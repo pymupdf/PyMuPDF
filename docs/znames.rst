@@ -21,10 +21,10 @@ Starting with version 1.19.0, we will issue deprecation warnings on `sys.stderr`
 
 Starting immediately, all deprecated objects (methods and properties) will show a copy of the original's docstring, **prefixed** with the deprecation message, for example::
 
-    >>> print(fitz.Document.pageCount.__doc__)
+    >>> print(pymupdf.Document.pageCount.__doc__)
     *** Deprecated and removed in version following 1.19.0 - use 'page_count'. ***
     Number of pages.
-    >>> print(fitz.Document.newPage.__doc__)
+    >>> print(pymupdf.Document.newPage.__doc__)
     *** Deprecated and removed in version following 1.19.0 - use 'new_page'. ***
     Create and return a new page object.
 

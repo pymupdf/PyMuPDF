@@ -853,10 +853,10 @@ msgstr ""
 #: ../../textpage.rst:240 45123225de0f42bfbe6d8423c9226015
 msgid ""
 "The image's \"transformation matrix\" is defined as the matrix, for which"
-" the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, "
+" the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, "
 "lookup details here: :ref:`ImageTransformation`."
 msgstr ""
-"画像の「変換行列」は、`bbox / transform == fitz.Rect(0, 0, 1, 1)` "
+"画像の「変換行列」は、`bbox / transform == pymupdf.Rect(0, 0, 1, 1)` "
 "という式が真である場合の行列です。詳細はこちらを参照してください： :ref:`ImageTransformation`。"
 
 #: ../../textpage.rst:243 8b617dc9898b4d469fdb2932600b9777
@@ -1067,11 +1067,11 @@ msgstr ""
 #: ../../textpage.rst:313 68e5a41860b142da9790ffa919ddc281
 msgid ""
 "You may request PyMuPDF to do all of the above automatically by executing"
-" `fitz.TOOLS.set_small_glyph_heights(True)`. This sets a global parameter"
+" `pymupdf.TOOLS.set_small_glyph_heights(True)`. This sets a global parameter"
 " so that all subsequent text searches and text extractions are based on "
 "reduced glyph heights, where meaningful."
 msgstr ""
-"PyMuPDFに対して、`fitz.TOOLS.set_small_glyph_heights(True)` "
+"PyMuPDFに対して、`pymupdf.TOOLS.set_small_glyph_heights(True)` "
 "を実行して、上記のすべてを自動的に実行するように依頼することができます。これは、すべての後続のテキスト検索とテキスト抽出が、縮小されたグリフの高さを基に行われるようにするためのグローバルパラメータを設定します。"
 
 #: ../../textpage.rst:315 e50d2714c900470d98ea9a65be3834d9

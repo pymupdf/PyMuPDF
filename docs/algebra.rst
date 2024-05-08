@@ -76,9 +76,9 @@ a == b    *True* if *bool(a-b)* is *False* ("b" may be "a-like").
 
 .. note:: Please note an important difference to usual arithmetic:
 
-        Matrix multiplication is **not commutative**, i.e. in general we have `m*n != n*m` for two matrices. Also, there are non-zero matrices which have no inverse, for example `m = Matrix(1, 0, 1, 0, 1, 0)`. If you try to divide by any of these, you will receive a `ZeroDivisionError` exception using operator *"/"*, e.g. for the expression `fitz.Identity / m`. But if you formulate `fitz.Identity * ~m`, the result will be `fitz.Matrix()` (the null matrix).
+        Matrix multiplication is **not commutative**, i.e. in general we have `m*n != n*m` for two matrices. Also, there are non-zero matrices which have no inverse, for example `m = Matrix(1, 0, 1, 0, 1, 0)`. If you try to divide by any of these, you will receive a `ZeroDivisionError` exception using operator *"/"*, e.g. for the expression `pymupdf.Identity / m`. But if you formulate `pymupdf.Identity * ~m`, the result will be `pymupdf.Matrix()` (the null matrix).
 
-        Admittedly, this represents an inconsistency, and we are considering to remove it. For the time being, you can choose to avoid an exception and check whether ~m is the null matrix, or accept a potential *ZeroDivisionError* by using `fitz.Identity / m`.
+        Admittedly, this represents an inconsistency, and we are considering to remove it. For the time being, you can choose to avoid an exception and check whether ~m is the null matrix, or accept a potential *ZeroDivisionError* by using `pymupdf.Identity / m`.
 
 .. note::
 
@@ -95,9 +95,9 @@ Manipulation with numbers
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For the usual arithmetic operations, numbers are always allowed as second operand. In addition, you can formulate `"x in OBJ"`, where x is a number. It is implemented as `"x in tuple(OBJ)"`::
 
-  >>> fitz.Rect(1, 2, 3, 4) + 5
-  fitz.Rect(6.0, 7.0, 8.0, 9.0)
-  >>> 3 in fitz.Rect(1, 2, 3, 4)
+  >>> pymupdf.Rect(1, 2, 3, 4) + 5
+  pymupdf.Rect(6.0, 7.0, 8.0, 9.0)
+  >>> 3 in pymupdf.Rect(1, 2, 3, 4)
   True
   >>> 
 
@@ -111,8 +111,8 @@ The following will create the upper left quarter of a document page rectangle::
 
 The following will deliver the **middle point of a line** that connects two points **p1** and **p2**::
 
-  >>> p1 = fitz.Point(1, 2)
-  >>> p2 = fitz.Point(4711, 3141)
+  >>> p1 = pymupdf.Point(1, 2)
+  >>> p2 = pymupdf.Point(4711, 3141)
   >>> mp = (p1 + p2) / 2
   >>> mp
   Point(2356.0, 1571.5)
@@ -134,15 +134,15 @@ The second operand of a binary operation can always be "like" the left operand. 
 
 To shift a rectangle for 5 pixels to the right, do this::
 
-  >>> fitz.Rect(100, 100, 200, 200) + (5, 0, 5, 0)  # add 5 to the x coordinates
+  >>> pymupdf.Rect(100, 100, 200, 200) + (5, 0, 5, 0)  # add 5 to the x coordinates
   Rect(105.0, 100.0, 205.0, 200.0)
   >>>
 
 Points, rectangles and matrices can be *transformed* with matrices. In PyMuPDF, we treat this like a **"multiplication"** (or resp. **"division"**), where the second operand may be "like" a matrix. Division in this context means "multiplication with the inverted matrix"::
 
-  >>> m = fitz.Matrix(1, 2, 3, 4, 5, 6)
-  >>> n = fitz.Matrix(6, 5, 4, 3, 2, 1)
-  >>> p = fitz.Point(1, 2)
+  >>> m = pymupdf.Matrix(1, 2, 3, 4, 5, 6)
+  >>> n = pymupdf.Matrix(6, 5, 4, 3, 2, 1)
+  >>> p = pymupdf.Point(1, 2)
   >>> p * m
   Point(12.0, 16.0)
   >>> p * (1, 2, 3, 4, 5, 6)
@@ -161,18 +161,18 @@ Points, rectangles and matrices can be *transformed* with matrices. In PyMuPDF, 
   Matrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)
   >>>
   >>> # look at this non-invertible matrix:
-  >>> m = fitz.Matrix(1, 0, 1, 0, 1, 0)
+  >>> m = pymupdf.Matrix(1, 0, 1, 0, 1, 0)
   >>> ~m
   Matrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
   >>> # we try dividing by it in two ways:
-  >>> p = fitz.Point(1, 2)
+  >>> p = pymupdf.Point(1, 2)
   >>> p * ~m  # this delivers point (0, 0):
   Point(0.0, 0.0)
   >>> p / m  # but this is an exception:
   Traceback (most recent call last):
     File "<pyshell#6>", line 1, in <module>
       p / m
-    File "... /site-packages/fitz/fitz.py", line 869, in __truediv__
+    File "... /site-packages/fitz/pymupdf.py", line 869, in __truediv__
       raise ZeroDivisionError("matrix not invertible")
   ZeroDivisionError: matrix not invertible
   >>>
@@ -194,7 +194,7 @@ Here is an example for creating the smallest rectangle enclosing given points::
   >>>
   >>> # now create a rectangle containing all these 100 points
   >>> # start with an empty rectangle
-  >>> r = fitz.Rect(points[0], points[0])
+  >>> r = pymupdf.Rect(points[0], points[0])
   >>> for p in points[1:]:  # and include remaining points one by one
           r |= p
   >>> r  # here is the to be expected result:

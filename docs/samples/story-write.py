@@ -10,7 +10,7 @@ callback that returns the rectangles into which the story is placed.
 
 import html
 
-import fitz
+import pymupdf
 
 
 # Create html containing multiple copies of our own source code.
@@ -62,20 +62,20 @@ def rectfn(rect_num, filled):
     
     if rect_num % 4 == 0:
         # New page.
-        mediabox = fitz.Rect(0, 0, page_w, page_h)
+        mediabox = pymupdf.Rect(0, 0, page_w, page_h)
     else:
         mediabox = None
     # Return one of four rects in turn.
     rect_x = margin + (rect_w+margin) * ((rect_num // 2) % 2)
     rect_y = margin + (rect_h+margin) * (rect_num % 2)
-    rect = fitz.Rect(rect_x, rect_y, rect_x + rect_w, rect_y + rect_h)
+    rect = pymupdf.Rect(rect_x, rect_y, rect_x + rect_w, rect_y + rect_h)
     #print(f'rectfn(): rect_num={rect_num} filled={filled}. Returning: rect={rect}')
     return mediabox, rect, None
 
-story = fitz.Story(html, em=8)
+story = pymupdf.Story(html, em=8)
 
 out_path = __file__.replace('.py', '.pdf')
-writer = fitz.DocumentWriter(out_path)
+writer = pymupdf.DocumentWriter(out_path)
 
 story.write(writer, rectfn)
 writer.close()

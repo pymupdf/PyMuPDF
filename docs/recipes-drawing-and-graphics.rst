@@ -19,7 +19,7 @@ The syntax for such operations is defined in "A Operator Summary" on page 643 of
 
 |PyMuPDF| implements a large part of the available features via its :ref:`Shape` class, which is comparable to notions like "canvas" in other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_).
 
-A shape is always created as a **child of a page**, usually with an instruction like `shape = page.new_shape()`. The class defines numerous methods that perform drawing operations on the page's area. For example, `last_point = shape.draw_rect(rect)` draws a rectangle along the borders of a suitably defined `rect = fitz.Rect(...)`.
+A shape is always created as a **child of a page**, usually with an instruction like `shape = page.new_shape()`. The class defines numerous methods that perform drawing operations on the page's area. For example, `last_point = shape.draw_rect(rect)` draws a rectangle along the borders of a suitably defined `rect = pymupdf.Rect(...)`.
 
 The returned *last_point* **always** is the :ref:`Point` where drawing operation ended ("last point"). Every such elementary drawing requires a subsequent :meth:`Shape.finish` to "close" it, but there may be multiple drawings which have one common ``finish()`` method.
 
@@ -41,7 +41,7 @@ If you import this script, you can also directly use its graphics as in the foll
 
     """
 
-    import fitz
+    import pymupdf
     import shapes_and_symbols as sas
 
     # list of available symbol functions and their descriptions
@@ -58,15 +58,15 @@ If you import this script, you can also directly use its graphics as in the foll
              (sas.smiley, "smiley (easy)"),
              ]
 
-    r = fitz.Rect(50, 50, 100, 100)  # first rect to contain a symbol
-    d = fitz.Rect(0, r.height + 10, 0, r.height + 10)  # displacement to next rect
+    r = pymupdf.Rect(50, 50, 100, 100)  # first rect to contain a symbol
+    d = pymupdf.Rect(0, r.height + 10, 0, r.height + 10)  # displacement to next rect
     p = (15, -r.height * 0.2)  # starting point of explanation text
     rlist = [r]  # rectangle list
 
     for i in range(1, len(tlist)):  # fill in all the rectangles
         rlist.append(rlist[i-1] + d)
 
-    doc = fitz.open()  # create empty PDF
+    doc = pymupdf.open()  # create empty PDF
     page = doc.new_page()  # create an empty page
     shape = page.new_shape()  # start a Shape (canvas)
 
@@ -142,15 +142,15 @@ The *path* dictionary has been designed such that it can easily be used by the :
 
 The following is a code snippet which extracts the drawings of a page and re-draws them on a new page::
 
-    import fitz
-    doc = fitz.open("some.file")
+    import pymupdf
+    doc = pymupdf.open("some.file")
     page = doc[0]
     paths = page.get_drawings()  # extract existing drawings
     # this is a list of "paths", which can directly be drawn again using Shape
     # -------------------------------------------------------------------------
     #
     # define some output page with the same dimensions
-    outpdf = fitz.open()
+    outpdf = pymupdf.open()
     outpage = outpdf.new_page(width=page.rect.width, height=page.rect.height)
     shape = outpage.new_shape()  # make a drawing canvas for the output page
     # --------------------------------------

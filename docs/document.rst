@@ -10,7 +10,7 @@ Document
 
 This class represents a document. It can be constructed from a file or from memory.
 
-There exists the alias *open* for this class, i.e. `fitz.Document(...)` and `fitz.open(...)` do exactly the same thing.
+There exists the alias *open* for this class, i.e. `pymupdf.Document(...)` and `pymupdf.open(...)` do exactly the same thing.
 
 For details on **embedded files** refer to Appendix 3.
 
@@ -200,7 +200,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :return: A document object. If the document cannot be created, an exception is raised in the above sequence. Note that PyMuPDF-specific exceptions, `FileNotFoundError`, `EmptyFileError` and `FileDataError` are intercepted if you check for `RuntimeError`.
 
-      In case of problems you can see more detail in the internal messages store: `print(fitz.TOOLS.mupdf_warnings())` (which will be emptied by this call, but you can also prevent this -- consult :meth:`Tools.mupdf_warnings`).
+      In case of problems you can see more detail in the internal messages store: `print(pymupdf.TOOLS.mupdf_warnings())` (which will be emptied by this call, but you can also prevent this -- consult :meth:`Tools.mupdf_warnings`).
 
     .. note:: Not all document types are checked for valid formats already at open time. Raster images for example will raise exceptions only later, when trying to access the content. Other types (notably with non-binary content) may also be opened (and sometimes **accessed**) successfully -- sometimes even when having invalid content for the format:
 
@@ -210,26 +210,26 @@ For details on **embedded files** refer to Appendix 3.
     Overview of possible forms, note: `open` is a synonym of `Document`::
 
         >>> # from a file
-        >>> doc = fitz.open("some.xps")
+        >>> doc = pymupdf.open("some.xps")
         >>> # handle wrong extension
-        >>> doc = fitz.open("some.file", filetype="xps")
+        >>> doc = pymupdf.open("some.file", filetype="xps")
         >>>
         >>> # from memory, filetype is required if not a PDF
-        >>> doc = fitz.open("xps", mem_area)
-        >>> doc = fitz.open(None, mem_area, "xps")
-        >>> doc = fitz.open(stream=mem_area, filetype="xps")
+        >>> doc = pymupdf.open("xps", mem_area)
+        >>> doc = pymupdf.open(None, mem_area, "xps")
+        >>> doc = pymupdf.open(stream=mem_area, filetype="xps")
         >>>
         >>> # new empty PDF
-        >>> doc = fitz.open()
-        >>> doc = fitz.open(None)
-        >>> doc = fitz.open("")
+        >>> doc = pymupdf.open()
+        >>> doc = pymupdf.open(None)
+        >>> doc = pymupdf.open("")
 
-    .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So `fitz.open("file.jpg")` will work even for a PNG image.
+    .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So `pymupdf.open("file.jpg")` will work even for a PNG image.
 
     The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
 
-        >>> import fitz
-        >>> with fitz.open(...) as doc:
+        >>> import pymupdf
+        >>> with pymupdf.open(...) as doc:
                 for page in doc: print("page %i" % page.number)
         page 0
         page 1
@@ -703,11 +703,11 @@ For details on **embedded files** refer to Appendix 3.
     :returns: a Python *bytes* object containing a PDF file image. It is created by internally using `tobytes(garbage=4, deflate=True)`. See :meth:`tobytes`. You can output it directly to disk or open it as a PDF. Here are some examples::
 
         >>> # convert an XPS file to PDF
-        >>> xps = fitz.open("some.xps")
+        >>> xps = pymupdf.open("some.xps")
         >>> pdfbytes = xps.convert_to_pdf()
         >>>
         >>> # either do this -->
-        >>> pdf = fitz.open("pdf", pdfbytes)
+        >>> pdf = pymupdf.open("pdf", pdfbytes)
         >>> pdf.save("some.pdf")
         >>>
         >>> # or this -->
@@ -717,12 +717,12 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> # copy image files to PDF pages
         >>> # each page will have image dimensions
-        >>> doc = fitz.open()                     # new PDF
+        >>> doc = pymupdf.open()                     # new PDF
         >>> imglist = [ ... image file names ...] # e.g. a directory listing
         >>> for img in imglist:
-                imgdoc=fitz.open(img)           # open image as a document
+                imgdoc=pymupdf.open(img)           # open image as a document
                 pdfbytes=imgdoc.convert_to_pdf()  # make a 1-page PDF of it
-                imgpdf=fitz.open("pdf", pdfbytes)
+                imgpdf=pymupdf.open("pdf", pdfbytes)
                 doc.insert_pdf(imgpdf)             # insert the image PDF
         >>> doc.save("allmyimages.pdf")
 
@@ -772,8 +772,8 @@ For details on **embedded files** refer to Appendix 3.
     :returns: a tuple of dictionary keys present in object :data:`xref`. Examples:
 
       >>> from pprint import pprint
-      >>> import fitz
-      >>> doc=fitz.open("pymupdf.pdf")
+      >>> import pymupdf
+      >>> doc=pymupdf.open("pymupdf.pdf")
       >>> xref = doc.page_xref(0)  # xref of page 0
       >>> pprint(doc.xref_get_keys(xref))  # primary level keys of a page
       ('Type', 'Contents', 'Resources', 'MediaBox', 'Parent')
@@ -858,10 +858,10 @@ For details on **embedded files** refer to Appendix 3.
       - If in doubt, we **strongly recommend** to use :meth:`get_pdf_str`! This function automatically generates the right brackets, escapes, and overall format. It will for example do conversions like these:
 
         >>> # because of the € symbol, the following yields UTF-16BE BOM
-        >>> fitz.get_pdf_str("Pay in $ or €.")
+        >>> pymupdf.get_pdf_str("Pay in $ or €.")
         '<feff00500061007900200069006e002000240020006f0072002020ac002e>'
         >>> # escapes for brackets and non-ASCII
-        >>> fitz.get_pdf_str("Prices in EUR (USD also accepted). Areas are in m².")
+        >>> pymupdf.get_pdf_str("Prices in EUR (USD also accepted). Areas are in m².")
         '(Prices in EUR \\(USD also accepted\\). Areas are in m\\262.)'
 
 
@@ -1127,8 +1127,8 @@ For details on **embedded files** refer to Appendix 3.
 
     Collapse everything below top level and show the chapter on Python support in red, bold and italic::
 
-      >>> import fitz
-      >>> doc=fitz.open("SWIGDocumentation.pdf")
+      >>> import pymupdf
+      >>> doc=pymupdf.open("SWIGDocumentation.pdf")
       >>> toc = doc.get_toc(False)  # we need the detailed TOC
       >>> # list of level 1 indices and their titles
       >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
@@ -1736,11 +1736,11 @@ For details on **embedded files** refer to Appendix 3.
     102
     >>> imgout.close()
 
-    .. note:: There is a functional overlap with *pix = fitz.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
+    .. note:: There is a functional overlap with *pix = pymupdf.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
 
        * xref 1268 is a PNG -- Comparable execution time and identical output::
 
-          In [23]: %timeit pix = fitz.Pixmap(doc, 1268);pix.tobytes()
+          In [23]: %timeit pix = pymupdf.Pixmap(doc, 1268);pix.tobytes()
           10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
           In [24]: len(pix.tobytes())
           Out[24]: 21462
@@ -1752,7 +1752,7 @@ For details on **embedded files** refer to Appendix 3.
 
        * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
 
-          In [27]: %timeit pix = fitz.Pixmap(doc, 1186);pix.tobytes()
+          In [27]: %timeit pix = pymupdf.Pixmap(doc, 1186);pix.tobytes()
           341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
           In [28]: len(pix.tobytes())
           Out[28]: 2599433
@@ -2025,7 +2025,7 @@ For details on **embedded files** refer to Appendix 3.
 
     * Changed in v1.16.0: This is now an integer comprised of bit indicators. Was a dictionary previously.
 
-    Contains the permissions to access the document. This is an integer containing bool values in respective bit positions. For example, if *doc.permissions & fitz.PDF_PERM_MODIFY > 0*, you may change the document. See :ref:`PermissionCodes` for details.
+    Contains the permissions to access the document. This is an integer containing bool values in respective bit positions. For example, if *doc.permissions & pymupdf.PDF_PERM_MODIFY > 0*, you may change the document. See :ref:`PermissionCodes` for details.
 
     :type: int
 
@@ -2089,8 +2089,8 @@ For details on **embedded files** refer to Appendix 3.
 -------------------------------
 Clear metadata information. If you do this out of privacy / data protection concerns, make sure you save the document as a new file with *garbage > 0*. Only then the old */Info* object will also be physically removed from the file. In this case, you may also want to clear any XML metadata inserted by several PDF editors:
 
->>> import fitz
->>> doc=fitz.open("pymupdf.pdf")
+>>> import pymupdf
+>>> doc=pymupdf.open("pymupdf.pdf")
 >>> doc.metadata             # look at what we currently have
 {'producer': 'rst2pdf, reportlab', 'format': 'PDF 1.4', 'encryption': None, 'author':
 'Jorj X. McKie', 'modDate': "D:20160611145816-04'00'", 'keywords': 'PDF, XPS, EPUB, CBZ',
@@ -2108,8 +2108,8 @@ Clear metadata information. If you do this out of privacy / data protection conc
 ----------------------------------
 This shows how to modify or add a table of contents. Also have a look at `import.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-toc/import.py>`_ and `export.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/export-toc/export.py>`_ in the examples directory.
 
->>> import fitz
->>> doc = fitz.open("test.pdf")
+>>> import pymupdf
+>>> doc = pymupdf.open("test.pdf")
 >>> toc = doc.get_toc()
 >>> for t in toc: print(t)                           # show what we have
 [1, 'The PyMuPDF Documentation', 1]
@@ -2129,8 +2129,8 @@ This shows how to modify or add a table of contents. Also have a look at `import
 ----------------------------
 **(1) Concatenate two documents including their TOCs:**
 
->>> doc1 = fitz.open("file1.pdf")          # must be a PDF
->>> doc2 = fitz.open("file2.pdf")          # must be a PDF
+>>> doc1 = pymupdf.open("file1.pdf")          # must be a PDF
+>>> doc2 = pymupdf.open("file2.pdf")          # must be a PDF
 >>> pages1 = len(doc1)                     # save doc1's page count
 >>> toc1 = doc1.get_toc(False)     # save TOC 1
 >>> toc2 = doc2.get_toc(False)     # save TOC 2
@@ -2160,11 +2160,11 @@ Other Examples
      imglist = doc.get_page_images(i)
      for img in imglist:
          xref = img[0]                  # xref number
-         pix = fitz.Pixmap(doc, xref)   # make pixmap from image
+         pix = pymupdf.Pixmap(doc, xref)   # make pixmap from image
          if pix.n - pix.alpha < 4:      # can be saved as PNG
              pix.save("p%s-%s.png" % (i, xref))
          else:                          # CMYK: must convert first
-             pix0 = fitz.Pixmap(fitz.csRGB, pix)
+             pix0 = pymupdf.Pixmap(pymupdf.csRGB, pix)
              pix0.save("p%s-%s.png" % (i, xref))
              pix0 = None                # free Pixmap resources
          pix = None                     # free Pixmap resources

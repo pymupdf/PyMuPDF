@@ -6,7 +6,7 @@ Read the Python sources in the script directory and create a PDF of all their
 source codes.
 
 The following features are included as a specialty:
-1. HTML source for fitz.Story created via Python API exclusively
+1. HTML source for pymupdf.Story created via Python API exclusively
 2. Separate Story objects for page headers and footers
 3. Use of HTML "id" elements for identifying source start pages
 4. Generate a Table of Contents pointing to source file starts. This
@@ -18,12 +18,12 @@ import io
 import os
 import time
 
-import fitz
+import pymupdf
 
 THISDIR = os.path.dirname(os.path.abspath(__file__))
 TOC = []  # this will contain the TOC list items
 CURRENT_ID = ""  # currently processed filename - stored by recorder func
-MEDIABOX = fitz.paper_rect("a4-l")  # chosen page size
+MEDIABOX = pymupdf.paper_rect("a4-l")  # chosen page size
 WHERE = MEDIABOX + (36, 50, -36, -36)  # sub rectangle for source content
 # location of the header rectangle
 HDR_WHERE = (36, 5, MEDIABOX.width - 36, 40)
@@ -59,10 +59,10 @@ def recorder(elpos):
 
 def header_story(text):
     """Make the page header"""
-    header = fitz.Story()
+    header = pymupdf.Story()
     hdr_body = header.body
     hdr_body.add_paragraph().set_properties(
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
         bgcolor="#eee",
         font="sans-serif",
         bold=True,
@@ -74,11 +74,11 @@ def header_story(text):
 
 def footer_story(text):
     """Make the page footer"""
-    footer = fitz.Story()
+    footer = pymupdf.Story()
     ftr_body = footer.body
     ftr_body.add_paragraph().set_properties(
         bgcolor="#eee",
-        align=fitz.TEXT_ALIGN_CENTER,
+        align=pymupdf.TEXT_ALIGN_CENTER,
         color="blue",
         fontsize=10,
         font="sans-serif",
@@ -90,12 +90,12 @@ def code_printer(outfile):
     """Output the generated PDF to outfile."""
     global MAX_TITLE_LEN
     where = +WHERE
-    writer = fitz.DocumentWriter(outfile, "")
+    writer = pymupdf.DocumentWriter(outfile, "")
     print_time = time.strftime("%Y-%m-%d %H:%M:%S (%z)")
     thispath = os.path.abspath(os.curdir)
     basename = os.path.basename(thispath)
 
-    story = fitz.Story()
+    story = pymupdf.Story()
     body = story.body
     body.set_properties(font="sans-serif")
 
@@ -126,7 +126,7 @@ def code_printer(outfile):
         ).set_fontsize(10).add_text(text)
 
         # Indicate end of a source file
-        body.add_paragraph().set_align(fitz.TEXT_ALIGN_CENTER).add_text(
+        body.add_paragraph().set_align(pymupdf.TEXT_ALIGN_CENTER).add_text(
             f"---------- End of File '{code_file}' ----------"
         )
         i += 1  # update file counter
@@ -179,17 +179,17 @@ if __name__ == "__main__" or os.environ.get('PYTEST_CURRENT_TEST'):
     t0 = time.perf_counter()
     code_printer(fileptr1)  # make the PDF
     t1 = time.perf_counter()
-    doc = fitz.open("pdf", fileptr1)
+    doc = pymupdf.open("pdf", fileptr1)
     old_count = doc.page_count
     # -----------------------------------------------------------------------------
     # Post-processing step to make / insert the toc
-    # This also works using fitz.Story:
+    # This also works using pymupdf.Story:
     # - make a new PDF in memory which contains pages with the TOC text
     # - add these TOC pages to the end of the original file
     # - search item text on the inserted pages and cover each with a PDF link
     # - move the TOC pages to the front of the document
     # -----------------------------------------------------------------------------
-    story = fitz.Story()
+    story = pymupdf.Story()
     body = story.body
     body.add_header(1).set_font("sans-serif").add_text("Table of Contents")
     # prefix TOC with an entry pointing to this page
@@ -200,7 +200,7 @@ if __name__ == "__main__" or os.environ.get('PYTEST_CURRENT_TEST'):
             item[1] + f" - ({item[2]})"
         )
     fileptr2 = io.BytesIO()  # put TOC pages to a separate PDF initially
-    writer = fitz.DocumentWriter(fileptr2)
+    writer = pymupdf.DocumentWriter(fileptr2)
     i = 1
     more = 1
     while more:
@@ -221,20 +221,20 @@ if __name__ == "__main__" or os.environ.get('PYTEST_CURRENT_TEST'):
         i += 1
 
     writer.close()
-    doc2 = fitz.open("pdf", fileptr2)  # open TOC pages as another PDF
+    doc2 = pymupdf.open("pdf", fileptr2)  # open TOC pages as another PDF
     doc.insert_pdf(doc2)  # and append to the main PDF
     new_range = range(old_count, doc.page_count)  # the TOC page numbers
     pages = [doc[i] for i in new_range]  # these are the TOC pages within main PDF
     for item in TOC:  # search for TOC item text to get its rectangle
         for page in pages:
-            rl = page.search_for(item[1], flags=~(fitz.TEXT_PRESERVE_LIGATURES | fitz.TEXT_PRESERVE_SPANS))
+            rl = page.search_for(item[1], flags=~(pymupdf.TEXT_PRESERVE_LIGATURES | pymupdf.TEXT_PRESERVE_SPANS))
             if rl != []:  # this text must be on next page
                 break
         rect = rl[0]  # rectangle of TOC item text
         link = {  # make a link from it
-            "kind": fitz.LINK_GOTO,
+            "kind": pymupdf.LINK_GOTO,
             "from": rect,
-            "to": fitz.Point(0, item[3]),
+            "to": pymupdf.Point(0, item[3]),
             "page": item[2] - 1,
         }
         page.insert_link(link)

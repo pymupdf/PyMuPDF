@@ -129,8 +129,8 @@ How to Access the PDF Catalog
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 This is a central ("root") object of a PDF. It serves as a starting point to reach important other objects and it also contains some global options for the PDF::
 
-    >>> import fitz
-    >>> doc=fitz.open("PyMuPDF.pdf")
+    >>> import pymupdf
+    >>> doc=pymupdf.open("PyMuPDF.pdf")
     >>> cat = doc.pdf_catalog()  # get xref of the /Catalog
     >>> print(doc.xref_object(cat))  # print object definition
     <<
@@ -165,8 +165,8 @@ XRefStm int         Offset of a cross-reference stream. See :ref:`AdobeManual` p
 
 Access this information via PyMuPDF with :meth:`Document.pdf_trailer` or, equivalently, via :meth:`Document.xref_object` using -1 instead of a valid :data:`xref` number.
 
-    >>> import fitz
-    >>> doc=fitz.open("PyMuPDF.pdf")
+    >>> import pymupdf
+    >>> doc=pymupdf.open("PyMuPDF.pdf")
     >>> print(doc.xref_object(-1))  # or: print(doc.pdf_trailer())
     <<
     /Type /XRef
@@ -269,7 +269,7 @@ Use the following code to see **all items** stored in the metadata object::
         raise ValueError("PDF has no metadata")
     xref = int(value.replace("0 R", ""))  # extract the metadata xref
     # add some private information
-    doc.xref_set_key(xref, "mykey", fitz.get_pdf_str("北京 is Beijing"))
+    doc.xref_set_key(xref, "mykey", pymupdf.get_pdf_str("北京 is Beijing"))
     #
     # after executing the previous code snippet, we will see this:
     pprint(metadata)
@@ -298,8 +298,8 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
 
 * :meth:`Document.xref_get_keys` returns the PDF keys of the object at :data:`xref`::
 
-    In [1]: import fitz
-    In [2]: doc = fitz.open("pymupdf.pdf")
+    In [1]: import pymupdf
+    In [2]: doc = pymupdf.open("pymupdf.pdf")
     In [3]: page = doc[0]
     In [4]: from pprint import pprint
     In [5]: pprint(doc.xref_get_keys(page.xref))

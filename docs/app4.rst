@@ -173,8 +173,8 @@ These are the :title:`Python` commands for how each tool is used:
 
 .. code-block:: python
 
-    import fitz
-    doc = fitz.open("input.pdf")
+    import pymupdf
+    doc = pymupdf.open("input.pdf")
     doc.save("output.pdf")
 
 :title:`PDFrw`
@@ -371,8 +371,8 @@ These are the :title:`Python` commands for how each tool is used:
 
     def ProcessFile(datei):
     print "processing:", datei
-    doc=fitz.open(datei)
-    for p in fitz.Pages(doc):
+    doc=pymupdf.open(datei)
+    for p in pymupdf.Pages(doc):
         pix = p.get_pixmap(dpi=150)
         pix.save("t-%s.png" % p.number)
         pix = None

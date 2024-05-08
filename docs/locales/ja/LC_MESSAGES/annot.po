@@ -432,8 +432,8 @@ msgid ""
 msgstr "（v1.19.2で新規追加）インチあたりのドット数で指定された解像度。 `None` でない場合、matrixパラメータは無視されます。"
 
 #: ../../annot.rst:80 472388915f304edaa87f5c6ee0c0602d
-msgid "a colorspace to be used for image creation. Default is *fitz.csRGB*."
-msgstr "画像の作成に使用されるカラースペース。デフォルトは *fitz.csRGB* です。"
+msgid "a colorspace to be used for image creation. Default is *pymupdf.csRGB*."
+msgstr "画像の作成に使用されるカラースペース。デフォルトは *pymupdf.csRGB* です。"
 
 #: ../../annot.rst:83 fcfedb41f14e4061ba26f9747b54769d
 msgid "whether to include transparency information. Default is *False*."
@@ -823,14 +823,14 @@ msgid ""
 "font \"Times-Bold\" as is, horizontally centered in **one line** and be "
 "shortened to fit. To get your text fully displayed, its length using "
 ":data:`fontsize` 20 must not exceed 190 points. So please make sure that "
-"the following inequality is true: `fitz.get_text_length(text, "
+"the following inequality is true: `pymupdf.get_text_length(text, "
 "fontname=\"tibo\", fontsize=20) <= 190`."
 msgstr ""
 "「Stamp」注釈の名前を設定した場合、これは矩形を **変更せず** 、テキストもレイアウトされません。:ref:`StampIcons` "
 "から標準のテキストを選択すると（ `\"STAMP_\"` の後の **正確な** 名前部分）、元のレイアウトが表示されるはずです。**任意** "
 "のテキストは大文字に変更されず、「Times-Bold」フォントで水平中央揃えで **1行** "
 "に表示され、収まるように短縮されます。テキストを完全に表示するには、フォントサイズ20を使用してのテキストの長さが190ピクセルを超えてはいけません。したがって、以下の不等式が成り立つことを確認してください:"
-" `fitz.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190` 。"
+" `pymupdf.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190` 。"
 
 #: ../../annot.rst:248 0c83c13908074354b67569584deba79f
 msgid ""

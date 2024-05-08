@@ -60,7 +60,7 @@ A display list is populated with objects from a page, usually by executing :meth
       pair: clip; DisplayList.get_pixmap
       pair: alpha; DisplayList.get_pixmap
 
-   .. method:: get_pixmap(matrix=fitz.Identity, colorspace=fitz.csRGB, alpha=0, clip=None)
+   .. method:: get_pixmap(matrix=pymupdf.Identity, colorspace=pymupdf.csRGB, alpha=0, clip=None)
 
       Run the display list through a draw device and return a pixmap.
 

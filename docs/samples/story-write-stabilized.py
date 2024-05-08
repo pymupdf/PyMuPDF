@@ -1,10 +1,10 @@
 """
-Demo script for PyMuPDF's `fitz.Story.write_stabilized()`.
+Demo script for PyMuPDF's `pymupdf.Story.write_stabilized()`.
 
-`fitz.Story.write_stabilized()` is similar to `fitz.Story.write()`,
+`pymupdf.Story.write_stabilized()` is similar to `pymupdf.Story.write()`,
 except instead of taking a fixed html document, it does iterative layout
 of dynamically-generated html content (provided by a callback) to a
-`fitz.DocumentWriter`.
+`pymupdf.DocumentWriter`.
 
 For example this allows one to add a dynamically-generated table of contents
 section while ensuring that page numbers are patched up until stable.
@@ -12,15 +12,15 @@ section while ensuring that page numbers are patched up until stable.
 
 import textwrap
 
-import fitz
+import pymupdf
 
 
 def rectfn(rect_num, filled):
     '''
     We return one rect per page.
     '''
-    rect = fitz.Rect(10, 20, 290, 380)
-    mediabox = fitz.Rect(0, 0, 300, 400)
+    rect = pymupdf.Rect(10, 20, 290, 380)
+    mediabox = pymupdf.Rect(0, 0, 300, 400)
     #print(f'rectfn(): rect_num={rect_num} filled={filled}')
     return mediabox, rect, None
 
@@ -83,6 +83,6 @@ def contentfn(positions):
 
 
 out_path = __file__.replace('.py', '.pdf')
-writer = fitz.DocumentWriter(out_path)
-fitz.Story.write_stabilized(writer, contentfn, rectfn)
+writer = pymupdf.DocumentWriter(out_path)
+pymupdf.Story.write_stabilized(writer, contentfn, rectfn)
 writer.close()

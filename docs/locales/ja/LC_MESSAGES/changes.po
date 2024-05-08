@@ -415,7 +415,7 @@ msgstr ""
 #: ../../../changes.txt:148 5b8c0a765631454cb45a7dfb1eb37c95
 msgid ""
 "**Fixed** `3180 <https://github.com/pymupdf/PyMuPDF/issues/3180>`_: "
-"Cannot show optional content group: AttributeError: module 'fitz.mupdf' "
+"Cannot show optional content group: AttributeError: module 'pymupdf.mupdf' "
 "has no attribute 'pdf_array_push_drop'"
 msgstr ""
 
@@ -462,13 +462,13 @@ msgstr ""
 #: ../../../changes.txt:164 b66cad2b220841f9a8072b9efac9573b
 msgid ""
 "**Fixed** `3163 <https://github.com/pymupdf/PyMuPDF/issues/3163>`_: "
-"AssertionError on using fitz.IRect"
+"AssertionError on using pymupdf.IRect"
 msgstr ""
 
 #: ../../../changes.txt:165 052f87daf49a45408fee2e9c71006153
 msgid ""
 "**Fixed** `3177 <https://github.com/pymupdf/PyMuPDF/issues/3177>`_: "
-"fitz.Pixmap(None, pix) Unrecognised args for constructing Pixmap"
+"pymupdf.Pixmap(None, pix) Unrecognised args for constructing Pixmap"
 msgstr ""
 
 #: ../../../changes.txt:170 7fb1e843cd19470d94839070510c3f3f
@@ -864,7 +864,7 @@ msgstr ""
 #: ../../../changes.txt:352 0ef3c2a111c44e3591301e53b361d7d2
 msgid ""
 "**Fixed** `2978 <https://github.com/pymupdf/PyMuPDF/issues/2978>`_: "
-"1.23.9rc1: module 'fitz.mupdf' has no attribute 'fz_copy_pixmap_rect'"
+"1.23.9rc1: module 'pymupdf.mupdf' has no attribute 'fz_copy_pixmap_rect'"
 msgstr ""
 
 #: ../../../changes.txt:354 22c56e42805b4bafab47bd9ef69dbffc
@@ -907,7 +907,7 @@ msgstr ""
 
 #: ../../../changes.txt:364 c17aea1a370d44fd878cd59a5897166d
 msgid ""
-"Fixed rebased `fitz.pymupdf_version_tuple` - was previously set to mupdf "
+"Fixed rebased `pymupdf.pymupdf_version_tuple` - was previously set to mupdf "
 "version."
 msgstr ""
 
@@ -1031,7 +1031,7 @@ msgstr ""
 
 #: ../../../changes.txt:400 619d317a6f0545e4b542e9bc143de3b9
 msgid ""
-"Added test for `fitz.css_for_pymupdf_font()` (uses package `pymupdf-"
+"Added test for `pymupdf.css_for_pymupdf_font()` (uses package `pymupdf-"
 "fonts`)."
 msgstr ""
 
@@ -1139,7 +1139,7 @@ msgid "Added `scripts/test.py`, for simple build+test of PyMuPDF git checkout."
 msgstr ""
 
 #: ../../../changes.txt:434 94872393e3df4f4c9b95487ba6e3184b
-msgid "Added `fitz.pymupdf_version_tuple`, e.g. `(1, 23, 6)`."
+msgid "Added `pymupdf.pymupdf_version_tuple`, e.g. `(1, 23, 6)`."
 msgstr ""
 
 #: ../../../changes.txt:435 e91cd349b57f43809090756fa880e18f
@@ -1223,7 +1223,7 @@ msgstr ""
 #: ../../../changes.txt:463 0c7432062d344b048e386b1f4fca147e
 msgid ""
 "**Fixed** `2548 <https://github.com/pymupdf/PyMuPDF/issues/2548>`_: Fitz "
-"freezes on some PDFs when calling the fitz.Page.get_text_blocks method."
+"freezes on some PDFs when calling the pymupdf.Page.get_text_blocks method."
 msgstr ""
 
 #: ../../../changes.txt:464 6fea6738d87141478ddaca2a037bbb47
@@ -1428,7 +1428,7 @@ msgstr ""
 #: ../../../changes.txt:550 106e6b2d68fe4eb4858ac1f0b962ff91
 msgid ""
 "**Fixed** `#2542 <https://github.com/pymupdf/PyMuPDF/issues/2542>`_: "
-"fitz.utils.scrub AttributeError Annot object has no attribute fileUpd "
+"pymupdf.utils.scrub AttributeError Annot object has no attribute fileUpd "
 "inside"
 msgstr ""
 
@@ -1888,7 +1888,7 @@ msgstr ""
 msgid ""
 "**Fixed** `#2290 <https://github.com/pymupdf/PyMuPDF/issues/2290>`_: "
 "Different image format/data from Page.get_text(\"dict\") and "
-"Fitz.get_page_images()"
+"pymupdf.get_page_images()"
 msgstr ""
 
 #: ../../../changes.txt:721 cdd991efc8b74c439d8fcc56bf0903be
@@ -1959,7 +1959,7 @@ msgstr ""
 #: ../../../changes.txt:749 ff740bc67d0c4b67af74bbe479744d1d
 msgid ""
 "Fixed issue where trace devices' state was not being initialised "
-"correctly; data returned from things like ``fitz.Page.get_texttrace()`` "
+"correctly; data returned from things like ``pymupdf.Page.get_texttrace()`` "
 "might be slightly altered, e.g. ``linewidth`` values."
 msgstr ""
 
@@ -2088,7 +2088,7 @@ msgstr ""
 #: ../../../changes.txt:801 cb935cc7a47d42548071d0d540dc0996
 msgid ""
 "**Fixed** `#2076 <https://github.com/pymupdf/PyMuPDF/issues/2076>`_: "
-"Segfault in fitz.py"
+"Segfault in pymupdf.py"
 msgstr ""
 
 #: ../../../changes.txt:802 f6d29b233d1c4fb18b5fd7e38e2eb54b
@@ -2501,7 +2501,7 @@ msgstr ""
 #: ../../../changes.txt:942 b0364cc4664544a38cfaa750d50d56b0
 msgid ""
 "``EmptyFileError`` -- raised when trying to create a :ref:`Document` "
-"(``fitz.open()``) from an empty file or zero-length memory."
+"(``pymupdf.open()``) from an empty file or zero-length memory."
 msgstr ""
 
 #: ../../../changes.txt:943 55e9cb29832d4c67a4ec94804444998a
@@ -3232,7 +3232,7 @@ msgstr ""
 msgid ""
 "**Fixed** issue `#1085 "
 "<https://github.com/pymupdf/PyMuPDF/issues/1085>`_. The old *snake_cased*"
-" alias of ``fitz.detTextlength`` is now defined correctly."
+" alias of ``pymupdf.detTextlength`` is now defined correctly."
 msgstr ""
 
 #: ../../../changes.txt:1181 b330fbd997e1417b9c1790b364d72202
@@ -5907,8 +5907,8 @@ msgstr ""
 #: ../../../changes.txt:1962 4cbd499433af4dc5a313d89abcbff5f9
 msgid ""
 "**Added** a method :meth:`paper_rect` which returns a :ref:`Rect` for a "
-"supplied paper format string. Example: *fitz.paper_rect(\"letter\") = "
-"fitz.Rect(0.0, 0.0, 612.0, 792.0)*."
+"supplied paper format string. Example: *pymupdf.paper_rect(\"letter\") = "
+"pymupdf.Rect(0.0, 0.0, 612.0, 792.0)*."
 msgstr ""
 
 #: ../../../changes.txt:1963 7939f5b3136b4715806e26b47b5cc0f5
@@ -6649,8 +6649,8 @@ msgid ""
 "Geometry objects now fully support in-place operators. For example, *p /="
 " m* replaces point p with *p * 1/m* for a number, or *p * ~m* for a "
 ":data:`matrix_like` object *m*. Similarly, if *r* is a rectangle, then *r"
-" |= (3, 4)* is the new rectangle that also includes *fitz.Point(3, 4)*, "
-"and *r &= (1, 2, 3, 4)* is its intersection with *fitz.Rect(1, 2, 3, 4)*."
+" |= (3, 4)* is the new rectangle that also includes *pymupdf.Point(3, 4)*, "
+"and *r &= (1, 2, 3, 4)* is its intersection with *pymupdf.Rect(1, 2, 3, 4)*."
 msgstr ""
 
 #: ../../../changes.txt:2215 8f4dfda17b7c45e5811345baf2bf3e50
@@ -6788,7 +6788,7 @@ msgstr ""
 msgid ""
 "A new *config.h* file can be used to de-select unwanted features in the C"
 " base code. Using this feature we have been able to reduce the size of "
-"our binary *_fitz.o* / *_fitz.pyd* by about 50% (from 9 MB to 4.5 MB). "
+"our binary *_pymupdf.o* / *_pymupdf.pyd* by about 50% (from 9 MB to 4.5 MB). "
 "When UPX-ing this, the size goes even further down to a very handy 2.3 "
 "MB."
 msgstr ""
@@ -6987,7 +6987,7 @@ msgstr ""
 
 #: ../../../changes.txt:2302 08e973d1e8f247bf905daafc9f7d8254
 msgid ""
-"*fitz.open()* (no parameters) creates a new empty **PDF** document, i.e. "
+"*pymupdf.open()* (no parameters) creates a new empty **PDF** document, i.e. "
 "if saved afterwards, it must be given a *.pdf* extension."
 msgstr ""
 
@@ -7042,20 +7042,20 @@ msgstr ""
 
 #: ../../../changes.txt:2314 29b6bbf81daa41858e5074673d286c3c
 msgid ""
-"New pixmap constructor *fitz.Pixmap(doc, xref)* creates a pixmap based on"
+"New pixmap constructor *pymupdf.Pixmap(doc, xref)* creates a pixmap based on"
 " an opened PDF document and an :data:`xref` number of the image."
 msgstr ""
 
 #: ../../../changes.txt:2315 0f5933e4aca14601be2b181ea07fede6
 msgid ""
-"New pixmap constructor *fitz.Pixmap(cspace, spix)* creates a pixmap as a "
+"New pixmap constructor *pymupdf.Pixmap(cspace, spix)* creates a pixmap as a "
 "copy of another one *spix* with the colorspace converted to *cspace*. "
 "This works for all colorspace combinations."
 msgstr ""
 
 #: ../../../changes.txt:2316 381501d236654e12b78c70b5ef7d81dc
 msgid ""
-"Pixmap constructor *fitz.Pixmap(colorspace, width, height, samples)* now "
+"Pixmap constructor *pymupdf.Pixmap(colorspace, width, height, samples)* now "
 "allows *samples* to also be *bytes*, not only *bytearray*."
 msgstr ""
 
@@ -7080,22 +7080,22 @@ msgid "Changes in version 1.9.1 compared to version 1.8.0 are the following:"
 msgstr ""
 
 #: ../../../changes.txt:2329 ef38ac62a7464093983794b9e37e6f09
-msgid "New methods *get_area()* for both *fitz.Rect* and *fitz.IRect*"
+msgid "New methods *get_area()* for both *pymupdf.Rect* and *pymupdf.IRect*"
 msgstr ""
 
 #: ../../../changes.txt:2330 7d95ce65555642a4b51d95e04ede7769
 msgid ""
 "Pixmaps can now be created directly from files using the new constructor "
-"*fitz.Pixmap(filename)*."
+"*pymupdf.Pixmap(filename)*."
 msgstr ""
 
 #: ../../../changes.txt:2331 a0ded6c4710b46bdaff9ed81d2e98838
-msgid "The Pixmap constructor *fitz.Pixmap(image)* has been extended accordingly."
+msgid "The Pixmap constructor *pymupdf.Pixmap(image)* has been extended accordingly."
 msgstr ""
 
 #: ../../../changes.txt:2332 2dcea7e23a68420aa79acc8113e4edb3
 msgid ""
-"*fitz.Rect* can now be created with all possible combinations of points "
+"*pymupdf.Rect* can now be created with all possible combinations of points "
 "and coordinates."
 msgstr ""
 
@@ -7115,7 +7115,7 @@ msgid ""
 msgstr ""
 
 #: ../../../changes.txt:2335 6f21b6af86e4416ca7e620b6ba9ca660
-msgid "The identity matrix *fitz.Identity* is now **immutable**."
+msgid "The identity matrix *pymupdf.Identity* is now **immutable**."
 msgstr ""
 
 #: ../../../changes.txt:2336 04f261820e2242d8b54685dbfdae9703
@@ -7135,7 +7135,7 @@ msgid ""
 msgstr ""
 
 #: ../../../changes.txt:2338 202e8cbef78e4fe0a594d51c1b86af73
-msgid "*fitz.open()* is now an alias of *fitz.Document()*."
+msgid "*pymupdf.open()* is now an alias of *pymupdf.Document()*."
 msgstr ""
 
 #: ../../../changes.txt:2339 80453f14ca6248c0ba0a4a3b0f8a8bf8
@@ -7157,7 +7157,7 @@ msgid ""
 msgstr ""
 
 #: ../../../changes.txt:2342 4389845f958449b081123f89a521027e
-msgid "New iterator *fitz.Pages(doc)* over a document's set of pages."
+msgid "New iterator *pymupdf.Pages(doc)* over a document's set of pages."
 msgstr ""
 
 #: ../../../changes.txt:2343 d1e29fba4a734eae95b00ab85e606e09

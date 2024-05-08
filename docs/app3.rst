@@ -20,15 +20,15 @@ The transformation matrix contains information about how an image was transforme
 The relationship between image dimension and its bbox on a page is the following:
 
 1. Using the original image's width and height,
-    - define the image rectangle `imgrect = fitz.Rect(0, 0, width, height)`
-    - define the "shrink matrix" `shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)`.
+    - define the image rectangle `imgrect = pymupdf.Rect(0, 0, width, height)`
+    - define the "shrink matrix" `shrink = pymupdf.Matrix(1/width, 0, 0, 1/height, 0, 0)`.
 
-2. Transforming the image rectangle with its shrink matrix, will result in the unit rectangle: `imgrect * shrink = fitz.Rect(0, 0, 1, 1)`.
+2. Transforming the image rectangle with its shrink matrix, will result in the unit rectangle: `imgrect * shrink = pymupdf.Rect(0, 0, 1, 1)`.
 
 3. Using the image **transformation matrix** "transform", the following steps will compute the bbox::
 
-    imgrect = fitz.Rect(0, 0, width, height)
-    shrink = fitz.Matrix(1/width, 0, 0, 1/height, 0, 0)
+    imgrect = pymupdf.Rect(0, 0, width, height)
+    shrink = pymupdf.Matrix(1/width, 0, 0, 1/height, 0, 0)
     bbox = imgrect * shrink * transform
 
 4. Inspecting the matrix product `shrink * transform` will reveal all information about what happened to the image rectangle to make it fit into the bbox on the page: rotation, scaling of its sides and translation of its origin. Let us look at an example:
@@ -39,8 +39,8 @@ The relationship between image dimension and its bbox on a page is the following
     >>> #------------------------------------------------
     >>> # define image shrink matrix and rectangle
     >>> #------------------------------------------------
-    >>> shrink = fitz.Matrix(1 / 439, 0, 0, 1 / 501, 0, 0)
-    >>> imgrect = fitz.Rect(0, 0, 439, 501)
+    >>> shrink = pymupdf.Matrix(1 / 439, 0, 0, 1 / 501, 0, 0)
+    >>> imgrect = pymupdf.Rect(0, 0, 439, 501)
     >>> #------------------------------------------------
     >>> # determine image bbox and transformation matrix:
     >>> #------------------------------------------------
@@ -59,7 +59,7 @@ The relationship between image dimension and its bbox on a page is the following
     >>> # the above shows:
     >>> # image sides are scaled by same factor ~0.4,
     >>> # and the image is rotated by 90 degrees clockwise
-    >>> # compare this with fitz.Matrix(-90) * 0.4
+    >>> # compare this with pymupdf.Matrix(-90) * 0.4
     >>> #------------------------------------------------
 
 
@@ -71,7 +71,7 @@ PDF Base 14 Fonts
 ---------------------
 The following 14 builtin font names **must be supported by every PDF viewer** application. They are available as a dictionary, which maps their full names amd their abbreviations in lower case to the full font basename. Wherever a **fontname** must be provided in PyMuPDF, any **key or value** from the dictionary may be used::
 
-    In [2]: fitz.Base14_fontdict
+    In [2]: pymupdf.Base14_fontdict
     Out[2]:
     {'courier': 'Courier',
     'courier-oblique': 'Courier-Oblique',
@@ -137,16 +137,16 @@ For example, specifying a sequence `"s"` in any of the following ways
 
 will make it usable in the following example expressions:
 
-* `fitz.Point(s)`
-* `fitz.Point(x, y) + s`
+* `pymupdf.Point(s)`
+* `pymupdf.Point(x, y) + s`
 * `doc.select(s)`
 
 Similarly with all geometry objects :ref:`Rect`, :ref:`IRect`, :ref:`Matrix` and :ref:`Point`.
 
 Because all PyMuPDF geometry classes themselves are special cases of sequences, they (with the exception of :ref:`Quad` -- see below) can be freely used where numerical sequences can be used, e.g. as arguments for functions like *list()*, *tuple()*, *array.array()* or *numpy.array()*. Look at the following snippet to see this work.
 
->>> import fitz, array, numpy as np
->>> m = fitz.Matrix(1, 2, 3, 4, 5, 6)
+>>> import pymupdf, array, numpy as np
+>>> m = pymupdf.Matrix(1, 2, 3, 4, 5, 6)
 >>>
 >>> list(m)
 [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]
@@ -170,9 +170,9 @@ Ensuring Consistency of Important Objects in PyMuPDF
 ------------------------------------------------------------
 PyMuPDF is a Python binding for the C library MuPDF. While a lot of effort has been invested by MuPDF's creators to approximate some sort of an object-oriented behavior, they certainly could not overcome basic shortcomings of the C language in that respect.
 
-Python on the other hand implements the OO-model in a very clean way. The interface code between PyMuPDF and MuPDF consists of two basic files: *fitz.py* and *fitz_wrap.c*. They are created by the excellent SWIG tool for each new version.
+Python on the other hand implements the OO-model in a very clean way. The interface code between PyMuPDF and MuPDF consists of two basic files: *pymupdf.py* and *fitz_wrap.c*. They are created by the excellent SWIG tool for each new version.
 
-When you use one of PyMuPDF's objects or methods, this will result in execution of some code in *fitz.py*, which in turn will call some C code compiled with *fitz_wrap.c*.
+When you use one of PyMuPDF's objects or methods, this will result in execution of some code in *pymupdf.py*, which in turn will call some C code compiled with *fitz_wrap.c*.
 
 Because SWIG goes a long way to keep the Python and the C level in sync, everything works fine, if a certain set of rules is being strictly followed. For example: **never access** a :ref:`Page` object, after you have closed (or deleted or set to *None*) the owning :ref:`Document`. Or, less obvious: **never access** a page or any of its children (links or annotations) after you have executed one of the document methods *select()*, *delete_page()*, *insert_page()* ... and more.
 
@@ -213,11 +213,11 @@ RuntimeError: orphaned object: parent is None
 
 This shows the cascading effect:
 
->>> doc = fitz.open("some.pdf")
+>>> doc = pymupdf.open("some.pdf")
 >>> page = doc[n]
 >>> annot = page.first_annot
 >>> page.rect
-fitz.Rect(0.0, 0.0, 595.0, 842.0)
+pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
 >>> annot.type
 [5, 'Circle']
 >>> del doc                       # or doc = None or doc.close()
@@ -298,7 +298,7 @@ Redirecting Error and Warning Messages
 --------------------------------------------
 Since MuPDF version 1.16 error and warning messages can be redirected via an official plugin.
 
-PyMuPDF will put error messages to `sys.stderr` prefixed with the string "mupdf:". Warnings are internally stored and can be accessed via *fitz.TOOLS.mupdf_warnings()*. There also is a function to empty this store.
+PyMuPDF will put error messages to `sys.stderr` prefixed with the string "mupdf:". Warnings are internally stored and can be accessed via *pymupdf.TOOLS.mupdf_warnings()*. There also is a function to empty this store.
 
 
 
@@ -346,7 +346,7 @@ Typical document page sizes are **ISO A4** and **Letter**. A **Letter** page has
     >>> page = doc.new_page(width=612, height=792)  # make new Letter page
     >>> ptm = page.transformation_matrix
     >>> # the inverse matrix of ptm is ~ptm
-    >>> fitz.Rect(0, 0, 100, 100) * ~ptm
+    >>> pymupdf.Rect(0, 0, 100, 100) * ~ptm
     Rect(0.0, 692.0, 100.0, 792.0)
 
 

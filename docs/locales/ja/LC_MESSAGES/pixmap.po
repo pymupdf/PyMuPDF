@@ -1194,24 +1194,24 @@ msgstr ""
 
 #: ../../pixmap.rst:375 77ba82a299fe4002813ed86bd11edfbc
 msgid ""
-"A 1-page PDF file in memory. Could be opened like `doc=fitz.open(\"pdf\","
+"A 1-page PDF file in memory. Could be opened like `doc=pymupdf.open(\"pdf\","
 " pix.pdfocr_tobytes())`, and text extractions could be performed on its "
 "`page=doc[0]`.  .. note::     Another possible use is insertion into some"
 " pdf. The following snippet reads the images of a folder and stores them "
 "as pages in a new PDF that contain an OCR text layer::        doc = "
-"fitz.open()       for imgfile in os.listdir(folder):          pix = "
-"fitz.Pixmap(imgfile)          imgpdf = fitz.open(\"pdf\", "
+"pymupdf.open()       for imgfile in os.listdir(folder):          pix = "
+"pymupdf.Pixmap(imgfile)          imgpdf = pymupdf.open(\"pdf\", "
 "pix.pdfocr_tobytes())          doc.insert_pdf(imgpdf)          pix = None"
 "          imgpdf.close()       doc.save(\"ocr-images.pdf\")"
 msgstr ""
 
 #: ../../pixmap.rst:375 dde41f5dc562440d9e6a25da1b5e0400
 msgid ""
-"A 1-page PDF file in memory. Could be opened like `doc=fitz.open(\"pdf\","
+"A 1-page PDF file in memory. Could be opened like `doc=pymupdf.open(\"pdf\","
 " pix.pdfocr_tobytes())`, and text extractions could be performed on its "
 "`page=doc[0]`."
 msgstr ""
-"メモリ内の1ページのPDFファイル。次のようにして開くことができます： `doc=fitz.open(\"pdf\", "
+"メモリ内の1ページのPDFファイル。次のようにして開くことができます： `doc=pymupdf.open(\"pdf\", "
 "pix.pdfocr_tobytes())` 、そしてそのページ=doc[0]でテキストの抽出が行えます。"
 
 #: ../../pixmap.rst:379 7c22bd99c6bd4c7eaccee6de4d0b4026
@@ -1718,12 +1718,12 @@ msgstr ""
 
 #: ../../pixmap.rst:631 c46375fc31bf4ffeaf1998e065b9192d
 msgid ""
-"Open such files with *fitz.open(...)*. The result will then appear as a "
+"Open such files with *pymupdf.open(...)*. The result will then appear as a "
 "document containing one single page. Creating a pixmap of this page "
 "offers all the options available in this context: apply a matrix, choose "
 "colorspace and alpha, confine the pixmap to a clip area, etc."
 msgstr ""
-"*fitz.open(...)* "
+"*pymupdf.open(...)* "
 "を使用してこのようなファイルを開きます。その結果、単一のページを含むドキュメントとして表示されます。このページのピクスマップを作成すると、このコンテキストで利用可能なすべてのオプションを使用できます：行列を適用、色空間とアルファを選択、ピクスマップをクリップエリアに制限などが含まれます。"
 
 #: ../../pixmap.rst:633 48b0e0afee874aeeaee50f7046457bf4
@@ -1921,11 +1921,11 @@ msgstr ""
 #: ../../pixmap.rst:657 4d4fdeeaf65d484c80e248690b90dfb8
 msgid ""
 "Especially pertaining to CMYK colorspaces, you can always convert a CMYK "
-"pixmap to an RGB pixmap with *rgb_pix = fitz.Pixmap(fitz.csRGB, "
+"pixmap to an RGB pixmap with *rgb_pix = pymupdf.Pixmap(pymupdf.csRGB, "
 "cmyk_pix)* and then save that in the desired format."
 msgstr ""
 "特にCMYKカラースペースに関連することについて、常にCMYK pixmapを *rgb_pix = "
-"fitz.Pixmap(fitz.csRGB、cmyk_pix)* に変換し、その後、その形式で保存できます。"
+"pymupdf.Pixmap(pymupdf.csRGB、cmyk_pix)* に変換し、その後、その形式で保存できます。"
 
 #: ../../pixmap.rst:658 7224739092ce429387b684341a7fb5c3
 msgid ""

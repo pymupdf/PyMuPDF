@@ -16,19 +16,19 @@ Function *getColor()*
 As the color database may not be needed very often, one additional import statement seems acceptable to get access to it::
 
     >>> # "getColor" is the only method you really need
-    >>> from fitz.utils import getColor
+    >>> from pymupdf.utils import getColor
     >>> getColor("aliceblue")
     (0.9411764705882353, 0.9725490196078431, 1.0)
     >>> #
     >>> # to get a list of all existing names
-    >>> from fitz.utils import getColorList
+    >>> from pymupdf.utils import getColorList
     >>> cl = getColorList()
     >>> cl
     ['ALICEBLUE', 'ANTIQUEWHITE', 'ANTIQUEWHITE1', 'ANTIQUEWHITE2', 'ANTIQUEWHITE3',
     'ANTIQUEWHITE4', 'AQUAMARINE', 'AQUAMARINE1'] ...
     >>> #
     >>> # to see the full integer color coding
-    >>> from fitz.utils import getColorInfoList
+    >>> from pymupdf.utils import getColorInfoList
     >>> il = getColorInfoList()
     >>> il
     [('ALICEBLUE', 240, 248, 255), ('ANTIQUEWHITE', 250, 235, 215),

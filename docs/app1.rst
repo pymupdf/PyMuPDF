@@ -310,7 +310,7 @@ To show the effect of `TEXT_INHIBIT_SPACES` have a look at this example::
     i n  E n g l i s h
     . . .  l e t ' s  s e e
     w h a t  h a p p e n s .
-    >>> print(page.get_text("text", flags=fitz.TEXT_INHIBIT_SPACES))
+    >>> print(page.get_text("text", flags=pymupdf.TEXT_INHIBIT_SPACES))
     Hallo!
     More text
     is following

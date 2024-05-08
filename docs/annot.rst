@@ -67,7 +67,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: alpha; Annot.get_pixmap
       pair: dpi; Annot.get_pixmap
 
-   .. method:: get_pixmap(matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, alpha=False)
+   .. method:: get_pixmap(matrix=pymupdf.Identity, dpi=None, colorspace=pymupdf.csRGB, alpha=False)
 
       * Changed in v1.19.2: added support of dpi parameter.
 
@@ -77,7 +77,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg int dpi: (new in v1.19.2) desired resolution in dots per inch. If not `None`, the matrix parameter is ignored.
 
-      :arg colorspace: a colorspace to be used for image creation. Default is *fitz.csRGB*.
+      :arg colorspace: a colorspace to be used for image creation. Default is *pymupdf.csRGB*.
       :type colorspace: :ref:`Colorspace`
 
       :arg bool alpha: whether to include transparency information. Default is *False*.
@@ -241,7 +241,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str name: the new name.
 
-      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after `"STAMP_"`), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using :data:`fontsize` 20 must not exceed 190 points. So please make sure that the following inequality is true: `fitz.get_text_length(text, fontname="tibo", fontsize=20) <= 190`.
+      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after `"STAMP_"`), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using :data:`fontsize` 20 must not exceed 190 points. So please make sure that the following inequality is true: `pymupdf.get_text_length(text, fontname="tibo", fontsize=20) <= 190`.
 
    .. method:: set_rect(rect)
 
@@ -555,7 +555,7 @@ Example
 --------
 Change the graphical image of an annotation. Also update the "author" and the text to be shown in the popup window::
 
- doc = fitz.open("circle-in.pdf")
+ doc = pymupdf.open("circle-in.pdf")
  page = doc[0]                          # page 0
  annot = page.first_annot                # get the annotation
  annot.set_border(dashes=[3])           # set dashes to "3 on, 3 off ..."

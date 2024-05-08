@@ -239,7 +239,7 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
        - Image blocks in a textpage are generated for **every** image location -- whether or not there are any duplicates. This is in contrast to :meth:`Page.get_images`, which will list each image only once (per reference name).
        - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
 
-   3. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
+   3. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
 
 
 **Text block:**
@@ -304,15 +304,15 @@ These numbers may be used to compute the minimum height of a character (or span)
 
 >>> a = span["ascender"]
 >>> d = span["descender"]
->>> r = fitz.Rect(span["bbox"])
->>> o = fitz.Point(span["origin"])  # its y-value is the baseline
+>>> r = pymupdf.Rect(span["bbox"])
+>>> o = pymupdf.Point(span["origin"])  # its y-value is the baseline
 >>> r.y1 = o.y - span["size"] * d / (a - d)
 >>> r.y0 = r.y1 - span["size"]
 >>> # r now is a rectangle of height 'fontsize'
 
 .. caution:: The above calculation may deliver a **larger** height! This may e.g. happen for OCRed documents, where the risk of all sorts of text artifacts is high. MuPDF tries to come up with a reasonable bbox height, independently from the :data:`fontsize` found in the PDF. So please ensure that the height of `span["bbox"]` is **larger** than `span["size"]`.
 
-.. note:: You may request PyMuPDF to do all of the above automatically by executing `fitz.TOOLS.set_small_glyph_heights(True)`. This sets a global parameter so that all subsequent text searches and text extractions are based on reduced glyph heights, where meaningful.
+.. note:: You may request PyMuPDF to do all of the above automatically by executing `pymupdf.TOOLS.set_small_glyph_heights(True)`. This sets a global parameter so that all subsequent text searches and text extractions are based on reduced glyph heights, where meaningful.
 
 The following shows the original span rectangle in red and the rectangle with re-computed height in blue.
 

@@ -68,10 +68,12 @@ msgid "Note on the Name *fitz*"
 msgstr "*fitz* という名前についての注意事項"
 
 #: ../../tutorial.rst:28 41d8c0d96d0740d0b48d80ea4d7a8c68
-msgid ""
-"The top level Python import name for this library is **\"fitz\"**. This "
-"has historical reasons:"
+msgid "Old versions of |PyMuPDF| had their **Python** import name as `fitz`. Newer versions use `pymupdf` instead, and offer `fitz` as a fallback so that old code will still work."
 msgstr "このライブラリのPythonのトップレベルインポート名は **\"fitz\"** です。 これには歴史的な理由があります："
+
+
+msgid "The reason for the name `fitz` is a historical curiosity:"
+msgstr "これには歴史的な理由があります："
 
 #: ../../tutorial.rst:30 338cea1baf3645d1bc9b2649ff761d3f
 msgid "The original rendering library for MuPDF was called *Libart*."
@@ -93,8 +95,7 @@ msgstr ""
 
 #: ../../tutorial.rst:37 94a769c214cb4082b8842e168cd476fe
 msgid ""
-"So |PyMuPDF| **cannot coexist** with packages named \"fitz\" in "
-"the same Python environment."
+"Importing |PyMuPDF| as `fitz` still works however |PyMuPDF| **cannot coexist** with other packages named "fitz" in the same Python environment."
 msgstr "したがって、PyMuPDFは同じPython環境で「fitz」という名前のパッケージと共存することはできません"
 
 #: ../../tutorial.rst:43 df26d7575cf841babb2f248f758ddbf6

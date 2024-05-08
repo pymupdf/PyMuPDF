@@ -40,18 +40,18 @@ General remarks:
 
 * How to use the module inside your script::
 
-    >>> from fitz.__main__ import main as fitz_command
+    >>> import pymupdf.__main__
     >>> cmd = "clean input.pdf output.pdf -pages 1,N".split()  # prepare command line
     >>> saved_parms = sys.argv[1:]  # save original command line
     >>> sys.argv[1:] = cmd  # store new command line
-    >>> fitz_command()  # execute module
+    >>> pymupdf.__main__.()  # execute module
     >>> sys.argv[1:] = saved_parms  # restore original command line
 
 * Use the following 2-liner and compile it with `Nuitka <https://pypi.org/project/Nuitka/>`_ in standalone mode. This will give you a CLI executable with all the module's features, that can be used on all compatible platforms without Python, PyMuPDF or MuPDF being installed.
 
 ::
 
-    from fitz.__main__ import main
+    from pymupdf.__main__ import main
     main()
 
 

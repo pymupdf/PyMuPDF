@@ -68,7 +68,7 @@ Please note:
 
       A "sequence" must be any Python sequence object with exactly 6 float entries (see :ref:`SequenceTypes`).
 
-      *fitz.Matrix(1, 1)* and *fitz.Matrix(fitz.Identity)* create modifiable versions of the :ref:`Identity` matrix, which looks like *[1, 0, 0, 1, 0, 0]*.
+      *pymupdf.Matrix(1, 1)* and *pymupdf.Matrix(pymupdf.Identity)* create modifiable versions of the :ref:`Identity` matrix, which looks like *[1, 0, 0, 1, 0, 0]*.
 
    .. method:: norm()
 

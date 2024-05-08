@@ -266,12 +266,12 @@ msgstr ""
 #: ../../recipes-images.rst:186 13aa08e716de4b16a2758745ec9c89d9
 msgid ""
 "**Create** a :ref:`Pixmap` of the image with instruction *pix = "
-"fitz.Pixmap(doc, xref)*. This method is **very** fast (single digit "
+"pymupdf.Pixmap(doc, xref)*. This method is **very** fast (single digit "
 "micro-seconds). The pixmap's properties (width, height, ...) will reflect"
 " the ones of the image. In this case there is no way to tell which image "
 "format the embedded original has."
 msgstr ""
-"**画像の** :ref:`Pixmap` を作成します。指示： `pix = fitz.Pixmap(doc, xref)` "
+"**画像の** :ref:`Pixmap` を作成します。指示： `pix = pymupdf.Pixmap(doc, xref)` "
 "。この方法は非常に高速です（単桁のマイクロ秒）。 :ref:`Pixmap` "
 "のプロパティ（幅、高さなど）は、画像のものと同じになります。この場合、埋め込まれたオリジナルの画像形式を判別する方法はありません。"
 
@@ -285,7 +285,7 @@ msgid ""
 "\"jpeg\", \"bmp\", \"tiff\", etc. can also occur. Use this string as the "
 "file extension if you want to store to disk. The execution speed of this "
 "method should be compared to the combined speed of the statements *pix = "
-"fitz.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG "
+"pymupdf.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG "
 "format, the speed of :meth:`Document.extract_image` is about the same "
 "(and the binary image data are identical). Otherwise, this method is "
 "**thousands of times faster**, and the **image data is much smaller**."
@@ -295,7 +295,7 @@ msgstr ""
 "で見つけることができるものとほぼ同じです。主な違いは、文字列 img[\"ext\"] であり、画像形式を指定します。\"png\" 以外にも "
 "\"jpeg\" 、 \"bmp\"、 \"tiff\" "
 "などの文字列が出現することがあります。ディスクに保存する場合は、この文字列をファイル拡張子として使用します。このメソッドの実行速度は、以下のステートメントの組み合わせ速度"
-" `pix = fitz.Pixmap(doc, xref);pix.tobytes()` "
+" `pix = pymupdf.Pixmap(doc, xref);pix.tobytes()` "
 "と比較する必要があります。埋め込まれた画像がPNG形式の場合、 :meth:`Document.extract_image` "
 "の速度はほぼ同じで（バイナリ画像データも同じです）、それ以外の場合は、このメソッドは数千倍高速であり、画像データも小さくなります"
 
@@ -583,10 +583,10 @@ msgstr "PyMuPDFはまた、SVG形式（XML構文で定義されたスケーラ�
 
 #: ../../recipes-images.rst:347 fac566640b2942dfbc2f872a42e8d8ff
 msgid ""
-"Instruction *svg = page.get_svg_image(matrix=fitz.Identity)* delivers a "
+"Instruction *svg = page.get_svg_image(matrix=pymupdf.Identity)* delivers a "
 "UTF-8 string *svg* which can be stored with extension \".svg\"."
 msgstr ""
-"指示  `svg = page.get_svg_image(matrix=fitz.Identity)`  はUTF-8文字列 *svg* "
+"指示  `svg = page.get_svg_image(matrix=pymupdf.Identity)`  はUTF-8文字列 *svg* "
 "を提供します。これは  \".svg\" の拡張子で保存できます。"
 
 #: ../../recipes-images.rst:363 45d87535148148a7887ec6f678612ae7
@@ -754,9 +754,9 @@ msgstr "**コメント**"
 
 #: ../../recipes-images.rst:394 9a4100622e7342b7b668ac0a89525c03
 msgid ""
-"The **input** argument of *fitz.Pixmap(arg)* can be a file or a bytes / "
+"The **input** argument of *pymupdf.Pixmap(arg)* can be a file or a bytes / "
 "io.BytesIO object containing an image."
-msgstr "`fitz.Pixmap(arg)` の入力引数は、画像を含むファイルまたはbytes/io.BytesIOオブジェクトを指定できます。"
+msgstr "`pymupdf.Pixmap(arg)` の入力引数は、画像を含むファイルまたはbytes/io.BytesIOオブジェクトを指定できます。"
 
 #: ../../recipes-images.rst:395 0ce176989427408ba2c8d5c22fd12e88
 msgid ""

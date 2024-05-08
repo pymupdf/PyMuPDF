@@ -243,11 +243,11 @@ msgstr ""
 #: ../../matrix.rst:71 7eb10a0515a7448f8d6404d7005a00aa
 #, fuzzy
 msgid ""
-"*fitz.Matrix(1, 1)* and *fitz.Matrix(fitz.Identity)* create modifiable "
+"*pymupdf.Matrix(1, 1)* and *pymupdf.Matrix(pymupdf.Identity)* create modifiable "
 "versions of the :ref:`Identity` matrix, which looks like *[1, 0, 0, 1, 0,"
 " 0]*."
 msgstr ""
-"*fitz.Matrix(1, 1)*、*fitz.Matrix(0.0)* および *fitz.Matrix(fitz.Identity)*) "
+"*pymupdf.Matrix(1, 1)*、*pymupdf.Matrix(0.0)* および *pymupdf.Matrix(pymupdf.Identity)*) "
 "は、*[1, 0, 0, 1, 0, 0]* のような :ref:`Identity` マトリックスの修正可能なバージョンを作成します。"
 
 #: ../../matrix.rst:75 a9b95d46c9774e1a84b223e1358c46da

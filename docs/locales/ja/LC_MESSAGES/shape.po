@@ -304,12 +304,12 @@ msgstr "**クラスAPI**"
 
 #: ../../shape.rst:55 b64270a719d14434bb9a502cdef78a0c
 msgid ""
-"Create a new drawing. During importing PyMuPDF, the *fitz.Page* object is"
+"Create a new drawing. During importing PyMuPDF, the *pymupdf.Page* object is"
 " being given the convenience method *new_shape()* to construct a *Shape* "
 "object. During instantiation, a check will be made whether we do have a "
 "PDF page. An exception is otherwise raised."
 msgstr ""
-"新しい描画を作成します。PyMuPDFをインポートする際、*fitz.Page* オブジェクトには *Shape* "
+"新しい描画を作成します。PyMuPDFをインポートする際、*pymupdf.Page* オブジェクトには *Shape* "
 "オブジェクトを構築するための便利なメソッド *new_shape()* "
 "が提供されます。インスタンス化中に、PDFページが存在するかどうかのチェックが行われます。それ以外の場合は例外が発生します。"
 
@@ -1374,12 +1374,12 @@ msgstr ""
 
 #: ../../shape.rst:573 fa6309e61b87459da1eb7a3939d397a9
 msgid ""
-"To simplify color specification, method *getColor()* in *fitz.utils* may "
+"To simplify color specification, method *getColor()* in *pymupdf.utils* may "
 "be used to get predefined RGB color triples by name. It accepts a string "
 "as the name of the color and returns the corresponding triple. The method"
 " knows over 540 color names -- see section :ref:`ColorDatabase`."
 msgstr ""
-"色の指定を簡略化するために、*fitz.utils* の *getColor()* "
+"色の指定を簡略化するために、*pymupdf.utils* の *getColor()* "
 "メソッドを使用して、名前に対応するRGBカラートリプルを取得することができます。これは色の名前を指定する文字列を受け入れ、対応するトリプルを返します。このメソッドは540以上のカラー名を認識します。:ref:`ColorDatabase`"
 " のセクションを参照してください。"
 

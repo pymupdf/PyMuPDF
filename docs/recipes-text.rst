@@ -18,9 +18,9 @@ The document can be any :ref:`supported type<Supported_File_Types>`.
 
 The script works as a command line tool which expects the document filename supplied as a parameter. It generates one text file named "filename.txt" in the script directory. Text of pages is separated by a form feed character::
 
-    import sys, pathlib, fitz
+    import sys, pathlib, pymupdf
     fname = sys.argv[1]  # get document filename
-    with fitz.open(fname) as doc:  # open document
+    with pymupdf.open(fname) as doc:  # open document
         text = chr(12).join([page.get_text() for page in doc])
     # write as a binary file to support non-ASCII characters
     pathlib.Path(fname + ".txt").write_bytes(text.encode())
@@ -91,7 +91,7 @@ One of the common issues with PDF text extraction is, that text may not appear i
 
 This is the responsibility of the PDF creator (software or a human). For example, page headers may have been inserted in a separate step -- after the document had been produced. In such a case, the header text will appear at the end of a page text extraction (although it will be correctly shown by PDF viewer software). For example, the following snippet will add some header and footer lines to an existing PDF::
 
-    doc = fitz.open("some.pdf")
+    doc = pymupdf.open("some.pdf")
     header = "Header"  # text in header
     footer = "Page %i of %i"  # text in footer
     for page in doc:
@@ -110,7 +110,7 @@ The text sequence extracted from a page modified in this way will look like this
 PyMuPDF has several means to re-establish some reading sequence or even to re-generate a layout close to the original:
 
 1. Use `sort` parameter of :meth:`Page.get_text`. It will sort the output from top-left to bottom-right (ignored for XHTML, HTML and XML output).
-2. Use the `fitz` module in CLI: `python -m fitz gettext ...`, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
+2. Use the `pymupdf` module in CLI: `python -m pymupdf gettext ...`, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
 
 You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-from-a-rectangle>`_ with your modifications.
 
@@ -148,7 +148,7 @@ This method has advantages and drawbacks. Pros are:
 But you also have other options::
 
  import sys
- import fitz
+ import pymupdf
 
  def mark_word(page, text):
      """Underline each word that contains 'text'.
@@ -158,13 +158,13 @@ But you also have other options::
      for w in wlist:  # scan through all words on page
          if text in w[4]:  # w[4] is the word's string
              found += 1  # count
-             r = fitz.Rect(w[:4])  # make rect from word bbox
+             r = pymupdf.Rect(w[:4])  # make rect from word bbox
              page.add_underline_annot(r)  # underline
      return found
 
  fname = sys.argv[1]  # filename
  text = sys.argv[2]  # search string
- doc = fitz.open(fname)
+ doc = pymupdf.open(fname)
 
  print("underlining words containing '%s' in document '%s'" % (word, doc.name))
 
@@ -201,10 +201,10 @@ How to Mark Searched Text
 This script searches for text and marks it::
 
     # -*- coding: utf-8 -*-
-    import fitz
+    import pymupdf
 
     # the document to annotate
-    doc = fitz.open("tilted-text.pdf")
+    doc = pymupdf.open("tilted-text.pdf")
 
     # the text to be marked
     needle = "¡La práctica hace el campeón!"
@@ -240,12 +240,12 @@ But text **extraction** with the "dict" / "rawdict" options of :meth:`Page.get_t
 
 The "bboxes" returned by the method however are rectangles only -- not quads. So, to mark span text correctly, its quad must be recovered from the data contained in the line and span dictionary. Do this with the following utility function (new in v1.18.9)::
 
-    span_quad = fitz.recover_quad(line["dir"], span)
+    span_quad = pymupdf.recover_quad(line["dir"], span)
     annot = page.add_highlight_annot(span_quad)  # this will mark the complete span text
 
 If you want to **mark the complete line** or a subset of its spans in one go, use the following snippet (works for v1.18.10 or later)::
 
-    line_quad = fitz.recover_line_quad(line, spans=line["spans"][1:-1])
+    line_quad = pymupdf.recover_line_quad(line, spans=line["spans"][1:-1])
     page.add_highlight_annot(line_quad)
 
 .. image:: images/img-linequad.*
@@ -309,10 +309,10 @@ How to Write Text Lines
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 Output some text lines on a page::
 
-    import fitz
-    doc = fitz.open(...)  # new or existing PDF
+    import pymupdf
+    doc = pymupdf.open(...)  # new or existing PDF
     page = doc.new_page()  # new or existing page via doc[n]
-    p = fitz.Point(50, 72)  # start point of 1st line
+    p = pymupdf.Point(50, 72)  # start point of 1st line
 
     text = "Some text,\nspread across\nseveral lines."
     # the same result is achievable by
@@ -336,8 +336,8 @@ However, for built-in fonts there are ways to calculate the line width beforehan
 
 Here is another example. It inserts 4 text strings using the four different rotation options, and thereby explains, how the text insertion point must be chosen to achieve the desired result::
 
-    import fitz
-    doc = fitz.open()
+    import pymupdf
+    doc = pymupdf.open()
     page = doc.new_page()
     # the text strings, each having 3 lines
     text1 = "rotate=0\nLine 2\nLine 3"
@@ -346,10 +346,10 @@ Here is another example. It inserts 4 text strings using the four different rota
     text4 = "rotate=180\nLine 2\nLine 3"
     red = (1, 0, 0) # the color for the red dots
     # the insertion points, each with a 25 pix distance from the corners
-    p1 = fitz.Point(25, 25)
-    p2 = fitz.Point(page.rect.width - 25, 25)
-    p3 = fitz.Point(25, page.rect.height - 25)
-    p4 = fitz.Point(page.rect.width - 25, page.rect.height - 25)
+    p1 = pymupdf.Point(25, 25)
+    p2 = pymupdf.Point(page.rect.width - 25, 25)
+    p3 = pymupdf.Point(25, page.rect.height - 25)
+    p4 = pymupdf.Point(page.rect.width - 25, page.rect.height - 25)
     # create a Shape to draw on
     shape = page.new_shape()
 
@@ -385,25 +385,25 @@ How to Fill a Text Box
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 This script fills 4 different rectangles with text, each time choosing a different rotation value::
 
-    import fitz
+    import pymupdf
 
-    doc = fitz.open()  # new or existing PDF
+    doc = pymupdf.open()  # new or existing PDF
     page = doc.new_page()  # new page, or choose doc[n]
 
     # write in this overall area
-    rect = fitz.Rect(100, 100, 300, 150)
+    rect = pymupdf.Rect(100, 100, 300, 150)
 
     # partition the area in 4 equal sub-rectangles
-    CELLS = fitz.make_table(rect, cols=4, rows=1)
+    CELLS = pymupdf.make_table(rect, cols=4, rows=1)
 
     t1 = "text with rotate = 0."  # these texts we will written
     t2 = "text with rotate = 90."
     t3 = "text with rotate = 180."
     t4 = "text with rotate = 270."
     text = [t1, t2, t3, t4]
-    red = fitz.pdfcolor["red"]  # some colors
-    gold = fitz.pdfcolor["gold"]
-    blue = fitz.pdfcolor["blue"]
+    red = pymupdf.pdfcolor["red"]  # some colors
+    gold = pymupdf.pdfcolor["gold"]
+    blue = pymupdf.pdfcolor["blue"]
     """
     We use a Shape object (something like a canvas) to output the text and
     the rectangles surrounding it for demonstration.
@@ -445,10 +445,10 @@ Any required fonts to output characters are automatically pulled in from the Goo
 
 As a small glimpse into the features offered here, we will output the following HTML-enriched text::
 
-    import fitz
+    import pymupdf
 
 
-    rect = fitz.Rect(100, 100, 400, 300)
+    rect = pymupdf.Rect(100, 100, 400, 300)
 
     text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed
         eiusmod tempor incidunt ut labore et dolore magna aliqua. Ut enim ad
@@ -461,7 +461,7 @@ As a small glimpse into the features offered here, we will output the following 
         <a href="https://www.artifex.com">officia</a> deserunt mollit anim id 
         est laborum."""
 
-    doc = fitz.Document()
+    doc = pymupdf.Document()
 
     page = doc.new_page()
     page.insert_htmlbox(rect, text, css="* {font-family: sans-serif;font-size:14px;}")
@@ -479,7 +479,7 @@ How to output HTML tables and images
 
 Here is another example that outputs a table with this method. This time, we are including all the styling in the HTML source itself. Please also note, how it works to include an image - even within a table cell::
 
-    import fitz_new as fitz
+    import pymupdf
     import os
 
     filedir = os.path.dirname(__file__)
@@ -526,13 +526,13 @@ Here is another example that outputs a table with this method. This time, we are
     </body>
     """
 
-    doc = fitz.Document()
+    doc = pymupdf.Document()
 
     page = doc.new_page()
     rect = page.rect + (36, 36, -36, -36)
 
     # we must specify an Archive because of the image
-    page.insert_htmlbox(rect, text, archive=fitz.Archive("."))
+    page.insert_htmlbox(rect, text, archive=pymupdf.Archive("."))
 
     doc.ez_save(__file__.replace(".py", ".pdf"))
 
@@ -548,7 +548,7 @@ How to Output Languages of the World
 
 Our third example will demonstrate the automatic multi-language support. It includes automatic **text shaping** for complex scripting systems like Devanagari and right-to-left languages::
 
-    import fitz
+    import pymupdf
 
     greetings = (
         "Hello, World!",  # english
@@ -565,7 +565,7 @@ Our third example will demonstrate the automatic multi-language support. It incl
         "नमस्कार, विश्व !",  # sanskrit
         "हैलो वर्ल्ड!",  # hindi
     )
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     rect = (50, 50, 200, 500)
 
@@ -590,7 +590,7 @@ As these four font files are located in the system's folder `C:/Windows/Fonts` t
     """
     How to use your own fonts with method Page.insert_htmlbox().
     """
-    import fitz_new as fitz
+    import pymupdf
 
     # Example text
     text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed
@@ -608,7 +608,7 @@ As these four font files are located in the system's folder `C:/Windows/Fonts` t
     We need an Archive object to show where font files are located.
     We intend to use the font family "MS Comic Sans".
     """
-    arch = fitz.Archive("C:/Windows/Fonts")
+    arch = pymupdf.Archive("C:/Windows/Fonts")
 
     # These statements define which font file to use for regular, bold,
     # italic and bold-italic text.
@@ -623,7 +623,7 @@ As these four font files are located in the system's folder `C:/Windows/Fonts` t
     * {font-family: comic;}
     """
 
-    doc = fitz.Document()
+    doc = pymupdf.Document()
     page = doc.new_page(width=150, height=150)  # make small page
 
     page.insert_htmlbox(page.rect, text, css=css, archive=arch)
@@ -647,7 +647,7 @@ This example combines multiple requirements:
     """
     How to use a pymupdf font with method Page.insert_htmlbox().
     """
-    import fitz_new as fitz
+    import pymupdf
 
     # Example text
     text = """Lorem ipsum dolor sit amet, consectetur adipisici elit, sed
@@ -666,13 +666,13 @@ This example combines multiple requirements:
     function for creating required CSS definitions.
     We still need an Archive for finding the font binaries.
     """
-    arch = fitz.Archive()
+    arch = pymupdf.Archive()
 
     # We request to use "myfont" throughout the text.
-    css = fitz.css_for_pymupdf_font("ubuntu", archive=arch, name="myfont")
+    css = pymupdf.css_for_pymupdf_font("ubuntu", archive=arch, name="myfont")
     css += "* {font-family: myfont;text-align: justify;}"
 
-    doc = fitz.Document()
+    doc = pymupdf.Document()
 
     page = doc.new_page(width=150, height=150)
 
@@ -697,12 +697,12 @@ Iterate through your text blocks and find the spans of text you need for this in
 ::
 
     for page in doc:
-        text_blocks = page.get_text("dict", flags=fitz.TEXTFLAGS_TEXT)["blocks"]
+        text_blocks = page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT)["blocks"]
         for block in text_blocks:
             for line in block["lines"]:
                 for span in line["spans"]:
                     text = span["text"]
-                    color = fitz.sRGB_to_rgb(span["color"])
+                    color = pymupdf.sRGB_to_rgb(span["color"])
                     print(f"Text: {text}, Color: {color}")
 
 

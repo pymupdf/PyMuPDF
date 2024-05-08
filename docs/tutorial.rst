@@ -2,6 +2,7 @@
 
 .. _Tutorial:
 
+
 =========
 Tutorial
 =========
@@ -16,8 +17,8 @@ Importing the Bindings
 ==========================
 The Python bindings to MuPDF are made available by this import statement. We also show here how your version can be checked::
 
-    >>> import fitz
-    >>> print(fitz.__doc__)
+    >>> import pymupdf
+    >>> print(pymupdf.__doc__)
     PyMuPDF 1.16.0: Python bindings for the MuPDF 1.16.0 library.
     Version date: 2019-07-28 07:30:14.
     Built for Python 3.7 on win32 (64-bit).
@@ -25,7 +26,10 @@ The Python bindings to MuPDF are made available by this import statement. We als
 
 Note on the Name *fitz*
 --------------------------
-The top level Python import name for this library is **"fitz"**. This has historical reasons:
+
+Old versions of |PyMuPDF| had their **Python** import name as `fitz`. Newer versions use `pymupdf` instead, and offer `fitz` as a fallback so that old code will still work.
+
+The reason for the name `fitz` is a historical curiosity:
 
 The original rendering library for MuPDF was called *Libart*.
 
@@ -34,7 +38,7 @@ The original rendering library for MuPDF was called *Libart*.
 
 .. note::
 
-    So |PyMuPDF| **cannot coexist** with packages named "fitz" in the same Python environment.
+    Importing |PyMuPDF| as `fitz` still works however |PyMuPDF| **cannot coexist** with other packages named "fitz" in the same Python environment.
 
 
 .. _Tutorial_Opening_a_Document:
@@ -44,7 +48,7 @@ Opening a Document
 
 To access a :ref:`supported document<Supported_File_Types>`, it must be opened with the following statement::
 
-    doc = fitz.open(filename)  # or fitz.Document(filename)
+    doc = pymupdf.open(filename)  # or pymupdf.Document(filename)
 
 This creates the :ref:`Document` object *doc*. *filename* must be a Python string (or a `pathlib.Path`) specifying the name of an existing file.
 
@@ -198,7 +202,7 @@ Please also see section 3.19 of the `Pillow documentation`_::
 The following **avoids using Pillow**::
 
     # remove alpha if present
-    pix1 = fitz.Pixmap(pix, 0) if pix.alpha else pix  # PPM does not support transparency
+    pix1 = pymupdf.Pixmap(pix, 0) if pix.alpha else pix  # PPM does not support transparency
     imgdata = pix1.tobytes("ppm")  # extremely fast!
     tkimg = tkinter.PhotoImage(data = imgdata)
 
@@ -349,7 +353,7 @@ Method :meth:`Document.insert_pdf` copies pages **between different** PDF docume
 
 Here is a snippet that **splits** *doc1*. It creates a new document of its first and its last 10 pages::
 
-    doc2 = fitz.open()                 # new empty PDF
+    doc2 = pymupdf.open()                 # new empty PDF
     doc2.insert_pdf(doc1, to_page = 9)  # first 10 pages
     doc2.insert_pdf(doc1, from_page = len(doc1) - 10) # last 10 pages
     doc2.save("first-and-last-10.pdf")
