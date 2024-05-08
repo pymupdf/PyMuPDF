@@ -181,7 +181,7 @@ def test_redact2():
     page.add_redact_annot(page.rect)
     page.apply_redactions(text=1)
     t = page.get_text("words")
-    if pymupdf.mupdf_version_tuple < (1, 25):
+    if pymupdf.mupdf_version_tuple < (1, 24, 2):
         assert t == []
     else:
         assert t == all_text0
@@ -223,8 +223,8 @@ def test_1645():
     '''
     path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
 
-    if pymupdf.mupdf_version_tuple >= (1, 24.2):
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.3.pdf')
+    if pymupdf.mupdf_version_tuple >= (1, 24, 2):
+        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.2.pdf')
     elif pymupdf.mupdf_version_tuple >= (1, 24):
         path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.pdf')
     else:
