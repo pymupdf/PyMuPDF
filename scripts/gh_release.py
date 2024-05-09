@@ -175,7 +175,7 @@ def build( platform_=None, valgrind=False):
     inputs_wheels_linux_aarch64 = get_bool('inputs_wheels_linux_aarch64', inputs_wheels_default)
     inputs_wheels_linux_auto = get_bool('inputs_wheels_linux_auto', inputs_wheels_default)
     inputs_wheels_linux_pyodide = get_bool('inputs_wheels_linux_pyodide', 0)
-    inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64', inputs_wheels_default)
+    inputs_wheels_macos_arm64 = get_bool('inputs_wheels_macos_arm64', 0)
     inputs_wheels_macos_auto = get_bool('inputs_wheels_macos_auto', inputs_wheels_default)
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
