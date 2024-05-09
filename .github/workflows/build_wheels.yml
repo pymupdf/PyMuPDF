@@ -29,9 +29,9 @@ on:
         type: boolean
         default: true
         
-      wheels_macos_arm64:
-        type: boolean
-        default: true
+      #wheels_macos_arm64:
+      #  type: boolean
+      #  default: true
       
       wheels_macos_auto:
         type: boolean
@@ -78,7 +78,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2019, macos-latest]
+        # 2024-05-08: Need to specify macos-13/14 to get x86_64/arm64.
+        os: [ubuntu-latest, windows-2019, macos-13, macos-14]
 
       # Avoid cancelling of all cibuildwheel runs after a single failure.
       fail-fast: false
@@ -132,7 +133,7 @@ jobs:
             inputs_wheels_linux_aarch64: ${{inputs.wheels_linux_aarch64}}
             inputs_wheels_linux_auto: ${{inputs.wheels_linux_auto}}
             inputs_wheels_linux_pyodide: ${{inputs.wheels_linux_pyodide}}
-            inputs_wheels_macos_arm64: ${{inputs.wheels_macos_arm64}}
+            #inputs_wheels_macos_arm64: ${{inputs.wheels_macos_arm64}}
             inputs_wheels_macos_auto: ${{inputs.wheels_macos_auto}}
             inputs_wheels_windows_auto: ${{inputs.wheels_windows_auto}}
             
