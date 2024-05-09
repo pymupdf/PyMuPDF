@@ -365,7 +365,7 @@ def test_2108():
 
         print(f'')
 
-    print(f'fitz.mupdf_version_tuple={pymupdf.mupdf_version_tuple}')
+    print(f'{pymupdf.mupdf_version_tuple=}')
     if pymupdf.mupdf_version_tuple >= (1, 21, 2):
         print('Asserting text==text_expected')
         assert text == text_expected

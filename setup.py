@@ -131,7 +131,7 @@ Environmental variables:
 
     PYMUPDF_SETUP_REBUILD_GIT_DETAILS
         Classic implementation only. If '0' we do not rebuild if only
-        fitz/helper-git-versions.i has changed.
+        src_classic/helper-git-versions.i has changed.
 
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.

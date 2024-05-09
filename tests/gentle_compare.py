@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 
 def gentle_compare(w0, w1):
@@ -17,8 +17,8 @@ def gentle_compare(w0, w1):
         if w0[i][4] != w1[i][4]:  # word strings must be the same
             print(f"word {i} mismatch")
             return False
-        r0 = fitz.Rect(w0[i][:4])  # rect of first word
-        r1 = fitz.Rect(w1[i][:4])  # rect of second word
+        r0 = pymupdf.Rect(w0[i][:4])  # rect of first word
+        r1 = pymupdf.Rect(w1[i][:4])  # rect of second word
         delta = (r1 - r0).norm()  # norm of difference rectangle
         if delta > tolerance:
             print(f"word {i}: rectangle mismatch {delta}")
