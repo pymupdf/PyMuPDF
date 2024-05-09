@@ -120,18 +120,18 @@ def main():
         
         elif i == 'r':
     
-            # Run with default `fitz` (rebased).
+            # Run with default `pymupdf` (rebased).
             #
-            log_star( f'Running using fitz (rebased): {shlex.join(args)}')
+            log_star( f'Running using pymupdf (rebased): {shlex.join(args)}')
             e_rebased = subprocess.run( args, shell=0, check=0, timeout=timeout).returncode
     
         elif i == 'R':
     
-            # Run with `fitz` (rebased) again, this time with PYMUPDF_USE_EXTRA=0.
+            # Run with `pymupdf` (rebased) again, this time with PYMUPDF_USE_EXTRA=0.
             #
             env = os.environ.copy()
             env[ 'PYMUPDF_USE_EXTRA'] = '0'
-            log_star(f'Running using fitz (rebased) with PYMUPDF_USE_EXTRA=0: {shlex.join(args)}')
+            log_star(f'Running using pymupdf (rebased) with PYMUPDF_USE_EXTRA=0: {shlex.join(args)}')
             e_rebased_unoptimised = subprocess.run( args, shell=0, check=0, env=env, timeout=timeout).returncode
         
         else:

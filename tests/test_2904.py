@@ -19,7 +19,7 @@ def test_2904():
             except Exception as ee:
                 print(f'Exception: {page_id=} {i=} {img=}: {ee}')
                 if 0 and hasattr(pymupdf, 'mupdf'):
-                    print(f'fitz.exception_info:')
+                    print(f'pymupdf.exception_info:')
                     pymupdf.exception_info()
                     sys.stdout.flush()
                 e = ee

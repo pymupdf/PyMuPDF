@@ -23,7 +23,7 @@ jobs:
       # etc) always ends up running the default python, even if we set
       # $PATH etc. So for example we can end up with mupdf files and
       # pymupdf files being installed into .../python3.11/site-packages and
-      # .../python3.10/site-packages, and tests all fail to import fitz.
+      # .../python3.10/site-packages, and tests all fail to import pymupdf.
       #
       #- uses: actions/setup-python@v2
         #with:

@@ -22,8 +22,8 @@ You can also try without installing by visiting [PyMuPDF.io](https://pymupdf.io/
 Basic usage is as follows:
 
 ```python
-import fitz # imports the pymupdf library
-doc = fitz.open("example.pdf") # open a document
+import pymupdf # imports the pymupdf library
+doc = pymupdf.open("example.pdf") # open a document
 for page in doc: # iterate the document pages
   text = page.get_text() # get plain text encoded as UTF-8
 

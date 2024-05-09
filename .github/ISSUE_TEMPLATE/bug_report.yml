@@ -54,7 +54,7 @@ body:
         - 1.23.x or earlier
         - Built from source
       description: |
-        * For example from `fitz.VersionBind`.
+        * For example from `pymupdf.VersionBind`.
         * We generally only look at bugs in the most recent release of PyMuPDF.
     validations:
       required: true
