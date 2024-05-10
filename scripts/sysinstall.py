@@ -265,9 +265,10 @@ def main():
         pv = '.'.join(platform.python_version_tuple()[:2])
         p = f'{root_prefix}/lib/python{pv}'
         # `python -m installer` fails to overwrite existing files.
+        run(f'{sudo}rm -r {p}/site-packages/pymupdf || true')
+        run(f'{sudo}rm -r {p}/site-packages/pymupdf.py || true')
         run(f'{sudo}rm -r {p}/site-packages/fitz || true')
         run(f'{sudo}rm -r {p}/site-packages/fitz.py || true')
-        run(f'{sudo}rm -r {p}/site-packages/pymupdf.py || true')
         run(f'{sudo}rm -r {p}/site-packages/PyMuPDF-*.dist-info || true')
         run(f'{sudo}rm -r {root_prefix}/bin/pymupdf || true')
         if pip == 'venv':
