@@ -10,6 +10,22 @@ Integrating |PyMuPDF| into your :title:`Large Language Model (LLM)` framework an
 
 There are a few well known :title:`LLM` solutions which have their own interfaces with |PyMuPDF| - it is a fast growing area, so please let us know if you discover any more!
 
+If you need to export to :title:`Markdown`:
+
+.. raw:: html
+
+   <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='https://pymupdf4llm.readthedocs.io'">Try PyMuPDF4LLM</button>
+   <p></p>
+
+   <script>
+      let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+      if (lang=="ja") {
+         document.getElementById("pymupdf4llmButton").innerHTML = "PyMuPDF4LLM を試してみる";
+      }
+
+   </script>
+
 
 Integration with :title:`LangChain`
 -------------------------------------

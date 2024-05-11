@@ -497,8 +497,14 @@
                 } else if (str=="Support Font Sub-Setting") {
                     return "フォントのサブセット化をサポートする";
                 } else if (str=="Extract Tables") {
-                    return "抽出テーブル";
+                    return "ページからのテーブルの抽出";
+                } else if (str=="Supports CJK characters") {
+                    return "CJK 文字をサポートしています";
+                } else if (str == "Extract Text as Markdown (.md)") {
+                    return "テキストを Markdown (.md) として抽出";
                 }
+
+
 
 
             }
@@ -555,13 +561,17 @@
         document.getElementById("transFM37").innerHTML = getTranslation("PDF Annotations");
         document.getElementById("transFM38").innerHTML = getTranslation("Full");
         document.getElementById("transFM39").innerHTML = getTranslation("Limited");
-        document.getElementById("transFM39x").innerHTML = getTranslation("Limited");
+
         document.getElementById("transFM40").innerHTML = getTranslation("PDF Form Fields");
         document.getElementById("transFM41").innerHTML = getTranslation("Create, read, update");
         document.getElementById("transFM42").innerHTML = getTranslation("Limited, no creation");
-        document.getElementById("transFM42x").innerHTML = getTranslation("Limited, no creation");
+
         document.getElementById("transFM43").innerHTML = getTranslation("PDF Page Labels");
         document.getElementById("transFM44").innerHTML = getTranslation("Support Font Sub-Setting");
+
+
+        document.getElementById("transFMSupportsCJK").innerHTML = getTranslation("Supports CJK characters");
+        document.getElementById("transFMSupportsMarkdown").innerHTML = getTranslation("Extract Text as Markdown (.md)");
         document.getElementById("transFMExtractTables").innerHTML = getTranslation("Extract Tables");
 
 
