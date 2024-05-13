@@ -1525,7 +1525,7 @@ def do_links(
             txt = pymupdf.annot_skel["goto1"]  # annot_goto
             idx = pno_src.index(lnk["page"])
             p = lnk["to"] * ctm  # target point in PDF coordinates
-            annot = txt % (xref_dst[idx], p.x, p.y, lnk["zoom"], rect)
+            annot = txt(xref_dst[idx], p.x, p.y, lnk["zoom"], rect)
 
         elif lnk["kind"] == pymupdf.LINK_GOTOR:
             if lnk["page"] >= 0:
@@ -1547,11 +1547,11 @@ def do_links(
                 to = pymupdf.get_pdf_str(lnk["to"])
                 to = to[1:-1]
                 f = lnk["file"]
-                annot = txt % (to, f, rect)
+                annot = txt(to, f, rect)
 
         elif lnk["kind"] == pymupdf.LINK_LAUNCH:
             txt = pymupdf.annot_skel["launch"]  # annot_launch
-            annot = txt % (lnk["file"], lnk["file"], rect)
+            annot = txt(lnk["file"], lnk["file"], rect)
 
         elif lnk["kind"] == pymupdf.LINK_URI:
             txt = pymupdf.annot_skel["uri"]  # annot_uri
