@@ -2556,9 +2556,10 @@ class DisplayList:
         return val
 
     def get_textpage(self, flags=3):
+        """Make a TextPage from a DisplayList."""
         stext_options = mupdf.FzStextOptions()
         stext_options.flags = flags
-        val = mupdf.fz_new_stext_page_from_display_list( self.this, stext_options)
+        val = mupdf.FzStextPage(self.this, stext_options)
         val.thisown = True
         return val
 
