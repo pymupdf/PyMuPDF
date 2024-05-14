@@ -20515,7 +20515,7 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
             new_annots = mupdf.pdf_dict_put_array( page_dict, PDF_NAME('Annots'), n)
             for i in range(n):
                 o = mupdf.pdf_array_get( old_annots, i)
-                if not o.m_internal or mupdf.pdf_is_dict(o):
+                if not o.m_internal or not mupdf.pdf_is_dict(o):
                     continue    # skip non-dict items
                 if mupdf.pdf_dict_gets( o, "IRT").m_internal:
                     continue
