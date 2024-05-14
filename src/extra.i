@@ -144,6 +144,68 @@ const char MSG_PIXEL_OUTSIDE[] = "pixel(s) outside image";
 
 static PyObject *JM_UnicodeFromStr(const char *c);
 
+
+#ifdef _WIN32
+
+/* These functions are not provided on Windows. */
+
+int vasprintf(char** str, const char* fmt, va_list ap)
+{
+    va_list ap2;
+
+    va_copy(ap2, ap);
+    int len = vsnprintf(nullptr, 0, fmt, ap2);
+    va_end(ap2);
+    
+    char* buffer = (char*) malloc(len + 1);
+    if (!buffer)
+    {
+        *str = nullptr;
+        return -1;
+    }
+    va_copy(ap2, ap);
+    int len2 = vsnprintf(buffer, len + 1, fmt, ap2);
+    va_end(ap2);
+    assert(len2 == len);
+    *str = buffer;
+    return len;
+}
+
+int asprintf(char** str, const char* fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vasprintf(str, fmt, ap);
+    va_end(ap);
+
+    return ret;
+}
+#endif
+
+
+static void messagev(const char* format, va_list va)
+{
+    static PyObject* pymupdf_module = PyImport_ImportModule("pymupdf");
+    static PyObject* message_fn = PyObject_GetAttrString(pymupdf_module, "message");
+    char* text;
+    vasprintf(&text, format, va);
+    PyObject* text_py = PyString_FromString(text);
+    PyObject* args = PyTuple_Pack(1, text_py);
+    PyObject* ret = PyObject_CallObject(message_fn, args);
+    Py_XDECREF(ret);
+    Py_XDECREF(args);
+    Py_XDECREF(text_py);
+    free(text);
+}
+
+static void messagef(const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    messagev(format, args);
+    va_end(args);
+}
+
 PyObject* JM_EscapeStrFromStr(const char* c)
 {
     if (!c) return PyUnicode_FromString("");
@@ -328,7 +390,7 @@ static void JM_merge_range(
             counter++;
             if (show_progress > 0 && counter % show_progress == 0)
             {
-                fprintf(stderr, "Inserted %i of %i pages.\n", counter, total);
+                messagef("Inserted %i of %i pages.", counter, total);
             }
         }
     }
@@ -340,7 +402,7 @@ static void JM_merge_range(
             counter++;
             if (show_progress > 0 && counter % show_progress == 0)
             {
-                fprintf(stderr, "Inserted %i of %i pages.\n", counter, total);
+                messagef("Inserted %i of %i pages.", counter, total);
             }
         }
     }
@@ -473,44 +535,6 @@ static std::vector< std::string> JM_get_annot_id_list(mupdf::PdfPage& page)
     }
     return names;
 }
-
-#ifdef _WIN32
-
-/* These functions are not provided on Windows. */
-
-int vasprintf(char** str, const char* fmt, va_list ap)
-{
-    va_list ap2;
-
-    va_copy(ap2, ap);
-    int len = vsnprintf(nullptr, 0, fmt, ap2);
-    va_end(ap2);
-    
-    char* buffer = (char*) malloc(len + 1);
-    if (!buffer)
-    {
-        *str = nullptr;
-        return -1;
-    }
-    va_copy(ap2, ap);
-    int len2 = vsnprintf(buffer, len + 1, fmt, ap2);
-    va_end(ap2);
-    assert(len2 == len);
-    *str = buffer;
-    return len;
-}
-
-int asprintf(char** str, const char* fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    int ret = vasprintf(str, fmt, ap);
-    va_end(ap);
-
-    return ret;
-}
-#endif
-
 
 //------------------------------------------------------------------------
 // Add a unique /NM key to an annotation or widget.
@@ -897,7 +921,6 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
         m = PySequence_Size(items);
         if (!n) goto end;
         
-        fflush(stderr);
         if (n != m)
         {
             throw std::runtime_error("internal error finding outline xrefs");
@@ -1424,7 +1447,7 @@ PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist)
             Py_CLEAR(txtpy);
             if (!text)
             {
-                PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                messagef("skipping bad link / annot item %i.", i);
                 continue;
             }
             try
@@ -1441,7 +1464,7 @@ PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist)
              }
             catch (std::exception&)
             {
-                PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                messagef("skipping bad link / annot item %i.", i);
             }
         }
     }
@@ -1707,9 +1730,6 @@ static void jm_trace_text_span(
         // left-right flip
         rot.d = 1;
     }
-    // PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
-    // PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
-
     PyObject* chars = PyTuple_New(span->len);
     double space_adv = 0;
     double last_adv = 0;
@@ -2602,7 +2622,7 @@ jm_append_merge(jm_lineart_device *dev)
         DICT_SETITEM_DROP(prev, dictkey_type, PyUnicode_FromString("fs"));
         goto postappend;
     } else {
-        PySys_WriteStderr("could not merge stroke and fill path");
+        messagef("could not merge stroke and fill path");
         goto append;
     }
     append:;
@@ -2622,7 +2642,7 @@ jm_append_merge(jm_lineart_device *dev)
     if (resp) {
         Py_DECREF(resp);
     } else {
-        PySys_WriteStderr("calling cdrawings callback function/method failed!");
+        messagef("calling cdrawings callback function/method failed!");
         PyErr_Clear();
     }
     Py_CLEAR(dev->pathdict);
