@@ -85,7 +85,7 @@ def message(text=''):
 def exception_info():
     import traceback
     log(f'exception_info:')
-    traceback.print_exc(file=sys.stdout)
+    traceback.print_exc(file=_g_out_log)
 
 
 # PDF names must not contain these characters:
@@ -339,7 +339,7 @@ class Annot:
         try:
             obj = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "RO")
             if obj.m_internal:
-                JM_Warning("Ignoring redaction key '/RO'.")
+                message_warning("Ignoring redaction key '/RO'.")
                 xref = mupdf.pdf_to_num(obj)
                 values[dictkey_xref] = xref
             obj = mupdf.pdf_dict_gets(mupdf.pdf_annot_obj(annot), "OverlayText")
@@ -464,7 +464,7 @@ class Annot:
                 mupdf.pdf_dict_put( annot_obj, PDF_NAME('IC'), col)
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
-            message( f'cannot update annot: {e}', file=sys.stderr)
+            message( f'cannot update annot: {e}')
             raise
         
         if (opacity < 0 or opacity >= 1) and not blend_mode:    # no opacity, no blend_mode
@@ -501,7 +501,7 @@ class Annot:
 
         except Exception as e:
             if g_exceptions_verbose:    exception_info()
-            message( f'cannot set opacity or blend mode\n: {e}', file=sys.stderr)
+            message( f'cannot set opacity or blend mode\n: {e}')
             raise
 
         return True
@@ -1194,7 +1194,7 @@ class Annot:
         if mupdf.pdf_annot_has_line_ending_styles(annot):
             mupdf.pdf_set_annot_line_ending_styles(annot, start, end)
         else:
-            JM_Warning("bad annot type for line ends")
+            message_warning("bad annot type for line ends")
 
     def set_name(self, name):
         """Set /Name (icon) of annotation."""
@@ -3660,7 +3660,7 @@ class Document:
         doc = JM_convert_to_pdf(fz_doc, fp, tp, rotate)
         len1 = len(JM_mupdf_warnings_store)
         for i in range(len0, len1):
-            PySys_WriteStderr(f'{JM_mupdf_warnings_store[i]}\n')
+            message(f'{JM_mupdf_warnings_store[i]}')
         return doc
 
     def copy_page(self, pno: int, to: int =-1):
@@ -7680,7 +7680,7 @@ class Page:
             txtpy = linklist[i]
             text = JM_StrAsChar(txtpy)
             if not text:
-                PySys_WriteStderr("skipping bad link / annot item %i.\n", i)
+                message("skipping bad link / annot item %i.", i)
                 continue
             try:
                 annot = mupdf.pdf_add_object( page.doc(), JM_pdf_obj_from_str( page.doc(), text))
@@ -7688,7 +7688,7 @@ class Page:
                 mupdf.pdf_array_push( annots, ind_obj)
             except Exception:
                 if g_exceptions_verbose:    exception_info()
-                message("skipping bad link / annot item %i.\n" % i, file=sys.stderr)
+                message("skipping bad link / annot item %i.\n" % i)
 
     def _addWidget(self, field_type, field_name):
         page = self._pdf_page()
@@ -8545,7 +8545,7 @@ class Page:
                 w, h = h, w
             val = Rect(0, 0, w, h)
             msg = TOOLS.mupdf_warnings(reset=False).splitlines()[-1]
-            message(msg, file=sys.stderr)
+            message(msg)
         
         return val
 
@@ -10056,7 +10056,7 @@ class Pixmap:
         """Apply correction with some float.
         gamma=1 is a no-op."""
         if not mupdf.fz_pixmap_colorspace( self.this):
-            JM_Warning("colorspace invalid for function")
+            message_warning("colorspace invalid for function")
             return
         mupdf.fz_gamma_pixmap( self.this, gamma)
 
@@ -10069,7 +10069,7 @@ class Pixmap:
         """Invert the colors inside a bbox."""
         pm = self.this
         if not mupdf.fz_pixmap_colorspace(pm):
-            JM_Warning("ignored for stencil pixmap")
+            message_warning("ignored for stencil pixmap")
             return False
         r = JM_irect_from_py(bbox)
         if mupdf.fz_is_infinite_irect(r):
@@ -10457,7 +10457,7 @@ class Pixmap:
         """Divide width and height by 2**factor.
         E.g. factor=1 shrinks to 25% of original size (in place)."""
         if factor < 1:
-            JM_Warning("ignoring shrink factor < 1")
+            message_warning("ignoring shrink factor < 1")
             return
         mupdf.fz_subsample_pixmap( self.this, factor)
         # Pixmap has changed so clear our memory view.
@@ -11965,7 +11965,6 @@ class Story:
     def draw( self, device, matrix=None):
         ctm2 = JM_matrix_from_py( matrix)
         dev = device.this if device else mupdf.FzDevice( None)
-        sys.stdout.flush()
         mupdf.fz_draw_story( self.this, dev, ctm2)
 
     def element_positions( self, function, args=None):
@@ -12178,7 +12177,6 @@ class Story:
         def log(text):
             assert verbose
             message(f'fit(): {text}')
-            sys.stdout.flush()
         
         assert isinstance(pmin, (int, float)) or pmin is None
         assert isinstance(pmax, (int, float)) or pmax is None
@@ -15765,7 +15763,7 @@ def JM_get_fontextension(doc, xref):
     if obj.m_internal:
         obj = mupdf.pdf_dict_get(obj, PDF_NAME('Subtype'))
         if obj.m_internal and not mupdf.pdf_is_name(obj):
-            PySys_WriteStdout("invalid font descriptor subtype")
+            message("invalid font descriptor subtype")
             return "n/a"
         if mupdf.pdf_name_eq(obj, PDF_NAME('Type1C')):
             return "cff"
@@ -15774,7 +15772,7 @@ def JM_get_fontextension(doc, xref):
         elif mupdf.pdf_name_eq(obj, PDF_NAME('OpenType')):
             return "otf"
         else:
-            PySys_WriteStdout("unhandled font type '%s'", mupdf.pdf_to_name(obj))
+            message("unhandled font type '%s'", mupdf.pdf_to_name(obj))
 
     return "n/a"
 
@@ -15924,19 +15922,9 @@ def JM_image_profile( imagedata, keep_image):
     if not imagedata:
         return None # nothing given
     
-    #if (PyBytes_Check(imagedata)) {
-    #    c = PyBytes_AS_STRING(imagedata);
-    #    len = PyBytes_GET_SIZE(imagedata);
-    #} else if (PyByteArray_Check(imagedata)) {
-    #    c = PyByteArray_AS_STRING(imagedata);
-    #    len = PyByteArray_GET_SIZE(imagedata);
-    #} else {
-    #    PySys_WriteStderr("bad image data\n");
-    #    Py_RETURN_NONE;
-    #}
     len_ = len( imagedata)
     if len_ < 8:
-        sys.stderr.write( "bad image data\n")
+        message( "bad image data")
         return None
     c = imagedata
     #log( 'calling mfz_recognize_image_format with {c!r=}')
@@ -16577,7 +16565,7 @@ def JM_merge_range(
             page_merge(doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map)
             counter += 1
             if show_progress > 0 and counter % show_progress == 0:
-                sys.stdout.write("Inserted %i of %i pages.\n", counter, total)
+                message(f"Inserted {counter} of {total} pages.")
             page += 1
             afterpage += 1
     else:
@@ -16586,7 +16574,7 @@ def JM_merge_range(
             page_merge(doc_des, doc_src, page, afterpage, rotate, links, annots, graft_map)
             counter += 1
             if show_progress > 0 and counter % show_progress == 0:
-                sys.stdout.write("Inserted %i of %i pages.\n", counter, total)
+                message(f"Inserted {counter} of {total} pages.")
             page -= 1
             afterpage += 1
 
@@ -16655,20 +16643,19 @@ def JM_merge_resources( page, temp_res):
     return (max_alp, max_fonts) # next available numbers
 
 
-def JM_mupdf_warning( message):
+def JM_mupdf_warning( text):
     '''
     redirect MuPDF warnings
     '''
-    sys.stderr.flush()
-    JM_mupdf_warnings_store.append(message)
+    JM_mupdf_warnings_store.append(text)
     if JM_mupdf_show_warnings:
-        sys.stderr.write(f'MuPDF warning: {message}\n')
+        message(f'MuPDF warning: {text}')
 
 
-def JM_mupdf_error( message):
-    JM_mupdf_warnings_store.append(message)
+def JM_mupdf_error( text):
+    JM_mupdf_warnings_store.append(text)
     if JM_mupdf_show_errors:
-        sys.stderr.write(f'MuPDF error: {message}\n')
+        message(f'MuPDF error: {text}\n')
 
 
 def JM_new_bbox_device(rc, inc_layers):
@@ -17628,11 +17615,11 @@ def JM_UnicodeFromBuffer(buff):
     return val
 
 
-def JM_Warning(id):
+def message_warning(text):
     '''
-    put a warning on Python-stdout
+    Generate a warning.
     '''
-    sys.stdout.write(f'warning: {id}\n')
+    message(f'warning: {text}')
 
 
 def JM_update_stream(doc, obj, buffer_, compress):
@@ -18112,7 +18099,7 @@ def get_tessdata() -> str:
         if os.path.exists(tessdata):  # all ok?
             return tessdata
         else:  # should not happen!
-            message("unexpected: Tesseract-OCR has no 'tessdata' folder", file=sys.stderr)
+            message("unexpected: Tesseract-OCR has no 'tessdata' folder")
             return False
 
     # Unix-like systems:
@@ -18132,10 +18119,7 @@ def get_tessdata() -> str:
     if tessdata is not None:
         return tessdata
     else:
-        message(
-            "unexpected: tesseract-ocr has no 'tessdata' folder",
-            file=sys.stderr,
-        )
+        message("unexpected: tesseract-ocr has no 'tessdata' folder")
         return False
     return False
 
@@ -18296,7 +18280,7 @@ def jm_append_merge(dev):
             #log(f'calling {dev.out=} {dev.method=} {dev.pathdict=}')
             resp = getattr(dev.out, dev.method)(dev.pathdict)
         if not resp:
-            message("calling cdrawings callback function/method failed!", file=sys.stderr)
+            message("calling cdrawings callback function/method failed!")
         dev.pathdict = None
         return
     
@@ -18340,7 +18324,7 @@ def jm_append_merge(dev):
         prev[ dictkey_type] = 'fs'
         dev.pathdict.clear()
     else:
-        message("could not merge stroke and fill path", file=sys.stderr)
+        message("could not merge stroke and fill path")
         append()
 
 
@@ -18551,9 +18535,6 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     if dir.x == -1: # left-right flip
         rot.d = 1
 
-    # PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
-    # PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
-    
     chars = []
     for i in range( span.m_internal.len):
         adv = 0
@@ -20949,14 +20930,6 @@ def unicode_to_glyph_name(ch: int) -> str:
     return _adobe_glyphs.get(ch, ".notdef")
 
 
-def PySys_WriteStdout(text):
-    sys.stdout.write(text)
-
-
-def PySys_WriteStderr(text):
-    sys.stderr.write(text)
-
-
 def vdist(dir, a, b):
     dx = b.x - a.x
     dy = b.y - a.y
@@ -21675,10 +21648,10 @@ def restore_aliases():
         text = warnings.formatwarning(msg, cat, filename, lineno, line=line)
         s = text.find("FitzDeprecation")
         if s < 0:
-            log(text, file=sys.stderr)
+            log(text)
             return
         text = text[s:].splitlines()[0][4:]
-        log(text, file=sys.stderr)
+        log(text)
 
     warnings.showwarning = showthis
 
