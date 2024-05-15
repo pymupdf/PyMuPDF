@@ -1269,7 +1269,7 @@ def cells_to_tables(page, cells) -> list:
     return _sorted
 
 
-class CellGroup():
+class CellGroup:
     def __init__(self, cells):
         self.cells = cells
         self.bbox = (
@@ -1284,7 +1284,7 @@ class TableRow(CellGroup):
     pass
 
 
-class TableHeader():
+class TableHeader:
     """PyMuPDF extension containing the identified table header."""
 
     def __init__(self, bbox, cells, names, above):
@@ -1294,7 +1294,7 @@ class TableHeader():
         self.external = above
 
 
-class Table():
+class Table:
     def __init__(self, page, cells):
         self.page = page
         self.cells = cells
@@ -1726,7 +1726,7 @@ class TableSettings:
             raise ValueError(f"Cannot resolve settings: {settings}")
 
 
-class TableFinder():
+class TableFinder:
     """
     Given a PDF page, find plausible table structures.
 
@@ -1772,6 +1772,8 @@ class TableFinder():
 
         if v_strat == "text" or h_strat == "text":
             words = extract_words(CHARS, **(settings.text_settings or {}))
+        else:
+            words = []
 
         v_explicit = []
         for desc in settings.explicit_vertical_lines or []:
@@ -1798,6 +1800,8 @@ class TableFinder():
         elif v_strat == "text":
             v_base = words_to_edges_v(words, word_threshold=settings.min_words_vertical)
         elif v_strat == "explicit":
+            v_base = []
+        else:
             v_base = []
 
         v = v_base + v_explicit
@@ -1829,6 +1833,8 @@ class TableFinder():
                 words, word_threshold=settings.min_words_horizontal
             )
         elif h_strat == "explicit":
+            h_base = []
+        else:
             h_base = []
 
         h = h_base + h_explicit
