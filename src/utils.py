@@ -4034,6 +4034,7 @@ class Shape:
         text_t = text.splitlines()  # split text in lines again
         just_tab[-1] = False  # never justify last line
         for i, t in enumerate(text_t):
+            spacing = 0
             pl = maxwidth - pixlen(t)  # length of empty line part
             pnt = point + c_pnt * (i * lheight_factor)  # text start of line
             if align == 1:  # center: right shift by half width
