@@ -2,6 +2,20 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.4 (2024-05-16)**
+
+  * **Fixed** `3418 <https://github.com/pymupdf/PyMuPDF/issues/3418>`_: Re-introduced bug, text align add_redact_annot
+
+* Other:
+
+  * Fixed sysinstall test failing to remove all of prior installation before
+    new install.
+  * Fixed `utils.do_links()` crash.
+  * Correct `TextPage` creation Code.
+  * Unified various diagnostics.
+  * Fix bug in `page_merge()`.
+
+
 **Changes in version 1.24.3 (2024-05-09)**
 
 *

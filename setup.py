@@ -1117,7 +1117,7 @@ classifier = [
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.24.3'
+version = '1.24.4'
 version_b = '1.24.3'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
