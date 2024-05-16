@@ -12,7 +12,8 @@ def wrap(*args, **kwargs):
     assert not wt, f'{wt=}'
     assert not pymupdf.TOOLS.set_small_glyph_heights()
     
-    pymupdf._g_log_items = list()
+    pymupdf._log_items_clear()
+    pymupdf._log_items_active(True)
     
     # Run the test.
     rep = yield
@@ -26,4 +27,5 @@ def wrap(*args, **kwargs):
     
     assert not pymupdf.TOOLS.set_small_glyph_heights()
     
-    assert not pymupdf._g_log_items, f'log() was called; {len(pymupdf._g_log_items)=}.'
+    log_items = pymupdf._log_items()
+    assert not log_items, f'log() was called; {len(log_items)=}.'

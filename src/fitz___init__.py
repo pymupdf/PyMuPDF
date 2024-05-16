@@ -4,3 +4,6 @@ from pymupdf import _as_fz_document
 from pymupdf import _as_fz_page
 from pymupdf import _as_pdf_document
 from pymupdf import _as_pdf_page
+from pymupdf import _log_items
+from pymupdf import _log_items_active
+from pymupdf import _log_items_clear

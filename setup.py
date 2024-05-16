@@ -606,21 +606,26 @@ def build():
 
     if path_so_leaf_b:
         # Add rebased implementation files.
-        add( ret_p, f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py')   # For `fitz` module alias.
-        add( ret_p, f'{g_root}/src/fitz_table.py', 'fitz/table.py')         # For `fitz` module alias.
-        add( ret_p, f'{g_root}/src/fitz_utils.py', 'fitz/utils.py')         # For `fitz` module alias.
         to_dir = 'pymupdf/'
         add( ret_p, f'{g_root}/src/__init__.py', to_dir)
         add( ret_p, f'{g_root}/src/__main__.py', to_dir)
         add( ret_p, f'{g_root}/src/pymupdf.py', to_dir)
         add( ret_p, f'{g_root}/src/table.py', to_dir)
         add( ret_p, f'{g_root}/src/utils.py', to_dir)
+        add( ret_p, f'{g_root}/src/_apply_pages.py', to_dir)
         add( ret_p, f'{g_root}/src/build/extra.py', to_dir)
         add( ret_p, f'{g_root}/src/build/{path_so_leaf_b}', to_dir)
         
+        # Add support for `fitz` backwards compatibility.
+        add( ret_p, f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py')
+        add( ret_p, f'{g_root}/src/fitz_table.py', 'fitz/table.py')
+        add( ret_p, f'{g_root}/src/fitz_utils.py', 'fitz/utils.py')
+        
         if mupdf_local:
+            # Add MuPDF Python API.
             add( ret_p, f'{mupdf_build_dir}/mupdf.py', to_dir)
             
+            # Add MuPDF shared libraries.
             if windows:
                 wp = pipcl.wdev.WindowsPython()
                 add( ret_p, f'{mupdf_build_dir}/_mupdf.pyd', to_dir)
