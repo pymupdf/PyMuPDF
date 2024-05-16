@@ -57,8 +57,7 @@ source using a Python sdist.
     2022, can cause problems because one can end up with MuPDF and PyMuPDF code
     being compiled with different compiler versions.
 
-As of `PyMuPDF-1.20.0`, the required MuPDF source code is already in the
-sdist and is automatically built into PyMuPDF.
+The build will automatically download and build MuPDF.
 
 
 Problems after installation
@@ -101,45 +100,46 @@ There are no **mandatory** external dependencies. However, some optional feature
 .. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
 
 
-Build and install from local PyMuPDF checkout and optional local MuPDF checkout
--------------------------------------------------------------------------------
+Build and install from a local PyMuPDF source tree
+---------------------------------------------------------
+
+Initial setup:
 
 * Install C/C++ development tools as described above.
-
 * Enter a Python venv and update pip, as described above.
 
 * Get a PyMuPDF source tree:
 
   * Clone the PyMuPDF git repository::
 
-      git clone https://github.com/pymupdf/PyMuPDF.git
+        git clone https://github.com/pymupdf/PyMuPDF.git
 
-  * Or download and extract a `.zip` or `.tar.gz` source release from
+  *
+    Or download and extract a `.zip` or `.tar.gz` source release from
     https://github.com/pymupdf/PyMuPDF/releases.
 
+Then one can build PyMuPDF in two ways:
 
-* Build and install PyMuPDF::
+* Build and install PyMuPDF with default MuPDF version::
 
-    cd PyMuPDF && pip install .
+      cd PyMuPDF && pip install .
 
-  This will automatically download a specific hard-coded MuPDF source release,
-  and build it into PyMuPDF.
+  This will automatically download a specific hard-coded MuPDF source
+  release, and build it into PyMuPDF.
 
+* Or build and install PyMuPDF using a local MuPDF source tree:
 
-Build and install PyMuPDF using a local MuPDF source tree:
+  * Clone the MuPDF git repository::
 
-* Clone the MuPDF git repository::
+      git clone --recursive https://git.ghostscript.com/mupdf.git
 
-    git clone --recursive https://ghostscript.com:/home/git/mupdf.git
+  *
+    Build PyMuPDF, specifying the location of the local MuPDF tree with the
+    environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::
 
-*
-  Build PyMuPDF, specifying the location of the local MuPDF tree with the
-  environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::
+      cd PyMuPDF && PYMUPDF_SETUP_MUPDF_BUILD=../mupdf pip install .
 
-    cd PyMuPDF && PYMUPDF_SETUP_MUPDF_BUILD=../mupdf pip install .
-
-
-Building for different Python versions in same PyMuPDF tree:
+Also, one can build for different Python versions in the same PyMuPDF tree:
 
 *
   PyMuPDF will build for the version of Python that is being used to run
@@ -153,13 +153,6 @@ Building for different Python versions in same PyMuPDF tree:
   or::
 
     cd PyMuPDF && py -3.10-32 -m pip install .
-
-
-.. note:: When running Python scripts that use PyMuPDF, make sure that the
-  current directory is not the `PyMuPDF/` directory.
-
-  Otherwise, confusingly, Python will attempt to import `fitz` from the local
-  `fitz/` directory, which will fail because it only contains source files.
 
 
 Running tests
