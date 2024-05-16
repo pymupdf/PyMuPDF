@@ -20942,6 +20942,79 @@ def vdist(dir, a, b):
     return mupdf.fz_abs(dx * dir.y + dy * dir.x)
 
 
+def get_text(
+        path,
+        *,
+        pages=None,
+        method='single',
+        concurrency=None,
+        
+        option='text',
+        clip=None,
+        flags=None,
+        textpage=None,
+        sort=False,
+        delimiters=None,
+        ):
+    '''
+    Returns list of results from `Page.get_text()`, optionally using
+    concurrency for speed.
+    
+    Args:
+        path:
+            Path of document.
+        pages:
+            List of page numbers to process, or None to include all pages.
+        method:
+            'single'
+                Do not use concurrency.
+            'mp'
+                Operate concurrently using Python's `multiprocessing` module.
+            'fork'
+                 Operate concurrently using custom implementation with
+                 `os.fork`. Does not work on Windows.
+        concurrency:
+            Number of worker processes to use when operating concurrently. If
+            None, we use the number of available CPUs.
+        option clip flags textpage sort delimiters:
+            Passed to internal calls to `Page.get_text()`.
+    '''
+    args_dict = dict(
+            option=option,
+            clip=clip,
+            flags=flags,
+            textpage=textpage,
+            sort=sort,
+            delimiters=delimiters,
+            )
+    
+    if method == 'single':
+        ret = list()
+        document = Document(path)
+        for page in document:
+            text = page.get_text(**args_dict)
+            ret.append(text)
+        return ret
+    
+    # Use concurrency.
+    #
+    from . import _get_text
+    
+    if pages is None:
+        with Document(path) as document:
+            num_pages = len(document)
+            pages = list(range(num_pages))
+    
+    if method == 'mp':
+        return _get_text._get_text_mp(path, pages, concurrency, args_dict)
+    
+    elif method == 'fork':
+        return _get_text._get_text_fork(path, pages, concurrency, args_dict)
+        
+    else:
+        assert 0, f'Unrecognised {method=}.'
+
+
 class TOOLS:
     '''
     We use @staticmethod to avoid the need to create an instance of this class.

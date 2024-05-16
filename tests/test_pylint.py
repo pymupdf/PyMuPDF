@@ -35,6 +35,7 @@ def test_pylint():
             W0622: Redefining built-in 'FileNotFoundError' (redefined-builtin)
             W0622: Redefining built-in 'open' (redefined-builtin)
             W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+            R1734: Consider using [] instead of list() (use-list-literal)
             '''
             )
     
@@ -80,6 +81,7 @@ def test_pylint():
             W0718: Catching too general exception Exception (broad-exception-caught)
             W0719: Raising too general exception: Exception (broad-exception-raised)
             C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
+            R0801: Similar lines in 2 files
             '''
             )
     ignores_list = list()
@@ -110,6 +112,7 @@ def test_pylint():
     leafs = [
             '__init__.py',
             '__main__.py',
+            '_get_text.py',
             'fitz___init__.py',
             'fitz_table.py',
             'fitz_utils.py',
@@ -117,7 +120,7 @@ def test_pylint():
             'table.py',
             'utils.py',
             ]
-    
+    leafs.sort()
     try:
         leafs_git = pipcl.git_items(directory)
     except Exception as e:
