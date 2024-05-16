@@ -267,3 +267,50 @@ def test_3197():
                 assert text_utf8 == text_utf8_expected[i]
             else:
                 assert text_utf8 != text_utf8_expected[i]
+
+
+def test_document_text():
+    import platform
+    import time
+    
+    path = os.path.abspath(f'{__file__}/../../tests/resources/mupdf_explored.pdf')
+    concurrency = None
+    
+    def llen(texts):
+        l = 0
+        for text in texts:
+            l += len(text) if isinstance(text, str) else text
+        return l
+
+    results = dict()
+    _stats = 1
+    
+    print('')
+    method = 'single'
+    t = time.time()
+    document = pymupdf.Document(path)
+    texts0 = pymupdf.get_text(path, _stats=_stats)
+    t0 = time.time() - t
+    print(f'{method}: {t0=} {llen(texts0)=}', flush=1)
+
+    # Dummy run seems to avoid misleading stats with slow first run.
+    method = 'mp'
+    texts = pymupdf.get_text(path, concurrency=concurrency, method=method, _stats=_stats)
+
+    method = 'mp'
+    t = time.time()
+    texts = pymupdf.get_text(path, concurrency=concurrency, method=method, _stats=_stats)
+    t = time.time() - t
+    print(f'{method}: {concurrency=} {t=} ({t0/t:.2f}x) {llen(texts)=}', flush=1)
+    assert texts == texts0
+
+    if platform.system() != 'Windows':
+        method = 'fork'
+        t = time.time()
+        texts = pymupdf.get_text(path, concurrency=concurrency, method='fork', _stats=_stats)
+        t = time.time() - t
+        print(f'{method}: {concurrency=} {t=} ({t0/t:.2f}x) {llen(texts)=}', flush=1)
+        assert texts == texts0
+    
+    if _stats:
+        pymupdf._log_items_clear()
