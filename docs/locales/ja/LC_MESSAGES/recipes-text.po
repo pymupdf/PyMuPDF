@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-01 16:48+0100\n"
+"POT-Creation-Date: 2024-05-17 11:45+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,41 +19,41 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 d412f81586744f78b0404eb7b8a177c7
+#: ../../header.rst:-1 3e61ae7831d54b53b314ae8ac1f2728d
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 0caf5e819e3740568815936aa9cc31d5
+#: ../../header.rst:-1 7e429b7f86ad4439a4d0d52bff6265b3
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 d516c2127da44a09b5983b8c73a63571
+#: ../../header.rst:-1 c2c6ea37f70d4162b401f8d64e053041
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../recipes-text.rst:7 6914c0ced0354be295d59a2f9b66782e
+#: ../../recipes-text.rst:7 f19bf747d27c439092c16fd8f55e61ea
 msgid "Text"
 msgstr "テキスト"
 
-#: ../../recipes-text.rst:13 6cf3c080d18447a0a7ef65c4f30805d9
+#: ../../recipes-text.rst:13 24a6bb5652e64a3e9b0516522d112b8e
 msgid "How to Extract all Document Text"
 msgstr "すべてのドキュメントテキストを抽出する方法"
 
-#: ../../recipes-text.rst:15 9bfbdd29492044de83b57980ce1bd017
+#: ../../recipes-text.rst:15 da58de122b0349f5bd4029b10c3fc51c
 msgid ""
 "This script will take a document filename and generate a text file from "
 "all of its text."
 msgstr "このスクリプトは、ドキュメントのファイル名を受け取り、そのテキストからテキストファイルを生成します。"
 
-#: ../../recipes-text.rst:17 6f9ae49d3d244fdab0212da47783c697
+#: ../../recipes-text.rst:17 e27f607f72c943c08549280d89ec9713
 msgid "The document can be any :ref:`supported type<Supported_File_Types>`."
 msgstr "ドキュメントは、:ref:`サポートされている <Supported_File_Types>` 任意のタイプのものが使用できます。"
 
-#: ../../recipes-text.rst:19 3e5873a437264fd29e4923eb5f78b447
+#: ../../recipes-text.rst:19 8b9c3162891a4e76846b7faddfd2e615
 msgid ""
 "The script works as a command line tool which expects the document "
 "filename supplied as a parameter. It generates one text file named "
@@ -61,14 +61,14 @@ msgid ""
 " form feed character::"
 msgstr "このスクリプトはコマンドラインツールとして機能し、ドキュメントのファイル名をパラメータとして受け取ります。スクリプトのディレクトリに「filename.txt」という名前のテキストファイルが生成されます。ページのテキストはフォームフィード文字で区切られます。"
 
-#: ../../recipes-text.rst:28 216be56c9e214e6280537dfa151b3992
+#: ../../recipes-text.rst:28 70512f134ae8415486e534b18e92d13c
 msgid ""
 "The output will be plain text as it is coded in the document. No effort "
 "is made to prettify in any way. Specifically for PDF, this may mean "
 "output not in usual reading order, unexpected line breaks and so forth."
 msgstr "出力はドキュメント内でコード化された通りのプレーンテキストになるため、見栄えの調整は行いません。特にPDFの場合、通常の読み順にならない出力や予期せぬ改行などが発生するかもしれません。"
 
-#: ../../recipes-text.rst:30 5843b2dcafbf43f0aac730ccfd28e761
+#: ../../recipes-text.rst:30 4437419de89b40c1a19b0f5f6bc0fcfe
 msgid ""
 "You have many options to rectify this -- see chapter :ref:`Appendix2`. "
 "Among them are:"
@@ -76,45 +76,47 @@ msgstr ""
 "これを修正するための多くのオプションがあります。詳細は :ref:`Appendix2` "
 "章「埋め込みファイルに関する考慮事項」を参照してください。以下の方法があります："
 
-#: ../../recipes-text.rst:32 8841fdf620da478ebc8175ca248c18ac
+#: ../../recipes-text.rst:32 bfbb3a38a30846f58d6981d4c70a305f
 msgid ""
 "Extract text in HTML format and store it as a HTML document, so it can be"
 " viewed in any browser."
 msgstr "テキストをHTML形式で抽出し、HTMLドキュメントとして保存することで、任意のブラウザで表示できるようにします。"
 
-#: ../../recipes-text.rst:33 c2db5b519c47463aa6da1f7afa49864f
+#: ../../recipes-text.rst:33 50700203a0f94688a83cb4164d3f1569
 msgid ""
 "Extract text as a list of text blocks via *Page.get_text(\"blocks\")*. "
 "Each item of this list contains position information for its text, which "
 "can be used to establish a convenient reading order."
 msgstr "Page.get_text(\"blocks\")を使ってテキストブロックのリストとして抽出します。リストの各アイテムにはテキストの位置情報が含まれており、便利な読み順を確立するのに使用できます。"
 
-#: ../../recipes-text.rst:34 7ce35a84a1ef47d0a2478384bfd4068b
+#: ../../recipes-text.rst:34 18ebebd8804f451880df619ede6a80a9
 msgid ""
 "Extract a list of single words via *Page.get_text(\"words\")*. Its items "
 "are words with position information. Use it to determine text contained "
 "in a given rectangle -- see next section."
 msgstr "Page.get_text(\"words\")を使って単語のリストを抽出します。各アイテムには位置情報が含まれています。これを使用して特定の四角形に含まれるテキストを決定します。"
 
-#: ../../recipes-text.rst:36 92fbd9519a0b47d5bd1fd8a357b29527
+#: ../../recipes-text.rst:36 f466a7b8d0eb421b88a53f870a6a53a6
 msgid "See the following two sections for examples and further explanations."
 msgstr "以下の2つのセクションを見て、例と詳細な説明をご覧ください。"
 
-#: ../../recipes-text.rst:44 c891b0a71b204817969bc579cbfe6d0e
+#: ../../recipes-text.rst:44 76cd3a13132542029bdeb26cb3093459
 msgid "How to Extract Text as Markdown"
 msgstr "テキストをMarkdown形式で抽出する方法"
 
-#: ../../recipes-text.rst:46 69e2c660e730441f9f9335c7282de5dc
+#: ../../recipes-text.rst:46 4dc5e856d70949738e19ff631552d88d
 msgid ""
 "This is especially useful for :title:`RAG/LLM` environments - please see "
 ":ref:`Outputting as Markdown <rag_outputting_as_md>`."
-msgstr "これは、特に :title:`RAG/LLM`  環境にとって便利です -  :ref:`Outputting as Markdown <rag_outputting_as_md>` を参照してください。"
+msgstr ""
+"これは、特に :title:`RAG/LLM`  環境にとって便利です -  :ref:`Outputting as Markdown "
+"<rag_outputting_as_md>` を参照してください。"
 
-#: ../../recipes-text.rst:52 910a8326bf184fb0bcf42b26c0a1c20f
+#: ../../recipes-text.rst:52 458957db58034d47b970142edc69b301
 msgid "How to Extract Key-Value Pairs from a Page"
 msgstr "ページからキーと値のペアを抽出する方法"
 
-#: ../../recipes-text.rst:53 125a84ff973440ebacf2fa9a03bbc51a
+#: ../../recipes-text.rst:53 dd2c616e2fcc4ac59369ec59dad07ddc
 msgid ""
 "If the layout of a page is *\"predictable\"* in some sense, then there is"
 " a simple way to find the values for a given set of keywords fast and "
@@ -126,40 +128,40 @@ msgstr ""
 "`以下の例のスクリプト <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master"
 "/text-extraction/lookup-keywords.py>`_ を参照してください。"
 
-#: ../../recipes-text.rst:55 a58adce7275e40eab0cc189c93fb7ee5
+#: ../../recipes-text.rst:55 bdcbf88bba624cdc9239fdfc537ca4d1
 msgid "\"Predictable\" in this context means:"
 msgstr "ここでの「予測可能」とは、次のような意味です："
 
-#: ../../recipes-text.rst:57 ea26f06e793e4f44b2bad704ce54dde6
+#: ../../recipes-text.rst:57 ecc50e4173a04ed6939f6deb8f551743
 msgid ""
 "Every keyword is followed by its value -- no other text is present in "
 "between them."
 msgstr "各キーワードの後にはその値が続きます。それらの間に他のテキストはありません。"
 
-#: ../../recipes-text.rst:58 7451ce4087724836a8e343d3edde5c05
+#: ../../recipes-text.rst:58 67cc396e753549919ce7558347cb1c00
 msgid ""
 "The bottom of the value's boundary box is **not above** the one of the "
 "keyword."
 msgstr "値の境界ボックスの下端は、キーワードの境界ボックスよりも上にありません。"
 
-#: ../../recipes-text.rst:59 4705d99609d54e508681a530732fa903
+#: ../../recipes-text.rst:59 8a04a7fad63e4e5b9602f016777ddccf
 msgid ""
 "There are **no other restrictions**: the page layout may or may not be "
 "fixed, and the text may also have been stored as one string. Key and "
 "value may have any distance from each other."
 msgstr "他の制約はありません：ページのレイアウトが固定されているかどうかは問いませんし、テキストは1つの文字列として保存されている可能性もあります。キーと値はお互いに任意の距離を持つかもしれません。"
 
-#: ../../recipes-text.rst:61 b776c3235c6b48059dff0b6e8f499542
+#: ../../recipes-text.rst:61 be5f887cb08d412d8fc99e9873ea4516
 msgid ""
 "For example, the following five key-value pairs will be correctly "
 "identified::"
 msgstr "例として、以下の5つのキーと値のペアが正しく識別されます::"
 
-#: ../../recipes-text.rst:77 010af53dda9443d0af52d5f722756d7a
+#: ../../recipes-text.rst:77 d21a47fb8bdb409db7ff35168572744a
 msgid "How to Extract Text from within a Rectangle"
 msgstr "四角形内のテキストを抽出する方法"
 
-#: ../../recipes-text.rst:78 b32d56184c2a4cd2a19794dfcd04a300
+#: ../../recipes-text.rst:78 d7ce07386a40498e81dac897d0a60d64
 msgid ""
 "There is now (v1.18.0) more than one way to achieve this. We therefore "
 "have created a `folder <https://github.com/pymupdf/PyMuPDF-"
@@ -170,17 +172,17 @@ msgstr ""
 "<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textbox-"
 "extraction>`_ リポジトリに、この特定のトピックに対応するフォルダを作成しました。"
 
-#: ../../recipes-text.rst:88 4809075e85d04b4f917ec1deb3929707
+#: ../../recipes-text.rst:88 ad94ee89ee5f44a2a7f7aecc5e242a18
 msgid "How to Extract Text in Natural Reading Order"
 msgstr "自然な読み順でテキストを抽出する方法"
 
-#: ../../recipes-text.rst:90 b78bdb1f893d4bae83085cd959fdbfc4
+#: ../../recipes-text.rst:90 97316353159045629e33ddb9c185a566
 msgid ""
 "One of the common issues with PDF text extraction is, that text may not "
 "appear in any particular reading order."
 msgstr "PDFのテキスト抽出によくある問題の1つは、テキストが特定の読み順に表示されないことです。"
 
-#: ../../recipes-text.rst:92 4b98d7b2d37941e8940fdd0b8801a0af
+#: ../../recipes-text.rst:92 066f8ff32d184352b43df6aeab04638c
 msgid ""
 "This is the responsibility of the PDF creator (software or a human). For "
 "example, page headers may have been inserted in a separate step -- after "
@@ -190,31 +192,31 @@ msgid ""
 "snippet will add some header and footer lines to an existing PDF::"
 msgstr "これはPDFの作成者（ソフトウェアまたは人間）の責任です。たとえば、ページヘッダーはドキュメントが作成された後の別のステップで挿入された可能性があります。そのような場合、ヘッダーテキストはページテキストの抽出の最後に表示されることがあります（ただし、PDFビューアソフトウェアでは正しく表示されます）。以下のスニペットは、既存のPDFにいくつかのヘッダーとフッターの行を追加します::"
 
-#: ../../recipes-text.rst:104 d3e4afffb9104870b3e640400b86e932
+#: ../../recipes-text.rst:104 3aa87e0042294457a5bb765ec561ba30
 msgid ""
 "The text sequence extracted from a page modified in this way will look "
 "like this:"
 msgstr "このように変更されたページから抽出されたテキストのシーケンスは次のようになります："
 
-#: ../../recipes-text.rst:106 fa0379fc9d3c4cf8ac3f60aafdc43d74
+#: ../../recipes-text.rst:106 521c301af2934dddbe4e321777f795a5
 msgid "original text"
 msgstr "元のテキスト"
 
-#: ../../recipes-text.rst:107 f16a6c83cc1d48e38819e9dcd3c286c8
+#: ../../recipes-text.rst:107 d8383fa532b24e5c88830dc3e777403a
 msgid "header line"
 msgstr "ヘッダーライン"
 
-#: ../../recipes-text.rst:108 2149fcca0ca74635820f7aee3dc3c4ee
+#: ../../recipes-text.rst:108 d62998c0aded4df5af1731aac52eb0e9
 msgid "footer line"
 msgstr "フッターライン"
 
-#: ../../recipes-text.rst:110 c65c6f6828a94007a3bd394f4d132e61
+#: ../../recipes-text.rst:110 1f2b9106bf5d4c0a99cf5df16d312f9f
 msgid ""
 "PyMuPDF has several means to re-establish some reading sequence or even "
 "to re-generate a layout close to the original:"
 msgstr "PyMuPDFには、いくつかの方法で読み順を再確立したり、元のレイアウトに近い形で再生成する手段があります："
 
-#: ../../recipes-text.rst:112 157b4105c57a4cf4bda704b5ab23dd07
+#: ../../recipes-text.rst:112 6229089f291e473d88bd6bc1a1837f52
 msgid ""
 "Use `sort` parameter of :meth:`Page.get_text`. It will sort the output "
 "from top-left to bottom-right (ignored for XHTML, HTML and XML output)."
@@ -222,16 +224,16 @@ msgstr ""
 ":meth:`Page.get_text` の `sort` "
 "パラメーターを使用します。これにより、出力が左上から右下に向かってソートされます（XHTML、HTML、XML出力には無効です）。"
 
-#: ../../recipes-text.rst:113 e46fc9a36b8e49719c633812c5a43bfd
+#: ../../recipes-text.rst:113 8ba15d25debf43bab9e13bbaab2ed85f
 msgid ""
-"Use the `fitz` module in CLI: `python -m fitz gettext ...`, which "
+"Use the `pymupdf` module in CLI: `python -m pymupdf gettext ...`, which "
 "produces a text file where text has been re-arranged in layout-preserving"
 " mode. Many options are available to control the output."
 msgstr ""
-"CLIでfitzモジュールを使用します： `python -m fitz gettext ...` "
+"CLIで `pymupdf` モジュールを使用します： `python -m pymupdf gettext ...` "
 "。これにより、テキストがレイアウトを保持するモードで再配置されたテキストファイルが生成されます。出力を制御するための多くのオプションが利用可能です。"
 
-#: ../../recipes-text.rst:115 3c6dc7e4d07b48a0b5ed3530e24f6228
+#: ../../recipes-text.rst:115 960f4e2c9a93433ab4cd78d6715c0ae9
 msgid ""
 "You can also use the above mentioned `script "
 "<https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-"
@@ -240,20 +242,20 @@ msgstr ""
 "また、上記の `スクリプト <https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-"
 "text-from-a-rectangle>`_ を自分の変更とともに使用することもできます。"
 
-#: ../../recipes-text.rst:122 82a4ace6a1274c6c9f0e30cba43b57b4
+#: ../../recipes-text.rst:122 c1e943aea17d4e279c79161fc11fd5bd
 msgid ""
 "How to :index:`Extract Table Content <pair: extract; table>` from "
 "Documents"
 msgstr "ドキュメントから表の内容を抽出する方法"
 
-#: ../../recipes-text.rst:123 3214b429d81744128946bab1027a99af
+#: ../../recipes-text.rst:123 f3d5dc3547364629a7d9b0173897d634
 msgid ""
 "If you see a table in a document, you are normally not looking at "
 "something like an embedded Excel or other identifiable object. It usually"
 " is just normal, standard text, formatted to appear as tabular data."
 msgstr "文書で表を見る場合、通常は埋め込まれたExcelなどの識別可能なオブジェクトのようなものではありません。通常、単なる通常の標準テキストで、表のデータとして表示されるようにフォーマットされています。"
 
-#: ../../recipes-text.rst:125 32996aabb57345a1bb7a3df42cd9c294
+#: ../../recipes-text.rst:125 c1432f2ac8ec4e108b935d58aa5120c7
 msgid ""
 "Extracting tabular data from such a page area therefore means that you "
 "must find a way to **identify** the table area (i.e. its boundary box), "
@@ -261,13 +263,13 @@ msgid ""
 "then extract text based on this information."
 msgstr "したがって、そのようなページ領域から表のデータを抽出するには、まず表の領域（つまり、その境界ボックス）を特定する方法を見つける必要があり、その後（1）グラフィカルに表と列の境界を示し、（2）この情報に基づいてテキストを抽出する必要があります。"
 
-#: ../../recipes-text.rst:127 17fb4f5a9bfd47faab5a9ca5cbb57859
+#: ../../recipes-text.rst:127 c21a3b9c27df42fcadfafc583f4be381
 msgid ""
 "This can be a very complex task, depending on details like the presence "
 "or absence of lines, rectangles or other supporting vector graphics."
 msgstr "これは、線、四角形、またはその他のサポートベクトルグラフィックの存在または不在などの詳細に依存するため、非常に複雑なタスクになる可能性があります。"
 
-#: ../../recipes-text.rst:129 5f9b3d61477c438985254f66b4184279
+#: ../../recipes-text.rst:129 4a941837396043219879541fe52eadff
 msgid ""
 "Method :meth:`Page.find_tables` does all that for you, with a high table "
 "detection precision. Its great advantage is that there are no external "
@@ -280,7 +282,7 @@ msgstr ""
 "は、高い表検出精度を備えて、すべてをあなたのために行います。その大きな利点は、外部ライブラリの依存関係がないこと、人工知能や機械学習技術を使用する必要がないことです。また、データ分析のためのPythonパッケージである"
 " `pandas <https://pypi.org/project/pandas/>`_ のための統合されたインターフェースも提供します。"
 
-#: ../../recipes-text.rst:131 55e3477493f441239131b742f176f496
+#: ../../recipes-text.rst:131 6af441540e8d4b6da806234c3fdcbc9d
 msgid ""
 "Please have a look at example `Jupyter notebooks "
 "<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-"
@@ -291,11 +293,11 @@ msgstr ""
 "Utilities/tree/master/table-analysis>`_ "
 "ノートブックをご覧いただければ幸いです。これには、1つのページに複数の表や複数のページにまたがる表の断片を結合するなどの状況が含まれています。"
 
-#: ../../recipes-text.rst:138 b55d7280009c481c83550af0b8cc8a2f
+#: ../../recipes-text.rst:138 664ec294ce4b4c9e8a94e6109cc5e546
 msgid "How to Mark Extracted Text"
 msgstr "抽出したテキストをマークする方法"
 
-#: ../../recipes-text.rst:139 94b40012384a40f381a52adef86513c5
+#: ../../recipes-text.rst:139 b3ac20b17bdd4889a9bc743d2d963466
 msgid ""
 "There is a standard search function to search for arbitrary text on a "
 "page: :meth:`Page.search_for`. It returns a list of :ref:`Rect` objects "
@@ -307,23 +309,23 @@ msgstr ""
 "です。これは、見つかったテキストを囲む :ref:`Rect` "
 "オブジェクトのリストを返します。これらの四角形は、見つかったテキストを目に見えるようにマークするために自動的に注釈を挿入するのに使用できます。"
 
-#: ../../recipes-text.rst:141 b499ead70d174046b00c77a7fa6e727a
+#: ../../recipes-text.rst:141 56e9b50e4a8e41c6b605771a67b7de28
 msgid "This method has advantages and drawbacks. Pros are:"
 msgstr "この方法には利点と欠点があります。利点は次のとおりです："
 
-#: ../../recipes-text.rst:143 bdefffc3f1a04a2fb91d0f70d0df55e8
+#: ../../recipes-text.rst:143 db7f07f1115b4ca28c9257e548630462
 msgid "The search string can contain blanks and wrap across lines"
 msgstr "検索文字列には空白を含めることができ、行をまたぐことができます。"
 
-#: ../../recipes-text.rst:144 0df840fdfa29447c95955163097c8e1e
+#: ../../recipes-text.rst:144 2c8d52f9cb23447787d282cce30843e1
 msgid "Upper or lower case characters are treated equal"
 msgstr "大文字と小文字は同じように扱われます。"
 
-#: ../../recipes-text.rst:145 5287fb973462496c831e8007e8693314
+#: ../../recipes-text.rst:145 4a63542e32d44e04b249706394ce459f
 msgid "Word hyphenation at line ends is detected and resolved"
 msgstr "行末での単語のハイフネーションが検出され、解決されます。"
 
-#: ../../recipes-text.rst:146 014e7302563a4c148755394b2beccb60
+#: ../../recipes-text.rst:146 e566dc657c60465bb73f3e3ff905ab66
 msgid ""
 "Return may also be a list of :ref:`Quad` objects to precisely locate text"
 " that is **not parallel** to either axis -- using :ref:`Quad` output is "
@@ -333,33 +335,36 @@ msgstr ""
 "オブジェクトのリストになる場合もあり、これにより軸に対して平行でないテキストを正確に位置付けることができます。ページの回転がゼロでない場合には、 "
 ":ref:`Quad` の出力を使用することも推奨されます。"
 
-#: ../../recipes-text.rst:148 0f91e8417d6942d0a99e02374b0c0a7b
+#: ../../recipes-text.rst:148 a105036bbab14110880a16430c859d95
 msgid "But you also have other options::"
 msgstr "ただし、他にも選択肢があります::"
 
-#: ../../recipes-text.rst:182 05aed2b5633b43bb88faee8c33650547
+#: ../../recipes-text.rst:182 6a0377a1d2fe4746ae2c53935c6a24a5
 msgid ""
 "This script uses `Page.get_text(\"words\")` to look for a string, handed "
 "in via cli parameter. This method separates a page's text into \"words\" "
 "using white spaces as delimiters. Further remarks:"
 msgstr "このスクリプトは、cliパラメーターを介して渡された文字列を検索するためにPage.get_text(\"words\")を使用します。この方法では、ページのテキストがスペースと改行を区切りとして「単語」に分割されます。さらなる注釈："
 
-#: ../../recipes-text.rst:184 a636bc2e280c4a958c795d3ef168eda4
+#: ../../recipes-text.rst:184 633a2affd61a49aabefdf3378ebf62fa
 msgid ""
 "If found, the **complete word containing the string** is marked "
 "(underlined) -- not only the search string."
 msgstr "文字列が見つかった場合、検索文字列だけでなく、その文字列を含む完全な単語がマークされます（アンダーラインが引かれます）。"
 
-#: ../../recipes-text.rst:185 f4c01e5f06954ce5827a91e03d5038b3
+#: ../../recipes-text.rst:185 b3a319b0dfa2447cabb5313b8a27d188
 msgid ""
 "The search string may **not contain word delimiters**. By default, word "
 "delimiters are white spaces and the non-breaking space `chr(0xA0)`. If "
 "you use extra delimiting characters like `page.get_text(\"words\", "
 "delimiters=\"./,\")` then none of these characters should be included in "
 "your search string either."
-msgstr "検索文字列には単語の区切り文字を含めることはできません。デフォルトでは、単語の区切り文字は空白と非改行空白 `chr(0xA0)` です。もし、 `page.get_text("words", delimiters="./,")`  のような追加の区切り文字を使用する場合は、これらの文字を検索文字列に含めてはいけません。"
+msgstr ""
+"検索文字列には単語の区切り文字を含めることはできません。デフォルトでは、単語の区切り文字は空白と非改行空白 `chr(0xA0)` です。もし、 "
+"`page.get_text(\"words\", delimiters=\"./,\")`  "
+"のような追加の区切り文字を使用する場合は、これらの文字を検索文字列に含めてはいけません。"
 
-#: ../../recipes-text.rst:186 1ae2bbf30aca4bf281c7177f8823a541
+#: ../../recipes-text.rst:186 b0d6817423c94a41b0cd59838d2cade1
 msgid ""
 "As shown here, upper / lower cases are **respected**. But this can be "
 "changed by using the string method *lower()* (or even regular "
@@ -368,46 +373,46 @@ msgstr ""
 "ここで示したように、大文字と小文字は区別されますが、`mark_word` 関数で `lower()` "
 "メソッド（または正規表現）を使用することで変更できます。"
 
-#: ../../recipes-text.rst:187 8017965a2bd94baaa08c9236b8332635
+#: ../../recipes-text.rst:187 20a203e8829c46ef93b9d7e2bdb9c8e8
 msgid "There is **no upper limit**: all occurrences will be detected."
 msgstr "上限はありません。すべての出現を検出します。"
 
-#: ../../recipes-text.rst:188 8730cddb6f4b49b08715daacd6151a0c
+#: ../../recipes-text.rst:188 c56a58ac561441fda1240e8c5002c785
 msgid ""
 "You can use **anything** to mark the word: 'Underline', 'Highlight', "
 "'StrikeThrough' or 'Square' annotations, etc."
 msgstr "単語をマークするために何を使用しても構いません：「アンダーライン」、「ハイライト」、「取り消し線」、「四角」の注釈などがあります。"
 
-#: ../../recipes-text.rst:189 5e2bdf66ba704e7087ed977957ff0439
+#: ../../recipes-text.rst:189 8feefb1374e64b4d8508965b2c7d04fb
 msgid ""
 "Here is an example snippet of a page of this manual, where \"MuPDF\" has "
 "been used as the search string. Note that all strings **containing "
 "\"MuPDF\"** have been completely underlined (not just the search string)."
 msgstr "以下は、このマニュアルのページの一部の例スニペットで、「MuPDF」が検索文字列として使用されています。注意：「MuPDF」を含むすべての文字列が完全にアンダーラインで引かれていることに注意してください（検索文字列だけでなく）。"
 
-#: ../../recipes-text.rst:200 34ae9dfd350a4b6c9eb3ac4a8538d36e
+#: ../../recipes-text.rst:200 8c2a9c5b0a89443faf8d53fcced6372d
 msgid "How to Mark Searched Text"
 msgstr "検索したテキストをマークする方法"
 
-#: ../../recipes-text.rst:201 9dd2fac54ba041b4bcb156c215892a4a
+#: ../../recipes-text.rst:201 4d9f96eab7664f6892d2405272a9e1e1
 msgid "This script searches for text and marks it::"
 msgstr "このスクリプトはテキストを検索してマークします::"
 
-#: ../../recipes-text.rst:225 ca10928108294a4b8686753094f57558
+#: ../../recipes-text.rst:225 b420c3085a684a338006b8e14b0079ec
 msgid "The result looks like this:"
 msgstr "結果は以下のようになります："
 
-#: ../../recipes-text.rst:236 b92235ce719b4ca892b6af3a1694e084
+#: ../../recipes-text.rst:236 a22c541e8eb7434eab5a962ebb684d69
 msgid "How to Mark Non-horizontal Text"
 msgstr "非水平テキストをマークする方法"
 
-#: ../../recipes-text.rst:237 b49797c67cad4c64b1e7960b4a97ac09
+#: ../../recipes-text.rst:237 d7a6ccce749843af8952f1412b512c6d
 msgid ""
 "The previous section already shows an example for marking non-horizontal "
 "text, that was detected by text **searching**."
 msgstr "前のセクションでは、テキスト検索によって検出された非水平テキストのマークの例が既に示されています。"
 
-#: ../../recipes-text.rst:239 4db26fc00d934eb3831d947a72adc1c0
+#: ../../recipes-text.rst:239 d45f2f09ec7b475a94d6c1a148fbd7fd
 msgid ""
 "But text **extraction** with the \"dict\" / \"rawdict\" options of "
 ":meth:`Page.get_text` may also return text with a non-zero angle to the "
@@ -421,7 +426,7 @@ msgstr ""
 " \"dir\" キーの値によって示されます：それはその角度に対する  `(cosine, sine)`  のタプルです。 "
 "`line[\"dir\"] != (1, 0)`  であれば、すべてのスパンのテキストは (同じ) 角度 != 0 によって回転しています。"
 
-#: ../../recipes-text.rst:241 3a8361429cfc4429b83d8b974e6adefd
+#: ../../recipes-text.rst:241 b55033dc8e0646da94598d172c5fd7a0
 msgid ""
 "The \"bboxes\" returned by the method however are rectangles only -- not "
 "quads. So, to mark span text correctly, its quad must be recovered from "
@@ -429,13 +434,13 @@ msgid ""
 "following utility function (new in v1.18.9)::"
 msgstr "ただし、このメソッドによって返される「bboxes」は四角形のみであり、クワッドではありません。したがって、スパンテキストを正しくマークするには、行とスパンの辞書に含まれるデータからクワッドを回復する必要があります。以下のユーティリティ関数を使用してください（v1.18.9で新しく追加されました）::"
 
-#: ../../recipes-text.rst:246 ec594dd05fac493a98d5aaf65a7c7fb0
+#: ../../recipes-text.rst:246 d98c3bad95584b61af7e1e2a8c0e3cb6
 msgid ""
 "If you want to **mark the complete line** or a subset of its spans in one"
 " go, use the following snippet (works for v1.18.10 or later)::"
 msgstr "一度に完全な行またはその一部のスパンをマークしたい場合は、以下のスニペットを使用してください（v1.18.10以降で動作します）"
 
-#: ../../recipes-text.rst:253 591dcca873bc4479815a3a3d1794bc0b
+#: ../../recipes-text.rst:253 c6e0ff88cc7a4da3863d6551f64a10c2
 msgid ""
 "The `spans` argument above may specify any sub-list of `line[\"spans\"]`."
 " In the example above, the second to second-to-last span are marked. If "
@@ -444,80 +449,80 @@ msgstr ""
 "上記の `spans` 引数は、`line[\"spans\"]` "
 "の任意の部分リストを指定できます。上記の例では、2番目から最後から2番目のスパンがマークされます。省略すると、完全な行が取得されます"
 
-#: ../../recipes-text.rst:260 442926dfd4bc4b248914c2e7696904fb
+#: ../../recipes-text.rst:260 b58435ec67ce4bf8939ce28255f56e47
 msgid "How to Analyze Font Characteristics"
 msgstr "フォントの特性を分析する方法"
 
-#: ../../recipes-text.rst:261 5b8311996cfa4ca78a8c8b79eaff47f5
+#: ../../recipes-text.rst:261 f78a2cc1728f43669674ce3a49c0d493
 msgid ""
 "To analyze the characteristics of text in a PDF use this elementary "
 "script as a starting point:"
 msgstr "PDF内のテキストの特性を分析するには、以下の初歩的なスクリプトを出発点として使用します::"
 
-#: ../../recipes-text.rst:266 620bd2ded4da43f3bba893746c2a9a91
+#: ../../recipes-text.rst:266 449d4daf3b75466fad202a491b17f50f
 msgid "Here is the PDF page and the script output:"
 msgstr "以下はPDFページとスクリプトの出力です。"
 
-#: ../../recipes-text.rst:277 bd09f80020994e63969d2d11be7bc734
+#: ../../recipes-text.rst:277 a00d33f428664affb3a5c4e3862cf9bb
 msgid "How to Insert Text"
 msgstr "テキストの挿入方法"
 
-#: ../../recipes-text.rst:278 8d235059eb374a59bc2f3e6d7d899d3c
+#: ../../recipes-text.rst:278 7fcf1526eb4f4eddaa9e0e6cfde3f3c5
 msgid ""
 "PyMuPDF provides ways to insert text on new or existing PDF pages with "
 "the following features:"
 msgstr "PyMuPDFは、以下の機能を備えて新しいまたは既存のPDFページにテキストを挿入する方法を提供しています："
 
-#: ../../recipes-text.rst:280 a73cc367178041fbbbefc0b774185d68
+#: ../../recipes-text.rst:280 5852f2d25ef9413482826a0bc3816fa2
 msgid ""
 "choose the font, including built-in fonts and fonts that are available as"
 " files"
 msgstr "フォントの選択：組み込みのフォントやファイルとして利用可能なフォントを選択できます。"
 
-#: ../../recipes-text.rst:281 d94e2b9e63cd448d817ec7a8f32b026c
+#: ../../recipes-text.rst:281 40c813d1a9034c79a51ef32c36af4bd9
 msgid "choose text characteristics like bold, italic, font size, font color, etc."
 msgstr "テキストの特性の選択：太字、斜体、フォントサイズ、フォントカラーなど、テキストの特性を選択できます。"
 
-#: ../../recipes-text.rst:282 5e97bd0c7b644e12abf1b40cec7c7d26
+#: ../../recipes-text.rst:282 cd78a54d34384bdabd900fcfe3a16c76
 msgid "position the text in multiple ways:"
 msgstr "テキストの配置方法："
 
-#: ../../recipes-text.rst:284 ad64ec22966b467792991b29927335cf
+#: ../../recipes-text.rst:284 7411b96da89444908afa30000c54aeea
 msgid "either as simple line-oriented output starting at a certain point,"
 msgstr "特定のポイントを起点として単純な行指向の出力として配置することができます。 "
 
-#: ../../recipes-text.rst:285 a1e6010c260d476a8574b498e37006e6
+#: ../../recipes-text.rst:285 186781e680874acab076c4767d0b8ccf
 msgid ""
 "or fitting text in a box provided as a rectangle, in which case text "
 "alignment choices are also available,"
 msgstr "ボックスにテキストをフィットさせる場合は、テキストの配置を選択することもできます。この場合、テキストの整列オプションも利用できます。"
 
-#: ../../recipes-text.rst:286 5b314054f4864a97b927a0264dfd0804
+#: ../../recipes-text.rst:286 3a21be574cb44130ad1c48aecc3383b9
 msgid ""
 "choose whether text should be put in foreground (overlay existing "
 "content),"
 msgstr "テキストを前面に配置するか選択できます（既存のコンテンツをオーバーレイします）。"
 
-#: ../../recipes-text.rst:287 7078aec6fe0948c097c9062038972710
+#: ../../recipes-text.rst:287 0b77716e8288468b8596184e427ceddb
 msgid ""
 "all text can be arbitrarily \"morphed\", i.e. its appearance can be "
 "changed via a :ref:`Matrix`, to achieve effects like scaling, shearing or"
 " mirroring,"
 msgstr "テキストは任意に「変形」されることができます。つまり、行列を使用して拡大、せん断、反転などの効果を得ることができます。"
 
-#: ../../recipes-text.rst:288 2c50ed686e8d4175bc31b1ec4c038ebe
+#: ../../recipes-text.rst:288 6cef2661e9aa498686c69be321c8208c
 msgid ""
 "independently from morphing and in addition to that, text can be rotated "
 "by integer multiples of 90 degrees."
 msgstr "変形とは別に、テキストを90度の整数倍で回転させることもできます。"
 
-#: ../../recipes-text.rst:290 f1712835cd98452a9e238e7883c7c316
+#: ../../recipes-text.rst:290 f07dab645f264849842f9329ac71b03f
 msgid ""
 "All of the above is provided by three basic :ref:`Page`, resp. "
 ":ref:`Shape` methods:"
 msgstr "以上のすべては、それぞれの基本的な :ref:`Page` 、:ref:`Shape` メソッドによって提供されています。"
 
-#: ../../recipes-text.rst:292 e8d7a2df50c04777ba75431dcbb2707e
+#: ../../recipes-text.rst:292 4a2fe5823f3d43ccb32ac6dee2913fc3
 msgid ""
 ":meth:`Page.insert_font` -- install a font for the page for later "
 "reference. The result is reflected in the output of "
@@ -526,23 +531,23 @@ msgstr ""
 ":meth:`Page.insert_font` - ページにフォントをインストールして後で参照できるようにします。その結果は、 "
 ":meth:`Document.get_page_fonts` の出力に反映されます。フォントは以下の方法で提供できます："
 
-#: ../../recipes-text.rst:294 9dfa254e24e34c70a2eeebe519197e4e
+#: ../../recipes-text.rst:294 035da135217a4a269fc80b5ad1e6d29d
 msgid "provided as a file,"
 msgstr "ファイルとして提供する。"
 
-#: ../../recipes-text.rst:295 33b561d05b4b48629e10e773ad5798a7
+#: ../../recipes-text.rst:295 59c9309aafe0470396db2a3622ebf39f
 msgid "via :ref:`Font` (then use :attr:`Font.buffer`)"
 msgstr ":ref:`Font` を使用して提供する（その場合、 :attr:`Font.buffer` を使用します）。"
 
-#: ../../recipes-text.rst:296 713f0c30cf98448a9b2fc4ea094b7f44
+#: ../../recipes-text.rst:296 0706b3ab12304f55a8eaeca7bdf7c6d8
 msgid "already present somewhere in **this or another** PDF, or"
 msgstr "既にこのPDFまたは別のPDFのどこかに存在する。"
 
-#: ../../recipes-text.rst:297 309f45a13d5344788b4d0d7066f9f4e9
+#: ../../recipes-text.rst:297 ef9b25b0c5df486abc0bb83b5b8600a9
 msgid "be a **built-in** font."
 msgstr "組み込みフォントである。"
 
-#: ../../recipes-text.rst:299 a642d39ce7274f6d90bc9393832a6e31
+#: ../../recipes-text.rst:299 d1f7b36b0006408fb187b7b4d3b29838
 msgid ""
 ":meth:`Page.insert_text` -- write some lines of text. Internally, this "
 "uses :meth:`Shape.insert_text`."
@@ -550,7 +555,7 @@ msgstr ""
 ":meth:`Page.insert_text`  - テキストの行を書き込みます。内部的には :meth:`Shape.insert_text`"
 " を使用します。"
 
-#: ../../recipes-text.rst:301 10d6c14e35d7486d8e437975ba65067b
+#: ../../recipes-text.rst:301 bae934330c7d4f2981de451a5d1606b0
 msgid ""
 ":meth:`Page.insert_textbox` -- fit text in a given rectangle. Here you "
 "can choose text alignment features (left, right, centered, justified) and"
@@ -561,19 +566,19 @@ msgstr ""
 "指定された矩形にテキストをフィットさせます。ここでは、テキストの整列機能（左揃え、右揃え、中央揃え、両端揃え）を選択できます。また、テキストが実際にフィットするかどうかの制御もできます。内部的には"
 " :meth:`Shape.insert_textbox` を使用します。"
 
-#: ../../recipes-text.rst:303 af78300ee455411a8ad00c2a5173412d
+#: ../../recipes-text.rst:303 de8cc8fb3e80432a97dbff9717b025e9
 msgid "Both text insertion methods automatically install the font as necessary."
 msgstr "テキスト挿入の両方の方法は、必要に応じてフォントを自動的にインストールします。"
 
-#: ../../recipes-text.rst:309 bbaf2f63c9a04bb5a22cc50c08ab167c
+#: ../../recipes-text.rst:309 5323d70c31104bd8a93d63d47ddf1a96
 msgid "How to Write Text Lines"
 msgstr "テキスト行を書く方法"
 
-#: ../../recipes-text.rst:310 f5d704f1fd94405088071deb88d34560
+#: ../../recipes-text.rst:310 fa37fb400ad84121857aeb266ae0ddd3
 msgid "Output some text lines on a page::"
 msgstr "ページにいくつかのテキスト行を出力する方法::"
 
-#: ../../recipes-text.rst:331 bda97fd176d64596ab3d1a77c40b69ce
+#: ../../recipes-text.rst:331 5f9fe9b524854f9a84a254495ff59603
 msgid ""
 "With this method, only the **number of lines** will be controlled to not "
 "go beyond page height. Surplus lines will not be written and the number "
@@ -584,56 +589,56 @@ msgstr ""
 "この方法では、ページの高さを超えないように行の数だけを制御します。余剰の行は書き込まれず、実際の行数が返されます。計算には、:data:`fontsize`"
 " と36ポイント（0.5インチ）のボトムマージンから計算された行の高さが使用されます。"
 
-#: ../../recipes-text.rst:333 a45655fb72f941488c4c6b5d46d1fd2b
+#: ../../recipes-text.rst:333 a5d1bf8f03624386b00355d23a917d23
 msgid ""
 "Line **width is ignored**. The surplus part of a line will simply be "
 "invisible."
 msgstr "行の幅は無視されます。行の余剰部分は単に見えなくなります。"
 
-#: ../../recipes-text.rst:335 e2f8ff5c793a417dab78d7aa557cd555
+#: ../../recipes-text.rst:335 0eb98bebd4c24350bd1d8e48c7e502d7
 msgid ""
 "However, for built-in fonts there are ways to calculate the line width "
 "beforehand - see :meth:`get_text_length`."
 msgstr "ただし、組み込みのフォントには、行の幅を事前に計算する方法があります。 :meth:`get_text_length` を参照してください。"
 
-#: ../../recipes-text.rst:337 79c95a55c9b445c99bd7a67744058bf4
+#: ../../recipes-text.rst:337 6125757e3ab3406f86693f3b462c7901
 msgid ""
 "Here is another example. It inserts 4 text strings using the four "
 "different rotation options, and thereby explains, how the text insertion "
 "point must be chosen to achieve the desired result::"
 msgstr "以下は別の例です。4つの異なる回転オプションを使用してテキスト文字列を挿入し、それにより、望む結果を得るためにどのようにテキスト挿入ポイントを選択すべきかを説明しています::"
 
-#: ../../recipes-text.rst:373 8f7376dd0b8a4fcf9408314c33b07cb3
+#: ../../recipes-text.rst:373 87d829d7b1ef4892935186744e113e02
 msgid "This is the result:"
 msgstr "これが結果です。"
 
-#: ../../recipes-text.rst:385 4b633d82a09f4101a469cc94b4f0e677
+#: ../../recipes-text.rst:385 0f936266bbd34cffad911b5c3d48b20a
 msgid "How to Fill a Text Box"
 msgstr "テキストボックスの塗りつぶし方"
 
-#: ../../recipes-text.rst:386 76acc57295af4fd7acaef657832b363d
+#: ../../recipes-text.rst:386 bd55bc019f244993aaf175e04f56fa97
 msgid ""
 "This script fills 4 different rectangles with text, each time choosing a "
 "different rotation value::"
 msgstr "このスクリプトは、異なる回転値を選択して、4つの異なる長方形にテキストを塗りつぶします。"
 
-#: ../../recipes-text.rst:423 0346737bdb1549398ecb1f75af6df616
+#: ../../recipes-text.rst:423 a7831fd528524e3e9b9e64f9b9cfef97
 msgid ""
 "Some default values were used above: font size 11 and text alignment "
 "\"left\". The result will look like this:"
 msgstr "上記ではいくつかのデフォルト値が使用されました：フォント「Helvetica」、フォントサイズ11、テキストの配置は「左寄せ」です。結果は以下のようになります。"
 
-#: ../../recipes-text.rst:433 9b56bb71bd214830a200d9ed7df0079d
+#: ../../recipes-text.rst:433 3affa7484d4d451c8182ee546efc2114
 msgid "How to Fill a Box with HTML Text"
 msgstr "HTMLテキストでボックスを埋める方法"
 
-#: ../../recipes-text.rst:434 ad58a2804e494183ab408c0e7d4ca2ef
+#: ../../recipes-text.rst:434 46a2c90e0b73472fa0adb89a1e12c655
 msgid ""
 "Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to"
 " insert text in a rectangle."
 msgstr "メソッド :meth:`Page.insert_htmlbox` は、矩形にテキストを挿入するための **より強力な** 方法を提供します。"
 
-#: ../../recipes-text.rst:436 1527be5615d942179ba293953fc802b4
+#: ../../recipes-text.rst:436 d72392d3a9414d438d7bcf512eb15305
 msgid ""
 "Instead of simple, plain text, this method accepts HTML source, which may"
 " not only contain HTML tags but also styling instructions to influence "
@@ -641,135 +646,149 @@ msgid ""
 "more."
 msgstr "このメソッドは、単純なプレーンテキストではなく、HTMLソースを受け入れます。HTMLタグのみならず、フォント、フォントの太さ（太字）、スタイル（イタリック）、色などを含むスタイル指示も含まれます。"
 
-#: ../../recipes-text.rst:438 0429d36a141e45faa77f55788bb80366
+#: ../../recipes-text.rst:438 c1bc94ca9f0142f384797bbbedb18d3a
 msgid ""
 "It is also possible to mix multiple fonts and languages, to output HTML "
 "tables and to insert images and URI links."
 msgstr "複数のフォントや言語を混在させ、HTMLテーブルを出力し、画像やURIリンクを挿入することも可能です。"
 
-#: ../../recipes-text.rst:440 53621bbf58534d909a365dfc983263fe
+#: ../../recipes-text.rst:440 5d494f5ae00644e3a2dfa0ef9ed30518
 msgid ""
 "For even more styling flexibility, an additional CSS source may also be "
 "given."
 msgstr "さらなるスタイリングの柔軟性を求める場合、追加のCSSソースを指定することもできます。"
 
-#: ../../recipes-text.rst:442 18b8bf0ebc05447190d87e6225258ff3
+#: ../../recipes-text.rst:442 58058386db8b48c28d9ab404e1b2852c
 msgid ""
 "The method is based on the :ref:`Story` class. Therefore, complex script "
 "systems like Devanagari, Nepali, Tamil and many are supported and written"
 " correctly thanks to using the HarfBuzz library - which provides this so-"
 "called **\"text shaping\"** feature."
-msgstr "このメソッドは、 :ref:`Story` （ストーリー）クラスに基づいています。そのため、デーヴァナーガリ、ネパール語、タミル語などの複雑な文字体系がサポートされ、HarfBuzzライブラリを使用して正しく書き込まれています - これがいわゆる **「テキストの形成」** 機能を提供します。"
+msgstr ""
+"このメソッドは、 :ref:`Story` "
+"（ストーリー）クラスに基づいています。そのため、デーヴァナーガリ、ネパール語、タミル語などの複雑な文字体系がサポートされ、HarfBuzzライブラリを使用して正しく書き込まれています"
+" - これがいわゆる **「テキストの形成」** 機能を提供します。"
 
-#: ../../recipes-text.rst:444 33b526221cab45b7840951fb01dd16a7
+#: ../../recipes-text.rst:444 762bef4a7ae340aba1ec668ab2d1d4fd
 msgid ""
 "Any required fonts to output characters are automatically pulled in from "
 "the Google NOTO font library - as a fallback (when the -- optionally "
 "supplied -- user font(s) do not contain some glyphs)."
-msgstr "文字を出力するために必要なフォントは、--オプションで提供される--ユーザーフォントが一部のグリフを含んでいない場合のフォールバックとして、Google NOTOフォントライブラリから自動的に取得されます。"
+msgstr ""
+"文字を出力するために必要なフォントは、--オプションで提供される--"
+"ユーザーフォントが一部のグリフを含んでいない場合のフォールバックとして、Google NOTOフォントライブラリから自動的に取得されます。"
 
-#: ../../recipes-text.rst:446 566b070f9969489aa0c43c26bd56f133
+#: ../../recipes-text.rst:446 5e965af0afae422b8b57979ef0695535
 msgid ""
 "As a small glimpse into the features offered here, we will output the "
 "following HTML-enriched text::"
 msgstr "ここで提供される機能の一端をご覧いただくために、以下のHTMLエンリッチされたテキストを出力します："
 
-#: ../../recipes-text.rst:471 3ff5f68fb3f04928aa357bfbd574313a
+#: ../../recipes-text.rst:471 775bac873835458cad8de34f083c9411
 msgid ""
 "Please note how the \"css\" parameter is used to globally select the "
 "default \"sans-serif\" font and a font size of 14."
 msgstr "「css」パラメータが、デフォルトの「sans-serif」フォントとフォントサイズ14をグローバルに選択する方法に注意してください。"
 
 #: ../../recipes-text.rst:473 ../../recipes-text.rst:541
-#: 071251ac4b01479e88cba12883d7e048 416a0c5773a24bd09fc66963368e7901
+#: 29f03a393e3c49598ed383a044db0271 5e260ba3996d4da1bfcaff64b23c8615
 msgid "The result will look like this:"
 msgstr "結果は以下のようになります："
 
-#: ../../recipes-text.rst:478 7439311a0743475baa545a662d2dc8a7
+#: ../../recipes-text.rst:478 19e67cca201e44a5aa0d1eec62c1ef2f
 msgid "How to output HTML tables and images"
 msgstr "HTMLテーブルや画像を出力する方法"
 
-#: ../../recipes-text.rst:480 471081c208f647eb911cd9f2bf553dbe
+#: ../../recipes-text.rst:480 30c123eeec6a4c80950bdd56bbe93198
 msgid ""
 "Here is another example that outputs a table with this method. This time,"
 " we are including all the styling in the HTML source itself. Please also "
 "note, how it works to include an image - even within a table cell::"
 msgstr "以下は、このメソッドを使用してテーブルを出力する別の例です。今回は、すべてのスタイリングをHTMLソース自体に含めています。また、テーブルセル内に画像を含める方法についても、ご注意ください::"
 
-#: ../../recipes-text.rst:547 0151db2ecbce4883b6cdf0fb5c109c5f
+#: ../../recipes-text.rst:547 d471c1b5ce124172a4aa36c586aebaa8
 msgid "How to Output Languages of the World"
 msgstr "世界の言語を出力する方法"
 
-#: ../../recipes-text.rst:549 3a23fb52a5cc45f3ab67f4e8753aada0
+#: ../../recipes-text.rst:549 addd025418904b2aad7ebf7006ece2c6
 msgid ""
 "Our third example will demonstrate the automatic multi-language support. "
 "It includes automatic **text shaping** for complex scripting systems like"
 " Devanagari and right-to-left languages::"
-msgstr "3つ目の例では、自動多言語サポートを示します。これには、デーヴァナーガリや右から左への言語などの複雑なスクリプトシステムに対する自動 **テキスト整形** も含まれます："
+msgstr ""
+"3つ目の例では、自動多言語サポートを示します。これには、デーヴァナーガリや右から左への言語などの複雑なスクリプトシステムに対する自動 "
+"**テキスト整形** も含まれます："
 
-#: ../../recipes-text.rst:579 a407420891614a48a0ca06bb345f359d
+#: ../../recipes-text.rst:579 cc3f85f97b504816a1ec95451edde0f6
 msgid "And this is the output:"
 msgstr "これが結果です。"
 
-#: ../../recipes-text.rst:584 83c3c93b2ac6458d9e4a528e37c5a905
+#: ../../recipes-text.rst:584 f4e5122a9c274be79e6c0483fa6dce9b
 msgid "How to Specify your Own Fonts"
 msgstr "独自のフォントを指定する方法"
 
-#: ../../recipes-text.rst:586 7f6dd0e44fa944d2b1cdc006ded23ce8
+#: ../../recipes-text.rst:586 edeca28ba69943829f764fdeb9bc6531
 msgid ""
 "Define your font files in CSS syntax using the `@font-face` statement. "
 "You need a separate `@font-face` for every combination of font weight and"
 " font style (e.g. bold or italic) you want to be supported. The following"
 " example uses the famous MS Comic Sans font in its four variants regular,"
 " bold, italic and bold-italic."
-msgstr "`@font-face` ステートメントを使用して、CSS構文でフォントファイルを定義します。サポートされるフォントのウェイトとスタイル（太字や斜体など）の組み合わせごとに、個別の `@font-face` が必要です。以下の例では、有名な MS Comic Sans フォントの 4 つのバリアント（通常、太字、斜体、太字斜体）を使用しています。"
+msgstr ""
+"`@font-face` "
+"ステートメントを使用して、CSS構文でフォントファイルを定義します。サポートされるフォントのウェイトとスタイル（太字や斜体など）の組み合わせごとに、個別の"
+" `@font-face` が必要です。以下の例では、有名な MS Comic Sans フォントの 4 "
+"つのバリアント（通常、太字、斜体、太字斜体）を使用しています。"
 
-#: ../../recipes-text.rst:588 cf1499ac6ee448809be0be6622fbc283
+#: ../../recipes-text.rst:588 8a8618a87b384e60b83a7334fda18ee0
 msgid ""
 "As these four font files are located in the system's folder "
 "`C:/Windows/Fonts` the method needs an :ref:`Archive` definition that "
 "points to that folder::"
-msgstr "これらの 4 つのフォントファイルがシステムのフォルダ `C:/Windows/Fonts` にあるため、このメソッドには、そのフォルダを指す :ref:`Archive`（アーカイブ）の定義が必要です。"
+msgstr ""
+"これらの 4 つのフォントファイルがシステムのフォルダ `C:/Windows/Fonts` にあるため、このメソッドには、そのフォルダを指す "
+":ref:`Archive` （アーカイブ）の定義が必要です。"
 
-#: ../../recipes-text.rst:637 d2c22ba3e4424db2a5c9b655f893f523
+#: ../../recipes-text.rst:637 3f984bc7c0454d788c82a293421d9119
 msgid "How to Request Text Alignment"
 msgstr "テキストの配置をリクエストする方法"
 
-#: ../../recipes-text.rst:639 c30a4130774f483bb2b9ab262424c74a
+#: ../../recipes-text.rst:639 c2239f064b244e13b6a471b3d11fd30e
 msgid "This example combines multiple requirements:"
 msgstr "この例では、複数の要件を組み合わせています"
 
-#: ../../recipes-text.rst:641 affb117cd9124c27ab1602d7a73aeffa
+#: ../../recipes-text.rst:641 5bb6d27e3d9b4f6fad0660e7ab6ae1a2
 msgid "Rotate the text by 90 degrees anti-clockwise."
 msgstr "テキストを90度反時計回りに回転させます。"
 
-#: ../../recipes-text.rst:642 75b570aa213c4a0c84d74c32e8a69e38
+#: ../../recipes-text.rst:642 590eef86c7f04341aa4e2d82f0fa184e
 msgid ""
 "Use a font from package `pymupdf-fonts <https://pypi.org/project/pymupdf-"
 "fonts/>`_. You will see that the respective CSS definitions are a lot "
 "easier in this case."
-msgstr "`pymupdf-fonts <https://pypi.org/project/pymupdf-"
-"fonts/>`_ パッケージからフォントを使用します。この場合、該当するCSS定義がはるかに簡単であることに気付くでしょう。"
+msgstr ""
+"`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ "
+"パッケージからフォントを使用します。この場合、該当するCSS定義がはるかに簡単であることに気付くでしょう。"
 
-#: ../../recipes-text.rst:643 dee98174f8514995b1782ac75dc7395a
+#: ../../recipes-text.rst:643 4da8c63667e549a1b4bdcead72c5484f
 msgid "Align the text with the \"justify\" option."
-msgstr "テキストを "justify" オプションで配置します。"
+msgstr "テキストを \"justify\" オプションで配置します。"
 
-#: ../../recipes-text.rst:693 38823179c24c4dc59fd34df1399c3be4
+#: ../../recipes-text.rst:693 f2d1a864442e42f3af6dad3e22db45fb
 msgid "How to Extract Text with Color"
 msgstr "色付きのテキストを抽出する方法"
 
-#: ../../recipes-text.rst:695 9c3d58e6f15b4356b9f6773b642f692e
+#: ../../recipes-text.rst:695 c215c6f8b1a44616a694151fa8e4ea41
 msgid ""
 "Iterate through your text blocks and find the spans of text you need for "
 "this information."
 msgstr "テキストブロックを繰り返し処理し、必要な情報のテキストスパンを見つけます。"
 
-#: ../../footer.rst:60 f99375d6f2b0405ea0056eb53aff72ce
+#: ../../footer.rst:60 5eddef6a381342d89aa56fc597568674
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 e203b6344cf94122974a50913b50d583
+#: ../../footer.rst:-1 3baed064e3bf411a82744fe5186f132a
 msgid "Discord logo"
 msgstr ""
 
