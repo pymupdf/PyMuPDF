@@ -16,7 +16,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       # It seems to be important not to install a custom python here,
       # because `sudo` (which we need to use when installing to /usr/local
