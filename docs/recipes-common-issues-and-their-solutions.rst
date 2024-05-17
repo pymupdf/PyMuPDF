@@ -47,7 +47,9 @@ If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invo
  print pdf.Info
  # do further processing
 
-With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only, but reported to also run under `Wine <https://www.winehq.org/>`_) a similar result can be achieved, see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. However, you must invoke it as a separate process via *subprocess.Popen*, using stdin and stdout as communication vehicles.
+With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows only, but reported to also run under `Wine <https://www.winehq.org/>`_) a similar result can be achieved,
+see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_.
+However, you must invoke it as a separate process via *subprocess.Popen*, using stdin and stdout as communication vehicles.
 
 
 

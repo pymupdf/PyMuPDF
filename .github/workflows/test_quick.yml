@@ -50,6 +50,6 @@ jobs:
           exclude_file: .codespell-ignorelines
           check_filenames: true
           check_hidden: true
-          skip: "*.pdf,src_classic,locales"
+          skip: "*.pdf,src_classic,locales,prism.js"
           # if we don't fix everything we can set this
           # only_warn: 1
