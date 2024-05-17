@@ -5538,7 +5538,7 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> pymupdf.Quad:
 # -------------------------------------------------------------------
 # Building font subsets using fontTools
 # -------------------------------------------------------------------
-def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = False) -> None:
+def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = False) -> OptInt:
     """Build font subsets in a PDF.
 
     Eligible fonts are potentially replaced by smaller versions. Page text is
@@ -5549,6 +5549,16 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
     fonts. As this is a new function, errors may still occur. In this case,
     please fall back to using the previous version by using "fallback=True".
     Fallback mode requires the external package 'fontTools'.
+
+    Args:
+        fallback: use the older deprecated implementation.
+        verbose: only used by fallback mode.
+
+    Returns:
+        The new MuPDF-based code returns None.  The deprecated fallback
+        mode returns 0 if there are no fonts to subset.  Otherwise, it
+        returns the decrease in fontsize (the difference in fontsize),
+        measured in bytes.
     """
     # Font binaries: -  "buffer" -> (names, xrefs, (unicodes, glyphs))
     # An embedded font is uniquely defined by its fontbuffer only. It may have
