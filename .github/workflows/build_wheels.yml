@@ -56,7 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
     - name: Build sdist
       env:
@@ -86,7 +86,7 @@ jobs:
     
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # Get Python 3.12 x32 and x64 on Windows. (As of 2023-10-12 these are not
       # always available by default.)
