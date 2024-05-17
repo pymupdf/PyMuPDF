@@ -1050,7 +1050,7 @@ This patch version implements minor improvements for :ref:`Pixmap` and also some
 
 * **Added** :meth:`Pixmap.warp` which makes a new pixmap from a given arbitrary convex quad inside the pixmap.
 
-* **Added** :attr:`Annot.irt_xref` and :meth:`Annot.set_irt_xref` to inquire or set the `/IRT` ("In Responde To") property of an annotation. Implements `#1450 <https://github.com/pymupdf/PyMuPDF/discussions/1450>`_.
+* **Added** :attr:`Annot.irt_xref` and :meth:`Annot.set_irt_xref` to inquire or set the `/IRT` ("In Response To") property of an annotation. Implements `#1450 <https://github.com/pymupdf/PyMuPDF/discussions/1450>`_.
 
 * **Added** :meth:`Rect.torect` and :meth:`IRect.torect` which compute a matrix that transforms to a given other rectangle.
 
