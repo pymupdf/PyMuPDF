@@ -1733,7 +1733,7 @@ Minor changes compared to version 1.16.2. The code of the "dict" and "rawdict" v
 
 * **Changed** text extraction methods of :ref:`Page` to allow detail control of the amount of extracted data.
 * **Added** :meth:`planish_line` which maps a given line (defined as a pair of points) to the x-axis.
-* **Fixed** an issue (w/o Github number) which brought down the interpreter when encountering certain non-UTF-8 encodable characters while using :meth:`Page.getText` with te "dict" option.
+* **Fixed** an issue (w/o Github number) which brought down the interpreter when encountering certain non-UTF-8 encodable characters while using :meth:`Page.getText` with the "dict" option.
 * **Fixed** issue #362 ("Memory Leak with getText('rawDICT')").
 
 ------
