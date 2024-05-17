@@ -10,7 +10,7 @@ def test_remove_rotation():
     filename = os.path.join(scriptdir, "resources", "test-2812.pdf")
     doc = pymupdf.open(filename)
 
-    # We always create fresh pages to avoid false positves from cache content.
+    # We always create fresh pages to avoid false positives from cache content.
     # Text on these pages consists of pairwise different strings, sorting by
     # these strings must therefore yield identical bounding boxes.
     for i in range(1, doc.page_count):

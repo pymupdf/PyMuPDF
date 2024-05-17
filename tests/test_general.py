@@ -809,7 +809,7 @@ def test_2957_2():
     page.apply_redactions()  # remove/redact the word "longer"
     words1 = page.get_text("words")  # extract words again
     assert len(words1) == len(words0) - 1  # must be one word less
-    assert words0[3][4] == "longer"  # just confirm test file is correc one
+    assert words0[3][4] == "longer"  # just confirm test file is correct one
     del words0[3]  # remove the redacted word from first list
     for i in range(len(words1)):  # compare words
         w1 = words1[i]  # word after redaction
