@@ -50,4 +50,4 @@ jobs:
           exclude_file: .codespell-ignorelines
           check_filenames: true
           check_hidden: true
-          skip: *.pdf
+          skip: "*.pdf"
