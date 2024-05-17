@@ -2369,7 +2369,7 @@ class Xml:
             ):
         """Set any or all properties of a node.
 
-        To be used for existing nodes preferrably.
+        To be used for existing nodes preferably.
         """
         root = self.root
         temp = root.add_division()
@@ -2659,7 +2659,7 @@ class Document:
             on open (e.g. EPUB). Ignored if n/a.
         """
         # We temporarily set JM_mupdf_show_errors=0 while we are constructing,
-        # then restore its orginal value in a `finally:` block.
+        # then restore its original value in a `finally:` block.
         #
         global JM_mupdf_show_errors
         JM_mupdf_show_errors_old = JM_mupdf_show_errors
@@ -4393,7 +4393,7 @@ class Document:
         Insert an arbitrary supported document to an existing PDF.
 
         The infile may be given as a filename, a Document or a Pixmap.
-        Other paramters - where applicable - equal those of insert_pdf().
+        Other parameters - where applicable - equal those of insert_pdf().
         '''
         src = None
         if isinstance(infile, Pixmap):
@@ -6909,7 +6909,7 @@ class Widget:
         self.text_fontsize = 0
         self.text_maxlen = 0  # text fields only
         self.text_format = 0  # text fields only
-        self._text_da = ""  # /DA = default apparance
+        self._text_da = ""  # /DA = default appearance
 
         self.script = None  # JavaScript (/A)
         self.script_stroke = None  # JavaScript (/AA/K)
@@ -7949,7 +7949,7 @@ class Page:
                 #log( 'do_have_imask')
                 # mupdf.FzCompressedBuffer is not copyable, so
                 # mupdf.fz_compressed_image_buffer() does not work - it cannot
-                # return by value. And sharing a fz_compressed_buffer betwen two
+                # return by value. And sharing a fz_compressed_buffer between two
                 # `fz_image`'s doesn't work, so we use a raw fz_compressed_buffer
                 # here, not a mupdf.FzCompressedBuffer.
                 #
@@ -7981,7 +7981,7 @@ class Page:
                 # `fz_compressed_buffer`, which is not reference counted, and they
                 # both think that they own it.
                 #
-                # So we do what the classic implementataion does, and simply ensure
+                # So we do what the classic implementation does, and simply ensure
                 # that `fz_drop_image(image)` is never called. This will leak
                 # some of `image`'s allocations (for example the main `fz_image`
                 # allocation), but it's not trivial to avoid this.
@@ -10468,7 +10468,7 @@ class Pixmap:
         """Pixmap size."""
         if mupdf_version_tuple >= (1, 23, 8):
             return  mupdf.fz_pixmap_size( self.this)
-        # fz_pixmap_size() is not publically visible, so we implement it
+        # fz_pixmap_size() is not publicly visible, so we implement it
         # ourselves. fixme: we don't add on sizeof(fz_pixmap).
         pm = self.this
         return pm.n() * pm.w() * pm.h()
@@ -10859,7 +10859,7 @@ class Quad:
         if p1.y * p2.y > 0:
             return False
         m = planish_line(self.ll, self.ur)  # puts other diagonal on x-axis
-        p1 = self.lr * m  # tranform the
+        p1 = self.lr * m  # transform the
         p2 = self.ul * m  # remaining points
         if p1.y * p2.y > 0:
             return False
@@ -11294,8 +11294,8 @@ class Shape:
 
     def draw_circle(self, center: point_like, radius: float):# -> Point:
         """Draw a circle given its center and radius."""
-        if not radius > EPSILON:
-            raise ValueError("radius must be postive")
+        if not radius > EPSILON:s
+            raise ValueError("radius must be positive")
         center = Point(center)
         p1 = center - (radius, 0)
         return self.draw_sector(center, p1, 360, fullSector=False)
@@ -11884,7 +11884,7 @@ class Story:
             `document_or_stream` if a `Document` instance, otherwise a
             new `Document` instance.
         We raise an exception if an `href` in `positions` refers to an
-        internal position `#<name>` but no item in `postions` has `id =
+        internal position `#<name>` but no item in `positions` has `id =
         name`.
         """
         if isinstance(document_or_stream, Document):
@@ -12216,7 +12216,7 @@ class Story:
         def update(parameter):
             '''
             Evaluates `more, _ = self.place(fn(parameter))`. If `more` is
-            false, then `rect` is big enought to contain `self` and we
+            false, then `rect` is big enough to contain `self` and we
             set `state.pmax=parameter` and return True. Otherwise we set
             `state.pmin=parameter` and return False.
             '''
@@ -12402,7 +12402,7 @@ class TextPage:
         # fixme: mupdfwrap.py thinks fz_output is not copyable, possibly
         # because there is no .refs member visible and no fz_keep_output() fn,
         # although there is an fz_drop_output(). So mupdf.fz_new_output_with_buffer()
-        # doesn't convert the returnd fz_output* into a mupdf.FzOutput.
+        # doesn't convert the returned fz_output* into a mupdf.FzOutput.
         #out = mupdf.FzOutput(out)
         if format_ == 1:
             mupdf.fz_print_stext_page_as_html(out, this_tpage, 0)
@@ -17002,7 +17002,7 @@ def JM_quad_from_py(r):
 
 def JM_read_contents(pageref):
     '''
-    Read and concatenate a PDF page's /Conents object(s) in a buffer
+    Read and concatenate a PDF page's /Contents object(s) in a buffer
     '''
     assert isinstance(pageref, mupdf.PdfObj), f'{type(pageref)}'
     contents = mupdf.pdf_dict_get(pageref, mupdf.PDF_ENUM_NAME_Contents)
@@ -19147,7 +19147,7 @@ class JM_new_output_fileptr_Output(mupdf.FzOutput2):
 
 def compute_scissor(dev):
     '''
-    Every scissor of a clip is a sub rectangle of the preceeding clip scissor
+    Every scissor of a clip is a sub rectangle of the preceding clip scissor
     if the clip level is larger.
     '''
     if dev.scissors is None:
@@ -19892,7 +19892,7 @@ def annot_preprocess(page: "Page") -> int:
 
 
 def annot_postprocess(page: "Page", annot: "Annot") -> None:
-    """Clean up after annotation inertion.
+    """Clean up after annotation insertion.
 
     Set ownership flag and store annotation in page annotation dictionary.
     """
@@ -20341,10 +20341,10 @@ def util_invert_matrix(matrix):
                 or abs( matrix.c - 0) >= sys.float_info.epsilon
                 or abs( matrix.d - 1) >= sys.float_info.epsilon
                 ):
-            # Invertion not possible.
+            # Inversion not possible.
             return 1, ()
         return 0, (ret.a, ret.b, ret.c, ret.d, ret.e, ret.f)
-    # Do invertion in python.
+    # Do inversion in python.
     src = JM_matrix_from_py(matrix)
     a = src.a
     det = a * src.d - src.b * src.c
@@ -20811,7 +20811,7 @@ def sRGB_to_pdf(srgb: int) -> tuple:
     Args:
         srgb: (int) RRGGBB (red, green, blue), each color in range(255).
     Returns:
-        Tuple (red, green, blue) each item in intervall 0 <= item <= 1.
+        Tuple (red, green, blue) each item in interval 0 <= item <= 1.
     """
     t = sRGB_to_rgb(srgb)
     return t[0] / 255.0, t[1] / 255.0, t[2] / 255.0
@@ -20825,7 +20825,7 @@ def sRGB_to_rgb(srgb: int) -> tuple:
     Args:
         srgb: (int) RRGGBB (red, green, blue), each color in range(255).
     Returns:
-        Tuple (red, green, blue) each item in intervall 0 <= item <= 255.
+        Tuple (red, green, blue) each item in interval 0 <= item <= 255.
     """
     r = srgb >> 16
     g = (srgb - (r << 16)) >> 8

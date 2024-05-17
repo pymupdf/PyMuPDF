@@ -274,7 +274,7 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
 
     3 -- Launch (open) another file (of any "executable" type).
     
-    * |PyMuPDF| treats any external link that starts wth `file:` or doesn't
+    * |PyMuPDF| treats any external link that starts with `file:` or doesn't
       contain a colon, as `LINK_LAUNCH`.
 
     :rtype: int

@@ -44,7 +44,7 @@
       document.getElementById("footerDisclaimer").innerHTML = getHeaderAndFooterTranslation("This software is provided AS-IS with no warranty, either express or implied. This software is distributed under license and may not be copied, modified or distributed except as expressly authorized under the terms of that license. Refer to licensing information at <a href='https://www.artifex.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=footer-link'>artifex.com</a> or contact Artifex Software Inc., 39 Mesa Street, Suite 108A, San Francisco CA 94129, United States for further information.");
 
 
-      // more tranlsation for admonition-title as the in-built translation isn't great, needs: 注釈 -> 注
+      // more translation for admonition-title as the in-built translation isn't great, needs: 注釈 -> 注
       if (docLanguage == "ja") {
           const collection = document.getElementsByClassName("admonition-title");
           for (var i=0;i<collection.length;i++) {

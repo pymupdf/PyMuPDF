@@ -612,7 +612,7 @@ As these four font files are located in the system's folder `C:/Windows/Fonts` t
 
     # These statements define which font file to use for regular, bold,
     # italic and bold-italic text.
-    # We assign an arbitary common font-family for all 4 font files.
+    # We assign an arbitrary common font-family for all 4 font files.
     # The Story algorithm will select the right file as required.
     # We request to use "comic" throughout the text.
     css = """
