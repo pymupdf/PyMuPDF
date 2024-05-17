@@ -582,7 +582,7 @@ def get_textpage_ocr(
 
     Args:
         flags: (int) control content becoming part of the result.
-        language: (str) specify expected language(s). Deafault is "eng" (English).
+        language: (str) specify expected language(s). Default is "eng" (English).
         dpi: (int) resolution in dpi, default 72.
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
@@ -1106,7 +1106,7 @@ def set_toc_item(
             (str) the new title. No change if None.
         to:
             (point-like) destination on the target page. If omitted, (72, 36)
-            will be used as taget coordinates.
+            will be used as target coordinates.
         filename:
             (str) destination filename, required for pymupdf.LINK_GOTOR and
             pymupdf.LINK_LAUNCH.
@@ -1373,7 +1373,7 @@ def set_toc(
     # ------------------------------------------------------------------------------
     olitems = [{"count": 0, "first": -1, "last": -1, "xref": xref[0]}]
     # ------------------------------------------------------------------------------
-    # build olitems as a list of PDF-like connnected dictionaries
+    # build olitems as a list of PDF-like connected dictionaries
     # ------------------------------------------------------------------------------
     for i in range(toclen):
         o = toc[i]
@@ -5106,7 +5106,7 @@ def set_page_labels(doc, labels):
     # William Chapman, 2021-01-06
 
     def create_label_str(label):
-        """Convert Python label dict to correspnding PDF rule string.
+        """Convert Python label dict to corresponding PDF rule string.
 
         Args:
             label: (dict) build rule for the label.
@@ -5194,7 +5194,7 @@ def recover_bbox_quad(line_dir: tuple, span: dict, bbox: tuple) -> pymupdf.Quad:
         d = span["ascender"] - span["descender"]
 
     height = d * span["size"]  # the quad's rectangle height
-    # The following are distances from the bbox corners, at wich we find the
+    # The following are distances from the bbox corners, at which we find the
     # respective quad points. The computation depends on in which quadrant
     # the text writing angle is located.
     hs = height * sin
