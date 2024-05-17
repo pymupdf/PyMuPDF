@@ -58,7 +58,7 @@ Options:
         Location of local mupdf/ directory or 'git:...' to be used
         when building PyMuPDF. [This sets environment variable
         PYMUPDF_SETUP_MUPDF_BUILD, which is used by PyMuPDF/setup.py. If not
-        specifed PyMuPDF will download its default mupdf .tgz.]
+        specified PyMuPDF will download its default mupdf .tgz.]
     -p <pytest-options>
         Set pytest options; default is ''.
     -t <names>
@@ -422,7 +422,7 @@ def test(
         elif gdb:
             command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} gdb --args {python} -m pytest {pytest_options} {pytest_arg}'
         elif platform.system() == 'Windows':
-            # `python -m pytest` doesn' seem to work.
+            # `python -m pytest` doesn't seem to work.
            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} pytest {pytest_options} {pytest_arg}'
         else:
             # On OpenBSD `pip install pytest` doesn't seem to install the pytest
