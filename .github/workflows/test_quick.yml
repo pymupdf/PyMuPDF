@@ -38,3 +38,15 @@ jobs:
             inputs_wheels_windows_auto: "1"
         run:
           python scripts/gh_release.py
+
+
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          ignore_words_file: .codespell-ignorewords
+          exclude_file: .codespell-ignorelines
+          check_filenames: true
+          check_hidden: true
