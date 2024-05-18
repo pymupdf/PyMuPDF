@@ -237,21 +237,21 @@ class Package:
         >>> assert len(so) == 1
         >>> so = so[0]
         >>> assert os.path.getmtime(so) > t0
-    
+
     Check `entry_points` causes creation of command `foo_cli` when we install
     from our wheel using pip. [As of 2024-02-24 using pipcl's CLI interface
     directly with `setup.py install` does not support entry points.]
-    
+
         >>> print('Creating venv.', file=sys.stderr)
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} -m venv pylocal',
         ...         shell=1, check=1)
-        
+
         >>> print('Installing from wheel into venv using pip.', file=sys.stderr)
         >>> _ = subprocess.run(
         ...         f'. pipcl_test/pylocal/bin/activate && pip install pipcl_test/dist/*.whl',
         ...         shell=1, check=1)
-        
+
         >>> print('Running foo_cli.', file=sys.stderr)
         >>> _ = subprocess.run(
         ...         f'. pipcl_test/pylocal/bin/activate && foo_cli',
@@ -299,7 +299,7 @@ class Package:
             requires_external = None,
             project_url = None,
             provides_extra = None,
-            
+
             entry_points = None,
 
             root = None,
@@ -374,21 +374,21 @@ class Package:
             entry_points:
                 String or dict specifying *.dist-info/entry_points.txt, for
                 example:
-                
+
                     ```
                     [console_scripts]
                     foo_cli = foo.__main__:main
                     ```
-                
+
                 or:
-                
+
                     { 'console_scripts': [
                         'foo_cli = foo.__main__:main',
                         ],
                     }
-                
+
                 See: https://packaging.python.org/en/latest/specifications/entry-points/
-            
+
             root:
                 Root of package, defaults to current directory.
 
@@ -684,7 +684,7 @@ class Package:
             # Add <name>-<version>.dist-info/COPYING.
             if self.license:
                 add_str(self.license, f'{dist_info_dir}/COPYING')
-            
+
             # Add <name>-<version>.dist-info/entry_points.txt.
             entry_points_text = self._entry_points_text()
             if entry_points_text:
@@ -735,15 +735,15 @@ class Package:
         os.makedirs(sdist_directory, exist_ok=True)
         tarpath = f'{sdist_directory}/{prefix}.tar.gz'
         log2(f'Creating sdist: {tarpath}')
-        
+
         with tarfile.open(tarpath, 'w:gz') as tar:
-            
+
             names_in_tar = list()
             def check_name(name):
                 if name in names_in_tar:
                     raise Exception(f'Name specified twice: {name}')
                 names_in_tar.append(name)
-            
+
             def add(from_, name):
                 check_name(name)
                 if isinstance(from_, str):
@@ -757,7 +757,7 @@ class Package:
                     tar.addfile(ti, io.BytesIO(from_))
                 else:
                     assert 0
-        
+
             def add_string(text, name):
                 textb = text.encode('utf8')
                 return add(textb, name)
@@ -776,7 +776,7 @@ class Package:
                     if to_rel == 'pyproject.toml':
                         found_pyproject_toml = True
                     add(from_, to_rel)
-            
+
             if not found_pyproject_toml:
                 log0(f'Warning: no pyproject.toml specified.')
 
@@ -884,10 +884,10 @@ class Package:
             add_file( from_, to_abs2, to_rel)
 
         add_str( self._metainfo(), f'{root2}/{dist_info_dir}/METADATA', f'{dist_info_dir}/METADATA')
-        
+
         if self.license:
             add_str( self.license, f'{root2}/{dist_info_dir}/COPYING', f'{dist_info_dir}/COPYING')
-        
+
         entry_points_text = self._entry_points_text()
         if entry_points_text:
             add_str(
@@ -1284,7 +1284,7 @@ class Package:
         if isinstance(p, str):
             p = p, p
         assert isinstance(p, tuple) and len(p) == 2
-        
+
         from_, to_ = p
         assert isinstance(from_, (str, bytes))
         assert isinstance(to_, str)
@@ -1798,7 +1798,7 @@ def git_items( directory, submodules=False):
     return ret
 
 
-def run( command, capture=False, check=1):
+def run( command, capture=False, check=1, verbose=1):
     '''
     Runs a command using `subprocess.run()`.
 
@@ -1818,6 +1818,8 @@ def run( command, capture=False, check=1):
         check:
             If true we raise an exception on error; otherwise we include the
             command's returncode in our return value.
+        verbose:
+            If true we show the command.
     Returns:
         check capture   Return
         --------------------------
@@ -1828,7 +1830,8 @@ def run( command, capture=False, check=1):
     '''
     lines = _command_lines( command)
     nl = '\n'
-    log2( f'Running: {nl.join(lines)}')
+    if verbose:
+        log1( f'Running: {nl.join(lines)}')
     sep = ' ' if windows() else '\\\n'
     command2 = sep.join( lines)
     cp = subprocess.run(
@@ -1924,18 +1927,18 @@ class PythonFlags:
                                 stderr=subprocess.DEVNULL,
                                 check=0,
                                 ).returncode
-                        log1(f'{e=} from {pc!r}.')
+                        log2(f'{e=} from {pc!r}.')
                         if e == 0:
                             python_config = pc
                     assert python_config, f'Cannot find python-config'
                 else:
                     python_config = f'{python_exe}-config'
-            log1(f'Using {python_config=}.')
+            log2(f'Using {python_config=}.')
             try:
-                self.includes = run( f'{python_config} --includes', capture=1).strip()
+                self.includes = run( f'{python_config} --includes', capture=1, verbose=0).strip()
             except Exception as e:
                 raise Exception('We require python development tools to be installed.') from e
-            self.ldflags = run( f'{python_config} --ldflags', capture=1).strip()
+            self.ldflags = run( f'{python_config} --ldflags', capture=1, verbose=0).strip()
             if linux():
                 # It seems that with python-3.10 on Linux, we can get an
                 # incorrect -lcrypt flag that on some systems (e.g. WSL)
@@ -2100,7 +2103,7 @@ def run_if( command, out, *prerequisites):
     if not doit:
         out_mtime = _fs_mtime( out)
         if out_mtime == 0:
-            doit = 'File does not exist: {out!e}'
+            doit = f'File does not exist: {out!r}'
 
     cmd_path = f'{out}.cmd'
     if os.path.isfile( cmd_path):
@@ -2155,7 +2158,7 @@ def run_if( command, out, *prerequisites):
             os.remove( cmd_path)
         except Exception:
             pass
-        log2( f'Running command because: {doit}')
+        log1( f'Running command because: {doit}')
 
         run( command)
 
@@ -2164,7 +2167,7 @@ def run_if( command, out, *prerequisites):
             f.write( command)
         return True
     else:
-        log2( f'Not running command because up to date: {out!r}')
+        log1( f'Not running command because up to date: {out!r}')
 
     if 0:
         log2( f'out_mtime={time.ctime(out_mtime)} pre_mtime={time.ctime(pre_mtime)}.'
@@ -2361,7 +2364,7 @@ class _Record:
             log2(f'Adding {to_}')
 
     def add_file(self, from_, to_):
-        log2(f'Adding file: {os.path.relpath(from_)} => {to_}')
+        log1(f'Adding file: {os.path.relpath(from_)} => {to_}')
         with open(from_, 'rb') as f:
             content = f.read()
         self.add_content(content, to_, verbose=False)
