@@ -571,13 +571,6 @@ def build():
             build_type,
             )
     
-    for d in (
-            mupdf_build_dir,
-            f'{g_root}/src',
-            ):
-        if d:
-            run(f'ls -l {os.path.relpath(d)}', check=0)
-    
     # Generate lists of (from, to) items to return to pipcl. We put MuPDF
     # shared libraries in a separate list so that we can build specific wheels
     # as determined by g_flavour.
@@ -622,8 +615,8 @@ def build():
         add( ret_p, f'{g_root}/src/pymupdf.py', to_dir)
         add( ret_p, f'{g_root}/src/table.py', to_dir)
         add( ret_p, f'{g_root}/src/utils.py', to_dir)
-        add( ret_p, f'{g_root}/src/extra.py', to_dir)
-        add( ret_p, f'{g_root}/src/{path_so_leaf_b}', to_dir)
+        add( ret_p, f'{g_root}/src/build/extra.py', to_dir)
+        add( ret_p, f'{g_root}/src/build/{path_so_leaf_b}', to_dir)
         
         if mupdf_local:
             add( ret_p, f'{mupdf_build_dir}/mupdf.py', to_dir)
@@ -659,8 +652,6 @@ def build():
     else:
         add( ret, f'{g_root}/README.md', '$dist-info/README.md')
     
-    for f, t in ret:
-        log( f'build(): {f} => {t}')
     return ret
 
 
@@ -963,7 +954,7 @@ def _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type):
     path_so_leaf_b = pipcl.build_extension(
             name = 'extra',
             path_i = f'{g_root}/src/extra.i',
-            outdir = f'{g_root}/src',
+            outdir = f'{g_root}/src/build',
             includes = includes,
             defines = defines,
             libpaths = libpaths,
