@@ -12,6 +12,8 @@ def wrap(*args, **kwargs):
     assert not wt, f'{wt=}'
     assert not pymupdf.TOOLS.set_small_glyph_heights()
     
+    pymupdf._g_log_items = list()
+    
     # Run the test.
     rep = yield
     
@@ -23,3 +25,5 @@ def wrap(*args, **kwargs):
         assert not wt, f'Warnings text not empty: {wt=}'
     
     assert not pymupdf.TOOLS.set_small_glyph_heights()
+    
+    assert not pymupdf._g_log_items, f'log() was called; {len(pymupdf._g_log_items)=}.'

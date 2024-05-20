@@ -61,6 +61,8 @@ def _set_stream(name, default):
 _g_out_log = _set_stream('PYMUPDF_LOG', sys.stdout)
 _g_out_message = _set_stream('PYMUPDF_MESSAGE', sys.stdout)
 
+# Set to list() if we are in test suite.
+_g_log_items = None
 
 def log( text='', caller=1):
     '''
@@ -70,7 +72,10 @@ def log( text='', caller=1):
     filename    = os.path.relpath(frame_record.filename)
     line        = frame_record.lineno
     function    = frame_record.function
-    print( f'{filename}:{line}:{function}: {text}', file=_g_out_log)
+    text = f'{filename}:{line}:{function}: {text}'
+    if _g_log_items is not None:
+        _g_log_items.append(text)
+    print(text, file=_g_out_log)
     _g_out_log.flush()
 
 
@@ -85,7 +90,7 @@ def message(text=''):
 def exception_info():
     import traceback
     log(f'exception_info:')
-    traceback.print_exc(file=_g_out_log)
+    log(traceback.format_exc())
 
 
 # PDF names must not contain these characters:
