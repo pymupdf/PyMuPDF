@@ -8994,7 +8994,8 @@ class Page:
 
         # prefix with derotation matrix
         mat = mat0 * self.derotation_matrix
-        cmd = b"%g %g %g %g %g %g cm " % tuple(mat)
+        cmd = _format_g(tuple(mat)) + ' cm '
+        cmd = cmd.encode('utf8')
         _ = TOOLS._insert_contents(self, cmd, False)  # prepend to page contents
 
         # swap x- and y-coordinates
