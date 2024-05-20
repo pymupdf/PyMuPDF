@@ -933,7 +933,7 @@ def getLinkDict(ln, document=None) -> dict:
         nl["from"] = ln.rect
     except Exception:
         # This seems to happen quite often in PyMuPDF/tests.
-        if g_exceptions_verbose:    pymupdf.exception_info()
+        if g_exceptions_verbose >= 2:   pymupdf.exception_info()
         pass
     pnt = pymupdf.Point(0, 0)
     if dest.flags & pymupdf.LINK_FLAG_L_VALID:
@@ -1444,46 +1444,46 @@ def set_toc(
             txt += ol["dest"]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
         try:
             if ol["first"] > -1:
                 txt += "/First %i 0 R" % xref[ol["first"]]
         except Exception:
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
         try:
             if ol["last"] > -1:
                 txt += "/Last %i 0 R" % xref[ol["last"]]
         except Exception:
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
         try:
             if ol["next"] > -1:
                 txt += "/Next %i 0 R" % xref[ol["next"]]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
         try:
             if ol["parent"] > -1:
                 txt += "/Parent %i 0 R" % xref[ol["parent"]]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
         try:
             if ol["prev"] > -1:
                 txt += "/Prev %i 0 R" % xref[ol["prev"]]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
         try:
             txt += "/Title" + ol["title"]
         except Exception:
             # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
 
         if ol.get("color") and len(ol["color"]) == 3:
@@ -4686,8 +4686,7 @@ def fill_textbox(
         try:
             line, tl = new_lines.pop(0)
         except IndexError:
-            # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             break
 
         if right_to_left:  # Arabic, Hebrew
