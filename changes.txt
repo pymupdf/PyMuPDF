@@ -5,6 +5,7 @@ Change Log
 **Changes in version 1.24.4 (2024-05-16)**
 
   * **Fixed** `3418 <https://github.com/pymupdf/PyMuPDF/issues/3418>`_: Re-introduced bug, text align add_redact_annot
+  * **Fixed** `3472 <https://github.com/pymupdf/PyMuPDF/issues/3472>`_: insert_pdf gives SystemError
 
 * Other:
 
