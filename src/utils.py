@@ -3428,7 +3428,7 @@ class Shape:
                 list(cp1 * self.ipctm) + list(cp2 * self.ipctm) + list(Q * self.ipctm)
             ))
 
-            betar -= w90  # reduce parm angle by 90 deg
+            betar -= w90
             alfa += w90  # advance start angle by 90 deg
             P = Q  # advance to arc end point
         # draw (remaining) arc
