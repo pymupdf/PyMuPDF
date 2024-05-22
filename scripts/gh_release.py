@@ -697,7 +697,7 @@ def platform_tag():
         assert 0, f'Unrecognised: {platform.system()=}'
 
 
-test_packages = 'pytest fontTools pymupdf-fonts flake8 pylint'
+test_packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell'
 if platform.system() == 'Windows' and cpu_bits() == 32:
     # No pillow wheel available, and doesn't build easily.
     pass
