@@ -130,7 +130,7 @@ def main(argv):
     build_type = None
     build_mupdf = True
     gdb = False
-    test_pymupdf = True
+    test_fitz = True
     implementations = None
     test_names = list()
     venv = 2
@@ -157,7 +157,7 @@ def main(argv):
         elif arg == '-d':
             build_type = 'debug'
         elif arg == '-f':
-            test_pymupdf = int(next(args))
+            test_fitz = int(next(args))
         elif arg in ('-h', '--help'):
             show_help()
             return
@@ -226,7 +226,7 @@ def main(argv):
                 pytest_options=pytest_options,
                 timeout=timeout,
                 gdb=gdb,
-                test_pymupdf=test_pymupdf,
+                test_fitz=test_fitz,
                 )
     
     for command in commands:
@@ -359,7 +359,7 @@ def test(
         pytest_options=None,
         timeout=None,
         gdb=False,
-        test_pymupdf=True,
+        test_fitz=True,
         ):
     '''
     Args:
@@ -375,7 +375,7 @@ def test(
             See top-level option `-p`.
         gdb:
             See top-level option `--gdb`.
-        test_pymupdf:
+        test_fitz:
             See top-level option `-f`.
     '''
     pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
@@ -433,7 +433,7 @@ def test(
         for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*_fitz.py'):
             print(f'Removing {p=}')
             os.remove(p)
-        if test_pymupdf:
+        if test_fitz:
             # Create copies of each test file, modified to use `pymupdf`
             # instead of `fitz`.
             for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*.py'):
