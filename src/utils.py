@@ -1533,7 +1533,7 @@ def do_links(
                 pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
                 if type(pnt) is not pymupdf.Point:
                     pnt = pymupdf.Point(0, 0)
-                annot = txt % (
+                annot = txt(
                     lnk["page"],
                     pnt.x,
                     pnt.y,
