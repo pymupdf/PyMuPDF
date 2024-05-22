@@ -2216,41 +2216,7 @@ static int JM_rects_overlap(const fz_rect a, const fz_rect b)
 
 //
 void JM_append_rune(fz_buffer *buff, int ch);
-void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
-{
-    fz_stext_block *block;
-    fz_stext_line *line;
-    fz_stext_char *ch;
-    fz_rect rect = page->mediabox;
-    fz_rect chbbox;
-    int last_char = 0;
 
-
-    for (block = page->first_block; block; block = block->next)
-    {
-        if (block->type == FZ_STEXT_BLOCK_TEXT)
-        {
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                last_char = 0;
-                for (ch = line->first_char; ch; ch = ch->next)
-                {
-                    chbbox = JM_char_bbox(line, ch);
-                    if (mupdf::ll_fz_is_infinite_rect(rect) ||
-                        JM_rects_overlap(rect, chbbox))
-                    {
-                        last_char = ch->c;
-                        JM_append_rune(res, last_char);
-                    }
-                }
-                if (last_char != 10 && last_char > 0)
-                {
-                    mupdf::ll_fz_append_string(res, "\n");
-                }
-            }
-        }
-    }
-}
 //-----------------------------------------------------------------------------
 // Plain text output. An identical copy of fz_print_stext_page_as_text,
 // but lines within a block are concatenated by space instead a new-line
@@ -2258,11 +2224,6 @@ void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
 //-----------------------------------------------------------------------------
 void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 {
-    if (0)
-    {
-        return ll_JM_print_stext_page_as_text(res.m_internal, page.m_internal);
-    }
-    
     fz_rect rect = page.m_internal->mediabox;
 
     for (auto block: page)
