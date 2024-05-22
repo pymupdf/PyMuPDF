@@ -4964,7 +4964,9 @@ def get_label_pno(pgNo, labels):
     rule = rule_dict(item)
     prefix = rule.get("prefix", "")
     style = rule.get("style", "")
-    pagenumber = pgNo - rule["startpage"] + rule["firstpagenum"]
+    # make sure we start at 0 when enumerating the alphabet
+    delta = -1 if style in ("a", "A") else 0
+    pagenumber = pgNo - rule["startpage"] + rule["firstpagenum"] + delta
     return construct_label(style, prefix, pagenumber)
 
 
