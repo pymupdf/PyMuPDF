@@ -365,7 +365,7 @@ mupdf_tgz = os.path.abspath( f'{__file__}/../mupdf.tgz')
 def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     '''
     Gets MuPDF as either a .tgz or a local directory.
-
+    
     Args:
         out:
             Either 'dir' (we return name of local directory containing mupdf) or 'tgz' (we return
