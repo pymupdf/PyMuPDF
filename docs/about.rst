@@ -21,6 +21,44 @@ The following table illustrates how |PyMuPDF| compares with other typical soluti
 .. include:: about-feature-matrix.rst
 
 
+----
+
+.. image:: images/icons/icon-docx.svg
+          :width: 40
+          :height: 40
+
+.. image:: images/icons/icon-xlsx.svg
+          :width: 40
+          :height: 40
+
+.. image:: images/icons/icon-pptx.svg
+          :width: 40
+          :height: 40
+
+
+.. image:: images/icons/icon-hangul.svg
+          :width: 40
+          :height: 40
+
+
+
+.. note::
+
+   A note about **Office** document types (DOCX, XLXS, PPTX) and **Hangul** documents (HWPX). These documents can be loaded into |PyMuPDF| and you will receive a :ref:`Document <Document>` object.
+
+   There are some caveats:
+
+
+      - we convert the input to **HTML** to layout the content.
+      - because of this the original page separation has gone.
+
+   When saving out the result any faithful representation of the original layout cannot be expected.
+
+   Therefore input files are mostly in a form that's useful for text extraction.
+
+
+----
+
 .. _About_Performance:
 
 Performance

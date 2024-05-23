@@ -10,7 +10,7 @@ Integrating |PyMuPDF| into your :title:`Large Language Model (LLM)` framework an
 
 There are a few well known :title:`LLM` solutions which have their own interfaces with |PyMuPDF| - it is a fast growing area, so please let us know if you discover any more!
 
-If you need to export to :title:`Markdown`:
+If you need to export to :title:`Markdown` or obtain a :title:`LlamaIndex` Document from a file:
 
 .. raw:: html
 
