@@ -39,6 +39,22 @@
           :width: 0
           :height: 0
 
+.. image:: images/icons/icon-docx.svg
+          :width: 0
+          :height: 0
+
+.. image:: images/icons/icon-pptx.svg
+          :width: 0
+          :height: 0
+
+.. image:: images/icons/icon-xlsx.svg
+          :width: 0
+          :height: 0
+
+.. image:: images/icons/icon-hangul.svg
+          :width: 0
+          :height: 0
+
 .. raw:: html
 
 
@@ -145,6 +161,26 @@
             background-size: 40px 40px;
         }
 
+        #feature-matrix .icon.docx {
+            background: url("_images/icon-docx.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.pptx {
+            background: url("_images/icon-pptx.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.xlsx {
+            background: url("_images/icon-xlsx.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.hangul {
+            background: url("_images/icon-hangul.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
     </style>
 
 
@@ -172,6 +208,12 @@
                 <span class="icon svg"><cite>SVG</cite></span>
                 <span class="icon txt"><cite>TXT</cite></span>
                 <span class="icon image"><cite id="transFM3">Image</cite></span>
+                <hr/>
+                <span class="icon docx"><cite>DOCX</cite></span>
+                <span class="icon xlsx"><cite>XLSX</cite></span>
+                <span class="icon pptx"><cite>PPTX</cite></span>
+                <span class="icon hangul"><cite>HWPX</cite></span>
+                <span class=""><cite>See <a href="#note">note</a></cite></span>
             </td>
             <td>
                 <span class="icon pdf"><cite>PDF</cite></span>
@@ -579,3 +621,5 @@
 
 
     <br/>
+
+    <div id="note"></div>
