@@ -930,7 +930,8 @@ def getLinkDict(ln, document=None) -> dict:
         assert 0, f'Unexpected {type(ln)=}.'
     nl = {"kind": dest.kind, "xref": 0}
     try:
-        nl["from"] = ln.rect
+        if hasattr(ln, 'rect'):
+            nl["from"] = ln.rect
     except Exception:
         # This seems to happen quite often in PyMuPDF/tests.
         if g_exceptions_verbose >= 2:   pymupdf.exception_info()
