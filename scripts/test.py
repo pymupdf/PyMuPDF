@@ -54,6 +54,8 @@ Options:
              'r' - rebased.
              'R' - rebased without optimisations.
             Default is 'rR'. Also see `PyMuPDF:tests/run_compound.py`.
+    -k <expression>
+        Passed straight through to pytest's `-k`.
     -m <location> | --mupdf <location>
         Location of local mupdf/ directory or 'git:...' to be used
         when building PyMuPDF. [This sets environment variable
@@ -83,6 +85,8 @@ Options:
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
         Run tests under gdb.
+    --system-site-packages 0|1
+        If 1, use `--system-site-packages` when creating venv.
     --timeout <seconds>
         Sets timeout when running tests.
     --valgrind 0|1
@@ -136,6 +140,8 @@ def main(argv):
     venv = 2
     pytest_options = None
     timeout = None
+    pytest_k = None
+    system_site_packages = False
     
     options = os.environ.get('PYMUDF_SCRIPTS_TEST_options', '')
     options = shlex.split(options)
@@ -169,8 +175,12 @@ def main(argv):
                 assert os.path.isdir(mupdf), f'Not a directory: {mupdf=}.'
                 mupdf = os.path.abspath(mupdf)
             os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = mupdf
+        elif arg == '-k':
+            pytest_k = next(args)
         elif arg == '-p':
             pytest_options  = next(args)
+        elif arg == '--system-site-packages':
+            system_site_packages = int(next(args))
         elif arg == '-t':
             test_names += next(args).split(',')
         elif arg == '--timeout':
@@ -206,7 +216,11 @@ def main(argv):
     if venv and sys.prefix == sys.base_prefix:
         # We are not running in a venv.
         log(f'Re-running in venv {gh_release.venv_name!r}.')
-        gh_release.venv( ['python'] + argv, quick=venv_quick)
+        gh_release.venv(
+                ['python'] + argv,
+                quick=venv_quick,
+                system_site_packages=system_site_packages,
+                )
         return
 
     def do_build():
@@ -227,6 +241,7 @@ def main(argv):
                 timeout=timeout,
                 gdb=gdb,
                 test_fitz=test_fitz,
+                pytest_k=pytest_k,
                 )
     
     for command in commands:
@@ -360,6 +375,7 @@ def test(
         timeout=None,
         gdb=False,
         test_fitz=True,
+        pytest_k=None
         ):
     '''
     Args:
@@ -384,6 +400,8 @@ def test(
             pytest_options = '-s -vv'
         else:
             pytest_options = ''
+    if pytest_k:
+        pytest_options += f' -k {shlex.quote(pytest_k)}'
     pytest_arg = ''
     if test_names:
         for test_name in test_names:
