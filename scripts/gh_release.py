@@ -440,7 +440,7 @@ def cpu_bits():
 #
 venv_name = f'venv-pymupdf-{platform.python_version()}-{cpu_bits()}'
 
-def venv( command=None, packages=None, quick=False):
+def venv( command=None, packages=None, quick=False, system_site_packages=False):
     '''
     Runs remaining args, or the specified command if present, in a venv.
     
@@ -454,16 +454,17 @@ def venv( command=None, packages=None, quick=False):
         install Python packages in it.
     '''
     command2 = ''
-    ssp = ''
     if platform.system() == 'OpenBSD':
         # libclang not available from pypi.org, but system py3-llvm package
         # works. `pip install` should be run with --no-build-isolation and
         # explicit `pip install swig setuptools psutil`.
-        ssp = ' --system-site-packages'
+        system_site_packages = True
+        #ssp = ' --system-site-packages'
         log(f'OpenBSD: libclang not available from pypi.org.')
         log(f'OpenBSD: system package `py3-llvm` must be installed.')
         log(f'OpenBSD: creating venv with --system-site-packages.')
         log(f'OpenBSD: `pip install .../PyMuPDF` must be preceded by install of swig etc.')
+    ssp = ' --system-site-packages' if system_site_packages else ''
     if quick and os.path.isdir(venv_name):
         log(f'{quick=}: Not creating venv because directory already exists: {venv_name}')
         command2 += 'true'
