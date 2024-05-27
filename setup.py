@@ -87,6 +87,9 @@ Environmental variables:
             Otherwise:
                 Location of mupdf directory.
     
+    PYMUPDF_SETUP_MUPDF_BSYMBOLIC
+        If '0' we do not link libmupdf.so with -Bsymbolic.
+    
     PYMUPDF_SETUP_MUPDF_TESSERACT
         If '0' we build MuPDF without Tesseract.
     
@@ -157,6 +160,7 @@ import os
 import textwrap
 import time
 import platform
+import re
 import shlex
 import shutil
 import stat
@@ -788,6 +792,14 @@ def build_mupdf_unix( mupdf_local, env, build_type):
         log(f'PYMUPDF_SETUP_MUPDF_TESSERACT=0 so building mupdf without tesseract.')
     else:
         build_prefix += 'tesseract-'
+    mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    if (
+            linux
+            and os.environ.get('PYMUPDF_SETUP_MUPDF_BSYMBOLIC', '1') == '1'
+            and mupdf_version_tuple >= (1, 24, 3)
+            ):
+        log(f'Appending `bsymbolic-` to MuPDF build path.')
+        build_prefix += 'bsymbolic-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
@@ -812,6 +824,19 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     
     return unix_build_dir
 
+
+def get_mupdf_version(mupdf_dir):
+    path = f'{mupdf_dir}/include/mupdf/fitz/version.h'
+    with open(path) as f:
+        text = f.read()
+    v0 = re.search('#define FZ_VERSION_MAJOR ([0-9]+)', text)
+    v1 = re.search('#define FZ_VERSION_MINOR ([0-9]+)', text)
+    v2 = re.search('#define FZ_VERSION_PATCH ([0-9]+)', text)
+    assert v0 and v1 and v2, f'Cannot find MuPDF version numers in {path=}.'
+    v0 = int(v0.group(1))
+    v1 = int(v1.group(1))
+    v2 = int(v2.group(1))
+    return v0, v1, v2
 
 def _fs_update(text, path):
     try:
