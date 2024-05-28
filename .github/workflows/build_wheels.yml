@@ -97,13 +97,13 @@ jobs:
       #
       - name: Install Python 3.12 x32 on Windows.
         if: runner.os == 'Windows'
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           architecture: x86
       - name: Install Python 3.12 x64 on Windows.
         if: runner.os == 'Windows'
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -115,7 +115,7 @@ jobs:
       # `python-config3` return settings for Python-3.12, instead of for
       # whatever Python is being used by cibuildwheel.
       #
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
 
       # On Linux, get qemu so we can build for aarch64.
       #
