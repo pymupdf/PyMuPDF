@@ -14,7 +14,7 @@ We run install commands with `sudo` if `--root /` is used.
 Note that we run some commands with sudo; it's important that these use the
 same python as non-sudo, otherwise things can be build and installed for
 different python versions. For example when we are run from a github action, it
-should not do `- uses: actions/setup-python@v2` but instead use whatever system
+should not do `- uses: actions/setup-python@v5` but instead use whatever system
 python is already defined.
 
 Args:
