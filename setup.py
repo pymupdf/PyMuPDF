@@ -142,16 +142,6 @@ Environmental variables:
     WDEV_VS_GRADE
         If set, we use as Visual Studio grade, for example 'Community' or
         'Professional' or 'Enterprise'.
-
-Known build failures:
-    Linux:
-        *musllinux*.
-    Windows:
-        pp*:
-            fitz_wrap.obj : error LNK2001: unresolved external symbol PyUnicode_DecodeRawUnicodeEscape
-
-    When using cibuildwheel, one can avoid building these failing wheels with:
-        CIBW_SKIP='*musllinux* pp*'
 '''
 
 import glob
@@ -1236,6 +1226,13 @@ else:
         Adds to pyproject.toml:[build-system]:requires, allowing programmatic
         control over what packages we require.
         '''
+        def platform_release_tuple():
+            r = platform.release()
+            r = r.split('.')
+            r = tuple(int(i) for i in r)
+            log(f'platform_release_tuple() returning {r=}.')
+            return r
+            
         ret = list()
         ret.append('setuptools')
         libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
@@ -1247,6 +1244,9 @@ else:
         elif darwin and platform.machine() == 'arm64':
             print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
             ret.append('libclang==16.0.6')
+        elif darwin and platform_release_tuple() < (18,):
+            # There are still of ptoblems when building on old macos.
+            ret.append('libclang==14.0.6')
         else:
             ret.append('libclang')
         if msys2:
