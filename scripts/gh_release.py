@@ -51,6 +51,8 @@ action inputs, which can't be easily translated into command-line arguments.
     inputs_PYMUPDF_SETUP_MUPDF_BUILD
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD.
         E.g. 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
+    inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE
+        Used to directly set PYMUPDF_SETUP_MUPDF_BUILD_TYPE.
     inputs_wheels_implementations
         Used to directly set PYMUPDF_SETUP_IMPLEMENTATIONS.
         'a', 'b', 'ab'.
@@ -180,6 +182,7 @@ def build( platform_=None, valgrind=False):
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
+    inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE')
     inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations', 'b')
     
     log( f'{inputs_flavours=}')
@@ -194,6 +197,7 @@ def build( platform_=None, valgrind=False):
     log( f'{inputs_wheels_windows_auto=}')
     log( f'{inputs_wheels_cps=}')
     log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
+    log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE=}')
     
     # Build Pyodide wheel if specified.
     #
@@ -314,6 +318,10 @@ def build( platform_=None, valgrind=False):
             log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD to {inputs_PYMUPDF_SETUP_MUPDF_BUILD!r}.')
             env_set('PYMUPDF_SETUP_MUPDF_BUILD', inputs_PYMUPDF_SETUP_MUPDF_BUILD, pass_=True)
             env_set('PYMUPDF_SETUP_MUPDF_TGZ', '', pass_=True)   # Don't put mupdf in sdist.
+    
+        if inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE not in ('-', None):
+            log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD_TYPE to {inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE!r}.')
+            env_set('PYMUPDF_SETUP_MUPDF_BUILD_TYPE', inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE, pass_=True)
     
         def set_cibuild_test():
             log( f'set_cibuild_test(): {inputs_skeleton=}')
