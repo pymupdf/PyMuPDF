@@ -135,3 +135,25 @@ def test_2788():
                 "trying to repair broken xref\n"
                 "repairing PDF document"
                 ), f'{wt=}'
+
+
+def test_toc_count():
+    file_in = os.path.abspath(f'{__file__}/../../tests/resources/test_toc_count.pdf')
+    file_out = os.path.abspath(f'{__file__}/../../tests/test_toc_count_out.pdf')
+
+    def get(doc):
+        outlines = doc.xref_get_key(doc.pdf_catalog(), "Outlines")
+        ret = doc.xref_object(int(outlines[1].split()[0]))
+        return ret
+    print()
+    with pymupdf.open(file_in) as doc:
+        print(f'1: {get(doc)}')
+        toc = doc.get_toc(simple=False)
+        doc.set_toc([])
+        #print(f'2: {get(doc)}')
+        doc.set_toc(toc)
+        print(f'3: {get(doc)}')
+        doc.save(file_out, garbage=4)
+    with pymupdf.open(file_out) as doc:
+        print(f'4: {get(doc)}')
+    pymupdf._log_items_clear()
