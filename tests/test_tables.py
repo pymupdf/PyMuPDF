@@ -176,7 +176,9 @@ def test_2979():
     assert len(lengths) == 1
 
     # test 3001
-    assert pymupdf.TOOLS.set_small_glyph_heights() is False, f'{pymupdf.TOOLS.set_small_glyph_heights()=}'
+    assert (
+        pymupdf.TOOLS.set_small_glyph_heights() is False
+    ), f"{pymupdf.TOOLS.set_small_glyph_heights()=}"
 
 
 def test_3062():
@@ -292,3 +294,17 @@ def test_markdown():
         "|Col15|Col25 Col26||\n\n"
     )
     assert tab.to_markdown() == text
+
+
+def test_dotted_grid():
+    """Confirm dotted lines are detected as gridlines."""
+    filename = os.path.join(scriptdir, "resources", "dotted-gridlines.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    tabs = page.find_tables()
+    assert len(tabs.tables) == 3  # must be 3 tables
+    t0, t1, t2 = tabs  # extract them
+    # check that they have expected dimensions
+    assert t0.row_count, t0.col_count == (11, 12)
+    assert t1.row_count, t1.col_count == (25, 11)
+    assert t2.row_count, t2.col_count == (1, 10)

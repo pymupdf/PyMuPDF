@@ -1946,6 +1946,7 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
     global EDGES
     snap_x = tset.snap_x_tolerance
     snap_y = tset.snap_y_tolerance
+    min_length = tset.edge_min_length
     lines_strict = (
         tset.vertical_strategy == "lines_strict"
         or tset.horizontal_strategy == "lines_strict"
@@ -2117,13 +2118,14 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                 if line_dict:
                     EDGES.append(line_to_edge(line_dict))
 
-            elif i[0] == "re":  # a rectangle: decompose into 4 lines
-                rect = i[1].normalize()  # rectangle itself
-                # ignore minute rectangles
-                if rect.height <= snap_y and rect.width <= snap_x:
-                    continue
+            elif i[0] == "re":
+                # A rectangle: decompose into 4 lines, but filter out
+                # the ones that simulate a line
+                rect = i[1].normalize()  # normalize the rectangle
 
-                if rect.width <= snap_x:  # simulates a vertical line
+                if (
+                    rect.width <= min_length and rect.width < rect.height
+                ):  # simulates a vertical line
                     x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
                     p1 = Point(x, rect.y0)
                     p2 = Point(x, rect.y1)
@@ -2132,7 +2134,9 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                         EDGES.append(line_to_edge(line_dict))
                     continue
 
-                if rect.height <= snap_y:  # simulates a horizontal line
+                if (
+                    rect.height <= min_length and rect.height < rect.width
+                ):  # simulates a horizontal line
                     y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
                     p1 = Point(rect.x0, y)
                     p2 = Point(rect.x1, y)
