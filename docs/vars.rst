@@ -51,31 +51,53 @@ Constants
 
     :rtype: int
 
-.. py:data:: VersionBind
+.. py.data:: mupdf_version
+
+    'x.xx.x' -- MuPDF version that is being used by PyMuPDF.
+
+    :rtype: string
+
+.. py.data:: mupdf_version_tuple
+
+    MuPDF version as a tuple of integers, `(major, minor, patch)`.
+    
+    :rtype: tuple
+
+.. py.data:: pymupdf_version
 
     'x.xx.x' -- version of PyMuPDF (these bindings)
 
     :rtype: string
 
-.. py:data:: VersionFitz
+.. py.data:: pymupdf_version_tuple
 
-    'x.xxx' -- version of MuPDF
+    PyMuPDF version as a tuple of integers, `(major, minor, patch)`.
+    
+    :rtype: tuple
 
-    :rtype: string
-
-.. py:data:: VersionDate
+.. py:data:: pymupdf_date
 
     ISO timestamp *YYYY-MM-DD HH:MM:SS* when these bindings were built.
 
     :rtype: string
 
-.. Note:: The docstring of *fitz* contains information of the above which can be retrieved like so: *print(fitz.__doc__)*, and should look like: *PyMuPDF 1.10.0: Python bindings for the MuPDF 1.10 library, built on 2016-11-30 13:09:13*.
-
 .. py:data:: version
 
-    (VersionBind, VersionFitz, timestamp) -- combined version information where *timestamp* is the generation point in time formatted as "YYYYMMDDhhmmss".
+    (pymupdf_version, mupdf_version, timestamp) -- combined version information where `timestamp` is the generation point in time formatted as "YYYYMMDDhhmmss".
 
     :rtype: tuple
+
+.. py:data:: VersionBind
+
+    Legacy equivalent to `mupdf_version`.
+
+.. py:data:: VersionFitz
+
+    Legacy equivalent to `pymupdf_version`.
+
+.. py:data:: VersionDate
+
+    Legacy equivalent to `mupdf_version`.
 
 
 .. _PermissionCodes:
