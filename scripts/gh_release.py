@@ -135,6 +135,12 @@ def main():
             pattern = f'{prefix}-*{platform_tag()}.whl'
             paths = glob.glob( pattern)
             log( f'{pattern=} {paths=}')
+            # Follow pipcl.py and look at AUDITWHEEL_PLAT. This allows us to
+            # cope if building for both musl and normal linux.
+            awp = os.environ.get('AUDITWHEEL_PLAT')
+            if awp:
+                paths = [i for i in paths if awp in i]
+                log(f'After selecting AUDITWHEEL_PLAT={awp!r}, {paths=}.')
             paths = ' '.join( paths)
             run( f'pip install {paths}')
         elif arg == 'venv':
@@ -240,7 +246,9 @@ def build( platform_=None, valgrind=False):
             else:
                 log( f'Not changing {name}={v!r} to {value!r}')
         set_if_unset( 'CIBW_BUILD_VERBOSITY', '3')
-        set_if_unset( 'CIBW_SKIP', '"pp* *i686 *-musllinux_* cp36* cp37*"')
+        # We exclude pp* because of `fitz_wrap.obj : error LNK2001: unresolved
+        # external symbol PyUnicode_DecodeRawUnicodeEscape`.
+        set_if_unset( 'CIBW_SKIP', '"pp* *i686 cp36* cp37*"')
     
         def make_string(*items):
             ret = list()
