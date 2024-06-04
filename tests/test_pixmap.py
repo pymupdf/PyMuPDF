@@ -299,6 +299,7 @@ def test_3493():
     # Find location of system install of `gi`.
     r = run_code(
             '''
+            from gi.repository import GdkPixbuf
             import gi
             print(gi.__file__)
             '''
