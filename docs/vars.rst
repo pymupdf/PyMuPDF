@@ -13,79 +13,79 @@ Constants
 
     Predefined Python list of valid :ref:`Base-14-Fonts`.
 
-    :rtype: list
+    :type: list
 
 .. py:data:: csRGB
 
     Predefined RGB colorspace *pymupdf.Colorspace(pymupdf.CS_RGB)*.
 
-    :rtype: :ref:`Colorspace`
+    :type: :ref:`Colorspace`
 
 .. py:data:: csGRAY
 
     Predefined GRAY colorspace *pymupdf.Colorspace(pymupdf.CS_GRAY)*.
 
-    :rtype: :ref:`Colorspace`
+    :type: :ref:`Colorspace`
 
 .. py:data:: csCMYK
 
     Predefined CMYK colorspace *pymupdf.Colorspace(pymupdf.CS_CMYK)*.
 
-    :rtype: :ref:`Colorspace`
+    :type: :ref:`Colorspace`
 
 .. py:data:: CS_RGB
 
     1 -- Type of :ref:`Colorspace` is RGBA
 
-    :rtype: int
+    :type: int
 
 .. py:data:: CS_GRAY
 
     2 -- Type of :ref:`Colorspace` is GRAY
 
-    :rtype: int
+    :type: int
 
 .. py:data:: CS_CMYK
 
     3 -- Type of :ref:`Colorspace` is CMYK
 
-    :rtype: int
+    :type: int
 
-.. py.data:: mupdf_version
+.. py:data:: mupdf_version
 
     'x.xx.x' -- MuPDF version that is being used by PyMuPDF.
 
-    :rtype: string
+    :type: string
 
-.. py.data:: mupdf_version_tuple
+.. py:data:: mupdf_version_tuple
 
     MuPDF version as a tuple of integers, `(major, minor, patch)`.
     
-    :rtype: tuple
+    :type: tuple
 
-.. py.data:: pymupdf_version
+.. py:data:: pymupdf_version
 
-    'x.xx.x' -- version of PyMuPDF (these bindings)
+    'x.xx.x' -- PyMuPDF version.
 
-    :rtype: string
+    :type: string
 
-.. py.data:: pymupdf_version_tuple
+.. py:data:: pymupdf_version_tuple
 
     PyMuPDF version as a tuple of integers, `(major, minor, patch)`.
     
-    :rtype: tuple
+    :type: tuple
 
 .. py:data:: pymupdf_date
 
     ISO timestamp *YYYY-MM-DD HH:MM:SS* when these bindings were built.
 
-    :rtype: string
+    :type: string
 
 .. py:data:: version
 
     (pymupdf_version, mupdf_version, timestamp) -- combined version information where `timestamp` is the generation point in time formatted as "YYYYMMDDhhmmss".
 
-    :rtype: tuple
+    :type: tuple
 
 .. py:data:: VersionBind
 
@@ -275,13 +275,13 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
 
     0 -- No destination. Indicates a dummy link.
 
-    :rtype: int
+    :type: int
 
 .. py:data:: LINK_GOTO
 
     1 -- Points to a place in this document.
 
-    :rtype: int
+    :type: int
 
 .. py:data:: LINK_URI
 
@@ -290,7 +290,7 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
     * PyMuPDF treats any external link that contains a colon and does not start
       with `file:`, as `LINK_URI`.
 
-    :rtype: int
+    :type: int
 
 .. py:data:: LINK_LAUNCH
 
@@ -299,19 +299,19 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
     * |PyMuPDF| treats any external link that starts wth `file:` or doesn't
       contain a colon, as `LINK_LAUNCH`.
 
-    :rtype: int
+    :type: int
 
 .. py:data:: LINK_NAMED
 
     4 -- points to a named location.
 
-    :rtype: int
+    :type: int
 
 .. py:data:: LINK_GOTOR
 
     5 -- Points to a place in another PDF document.
 
-    :rtype: int
+    :type: int
 
 .. _linkDest Flags:
 
@@ -324,43 +324,43 @@ Link Destination Flags
 
     1  (bit 0) Top left x value is valid
 
-    :rtype: bool
+    :type: bool
 
 .. py:data:: LINK_FLAG_T_VALID
 
     2  (bit 1) Top left y value is valid
 
-    :rtype: bool
+    :type: bool
 
 .. py:data:: LINK_FLAG_R_VALID
 
     4  (bit 2) Bottom right x value is valid
 
-    :rtype: bool
+    :type: bool
 
 .. py:data:: LINK_FLAG_B_VALID
 
     8  (bit 3) Bottom right y value is valid
 
-    :rtype: bool
+    :type: bool
 
 .. py:data:: LINK_FLAG_FIT_H
 
     16 (bit 4) Horizontal fit
 
-    :rtype: bool
+    :type: bool
 
 .. py:data:: LINK_FLAG_FIT_V
 
     32 (bit 5) Vertical fit
 
-    :rtype: bool
+    :type: bool
 
 .. py:data:: LINK_FLAG_R_IS_ZOOM
 
     64 (bit 6) Bottom right x is a zoom figure
 
-    :rtype: bool
+    :type: bool
 
 
 Annotation Related Constants
