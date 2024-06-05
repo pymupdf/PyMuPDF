@@ -270,6 +270,9 @@ def test_3493():
     If python3-gi is installed, we check fix for #3493, where importing gi
     would load an older version of libjpeg than is used in MuPDF, and break
     MuPDF.
+    
+    This test is excluded by default in sysinstall tests, because running
+    commands in a new venv does not seem to pick up pymupdf as expected.
     '''
     if platform.system() != 'Linux':
         print(f'Not running because not Linux: {platform.system()=}')
@@ -315,7 +318,7 @@ def test_3493():
         return
     gi = r.stdout.strip()
     gi_pythonpath = os.path.abspath(f'{gi}/../..')
-            
+    
     def do(gi):
         # Run code that will import gi and pymupdf in different orders, and
         # return contents of generated .png file as a bytes.
