@@ -930,7 +930,8 @@ def getLinkDict(ln, document=None) -> dict:
         assert 0, f'Unexpected {type(ln)=}.'
     nl = {"kind": dest.kind, "xref": 0}
     try:
-        nl["from"] = ln.rect
+        if hasattr(ln, 'rect'):
+            nl["from"] = ln.rect
     except Exception:
         # This seems to happen quite often in PyMuPDF/tests.
         if g_exceptions_verbose >= 2:   pymupdf.exception_info()
@@ -5466,67 +5467,52 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
             pymupdf.message("This method requires fontTools to be installed.")
             raise
         import tempfile
-        tmp_dir = tempfile.gettempdir()
-        oldfont_path = f"{tmp_dir}/oldfont.ttf"
-        newfont_path = f"{tmp_dir}/newfont.ttf"
-        uncfile_path = f"{tmp_dir}/uncfile.txt"
-        args = [
-            oldfont_path,
-            "--retain-gids",
-            f"--output-file={newfont_path}",
-            "--layout-features='*'",
-            "--passthrough-tables",
-            "--ignore-missing-glyphs",
-            "--ignore-missing-unicodes",
-            "--symbol-cmap",
-        ]
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            oldfont_path = f"{tmp_dir}/oldfont.ttf"
+            newfont_path = f"{tmp_dir}/newfont.ttf"
+            uncfile_path = f"{tmp_dir}/uncfile.txt"
+            args = [
+                oldfont_path,
+                "--retain-gids",
+                f"--output-file={newfont_path}",
+                "--layout-features='*'",
+                "--passthrough-tables",
+                "--ignore-missing-glyphs",
+                "--ignore-missing-unicodes",
+                "--symbol-cmap",
+            ]
 
-        # store glyph ids or unicodes as file
-        with open(f"{tmp_dir}/uncfile.txt", "w", encoding='utf8') as unc_file:
-            if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
-                args.append(f"--gids-file={uncfile_path}")
-                gid_set.add(189)
-                unc_list = list(gid_set)
-                for unc in unc_list:
-                    unc_file.write("%i\n" % unc)
-            else:
-                args.append(f"--unicodes-file={uncfile_path}")
-                unc_set.add(255)
-                unc_list = list(unc_set)
-                for unc in unc_list:
-                    unc_file.write("%04x\n" % unc)
+            # store glyph ids or unicodes as file
+            with open(f"{tmp_dir}/uncfile.txt", "w", encoding='utf8') as unc_file:
+                if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
+                    args.append(f"--gids-file={uncfile_path}")
+                    gid_set.add(189)
+                    unc_list = list(gid_set)
+                    for unc in unc_list:
+                        unc_file.write("%i\n" % unc)
+                else:
+                    args.append(f"--unicodes-file={uncfile_path}")
+                    unc_set.add(255)
+                    unc_list = list(unc_set)
+                    for unc in unc_list:
+                        unc_file.write("%04x\n" % unc)
 
-        # store fontbuffer as a file
-        with open(oldfont_path, "wb") as fontfile:
-            fontfile.write(buffer)
-        try:
-            os.remove(newfont_path)  # remove old file
-        except Exception:
-            pass
-        try:  # invoke fontTools subsetter
-            fts.main(args)
-            font = pymupdf.Font(fontfile=newfont_path)
-            new_buffer = font.buffer  # subset font binary
-            if font.glyph_count == 0:  # intercept empty font
+            # store fontbuffer as a file
+            with open(oldfont_path, "wb") as fontfile:
+                fontfile.write(buffer)
+            try:
+                os.remove(newfont_path)  # remove old file
+            except Exception:
+                pass
+            try:  # invoke fontTools subsetter
+                fts.main(args)
+                font = pymupdf.Font(fontfile=newfont_path)
+                new_buffer = font.buffer  # subset font binary
+                if font.glyph_count == 0:  # intercept empty font
+                    new_buffer = None
+            except Exception:
+                pymupdf.exception_info()
                 new_buffer = None
-        except Exception:
-            pymupdf.exception_info()
-            new_buffer = None
-        try:
-            os.remove(uncfile_path)
-        except Exception:
-            pymupdf.exception_info()
-            pass
-        try:
-            os.remove(oldfont_path)
-        except Exception:
-            pymupdf.exception_info()
-            pass
-        try:
-            os.remove(newfont_path)
-        except Exception:
-            pymupdf.exception_info()
-            pass
         return new_buffer
 
     def repl_fontnames(doc):

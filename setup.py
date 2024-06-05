@@ -87,6 +87,9 @@ Environmental variables:
             Otherwise:
                 Location of mupdf directory.
     
+    PYMUPDF_SETUP_MUPDF_BSYMBOLIC
+        If '0' we do not link libmupdf.so with -Bsymbolic.
+    
     PYMUPDF_SETUP_MUPDF_TESSERACT
         If '0' we build MuPDF without Tesseract.
     
@@ -139,16 +142,6 @@ Environmental variables:
     WDEV_VS_GRADE
         If set, we use as Visual Studio grade, for example 'Community' or
         'Professional' or 'Enterprise'.
-
-Known build failures:
-    Linux:
-        *musllinux*.
-    Windows:
-        pp*:
-            fitz_wrap.obj : error LNK2001: unresolved external symbol PyUnicode_DecodeRawUnicodeEscape
-
-    When using cibuildwheel, one can avoid building these failing wheels with:
-        CIBW_SKIP='*musllinux* pp*'
 '''
 
 import glob
@@ -157,6 +150,7 @@ import os
 import textwrap
 import time
 import platform
+import re
 import shlex
 import shutil
 import stat
@@ -788,6 +782,14 @@ def build_mupdf_unix( mupdf_local, env, build_type):
         log(f'PYMUPDF_SETUP_MUPDF_TESSERACT=0 so building mupdf without tesseract.')
     else:
         build_prefix += 'tesseract-'
+    mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    if (
+            linux
+            and os.environ.get('PYMUPDF_SETUP_MUPDF_BSYMBOLIC', '1') == '1'
+            and mupdf_version_tuple >= (1, 24, 3)
+            ):
+        log(f'Appending `bsymbolic-` to MuPDF build path.')
+        build_prefix += 'bsymbolic-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
@@ -812,6 +814,19 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     
     return unix_build_dir
 
+
+def get_mupdf_version(mupdf_dir):
+    path = f'{mupdf_dir}/include/mupdf/fitz/version.h'
+    with open(path) as f:
+        text = f.read()
+    v0 = re.search('#define FZ_VERSION_MAJOR ([0-9]+)', text)
+    v1 = re.search('#define FZ_VERSION_MINOR ([0-9]+)', text)
+    v2 = re.search('#define FZ_VERSION_PATCH ([0-9]+)', text)
+    assert v0 and v1 and v2, f'Cannot find MuPDF version numers in {path=}.'
+    v0 = int(v0.group(1))
+    v1 = int(v1.group(1))
+    v2 = int(v2.group(1))
+    return v0, v1, v2
 
 def _fs_update(text, path):
     try:
@@ -1113,7 +1128,7 @@ classifier = [
 # We generate different wheels depending on g_flavour.
 #
 
-version = '1.24.4'
+version = '1.24.5'
 version_b = '1.24.3'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
@@ -1211,6 +1226,13 @@ else:
         Adds to pyproject.toml:[build-system]:requires, allowing programmatic
         control over what packages we require.
         '''
+        def platform_release_tuple():
+            r = platform.release()
+            r = r.split('.')
+            r = tuple(int(i) for i in r)
+            log(f'platform_release_tuple() returning {r=}.')
+            return r
+            
         ret = list()
         ret.append('setuptools')
         libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
@@ -1222,6 +1244,9 @@ else:
         elif darwin and platform.machine() == 'arm64':
             print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
             ret.append('libclang==16.0.6')
+        elif darwin and platform_release_tuple() < (18,):
+            # There are still of ptoblems when building on old macos.
+            ret.append('libclang==14.0.6')
         else:
             ret.append('libclang')
         if msys2:

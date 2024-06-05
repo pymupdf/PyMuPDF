@@ -199,17 +199,27 @@ def _int_rc(text):
         text = text[:rc]
     return int(text)
 
-VersionFitz = mupdf.FZ_VERSION # MuPDF version.
-VersionBind = "1.24.4" # PyMuPDF version.
-VersionDate = "2024-05-16 00:00:01"
-VersionDate2 = VersionDate.replace('-', '').replace(' ', '').replace(':', '')
-version = (VersionBind, VersionFitz, VersionDate2)
-pymupdf_version_tuple = tuple( [_int_rc(i) for i in VersionBind.split('.')])
+# Basic version information.
+#
+pymupdf_version = "1.24.5"
+mupdf_version = mupdf.FZ_VERSION
+pymupdf_date = "2024-05-30 00:00:01"
 
-mupdf_version_tuple = (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH)
+# Versions as tuples; useful when comparing versions.
+#
+pymupdf_version_tuple = tuple( [_int_rc(i) for i in pymupdf_version.split('.')])
+mupdf_version_tuple = tuple( [_int_rc(i) for i in mupdf_version.split('.')])
 
-assert mupdf_version_tuple == tuple([_int_rc(i) for i in VersionFitz.split('.')]), \
-        f'Inconsistent MuPDF version numbers: {mupdf_version_tuple=} != {VersionFitz=}'
+assert mupdf_version_tuple == (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH), \
+        f'Inconsistent MuPDF version numbers: {mupdf_version_tuple=} != {(mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH)=}'
+
+# Legacy version information.
+#
+pymupdf_date2 = pymupdf_date.replace('-', '').replace(' ', '').replace(':', '')
+version = (pymupdf_version, mupdf_version, pymupdf_date2)
+VersionFitz = mupdf_version
+VersionBind = pymupdf_version
+VersionDate = pymupdf_date
 
 
 # String formatting.

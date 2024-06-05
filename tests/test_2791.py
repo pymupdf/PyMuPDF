@@ -80,7 +80,8 @@ def test_2791():
         assert ratio > 1 and ratio < 1.6
     elif stat_type == 'psutil':
         # Prior to fix, ratio was 1.043. After the fix, improved to 1.005, but
-        # varies and sometimes as high as 1.01.
-        assert ratio >= 1 and ratio < 1.015
+        # varies and sometimes as high as 1.010.
+        # 2024-06-03: have seen 0.99919 on musl linux, and sebras reports .025.
+        assert ratio >= 0.990 and ratio < 1.027, f'{ratio=}'
     else:
         pass

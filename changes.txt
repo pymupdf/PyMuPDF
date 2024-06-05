@@ -2,6 +2,22 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.5 (2024-05-30)**
+
+* Fixed issues:
+
+  * **Fixed** `3479 <https://github.com/pymupdf/PyMuPDF/issues/3479>`_: regression: fill_textbox: IndexError: pop from empty list
+  * **Fixed** `3488 <https://github.com/pymupdf/PyMuPDF/issues/3488>`_: set_toc method error
+
+* Other:
+
+  * Some more fixes to use MuPDF floating formatting.
+  * Removed/disabled some unnecessary diagnostics.
+  * Fixed utils.do_links() crash.
+  * Experimental new functions `pymupdf.apply_pages()` and `pymupdf.get_text()`.
+  * Addresses wrong label generation for label styles "a" and "A".
+
+
 **Changes in version 1.24.4 (2024-05-16)**
 
   * **Fixed** `3418 <https://github.com/pymupdf/PyMuPDF/issues/3418>`_: Re-introduced bug, text align add_redact_annot

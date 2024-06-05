@@ -51,6 +51,8 @@ action inputs, which can't be easily translated into command-line arguments.
     inputs_PYMUPDF_SETUP_MUPDF_BUILD
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD.
         E.g. 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
+    inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE
+        Used to directly set PYMUPDF_SETUP_MUPDF_BUILD_TYPE.
     inputs_wheels_implementations
         Used to directly set PYMUPDF_SETUP_IMPLEMENTATIONS.
         'a', 'b', 'ab'.
@@ -133,6 +135,12 @@ def main():
             pattern = f'{prefix}-*{platform_tag()}.whl'
             paths = glob.glob( pattern)
             log( f'{pattern=} {paths=}')
+            # Follow pipcl.py and look at AUDITWHEEL_PLAT. This allows us to
+            # cope if building for both musl and normal linux.
+            awp = os.environ.get('AUDITWHEEL_PLAT')
+            if awp:
+                paths = [i for i in paths if awp in i]
+                log(f'After selecting AUDITWHEEL_PLAT={awp!r}, {paths=}.')
             paths = ' '.join( paths)
             run( f'pip install {paths}')
         elif arg == 'venv':
@@ -180,6 +188,7 @@ def build( platform_=None, valgrind=False):
     inputs_wheels_windows_auto = get_bool('inputs_wheels_windows_auto', inputs_wheels_default)
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
+    inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE')
     inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations', 'b')
     
     log( f'{inputs_flavours=}')
@@ -194,6 +203,7 @@ def build( platform_=None, valgrind=False):
     log( f'{inputs_wheels_windows_auto=}')
     log( f'{inputs_wheels_cps=}')
     log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
+    log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE=}')
     
     # Build Pyodide wheel if specified.
     #
@@ -236,7 +246,9 @@ def build( platform_=None, valgrind=False):
             else:
                 log( f'Not changing {name}={v!r} to {value!r}')
         set_if_unset( 'CIBW_BUILD_VERBOSITY', '3')
-        set_if_unset( 'CIBW_SKIP', '"pp* *i686 *-musllinux_* cp36* cp37*"')
+        # We exclude pp* because of `fitz_wrap.obj : error LNK2001: unresolved
+        # external symbol PyUnicode_DecodeRawUnicodeEscape`.
+        set_if_unset( 'CIBW_SKIP', '"pp* *i686 cp36* cp37*"')
     
         def make_string(*items):
             ret = list()
@@ -314,6 +326,10 @@ def build( platform_=None, valgrind=False):
             log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD to {inputs_PYMUPDF_SETUP_MUPDF_BUILD!r}.')
             env_set('PYMUPDF_SETUP_MUPDF_BUILD', inputs_PYMUPDF_SETUP_MUPDF_BUILD, pass_=True)
             env_set('PYMUPDF_SETUP_MUPDF_TGZ', '', pass_=True)   # Don't put mupdf in sdist.
+    
+        if inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE not in ('-', None):
+            log(f'Setting PYMUPDF_SETUP_MUPDF_BUILD_TYPE to {inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE!r}.')
+            env_set('PYMUPDF_SETUP_MUPDF_BUILD_TYPE', inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE, pass_=True)
     
         def set_cibuild_test():
             log( f'set_cibuild_test(): {inputs_skeleton=}')
@@ -440,7 +456,7 @@ def cpu_bits():
 #
 venv_name = f'venv-pymupdf-{platform.python_version()}-{cpu_bits()}'
 
-def venv( command=None, packages=None, quick=False):
+def venv( command=None, packages=None, quick=False, system_site_packages=False):
     '''
     Runs remaining args, or the specified command if present, in a venv.
     
@@ -454,16 +470,17 @@ def venv( command=None, packages=None, quick=False):
         install Python packages in it.
     '''
     command2 = ''
-    ssp = ''
     if platform.system() == 'OpenBSD':
         # libclang not available from pypi.org, but system py3-llvm package
         # works. `pip install` should be run with --no-build-isolation and
         # explicit `pip install swig setuptools psutil`.
-        ssp = ' --system-site-packages'
+        system_site_packages = True
+        #ssp = ' --system-site-packages'
         log(f'OpenBSD: libclang not available from pypi.org.')
         log(f'OpenBSD: system package `py3-llvm` must be installed.')
         log(f'OpenBSD: creating venv with --system-site-packages.')
         log(f'OpenBSD: `pip install .../PyMuPDF` must be preceded by install of swig etc.')
+    ssp = ' --system-site-packages' if system_site_packages else ''
     if quick and os.path.isdir(venv_name):
         log(f'{quick=}: Not creating venv because directory already exists: {venv_name}')
         command2 += 'true'

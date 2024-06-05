@@ -12,6 +12,7 @@ import platform
 import sys
 import tempfile
 import pytest
+import textwrap
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 epub = os.path.join(scriptdir, "resources", "Bezier.epub")
@@ -262,3 +263,93 @@ def test_3177():
     path = os.path.abspath(f'{__file__}/../../tests/resources/img-transparent.png')
     pixmap = pymupdf.Pixmap(path)
     pixmap2 = pymupdf.Pixmap(None, pixmap)
+
+
+def test_3493():
+    '''
+    If python3-gi is installed, we check fix for #3493, where importing gi
+    would load an older version of libjpeg than is used in MuPDF, and break
+    MuPDF.
+    '''
+    if platform.system() != 'Linux':
+        print(f'Not running because not Linux: {platform.system()=}')
+        return
+    
+    import subprocess
+    
+    root = os.path.abspath(f'{__file__}/../..')
+    in_path = f'{root}/tests/resources/test_3493.epub'
+    
+    def run(command, check=1, stdout=None):
+        print(f'Running: {command}')
+        return subprocess.run(command, shell=1, check=check, stdout=stdout, text=1)
+    
+    def run_code(code, code_path, *, check=True, venv=None, venv_args='', pythonpath=None, stdout=None):
+        code = textwrap.dedent(code)
+        with open(code_path, 'w') as f:
+            f.write(code)
+        prefix = f'PYTHONPATH={pythonpath} ' if pythonpath else ''
+        if venv:
+            run(f'{sys.executable} -m venv {venv_args} {venv}')
+            r = run(f'. {venv}/bin/activate && {prefix}python {code_path}', check=check, stdout=stdout)
+        else:
+            r = run(f'{prefix}{sys.executable} {code_path}', check=check, stdout=stdout)
+        return r
+    
+    # Find location of system install of `gi`.
+    r = run_code(
+            '''
+            from gi.repository import GdkPixbuf
+            import gi
+            print(gi.__file__)
+            '''
+            ,
+            f'{root}/tests/resources/test_3493_gi.py',
+            check=0,
+            venv=f'{root}/tests/resources/test_3493_venv',
+            venv_args='--system-site-packages',
+            stdout=subprocess.PIPE,
+            )
+    if r.returncode:
+        print(f'test_3493(): Not running test because --system-site-packages venv cannot import gi.')
+        return
+    gi = r.stdout.strip()
+    gi_pythonpath = os.path.abspath(f'{gi}/../..')
+            
+    def do(gi):
+        # Run code that will import gi and pymupdf in different orders, and
+        # return contents of generated .png file as a bytes.
+        out = f'{root}/tests/resources/test_3493_{gi}.png'
+        run_code(
+                f'''
+                if {gi}==0:
+                    import pymupdf
+                elif {gi}==1:
+                    from gi.repository import GdkPixbuf
+                    import pymupdf
+                elif {gi}==2:
+                    import pymupdf
+                    from gi.repository import GdkPixbuf
+                else:
+                    assert 0
+                document = pymupdf.Document('{in_path}')
+                page = document[0]
+                print(f'{gi=}: saving to: {out}')
+                page.get_pixmap().save('{out}')
+                '''
+                ,
+                os.path.abspath(f'{root}/tests/resources/test_3493_{gi}.py'),
+                pythonpath=gi_pythonpath,
+                )
+        with open(out, 'rb') as f:
+            return f.read()
+    
+    out0 = do(0)
+    out1 = do(1)
+    out2 = do(2)
+    print(f'{len(out0)=} {len(out1)=} {len(out2)=}.')
+    if pymupdf.mupdf_version_tuple >= (1, 24, 3):
+        assert out1 == out0
+    else:
+        assert out1 != out0
+    assert out2 == out0
