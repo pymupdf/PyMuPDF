@@ -1192,7 +1192,7 @@ def get_area(*args) -> float:
     return f * rect.width * rect.height
 
 
-def set_metadata(doc: pymupdf.Document, m: dict) -> None:
+def set_metadata(doc: pymupdf.Document, m: dict = None) -> None:
     """Update the PDF /Info object.
 
     Args:
@@ -1202,7 +1202,9 @@ def set_metadata(doc: pymupdf.Document, m: dict) -> None:
         raise ValueError("is no PDF")
     if doc.is_closed or doc.is_encrypted:
         raise ValueError("document closed or encrypted")
-    if type(m) is not dict:
+    if m is None:
+        m = {}
+    elif type(m) is not dict:
         raise ValueError("bad metadata")
     keymap = {
         "author": "Author",
@@ -1238,6 +1240,7 @@ def set_metadata(doc: pymupdf.Document, m: dict) -> None:
         doc.xref_set_key(-1, "Info", "%i 0 R" % info_xref)
     elif m == {}:  # remove existing metadata
         doc.xref_set_key(-1, "Info", "null")
+        doc.init_doc()
         return
 
     for key, val in [(k, v) for k, v in m.items() if keymap[k] is not None]:

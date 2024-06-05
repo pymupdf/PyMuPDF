@@ -34,7 +34,7 @@ def test_3237():
         metadata1 = doc.metadata
         metadata1 = repr(metadata1).encode('utf8')
         doc.set_metadata({})
-        doc.init_doc()
+
         metadata2 = doc.metadata
         metadata2 = repr(metadata2).encode('utf8')
         print(f'{metadata1=}')
