@@ -2075,49 +2075,63 @@ def run_if( command, out, *prerequisites):
         >>> out = 'run_if_test_out'
         >>> if os.path.exists( out):
         ...     os.remove( out)
+        >>> if os.path.exists( f'{out}.cmd'):
+        ...     os.remove( f'{out}.cmd')
         >>> run_if( f'touch {out}', out)
+        pipcl.py: run_if(): Running command because: File does not exist: 'run_if_test_out'
+        pipcl.py: run(): Running: touch run_if_test_out
         True
 
     If we repeat, the output file will be up to date so the command is not run:
 
         >>> run_if( f'touch {out}', out)
+        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
 
     If we change the command, the command is run:
 
         >>> run_if( f'touch  {out}', out)
+        pipcl.py: run_if(): Running command because: Command has changed
+        pipcl.py: run(): Running: touch  run_if_test_out
         True
 
     If we add a prerequisite that is newer than the output, the command is run:
 
+        >>> time.sleep(1)
         >>> prerequisite = 'run_if_test_prerequisite'
         >>> run( f'touch {prerequisite}')
-        >>> run_if( f'touch {out}', out, prerequisite)
+        pipcl.py: run(): Running: touch run_if_test_prerequisite
+        >>> run_if( f'touch  {out}', out, prerequisite)
+        pipcl.py: run_if(): Running command because: Prerequisite is new: 'run_if_test_prerequisite'
+        pipcl.py: run(): Running: touch  run_if_test_out
         True
 
     If we repeat, the output will be newer than the prerequisite, so the
     command is not run:
 
-        >>> run_if( f'touch {out}', out, prerequisite)
+        >>> run_if( f'touch  {out}', out, prerequisite)
+        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
     '''
     doit = False
+    cmd_path = f'{out}.cmd'
+    
     if not doit:
         out_mtime = _fs_mtime( out)
         if out_mtime == 0:
             doit = f'File does not exist: {out!r}'
 
-    cmd_path = f'{out}.cmd'
-    if os.path.isfile( cmd_path):
-        with open( cmd_path) as f:
-            cmd = f.read()
-    else:
-        cmd = None
-    if command != cmd:
-        if cmd is None:
-            doit = 'No previous command stored'
+    if not doit:
+        if os.path.isfile( cmd_path):
+            with open( cmd_path) as f:
+                cmd = f.read()
         else:
-            doit = f'Command has changed'
-            if 0:
-                doit += f': {cmd!r} => {command!r}'
+            cmd = None
+        if command != cmd:
+            if cmd is None:
+                doit = 'No previous command stored'
+            else:
+                doit = f'Command has changed'
+                if 0:
+                    doit += f': {cmd!r} => {command!r}'
 
     if not doit:
         # See whether any prerequisites are newer than target.
