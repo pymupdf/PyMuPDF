@@ -20,8 +20,28 @@ def print_coverage():
     for branch, hit in branch_coverage.items():
         print(f"{branch} was {'hit' if hit else 'not hit'}")
 
-result = JM_INT_ITEM("test", 1)
-print_coverage()
+def test_JM_INT_ITEM_within_bounds_returns_0():
+    result = JM_INT_ITEM("test", 1)
+    print_coverage()
 
-result = JM_INT_ITEM("test", 213)
-print_coverage()
+def test_JM_INT_ITEM_out_of_bounds_returns_1():
+    result = JM_INT_ITEM("test", 213)
+    print_coverage()
+
+def test_JM_INT_ITEM_list_within_bounds_returns_0():
+    result = JM_INT_ITEM([2, 4, 6, 8], 2)
+    print_coverage()
+
+def test_JM_INT_ITEM_list_out_of_bounds_returns_1():
+    result = JM_INT_ITEM([3, 6, 9, 12], 10)
+    print_coverage()
+
+def test_JM_INT_ITEM_empty_returns_1():
+    result = JM_INT_ITEM([], 0)
+    print_coverage()
+
+test_JM_INT_ITEM_within_bounds_returns_0()
+test_JM_INT_ITEM_out_of_bounds_returns_1()
+test_JM_INT_ITEM_list_within_bounds_returns_0()
+test_JM_INT_ITEM_list_out_of_bounds_returns_1()
+test_JM_INT_ITEM_empty_returns_1()
