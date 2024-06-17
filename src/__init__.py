@@ -7577,6 +7577,7 @@ class Page:
         annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_REDACT)
         q = JM_quad_from_py(quad)
         r = mupdf.fz_rect_from_quad(q)
+        assert not mupdf.fz_is_empty_rect(r), "quad / rectangle is empty"
         # TODO calculate de-rotated rect
         mupdf.pdf_set_annot_rect(annot, r)
         if fill:
@@ -8388,7 +8389,7 @@ class Page:
             ) -> Annot:
         """Add a 'Redact' annotation."""
         da_str = None
-        if text:
+        if text and not set(string.whitespace).issuperset(text):
             CheckColor(fill)
             CheckColor(text_color)
             if not fontname:
@@ -9036,14 +9037,19 @@ class Page:
 
         self.set_rotation(0)
         rot = ~mat  # inverse of the derotation matrix
+
         for annot in self.annots():  # modify rectangles of annotations
             r = annot.rect * rot
+            # TODO: only try to set rectangle for applicable annot types
             annot.set_rect(r)
         for link in self.get_links():  # modify 'from' rectangles of links
             r = link["from"] * rot
             self.delete_link(link)
             link["from"] = r
-            self.insert_link(link)
+            try:  # invalid links remain deleted
+                self.insert_link(link)
+            except Exception:
+                pass
         for widget in self.widgets():  # modify field rectangles
             r = widget.rect * rot
             widget.rect = r
