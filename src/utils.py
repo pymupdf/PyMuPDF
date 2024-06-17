@@ -4246,7 +4246,7 @@ def apply_redactions(
         exception_types = (ValueError, mupdf.FzErrorBase)
         if pymupdf.mupdf_version_tuple < (1, 24):
             exception_types = ValueError
-        if not new_text:
+        if not new_text or annot_rect.width <= pymupdf.EPSILON:
             return annot_rect
         try:
             text_width = pymupdf.get_text_length(new_text, font, fsize)
