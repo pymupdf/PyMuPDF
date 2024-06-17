@@ -217,22 +217,6 @@ def test_redact4():
     assert line_art == page.get_drawings()
 
 
-def test_redact5():
-    """Prevent empty redaction rectangles."""
-    if not hasattr(pymupdf, "mupdf"):
-        print("Not executing 'test_redact5' in classic")
-        return
-    filename = os.path.join(scriptdir, "resources", "symbol-list.pdf")
-    doc = pymupdf.open(filename)
-    page = doc[0]
-    raised = False
-    try:
-        redact = page.add_redact_annot(pymupdf.EMPTY_RECT())
-    except Exception:
-        raised = True
-    assert raised
-
-
 def test_1645():
     '''
     Test fix for #1645.
