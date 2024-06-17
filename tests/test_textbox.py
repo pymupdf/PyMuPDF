@@ -260,3 +260,14 @@ def test_htmlbox3():
     # lowlevel-extract inserted text to access opacity
     span = page.get_texttrace()[0]
     assert span["opacity"] == 0.5
+
+
+def test_3559():
+    if pymupdf.mupdf_version_tuple < (1, 24, 4):
+        print(f'test_3559(): Not running because mupdf known to SEGV.')
+        return
+    doc = pymupdf.Document()
+    page = doc.new_page()
+    text_insert="""<body><h3></h3></body>"""
+    rect = pymupdf.Rect(100, 100, 200, 200)
+    page.insert_htmlbox(rect, text_insert)

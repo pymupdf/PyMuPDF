@@ -2803,12 +2803,20 @@ class Document:
                                         stream = mupdf.FzStream(filename)
                                         accel = mupdf.FzStream()
                                         archive = mupdf.FzArchive(None)
-                                        doc = mupdf.ll_fz_document_open_fn_call(
-                                                handler.open,
-                                                stream.m_internal,
-                                                accel.m_internal,
-                                                archive.m_internal,
-                                                )
+                                        if mupdf_version_tuple >= (1, 25):
+                                            doc = mupdf.ll_fz_document_handler_open(
+                                                    handler,
+                                                    stream.m_internal,
+                                                    accel.m_internal,
+                                                    archive.m_internal,
+                                                    )
+                                        else:
+                                            doc = mupdf.ll_fz_document_open_fn_call(
+                                                    handler.open,
+                                                    stream.m_internal,
+                                                    accel.m_internal,
+                                                    archive.m_internal,
+                                                    )
                                     else:
                                         doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
                                 except Exception as e:

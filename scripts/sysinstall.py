@@ -3,8 +3,9 @@
 '''
 Test for Linux system install of MuPDF and PyMuPDF.
 
-We build and install MuPDF and PyMuPDF into a root directory, then run
-PyMuPDF's pytest tests with LD_PRELOAD_PATH and PYTHONPATH set.
+We build and install MuPDF and PyMuPDF into a root directory, then use
+scripts/test.py to run PyMuPDF's pytest tests with LD_PRELOAD_PATH and
+PYTHONPATH set.
 
 PyMuPDF itself is installed using `python -m install` with a wheel created with
 `pip wheel`.
@@ -21,6 +22,8 @@ Args:
 
     --mupdf-dir <mupdf_dir>
         Path of MuPDF checkout; default is 'mupdf'.
+    --mupdf-do 0|1
+        Whether to build and install mupdf.
     --mupdf-git <git_args>
         Get or update `mupdf_dir` using git. If `mupdf_dir` already
         exists we run `git pull` in it; otherwise we run `git
@@ -43,6 +46,8 @@ Args:
         Directory within `root`; default is `/usr/local`. Must start with `/`.
     --pymupdf-dir <pymupdf_dir>
         Path of PyMuPDF checkout; default is 'PyMuPDF'.
+    --pymupdf-do 0|1
+        Whether to build and install pymupdf.
     --root <root>
         Root of install directory; default is `/`.
     --tesseract5 0|1
@@ -57,15 +62,14 @@ Args:
         If 1 (the default), we use `python -m installer` to install PyMuPDF
         from a generated wheel. [Otherwise we use `pip install`, which refuses
         to do a system install with `--root /`, referencing PEP-668.]
-    -m 0|1
-        If 1 (the default) we build and install MuPDF, otherwise we just show
-        what command we would have run.
-    -p 0|1
-        If 1 (the default) we build and install PyMuPDF, otherwise we just show
-        what command we would have run.
-    -t 0|1
-        If 1 (the default) we run PyMuPDF's pytest tests, otherwise we just
-        show what command we would have run.
+    -i <implementations>
+        Passed through to scripts/test.py.
+    -f <test-fitz>
+        Passed through to scripts/test.py.
+    -p <pytest-options>
+        Passed through to scripts/test.py.
+    -t <names>
+        Passed through to scripts/test.py.
 
 To only show what commands would be run, but not actually run them, specify `-m
 0 -p 0 -t 0`.
@@ -75,6 +79,7 @@ import glob
 import multiprocessing
 import os
 import platform
+import shlex
 import subprocess
 import sys
 import sysconfig
@@ -117,19 +122,23 @@ def main():
     # Set default behaviour.
     #
     use_installer = True
-    mupdf = True
+    mupdf_do = True
     mupdf_dir = 'mupdf'
     mupdf_git = None
     mupdf_so_mode = None
     packages = True
     prefix = '/usr/local'
-    pymupdf = True
+    pymupdf_do = True
     pymupdf_dir = os.path.abspath( f'{__file__}/../..')
     root = 'sysinstall_test'
     tesseract5 = True
-    test = True
+    pytest_args = None
+    pytest_do = True
+    pytest_name = None
     test_venv = 'venv-pymupdf-sysinstall-test'
     pip = 'venv'
+    test_fitz = None
+    test_implementations = None
     
     # Parse command-line.
     #
@@ -142,20 +151,24 @@ def main():
         if arg in ('-h', '--help'):
             print(__doc__)
             return
+        elif arg == '--mupdf-do':       mupdf_do = int(next(args))
         elif arg == '--mupdf-dir':      mupdf_dir = next(args)
         elif arg == '--mupdf-git':      mupdf_git = next(args)
         elif arg == '--mupdf-so-mode':  mupdf_so_mode = next(args)
         elif arg == '--packages':       packages = int(next(args))
         elif arg == '--prefix':         prefix = next(args)
+        elif arg == '--pymupdf-do':     pymupdf_do = int(next(args))
         elif arg == '--pymupdf-dir':    pymupdf_dir = next(args)
         elif arg == '--root':           root = next(args)
         elif arg == '--tesseract5':     tesseract5 = int(next(args))
+        elif arg == '--pytest-do':      pytest_do = int(next(args))
         elif arg == '--test-venv':      test_venv = next(args)
         elif arg == '--use-installer':  use_installer = int(next(args))
         elif arg == '--pip':            pip = next(args)
-        elif arg == '-m':               mupdf = int(next(args))
-        elif arg == '-p':               pymupdf = int(next(args))
-        elif arg == '-t':               test = int(next(args))
+        elif arg == '-f':               test_fitz = next(args)
+        elif arg == '-i':               test_implementations = next(args)
+        elif arg == '-p':               pytest_args = next(args)
+        elif arg == '-t':               pytest_name = next(args)
         else:
             assert 0, f'Unrecognised arg: {arg!r}'
     
@@ -169,7 +182,7 @@ def main():
     if root == '/':
         sudo = f'sudo PATH={os.environ["PATH"]} '
     def run(command):
-        return run_command(command, doit=mupdf)
+        return run_command(command, doit=mupdf_do)
     # Get MuPDF from git if specified.
     #
     if mupdf_git:
@@ -232,7 +245,7 @@ def main():
     #
     print('## Build and install PyMuPDF.')
     def run(command):
-        return run_command(command, doit=pymupdf)
+        return run_command(command, doit=pymupdf_do)
     flags_freetype2 = run_command('pkg-config --cflags freetype2', capture_output=1).stdout.strip()
     compile_flags = f'-I {root_prefix}/include {flags_freetype2}'
     link_flags = f'-L {root_prefix}/lib'
@@ -316,7 +329,7 @@ def main():
     #
     print('## Run PyMuPDF pytest tests.')
     def run(command):
-        return run_command(command, doit=test)
+        return run_command(command, doit=pytest_do)
     import gh_release
     if pip == 'venv':
         # Create venv.
@@ -342,9 +355,32 @@ def main():
     run(f'ls -l {root_prefix}/bin/')
     # 2024-03-20: Not sure whether/where `pymupdf` binary is installed, so we
     # disable the test_cli* tests.
-    excluded_tests = 'test_color_count test_3050 test_cli test_cli_out test_pylint test_textbox3'.split()
-    excluded_tests = ' and not '.join(excluded_tests)
-    command += f' {pymupdf_dir}/scripts/test.py -p "-k \'not {excluded_tests}\'" -v 0 test'
+    command += f' {pymupdf_dir}/scripts/test.py'
+    command += f' -v 0'
+    if pytest_name is None:
+        excluded_tests = (
+                'test_color_count',
+                'test_3050',
+                'test_cli',
+                'test_cli_out',
+                'test_pylint',
+                'test_textbox3',
+                'test_3493',
+                )
+        excluded_tests = ' and not '.join(excluded_tests)
+        if not pytest_args:
+            pytest_args = ''
+        pytest_args += f' -k \'not {excluded_tests}\''
+    else:
+        command += f' -t {pytest_name}'
+    if test_fitz:
+        command += f' -f {test_fitz}'
+    if test_implementations:
+        command += f' -i {test_implementations}'
+    if pytest_args:
+        command += f' -p {shlex.quote(pytest_args)}'
+    if pytest_do:
+        command += ' test'
     run(command)
 
 
