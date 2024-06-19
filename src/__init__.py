@@ -18928,8 +18928,10 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
     try:
         assert isinstance( ctm, mupdf.fz_matrix)
         dev.pathfactor = 1
-        if abs(ctm.a) == abs(ctm.d):
+        if ctm.a != 0 and abs(ctm.a) == abs(ctm.d):
             dev.pathfactor = abs(ctm.a)
+        elif ctm.b != 0 and abs(ctm.b) == abs(ctm.c):
+            dev.pathfactor = abs(ctm.b)
         dev.ctm = mupdf.FzMatrix( ctm)  # fz_concat(ctm, dev_ptm);
         dev.path_type = trace_device_STROKE_PATH
 

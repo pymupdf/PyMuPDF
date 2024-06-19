@@ -169,7 +169,7 @@ def test_2556():
     # following contains an incomplete clip
     c = b"q 50 697.6 400 100.0 re W n q 0 0 m W n Q "
     xref = doc.get_new_xref()  # prepare /Contents object for page
-    doc.update_object(xref,"<<>>")  # new xref now is a dictionary
+    doc.update_object(xref, "<<>>")  # new xref now is a dictionary
     doc.update_stream(xref, c)  # store drawing commands
     page.set_contents(xref)  # give the page this xref as /Contents
     # following will bring down interpreter if fix not installed
@@ -218,3 +218,13 @@ def test_3207():
     p11 = items[5][2]
     assert p0 == p5
     assert p6 == p11
+
+
+def test_3591():
+    """Confirm correct scaling factor for rotation matrices."""
+    filename = os.path.join(scriptdir, "resources", "test-3591.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    paths = page.get_drawings()
+    for p in paths:
+        assert p["width"] == 15
