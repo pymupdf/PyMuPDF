@@ -2647,8 +2647,12 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     //printf("extra.jm_lineart_stroke_path(): dev->seqno=%zi\n", dev->seqno);
     int i;
     dev->pathfactor = 1;
-    if (fz_abs(ctm.a) == fz_abs(ctm.d)) {
+    if (ctm.a != 0 && fz_abs(ctm.a) == fz_abs(ctm.d)) {
         dev->pathfactor = fz_abs(ctm.a);
+    } else {
+        if (ctm.b != 0 && fz_abs(ctm.b) == fz_abs(ctm.c)) {
+            dev->pathfactor = fz_abs(ctm.b);
+        }
     }
     dev->ctm = ctm; // fz_concat(ctm, trace_device_ptm);
     dev->path_type = STROKE_PATH;
