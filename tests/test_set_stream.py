@@ -34,17 +34,14 @@ def print_coverage():
 def test_set_stream_name_startsWithFd_opensFile():
     os.environ['VAR'] = 'fd:1'
     result = _set_stream('VAR', "")
-    print_coverage()
 
 def test_set_stream_name_startsWithPath_opensFile():
     os.environ['VAR'] = 'path:example.txt'
     result = _set_stream('VAR', "")
-    print_coverage()
 
 def test_set_stream_name_startsWithPathPlus_opensFile():
     os.environ['VAR'] = 'path+:example.txt'
     result = _set_stream('VAR', "")
-    print_coverage()
 
 def test_set_stream_name_unrecognized_raisesException():
     os.environ['VAR'] = 'unrecognized'
@@ -52,15 +49,24 @@ def test_set_stream_name_unrecognized_raisesException():
         result = _set_stream('VAR', "")
     except Exception as e:
         print(e)
-    print_coverage()
 
 def test_set_stream_name_isNone_returns_default():
     del os.environ['VAR']
     result = _set_stream('VAR', 0)
-    print_coverage()
+
+def calculate_coverage():
+    hit_branches = 0
+    for branch, hit in branch_coverage.items():
+        if hit:
+          hit_branches = hit_branches + 1
+    total_branches = len(branch_coverage)
+    coverage = (hit_branches / total_branches) * 100
+    print("Coverage is", coverage, "%")
 
 test_set_stream_name_startsWithFd_opensFile()
 test_set_stream_name_startsWithPath_opensFile()
 test_set_stream_name_startsWithPathPlus_opensFile()
 test_set_stream_name_unrecognized_raisesException()
 test_set_stream_name_isNone_returns_default()
+print_coverage()
+calculate_coverage()
