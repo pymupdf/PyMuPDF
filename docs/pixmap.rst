@@ -71,7 +71,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
 .. class:: Pixmap
 
-   .. method:: __init__(self, colorspace, irect, alpha)
+   .. method:: __init__(self, colorspace, irect, alpha=False)
 
       **New empty pixmap:** Create an empty pixmap of size and origin given by the rectangle. So, *irect.top_left* designates the top left corner of the pixmap, and its width and height are *irect.width* resp. *irect.height*. Note that the image area is **not initialized** and will contain crap data -- use eg. :meth:`clear_with` or :meth:`set_rect` to be sure.
 
