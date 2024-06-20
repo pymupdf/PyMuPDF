@@ -12417,7 +12417,7 @@ class Story:
             If true we output diagnostics.
         '''
         x0, y0 = origin
-        y1 = x0 + height
+        y1 = y0 + height
         def fn(width):
             return Rect(x0, y0, x0+width, y1)
         return self.fit(fn, width_min, width_max, delta, verbose)
