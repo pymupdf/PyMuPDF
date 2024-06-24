@@ -2,6 +2,38 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.6 (2024-06-25)**
+
+* Fixed issues:
+
+  * **Fixed** `3599 <https://github.com/pymupdf/PyMuPDF/issues/3599>`_: Story.fit_width() has a weird line
+  * **Fixed** `3594 <https://github.com/pymupdf/PyMuPDF/issues/3594>`_: Garbled extraction for Amazon Sustainability Report
+  * **Fixed** `3591 <https://github.com/pymupdf/PyMuPDF/issues/3591>`_: 'width' in Page.get_drawings() returns width equal as 0
+  * **Fixed** `3561 <https://github.com/pymupdf/PyMuPDF/issues/3561>`_: ZeroDivisionError: float division by zero with page.apply_redactions()
+  * **Fixed** `3559 <https://github.com/pymupdf/PyMuPDF/issues/3559>`_: SegFault 11 when empty H1 H2 H3 H4 etc element is used in insert_htmlbox
+  * **Fixed** `3539 <https://github.com/pymupdf/PyMuPDF/issues/3539>`_: Add dotted gridline detection to table recognition
+  * **Fixed** `3519 <https://github.com/pymupdf/PyMuPDF/issues/3519>`_: get_toc(simple=False) AttributeError: 'Outline' object has no attribute 'rect'
+  * **Fixed** `3510 <https://github.com/pymupdf/PyMuPDF/issues/3510>`_: page.get_label() gets wrong label on the first page of doc
+  * **Fixed** `3494 <https://github.com/pymupdf/PyMuPDF/issues/3494>`_: 1.24.2/1.24.3: spurious characters introduced when using subset_fonts and insert_pdf
+  * **Fixed** `3470 <https://github.com/pymupdf/PyMuPDF/issues/3470>`_: subset_fonts error exit without exception/warning
+  * **Fixed** `3400 <https://github.com/pymupdf/PyMuPDF/issues/3400>`_: set_toc alters link coordinates for some rotated pages on pymupdf 1.24.2
+  * **Fixed** `3347 <https://github.com/pymupdf/PyMuPDF/issues/3347>`_: Incorrect links to points on pages having different heights
+  * **Fixed** `3237 <https://github.com/pymupdf/PyMuPDF/issues/3237>`_: Set_metadata() does not work
+  * **Fixed** `3493 <https://github.com/pymupdf/PyMuPDF/discussions/3493>`_: Isolate PyMuPDF from other libraries; issues when PyMuPDF is loaded with other libraries like GdkPixbuf
+
+* Other:
+
+  * Fixed concurrent use of PyMuPDF caused by use of constant temporary filenames.
+  
+  * Add musllinux x86_64 wheels to release.
+
+  * Added clearer version information:
+    
+    * `pymupdf.pymupdf_version`.
+    * `pymupdf.mupdf_version`.
+    * `pymupdf.pymupdf_date`.
+
+
 **Changes in version 1.24.5 (2024-05-30)**
 
 * Fixed issues:
