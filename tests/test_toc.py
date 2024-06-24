@@ -157,3 +157,120 @@ def test_toc_count():
     with pymupdf.open(file_out) as doc:
         print(f'4: {get(doc)}')
     pymupdf._log_items_clear()
+
+
+def test_3347():
+    '''
+    Check fix for #3347 - link destination rectangles when source/destination
+    pages have different sizes.
+    '''
+    doc = pymupdf.open()
+    doc.new_page(width=500, height=800)
+    doc.new_page(width=800, height=500)
+    rects = [
+        (0, pymupdf.Rect(10, 20, 50, 40), pymupdf.utils.getColor('red')),
+        (0, pymupdf.Rect(300, 350, 400, 450), pymupdf.utils.getColor('green')),
+        (1, pymupdf.Rect(20, 30, 40, 50), pymupdf.utils.getColor('blue')),
+        (1, pymupdf.Rect(350, 300, 450, 400), pymupdf.utils.getColor('black'))
+    ]
+
+    for page, rect, color in rects:
+        doc[page].draw_rect(rect, color=color)
+
+    for (from_page, from_rect, _), (to_page, to_rect, _) in zip(rects, rects[1:] + rects[:1]):
+        doc[from_page].insert_link({
+            'kind': 1,
+            'from': from_rect,
+            'page': to_page,
+            'to': to_rect.top_left,
+        })
+
+    links_expected = [
+            (0, {'kind': 1, 'xref': 11, 'from': pymupdf.Rect(10.0, 20.0, 50.0, 40.0), 'page': 0, 'to': pymupdf.Point(300.0, 350.0), 'zoom': 0.0, 'id': 'jorj-L0'}),
+            (0, {'kind': 1, 'xref': 12, 'from': pymupdf.Rect(300.0, 350.0, 400.0, 450.0), 'page': 1, 'to': pymupdf.Point(20.0, 30.0), 'zoom': 0.0, 'id': 'jorj-L1'}),
+            (1, {'kind': 1, 'xref': 13, 'from': pymupdf.Rect(20.0, 30.0, 40.0, 50.0), 'page': 1, 'to': pymupdf.Point(350.0, 300.0), 'zoom': 0.0, 'id': 'jorj-L0'}),
+            (1, {'kind': 1, 'xref': 14, 'from': pymupdf.Rect(350.0, 300.0, 450.0, 400.0), 'page': 0, 'to': pymupdf.Point(10.0, 20.0), 'zoom': 0.0, 'id': 'jorj-L1'}),
+            ]
+
+    path = os.path.normpath(f'{__file__}/../../tests/test_3347_out.pdf')
+    doc.save(path)
+    print(f'Have saved to {path=}.')
+
+    links_actual = list()
+    for page_i, page in enumerate(doc):
+        links = page.get_links()
+        for link_i, link in enumerate(links):
+            print(f'{page_i=} {link_i=}: {link!r}')
+            links_actual.append( (page_i, link) )
+    
+    assert links_actual == links_expected
+
+
+def test_3400():
+    '''
+    Check fix for #3400 - link destination rectangles when source/destination
+    pages have different rotations.
+    '''
+    width = 750
+    height = 1110
+    circle_middle_point = pymupdf.Point(height / 4, width / 4)
+    print(f'{circle_middle_point=}')
+    with pymupdf.open() as doc:
+        
+        page = doc.new_page(width=width, height=height)
+        page.set_rotation(270)
+        # draw a circle at the middle point to facilitate debugging
+        page.draw_circle(circle_middle_point, color=(0, 0, 1), radius=5, width=2)
+        
+        for i in range(10):
+            for j in range(10):
+                x = i/10 * width
+                y = j/10 * height
+                page.draw_circle(pymupdf.Point(x, y), color=(0,0,0), radius=0.2, width=0.1)
+                page.insert_htmlbox(pymupdf.Rect(x, y, x+width/10, y+height/20), f'<small><small><small><small>({x=:.1f},{y=:.1f})</small></small></small></small>', )
+
+        # rotate the middle point by the page rotation for the new toc entry
+        toc_link_coords = circle_middle_point
+        print(f'{toc_link_coords=}')
+        
+        toc = [
+            (
+                1,
+                "Link to circle",
+                1,
+                {
+                    "kind": pymupdf.LINK_GOTO,
+                    "page": 1,
+                    "to": toc_link_coords,
+                    "from": pymupdf.Rect(0, 0, height / 4, width / 4),
+                },
+            )
+        ]
+        doc.set_toc(toc, 0)  # set the toc
+        
+        page = doc.new_page(width=200, height=300)
+        from_rect = pymupdf.Rect(10, 10, 100, 50)
+        page.insert_htmlbox(from_rect, 'link')
+        link = dict()
+        link['from'] = from_rect
+        link['kind'] = pymupdf.LINK_GOTO
+        link['to'] = toc_link_coords
+        link['page'] = 0
+        page.insert_link(link)
+        
+        path = os.path.normpath(f'{__file__}/../../tests/test_3400.pdf')
+        doc.save(path)
+        print(f'Saved to {path=}.')
+        
+        links_expected = [
+                (1, {'kind': 1, 'xref': 1120, 'from': pymupdf.Rect(10.0, 10.0, 100.0, 50.0), 'page': 0, 'to': pymupdf.Point(187.5, 472.5), 'zoom': 0.0, 'id': 'jorj-L0'})
+                ]
+
+        links_actual = list()
+        for page_i, page in enumerate(doc):
+            links = page.get_links()
+            for link_i, link in enumerate(links):
+                print(f'({page_i}, {link!r})')
+                links_actual.append( (page_i, link) )
+    
+        assert links_actual == links_expected

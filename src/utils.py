@@ -1643,7 +1643,10 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
             pno = lnk["page"]
             xref = page.parent.page_xref(pno)
             pnt = lnk.get("to", pymupdf.Point(0, 0))  # destination point
-            ipnt = pnt * ictm
+            dest_page = page.parent[pno]
+            dest_ctm = dest_page.transformation_matrix
+            dest_ictm = ~dest_ctm
+            ipnt = pnt * dest_ictm
             annot = txt(xref, ipnt.x, ipnt.y, lnk.get("zoom", 0), rect)
         else:
             txt = pymupdf.annot_skel["goto2"]  # annot_goto_n
