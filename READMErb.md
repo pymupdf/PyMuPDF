@@ -1,4 +1,4 @@
-# PyMuPDF 1.24.3
+# PyMuPDF 1.24.6
 
 This wheel contains [MuPDF](https://mupdf.readthedocs.io/) shared libraries for
 use by [PyMuPDF](https://pymupdf.readthedocs.io/).
