@@ -283,11 +283,12 @@ def _as_fz_document(document):
     else:
         assert 0, f'Unrecognised {type(document)=}'
 
-def _as_pdf_document(document):
+def _as_pdf_document(document, required=True):
     '''
-    Returns document as a mupdf.PdfDocument, downcasting as required. If we
-    fail (i.e. document is a mupdf.FzDocument(), <ret>.m_internal will be
-    None. Raises 'document closed' exception if closed.
+    Returns `document` downcast to a mupdf.PdfDocument. If downcast fails (i.e.
+    `document` is not actually a `PdfDocument`) then we assert-fail if `required`
+    is true (the default) else return a `mupdf.PdfDocument` with `.m_internal`
+    false.
     '''
     if isinstance(document, Document):
         if document.is_closed:
@@ -296,7 +297,10 @@ def _as_pdf_document(document):
     if isinstance(document, mupdf.PdfDocument):
         return document
     elif isinstance(document, mupdf.FzDocument):
-        return mupdf.PdfDocument(document)
+        ret = mupdf.PdfDocument(document)
+        if required:
+            assert ret.m_internal
+        return ret
     elif document is None:
         assert 0, f'document is None'
     else:
@@ -317,17 +321,21 @@ def _as_fz_page(page):
     else:
         assert 0, f'Unrecognised {type(page)=}'
 
-def _as_pdf_page(page):
+def _as_pdf_page(page, required=True):
     '''
-    Returns page as a mupdf.PdfPage, downcasting as required. If we fail (i.e.
-    page is a mupdf.FzPage(), <ret>.m_internal will be None.
+    Returns `page` downcast to a mupdf.PdfPage. If downcast fails (i.e. `page`
+    is not actually a `PdfPage`) then we assert-fail if `required` is true (the
+    default) else return a `mupdf.PdfPage` with `.m_internal` false.
     '''
     if isinstance(page, Page):
         page = page.this
     if isinstance(page, mupdf.PdfPage):
         return page
     elif isinstance(page, mupdf.FzPage):
-        return mupdf.pdf_page_from_fz_page(page)
+        ret = mupdf.pdf_page_from_fz_page(page)
+        if required:
+            assert ret.m_internal
+        return ret
     elif page is None:
         assert 0, f'page is None'
     else:
@@ -2886,8 +2894,8 @@ class Document:
         """Add new form font."""
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return
         fonts = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
@@ -2907,8 +2915,8 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         xrefs = []  # create Python list
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return xrefs    # not a pdf
         # get the main root
         root = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('Root'))
@@ -2943,7 +2951,6 @@ class Document:
     def _deleteObject(self, xref):
         """Delete object."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         if not _INRANGE(xref, 1, mupdf.pdf_xref_len(pdf)-1):
             raise ValueError( MSG_BAD_XREF)
         mupdf.pdf_delete_object(pdf, xref)
@@ -2976,7 +2983,6 @@ class Document:
 
     def _embfile_add(self, name, buffer_, filename=None, ufilename=None, desc=None):
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         data = JM_BufferFromBytes(buffer_)
         if not data.m_internal:
             raise TypeError( MSG_BAD_BUFFER)
@@ -3068,7 +3074,6 @@ class Document:
     def _embfile_names(self, namelist):
         """Get list of embedded file names."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         names = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer(pdf),
                 PDF_NAME('Root'),
@@ -3204,7 +3209,6 @@ class Document:
         mylimit = limit
         if mylimit < 256:
             mylimit = 256
-        ASSERT_PDF(pdf), f'{pdf=}'
         if ordering >= 0:
             data, size, index = mupdf.fz_lookup_cjk_font(ordering)
             font = mupdf.fz_new_font_from_memory(None, data, size, index, 0)
@@ -3232,8 +3236,6 @@ class Document:
 
     def _get_page_labels(self):
         pdf = _as_pdf_document(self)
-
-        ASSERT_PDF(pdf)
         rc = []
         pagelabels = mupdf.pdf_new_name("PageLabels")
         obj = mupdf.pdf_dict_getl( mupdf.pdf_trailer(pdf), PDF_NAME('Root'), pagelabels)
@@ -3275,7 +3277,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         # get main root
         root = mupdf.pdf_dict_get( mupdf.pdf_trailer( pdf), PDF_NAME('Root'))
         # get outline root
@@ -3290,8 +3291,8 @@ class Document:
 
     def _getPDFfileid(self):
         """Get PDF file id."""
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return
         idlist = []
         identity = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('ID'))
@@ -3309,13 +3310,13 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         doc = self.this
-        pdf = _as_pdf_document(self)
         pageCount = mupdf.pdf_count_pages(doc) if isinstance(doc, mupdf.PdfDocument) else mupdf.fz_count_pages(doc)
         n = pno  # pno < 0 is allowed
         while n < 0:
             n += pageCount  # make it non-negative
         if n >= pageCount:
             raise ValueError( MSG_BAD_PAGENO)
+        pdf = _as_pdf_document(self)
         pageref = mupdf.pdf_lookup_page_obj(pdf, n)
         rsrc = mupdf.pdf_dict_get_inheritable(pageref, mupdf.PDF_ENUM_NAME_Resources)
         liste = []
@@ -3329,8 +3330,6 @@ class Document:
         Utility: insert font from file or binary.
         '''
         pdf = _as_pdf_document(self)
-
-        ASSERT_PDF(pdf)
         if not fontfile and not fontbuffer:
             raise ValueError( MSG_FILE_OR_BUFFER)
         value = JM_insert_font(pdf, None, fontfile, fontbuffer, 0, 0, 0, 0, 0, -1)
@@ -3357,7 +3356,6 @@ class Document:
         """Move or copy a PDF page reference."""
         pdf = _as_pdf_document(self)
         same = 0
-        ASSERT_PDF(pdf)
         # get the two page objects -----------------------------------
         # locate the /Kids arrays and indices in each
 
@@ -3418,7 +3416,6 @@ class Document:
             extra._newPage( self.this, pno, width, height)
         else:
             pdf = _as_pdf_document(self)
-            assert isinstance(pdf, mupdf.PdfDocument)
             mediabox = mupdf.FzRect(mupdf.FzRect.Fixed_UNIT)
             mediabox.x1 = width
             mediabox.y1 = height
@@ -3463,7 +3460,6 @@ class Document:
 
     def _set_page_labels(self, labels):
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         pagelabels = mupdf.pdf_new_name("PageLabels")
         root = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('Root'))
         mupdf.pdf_dict_del(root, pagelabels)
@@ -3505,8 +3501,8 @@ class Document:
     @property
     def FormFonts(self):
         """Get list of field font resource names."""
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return
         fonts = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer(pdf),
@@ -3526,7 +3522,6 @@ class Document:
     def add_layer(self, name, creator=None, on=None):
         """Add a new OC layer."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         JM_add_layer_config( pdf, name, creator, on)
         mupdf.ll_pdf_read_ocg( pdf.m_internal)
 
@@ -3534,7 +3529,6 @@ class Document:
         """Add new optional content group."""
         xref = 0
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
 
         # make the OCG
         ocg = mupdf.pdf_add_new_dict(pdf, 3)
@@ -3615,8 +3609,8 @@ class Document:
 
     def can_save_incrementally(self):
         """Check whether incremental saves are possible."""
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return False
         return mupdf.pdf_can_be_saved_incrementally(pdf)
 
@@ -3636,8 +3630,6 @@ class Document:
 
         """
         pdf = _as_pdf_document(self)
-        if not pdf:
-            raise ValueError("not a PDF")
         mupdf.pdf_bake_document(pdf, int(annots), int(widgets))
 
     @property
@@ -3959,7 +3951,6 @@ class Document:
         '''
         #log( '{=xref info_only}')
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         obj = mupdf.pdf_load_object(pdf, xref)
         type_ = mupdf.pdf_dict_get(obj, PDF_NAME('Type'))
         subtype = mupdf.pdf_dict_get(obj, PDF_NAME('Subtype'))
@@ -4011,7 +4002,6 @@ class Document:
         pdf = _as_pdf_document(self)
         img_type = 0
         smask = 0
-        ASSERT_PDF(pdf)
         if not _INRANGE(xref, 1, mupdf.pdf_xref_len(pdf)-1):
             raise ValueError( MSG_BAD_XREF)
 
@@ -4144,7 +4134,6 @@ class Document:
         pdf = _as_pdf_document(self)
         page_count = mupdf.pdf_count_pages( pdf)
         try:
-            ASSERT_PDF(pdf)
             if (not _INRANGE(pno, 0, page_count - 1)
                     or not _INRANGE(to, -1, page_count - 1)
                     ):
@@ -4199,7 +4188,6 @@ class Document:
     def get_layer(self, config=-1):
         """Content of ON, OFF, RBGroups of an OC layer."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         ocp = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
                 PDF_NAME('Root'),
@@ -4222,7 +4210,6 @@ class Document:
     def get_layers(self):
         """Show optional OC layers."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         n = mupdf.pdf_count_layer_configs( pdf)
         if n == 1:
             obj = mupdf.pdf_dict_getl(
@@ -4251,7 +4238,6 @@ class Document:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
         xref = 0
-        ASSERT_PDF(pdf)
         ENSURE_OPERATION(pdf)
         xref = mupdf.pdf_create_object(pdf)
         return xref
@@ -4260,7 +4246,6 @@ class Document:
         """Show existing optional content groups."""
         ci = mupdf.pdf_new_name( "CreatorInfo")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         ocgs = mupdf.pdf_dict_getl(
                 mupdf.pdf_dict_get( mupdf.pdf_trailer( pdf), PDF_NAME('Root')),
                 PDF_NAME('OCProperties'),
@@ -4303,8 +4288,8 @@ class Document:
     def get_outline_xrefs(self):
         """Get list of outline xref numbers."""
         xrefs = []
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return xrefs
         root = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('Root'))
         if not root.m_internal:
@@ -4360,8 +4345,8 @@ class Document:
 
     def get_sigflags(self):
         """Get the /SigFlags value."""
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return -1   # not a PDF
         sigflags = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer(pdf),
@@ -4377,7 +4362,7 @@ class Document:
     def get_xml_metadata(self):
         """Get document XML metadata."""
         xml = None
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         if pdf.m_internal:
             xml = mupdf.pdf_dict_getl(
                     mupdf.pdf_trailer(pdf),
@@ -4569,7 +4554,7 @@ class Document:
 
     @property
     def is_dirty(self):
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         if not pdf.m_internal:
             return False
         r = mupdf.pdf_has_unsaved_changes(pdf)
@@ -4580,7 +4565,7 @@ class Document:
         '''
         Check whether we have a linearized PDF.
         '''
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         if pdf.m_internal:
             return mupdf.pdf_doc_was_linearized(pdf)
         return False    # gracefully handle non-PDF
@@ -4588,7 +4573,7 @@ class Document:
     @property
     def is_form_pdf(self):
         """Either False or PDF field count."""
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         if not pdf.m_internal:
             return False
         count = -1
@@ -4613,7 +4598,7 @@ class Document:
         """Check for PDF."""
         if isinstance(self.this, mupdf.PdfDocument):
             return True
-        # Avoid calling self.this.specifics() because it will end up creating
+        # Avoid calling smupdf.pdf_specifics because it will end up creating
         # a new PdfDocument which will call pdf_create_document(), which is ok
         # but a little unnecessary.
         #
@@ -4633,7 +4618,7 @@ class Document:
     @property
     def is_repaired(self):
         """Check whether PDF was repaired."""
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         if not pdf.m_internal:
             return False
         r = mupdf.pdf_was_repaired(pdf)
@@ -4648,7 +4633,6 @@ class Document:
         undo=0
         redo=0
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         undo = mupdf.pdf_can_undo(pdf)
         redo = mupdf.pdf_can_redo(pdf)
         return {'undo': bool(undo), 'redo': bool(redo)}
@@ -4658,7 +4642,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         mupdf.pdf_enable_journal(pdf)
 
     def journal_is_enabled(self):
@@ -4674,7 +4657,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         if isinstance(filename, str):
             mupdf.pdf_load_journal(pdf, filename)
         else:
@@ -4689,7 +4671,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         name = mupdf.pdf_undoredo_step(pdf, step)
         return name
 
@@ -4699,7 +4680,6 @@ class Document:
             raise ValueError("document closed or encrypted")
         steps=0
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         rc, steps = mupdf.pdf_undoredo_state(pdf)
         return rc, steps
 
@@ -4708,7 +4688,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         mupdf.pdf_redo(pdf)
         return True
 
@@ -4717,7 +4696,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         if isinstance(filename, str):
             mupdf.pdf_save_journal(pdf, filename)
         else:
@@ -4730,7 +4708,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         if not pdf.m_internal.journal:
             raise RuntimeError( "Journalling not enabled")
         if name:
@@ -4743,7 +4720,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         mupdf.pdf_end_operation(pdf)
 
     def journal_undo(self):
@@ -4751,15 +4727,14 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         mupdf.pdf_undo(pdf)
         return True
 
     @property
     def language(self):
         """Document language."""
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return
         lang = mupdf.pdf_document_language(pdf)
         if lang == mupdf.FZ_LANG_UNSET:
@@ -4779,7 +4754,6 @@ class Document:
     def layer_ui_configs(self):
         """Show OC visibility status modifiable by user."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         info = mupdf.PdfLayerConfigUi()
         n = mupdf.pdf_count_layer_config_ui( pdf)
         rc = []
@@ -5024,7 +4998,6 @@ class Document:
         pdf = _as_pdf_document(self)
         if n >= page_count:
             raise ValueError( MSG_BAD_PAGENO)
-        ASSERT_PDF(pdf)
         pageref = mupdf.pdf_lookup_page_obj( pdf, n)
         cropbox = JM_cropbox(pageref)
         val = JM_py_from_rect(cropbox)
@@ -5061,7 +5034,6 @@ class Document:
         xref = 0
         if n >= page_count:
             raise ValueError( MSG_BAD_PAGENO)
-        ASSERT_PDF(pdf)
         xref = mupdf.pdf_to_num(mupdf.pdf_lookup_page_obj(pdf, n))
         return xref
 
@@ -5128,9 +5100,9 @@ class Document:
 
     def pdf_catalog(self):
         """Get xref of PDF catalog."""
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         xref = 0
-        if not pdf:
+        if not pdf.m_internal:
             return xref
         root = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdf), PDF_NAME('Root'))
         xref = mupdf.pdf_to_num(root)
@@ -5463,7 +5435,6 @@ class Document:
         opts.compression_effort = compression_effort
 
         out = None
-        ASSERT_PDF(pdf)
         pdf.m_internal.resynth_required = 0
         JM_embedded_clean(pdf)
         if no_new_id == 0:
@@ -5492,7 +5463,6 @@ class Document:
         if filename == self.name:
             raise ValueError("cannot snapshot to original")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         mupdf.pdf_save_snapshot(pdf, filename)
 
     def saveIncr(self):
@@ -5517,7 +5487,6 @@ class Document:
 
         # get underlying pdf document,
         pdf = _as_pdf_document(self)
-
         # create page sub-pdf via pdf_rearrange_pages2().
         #
         if mupdf_version_tuple >= (1, 24):
@@ -5531,7 +5500,6 @@ class Document:
 
     def set_language(self, language=None):
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         if not language:
             lang = mupdf.FZ_LANG_UNSET
         else:
@@ -5585,7 +5553,6 @@ class Document:
             if basestate not in ("ON", "OFF", "Unchanged"):
                 raise ValueError("bad 'basestate'")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         ocp = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
                 PDF_NAME('Root'),
@@ -5615,7 +5582,6 @@ class Document:
                 raise ValueError(f"bad OCG '{number}'.")
             number = select[0]  # this is the number for the name
         pdf = _as_pdf_document(self)
-        assert pdf
         if action == 1:
             mupdf.pdf_toggle_layer_config_ui(pdf, number)
         elif action == 2:
@@ -5683,7 +5649,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         root = mupdf.pdf_dict_get( mupdf.pdf_trailer( pdf), PDF_NAME('Root'))
         if not root.m_internal:
             RAISEPY( MSG_BAD_PDFROOT, JM_Exc_FileDataError)
@@ -5700,7 +5665,6 @@ class Document:
     def switch_layer(self, config, as_default=0):
         """Activate an OC layer."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         cfgs = mupdf.pdf_dict_getl(
                 mupdf.pdf_trailer( pdf),
                 PDF_NAME('Root'),
@@ -5723,7 +5687,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1):
             RAISEPY("bad xref", MSG_BAD_XREF, PyExc_ValueError)
@@ -5757,7 +5720,7 @@ class Document:
         '''
         Count versions of PDF document.
         '''
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=0)
         if pdf.m_internal:
             return mupdf.pdf_count_versions(pdf)
         return 0
@@ -5819,7 +5782,6 @@ class Document:
     def xref_get_key(self, xref, key):
         """Get PDF dict key value of object at 'xref'."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -5870,7 +5832,6 @@ class Document:
     def xref_get_keys(self, xref):
         """Get the keys of PDF dict object at 'xref'. Use -1 for the PDF trailer."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -5905,8 +5866,8 @@ class Document:
 
     def xref_is_stream(self, xref=0):
         """Check if xref is a stream object."""
-        pdf = _as_pdf_document(self)
-        if not pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if not pdf.m_internal:
             return False    # not a PDF
         return bool(mupdf.pdf_obj_num_is_stream(pdf, xref))
 
@@ -5921,8 +5882,8 @@ class Document:
     def xref_length(self):
         """Get length of xref table."""
         xreflen = 0
-        pdf = _as_pdf_document(self)
-        if pdf:
+        pdf = _as_pdf_document(self, required=0)
+        if pdf.m_internal:
             xreflen = mupdf.pdf_xref_len(pdf)
         return xreflen
 
@@ -5934,7 +5895,6 @@ class Document:
             ret = extra.xref_object( self.this, xref, compressed, ascii)
             return ret
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -5957,7 +5917,6 @@ class Document:
             raise ValueError("bad 'value'")
 
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len(pdf)
         #if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
         #    THROWMSG("bad xref")
@@ -5990,7 +5949,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -6009,7 +5967,6 @@ class Document:
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         xreflen = mupdf.pdf_xref_len( pdf)
         if not _INRANGE(xref, 1, xreflen-1) and xref != -1:
             raise ValueError( MSG_BAD_XREF)
@@ -6026,7 +5983,6 @@ class Document:
     def xref_xml_metadata(self):
         """Get xref of document XML metadata."""
         pdf = _as_pdf_document(self)
-        ASSERT_PDF(pdf)
         root = mupdf.pdf_dict_get( mupdf.pdf_trailer( pdf), PDF_NAME('Root'))
         if not root.m_internal:
             RAISEPY( MSG_BAD_PDFROOT, JM_Exc_FileDataError)
@@ -6364,7 +6320,6 @@ class Graftmap:
 
     def __init__(self, doc):
         dst = _as_pdf_document(doc)
-        ASSERT_PDF(dst)
         map_ = mupdf.pdf_new_graft_map(dst)
         self.this = map_
         self.thisown = True
@@ -6387,8 +6342,8 @@ class Link:
         return "link on " + str(self.parent)
 
     def _border(self, doc, xref):
-        pdf = _as_pdf_document(doc)
-        if not pdf:
+        pdf = _as_pdf_document(doc, required=0)
+        if not pdf.m_internal:
             return
         link_obj = mupdf.pdf_new_indirect(pdf, xref, 0)
         if not link_obj.m_internal:
@@ -6397,8 +6352,8 @@ class Link:
         return b
 
     def _colors(self, doc, xref):
-        pdf = _as_pdf_document(doc)
-        if not pdf:
+        pdf = _as_pdf_document(doc, required=0)
+        if not pdf.m_internal:
             return
         link_obj = mupdf.pdf_new_indirect( pdf, xref, 0)
         if not link_obj.m_internal:
@@ -6411,8 +6366,8 @@ class Link:
         self.thisown = False
 
     def _setBorder(self, border, doc, xref):
-        pdf = _as_pdf_document(doc)
-        if not pdf:
+        pdf = _as_pdf_document(doc, required=0)
+        if not pdf.m_internal:
             return
         link_obj = mupdf.pdf_new_indirect(pdf, xref, 0)
         if not link_obj.m_internal:
@@ -7406,16 +7361,6 @@ class Page:
     def _add_caret_annot(self, point):
         if g_use_extra:
             annot = extra._add_caret_annot( self.this, JM_point_from_py(point))
-        elif g_use_extra:
-            # This reduces a multi-it version of
-            # PyMuPDF/tests/test_annots.py:test_caret() from t=0.328 to
-            # t=0.197. PyMuPDF is 0.0712.  Native PyMuPDF is 0.0712.
-            if isinstance( self.this, mupdf.PdfPage):
-                page = self.this
-            else:
-                page = mupdf.pdf_page_from_fz_page( self.this)
-            #log( '{=type(point) point}')
-            annot = extra._add_caret_annot( page, JM_point_from_py(point))
         else:
             page = self._pdf_page()
             annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_CARET)
@@ -7433,7 +7378,6 @@ class Page:
         uf = ufilename if ufilename else filename
         d = desc if desc else filename
         p = JM_point_from_py(point)
-        ASSERT_PDF(page)
         filebuf = JM_BufferFromBytes(buffer_)
         if not filebuf.m_internal:
             raise TypeError( MSG_BAD_BUFFER)
@@ -7519,8 +7463,7 @@ class Page:
         return val
 
     def _add_ink_annot(self, list):
-        page = mupdf.pdf_page_from_fz_page(self.this)
-        ASSERT_PDF(page)
+        page = _as_pdf_page(self.this)
         if not PySequence_Check(list):
             raise ValueError( MSG_BAD_ARG_INK_ANNOT)
         ctm = mupdf.FzMatrix()
@@ -7697,14 +7640,13 @@ class Page:
             self.__class__._addAnnot_FromString = extra.Page_addAnnot_FromString
             #log('Page._addAnnot_FromString() deferring to extra.Page_addAnnot_FromString().')
             return extra.Page_addAnnot_FromString( self.this, linklist)
-        page = mupdf.pdf_page_from_fz_page(self.this)
+        page = _as_pdf_page(self.this)
         lcount = len(linklist)  # link count
         if lcount < 1:
             return
         i = -1
 
         # insert links from the provided sources
-        ASSERT_PDF(page)
         if not isinstance(linklist, tuple):
             raise ValueError( "bad 'linklist' argument")
         if not mupdf.pdf_dict_get( page.obj(), PDF_NAME('Annots')).m_internal:
@@ -8096,7 +8038,7 @@ class Page:
 
     def _other_box(self, boxtype):
         rect = mupdf.FzRect( mupdf.FzRect.Fixed_INFINITE)
-        page = mupdf.pdf_page_from_fz_page( self.this)
+        page = _as_pdf_page(self.this, required=False)
         if page.m_internal:
             obj = mupdf.pdf_dict_gets( page.obj(), boxtype)
             if mupdf.pdf_is_array(obj):
@@ -8106,13 +8048,7 @@ class Page:
         return JM_py_from_rect(rect)
 
     def _pdf_page(self):
-        '''
-        Returns self.this as a mupdf.PdfPage using pdf_page_from_fz_page() if
-        required.
-        '''
-        if isinstance(self.this, mupdf.PdfPage):
-            return self.this
-        return mupdf.pdf_page_from_fz_page(self.this)
+        return _as_pdf_page(self.this)
 
     def _reset_annot_refs(self):
         """Invalidate / delete all annots of this page."""
@@ -8132,8 +8068,7 @@ class Page:
 
         if not gstate:
             return
-        page = mupdf.pdf_page_from_fz_page(self.this)
-        ASSERT_PDF(page)
+        page = _as_pdf_page(self.this)
         resources = mupdf.pdf_dict_get(page.obj(), PDF_NAME('Resources'))
         if not resources.m_internal:
             resources = mupdf.pdf_dict_put_dict(page.obj(), PDF_NAME('Resources'), 2)
@@ -8175,14 +8110,14 @@ class Page:
 
     def _set_resource_property(self, name, xref):
         page = self._pdf_page()
-        ASSERT_PDF(page)
+        assert page.m_internal
         JM_set_resource_property(page.obj(), name, xref)
 
     def _show_pdf_page(self, fz_srcpage, overlay=1, matrix=None, xref=0, oc=0, clip=None, graftmap=None, _imgname=None):
         cropbox = JM_rect_from_py(clip)
         mat = JM_matrix_from_py(matrix)
         rc_xref = xref
-        tpage = mupdf.pdf_page_from_fz_page(self.this)
+        tpage = _as_pdf_page(self.this)
         tpageref = tpage.obj()
         pdfout = tpage.doc()    # target PDF
         ENSURE_OPERATION(pdfout)
@@ -8587,7 +8522,7 @@ class Page:
     def clean_contents(self, sanitize=1):
         if not sanitize and not self.is_wrapped:
             self.wrap_contents()
-        page = mupdf.pdf_page_from_fz_page( self.this)
+        page = _as_pdf_page( self.this, required=False)
         if not page.m_internal:
             return
         filter_ = _make_PdfFilterOptions(recurse=1, sanitize=sanitize)
@@ -8650,7 +8585,7 @@ class Page:
                 if g_exceptions_verbose > 1:    exception_info()
                 pass
 
-        page = mupdf.pdf_page_from_fz_page( self.this)
+        page = _as_pdf_page(self.this, required=False)
         if not page.m_internal:
             return finished()   # have no PDF
         xref = linkdict[dictkey_xref]
@@ -8792,7 +8727,7 @@ class Page:
         """Get xrefs of /Contents objects."""
         CheckParent(self)
         ret = []
-        page = mupdf.pdf_page_from_fz_page(self.this)
+        page = _as_pdf_page(self.this)
         obj = page.obj()
         contents = mupdf.pdf_dict_get(obj, mupdf.PDF_ENUM_NAME_Contents)
         if mupdf.pdf_is_array(contents):
@@ -9424,7 +9359,7 @@ class Page:
     @property
     def language(self):
         """Page language."""
-        pdfpage = mupdf.pdf_page_from_fz_page(self.this)
+        pdfpage = _as_pdf_page(self.this, required=False)
         if not pdfpage.m_internal:
             return
         lang = mupdf.pdf_dict_get_inheritable(pdfpage.obj(), PDF_NAME('Lang'))
@@ -9499,8 +9434,7 @@ class Page:
         """Load a widget by its xref."""
         CheckParent(self)
 
-        page = mupdf.pdf_page_from_fz_page( self.this)
-        ASSERT_PDF(page)
+        page = _as_pdf_page(self.this)
         annot = JM_get_widget_by_xref( page, xref)
         #log( '{=type(annot)}')
         val = annot
@@ -9552,7 +9486,7 @@ class Page:
     def rotation(self):
         """Page rotation."""
         CheckParent(self)
-        page = self.this if isinstance(self.this, mupdf.PdfPage) else mupdf.pdf_page_from_fz_page(self.this)
+        page = _as_pdf_page(self.this, required=0)
         if not page.m_internal:
             return 0
         return JM_page_rotation(page)
@@ -9598,8 +9532,7 @@ class Page:
     def set_language(self, language=None):
         """Set PDF page default language."""
         CheckParent(self)
-        pdfpage = mupdf.pdf_page_from_fz_page(self.this)
-        ASSERT_PDF(pdfpage)
+        pdfpage = _as_pdf_page(self.this)
         if not language:
             mupdf.pdf_dict_del(pdfpage.obj(), PDF_NAME('Lang'))
         else:
@@ -9630,8 +9563,7 @@ class Page:
     def set_rotation(self, rotation):
         """Set page rotation."""
         CheckParent(self)
-        page = mupdf.pdf_page_from_fz_page( self.this)
-        ASSERT_PDF(page)
+        page = _as_pdf_page(self.this)
         rot = JM_norm_rotation(rotation)
         mupdf.pdf_dict_put_int( page.obj(), PDF_NAME('Rotate'), rot)
 
@@ -9954,7 +9886,6 @@ class Pixmap:
             # Create pixmap from PDF image identified by XREF number
             doc, xref = args
             pdf = _as_pdf_document(doc)
-            ASSERT_PDF(pdf)
             xreflen = mupdf.pdf_xref_len(pdf)
             if not _INRANGE(xref, 1, xreflen-1):
                 raise ValueError( MSG_BAD_XREF)
@@ -17696,7 +17627,7 @@ def JM_xobject_from_page(pdfout, fsrcpage, xref, gmap):
     if xref > 0:
         xobj1 = mupdf.pdf_new_indirect(pdfout, xref, 0)
     else:
-        srcpage = mupdf.pdf_page_from_fz_page(fsrcpage.this)
+        srcpage = _as_pdf_page(fsrcpage.this)
         spageref = srcpage.obj()
         mediabox = mupdf.pdf_to_rect(mupdf.pdf_dict_get_inheritable(spageref, PDF_NAME('MediaBox')))
         # Deep-copy resources object of source page
@@ -21207,7 +21138,7 @@ class TOOLS:
 
     @staticmethod
     def _get_all_contents(page):
-        page = mupdf.pdf_page_from_fz_page(page.this)
+        page = _as_pdf_page(page.this)
         res = JM_read_contents(page.obj())
         result = JM_BinFromBuffer( res)
         return result
@@ -21215,8 +21146,7 @@ class TOOLS:
     @staticmethod
     def _insert_contents(page, newcont, overlay=1):
         """Add bytes as a new /Contents object for a page, and return its xref."""
-        pdfpage = page._pdf_page()
-        ASSERT_PDF(pdfpage)
+        pdfpage = _as_pdf_page(page, required=1)
         contbuf = JM_BufferFromBytes(newcont)
         xref = JM_insert_contents(pdfpage.doc(), pdfpage.obj(), contbuf, overlay)
         #fixme: pdfpage->doc->dirty = 1;
@@ -21629,8 +21559,8 @@ class TOOLS:
 
     @staticmethod
     def set_font_width(doc, xref, width):
-        pdf = _as_pdf_document(doc)
-        if not pdf:
+        pdf = _as_pdf_document(doc, required=0)
+        if not pdf.m_internal:
             return False
         font = mupdf.pdf_load_object(pdf, xref)
         dfonts = mupdf.pdf_dict_get(font, PDF_NAME('DescendantFonts'))
