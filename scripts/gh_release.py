@@ -563,8 +563,11 @@ def pyodide_setup(clean=False):
     # Clone emsdk.
     #
     dir_emsdk = 'emsdk'
-    if clean and os.path.exists(dir_emsdk):
-        shutil.rmtree( dir_emsdk, ignore_errors=1)
+    if clean:
+        shutil.rmtree(dir_emsdk, ignore_errors=1)
+        # 2024-06-25: old `.pyodide-xbuildenv` directory was breaking build, so
+        # important to remove it here.
+        shutil.rmtree('.pyodide-xbuildenv', ignore_errors=1)
     if not os.path.exists(dir_emsdk):
         command += f' && echo "### cloning emsdk.git"'
         command += f' && git clone https://github.com/emscripten-core/emsdk.git {dir_emsdk}'
