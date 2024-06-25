@@ -1235,3 +1235,14 @@ def test_scientific_numbers():
         assert b" 1e-" not in contents
     else:
         assert b" 1e-" in contents
+
+def test_3615():
+    print('')
+    print(f'{pymupdf.pymupdf_version=}', flush=1)
+    print(f'{pymupdf.VersionBind=}', flush=1)
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3615.epub')
+    doc = pymupdf.open(path)
+    print(doc.pagemode)
+    print(doc.pagelayout)
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt
