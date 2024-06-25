@@ -250,7 +250,7 @@ def build( platform_=None, valgrind=False):
         # external symbol PyUnicode_DecodeRawUnicodeEscape`.
         # 2024-06-05: musllinux on aarch64 fails because libclang cannot find
         # libclang.so.
-        set_if_unset( 'CIBW_SKIP', '"pp* *i686 cp36* cp37* *musllinux*aarch64*"')
+        set_if_unset( 'CIBW_SKIP', 'pp* *i686 cp36* cp37* *musllinux*aarch64*')
     
         def make_string(*items):
             ret = list()
