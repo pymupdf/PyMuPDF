@@ -201,9 +201,9 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.24.5"
+pymupdf_version = "1.24.6"
 mupdf_version = mupdf.FZ_VERSION
-pymupdf_date = "2024-05-30 00:00:01"
+pymupdf_date = "2024-06-25 00:00:01"
 
 # Versions as tuples; useful when comparing versions.
 #
@@ -21919,15 +21919,14 @@ def restore_aliases():
         assert not getattr( class_, legacy_name, None), f'class {class_} already has {legacy_name}'
         if callable( new_object):
             def deprecated_function( *args, **kwargs):
-                if not VersionBind.startswith('1.18'):
-                    warnings.warn(
-                            f'"{legacy_name}" removed from {class_} after v1.19.0 - use "{new_name}".',
-                            category=FitzDeprecation,
-                            )
+                warnings.warn(
+                        f'"{legacy_name=}" removed from {class_} after v1.19.0 - use "{new_name}".',
+                        category=FitzDeprecation,
+                        )
                 return new_object( *args, **kwargs)
             setattr( class_, legacy_name, deprecated_function)
             deprecated_function.__doc__ = (
-                    f'*** Deprecated and removed in version following 1.19.0 - use "{new_name}". ***\n'
+                    f'*** Deprecated and removed in version after v1.19.0 - use "{new_name}". ***\n'
                     f'{new_object.__doc__}'
                     )
         else:

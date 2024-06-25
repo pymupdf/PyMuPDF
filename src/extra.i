@@ -1384,7 +1384,7 @@ static mupdf::FzLink Link_next(mupdf::FzLink& this_link)
 
 
 //-----------------------------------------------------------------------------
-// create PDF object from given string (new in v1.14.0: MuPDF dropped it)
+// create PDF object from given string
 //-----------------------------------------------------------------------------
 static pdf_obj *lll_JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, const char *src)
 {
