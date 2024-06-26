@@ -2,6 +2,14 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.7 (2024-06-26)**
+
+* Fixed issues:
+
+  * **Fixed** `3615 <https://github.com/pymupdf/PyMuPDF/issues/3615>`_: Document.pagemode or Document.pagelayout crashes for epub files
+  * **Fixed** `3616 <https://github.com/pymupdf/PyMuPDF/issues/3616>`_: not last version reported
+
+
 **Changes in version 1.24.6 (2024-06-25)**
 
 * Fixed issues:
