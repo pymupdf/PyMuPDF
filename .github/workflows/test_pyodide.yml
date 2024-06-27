@@ -7,6 +7,7 @@ on:
       PYMUPDF_SETUP_MUPDF_BUILD:
           description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g.: git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
           type: string
+          default: 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
 
   schedule:
     - cron: '13 5 * * *'
