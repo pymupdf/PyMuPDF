@@ -1471,7 +1471,7 @@ def build_extension(
         debug2 = ''
         if debug:
             debug2 = '/Zi'  # Generate .pdb.
-            # debug2 = '/Z7'    # Embded debug info in .obj files.
+            # debug2 = '/Z7'    # Embedded debug info in .obj files.
 
         # As of 2023-08-23, it looks like VS tools create slightly
         # .dll's each time, even with identical inputs.
@@ -1493,7 +1493,7 @@ def build_extension(
 
                     # Input/output files:
                     {T}{path_cpp}               # /Tp specifies C++ source file.
-                    /Fo{path_obj}               # Output file.
+                    /Fo{path_obj}               # Output file. codespell:ignore
 
                     # Include paths:
                     {includes_text}
@@ -1786,7 +1786,7 @@ def git_items( directory, submodules=False):
     ret = []
     for path in text.decode('utf8').strip().split( '\n'):
         path2 = os.path.join(directory, path)
-        # Sometimes git ls-files seems to list empty/non-existant directories
+        # Sometimes git ls-files seems to list empty/non-existent directories
         # within submodules.
         #
         if not os.path.exists(path2):

@@ -42,7 +42,7 @@ If you want to put an **existing** image under the control of an OCG, you must f
 
 To **remove** an OCG from an image, do `doc.set_oc(img_xref, 0)`.
 
-One single OCG can be assigned to mutiple PDF objects to control their visibility.
+One single OCG can be assigned to multiple PDF objects to control their visibility.
 
 How to Define Complex Optional Content Conditions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

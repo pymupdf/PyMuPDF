@@ -1,5 +1,5 @@
 """
-Exract page text in various formats.
+Extract page text in various formats.
 No checks performed - just contribute to code coverage.
 """
 import os
@@ -34,7 +34,7 @@ def _test_extract2():
     import time
     path = f'{scriptdir}/../../PyMuPDF-performance/adobe.pdf'
     if not os.path.exists(path):
-        print(f'test_extract2(): not running becase does not exist: {path}')
+        print(f'test_extract2(): not running because does not exist: {path}')
         return
     doc = pymupdf.open( path)
     for opt in (
@@ -63,7 +63,7 @@ def _test_extract3():
     import time
     path = f'{scriptdir}/../../PyMuPDF-performance/adobe.pdf'
     if not os.path.exists(path):
-        print(f'test_extract3(): not running becase does not exist: {path}')
+        print(f'test_extract3(): not running because does not exist: {path}')
         return
     doc = pymupdf.open( path)
     t0 = time.time()
@@ -131,7 +131,7 @@ def test_extract4():
 
 def test_2954():
     '''
-    Check handling of unknow unicode characters, issue #2954, fixed in
+    Check handling of unknown unicode characters, issue #2954, fixed in
     mupdf-1.23.9 with addition of FZ_STEXT_USE_CID_FOR_UNKNOWN_UNICODE.
     '''
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2954.pdf')

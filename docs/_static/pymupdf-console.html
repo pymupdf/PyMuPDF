@@ -266,11 +266,11 @@
         window.term.exec("data = await r.bytes()");
         window.term.exec("doc = fitz.Document(stream=data)");
 
-        function pressEnter() {
+        function pressEnter() { // codespell:ignore
           window.term.invoke_key("ENTER");
         }
 
-        setTimeout(pressEnter,1000);
+        setTimeout(pressEnter,1000); // codespell:ignore
 
 
       }

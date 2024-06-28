@@ -41,7 +41,7 @@ msgstr "用語集"
 
 #: ../../glossary.rst:11 d9645c6f37d7406983e6e2be167f78d4
 msgid ""
-"This is an esential general mathematical / geometrical term for "
+"This is an essential general mathematical / geometrical term for "
 "understanding this documentation. Please see this section for a more "
 "detailed discussion: :ref:`Coordinates`."
 msgstr ""

@@ -172,7 +172,7 @@ button.cta a {
 :target>h1:first-of-type, span:target~h1:first-of-type {
     background-color: #007aff !important;
     color: #fff !important;
-    padding-top: 40px; /* accomodates header search blocking target */
+    padding-top: 40px; /* accommodates header search blocking target */
     margin-top: -40px;
 }
 
@@ -182,7 +182,7 @@ button.cta a {
 span:target~h2:first-of-type, span:target~h3:first-of-type,
 span:target~h4:first-of-type, span:target~h5:first-of-type, span:target~h6:first-of-type {
     background-color: transparent !important;
-    padding-top: 40px; /* accomodates header search blocking target */
+    padding-top: 40px; /* accommodates header search blocking target */
     margin-top: -40px;
     text-decoration: underline;
 }

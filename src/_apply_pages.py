@@ -240,7 +240,7 @@ def _fork(
         return ret
         
     finally:
-        # Join all child proceses.
+        # Join all child processes.
         if stats:
             t = time.time()
         for pid in pids:

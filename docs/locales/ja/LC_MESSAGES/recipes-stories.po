@@ -425,7 +425,7 @@ msgstr "行の高さは、行のコンテンツに基づいて自動的に計算
 msgid ""
 "The potentially multiple lines of a table row will always be kept "
 "together on one page (respectively \"where\" rectangle) and not be "
-"splitted."
+"split."
 msgstr "テーブルの行の潜在的に複数行は、常に1つのページ（または “where” 矩形）にまとめて表示され、分割されることはありません。"
 
 #: ../../recipes-stories.rst:339 de42a46ba1aa49ca96c4df690d752869

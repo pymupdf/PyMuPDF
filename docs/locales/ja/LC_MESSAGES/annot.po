@@ -75,7 +75,7 @@ msgid ":meth:`Annot.delete_responses`"
 msgstr ""
 
 #: ../../annot.rst:18 4bb5054e003e4a0eab4557a602962f43
-msgid "delete all responding annotions"
+msgid "delete all responding annotations"
 msgstr "すべての応答アノテーションを削除します"
 
 #: ../../annot.rst:19 be33f456bc764e028444f979903ac32d
