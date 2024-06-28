@@ -4369,7 +4369,7 @@ class Document:
                     PDF_NAME('Root'),
                     PDF_NAME('Metadata'),
                     )
-        if xml and xml.m_internal:
+        if xml is not None and xml.m_internal:
             buff = mupdf.pdf_load_stream(xml)
             rc = JM_UnicodeFromBuffer(buff)
         else:
@@ -5710,7 +5710,7 @@ class Document:
         if not mupdf.pdf_is_dict(obj):
             raise ValueError( MSG_IS_NO_DICT)
         res = JM_BufferFromBytes(stream)
-        if not res:
+        if not res.m_internal:
             raise TypeError( MSG_BAD_BUFFER)
         JM_update_stream(pdf, obj, res, compress)
         pdf.dirty = 1
@@ -6455,10 +6455,8 @@ class Link:
         CheckParent(self)
         # utils.py:getLinkDict() appears to expect exceptions from us, so we
         # ensure that we raise on error.
-        if not self.this or not self.this.m_internal:
+        if self.this is None or not self.this.m_internal:
             raise Exception( 'self.this.m_internal not available')
-        assert self.this
-        assert self.this.m_internal
         val = JM_py_from_rect( self.this.rect())
         val = Rect(val)
         return val
@@ -8030,7 +8028,8 @@ class Page:
             annot = JM_get_annot_by_name(page, name)
         else:
             annot = JM_get_annot_by_xref(page, xref)
-        return Annot(annot) if annot else None
+        if annot.m_internal:
+            return Annot(annot)
 
     def _makePixmap(self, doc, ctm, cs, alpha=0, annots=1, clip=None):
         pix = JM_pixmap_from_page(doc, self.this, ctm, cs, alpha, annots, clip)
@@ -8638,7 +8637,7 @@ class Page:
         """First annotation."""
         CheckParent(self)
         page = self._pdf_page()
-        if not page:
+        if not page.m_internal:
             return
         annot = mupdf.pdf_first_annot(page)
         if not annot.m_internal:
@@ -8662,7 +8661,7 @@ class Page:
         CheckParent(self)
         annot = 0
         page = self._pdf_page()
-        if not page:
+        if not page.m_internal:
             return
         annot = mupdf.pdf_first_widget(page)
         if not annot.m_internal:
@@ -10040,7 +10039,7 @@ class Pixmap:
     def invert_irect(self, bbox=None):
         """Invert the colors inside a bbox."""
         pm = self.this
-        if not mupdf.fz_pixmap_colorspace(pm):
+        if not mupdf.fz_pixmap_colorspace(pm).m_internal:
             message_warning("ignored for stencil pixmap")
             return False
         r = JM_irect_from_py(bbox)
@@ -12480,7 +12479,7 @@ class TextPage:
             img_size = 0
             if mupdf_version_tuple >= (1, 24):
                 compr_buff = mupdf.fz_compressed_image_buffer(img)
-                if compr_buff:
+                if compr_buff.m_internal:
                     img_size = compr_buff.fz_compressed_buffer_size()
                     compr_buff = None
             else:
@@ -16878,7 +16877,7 @@ def JM_put_script(annot_obj, key1, key2, value):
 
     # if no new script given, just delete corresponding key
     if not value:
-        if not key2 or not key2.m_internal:
+        if key2 is None or not key2.m_internal:
             mupdf.pdf_dict_del(annot_obj, key1)
         elif key1_obj.m_internal:
             mupdf.pdf_dict_del(key1_obj, key2)
@@ -17030,7 +17029,7 @@ def JM_refresh_links( page):
     '''
     refreshes the link and annotation tables of a page
     '''
-    if not page:
+    if page is None or not page.m_internal:
         return
     obj = mupdf.pdf_dict_get( page.obj(), PDF_NAME('Annots'))
     if obj.m_internal:
@@ -17237,7 +17236,7 @@ def JM_set_field_type(doc, obj, type):
     elif type == mupdf.PDF_WIDGET_TYPE_SIGNATURE:
         typename = PDF_NAME('Sig')
 
-    if typename:
+    if typename is not None and typename.m_internal:
         mupdf.pdf_dict_put(obj, PDF_NAME('FT'), typename)
 
     if setbits != 0 or clearbits != 0:
@@ -17599,23 +17598,23 @@ def JM_update_stream(doc, obj, buffer_, compress):
     update a stream object
     compress stream when beneficial
     '''
-    len_, _ = mupdf.fz_buffer_storage(buffer_)
-    nlen = len_
-
-    if len_ > 30:   # ignore small stuff
-        nres = JM_compress_buffer(buffer_)
-        assert isinstance(nres, mupdf.FzBuffer)
-        nlen, _ = mupdf.fz_buffer_storage(nres)
-
-    if nlen < len_ and nres and compress==1:   # was it worth the effort?
-        mupdf.pdf_dict_put(
-                obj,
-                mupdf.PDF_ENUM_NAME_Filter,
-                mupdf.PDF_ENUM_NAME_FlateDecode,
-                )
-        mupdf.pdf_update_stream(doc, obj, nres, 1)
-    else:
-        mupdf.pdf_update_stream(doc, obj, buffer_, 0)
+    if compress:
+        length, _ = mupdf.fz_buffer_storage(buffer_)
+        if length > 30:   # ignore small stuff
+            buffer_compressed = JM_compress_buffer(buffer_)
+            assert isinstance(buffer_compressed, mupdf.FzBuffer)
+            if buffer_compressed.m_internal:
+                length_compressed, _ = mupdf.fz_buffer_storage(buffer_compressed)
+                if length_compressed < length:  # was it worth the effort?
+                    mupdf.pdf_dict_put(
+                            obj,
+                            mupdf.PDF_ENUM_NAME_Filter,
+                            mupdf.PDF_ENUM_NAME_FlateDecode,
+                            )
+                    mupdf.pdf_update_stream(doc, obj, buffer_compressed, 1)
+                    return
+    
+    mupdf.pdf_update_stream(doc, obj, buffer_, 0)
 
 
 def JM_xobject_from_page(pdfout, fsrcpage, xref, gmap):
