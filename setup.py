@@ -367,8 +367,8 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         location:
             First, if None we set to hard-coded default URL or git location.
             If starts with 'git:', should be remote git location.
-            Otherwise if containg '://' should be URL for .tgz.
-            Otherwise shuld path of local mupdf checkout.
+            Otherwise if containing '://' should be URL for .tgz.
+            Otherwise should path of local mupdf checkout.
         sha:
             If not None and we use git clone, we checkout this sha.
         local_tgz:
@@ -658,7 +658,7 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
     '''
     Appends/prepends `<value>` to `env[name]`.
     
-    If `name` is not in `env`, we use os.environ[nane] if it exists.
+    If `name` is not in `env`, we use os.environ[name] if it exists.
     '''
     v = env.get(name)
     if verbose:
@@ -822,7 +822,7 @@ def get_mupdf_version(mupdf_dir):
     v0 = re.search('#define FZ_VERSION_MAJOR ([0-9]+)', text)
     v1 = re.search('#define FZ_VERSION_MINOR ([0-9]+)', text)
     v2 = re.search('#define FZ_VERSION_PATCH ([0-9]+)', text)
-    assert v0 and v1 and v2, f'Cannot find MuPDF version numers in {path=}.'
+    assert v0 and v1 and v2, f'Cannot find MuPDF version numbers in {path=}.'
     v0 = int(v0.group(1))
     v1 = int(v1.group(1))
     v2 = int(v2.group(1))

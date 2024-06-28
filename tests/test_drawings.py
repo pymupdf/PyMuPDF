@@ -180,7 +180,7 @@ def test_3207():
     """Example graphics with multiple "close path" commands within same path.
 
     The fix translates a close-path commands into an additional line
-    which connects the current point with a preceeding "move" target.
+    which connects the current point with a preceding "move" target.
     The example page has 2 paths which each contain 2 close-path
     commands after 2 normal "line" commands, i.e. 2 command sequences
     "move-to, line-to, line-to, close-path".

@@ -568,7 +568,7 @@ msgstr "3 – 別のファイル（任意の「実行可能」タイプ）を開
 
 #: ../../vars.rst:277 e30d8ee2f8c9484eaa1de892c496a67f
 msgid ""
-"|PyMuPDF| treats any external link that starts wth `file:` or doesn't "
+"|PyMuPDF| treats any external link that starts with `file:` or doesn't "
 "contain a colon, as `LINK_LAUNCH`."
 msgstr "PyMuPDFは、 `file:`  で始まるかコロンを含まない外部リンクを `LINK_LAUNCH` として扱います。"
 

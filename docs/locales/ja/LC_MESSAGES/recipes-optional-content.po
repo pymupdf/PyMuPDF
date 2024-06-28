@@ -159,7 +159,7 @@ msgstr "画像からOCGを削除するには、 `doc.set_oc(img_xref, 0)` を行
 
 #: ../../recipes-optional-content.rst:45 fdd9ff2041064cf1896e01be1b5f2a33
 msgid ""
-"One single OCG can be assigned to mutiple PDF objects to control their "
+"One single OCG can be assigned to multiple PDF objects to control their "
 "visibility."
 msgstr "1つのOCGは複数のPDFオブジェクトに割り当てて、それらの可視性を制御することができます。"
 

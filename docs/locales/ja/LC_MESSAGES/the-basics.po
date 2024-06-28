@@ -804,7 +804,7 @@ msgid ""
 "document page to denote an area on the page which should be securely "
 "removed. After marking an area with a rectangle then this area will be "
 "marked for *redaction*, once the redaction is *applied* then the content "
-"is securly removed."
+"is securely removed."
 msgstr "マーキングされた領域に矩形を使用して、ページ上の削除されるべき領域を示すために、赤字が付けられる特別なアノテーションです。領域に矩形をマークした後、その領域は赤字としてマークされ、赤字が適用されると、そのコンテンツは安全に削除されます。"
 
 #: ../../the-basics.rst:1006 a52332e215d34f1d9476e8384fea523b

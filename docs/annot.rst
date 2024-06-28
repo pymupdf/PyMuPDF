@@ -15,7 +15,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 ================================== ==============================================================
 **Attribute**                      **Short Description**
 ================================== ==============================================================
-:meth:`Annot.delete_responses`     delete all responding annotions
+:meth:`Annot.delete_responses`     delete all responding annotations
 :meth:`Annot.get_file`             get attached file content
 :meth:`Annot.get_oc`               get :data:`xref` of an :data:`OCG` / :data:`OCMD`
 :meth:`Annot.get_pixmap`           image of the annotation as a pixmap

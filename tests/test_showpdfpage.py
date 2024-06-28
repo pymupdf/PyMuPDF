@@ -3,7 +3,7 @@ Tests:
     * Convert some image to a PDF
     * Insert it rotated in some rectangle of a PDF page
     * Assert PDF Form XObject has been created
-    * Assert that image contained in inserted PDF is inside given retangle
+    * Assert that image contained in inserted PDF is inside given rectangle
 """
 import os
 
