@@ -16,7 +16,7 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       # It seems to be important not to install a custom python here,
       # because `sudo` (which we need to use when installing to /usr/local
@@ -25,7 +25,7 @@ jobs:
       # pymupdf files being installed into .../python3.11/site-packages and
       # .../python3.10/site-packages, and tests all fail to import pymupdf.
       #
-      #- uses: actions/setup-python@v2
+      #- uses: actions/setup-python@v5
         #with:
         #  # 3.12 doesn't have setuptools. As of 2024-01-03, MuPDF build requires setuptools before it
         #  # sees `--venv` and defers to a venv, so we currently have to force use of python 3.11.
