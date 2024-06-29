@@ -59,6 +59,10 @@ action inputs, which can't be easily translated into command-line arguments.
 
 Building for Pyodide
 
+    If GITHUB_EVENT_NAME is 'schedule' we assume we are running as a scheduled
+    Github workflow, and if inputs_PYMUPDF_SETUP_MUPDF_BUILD is unset we change
+    it to use MuPDF master branch.
+    
     If `inputs_wheels_linux_pyodide` is true and we are on Linux, we clone
     `emsdk.git`, set it up, and run `pyodide build`. This runs our setup.py
     with CC etc set up to create Pyodide binaries in a wheel called, for
@@ -208,6 +212,14 @@ def build( platform_=None, valgrind=False):
     # Build Pyodide wheel if specified.
     #
     if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
+        # In scheduled runs (by .github/workflows/test_pyodide.yml), use MuPDF
+        # master.
+        GITHUB_EVENT_NAME = os.getenv('GITHUB_EVENT_NAME')
+        if GITHUB_EVENT_NAME == 'schedule':
+            if inputs_PYMUPDF_SETUP_MUPDF_BUILD in ('', None):
+                log(f'Overriding inputs_PYMUPDF_SETUP_MUPDF_BUILD because {GITHUB_EVENT_NAME=} {inputs_PYMUPDF_SETUP_MUPDF_BUILD=}.')
+                inputs_PYMUPDF_SETUP_MUPDF_BUILD = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
+                log(f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
         build_pyodide_wheel(inputs_wheels_implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD)
     
     # Build sdist(s).
