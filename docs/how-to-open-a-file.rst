@@ -32,6 +32,8 @@ To open a file, do the following:
     doc = pymupdf.open("a.pdf")
 
 
+.. note:: The above creates a :ref:`Document`. The instruction `doc = pymupdf.Document("a.pdf")` does exactly the same. So, `open` is just a convenient alias  and you can find its full API documented in that chapter. 
+
 
 Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
