@@ -1245,7 +1245,7 @@ else:
             print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
             ret.append('libclang==16.0.6')
         elif darwin and platform_release_tuple() < (18,):
-            # There are still of ptoblems when building on old macos.
+            # There are still of problems when building on old macos.
             ret.append('libclang==14.0.6')
         else:
             ret.append('libclang')
