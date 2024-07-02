@@ -83,7 +83,7 @@ def test_3094():
 def test_3150():
     """Assert correct functioning for problem file.
 
-    Implicitely also check use of new MuPDF function
+    Implicitly also check use of new MuPDF function
     pdf_rearrange_pages() since version 1.23.9.
     """
     filename = os.path.join(scriptdir, "resources", "test-3150.pdf")

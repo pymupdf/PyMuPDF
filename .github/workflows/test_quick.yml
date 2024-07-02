@@ -3,7 +3,7 @@ name: Test quick
 on:
   pull_request:
     branches: [main]
-    
+
   workflow_dispatch:
 
 jobs:
@@ -22,9 +22,9 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: actions/setup-python@v2
-      
+
       - name: test_quick
 
         env:
@@ -38,3 +38,18 @@ jobs:
             inputs_wheels_windows_auto: "1"
         run:
           python scripts/gh_release.py
+
+
+  codespell:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          ignore_words_file: .codespell-ignorewords
+          exclude_file: .codespell-ignorelines
+          check_filenames: true
+          check_hidden: true
+          skip: "*.pdf,src_classic,locales,prism.js,tests"
+          # if we don't fix everything we can set this
+          # only_warn: 1

@@ -367,8 +367,8 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         location:
             First, if None we set to hard-coded default URL or git location.
             If starts with 'git:', should be remote git location.
-            Otherwise if containg '://' should be URL for .tgz.
-            Otherwise shuld path of local mupdf checkout.
+            Otherwise if containing '://' should be URL for .tgz.
+            Otherwise should be path of local mupdf checkout.
         sha:
             If not None and we use git clone, we checkout this sha.
         local_tgz:
@@ -658,7 +658,7 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
     '''
     Appends/prepends `<value>` to `env[name]`.
     
-    If `name` is not in `env`, we use os.environ[nane] if it exists.
+    If `name` is not in `env`, we use os.environ[name] if it exists.
     '''
     v = env.get(name)
     if verbose:

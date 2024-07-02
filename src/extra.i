@@ -732,7 +732,7 @@ static int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value
 
 
 //-----------------------------------------------------------------------------
-// Functions converting betwenn PySequences and pymupdf geometry objects
+// Functions converting between PySequences and pymupdf geometry objects
 //-----------------------------------------------------------------------------
 static int
 jm_init_item(PyObject* obj, Py_ssize_t idx, int* result)
@@ -2261,7 +2261,7 @@ void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 #define CLIP_PATH 3
 #define CLIP_STROKE_PATH 4
 
-// Every scissor of a clip is a sub rectangle of the preceeding clip
+// Every scissor of a clip is a sub rectangle of the preceding clip
 // scissor if the clip level is larger.
 static fz_rect compute_scissor(jm_lineart_device *dev)
 {

@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: FSFAP
+# Copyright (C) 2024 Colin B. Macdonald
+#
+# Copying and distribution of this file, with or without modification,
+# are permitted in any medium without royalty provided the copyright
+# notice and this notice are preserved.  This file is offered as-is,
+# without any warranty.
+
+# lines that codespell should ignore: whitespace matters!
+
+        function pressEnter() {
+        setTimeout(pressEnter,1000);
+see `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_.
+Wallis and Futuna (France);Mata Utu;1029;8.9%;2018
+    needle = "¡La práctica hace el campeón!"
+
+# end of file

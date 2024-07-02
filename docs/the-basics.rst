@@ -1001,7 +1001,7 @@ Annotations (:ref:`Annot`) on pages can be retrieved with the `page.annots()` me
 Redacting content from a **PDF**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Redactions are special types of annotations which can be marked onto a document page to denote an area on the page which should be securely removed. After marking an area with a rectangle then this area will be marked for *redaction*, once the redaction is *applied* then the content is securly removed.
+Redactions are special types of annotations which can be marked onto a document page to denote an area on the page which should be securely removed. After marking an area with a rectangle then this area will be marked for *redaction*, once the redaction is *applied* then the content is securely removed.
 
 For example if we wanted to redact all instances of the name "Jane Doe" from a document we could do the following:
 

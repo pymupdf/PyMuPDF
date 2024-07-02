@@ -19,8 +19,8 @@ def test_story():
     WHERE = MEDIABOX + (36, 36, -36, -36)
     # the font files are located in /home/chinese
     arch = pymupdf.Archive(".")
-    # if not specfied user_css, the output pdf has content
-    story = pymupdf.Story(HTML, user_css=CSS, archive=arch)  
+    # if not specified user_css, the output pdf has content
+    story = pymupdf.Story(HTML, user_css=CSS, archive=arch)
 
     writer = pymupdf.DocumentWriter("output.pdf")
 
