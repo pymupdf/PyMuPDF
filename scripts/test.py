@@ -363,7 +363,7 @@ def build(
         env_extra['PYMUPDF_SETUP_MUPDF_REBUILD'] = '0'
     if build_type:
         env_extra['PYMUPDF_SETUP_MUPDF_BUILD_TYPE'] = build_type
-    gh_release.run(f'pip install{build_isolation_text} -vv {pymupdf_dir}', env_extra=env_extra)
+    gh_release.run(f'pip install{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
 
 
 def test(
