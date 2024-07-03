@@ -1832,7 +1832,7 @@ def run( command, capture=False, check=1, verbose=1):
     nl = '\n'
     if verbose:
         log1( f'Running: {nl.join(lines)}')
-    sep = ' ' if windows() else '\\\n'
+    sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
     cp = subprocess.run(
             command2,
