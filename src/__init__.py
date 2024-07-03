@@ -7494,7 +7494,6 @@ class Page:
 
     def _add_line_annot(self, p1, p2):
         page = self._pdf_page()
-        ASSERT_PDF(page)
         annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_LINE)
         a = JM_point_from_py(p1)
         b = JM_point_from_py(p2)
@@ -7580,7 +7579,6 @@ class Page:
                 ]
         n = len(stamp_id)
         name = stamp_id[0]
-        ASSERT_PDF(page)
         r = JM_rect_from_py(rect)
         if mupdf.fz_is_infinite_rect(r) or mupdf.fz_is_empty_rect(r):
             raise ValueError( MSG_BAD_RECT)
@@ -7605,7 +7603,6 @@ class Page:
     def _add_text_annot(self, point, text, icon=None):
         page = self._pdf_page()
         p = JM_point_from_py( point)
-        ASSERT_PDF(page)
         annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_TEXT)
         r = mupdf.pdf_annot_rect(annot)
         r = mupdf.fz_make_rect(p.x, p.y, p.x + r.x1 - r.x0, p.y + r.y1 - r.y0)
@@ -7681,7 +7678,6 @@ class Page:
         opts.text = text  # how to treat text
         opts.image_method = images  # how to treat images
         opts.line_art = graphics  # how to treat vector graphics
-        ASSERT_PDF(page)
         success = mupdf.pdf_redact_page(page.doc(), page, opts)
         return success
 
@@ -7749,7 +7745,6 @@ class Page:
         page list Resource/Properties
         '''
         page = self._pdf_page()
-        ASSERT_PDF(page)
         rc = JM_get_resource_properties(page.obj())
         return rc
 
@@ -8003,7 +7998,6 @@ class Page:
 
     def _insertFont(self, fontname, bfname, fontfile, fontbuffer, set_simple, idx, wmode, serif, encoding, ordering):
         page = self._pdf_page()
-        ASSERT_PDF(page)
         pdf = page.doc()
 
         value = JM_insert_font(pdf, bfname, fontfile,fontbuffer, set_simple, idx, wmode, serif, encoding, ordering)
@@ -8023,7 +8017,6 @@ class Page:
 
     def _load_annot(self, name, xref):
         page = self._pdf_page()
-        ASSERT_PDF(page)
         if xref == 0:
             annot = JM_get_annot_by_name(page, name)
         else:
@@ -8046,8 +8039,8 @@ class Page:
             return
         return JM_py_from_rect(rect)
 
-    def _pdf_page(self):
-        return _as_pdf_page(self.this)
+    def _pdf_page(self, required=True):
+        return _as_pdf_page(self.this, required=required)
 
     def _reset_annot_refs(self):
         """Invalidate / delete all annots of this page."""
@@ -8109,7 +8102,6 @@ class Page:
 
     def _set_resource_property(self, name, xref):
         page = self._pdf_page()
-        assert page.m_internal
         JM_set_resource_property(page.obj(), name, xref)
 
     def _show_pdf_page(self, fz_srcpage, overlay=1, matrix=None, xref=0, oc=0, clip=None, graftmap=None, _imgname=None):
@@ -8453,7 +8445,7 @@ class Page:
         '''
         """List of names of annotations, fields and links."""
         CheckParent(self)
-        page = self._pdf_page()
+        page = self._pdf_page(required=False)
         if not page.m_internal:
             return []
         return JM_get_annot_id_list(page)
@@ -8531,7 +8523,7 @@ class Page:
     def cropbox(self):
         """The CropBox."""
         CheckParent(self)
-        page = self._pdf_page()
+        page = self._pdf_page(required=False)
         if not page.m_internal:
             val = mupdf.fz_bound_page(self.this)
         else:
@@ -8616,7 +8608,7 @@ class Page:
         """Reflects page de-rotation."""
         if g_use_extra:
             return Matrix(extra.Page_derotate_matrix( self.this))
-        pdfpage = self._pdf_page()
+        pdfpage = self._pdf_page(required=False)
         if not pdfpage.m_internal:
             return Matrix(mupdf.FzRect(mupdf.FzRect.UNIT))
         return Matrix(JM_derotate_page_matrix(pdfpage))
@@ -8636,7 +8628,7 @@ class Page:
     def first_annot(self):
         """First annotation."""
         CheckParent(self)
-        page = self._pdf_page()
+        page = self._pdf_page(required=False)
         if not page.m_internal:
             return
         annot = mupdf.pdf_first_annot(page)
@@ -8660,7 +8652,7 @@ class Page:
         """First widget/field."""
         CheckParent(self)
         annot = 0
-        page = self._pdf_page()
+        page = self._pdf_page(required=False)
         if not page.m_internal:
             return
         annot = mupdf.pdf_first_widget(page)
@@ -9451,7 +9443,7 @@ class Page:
     def mediabox(self):
         """The MediaBox."""
         CheckParent(self)
-        page = self._pdf_page()
+        page = self._pdf_page(required=False)
         if not page.m_internal:
             rect = mupdf.fz_bound_page( self.this)
         else:
@@ -9547,7 +9539,6 @@ class Page:
         """Set the MediaBox."""
         CheckParent(self)
         page = self._pdf_page()
-        ASSERT_PDF(page)
         mediabox = JM_rect_from_py(rect)
         if (mupdf.fz_is_empty_rect(mediabox)
                 or mupdf.fz_is_infinite_rect(mediabox)
@@ -9576,7 +9567,7 @@ class Page:
         CheckParent(self)
 
         ctm = mupdf.FzMatrix()
-        page = self._pdf_page()
+        page = self._pdf_page(required=False)
         if not page.m_internal:
             return JM_py_from_matrix(ctm)
         mediabox = mupdf.FzRect(mupdf.FzRect.Fixed_UNIT)    # fixme: original code passed mediabox=NULL.
@@ -12860,7 +12851,6 @@ class TextWriter:
             else:
                 colorspace = mupdf.fz_device_gray()
 
-            ASSERT_PDF(pdfpage)
             resources = mupdf.pdf_new_dict(pdfpage.doc(), 5)
             contents = mupdf.fz_new_buffer(1024)
             dev = mupdf.pdf_new_pdf_device( pdfpage.doc(), mupdf.FzMatrix(), resources, contents)
@@ -15392,7 +15382,7 @@ def JM_get_annot_xref_list( page_obj):
 
 
 def JM_get_annot_xref_list2(page):
-    page = page._pdf_page()
+    page = page._pdf_page(required=False)
     if not page.m_internal:
         return list()
     return JM_get_annot_xref_list( page.obj())
@@ -21452,7 +21442,7 @@ class TOOLS:
 
     @staticmethod
     def _rotate_matrix(page):
-        pdfpage = page._pdf_page()
+        pdfpage = page._pdf_page(required=False)
         if not pdfpage.m_internal:
             return JM_py_from_matrix(mupdf.FzMatrix())
         return JM_py_from_matrix(JM_rotate_page_matrix(pdfpage))
