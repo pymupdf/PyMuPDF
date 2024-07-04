@@ -1246,3 +1246,16 @@ def test_3615():
     print(doc.pagelayout)
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt
+
+def test_3654():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3654.docx')
+    content = ""
+    with pymupdf.open(path) as document:
+        for page in document:
+            content += page.get_text() + '\n\n'
+    content = content.strip()
+    
+    # As of 2024-07-04 we get a warning for this input file.
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'dropping unclosed output'
+
