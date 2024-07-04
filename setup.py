@@ -374,8 +374,13 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         local_tgz:
             If not None, must be local .tgz file.
     Returns:
-        Absolute path of local directory or .tgz containing MuPDF, or None if
-        we are to use system MuPDF.
+        (path, location):
+            `path` is absolute path of local directory or .tgz containing
+            MuPDF, or None if we are to use system MuPDF.
+
+            `location_out` is `location` if not None, else the hard-coded
+            default location.
+                
     '''
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
@@ -385,7 +390,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     
     if location == '':
         # Use system mupdf.
-        return
+        return None, location
     
     local_dir = None
     if local_tgz:
@@ -436,7 +441,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         if not local_dir:
             assert local_tgz
             local_dir = tar_extract( local_tgz, exists='return')
-        return os.path.abspath( local_dir)
+        return os.path.abspath( local_dir), location
     elif out == 'tgz':
         if not local_tgz:
             # Create .tgz containing git files in `local_dir`.
@@ -454,7 +459,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
                         path2 = f'{top}/{name}'
                         log(f'Adding {path=} {path2=}.')
                         f.add( path, path2, recursive=False)
-        return os.path.abspath( local_tgz)
+        return os.path.abspath( local_tgz), location
     else:
         assert 0, f'Unrecognised {out=}'
             
@@ -470,13 +475,14 @@ def get_mupdf_tgz():
 
     Returns name of top-level directory within the .tgz file.
     '''
-    name = get_mupdf_internal( 'tgz', os.environ.get('PYMUPDF_SETUP_MUPDF_TGZ'))
-    return name
+    name, location = get_mupdf_internal( 'tgz', os.environ.get('PYMUPDF_SETUP_MUPDF_TGZ'))
+    return name, location
 
 
 def get_mupdf(path=None, sha=None):
     '''
-    Downloads and/or extracts mupdf and returns location of mupdf directory.
+    Downloads and/or extracts mupdf and returns (path, location) where `path`
+    is the local mupdf directory and `location` is where it came from.
 
     Exact behaviour depends on environmental variable
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
@@ -509,7 +515,7 @@ def build():
     '''
     # Download MuPDF.
     #
-    mupdf_local = get_mupdf()
+    mupdf_local, mupdf_location = get_mupdf()
 
     build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
     assert build_type in ('debug', 'memento', 'release'), \
@@ -636,6 +642,10 @@ def build():
                 add( ret_p, f'{mupdf_build_dir}/_mupdf.so', to_dir)
                 add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
                 add( ret_b, pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
+        
+        # Add a .py file containing location of MuPDF.
+        text = f"mupdf_location='{mupdf_location}'\n"
+        add( ret_p, text.encode(), f'{to_dir}/_build.py')
     
     if g_flavour == 'pb':
         ret = ret_p + ret_b
@@ -1101,7 +1111,7 @@ def sdist():
         else:
             ret.append(p)
     if 0:
-        tgz = get_mupdf_tgz()
+        tgz, mupdf_location = get_mupdf_tgz()
         if tgz:
             ret.append((tgz, mupdf_tgz))
     else:
