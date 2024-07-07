@@ -8,6 +8,7 @@ import glob
 import re
 import subprocess
 import sys
+import sysconfig
 import textwrap
 
 
@@ -26,6 +27,7 @@ class WindowsVS:
         .cl:        C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\Hostx64\x64\cl.exe
         .link:      C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.28.29910\bin\Hostx64\x64\link.exe
         .csc:       C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\Roslyn\csc.exe
+        .msbuild:   C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Current\Bin\MSBuild.exe
         .devenv:    C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\IDE\devenv.com
 
     `.csc` is C# compiler; will be None if not found.
@@ -142,12 +144,23 @@ class WindowsVS:
                         #_log(f'{csc=}')
                         #break
 
+            # Find MSBuild.exe.
+            #
+            msbuild = None
+            for dirpath, dirnames, filenames in os.walk(directory):
+                for filename in filenames:
+                    if filename == 'MSBuild.exe':
+                        msbuild = os.path.join(dirpath, filename)
+                        #_log(f'{csc=}')
+                        #break
+
             self.cl = cl
             self.devenv = devenv
             self.directory = directory
             self.grade = grade
             self.link = link
             self.csc = csc
+            self.msbuild = msbuild
             self.vcvars = vcvars
             self.version = version
             self.year = year
@@ -167,6 +180,7 @@ class WindowsVS:
                 cl:           {self.cl}
                 link:         {self.link}
                 csc:          {self.csc}
+                msbuild:      {self.msbuild}
                 devenv:       {self.devenv}
                 ''')
         return textwrap.indent( ret, indent)
@@ -226,9 +240,8 @@ class WindowsPython:
         .version:
             `{major}.{minor}`, e.g. `3.9` or `3.11`. Same as `version` passed
             to `__init__()` if not None, otherwise the inferred version.
-        .root:
-            The parent directory of `.path`; allows Python headers to be found,
-            for example `{root}/include/Python.h`.
+        .include:
+            Python include path.
         .cpu:
             A `WindowsCpu` instance, same as `cpu` passed to `__init__()` if
             not None, otherwise the inferred cpu.
@@ -255,59 +268,85 @@ class WindowsPython:
         if version is None:
             version = '.'.join(platform.python_version().split('.')[:2])
         _log(f'Looking for Python {version=} {cpu.bits=}.')
-        command = 'py -0p'
-        if verbose:
-            _log(f'Running: {command}')
-        text = subprocess.check_output( command, shell=True, text=True)
-        for line in text.split('\n'):
-            #_log( f'    {line}')
-            if m := re.match( '^ *-V:([0-9.]+)(-32)? ([*])? +(.+)$', line):
-                version2 = m.group(1)
-                bits = 32 if m.group(2) else 64
-                current = m.group(3)
-                path = m.group(4).strip()
-            elif m := re.match( '^ *-([0-9.]+)-((32)|(64)) +(.+)$', line):
-                version2 = m.group(1)
-                bits = int(m.group(2))
-                path = m.group(5).strip()
-            else:
-                if verbose:
-                    _log( f'No match for {line=}')
-                continue
-            if verbose:
-                _log( f'{version2=} {bits=} {path=} from {line=}.')
-            if bits != cpu.bits or version2 != version:
-                continue
-            root = path[ :path.rfind('\\')]
-            if not os.path.exists(path):
-                # Sometimes it seems that the specified .../python.exe does not exist,
-                # and we have to change it to .../python<version>.exe.
-                #
-                assert path.endswith('.exe'), f'path={path!r}'
-                path2 = f'{path[:-4]}{version}.exe'
-                _log( f'Python {path!r} does not exist; changed to: {path2!r}')
-                assert os.path.exists( path2)
-                path = path2
 
-            self.path = path
+        if '.'.join(platform.python_version().split('.')[:2]) == version:
+            # Current python matches, so use it directly. This avoids problems
+            # on Github where experimental python-3.13 is not available via
+            # `py`.
+            _log(f'{cpu=} {version=}: using {sys.executable=}.')
+            self.path = sys.executable
             self.version = version
-            self.root = root
             self.cpu = cpu
-            #_log( f'pipcl.py:WindowsPython():\n{self.description_ml("    ")}')
-            return
+            self.include = sysconfig.get_path('include')
 
-        _log(f'Failed to find python matching cpu={cpu}.')
-        _log(f'Output from {command!r} was:\n{text}')
-        raise Exception( f'Failed to find python matching cpu={cpu}.')
+        else:
+            command = 'py -0p'
+            if verbose:
+                _log(f'{cpu=} {version=}: Running: {command}')
+            text = subprocess.check_output( command, shell=True, text=True)
+            for line in text.split('\n'):
+                #_log( f'    {line}')
+                if m := re.match( '^ *-V:([0-9.]+)(-32)? ([*])? +(.+)$', line):
+                    version2 = m.group(1)
+                    bits = 32 if m.group(2) else 64
+                    current = m.group(3)
+                    path = m.group(4).strip()
+                elif m := re.match( '^ *-([0-9.]+)-((32)|(64)) +(.+)$', line):
+                    version2 = m.group(1)
+                    bits = int(m.group(2))
+                    path = m.group(5).strip()
+                else:
+                    if verbose:
+                        _log( f'No match for {line=}')
+                    continue
+                if verbose:
+                    _log( f'{version2=} {bits=} {path=} from {line=}.')
+                if bits != cpu.bits or version2 != version:
+                    continue
+                root = os.path.dirname(path)
+                if not os.path.exists(path):
+                    # Sometimes it seems that the specified .../python.exe does not exist,
+                    # and we have to change it to .../python<version>.exe.
+                    #
+                    assert path.endswith('.exe'), f'path={path!r}'
+                    path2 = f'{path[:-4]}{version}.exe'
+                    _log( f'Python {path!r} does not exist; changed to: {path2!r}')
+                    assert os.path.exists( path2)
+                    path = path2
+
+                self.path = path
+                self.version = version
+                self.cpu = cpu
+                command = f'{self.path} -c "import sysconfig; print(sysconfig.get_path(\'include\'))"'
+                _log(f'Finding Python include path by running {command=}.')
+                self.include = subprocess.check_output(command, shell=True, text=True).strip()
+                _log(f'Python include path is {self.include=}.')
+                #_log( f'pipcl.py:WindowsPython():\n{self.description_ml("    ")}')
+                break
+            else:
+                _log(f'Failed to find python matching cpu={cpu}.')
+                _log(f'Output from {command!r} was:\n{text}')
+                raise Exception( f'Failed to find python matching cpu={cpu} {version=}.')
+
+        # Oddly there doesn't seem to be a
+        # `sysconfig.get_path('libs')`, but it seems to be next
+        # to `includes`:
+        self.libs = os.path.abspath(f'{self.include}/../libs')
+
+        _log( f'WindowsPython:\n{self.description_ml("    ")}')
 
     def description_ml(self, indent=''):
         ret = textwrap.dedent(f'''
-                root:    {self.root}
-                path:    {self.path}
-                version: {self.version}
-                cpu:     {self.cpu}
+                path:       {self.path}
+                version:    {self.version}
+                cpu:        {self.cpu}
+                include:    {self.include}
+                libs:       {self.libs}
                 ''')
         return textwrap.indent( ret, indent)
+
+    def __repr__(self):
+        return f'path={self.path!r} version={self.version!r} cpu={self.cpu!r} include={self.include!r} libs={self.libs!r}'
 
 
 # Internal helpers.
