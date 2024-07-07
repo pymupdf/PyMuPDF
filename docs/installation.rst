@@ -76,6 +76,10 @@ Problems after installation
 
   See https://github.com/pymupdf/PyMuPDF/issues/2678 for more details.
 
+*
+  Problems have been reported when using PyMuPDF with Jupyter labs on Apple
+  Silicon (arm64); see https://github.com/pymupdf/PyMuPDF/issues/3643.
+
 
 Notes
 ---------------------------------------------------------
