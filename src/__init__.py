@@ -5305,7 +5305,11 @@ class Document:
             if array.startswith("/XYZ"):
                 del templ_dict["dest"]  # don't return orig string in this case
                 arr_t = array.split()[1:]
-                x, y, z = tuple(map(float, arr_t))
+                if len(arr_t) == 3:
+                    x, y, z = tuple(map(float, arr_t))
+                else:
+                    x, y = tuple(map(float, arr_t))
+                    z = 0
                 templ_dict["to"] = (x, y)
                 templ_dict["zoom"] = z
 
