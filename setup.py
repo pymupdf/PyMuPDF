@@ -521,46 +521,14 @@ def build():
     assert build_type in ('debug', 'memento', 'release'), \
             f'Unrecognised build_type={build_type!r}'
     
-    # Copy our config header on top of MuPDF's config.h.
-    #
-    env_extra = dict()
-    if mupdf_local:
-        if windows:
-            from_ = f'{g_root}/src_classic/_config.h'
-            to_ = f'{mupdf_local}/include/mupdf/fitz/config.h'
-        if os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG') == '0':
-            # Use MuPDF default config.
-            if windows:
-                log( f'Not copying {from_} to {to_}.')
-            else:
-                log( f'Not predefining TOFU_CJK_EXT.')
-        else:
-            # Our config differs from MuPDF's default in that it defines TOFU_CJK_EXT
-            # This tells the MuPDF shared-library build to exclude large unused font
-            # files such as resources/fonts/han/SourceHanSerif-Regular.ttc.
-            #
-            if windows:
-                # No equivalent to XCFLAGS. We could create an override.props
-                # file and run devenv.com with
-                # `-p:ForceImportBeforeCppTargets=$(SolutionDir)override.props`,
-                # but for now we just overwrite MuPDF's config.h.
-                log( f'Copying {from_} to {to_}.')
-                shutil.copy2( from_, to_)
-                s = os.stat( f'{to_}')
-                log( f'{to_}: {s} mtime={time.strftime("%F-%T", time.gmtime(s.st_mtime))}')
-            else:
-                # By predefining TOFU_CJK_EXT here, we don't need to modify
-                # MuPDF's include/mupdf/fitz/config.h.
-                log( f'Setting XCFLAGS and XCXXFLAGS to predefine TOFU_CJK_EXT.')
-                env_add(env_extra, 'XCFLAGS', '-DTOFU_CJK_EXT')
-                env_add(env_extra, 'XCXXFLAGS', '-DTOFU_CJK_EXT')
+    overwrite_config = os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG', '1') == '1'
     
     # Build MuPDF shared libraries.
     #
     if windows:
-        mupdf_build_dir = build_mupdf_windows( mupdf_local, env_extra, build_type)
+        mupdf_build_dir = build_mupdf_windows( mupdf_local, build_type, overwrite_config)
     else:
-        mupdf_build_dir = build_mupdf_unix( mupdf_local, env_extra, build_type)
+        mupdf_build_dir = build_mupdf_unix( mupdf_local, build_type, overwrite_config)
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
     # Build rebased `extra` module (and/or PyMuPDF classic if specified).
@@ -686,10 +654,25 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
         log(f'Returning with {name}={env[name]!r}')
 
 
-def build_mupdf_windows( mupdf_local, env, build_type):
+def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
     
     assert mupdf_local
 
+    if overwrite_config:
+        mupdf_config_h = f'{mupdf_local}/include/mupdf/fitz/config.h'
+        prefix = '#define TOFU_CJK_EXT 1 /* PyMuPDF override. */\n'
+        with open(mupdf_config_h) as f:
+            text = f.read()
+        if text.startswith(prefix):
+            print(f'Not modifying {mupdf_config_h} because already has prefix {prefix!r}.')
+        else:
+            print(f'Prefixing {mupdf_config_h} with {prefix!r}.')
+            text = prefix + text
+            st = os.stat(mupdf_config_h)
+            with open(mupdf_config_h, 'w') as f:
+                f.write(text)
+            os.utime(mupdf_config_h, (st.st_atime, st.st_mtime))
+        
     wp = pipcl.wdev.WindowsPython()
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
     windows_build_tail = f'build\\shared-{tesseract}{build_type}-x{wp.cpu.bits}-py{wp.version}'
@@ -718,24 +701,26 @@ def build_mupdf_windows( mupdf_local, env, build_type):
         for q in '"', "'":
             if devenv.startswith( q) and devenv.endswith( q):
                 devenv = devenv[1:-1]
-    command += f' -d {windows_build_tail} -b --refcheck-if "#if 1" --devenv "{devenv}" '
+    command += f' -d {windows_build_tail}'
+    command += f' -b'
+    command += f' --refcheck-if "#if 1"'
+    command += f' --devenv "{devenv}"'
+    command += f' '
     if 'b' in _implementations():
         command += 'all'
     else:
         command += '01' # No need for C++/Python bindings.
-    env2 = os.environ.copy()
-    env2.update(env)
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
-        log( f'PYMUPDF_SETUP_MUPDF_REBUILD is "0" so not building MuPDF; would have run with env={env!r}: {command}')
+        log( f'PYMUPDF_SETUP_MUPDF_REBUILD is "0" so not building MuPDF; would have run: {command}')
     else:
-        log( f'Building MuPDF by running with {env=}: {command}')
-        subprocess.run( command, shell=True, check=True, env=env2)
+        log( f'Building MuPDF by running: {command}')
+        subprocess.run( command, shell=True, check=True)
         log( f'Finished building mupdf.')
     
     return windows_build_dir
 
 
-def build_mupdf_unix( mupdf_local, env, build_type):
+def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
     '''
     Builds MuPDF.
 
@@ -751,7 +736,14 @@ def build_mupdf_unix( mupdf_local, env, build_type):
         log( f'Using system mupdf.')
         return None
 
-    env = env.copy()
+    env = dict()
+    if overwrite_config:
+        # By predefining TOFU_CJK_EXT here, we don't need to modify
+        # MuPDF's include/mupdf/fitz/config.h.
+        log( f'Setting XCFLAGS and XCXXFLAGS to predefine TOFU_CJK_EXT.')
+        env_add(env, 'XCFLAGS', '-DTOFU_CJK_EXT')
+        env_add(env, 'XCXXFLAGS', '-DTOFU_CJK_EXT')
+
     if openbsd or freebsd:
         env_add(env, 'CXX', 'c++', ' ')
 
@@ -804,10 +796,10 @@ def build_mupdf_unix( mupdf_local, env, build_type):
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
     #
-    env_string = ''
+    command = f'cd {mupdf_local} &&'
     for n, v in env.items():
-        env_string += f' {n}={shlex.quote(v)}'
-    command = f'cd {mupdf_local} &&{env_string} {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
+        command += f' {n}={shlex.quote(v)}'
+    command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
     if 'b' in _implementations() and 'p' in g_flavour:
         command += 'all'
     else:
