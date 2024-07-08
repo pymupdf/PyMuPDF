@@ -29,7 +29,7 @@ jobs:
             inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git"
             inputs_flavours: "0"
             inputs_sdist: "0"
-            inputs_wheels_cps: "cp312*"
+            inputs_wheels_cps: "cp312* cp313*"
             inputs_wheels_default: "0"
             inputs_wheels_linux_auto: "1"
             inputs_wheels_macos_auto: "1"
