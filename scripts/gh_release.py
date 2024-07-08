@@ -77,6 +77,7 @@ import glob
 import inspect
 import os
 import platform
+import re
 import shlex
 import subprocess
 import sys
@@ -262,7 +263,14 @@ def build( platform_=None, valgrind=False):
         # external symbol PyUnicode_DecodeRawUnicodeEscape`.
         # 2024-06-05: musllinux on aarch64 fails because libclang cannot find
         # libclang.so.
-        set_if_unset( 'CIBW_SKIP', 'pp* *i686 cp36* cp37* *musllinux*aarch64*')
+        #
+        # 2024-07-09: exclude Windows 32-bit Python-3.13 because when running
+        # under 32-bit Python-3.13, there is no 64-bit Python-3.13 available
+        # via `py -3.13`, which we need because libclang fails on 32-bit
+        # Windows. Hopefully this will work when Python-3.13 is officially
+        # released.
+        #
+        set_if_unset( 'CIBW_SKIP', 'pp* *i686 cp36* cp37* *musllinux*aarch64* cp313-win32')
     
         def make_string(*items):
             ret = list()
@@ -273,6 +281,15 @@ def build( platform_=None, valgrind=False):
     
         cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311* cp312*'
         set_if_unset( 'CIBW_BUILD', cps)
+        for cp in cps.split():
+            m = re.match('cp([0-9]+)[*]', cp)
+            assert m
+            v = int(m.group(1))
+            if v == 313:
+                # Need to set CIBW_PRERELEASE_PYTHONS, otherwise cibuildwheel
+                # will refuse.
+                log(f'Setting CIBW_PRERELEASE_PYTHONS for Python version {cp=}.')
+                set_if_unset( 'CIBW_PRERELEASE_PYTHONS', '1')
     
         if platform.system() == 'Linux':
             set_if_unset(
