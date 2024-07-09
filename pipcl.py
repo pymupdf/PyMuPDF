@@ -516,13 +516,7 @@ class Package:
         assert re.match('([A-Z0-9]|[A-Z0-9][A-Z0-9._-]*[A-Z0-9])$', name, re.IGNORECASE), \
                 f'Bad name: {name!r}'
 
-
-        # PEP-440.
-        assert re.match(
-                    r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$',
-                    version,
-                ), \
-                f'Bad version: {version!r}.'
+        _assert_version_pep_440(version)
 
         # https://packaging.python.org/en/latest/specifications/binary-distribution-format/
         if tag_python:
@@ -1471,7 +1465,7 @@ def build_extension(
         debug2 = ''
         if debug:
             debug2 = '/Zi'  # Generate .pdb.
-            # debug2 = '/Z7'    # Embedded debug info in .obj files.
+            # debug2 = '/Z7'    # Embed debug info in .obj files.
 
         # As of 2023-08-23, it looks like VS tools create slightly
         # .dll's each time, even with identical inputs.
@@ -1884,8 +1878,8 @@ class PythonFlags:
 
         if windows():
             wp = wdev.WindowsPython()
-            self.includes = f'/I"{wp.root}\\include"'
-            self.ldflags = f'/LIBPATH:"{wp.root}\\libs"'
+            self.includes = f'/I"{wp.include}"'
+            self.ldflags = f'/LIBPATH:"{wp.libs}"'
 
         elif pyodide():
             _include_dir = os.environ[ 'PYO3_CROSS_INCLUDE_DIR']
@@ -2113,7 +2107,7 @@ def run_if( command, out, *prerequisites):
     '''
     doit = False
     cmd_path = f'{out}.cmd'
-    
+
     if not doit:
         out_mtime = _fs_mtime( out)
         if out_mtime == 0:
@@ -2246,6 +2240,15 @@ def _fs_mtime( filename, default=0):
         return os.path.getmtime( filename)
     except OSError:
         return default
+
+
+def _assert_version_pep_440(version):
+    assert re.match(
+                r'^([1-9][0-9]*!)?(0|[1-9][0-9]*)(\.(0|[1-9][0-9]*))*((a|b|rc)(0|[1-9][0-9]*))?(\.post(0|[1-9][0-9]*))?(\.dev(0|[1-9][0-9]*))?$',
+                version,
+            ), \
+            f'Bad version: {version!r}.'
+
 
 g_verbose = int(os.environ.get('PIPCL_VERBOSE', '1'))
 
