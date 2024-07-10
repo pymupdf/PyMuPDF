@@ -60,10 +60,14 @@ source using a Python sdist.
 The build will automatically download and build MuPDF.
 
 
+.. _problems-after-installation:
+
 Problems after installation
 ---------------------------------------------------------
 
-* On Windows `ImportError: DLL load failed while importing _fitz`.
+* On Windows, Python error::
+
+      ImportError: DLL load failed while importing _fitz
 
   This has been occasionally seen if `MSVCP140.dll` is missing, and appears
   to be caused by a bug in some versions (2015-2017) of `Microsoft Visual C++
@@ -77,8 +81,37 @@ Problems after installation
   See https://github.com/pymupdf/PyMuPDF/issues/2678 for more details.
 
 *
-  Problems have been reported when using PyMuPDF with Jupyter labs on Apple
-  Silicon (arm64); see https://github.com/pymupdf/PyMuPDF/issues/3643.
+  Python error::
+
+      ModuleNotFoundError: No module named 'frontend'
+  
+  This can happen if PyMuPDF's legacy name `fitz` is used (for example `import
+  fitz` instead of `import pymupdf`), and an unrelated Python package called
+  `fitz` (https://pypi.org/project/fitz/) is installed.
+
+  The fitz package appears to be no longer maintained (the latest release is
+  from 2017), but unfortunately it does not seem possible to remove it from
+  pypi.org. It does not even work on its own, as well as breaking the use of
+  PyMuPDF's legacy name.
+
+  There are a few ways to avoid this problem:
+
+  *
+    Use `import pymupdf` instead of `import fitz`, and update one's code to
+    match.
+
+  * Or uninstall the `fitz` package and reinstall PyMuPDF::
+  
+        pip uninstall fitz
+        pip install --force-reinstall pymupdf
+
+  * Or use `import pymupdf as fitz`. However this has not been well tested.
+
+* With Jupyter labs on Apple Silicon (arm64), Python error::
+
+      ImportError: /opt/conda/lib/python3.11/site-packages/pymupdf/libmupdf.so.24.4: undefined symbol: fz_pclm_write_options_usage
+
+  See https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
 
 
 Notes
