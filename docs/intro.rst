@@ -40,7 +40,12 @@ The original rendering library for MuPDF was called *Libart*.
 
 *"After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called "Fitz". Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF."* (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
 
-`import fitz` is still supported for backwards compatibility, but this usage **cannot coexist** with packages named "fitz" in the same Python environment.
+`import fitz` is still supported for backwards compatibility.
+
+.. note::
+
+  Use of legacy name `fitz` can fail if defunct package pypi.org `fitz` is installed; see :ref:`problems-after-installation`.
+
 
 License and Copyright
 ----------------------
