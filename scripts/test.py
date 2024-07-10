@@ -17,7 +17,7 @@ Examples:
         Build and test using internal checkout of mupdf 1.24.x branch from Github.
 
 Usage:
-    scripts/test.py <options> <commands>
+    scripts/test.py <options> <command(s)>
 
 * Commands are handled in order, so for example `build` should usually be
   before `test`.
@@ -81,6 +81,10 @@ Options:
         If true (the default on non-OpenBSD systems), we let pip create and use
         its own new venv to build PyMuPDF. Otherwise we force pip to use the
         current venv.
+    --build-flavour <build_flavour>
+        Combination of 'p', 'b', 'd'. See ../setup.py's description of
+        PYMUPDF_SETUP_FLAVOUR. Default is 'pb', i.e. self-contained PyMuPDF
+        wheels without MuPDF build-time files.
     --build-mupdf 0|1
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
@@ -101,6 +105,8 @@ Commands:
     test
         Runs PyMuPDF's pytest tests in venv. Default is to test rebased and
         unoptimised rebased; use `-i` to change this.
+    wheel
+        Build wheel.
 
 Environment:
     PYMUDF_SCRIPTS_TEST_options
@@ -131,8 +137,10 @@ def main(argv):
     build_isolation = None
     valgrind = False
     s = True
+    build_do = 'i'
     build_type = None
     build_mupdf = True
+    build_flavour = 'pb'
     gdb = False
     test_fitz = True
     implementations = None
@@ -187,6 +195,8 @@ def main(argv):
             timeout = float(next(args))
         elif arg == '-v':
             venv = int(next(args))
+        elif arg == '--build-flavour':
+            build_flavour = next(args)
         elif arg == '--build-mupdf':
             build_mupdf = int(next(args))
         elif arg == '--gdb':
@@ -202,7 +212,7 @@ def main(argv):
     
     commands = list()
     while 1:
-        assert arg in ('build', 'buildtest', 'test'), \
+        assert arg in ('build', 'buildtest', 'test', 'wheel'), \
                 f'Unrecognised command: {arg=}.'
         commands.append(arg)
         try:
@@ -223,13 +233,15 @@ def main(argv):
                 )
         return
 
-    def do_build():
+    def do_build(wheel=False):
         build(
                 implementations=implementations,
                 build_type=build_type,
                 build_isolation=build_isolation,
                 venv_quick=venv_quick,
                 build_mupdf=build_mupdf,
+                build_flavour=build_flavour,
+                wheel=wheel,
                 )
     def do_test():
         test(
@@ -254,6 +266,8 @@ def main(argv):
         elif command == 'buildtest':
             do_build()
             do_test()
+        elif command == 'wheel':
+            do_build(wheel=True)
         else:
             assert 0
 
@@ -312,6 +326,8 @@ def build(
         build_isolation=None,
         venv_quick=False,
         build_mupdf=True,
+        build_flavour='pb',
+        wheel=False,
         ):
     '''
     Args:
@@ -363,7 +379,12 @@ def build(
         env_extra['PYMUPDF_SETUP_MUPDF_REBUILD'] = '0'
     if build_type:
         env_extra['PYMUPDF_SETUP_MUPDF_BUILD_TYPE'] = build_type
-    gh_release.run(f'pip install{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
+    if build_flavour:
+        env_extra['PYMUPDF_SETUP_FLAVOUR'] = build_flavour
+    if wheel:
+        gh_release.run(f'pip wheel{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
+    else:
+        gh_release.run(f'pip install{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
 
 
 def test(

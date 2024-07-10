@@ -375,6 +375,9 @@ def build( platform_=None, valgrind=False):
     
         run('pip install cibuildwheel')
     
+        # We include MuPDF build-time files on certain platforms.
+        flavour_d = platform.system() in ('Linux', 'Windows') and cpu_bits() == 64
+        
         if inputs_flavours:
             # Build and test PyMuPDF and PyMuPDFb wheels.
             #
@@ -382,9 +385,13 @@ def build( platform_=None, valgrind=False):
             # First build PyMuPDFb wheel. cibuildwheel will build a single wheel
             # here, which will work with any python version on current OS.
             #
-            env_set( 'PYMUPDF_SETUP_FLAVOUR', 'b', pass_=1)
+            flavour = 'b'
+            if flavour_d:
+                # Include MuPDF build-time files.
+                flavour += 'd'
+            env_set( 'PYMUPDF_SETUP_FLAVOUR', flavour, pass_=1)
             run( f'cibuildwheel{platform_arg}', env_extra)
-            run( 'echo after flavour=b')
+            run( 'echo after {flavour=}')
             run( 'ls -l wheelhouse')
 
             # Now set environment to build PyMuPDF wheels. cibuildwheel will build
@@ -414,15 +421,21 @@ def build( platform_=None, valgrind=False):
         
             set_cibuild_test()
         
-            env_set( 'PYMUPDF_SETUP_FLAVOUR', 'p', pass_=1)
+            # Build main PyMuPDF wheel.
+            flavour = 'p'
+            env_set( 'PYMUPDF_SETUP_FLAVOUR', flavour, pass_=1)
+            run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
         
         else:
             # Build and test wheels which contain everything.
             #
+            flavour = 'pb'
+            if flavour_d:
+                flavour += 'd'
             set_cibuild_test()
-            env_set( 'PYMUPDF_SETUP_FLAVOUR', 'pb', pass_=1)
+            env_set( 'PYMUPDF_SETUP_FLAVOUR', flavour, pass_=1)
     
-        run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
+            run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
     
         run( 'ls -lt wheelhouse')
 
@@ -707,9 +720,8 @@ def log(text, caller=0):
     filename    = frame_record.filename
     line        = frame_record.lineno
     function    = frame_record.function
-    prefix = f'{relpath(filename, pymupdf_dir)}:{function}(): '
-    print(textwrap.indent(text, prefix))
-    sys.stdout.flush()
+    prefix = f'{relpath(filename, pymupdf_dir)}:{line}:{function}(): '
+    print(textwrap.indent(text, prefix), flush=1)
 
 
 def run(command, env_extra=None, check=1, timeout=None):
@@ -729,10 +741,14 @@ def run(command, env_extra=None, check=1, timeout=None):
             leave processes running if timeout expires.
     '''
     env = None
+    message = 'Running:'
     if env_extra:
         env = os.environ.copy()
         env.update(env_extra)
-    log(f'Running: {command}')
+        for n, v in env_extra.items():
+            message += f' {n}={v}'
+    message += f' {command}'
+    log(message, caller=1)
     return subprocess.run(command, check=check, shell=1, env=env, timeout=timeout)
 
 
