@@ -1566,10 +1566,19 @@ enum
     TEXT_FONT_BOLD = 16,
 };
 
-/* todo: implement fns to set these and sync with __init__.py. */
 int g_skip_quad_corrections = 0;
 int g_subset_fontnames = 0;
 int g_small_glyph_heights = 0;
+
+void set_skip_quad_corrections(int on)
+{
+    g_skip_quad_corrections = on;
+}
+
+void set_subset_fontnames(int on)
+{
+    g_subset_fontnames = on;
+}
 
 void set_small_glyph_heights(int on)
 {
@@ -4045,7 +4054,10 @@ fz_rect JM_char_bbox(const mupdf::FzStextLine& line, const mupdf::FzStextChar& c
 static fz_quad JM_char_quad( fz_stext_line *line, fz_stext_char *ch);
 void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page);
 
+void set_skip_quad_corrections(int on);
+void set_subset_fontnames(int on);
 void set_small_glyph_heights(int on);
+
 mupdf::FzRect JM_cropbox(mupdf::PdfObj& page_obj);
 PyObject* get_cdrawings(mupdf::FzPage& page, PyObject *extended=NULL, PyObject *callback=NULL, PyObject *method=NULL);
 
