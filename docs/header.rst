@@ -21,6 +21,10 @@
 
     <cite>PyMuPDF</cite>
 
+.. |PyMuPDF Pro| raw:: html
+
+    <cite>PyMuPDF Pro</cite>
+
 .. |PDF| raw:: html
 
     <cite>PDF</cite>

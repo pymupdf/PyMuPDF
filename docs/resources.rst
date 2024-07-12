@@ -5,6 +5,16 @@
 Resources
 =============
 
+**PyMuPDF Pro**
+--------------------
+
+
+For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`.
+
+
+|
+----
+
 
 Find out about **PyMuPDF Utilities**
 -------------------------------------------------
