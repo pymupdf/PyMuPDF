@@ -21605,6 +21605,8 @@ class TOOLS:
         '''
         if on is not None:
             _globals.subset_fontnames = bool(on)
+            if g_use_extra:
+                extra.set_subset_fontnames(_globals.subset_fontnames)
         return _globals.subset_fontnames
     
     @staticmethod
@@ -21653,6 +21655,8 @@ class TOOLS:
         '''
         if on is not None:
             _globals.skip_quad_corrections = bool(on)
+            if g_use_extra:
+                extra.set_skip_quad_corrections(_globals.skip_quad_corrections)
         return _globals.skip_quad_corrections
 
     # fixme: also defined at top-level.
