@@ -262,7 +262,7 @@ The following constants represent the default combinations of the above for text
 
 .. py:data:: TEXTFLAGS_SEARCH
 
-    `TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_DEHYPHENATE`
+    `TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_DEHYPHENATE`
 
 
 .. _linkDest Kinds:
