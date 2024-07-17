@@ -329,3 +329,17 @@ def test_3594():
         # We expect MuPDF warnings.
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt
+
+
+def test_3687():
+    path1 = pymupdf.open(os.path.normpath(f'{__file__}/../../tests/resources/test_3687.epub'))
+    path2 = pymupdf.open(os.path.normpath(f'{__file__}/../../tests/resources/test_3687-3.epub'))
+    for path in path1, path2:
+        print(f'Looking at {path=}.')
+        with pymupdf.open(path) as document:
+            page = document[0]
+            text = page.get_text("text")
+            print(f'{text=!s}')
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        print(f'{wt=}')
+        assert wt == 'unknown epub version: 3.0'
