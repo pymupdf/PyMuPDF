@@ -2817,6 +2817,7 @@ class Document:
                                                     stream.m_internal,
                                                     accel.m_internal,
                                                     archive.m_internal,
+                                                    None,   # recognize_state
                                                     )
                                         else:
                                             doc = mupdf.ll_fz_document_open_fn_call(
