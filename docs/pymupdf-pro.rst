@@ -13,8 +13,8 @@ Enhance |PyMuPDF| capability with **Office** document support.
 
 |PyMuPDF Pro| offers all the features of |PyMuPDF|, plus enhanced functionality to support **Office** documents.
 
-- Load, parse and extract text data from Office files
-- Display Office files
+- Load, parse and extract text data from **Office** files
+- Able to render **Office** files
 
 
 Office file support
@@ -48,8 +48,8 @@ Import |PyMuPDF Pro| and you can then reference **Office** documents directly, e
 
 .. code-block:: python
 
-    import pymupdf.pro
-    doc = pymupdf.pro.open("my-office-doc.xls")
+    import pymupdfpro
+    doc = pymupdf.open("my-office-doc.xls")
 
 .. note::
 
@@ -88,10 +88,10 @@ Initialize |PyMuPDF Pro| with a key as follows:
 
 .. code-block:: python
 
-    import pymupdf.pro
+    import pymupdfpro
     key = '...' # use key contents directly.
     key = 'foo/my_pymupdfpro_key' # use key file.
-    pymupdf.pro.init(key)
+    pymupdf.init(key)
 
 This will allow you to evaluate the product for a limited time. If you want to use |PyMuPDF Pro| after this time you should then `enquire about obtaining a commercial license <https://artifex.com/products/pymupdf-pro/>`_.
 
