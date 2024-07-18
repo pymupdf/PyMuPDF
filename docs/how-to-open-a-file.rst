@@ -57,7 +57,38 @@ Assume that *"some.file"* is actually an **XPS**. Open it like so:
     If you attempt to open an unsupported file then |PyMuPDF| will throw a file data error.
 
 
+
+
 ----------
+
+
+Opening Remote Files
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+For remote files on a server (i.e. non-local files), you will need to *stream* the file data to |PyMuPDF|.
+
+For example use the `requests <https://requests.readthedocs.io/en/latest/>`_ library as follows:
+
+.. code-block:: python
+
+    import pymupdf
+    import requests
+
+    r = requests.get('https://mupdf.com/docs/mupdf_explored.pdf')
+    data = r.content
+    doc = pymupdf.Document(stream=data)
+
+
+Opening Files from Cloud Services
+""""""""""""""""""""""""""""""""""""""
+
+For further examples which deal with files held on typical cloud services please see these `Cloud Interactions code snippets <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/cloud-interactions>`_.
+
+
+
+----------
+
 
 
 Opening Files as Text
