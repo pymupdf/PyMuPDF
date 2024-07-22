@@ -1163,7 +1163,7 @@ classifier = [
 #
 
 version_p = '1.24.8'
-version_b = '1.24.6'
+version_b = '1.24.8'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     
