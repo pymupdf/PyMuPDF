@@ -608,7 +608,10 @@ class Package:
             # pypi.org.
             #
             import setuptools
-            tag_platform = setuptools.distutils.util.get_platform().replace('-', '_').replace('.', '_')
+            tag_platform1 = setuptools.distutils.util.get_platform()
+            tag_platform2 = sysconfig.get_platform()
+            assert tag_platform1 == tag_platform2, f'{tag_platform1=} != {tag_platform2=}'
+            tag_platform = tag_platform2.replace('-', '_').replace('.', '_').lower()
 
             # We need to patch things on MacOS.
             #
