@@ -155,8 +155,8 @@ html_favicon = "_static/PyMuPDF.ico"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 html_theme_options = {
-    "light_logo": "pymupdf-sidebar-logo-dark.png",
-    "dark_logo": "pymupdf-sidebar-logo-light.png",
+    "light_logo": "sidebar-logo-dark.svg",
+    "dark_logo": "sidebar-logo-light.svg",
 }
 
 # A list of CSS files. The entry must be a filename string or a tuple containing
