@@ -2,6 +2,22 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.8 (2024-07-22)**
+
+* Fixed issues:
+
+  * **Fixed** `3636 <https://github.com/pymupdf/PyMuPDF/issues/3636>`_: API documentation for the open function is not obvious to find.
+  * **Fixed** `3654 <https://github.com/pymupdf/PyMuPDF/issues/3654>`_: docx parsing was broken in 1.24.7
+  * **Fixed** `3677 <https://github.com/pymupdf/PyMuPDF/issues/3677>`_: Unable to extract subset font name using the newer versions of PyMuPDF : 1.24.6 and 1.24.7.
+  * **Fixed** `3687 <https://github.com/pymupdf/PyMuPDF/issues/3687>`_: Page.get_text results in AssertionError for epub files
+
+Other:
+
+  * Fixed various spelling mistakes spotted by codespell.
+  * Improved how we modify MuPDF's default configuration on Windows.
+  * Make text search to work with ligatures.
+
+
 **Changes in version 1.24.7 (2024-06-26)**
 
 * Fixed issues:
