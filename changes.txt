@@ -2,6 +2,11 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.9 (2024-07-24)**
+
+* Incremented MyPDF version to 1.24.9.
+
+
 **Changes in version 1.24.8 (2024-07-22)**
 
 * Fixed issues:

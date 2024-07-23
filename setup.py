@@ -205,7 +205,7 @@ if 1:
         log( f'    {k}: {v!r}')
 
 
-PYMUPDF_SETUP_FLAVOUR = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'pb')
+PYMUPDF_SETUP_FLAVOUR = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'pbd')
 for i in PYMUPDF_SETUP_FLAVOUR:
     assert i in 'pbd', f'Unrecognised flag "{i} in {PYMUPDF_SETUP_FLAVOUR=}. Should be one of "p", "b", "pb"'
 
@@ -395,7 +395,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.4-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.8-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -1168,8 +1168,8 @@ classifier = [
 # We generate different wheels depending on PYMUPDF_SETUP_FLAVOUR.
 #
 
-version_p = '1.24.8'
-version_b = '1.24.8'
+version_p = '1.24.9'
+version_b = '1.24.9'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     
