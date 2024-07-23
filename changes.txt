@@ -13,9 +13,9 @@ Change Log
 
 Other:
 
-  * Fixed various spelling mistakes spotted by codespell.
-  * Improved how we modify MuPDF's default configuration on Windows.
-  * Make text search to work with ligatures.
+* Fixed various spelling mistakes spotted by codespell.
+* Improved how we modify MuPDF's default configuration on Windows.
+* Make text search to work with ligatures.
 
 
 **Changes in version 1.24.7 (2024-06-26)**
