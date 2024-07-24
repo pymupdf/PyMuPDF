@@ -14,7 +14,7 @@ Enhance |PyMuPDF| capability with **Office** document support.
 |PyMuPDF Pro| offers all the features of |PyMuPDF|, plus enhanced functionality to support **Office** documents.
 
 - Load, parse and extract text data from **Office** files
-- Able to render **Office** files
+- Ablility to render **Office** files
 
 
 Office file support
@@ -48,7 +48,9 @@ Import |PyMuPDF Pro| and you can then reference **Office** documents directly, e
 
 .. code-block:: python
 
-    import pymupdfpro
+    import pymupdf.pro
+    pymupdf.pro.unlock()
+    # PyMuPDF has now been extended with PyMuPDF Pro features, with some restrictions.
     doc = pymupdf.open("my-office-doc.xls")
 
 .. note::
@@ -67,9 +69,9 @@ Restrictions
 
 |PyMuPDF Pro| functionality is restricted without a license key as follows:
 
-    **Only the first 10KB of any document will be available as extracted text.**
+    **Only the first 3 pages of any document will be available.**
 
-To unlock full functionality you should `obtain a trial key <PyMuPDFPro_TrialKeys>`.
+To unlock full functionality you should `obtain a trial key <https://pymupdf.io/try-pro/>`_.
 
 
 .. _PyMuPDFPro_TrialKeys:
@@ -77,7 +79,7 @@ To unlock full functionality you should `obtain a trial key <PyMuPDFPro_TrialKey
 Trial keys
 -----------------------
 
-To obtain a license key `please fill out the form on this page <https://artifex.com/products/pymupdf-pro/trial/>`_. You will then have the trial key emailled to the address you submitted.
+To obtain a license key `please fill out the form on this page <https://pymupdf.io/try-pro/>`_. You will then have the trial key emailled to the address you submitted.
 
 
 Using a key
@@ -88,17 +90,18 @@ Initialize |PyMuPDF Pro| with a key as follows:
 
 .. code-block:: python
 
-    import pymupdfpro
-    key = '...' # use key contents directly.
-    key = 'foo/my_pymupdfpro_key' # use key file.
-    pymupdf.init(key)
+    import pymupdf.pro
+    pymupdf.pro.unlock(my_key)
+    # PyMuPDF has now been extended with PyMuPDF Pro features.
 
 This will allow you to evaluate the product for a limited time. If you want to use |PyMuPDF Pro| after this time you should then `enquire about obtaining a commercial license <https://artifex.com/products/pymupdf-pro/>`_.
 
 
+
+
 .. raw:: html
 
-   <button id="findOutAboutPyMuPDFPro" class="cta orange" onclick="window.location='https://artifex.com/products/pymupdf-pro?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">Ready to license PyMuPDF Pro?</button>
+   <button id="findOutAboutPyMuPDFPro" class="cta orange" onclick="window.location='https://pymupdf.io/try-pro/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">Ready to try PyMuPDF Pro?</button>
 
 
 
