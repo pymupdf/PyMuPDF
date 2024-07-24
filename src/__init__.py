@@ -2818,7 +2818,7 @@ class Document:
                                         stream = mupdf.FzStream(filename)
                                         accel = mupdf.FzStream()
                                         archive = mupdf.FzArchive(None)
-                                        if mupdf_version_tuple >= (1, 25):
+                                        if mupdf_version_tuple >= (1, 24, 8):
                                             doc = mupdf.ll_fz_document_handler_open(
                                                     handler,
                                                     stream.m_internal,
