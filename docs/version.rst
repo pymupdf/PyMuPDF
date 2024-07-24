@@ -1,6 +1,6 @@
 ----
 
-This documentation covers **PyMuPDF v1.24.7** features as of **2024-06-26 00:00:01**.
+This documentation covers **PyMuPDF v1.24.9** features as of **2024-07-24 00:00:01**.
 
 The major and minor versions of **PyMuPDF** and **MuPDF** will always be the same. Only the third qualifier (patch level) may deviate from that of **MuPDF**.
 

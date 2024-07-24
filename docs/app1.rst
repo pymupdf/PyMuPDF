@@ -286,7 +286,7 @@ Text Extraction Flags Defaults
 ========================= ==== ==== ===== === ==== ======= ===== ====== ======
 Indicator                 text html xhtml xml dict rawdict words blocks search
 ========================= ==== ==== ===== === ==== ======= ===== ====== ======
-preserve ligatures        1    1    1     1   1    1       1     1       1
+preserve ligatures        1    1    1     1   1    1       1     1       0
 preserve whitespace       1    1    1     1   1    1       1     1       1
 preserve images           n/a  1    1     n/a 1    1       n/a   0       0
 inhibit spaces            0    0    0     0   0    0       0     0       0
