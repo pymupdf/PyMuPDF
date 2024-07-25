@@ -80,15 +80,22 @@ def log( text='', caller=1):
     '''
     For development/debugging diagnostics.
     '''
-    frame_record = inspect.stack( context=0)[ caller]
-    filename    = os.path.relpath(frame_record.filename)
-    line        = frame_record.lineno
-    function    = frame_record.function
-    text = f'{filename}:{line}:{function}: {text}'
+    try:
+        stack = inspect.stack(context=0)
+    except StopIteration:
+        pass
+    else:
+        frame_record = stack[caller]
+        try:
+            filename = os.path.relpath(frame_record.filename)
+        except Exception:   # Can fail on windows.
+            filename = frame_record.filename
+        line = frame_record.lineno
+        function = frame_record.function
+        text = f'{filename}:{line}:{function}(): {text}'
     if _g_log_items_active:
         _g_log_items.append(text)
-    print(text, file=_g_out_log)
-    _g_out_log.flush()
+    print(text, file=_g_out_log, flush=1)
 
 
 def message(text=''):
@@ -201,9 +208,9 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.24.7"
+pymupdf_version = "1.24.9"
 mupdf_version = mupdf.FZ_VERSION
-pymupdf_date = "2024-06-26 00:00:01"
+pymupdf_date = "2024-07-24 00:00:01"
 
 # Versions as tuples; useful when comparing versions.
 #
@@ -2811,12 +2818,13 @@ class Document:
                                         stream = mupdf.FzStream(filename)
                                         accel = mupdf.FzStream()
                                         archive = mupdf.FzArchive(None)
-                                        if mupdf_version_tuple >= (1, 25):
+                                        if mupdf_version_tuple >= (1, 24, 8):
                                             doc = mupdf.ll_fz_document_handler_open(
                                                     handler,
                                                     stream.m_internal,
                                                     accel.m_internal,
                                                     archive.m_internal,
+                                                    None,   # recognize_state
                                                     )
                                         else:
                                             doc = mupdf.ll_fz_document_open_fn_call(
@@ -13312,7 +13320,6 @@ TEXTFLAGS_DICT = (0
 TEXTFLAGS_RAWDICT = TEXTFLAGS_DICT
 
 TEXTFLAGS_SEARCH = (0
-        | TEXT_PRESERVE_LIGATURES
         | TEXT_PRESERVE_WHITESPACE
         | TEXT_MEDIABOX_CLIP
         | TEXT_DEHYPHENATE
