@@ -24,7 +24,7 @@ In addition to the `standard file types supported by PyMuPDF <Supported_File_Typ
 
 - DOC/DOCX
 - PPT/PPTX
-- XLS/XLXS
+- XLS/XLSX
 - HWP/HWPX
 
 
