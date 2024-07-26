@@ -34,6 +34,11 @@ Usage
 Installation
 ~~~~~~~~~~~~~~~~~~
 
+.. note::
+
+    |PyMuPDF Pro| is only available for Linux & Windows platforms.
+
+
 Install via pip with:
 
 .. code-block:: bash
