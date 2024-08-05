@@ -370,8 +370,8 @@ def build( platform_=None, valgrind=False):
     
         run('pip install cibuildwheel')
     
-        # We include MuPDF build-time files on certain platforms.
-        flavour_d = platform.system() in ('Linux', 'Windows') and cpu_bits() == 64
+        # We include MuPDF build-time files.
+        flavour_d = True
         
         if inputs_flavours:
             # Build and test PyMuPDF and PyMuPDFb wheels.
