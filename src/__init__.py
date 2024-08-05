@@ -2677,7 +2677,20 @@ class Document:
     def __exit__(self, *args):
         self.close()
 
-    def __getitem__(self, i: int =0):
+    @typing.overload
+    def __getitem__(self, i: int = 0) -> Page:
+        ...
+    
+    if sys.version_info >= (3, 9):
+        @typing.overload
+        def __getitem__(self, i: slice) -> list[Page]:
+            ...
+        
+        @typing.overload
+        def __getitem__(self, i: tuple[int, int]) -> Page:
+            ...
+    
+    def __getitem__(self, i=0):
         if isinstance(i, slice):
             return [self[j] for j in range(*i.indices(len(self)))]
         assert isinstance(i, int) or (isinstance(i, tuple) and len(i) == 2 and all(isinstance(x, int) for x in i)), \
