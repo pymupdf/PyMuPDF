@@ -48,7 +48,7 @@ Environmental variables:
         
         Must be unset or a combination of 'p', 'b' and 'd'.
         
-        Default is 'pb'.
+        Default is 'pbd'.
         
         'p':
             Generated wheel contains PyMuPDF code.
@@ -198,7 +198,7 @@ if 1:
 
 PYMUPDF_SETUP_FLAVOUR = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'pbd')
 for i in PYMUPDF_SETUP_FLAVOUR:
-    assert i in 'pbd', f'Unrecognised flag "{i} in {PYMUPDF_SETUP_FLAVOUR=}. Should be one of "p", "b", "pb"'
+    assert i in 'pbd', f'Unrecognised flag "{i} in {PYMUPDF_SETUP_FLAVOUR=}. Should be one of "p", "b", "d"'
 
 g_root = os.path.abspath( f'{__file__}/..')
 
@@ -524,16 +524,24 @@ def build():
     if windows:
         mupdf_build_dir = build_mupdf_windows( mupdf_local, build_type, overwrite_config)
     else:
-        mupdf_build_dir = build_mupdf_unix( mupdf_local, build_type, overwrite_config)
+        if 'p' not in PYMUPDF_SETUP_FLAVOUR and 'b' not in PYMUPDF_SETUP_FLAVOUR:
+            # We only need MuPDF headers, so no point building MuPDF.
+            log(f'Not building MuPDF because not Windows and {PYMUPDF_SETUP_FLAVOUR=}.')
+            mupdf_build_dir = None
+        else:
+            mupdf_build_dir = build_mupdf_unix( mupdf_local, build_type, overwrite_config)
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
     # Build rebased `extra` module.
     #
-    path_so_leaf = _build_extension(
-            mupdf_local,
-            mupdf_build_dir,
-            build_type,
-            )
+    if mupdf_build_dir:
+        path_so_leaf = _build_extension(
+                mupdf_local,
+                mupdf_build_dir,
+                build_type,
+                )
+    else:
+        path_so_leaf = None
     
     # Generate list of (from, to) items to return to pipcl. What we add depends
     # on PYMUPDF_SETUP_FLAVOUR.
@@ -544,9 +552,23 @@ def build():
         if flavour in PYMUPDF_SETUP_FLAVOUR:
             ret.append((from_, to_))
     
+    to_dir = 'pymupdf/'
+    to_dir_d = f'{to_dir}/mupdf-devel'
+    
+    if mupdf_local and 'd' in PYMUPDF_SETUP_FLAVOUR:
+        # Add MuPDF headers to `ret_d`. Would prefer to use
+        # pipcl.git_items() but hard-coded mupdf tree is not a git
+        # checkout.
+        include = f'{mupdf_local}/include'
+        for dirpath, dirnames, filenames in os.walk(include):
+            for filename in filenames:
+                header_abs = os.path.join(dirpath, filename)
+                assert header_abs.startswith(include)
+                header_rel = header_abs[len(include)+1:]
+                add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
+    
     if path_so_leaf:
-        # Add rebased implementation files.
-        to_dir = 'pymupdf/'
+        # Add implementation files.
         add('p', f'{g_root}/src/__init__.py', to_dir)
         add('p', f'{g_root}/src/__main__.py', to_dir)
         add('p', f'{g_root}/src/pymupdf.py', to_dir)
@@ -565,13 +587,13 @@ def build():
             # Add MuPDF Python API.
             add('p', f'{mupdf_build_dir}/mupdf.py', to_dir)
             
-            to_dir_d = f'{to_dir}/mupdf-devel'
             # Add MuPDF shared libraries.
             if windows:
                 wp = pipcl.wdev.WindowsPython()
                 add('p', f'{mupdf_build_dir}/_mupdf.pyd', to_dir)
                 add('b', f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
                 
+                # Add Windows .lib files.
                 mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
                 add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
             elif darwin:
@@ -586,19 +608,7 @@ def build():
                 add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
                 add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
                 add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
-            
-            if 'd' in PYMUPDF_SETUP_FLAVOUR:
-                # Add MuPDF headers to `ret_d`. Would prefer to use
-                # pipcl.git_items() but hard-coded mupdf tree is not a git
-                # checkout.
-                include = f'{mupdf_local}/include'
-                for dirpath, dirnames, filenames in os.walk(include):
-                    for filename in filenames:
-                        header_abs = os.path.join(dirpath, filename)
-                        assert header_abs.startswith(include)
-                        header_rel = header_abs[len(include)+1:]
-                        add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
-        
+                
         # Add a .py file containing location of MuPDF.
         text = f"mupdf_location='{mupdf_location}'\n"
         add('p', text.encode(), f'{to_dir}/_build.py')
