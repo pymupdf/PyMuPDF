@@ -39,11 +39,6 @@ Environmental variables:
             Directory containing MuPDF libraries, (libmupdf.so,
             libmupdfcpp.so).
     
-    PYMUPDF_SETUP_IMPLEMENTATIONS
-        Must be one of 'a', 'b', 'ab'. If unset we use 'b'.
-        If contains 'a' we build obsolete classic implementation.
-        If contains 'b' we build rebased implementation.
-    
     PYMUPDF_SETUP_DEVENV
         Location of devenv.com on Windows. If unset we search for it - see
         wdev.py. if that fails we use just 'devenv.com'.
@@ -141,10 +136,6 @@ Environmental variables:
     
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
-
-    PYMUPDF_SETUP_REBUILD_GIT_DETAILS
-        Classic implementation only. If '0' we do not rebuild if only
-        src_classic/helper-git-versions.i has changed.
 
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
@@ -514,11 +505,6 @@ msys2 = platform.system().startswith('MSYS_NT-')
 pyodide = os.environ.get('OS') == 'pyodide'
 
 
-def _implementations():
-    v = os.environ.get( 'PYMUPDF_SETUP_IMPLEMENTATIONS', 'b')
-    assert v in ('a', 'b', 'ab')
-    return v
-
 def build():
     '''
     pipcl.py `build_fn()` callback.
@@ -541,9 +527,9 @@ def build():
         mupdf_build_dir = build_mupdf_unix( mupdf_local, build_type, overwrite_config)
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
-    # Build rebased `extra` module (and/or PyMuPDF classic if specified).
+    # Build rebased `extra` module.
     #
-    path_so_leaf_a, path_so_leaf_b = _build_extensions(
+    path_so_leaf = _build_extension(
             mupdf_local,
             mupdf_build_dir,
             build_type,
@@ -558,31 +544,7 @@ def build():
         if flavour in PYMUPDF_SETUP_FLAVOUR:
             ret.append((from_, to_))
     
-    if path_so_leaf_a:
-        # Add classic implementation files.
-        to_dir = 'fitz_old/'
-        add('p', f'{g_root}/src_classic/__init__.py', to_dir)
-        add('p', f'{g_root}/src_classic/__main__.py', to_dir)
-        add('p', f'{g_root}/src_classic/fitz_old.py', to_dir)
-        add('p', f'{g_root}/src/table.py', to_dir)
-        add('p', f'{g_root}/src_classic/utils.py', to_dir)
-        add('p', f'{g_root}/src_classic/{path_so_leaf_a}', to_dir)
-
-        if mupdf_local:
-            # Add mupdf shared library next to `path_so_leaf_a` so it will be
-            # found at runtime. Would prefer to embed a softlink to mupdfpy's
-            # file but wheels do not seem to support them.
-            if windows:
-                wp = pipcl.wdev.WindowsPython()
-                add('b', f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
-            elif darwin:
-                add('b', f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
-            elif pyodide:
-                add('b', f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
-            else:
-                add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
-
-    if path_so_leaf_b:
+    if path_so_leaf:
         # Add rebased implementation files.
         to_dir = 'pymupdf/'
         add('p', f'{g_root}/src/__init__.py', to_dir)
@@ -592,7 +554,7 @@ def build():
         add('p', f'{g_root}/src/utils.py', to_dir)
         add('p', f'{g_root}/src/_apply_pages.py', to_dir)
         add('p', f'{g_root}/src/build/extra.py', to_dir)
-        add('p', f'{g_root}/src/build/{path_so_leaf_b}', to_dir)
+        add('p', f'{g_root}/src/build/{path_so_leaf}', to_dir)
         
         # Add support for `fitz` backwards compatibility.
         add('p', f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py')
@@ -724,11 +686,7 @@ def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
     command += f' -b'
     command += f' --refcheck-if "#if 1"'
     command += f' --devenv "{devenv}"'
-    command += f' '
-    if 'b' in _implementations():
-        command += 'all'
-    else:
-        command += '01' # No need for C++/Python bindings.
+    command += f' all'
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
         log( f'PYMUPDF_SETUP_MUPDF_REBUILD is "0" so not building MuPDF; would have run: {command}')
     else:
@@ -838,7 +796,7 @@ def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
     for n, v in env.items():
         command += f' {n}={shlex.quote(v)}'
     command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
-    if 'b' in _implementations() and 'p' in PYMUPDF_SETUP_FLAVOUR:
+    if 'p' in PYMUPDF_SETUP_FLAVOUR:
         command += 'all'
     else:
         command += 'm01'    # No need for C++/Python bindings.
@@ -880,104 +838,9 @@ def _fs_update(text, path):
             f.write( text)
     
 
-def _build_extensions( mupdf_local, mupdf_build_dir, build_type):
+def _build_extension( mupdf_local, mupdf_build_dir, build_type):
     '''
-    Builds Python extension modules `_pymupdf` and `_extra`.
-
-    Returns (path_so_leaf_a, path_so_leaf_b), the leafnames of the generated
-    shared libraries within mupdf_build_dir.
-    '''
-    path_so_leaf_a = None
-    path_so_leaf_b = None
-    
-    if 'a' in _implementations():
-        path_so_leaf_a = _build_extension_classic( mupdf_local, mupdf_build_dir, build_type)
-    
-    if 'b' in _implementations():
-        path_so_leaf_b = _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type)
-    
-    return path_so_leaf_a, path_so_leaf_b
-    
-
-def _build_extension_classic( mupdf_local, mupdf_build_dir, build_type):
-    '''
-    Builds Python extension module `_fitz` for obsolete classic implementation.
-
-    Returns leafname of the generated shared libraries within mupdf_build_dir.
-    '''
-    (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
-        = _extension_flags( mupdf_local, mupdf_build_dir, build_type)
-    
-    # Update helper-git-versions.i.
-    f = io.StringIO()
-    f.write('%pythoncode %{\n')
-    def repr_escape(text):
-        text = repr(text)
-        text = text.replace('{', '{{')
-        text = text.replace('}', '}}')
-        text = text.replace('%', '{chr(37)})')  # Avoid confusing swig.
-        return 'f' + text
-    def write_git(name, directory):
-        sha, comment, diff, branch = get_git_id(directory)
-        f.write(f'{name}_git_sha = \'{sha}\'\n')
-        f.write(f'{name}_git_comment = {repr_escape(comment)}\n')
-        f.write(f'{name}_git_diff = {repr_escape(diff)}\n')
-        f.write(f'{name}_git_branch = {repr_escape(branch)}\n')
-        f.write('\n')
-    write_git('pymupdf', '.')
-    if mupdf_local:
-        write_git('mupdf', mupdf_local)
-    f.write('%}\n')
-    _fs_update( f.getvalue(), 'src_classic/helper-git-versions.i')
-    if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
-        log( f'Marking src_classic/helper-git-versions.i as old because PYMUPDF_SETUP_REBUILD_GIT_DETAILS=0')
-        os.utime( 'src_classic/helper-git-versions.i', (1, 1))
-
-    if windows:
-        compiler_extra_c = ''
-    else:
-        compiler_extra_c = (
-                ' -Wno-incompatible-pointer-types'
-                ' -Wno-pointer-sign'
-                ' -Wno-sign-compare'
-                )
-    prerequisites_swig = glob.glob( f'{g_root}/src_classic/*.i')
-    if os.environ.get( 'PYMUPDF_SETUP_REBUILD_GIT_DETAILS') == '0':
-        # Remove helper-git-versions.i from prerequisites_swig so
-        # it doesn't force rebuild on its own. [Cannot easily use
-        # prerequisites_swig.remove() because / vs \ on Windows.]
-        #
-        for i, p in enumerate( prerequisites_swig):
-            if p.endswith( 'helper-git-versions.i'):
-                del prerequisites_swig[i]
-                break
-        else:
-            assert 0, f'Cannot find *helper-git-versions.i in prerequisites_swig: {prerequisites_swig}'
-
-    path_so_leaf_a = pipcl.build_extension(
-            name = 'fitz_old',
-            path_i = f'{g_root}/src_classic/fitz_old.i',
-            outdir = f'{g_root}/src_classic',
-            includes = includes,
-            defines = defines,
-            libpaths = libpaths,
-            libs = libs,
-            compiler_extra = compiler_extra + compiler_extra_c,
-            linker_extra = linker_extra,
-            optimise = optimise,
-            debug = debug,
-            cpp = False,
-            prerequisites_swig = prerequisites_swig,
-            prerequisites_compile = f'{mupdf_local}/include',
-            prerequisites_link = libraries,
-            )
-
-    return path_so_leaf_a
-    
-
-def _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type):
-    '''
-    Builds Python extension module `_extra` for rebased implementation.
+    Builds Python extension module `_extra`.
 
     Returns leafname of the generated shared libraries within mupdf_build_dir.
     '''
@@ -1011,7 +874,7 @@ def _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type):
                 f'{mupdf_build_dir}/libmupdfcpp.so'
                 ]
     
-    path_so_leaf_b = pipcl.build_extension(
+    path_so_leaf = pipcl.build_extension(
             name = 'extra',
             path_i = f'{g_root}/src/extra.i',
             outdir = f'{g_root}/src/build',
@@ -1028,7 +891,7 @@ def _build_extension_rebased( mupdf_local, mupdf_build_dir, build_type):
             prerequisites_link = libraries,
             )
     
-    return path_so_leaf_b
+    return path_so_leaf
 
 
 def _extension_flags( mupdf_local, mupdf_build_dir, build_type):

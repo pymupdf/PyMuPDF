@@ -53,9 +53,6 @@ action inputs, which can't be easily translated into command-line arguments.
         E.g. 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
     inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD_TYPE.
-    inputs_wheels_implementations
-        Used to directly set PYMUPDF_SETUP_IMPLEMENTATIONS.
-        'a', 'b', 'ab'.
 
 Building for Pyodide
 
@@ -194,7 +191,6 @@ def build( platform_=None, valgrind=False):
     inputs_wheels_cps = os.environ.get('inputs_wheels_cps')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE')
-    inputs_wheels_implementations = os.environ.get('inputs_wheels_implementations', 'b')
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -221,7 +217,7 @@ def build( platform_=None, valgrind=False):
                 log(f'Overriding inputs_PYMUPDF_SETUP_MUPDF_BUILD because {GITHUB_EVENT_NAME=} {inputs_PYMUPDF_SETUP_MUPDF_BUILD=}.')
                 inputs_PYMUPDF_SETUP_MUPDF_BUILD = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
                 log(f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
-        build_pyodide_wheel(inputs_wheels_implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD)
+        build_pyodide_wheel(inputs_PYMUPDF_SETUP_MUPDF_BUILD)
     
     # Build sdist(s).
     #
@@ -349,7 +345,6 @@ def build( platform_=None, valgrind=False):
         if os.environ.get('PYMUPDF_SETUP_LIBCLANG'):
             env_pass('PYMUPDF_SETUP_LIBCLANG')
     
-        env_set('PYMUPDF_SETUP_IMPLEMENTATIONS', inputs_wheels_implementations, pass_=1)
         if inputs_skeleton:
             env_set('PYMUPDF_SETUP_SKELETON', inputs_skeleton, pass_=1)
     
@@ -440,7 +435,7 @@ def build( platform_=None, valgrind=False):
         run( 'ls -lt wheelhouse')
 
 
-def build_pyodide_wheel( implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD):
+def build_pyodide_wheel(inputs_PYMUPDF_SETUP_MUPDF_BUILD):
     '''
     Build Pyodide wheel.
 
@@ -465,8 +460,6 @@ def build_pyodide_wheel( implementations, inputs_PYMUPDF_SETUP_MUPDF_BUILD):
     # Tell MuPDF to build for Pyodide.
     env_extra['OS'] = 'pyodide'
 
-    env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = implementations
-    
     # Build a single wheel without a separate PyMuPDFb wheel.
     env_extra['PYMUPDF_SETUP_FLAVOUR'] = 'pb'
     
