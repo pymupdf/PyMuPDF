@@ -50,7 +50,6 @@ Options:
     -i <implementations>
         Set PyMuPDF implementations to test.
         <implementations> must contain only these individual characters:
-             'c' - classic.
              'r' - rebased.
              'R' - rebased without optimisations.
             Default is 'rR'. Also see `PyMuPDF:tests/run_compound.py`.
@@ -235,7 +234,6 @@ def main(argv):
 
     def do_build(wheel=False):
         build(
-                implementations=implementations,
                 build_type=build_type,
                 build_isolation=build_isolation,
                 venv_quick=venv_quick,
@@ -321,7 +319,6 @@ def venv_info(pytest_args=None):
 
 
 def build(
-        implementations=None,
         build_type=None,
         build_isolation=None,
         venv_quick=False,
@@ -368,13 +365,6 @@ def build(
         build_isolation_text = ' --no-build-isolation'
     
     env_extra = dict()
-    if implementations:
-        v = ''
-        if 'c' in implementations:
-            v += 'a'
-        if 'r' in implementations or 'R' in implementations:
-            v += 'b'
-        env_extra['PYMUPDF_SETUP_IMPLEMENTATIONS'] = v
     if not build_mupdf:
         env_extra['PYMUPDF_SETUP_MUPDF_REBUILD'] = '0'
     if build_type:

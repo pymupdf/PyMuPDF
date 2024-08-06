@@ -42,7 +42,6 @@ jobs:
             inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
             inputs_wheels_default: 0
             inputs_wheels_linux_pyodide: 1
-            inputs_wheels_implementations: b
         run:
           python scripts/gh_release.py build
 
