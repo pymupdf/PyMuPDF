@@ -22,10 +22,26 @@ Office file support
 
 In addition to the `standard file types supported by PyMuPDF <Supported_File_Types>`, |PyMuPDF Pro| supports:
 
-- DOC/DOCX
-- PPT/PPTX
-- XLS/XLSX
-- HWP/HWPX
+.. list-table::
+   :header-rows: 1
+
+   * - **DOC/DOCX**
+     - **XLS/XLSX**
+     - **PPT/PPTX**
+     - **HWP/HWPX**
+   * - .. image:: images/icons/icon-docx.svg
+          :width: 40
+          :height: 40
+     - .. image:: images/icons/icon-xlsx.svg
+          :width: 40
+          :height: 40
+     - .. image:: images/icons/icon-pptx.svg
+          :width: 40
+          :height: 40
+     - .. image:: images/icons/icon-hangul.svg
+          :width: 40
+          :height: 40
+
 
 
 Usage
@@ -33,11 +49,6 @@ Usage
 
 Installation
 ~~~~~~~~~~~~~~~~~~
-
-.. note::
-
-    |PyMuPDF Pro| is only available for Linux & Windows platforms.
-
 
 Install via pip with:
 
