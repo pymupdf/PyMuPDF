@@ -14,7 +14,7 @@ If you need to export to :title:`Markdown` or obtain a :title:`LlamaIndex` Docum
 
 .. raw:: html
 
-   <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='https://pymupdf4llm.readthedocs.io'">Try PyMuPDF4LLM</button>
+   <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='pymupdf4llm/'">Try PyMuPDF4LLM</button>
    <p></p>
 
    <script>
@@ -70,7 +70,7 @@ Chunking (or splitting) data is essential to give context to your :title:`LLM` d
 Outputting as :title:`Markdown`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to export your document in :title:`Markdown` format you will need a separate helper. Package `pymupdf4llm <https://pypi.org/project/pymupdf4llm/>`_ is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
+In order to export your document in :title:`Markdown` format you will need a separate helper. Package :doc:`pymupdf4llm/index` is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
 
 
 .. code-block:: python
@@ -84,7 +84,7 @@ In order to export your document in :title:`Markdown` format you will need a sep
     pathlib.Path("output.md").write_bytes(md_text.encode())
 
 
-For further information please refer to: `pymupdf4llm documentation <https://pymupdf4llm.readthedocs.io>`_
+For further information please refer to: :doc:`pymupdf4llm/index`.
 
 
 How to use :title:`Markdown` output

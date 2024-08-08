@@ -35,6 +35,7 @@ This documentation covers all versions up to |version|.
    :maxdepth: 1
 
    about.rst
+   pymupdf4llm/index.rst
    pymupdf-pro.rst
 
 
