@@ -44,8 +44,11 @@ def test_codespell():
             ''')
     skips = skips.strip().replace('\n', ',')
     
-    command = f'cd {root} && codespell --skip {shlex.quote(skips)} --count'
-    command += f' --ignore-words-list re-use,flate,thirdparty'
+    command = textwrap.dedent(f'''
+            cd {root} && codespell
+                --skip {shlex.quote(skips)}
+                --ignore-words-list re-use,flate,thirdparty
+            ''')
     
     sys.path.append(root)
     try:
@@ -56,11 +59,16 @@ def test_codespell():
     
     for p in git_files:
         _, ext = os.path.splitext(p)
-        if ext in ('.png', '.pdf'):
+        if ext in ('.png', '.pdf', '.jpg', '.svg'):
             pass
         else:
-            command += f' {p}'
+            command += f'    {p}\n'
     
-    print(f'test_codespell(): Running: {command}')
+    if platform.system() != 'Windows':
+        command = command.replace('\n', ' \\\n')
+    # Don't print entire command because very long, and will be displayed
+    # anyway if there is an error.
+    #print(f'test_codespell(): Running: {command}')
+    print(f'Running codespell.')
     subprocess.run(command, shell=1, check=1)
     print('test_codespell(): codespell succeeded.')
