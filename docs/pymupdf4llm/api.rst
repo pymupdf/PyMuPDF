@@ -33,7 +33,7 @@ The |PyMuPDF4LLM| API
 
         - **"metadata"** - a dictionary consisting of the document's metadata `Document.metadata <https://pymupdf.readthedocs.io/en/latest/document.html#Document.metadata>`_, enriched with additional keys **"file_path"** (the file name), **"page_count"** (number of pages in document), and **"page_number"** (1-based page number).
 
-        - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierachy level, `title` a string and `pagenumber` the 12-based page number.
+        - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` the 12-based page number.
 
         - **"tables"** - a list of tables on this page. Each item is a dictionary with keys "bbox", "row_count" and "col_count". Key "bbox" is a `pymupdf.Rect` in tuple format of the table's position on the page.
 
