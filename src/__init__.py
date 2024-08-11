@@ -16,6 +16,7 @@ import io
 import math
 import os
 import pathlib
+import glob
 import re
 import string
 import sys
@@ -18041,7 +18042,7 @@ def get_pdf_str(s: str) -> str:
     return "(" + r + ")"
 
 
-def get_tessdata() -> str:
+def get_tessdata():
     """Detect Tesseract-OCR and return its language support folder.
 
     This function can be used to enable OCR via Tesseract even if the
@@ -18053,16 +18054,8 @@ def get_tessdata() -> str:
         Folder name of tessdata if Tesseract-OCR is available, otherwise False.
     """
     TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
-    if TESSDATA_PREFIX is not None:
+    if TESSDATA_PREFIX:  # use environment variable if set
         return TESSDATA_PREFIX
-
-    if sys.platform == "win32":
-        tessdata = "C:\\Program Files\\Tesseract-OCR\\tessdata"
-    else:
-        tessdata = "/usr/share/tesseract-ocr/4.00/tessdata"
-
-    if os.path.exists(tessdata):
-        return tessdata
 
     """
     Try to locate the tesseract-ocr installation.
@@ -18070,7 +18063,7 @@ def get_tessdata() -> str:
     import subprocess
     # Windows systems:
     if sys.platform == "win32":
-        cp = subprocess.run('where tesseract', shell=1, capture_output=1, check=0)
+        cp = subprocess.run("where tesseract", shell=1, capture_output=1, check=0, text=True)
         response = cp.stdout.strip()
         if cp.returncode or not response:
             message("Tesseract-OCR is not installed")
@@ -18084,25 +18077,20 @@ def get_tessdata() -> str:
             return False
 
     # Unix-like systems:
-    cp = subprocess.run('whereis tesseract-ocr', shell=1, capture_output=1, check=0)
+    cp = subprocess.run("whereis tesseract-ocr", shell=1, capture_output=1, check=0, text=True)
     response = cp.stdout.strip().split()
     if cp.returncode or len(response) != 2:  # if not 2 tokens: no tesseract-ocr
-        message("Tesseract-OCR is not installed")
+        message("tesseract-ocr is not installed")
         return False
 
-    # determine tessdata via iteration over subfolders
-    tessdata = None
-    for sub_response in response.iterdir():
-        for sub_sub in sub_response.iterdir():
-            if str(sub_sub).endswith("tessdata"):
-                tessdata = sub_sub
-                break
-    if tessdata is not None:
-        return tessdata
-    else:
+    # search tessdata in folder structure
+    dirname = response[1]  # contains tesseract-ocr installation folder
+    tessdatas = glob.glob(f"{dirname}/*/tessdata")
+    tessdatas.sort()
+    if len(tessdatas) == 0:
         message("unexpected: tesseract-ocr has no 'tessdata' folder")
         return False
-    return False
+    return tessdatas[-1]
 
 
 def css_for_pymupdf_font(
