@@ -534,13 +534,14 @@ def build():
     
     # Build rebased `extra` module.
     #
-    if mupdf_build_dir:
+    if 'p' in PYMUPDF_SETUP_FLAVOUR:
         path_so_leaf = _build_extension(
                 mupdf_local,
                 mupdf_build_dir,
                 build_type,
                 )
     else:
+        log(f'Not building extension.')
         path_so_leaf = None
     
     # Generate list of (from, to) items to return to pipcl. What we add depends
@@ -555,64 +556,66 @@ def build():
     to_dir = 'pymupdf/'
     to_dir_d = f'{to_dir}/mupdf-devel'
     
-    if mupdf_local and 'd' in PYMUPDF_SETUP_FLAVOUR:
-        # Add MuPDF headers to `ret_d`. Would prefer to use
-        # pipcl.git_items() but hard-coded mupdf tree is not a git
-        # checkout.
-        include = f'{mupdf_local}/include'
-        for dirpath, dirnames, filenames in os.walk(include):
-            for filename in filenames:
-                header_abs = os.path.join(dirpath, filename)
-                assert header_abs.startswith(include)
-                header_rel = header_abs[len(include)+1:]
-                add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
-    
+    # Add implementation files.
+    add('p', f'{g_root}/src/__init__.py', to_dir)
+    add('p', f'{g_root}/src/__main__.py', to_dir)
+    add('p', f'{g_root}/src/pymupdf.py', to_dir)
+    add('p', f'{g_root}/src/table.py', to_dir)
+    add('p', f'{g_root}/src/utils.py', to_dir)
+    add('p', f'{g_root}/src/_apply_pages.py', to_dir)
+    add('p', f'{g_root}/src/build/extra.py', to_dir)
     if path_so_leaf:
-        # Add implementation files.
-        add('p', f'{g_root}/src/__init__.py', to_dir)
-        add('p', f'{g_root}/src/__main__.py', to_dir)
-        add('p', f'{g_root}/src/pymupdf.py', to_dir)
-        add('p', f'{g_root}/src/table.py', to_dir)
-        add('p', f'{g_root}/src/utils.py', to_dir)
-        add('p', f'{g_root}/src/_apply_pages.py', to_dir)
-        add('p', f'{g_root}/src/build/extra.py', to_dir)
         add('p', f'{g_root}/src/build/{path_so_leaf}', to_dir)
-        
-        # Add support for `fitz` backwards compatibility.
-        add('p', f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py')
-        add('p', f'{g_root}/src/fitz_table.py', 'fitz/table.py')
-        add('p', f'{g_root}/src/fitz_utils.py', 'fitz/utils.py')
-        
-        if mupdf_local:
-            # Add MuPDF Python API.
-            add('p', f'{mupdf_build_dir}/mupdf.py', to_dir)
-            
-            # Add MuPDF shared libraries.
-            if windows:
-                wp = pipcl.wdev.WindowsPython()
-                add('p', f'{mupdf_build_dir}/_mupdf.pyd', to_dir)
-                add('b', f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
-                
-                # Add Windows .lib files.
-                mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
-                add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
-            elif darwin:
-                add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-                add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
-                add('b', f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
-            elif pyodide:
-                add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-                add('b', f'{mupdf_build_dir}/libmupdfcpp.so', 'PyMuPDF.libs/')
-                add('b', f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
-            else:
-                add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-                add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
-                add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
-                
-        # Add a .py file containing location of MuPDF.
-        text = f"mupdf_location='{mupdf_location}'\n"
-        add('p', text.encode(), f'{to_dir}/_build.py')
+
+    # Add support for `fitz` backwards compatibility.
+    add('p', f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py')
+    add('p', f'{g_root}/src/fitz_table.py', 'fitz/table.py')
+    add('p', f'{g_root}/src/fitz_utils.py', 'fitz/utils.py')
+
+    if mupdf_local:
+        # Add MuPDF Python API.
+        add('p', f'{mupdf_build_dir}/mupdf.py', to_dir)
+
+        # Add MuPDF shared libraries.
+        if windows:
+            wp = pipcl.wdev.WindowsPython()
+            add('p', f'{mupdf_build_dir}/_mupdf.pyd', to_dir)
+            add('b', f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
+
+            # Add Windows .lib files.
+            mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
+            add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
+        elif darwin:
+            add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
+            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
+            add('b', f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
+        elif pyodide:
+            add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
+            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', 'PyMuPDF.libs/')
+            add('b', f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
+        else:
+            add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
+            add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
+            add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
+
+        if 'd' in PYMUPDF_SETUP_FLAVOUR:
+            # Add MuPDF headers to `ret_d`. Would prefer to use
+            # pipcl.git_items() but hard-coded mupdf tree is not a git
+            # checkout.
+            #
+            include = f'{mupdf_local}/include'
+            for dirpath, dirnames, filenames in os.walk(include):
+                for filename in filenames:
+                    header_abs = os.path.join(dirpath, filename)
+                    assert header_abs.startswith(include)
+                    header_rel = header_abs[len(include)+1:]
+                    add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
     
+    # Add a .py file containing location of MuPDF.
+    text = f"mupdf_location='{mupdf_location}'\n"
+    add('p', text.encode(), f'{to_dir}/_build.py')
+    
+    # Add single README file.
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
         add('p', f'{g_root}/README.md', '$dist-info/README.md')
     elif 'b' in PYMUPDF_SETUP_FLAVOUR:
