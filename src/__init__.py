@@ -14378,7 +14378,7 @@ def JM_annot_set_border( border, doc, annot_obj):
     nwidth = border.get( dictkey_width)     # new width
     ndashes = border.get( dictkey_dashes)   # new dashes
     nstyle = border.get( dictkey_style)     # new style
-    nclouds  = border.get( 'clouds')        # new clouds value
+    nclouds  = border.get( 'clouds', -1)    # new clouds value
 
     # get old border properties
     oborder = JM_annot_border( annot_obj)
@@ -14396,7 +14396,7 @@ def JM_annot_set_border( border, doc, annot_obj):
     if nstyle is None:
         nstyle  = oborder.get( dictkey_style)   # no new style: keep old
     if nclouds < 0:
-        nclouds  = oborder.get( "clouds")       # no new clouds: keep old
+        nclouds  = oborder.get( "clouds", -1)   # no new clouds: keep old
 
     if isinstance( ndashes, tuple) and len( ndashes) > 0:
         dashlen = len( ndashes)
