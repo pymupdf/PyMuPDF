@@ -5324,12 +5324,18 @@ class Document:
             templ_dict["dest"] = array
 
             # if we start with /XYZ: extract x, y, zoom
+            # 1, 2 or 3 of these values may actually be supplied
             if array.startswith("/XYZ"):
                 del templ_dict["dest"]  # don't return orig string in this case
-                arr_t = array.split()[1:]
-                x, y, z = tuple(map(float, arr_t))
-                templ_dict["to"] = (x, y)
-                templ_dict["zoom"] = z
+
+                t = [0, 0, 0]  # the resulting x, y, z values
+
+                # need to replace any "null" item by "0", then split at
+                # white spaces, omitting "/XYZ" from the result
+                for i, v in enumerate(array.replace("null", "0").split()[1:]):
+                    t[i] = float(v)
+                templ_dict["to"] = (t[0], t[1])
+                templ_dict["zoom"] = t[2]
 
             # extract page number
             if "0 R" in subval:  # page xref given?
@@ -5421,6 +5427,8 @@ class Document:
             raise ValueError("filename must be str, Path or file object")
         if filename == self.name and not incremental:
             raise ValueError("save to original must be incremental")
+        if linear and use_objstms:
+            raise ValueError("'linear' and 'use_objstms' cannot both be requested")
         if self.page_count < 1:
             raise ValueError("cannot save with zero pages")
         if incremental:
