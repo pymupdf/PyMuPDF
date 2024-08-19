@@ -5,6 +5,8 @@
     - must have different trailers
 * Try inserting files in a loop.
 """
+
+import io
 import os
 import re
 import pymupdf
@@ -147,3 +149,43 @@ def test_2871():
             content = content_pdf.read()
             coverpage = coverpage_pdf.read()
             _2861_2871_merge_pdf(content, coverpage)
+
+
+def test_3789():
+    
+    print('test_3789(): Disabled because known to fail.')
+    return
+    
+    file_path = os.path.abspath(f'{__file__}/../../tests/resources/test_3789.pdf')
+    result_path = os.path.abspath(f'{__file__}/../../tests/test_3789_out')
+    pages_per_split = 5
+    
+    # Clean pdf
+    doc = pymupdf.open(file_path)
+    tmp = io.BytesIO()
+    tmp.write(doc.write(garbage=4, deflate=True))
+    
+    source_doc = pymupdf.Document('pdf', tmp.getvalue())
+    tmp.close()
+
+    # Calculate the number of pages per split file and the number of split files
+    page_range = pages_per_split - 1
+    split_range = range(0, source_doc.page_count, pages_per_split)
+    num_splits = len(split_range)
+
+    # Loop through each split range and create a new PDF file
+    for i, start in enumerate(split_range):
+        output_doc = pymupdf.open()
+
+        # Determine the ending page for this split file
+        to_page = start + page_range if i < num_splits - 1 else -1
+        output_doc.insert_pdf(source_doc, from_page=start, to_page=to_page)
+
+        # Save the output document to a file and add the path to the list of split files
+        path = f'{result_path}_{i}.pdf'
+        output_doc.save(path, garbage=2)
+        print(f'Have saved to {path=}.')
+
+        # If this is the last split file, exit the loop
+        if to_page == -1:
+            break
