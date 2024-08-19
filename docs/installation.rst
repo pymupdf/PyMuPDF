@@ -111,30 +111,39 @@ Problems after installation
 
       ImportError: /opt/conda/lib/python3.11/site-packages/pymupdf/libmupdf.so.24.4: undefined symbol: fz_pclm_write_options_usage
 
-  See https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
+  This appears to be a problem in Jupyter labs; see:
+  https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
 
 
 Notes
 ---------------------------------------------------------
 
-Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), for Python versions marked as "Supported" on https://devguide.python.org/versions/.
+* Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), for Python versions marked as "Supported" on https://devguide.python.org/versions/.
 
-Wheels are not available for Python installed with `Chocolatey
-<https://chocolatey.org/>`_ on Windows. Instead install Python
-using the Windows installer from the python.org website, see:
-http://www.python.org/downloads
+*
+  Wheels are not available for Python installed with `Chocolatey
+  <https://chocolatey.org/>`_ on Windows. Instead install Python
+  using the Windows installer from the python.org website, see:
+  http://www.python.org/downloads
 
-PyMuPDF does not support Python versions prior to 3.8. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
-Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
+*
+  Wheels are not available for Linux-aarch64 with `Musl libc
+  <https://musl.libc.org/>`_ (For example `Alpine Linux
+  <https://alpinelinux.org/>`_ on aarch64), and building from source is known
+  to fail.
 
-There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
+* PyMuPDF does not support Python versions prior to 3.8. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
-* `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
-* `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
-* `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
+* Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
 
-.. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
+* There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
+
+  * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
+  * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
+  * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
+  * `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
+
+  .. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
 
 
 Build and install from a local PyMuPDF source tree
