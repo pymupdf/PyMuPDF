@@ -10255,7 +10255,7 @@ class Pixmap:
         if self.alpha and idx in (2, 6, 7):
             raise ValueError("'%s' cannot have alpha" % output)
         if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
-            raise ValueError("unsupported colorspace for '%s'" % output)
+            raise ValueError(f"unsupported colorspace for '{output}'")
         if idx == 7:
             self.set_dpi(self.xres, self.yres)
         return self._writeIMG(filename, idx, jpg_quality)
@@ -10379,7 +10379,7 @@ class Pixmap:
         if self.alpha and idx in (2, 6, 7):
             raise ValueError("'{output}' cannot have alpha")
         if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
-            raise ValueError("unsupported colorspace for '{output}'")
+            raise ValueError(f"unsupported colorspace for '{output}'")
         if idx == 7:
             self.set_dpi(self.xres, self.yres)
         barray = self._tobytes(idx, jpg_quality)
