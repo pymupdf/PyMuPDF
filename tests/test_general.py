@@ -873,12 +873,12 @@ def test_bboxlog_2885():
     page=doc[0]
     
     bbl = page.get_bboxlog()
-    if pymupdf.mupdf_version_tuple >= (1, 25):
+    if pymupdf.mupdf_version_tuple >= (1, 24, 9):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'invalid marked content and clip nesting'
     
     bbl = page.get_bboxlog(layers=True)
-    if pymupdf.mupdf_version_tuple >= (1, 25):
+    if pymupdf.mupdf_version_tuple >= (1, 24, 9):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'invalid marked content and clip nesting'
 
