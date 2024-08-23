@@ -93,15 +93,15 @@ def test_load_system_font():
     trace = list()
     def font_f(name, bold, italic, needs_exact_metrics):
         trace.append((name, bold, italic, needs_exact_metrics))
-        print(f'font_f(): Looking for font: {name=} {bold=} {italic=} {needs_exact_metrics=}.')
+        print(f'test_load_system_font():font_f(): Looking for font: {name=} {bold=} {italic=} {needs_exact_metrics=}.')
         return None
     def f_cjk(name, ordering, serif):
         trace.append((name, ordering, serif))
-        print(f'f_cjk(): Looking for font: {name=} {ordering=} {serif=}.')
+        print(f'test_load_system_font():f_cjk(): Looking for font: {name=} {ordering=} {serif=}.')
         return None
     def f_fallback(script, language, serif, bold, italic):
         trace.append((script, language, serif, bold, italic))
-        print(f'f_fallback(): looking for font: {script=} {language=} {serif=} {bold=} {italic=}.')
+        print(f'test_load_system_font():f_fallback(): looking for font: {script=} {language=} {serif=} {bold=} {italic=}.')
         return None
     pymupdf.mupdf.fz_install_load_system_font_funcs(font_f, f_cjk, f_fallback)
     f = pymupdf.mupdf.fz_load_system_font("some-font-name", 0, 0, 0)

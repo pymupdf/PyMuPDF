@@ -257,7 +257,7 @@ def test_texttrace():
     # Repeat, this time writing data to file.
     import json
     path = f'{scriptdir}/resources/test_texttrace.txt'
-    print( f'Writing to: {path}')
+    print( f'test_texttrace(): Writing to: {path}')
     with open( path, 'w') as f:
         for i, page in enumerate(document):
             tt = page.get_texttrace()
@@ -592,6 +592,7 @@ def test_2730():
 
 def test_2553():
     """Ensure identical output across text extractions."""
+    verbose = 0
     doc = pymupdf.open(f"{scriptdir}/resources/test_2553.pdf")
     page = doc[0]
 
@@ -616,9 +617,11 @@ def test_2553():
             else:
                 ret += f' [0x{hex(cc)}]'
         return ret
-    print(f'list1:\n{show(list1)}')
-    print(f'list2:\n{show(list2)}')
-    print(f'list3:\n{show(list3)}')
+    
+    if verbose:
+        print(f'list1:\n{show(list1)}')
+        print(f'list2:\n{show(list2)}')
+        print(f'list3:\n{show(list3)}')
     
     # all sets must be equal
     assert set1 == set2
@@ -1217,11 +1220,11 @@ def test_533():
     doc = pymupdf.open(path)
     print()
     for p in doc:
-        print(f'for p in doc: {p=}.')
+        print(f'test_533(): for p in doc: {p=}.')
     for p in list(doc)[:]:
-        print(f'for p in list(doc)[:]: {p=}.')
+        print(f'test_533(): for p in list(doc)[:]: {p=}.')
     for p in doc[:]:
-        print(f'for p in doc[:]: {p=}.')
+        print(f'test_533(): for p in doc[:]: {p=}.')
 
 def test_3354():
     document = pymupdf.open(filename)

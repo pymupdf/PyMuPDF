@@ -43,7 +43,7 @@ def test_2753():
     def make_pdf(html, path_out):
         story = pymupdf.Story(html=html)
         document = story.write_with_links(rectfn)
-        print(f'Writing to: {path_out=}.')
+        print(f'test_2753(): Writing to: {path_out=}.')
         document.save(path_out)
         return document
     
@@ -104,6 +104,7 @@ def test_fit_springer():
         print(f'test_fit_springer(): not running on classic.')
         return
     
+    verbose = 0
     story = pymupdf.Story(springer_html)
     
     def check(call, expected):
@@ -123,24 +124,24 @@ def test_fit_springer():
             print(f'Have saved document to {path}.')
             assert abs(fit_result.parameter-expected) < 0.001, f'{expected=} {fit_result.parameter=}'
     
-    check('story.fit_scale(pymupdf.Rect(0, 0, 200, 200), scale_min=1, verbose=1)', 3.685728073120117)
-    check('story.fit_scale(pymupdf.Rect(0, 0, 595, 842), scale_min=1, verbose=1)', 1.0174560546875)
-    check('story.fit_scale(pymupdf.Rect(0, 0, 300, 421), scale_min=1, verbose=1)', 2.02752685546875)
-    check('story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=1)', 1)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 200, 200), scale_min=1, verbose={verbose})', 3.685728073120117)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 595, 842), scale_min=1, verbose={verbose})', 1.0174560546875)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 300, 421), scale_min=1, verbose={verbose})', 2.02752685546875)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose={verbose})', 1)
     
-    check('story.fit_height(20, verbose=1)', 10782.3291015625)
-    check('story.fit_height(200, verbose=1)', 2437.4990234375)
-    check('story.fit_height(2000, verbose=1)', 450.2998046875)
-    check('story.fit_height(5000, verbose=1)', 378.2998046875)
-    check('story.fit_height(5500, verbose=1)', 378.2998046875)
+    check(f'story.fit_height(20, verbose={verbose})', 10782.3291015625)
+    check(f'story.fit_height(200, verbose={verbose})', 2437.4990234375)
+    check(f'story.fit_height(2000, verbose={verbose})', 450.2998046875)
+    check(f'story.fit_height(5000, verbose={verbose})', 378.2998046875)
+    check(f'story.fit_height(5500, verbose={verbose})', 378.2998046875)
     
-    check('story.fit_width(3000, verbose=1)', 167.30859375)
-    check('story.fit_width(2000, verbose=1)', 239.595703125)
-    check('story.fit_width(1000, verbose=1)', 510.85546875)
-    check('story.fit_width(500, verbose=1)', 1622.1272945404053)
-    check('story.fit_width(400, verbose=1)', 2837.507724761963)
-    check('story.fit_width(300, width_max=200000, verbose=1)', None)
-    check('story.fit_width(200, width_max=200000, verbose=1)', None)
+    check(f'story.fit_width(3000, verbose={verbose})', 167.30859375)
+    check(f'story.fit_width(2000, verbose={verbose})', 239.595703125)
+    check(f'story.fit_width(1000, verbose={verbose})', 510.85546875)
+    check(f'story.fit_width(500, verbose={verbose})', 1622.1272945404053)
+    check(f'story.fit_width(400, verbose={verbose})', 2837.507724761963)
+    check(f'story.fit_width(300, width_max=200000, verbose={verbose})', None)
+    check(f'story.fit_width(200, width_max=200000, verbose={verbose})', None)
 
     # Run without verbose to check no calls to log() - checked by assert.
     check('story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=0)', 1)

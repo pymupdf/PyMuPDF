@@ -317,14 +317,16 @@ def test_document_text():
 
 
 def test_3594():
+    verbose = 0
     print()
     d = pymupdf.open(os.path.abspath(f'{__file__}/../../tests/resources/test_3594.pdf'))
     for i, p in enumerate(d.pages()):
         text = p.get_text()
-        print('='*40)
         print(f'Page {i}:')
-        for line in text.split('\n'):
-            print(f'    {line!r}')
+        if verbose:
+            for line in text.split('\n'):
+                print(f'    {line!r}')
+            print('='*40)
     if pymupdf.mupdf_version_tuple < (1, 24, 3):
         # We expect MuPDF warnings.
         wt = pymupdf.TOOLS.mupdf_warnings()
