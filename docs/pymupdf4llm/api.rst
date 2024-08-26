@@ -24,7 +24,7 @@ The |PyMuPDF4LLM| API
 
     :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted all pages are processed.
 
-    :arg hdr_info: optional. Use this if you want to provide your own header detection logic. This may be a callable or an object having a method named `get_header_id`. It must accept a text span (a span dictionary as contained in `extractDict <https://pymupdf.readthedocs.io/en/latest/textpage.html#span-dictionary>`_) and a keyword parameter "page" (which is the owning `Page <https://pymupdf.readthedocs.io/en/latest/page.html>`_ object). It must return a string "" or up to 6 "#" characters followed by 1 space. If omitted, a full document scan will be performed to find the most popular font sizes and derive header levels based on them. To completely avoid this behavior specify `hdr_info=lambda s, page=None: ""` or `hdr_info=False`.
+    :arg hdr_info: optional. Use this if you want to provide your own header detection logic. This may be a callable or an object having a method named `get_header_id`. It must accept a text span (a span dictionary as contained in :meth:`~.extractDICT`) and a keyword parameter "page" (which is the owning :ref:`Page <page>` object). It must return a string "" or up to 6 "#" characters followed by 1 space. If omitted, a full document scan will be performed to find the most popular font sizes and derive header levels based on them. To completely avoid this behavior specify `hdr_info=lambda s, page=None: ""` or `hdr_info=False`.
 
     :arg bool write_images: when encountering images or vector graphics, images will be created from the respective page area and stored in the specified folder. Markdown references will be generated pointing to these images. Any text contained in these areas will not be included in the text output (but appear as part of the images). Therefore, if for instance your document has text written on full page images, make sure to set this parameter to `False`.
 
@@ -32,7 +32,7 @@ The |PyMuPDF4LLM| API
 
     :arg str image_path: store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory.
 
-    :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all `supported output formats <https://pymupdf.readthedocs.io/en/latest/pixmap.html#supported-output-image-formats>`_.
+    :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`.
 
     :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image. If `write_images=True` this parameter may be `False` to suppress repetition of text on images.
 
@@ -52,27 +52,27 @@ The |PyMuPDF4LLM| API
 
     :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
 
-        - **"metadata"** - a dictionary consisting of the document's metadata `Document.metadata <https://pymupdf.readthedocs.io/en/latest/document.html#Document.metadata>`_, enriched with additional keys **"file_path"** (the file name), **"page_count"** (number of pages in document), and **"page_number"** (1-based page number).
+        - **"metadata"** - a dictionary consisting of the document's metadata :attr:`Document.metadata`, enriched with additional keys **"file_path"** (the file name), **"page_count"** (number of pages in document), and **"page_number"** (1-based page number).
 
-        - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierachy level, `title` a string and `pagenumber` the 1-based page number.
+        - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` as a 1-based page number.
 
         - **"tables"** - a list of tables on this page. Each item is a dictionary with keys "bbox", "row_count" and "col_count". Key "bbox" is a `pymupdf.Rect` in tuple format of the table's position on the page.
 
-        - **"images"** - a list of images on the page. This a copy of page method `get_image_info <https://pymupdf.readthedocs.io/en/latest/page.html#Page.get_image_info>`_. Please see there for a full description of items.
+        - **"images"** - a list of images on the page. This a copy of page method :meth:`Page.get_image_info`.
 
-        - **"graphics"** - a list of vector graphics rectangles on the page. This is a list of boundary boxes of clustered vector graphics as delivered by method `cluster_drawings <https://pymupdf.readthedocs.io/en/latest/page.html#Page.cluster_drawings>`_.
+        - **"graphics"** - a list of vector graphics rectangles on the page. This is a list of boundary boxes of clustered vector graphics as delivered by method :meth:`Page.cluster_drawings`.
 
-        - **"text"** - page content as Markdown text.
+        - **"text"** - page content as |Markdown| text.
 
     :returns: Either a string of the combined text of all selected document pages or a list of dictionaries.
 
 .. method:: LlamaMarkdownReader(*args, **kwargs)
 
-    Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex <https://pypi.org/project/llama-index/>`_ package. Please note that this package will **not be installed** when installing **pymupdf4llm**.
+    Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex`_ package. Please note that this package will **not automatically be installed** when installing **pymupdf4llm**.
 
     For details on the possible arguments, please consult the LlamaIndex documentation [#f1]_.
 
-    :raises: NotImplementedError: Please install required 'llama_index'.
+    :raises: `NotImplementedError`: Please install required `LlamaIndex`_ package.
     :returns: a `pdf_markdown_reader.PDFMarkdownReader` and issues message "Successfully imported LlamaIndex". Please note that this method needs several seconds to execute. For details on using the markdown reader please see below.
 
 ----
@@ -82,7 +82,7 @@ The |PyMuPDF4LLM| API
 
     .. method:: load_data(file_path: Union[Path, str], extra_info: Optional[Dict] = None, **load_kwargs: Any) -> List[LlamaIndexDocument]
 
-        This is the only method of the markdown reader you should currently use to extract markdown data. Please in any case ignore methods `aload_data()` and `lazy_load_data()`. Other methods like `use_doc_meta()` may or may not make sense. For more information, please consult the documentation of LlamaIndex [#f1]_.
+        This is the only method of the markdown reader you should currently use to extract markdown data. Please in any case ignore methods `aload_data()` and `lazy_load_data()`. Other methods like `use_doc_meta()` may or may not make sense. For more information, please consult the LlamaIndex documentation [#f1]_.
 
         Under the hood the method will execute `to_markdown()`.
 
