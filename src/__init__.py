@@ -17007,6 +17007,8 @@ def JM_read_contents(pageref):
                 mupdf.fz_append_buffer(res, nres)
     elif contents.m_internal:
         res = mupdf.pdf_load_stream(contents)
+    else:
+        res = b""
     return res
 
 
