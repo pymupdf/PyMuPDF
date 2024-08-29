@@ -16,6 +16,7 @@ filename2 = os.path.join(scriptdir, "resources", "2.pdf")
 circular = os.path.join(scriptdir, "resources", "circular-toc.pdf")
 full_toc = os.path.join(scriptdir, "resources", "full_toc.txt")
 simple_toc = os.path.join(scriptdir, "resources", "simple_toc.txt")
+file_3820 = os.path.join(scriptdir, "resources", "test-3820.pdf")
 doc = pymupdf.open(filename)
 
 
@@ -274,3 +275,14 @@ def test_3400():
                 links_actual.append( (page_i, link) )
     
         assert links_actual == links_expected
+
+
+
+def test_3820():
+    """Ensure all extended TOC items point to pages."""
+    doc = pymupdf.open(file_3820)
+    toc = doc.get_toc(simple=False)
+    for _, _, epage, dest in toc:
+        assert epage == dest["page"] + 1
+
+

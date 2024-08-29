@@ -6835,6 +6835,17 @@ class linkDest:
                 else:
                     ret[item] = None
             return ret
+
+        def unescape(name):
+            """Unescape '%AB' substrings to chr(0xAB)."""
+            split = name.replace("%%", "%25")  # take care of escaped '%'
+            split = split.split("%")
+            newname = split[0]
+            for item in split[1:]:
+                piece = item[:2]
+                newname += chr(int(piece, base=16))
+                newname += item[2:]
+            return newname
         
         if rlink and not self.uri.startswith("#"):
             self.uri = f"#page={rlink[0] + 1}&zoom=0,{_format_g(rlink[1])},{_format_g(rlink[2])}"
@@ -6862,7 +6873,7 @@ class linkDest:
                         m = re.match('^#nameddest=(.*)', self.uri)
                         assert document
                         if document and m:
-                            named = m.group(1)
+                            named = unescape(m.group(1))
                             self.named = document.resolve_names().get(named)
                             if self.named is None:
                                 # document.resolve_names() does not contain an
