@@ -387,6 +387,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                   imgpdf.close()
                doc.save("ocr-images.pdf")
 
+   ..  method:: pil()
+
+      * New in FIXME
+
+      Convert the pixmap to Pillow format. Returns a `PIL.Image` object. This method is useful for further processing with Pillow.
+
+      :raises ImportError: if Pillow is not installed.
 
    ..  method:: pil_save(*args, unmultiply=False, **kwargs)
 

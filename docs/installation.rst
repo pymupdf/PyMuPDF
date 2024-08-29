@@ -138,7 +138,7 @@ Notes
 
 * There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
 
-  * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
+  * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil`, :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
   * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
   * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
   * `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.

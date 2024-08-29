@@ -196,7 +196,7 @@ msgstr "必須の外部依存関係はありません。ただし、追加のコ
 #: ../../installation.rst:95 c678cc3a473f4c568fdfc4452ba213c8
 msgid ""
 "`Pillow <https://pypi.org/project/Pillow/>`_ is required for "
-":meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`."
+":meth:`Pixmap.pil`, :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`."
 msgstr ""
 "`Pillow <https://pypi.org/project/Pillow/>`_ は :meth:`Pixmap.pil_save` と "
 ":meth:`Pixmap.pil_tobytes` の実行に必要です。"
