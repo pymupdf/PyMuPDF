@@ -16,7 +16,7 @@ The |PyMuPDF4LLM| API
 
     Prints the version of the library.
 
-.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, hdr_info: Any = None, write_images: bool = False, dpi: int = 150, image_path="", image_format="png", force_text=True, margins=(0, 50, 0, 50), page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None) -> str | list[dict]
+.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, hdr_info: Any = None, write_images: bool = False, dpi: int = 150, image_path="", image_format="png", force_text=True, margins=(0, 50, 0, 50), page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None, ignore_code: bool = False, extract_words: bool = False) -> str | list[dict]
 
     Read the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that there exists **support for building page chunks** from the |Markdown|  text.
 
@@ -64,7 +64,9 @@ The |PyMuPDF4LLM| API
 
     :arg int graphics_limit: use this to limit dealing with excess amounts of vector graphics elements. Typically, scientific documents or pages simulating text using graphics commands may contain tens of thousands of these objects. As vector graphics are used for table detection mainly, analyzing pages of this kind may result in excessive runtimes. You can exclude problematic pages via `graphics_limit=5000`. The respective pages will then be ignored and be represented by one message line in the output text.
 
+    :arg bool ignore_code: if `True` mono-spaced text does not receive special formatting treatment. Code blocks will no longer be generated.
 
+    :arg bool extract_words: a value of `True` enforces `page_chunks=True` and adds key "words" to each page dictionary. Its value is a list of words as delivered by PyMuPDF's `Page` method `get_text("words")` of the generated Markdown text. Text in tables is not included.
 
     :returns: Either a string of the combined text of all selected document pages or a list of dictionaries.
 
