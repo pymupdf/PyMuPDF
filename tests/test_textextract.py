@@ -376,3 +376,14 @@ def test_3705():
 
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
+
+def test_3650():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3650.pdf')
+    doc = pymupdf.Document(path)
+    blocks = doc[0].get_text("blocks")
+    t = [block[4] for block in blocks]
+    print(f'{t=}')
+    assert t == [
+            'RECUEIL DES ACTES ADMINISTRATIFS\n',
+            'n° 78 du 28 avril 2023\n',
+            ]
