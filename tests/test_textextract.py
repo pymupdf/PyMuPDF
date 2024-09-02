@@ -345,3 +345,34 @@ def test_3687():
         wt = pymupdf.TOOLS.mupdf_warnings()
         print(f'{wt=}')
         assert wt == 'unknown epub version: 3.0'
+
+def test_3705():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3705.pdf')
+    def get_all_page_from_pdf(document, last_page=None):
+        if last_page:
+            document.select(list(range(0, last_page)))
+        if document.page_count > 30:
+            document.select(list(range(0, 30)))
+        return iter(page for page in document)
+
+    filename = os.path.basename(path)
+
+    doc = pymupdf.open(path)
+    texts0 = list()
+    for i, page in enumerate(get_all_page_from_pdf(doc)):
+        text = page.get_text()
+        print(i, text)    
+        texts0.append(text)
+    
+    texts1 = list()
+    doc = pymupdf.open(path)
+    for page in doc:
+        if page.number >= 30:  # leave the iterator immediately
+            break
+        text = page.get_text()
+        texts1.append(text)
+    
+    assert texts1 == texts0
+
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
