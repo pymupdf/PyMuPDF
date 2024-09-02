@@ -1270,3 +1270,11 @@ def test_3654():
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'dropping unclosed output'
 
+def test_3727():
+    if pymupdf.mupdf_version_tuple < (1, 24, 9):
+        print('test_3727(): not running because known to segv: {pymupdf.mupdf_version=}')
+        return
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3727.pdf')
+    doc = pymupdf.open(path)
+    for page in doc:
+        page.get_pixmap(matrix = pymupdf.Matrix(2,2))
