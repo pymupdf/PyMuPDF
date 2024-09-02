@@ -153,9 +153,6 @@ def test_2871():
 
 def test_3789():
     
-    print('test_3789(): Disabled because known to fail.')
-    return
-    
     file_path = os.path.abspath(f'{__file__}/../../tests/resources/test_3789.pdf')
     result_path = os.path.abspath(f'{__file__}/../../tests/test_3789_out')
     pages_per_split = 5
