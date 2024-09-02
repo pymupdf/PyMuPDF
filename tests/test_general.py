@@ -1278,3 +1278,36 @@ def test_3727():
     doc = pymupdf.open(path)
     for page in doc:
         page.get_pixmap(matrix = pymupdf.Matrix(2,2))
+
+def test_3569():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3569.pdf')
+    document = pymupdf.open(path)
+    page = document[0]
+    svg = page.get_svg_image(text_as_path=False)
+    print(f'{svg=}')
+    assert svg == (
+            '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" version="1.1" width="3024" height="2160" viewBox="0 0 3024 2160">\n'
+            '<defs>\n'
+            '<clipPath id="clip_1">\n'
+            '<path transform="matrix(0,-.06,-.06,-0,3024,2160)" d="M25432 10909H29692V15642H25432V10909"/>\n'
+            '</clipPath>\n'
+            '<clipPath id="clip_2">\n'
+            '<path transform="matrix(0,-.06,-.06,-0,3024,2160)" d="M28526 38017 31807 40376V40379L31312 41314V42889H28202L25092 42888V42887L28524 38017H28526"/>\n'
+            '</clipPath>\n'
+            '</defs>\n'
+            '<g clip-path="url(#clip_1)">\n'
+            '<g inkscape:groupmode="layer" inkscape:label="CED - Text">\n'
+            '<text xml:space="preserve" transform="matrix(.06 0 0 .06 3024 2160)" font-size="174.644" font-family="ArialMT"><tspan y="-28538" x="-14909 -14841.063 -14773.127 -14676.024 -14578.922 -14520.766 -14423.663">**L1-13</tspan></text>\n'
+            '</g>\n'
+            '</g>\n'
+            '<g clip-path="url(#clip_2)">\n'
+            '<g inkscape:groupmode="layer" inkscape:label="Level 03|S-COLS">\n'
+            '<path transform="matrix(0,-.06,-.06,-0,3024,2160)" d="M31130 41483V42083L30530 41483ZM31130 42083 30530 41483V42083Z" fill="#7f7f7f"/>\n'
+            '<path transform="matrix(0,-.06,-.06,-0,3024,2160)" stroke-width="0" stroke-linecap="butt" stroke-miterlimit="10" stroke-linejoin="miter" fill="none" stroke="#7f7f7f" d="M31130 41483V42083L30530 41483ZM31130 42083 30530 41483V42083Z"/>\n'
+            '<path transform="matrix(0,-.06,-.06,-0,3024,2160)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke="#7f7f7f" d="M30530 41483H31130V42083H30530V41483"/>\n'
+            '</g>\n'
+            '</g>\n'
+            '</svg>\n'
+            )
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
