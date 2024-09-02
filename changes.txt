@@ -2,9 +2,36 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.10 (2024-09-02)**
+
+* Use MuPDF-1.24.9.
+
+* Fixed issues:
+
+  * **Fixed** `3450 <https://github.com/pymupdf/PyMuPDF/issues/3450>`_: get_pixmap function takes too long to process
+  * **Fixed** `3569 <https://github.com/pymupdf/PyMuPDF/issues/3569>`_: Invalid OCGs not ignored by SVG image creation
+  * **Fixed** `3603 <https://github.com/pymupdf/PyMuPDF/issues/3603>`_: ObjStm compression and PDF linearization doesn't work together
+  * **Fixed** `3650 <https://github.com/pymupdf/PyMuPDF/issues/3650>`_: Linebreak inserted between each letter
+  * **Fixed** `3698 <https://github.com/pymupdf/PyMuPDF/issues/3698>`_: documentation issue - old code in the annotations documentation
+  * **Fixed** `3705 <https://github.com/pymupdf/PyMuPDF/issues/3705>`_: Document.select() behaves weirdly in some particular kind of pdf files
+  * **Fixed** `3706 <https://github.com/pymupdf/PyMuPDF/issues/3706>`_: extend Document.__getitem__ type annotation to reflect that the method also accepts slices
+  * **Fixed** `3727 <https://github.com/pymupdf/PyMuPDF/issues/3727>`_: Method get_pixmap() make the program exit without any exceptions or messages
+  * **Fixed** `3767 <https://github.com/pymupdf/PyMuPDF/issues/3767>`_: Cannot get Tessdata with Tesseract-OCR 5
+  * **Fixed** `3773 <https://github.com/pymupdf/PyMuPDF/issues/3773>`_: Link.set_border gives TypeError: '<' not supported between instances of 'NoneType' and 'int'
+  * **Fixed** `3774 <https://github.com/pymupdf/PyMuPDF/issues/3774>`_: fitz.__version__` does not work anymore
+  * **Fixed** `3789 <https://github.com/pymupdf/PyMuPDF/issues/3789>`_: ValueError: not enough values to unpack (expected 3, got 2) is thrown when call insert_pdf
+  * **Fixed** `3820 <https://github.com/pymupdf/PyMuPDF/issues/3820>`_: class improves namedDest handling
+
+* Other:
+
+  * Object streams and linearization cannot be used together; attempting to do
+    so will raise an exception. (#3603)
+  * Fixed handling of non-existing /Contents object.
+
+ 
 **Changes in version 1.24.9 (2024-07-24)**
 
-* Incremented MyPDF version to 1.24.9.
+* Use MuPDF-1.24.8.
 
 
 **Changes in version 1.24.8 (2024-07-22)**
@@ -32,6 +59,8 @@ Other:
 
 
 **Changes in version 1.24.6 (2024-06-25)**
+
+* Use MuPDF-1.24.4
 
 * Fixed issues:
 
