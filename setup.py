@@ -386,7 +386,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.8-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.9-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -430,7 +430,8 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
             log(f'Not downloading from {location} because already present: {local_tgz!r}')
         else:
             log(f'Downloading from {location=} to {local_tgz=}.')
-            urllib.request.urlretrieve( location, local_tgz)
+            urllib.request.urlretrieve( location, local_tgz + '-')
+            os.rename(local_tgz + '-', local_tgz)
             assert os.path.exists( local_tgz)
             tar_check( local_tgz, 'r:gz', prefix=f'{name}/')
     else:
@@ -1044,8 +1045,8 @@ classifier = [
 # We generate different wheels depending on PYMUPDF_SETUP_FLAVOUR.
 #
 
-version_p = '1.24.9'
-version_b = '1.24.9'
+version_p = '1.24.10'
+version_b = '1.24.10'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     
