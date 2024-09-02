@@ -11,6 +11,7 @@ import pymupdf
 import pathlib
 import pickle
 import platform
+import time
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
@@ -1311,3 +1312,18 @@ def test_3569():
             )
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
+
+def test_3450():
+    # This issue is a slow-down, so we just show time taken - it's not safe
+    # to fail if test takes too long because that can give spurious failures
+    # depending on hardware etc.
+    #
+    # On a mac-mini, PyMuPDF-1.24.8 takes 60s, PyMuPDF-1.24.9 takes 4s.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3450.pdf')
+    pdf = pymupdf.open(path)
+    page = pdf[0]
+    t = time.time()
+    pix = page.get_pixmap(alpha=False, dpi=150)
+    t = time.time() - t
+    print(f'test_3450(): {t=}')
