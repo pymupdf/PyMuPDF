@@ -11,7 +11,6 @@ import pymupdf
 import pathlib
 import pickle
 import platform
-import subprocess
 import time
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -901,6 +900,12 @@ def test_3081():
     import traceback
     shutil.copy2(path1, path2)
     
+    # Find next two available fds.
+    next_fd_1 = os.open(path2, os.O_RDONLY)
+    next_fd_2 = os.open(path2, os.O_RDONLY)
+    os.close(next_fd_1)
+    os.close(next_fd_2)
+
     def next_fd():
         fd = os.open(path2, os.O_RDONLY)
         os.close(fd)
@@ -910,24 +915,6 @@ def test_3081():
     document = pymupdf.open(path2)
     page = document[0]
     fd2 = next_fd()
-    if platform.system() == 'Linux':
-        # Show information about fds, to help track down very rare failure
-        # where fd2 = fd1+2.
-        print()
-        print(f'{fd1=} {fd2=}.')
-        for fd in range(fd1, fd2+1):
-            # Show info about fd.
-            path = f'/proc/self/fd/{fd}'
-            try:
-                path2 = os.readlink(path)
-            except Exception as e:
-                print(f'    {fd=}: Failed to deref link {path=}: {e}')
-            else:
-                print(f'    {fd=}: {path=} -> {path2=}.')
-        command = f'ls -l /proc/{os.getpid()}/fd'
-        print(f'Running: {command}', flush=1)
-        subprocess.run(command, shell=1, check=0)
-                    
     document.close()
     if rebased:
         assert document.this is None
@@ -954,11 +941,13 @@ def test_3081():
         assert 0, 'Did not receive expected exception.'
     page = None
     fd4 = next_fd()
+    print(f'{next_fd_1=} {next_fd_2=}')
     print(f'{fd1=} {fd2=} {fd3=} {fd4=}')
     print(f'{document=}')
-    assert fd2 == fd1 + 1
-    assert fd3 == fd1
-    assert fd4 == fd1
+    assert fd1 == next_fd_1
+    assert fd2 == next_fd_2 # Checks document only uses one fd.
+    assert fd3 == next_fd_1 # Checks no leaked fds after document close.
+    assert fd4 == next_fd_1 # Checks no leaked fds after failed page access.
 
 def test_xml():
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
