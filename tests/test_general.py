@@ -11,6 +11,7 @@ import pymupdf
 import pathlib
 import pickle
 import platform
+import subprocess
 import time
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -892,7 +893,6 @@ def test_3081():
     '''
     path1 = os.path.abspath(f'{__file__}/../../tests/resources/1.pdf')
     path2 = os.path.abspath(f'{__file__}/../../tests/test_3081-2.pdf')
-    path3 = os.path.abspath(f'{__file__}/../../tests/test_3081-3.pdf')
     
     rebased = hasattr(pymupdf, 'mupdf')
     
@@ -910,6 +910,24 @@ def test_3081():
     document = pymupdf.open(path2)
     page = document[0]
     fd2 = next_fd()
+    if platform.system() == 'Linux':
+        # Show information about fds, to help track down very rare failure
+        # where fd2 = fd1+2.
+        print()
+        print(f'{fd1=} {fd2=}.')
+        for fd in range(fd1, fd2+1):
+            # Show info about fd.
+            path = f'/proc/self/fd/{fd}'
+            try:
+                path2 = os.readlink(path)
+            except Exception as e:
+                print(f'    {fd=}: Failed to deref link {path=}: {e}')
+            else:
+                print(f'    {fd=}: {path=} -> {path2=}.')
+        command = f'ls -l /proc/{os.getpid()}/fd'
+        print(f'Running: {command}', flush=1)
+        subprocess.run(command, shell=1, check=0)
+                    
     document.close()
     if rebased:
         assert document.this is None
