@@ -12,6 +12,7 @@ Change Log
   * **Fixed** `3569 <https://github.com/pymupdf/PyMuPDF/issues/3569>`_: Invalid OCGs not ignored by SVG image creation
   * **Fixed** `3603 <https://github.com/pymupdf/PyMuPDF/issues/3603>`_: ObjStm compression and PDF linearization doesn't work together
   * **Fixed** `3650 <https://github.com/pymupdf/PyMuPDF/issues/3650>`_: Linebreak inserted between each letter
+  * **Fixed** `3661 <https://github.com/pymupdf/PyMuPDF/issues/3661>`_: Update Document to check the /XYZ len
   * **Fixed** `3698 <https://github.com/pymupdf/PyMuPDF/issues/3698>`_: documentation issue - old code in the annotations documentation
   * **Fixed** `3705 <https://github.com/pymupdf/PyMuPDF/issues/3705>`_: Document.select() behaves weirdly in some particular kind of pdf files
   * **Fixed** `3706 <https://github.com/pymupdf/PyMuPDF/issues/3706>`_: extend Document.__getitem__ type annotation to reflect that the method also accepts slices
