@@ -881,6 +881,9 @@ def get_pixmap(
     if colorspace.n not in (1, 3, 4):
         raise ValueError("unsupported colorspace")
 
+    if clip is not None and pymupdf.IRect(clip).is_empty:
+        raise ValueError("clip must not be empty")
+
     dl = page.get_displaylist(annots=annots)
     pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
     dl = None

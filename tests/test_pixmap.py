@@ -264,6 +264,16 @@ def test_3177():
     pixmap = pymupdf.Pixmap(path)
     pixmap2 = pymupdf.Pixmap(None, pixmap)
 
+def test_3848():
+    path = os.path.abspath(f"{__file__}/../../tests/resources/img-transparent.png")
+    pix = pymupdf.Pixmap(path)
+    error = False
+    try:
+        top = pix.color_topusage(clip=(0, 0, 0, 0))
+    except ValueError:
+        error = True
+    assert error
+
 
 def test_3493():
     '''

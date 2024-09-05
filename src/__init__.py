@@ -10021,11 +10021,14 @@ class Pixmap:
 
     def color_topusage(self, clip=None):
         """Return most frequent color and its usage ratio."""
+        if clip is not None:
+            clip = IRect(self.irect) & clip
+            if clip.is_empty:
+                raise ValueError("clip must not be empty")
         allpixels = 0
         cnt = 0
-        if clip is not None and self.irect in Rect(clip):
-            clip = self.irect
-        for pixel, count in self.color_count(colors=True,clip=clip).items():
+ 
+        for pixel, count in self.color_count(colors=True, clip=clip).items():
             allpixels += count
             if count > cnt:
                 cnt = count
