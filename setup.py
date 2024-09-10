@@ -136,6 +136,29 @@ Environmental variables:
     
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
+    
+    PYMUPDF_SETUP_Py_LIMITED_API
+        None, 'default' or the value of `Py_LIMITED_API` macro when building
+        MuPDF and PyMuPDF Python client code. If 'defaut', we use hard-coded
+        default.
+
+        This will hopefully allow the same build of PyMuPDF to be used with
+        multiple Python versions.
+    
+    PYMUPDF_SETUP_URL_WHEEL
+        If set, we use an existing wheel instead of building a new wheel.
+        
+        If starts with `http://` or `https://`:
+            If ends with '/', we append our wheel name and download. Otherwise
+            we download directly.
+        
+        If starts with `file://`:
+            If ends with '/' we look for a matching wheel name, `using
+            pipcl.wheel_name_match()` to cope with differing platform tags,
+            for example our `manylinux2014_x86_64` will match with an existing
+            wheel with `manylinux2014_x86_64.manylinux_2_17_x86_64`.
+        
+        Any other prefix is an error.
 
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
@@ -204,6 +227,13 @@ g_root = os.path.abspath( f'{__file__}/..')
 
 # Name of file that identifies that we are in a PyMuPDF sdist.
 g_pymupdfb_sdist_marker = 'pymupdfb_sdist'
+
+Py_LIMITED_API = os.environ.get('PYMUPDF_SETUP_Py_LIMITED_API')
+if Py_LIMITED_API == 'default':
+    Py_LIMITED_API = '0x03080000'
+
+PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
+log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
 
 def _fs_remove(path):
     '''
@@ -523,14 +553,24 @@ def build():
     # Build MuPDF shared libraries.
     #
     if windows:
-        mupdf_build_dir = build_mupdf_windows( mupdf_local, build_type, overwrite_config)
+        mupdf_build_dir = build_mupdf_windows(
+                mupdf_local,
+                build_type,
+                overwrite_config,
+                Py_LIMITED_API,
+                )
     else:
         if 'p' not in PYMUPDF_SETUP_FLAVOUR and 'b' not in PYMUPDF_SETUP_FLAVOUR:
             # We only need MuPDF headers, so no point building MuPDF.
             log(f'Not building MuPDF because not Windows and {PYMUPDF_SETUP_FLAVOUR=}.')
             mupdf_build_dir = None
         else:
-            mupdf_build_dir = build_mupdf_unix( mupdf_local, build_type, overwrite_config)
+            mupdf_build_dir = build_mupdf_unix(
+                    mupdf_local,
+                    build_type,
+                    overwrite_config,
+                    Py_LIMITED_API,
+                    )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
     # Build rebased `extra` module.
@@ -540,6 +580,7 @@ def build():
                 mupdf_local,
                 mupdf_build_dir,
                 build_type,
+                Py_LIMITED_API,
                 )
     else:
         log(f'Not building extension.')
@@ -649,7 +690,7 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
         log(f'Returning with {name}={env[name]!r}')
 
 
-def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
+def build_mupdf_windows( mupdf_local, build_type, overwrite_config, Py_LIMITED_API):
     
     assert mupdf_local
 
@@ -670,7 +711,10 @@ def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
         
     wp = pipcl.wdev.WindowsPython()
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
-    windows_build_tail = f'build\\shared-{tesseract}{build_type}-x{wp.cpu.bits}-py{wp.version}'
+    windows_build_tail = f'build\\shared-{tesseract}{build_type}'
+    if Py_LIMITED_API:
+        windows_build_tail += f'-Py_LIMITED_API={Py_LIMITED_API}'
+    windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
     devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
@@ -730,7 +774,7 @@ def _cpu_bits():
     return 64
 
 
-def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
+def build_mupdf_unix( mupdf_local, build_type, overwrite_config, Py_LIMITED_API):
     '''
     Builds MuPDF.
 
@@ -802,6 +846,9 @@ def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
             ):
         log(f'Appending `bsymbolic-` to MuPDF build path.')
         build_prefix += 'bsymbolic-'
+    log(f'{Py_LIMITED_API=}')
+    if Py_LIMITED_API:
+        build_prefix += f'Py_LIMITED_API={Py_LIMITED_API}-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
@@ -852,15 +899,15 @@ def _fs_update(text, path):
             f.write( text)
     
 
-def _build_extension( mupdf_local, mupdf_build_dir, build_type):
+def _build_extension( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API):
     '''
     Builds Python extension module `_extra`.
 
     Returns leafname of the generated shared libraries within mupdf_build_dir.
     '''
     (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
-        = _extension_flags( mupdf_local, mupdf_build_dir, build_type)
-
+        = _extension_flags( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API)
+    log(f'_build_extension(): {Py_LIMITED_API=} {defines=}')
     if mupdf_local:
         includes = (
                 f'{mupdf_local}/platform/c++/include',
@@ -903,12 +950,13 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type):
             prerequisites_swig = None,
             prerequisites_compile = f'{mupdf_local}/include',
             prerequisites_link = libraries,
+            use_so_versioning=not Py_LIMITED_API,
             )
     
     return path_so_leaf
 
 
-def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
+def _extension_flags( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API):
     '''
     Returns various flags to pass to pipcl.build_extension().
     '''
@@ -923,8 +971,12 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     optimise = 'release' in mupdf_build_dir_flags
     debug = 'debug' in mupdf_build_dir_flags
     r_extra = ''
+    defines = list()
+    log(f'{Py_LIMITED_API=}')
+    if Py_LIMITED_API:
+        defines.append(f'Py_LIMITED_API={Py_LIMITED_API}')
     if windows:
-        defines = ('FZ_DLL_CLIENT',)
+        defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
         if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
             # MuPDF C++ build uses a parallel build tree with updated VS files.
@@ -941,7 +993,6 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         compiler_extra = ''
     else:
         libs = ['mupdf']
-        defines = None
         compiler_extra += (
                 ' -Wall'
                 ' -Wno-deprecated-declarations'
@@ -1099,7 +1150,9 @@ else:
                 [console_scripts]
                 pymupdf = pymupdf.__main__:main
                 ''')
-            
+        if Py_LIMITED_API:
+            # Wheel will work on all Python versions.
+            tag_python = 'py3'
     elif 'b' in PYMUPDF_SETUP_FLAVOUR:
         version = version_b
         name = 'PyMuPDFb'
@@ -1184,7 +1237,63 @@ else:
             ret.append( 'swig')
         return ret
 
-build_wheel = p.build_wheel
+
+if PYMUPDF_SETUP_URL_WHEEL:
+    def build_wheel(
+            wheel_directory,
+            config_settings=None,
+            metadata_directory=None,
+            p=p,
+            ):
+        '''
+        Instead of building wheel, we look for and copy a wheel from location
+        specified by PYMUPDF_SETUP_URL_WHEEL.
+        '''
+        log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
+        log(f'{p.wheel_name()=}')
+        url = PYMUPDF_SETUP_URL_WHEEL
+        if url.startswith(('http://', 'https://')):
+            leaf = p.wheel_name()
+            out_path = f'{wheel_directory}{leaf}'
+            out_path_temp = out_path + '-'
+            if url.endswith('/'):
+                url += leaf
+            log(f'Downloading from {url=} to {out_path_temp=}.')
+            urllib.request.urlretrieve(url, out_path_temp)
+        elif url.startswith(f'file://'):
+            in_path = url[len('file://'):]
+            log(f'{in_path=}')
+            if in_path.endswith('/'):
+                # Look for matching wheel within this directory.
+                wheels = glob.glob(f'{in_path}*.whl')
+                log(f'{len(wheels)=}')
+                for in_path in wheels:
+                    log(f'{in_path=}')
+                    leaf = os.path.basename(in_path)
+                    if p.wheel_name_match(leaf):
+                        log(f'Match: {in_path=}')
+                        break
+                else:
+                    message = f'Cannot find matching for {p.wheel_name()=} in ({len(wheels)=}):\n'
+                    wheels_text = ''
+                    for wheel in wheels:
+                        wheels_text += f'    {wheel}\n'
+                    assert 0, f'Cannot find matching for {p.wheel_name()=} in:\n{wheels_text}'
+            else:
+                leaf = os.path.basename(in_path)
+            out_path = os.path.join(wheel_directory, leaf)
+            out_path_temp = out_path + '-'
+            log(f'Copying from {in_path=} to {out_path_temp=}.')
+            shutil.copy2(in_path, out_path_temp)
+        else:
+            assert 0, f'Unrecognised prefix in {PYMUPDF_SETUP_URL_WHEEL=}.'
+        
+        log(f'Renaming from {out_path_temp=} to {out_path=}.')
+        os.rename(out_path_temp, out_path)
+        return os.path.basename(out_path)
+else:
+    build_wheel = p.build_wheel
+
 build_sdist = p.build_sdist
 
 
