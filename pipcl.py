@@ -553,9 +553,9 @@ class Package:
         self.fn_build = fn_build
         self.fn_clean = fn_clean
         self.fn_sdist = fn_sdist
-        self.tag_python = tag_python
-        self.tag_abi = tag_abi
-        self.tag_platform = tag_platform
+        self.tag_python_ = tag_python
+        self.tag_abi_ = tag_abi
+        self.tag_platform_ = tag_platform
 
         self.wheel_compression = wheel_compression
         self.wheel_compresslevel = wheel_compresslevel
@@ -579,58 +579,8 @@ class Package:
                 f' metadata_directory={metadata_directory!r}'
                 )
 
-        # Get two-digit python version, e.g. 'cp3.8' for python-3.8.6.
-        #
-        if self.tag_python:
-            tag_python = self.tag_python
-        else:
-            tag_python = 'cp' + ''.join(platform.python_version().split('.')[:2])
-
-        # ABI tag.
-        if self.tag_abi:
-            tag_abi = self.tag_abi
-        else:
-            tag_abi = 'none'
-
-        # Find platform tag used in wheel filename.
-        #
-        tag_platform = None
-        if not tag_platform:
-            tag_platform = self.tag_platform
-        if not tag_platform:
-            # Prefer this to PEP-425. Appears to be undocumented,
-            # but set in manylinux docker images and appears
-            # to be used by cibuildwheel and auditwheel, e.g.
-            # https://github.com/rapidsai/shared-action-workflows/issues/80
-            tag_platform = os.environ.get( 'AUDITWHEEL_PLAT')
-        if not tag_platform:
-            # PEP-425. On Linux gives `linux_x86_64` which is rejected by
-            # pypi.org.
-            #
-            import setuptools
-            tag_platform1 = setuptools.distutils.util.get_platform()
-            tag_platform2 = sysconfig.get_platform()
-            assert tag_platform1 == tag_platform2, f'{tag_platform1=} != {tag_platform2=}'
-            tag_platform = tag_platform2.replace('-', '_').replace('.', '_').lower()
-
-            # We need to patch things on MacOS.
-            #
-            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
-            # causes `pip` to fail with: `not a supported wheel on this
-            # platform`. We seem to need to add `_0` to the OS version.
-            #
-            m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', tag_platform)
-            if m:
-                tag_platform2 = f'{m.group(1)}_0{m.group(2)}'
-                log2( f'Changing from {tag_platform!r} to {tag_platform2!r}')
-                tag_platform = tag_platform2
-
-        # Final tag is, for example, 'cp39-none-win32', 'cp39-none-win_amd64'
-        # or 'cp38-none-openbsd_6_8_amd64'.
-        #
-        tag = f'{tag_python}-{tag_abi}-{tag_platform}'
-
-        path = f'{wheel_directory}/{self.name}-{self.version}-{tag}.whl'
+        wheel_name = self.wheel_name()
+        path = f'{wheel_directory}/{wheel_name}'
 
         # Do a build and get list of files to copy into the wheel.
         #
@@ -670,7 +620,7 @@ class Package:
                     f'Wheel-Version: 1.0\n'
                     f'Generator: pipcl\n'
                     f'Root-Is-Purelib: false\n'
-                    f'Tag: {tag}\n'
+                    f'Tag: {self.wheel_tag_string()}\n'
                     ,
                     f'{dist_info_dir}/WHEEL',
                     )
@@ -789,6 +739,95 @@ class Package:
         log1( f'Have created sdist: {tarpath}')
         return os.path.basename(tarpath)
 
+    def wheel_tag_string(self):
+        '''
+        Returns <tag_python>-<tag_abi>-<tag_platform>.
+        '''
+        return f'{self.tag_python()}-{self.tag_abi()}-{self.tag_platform()}'
+
+    def tag_python(self):
+        '''
+        Get two-digit python version, e.g. 'cp3.8' for python-3.8.6.
+        '''
+        if self.tag_python_:
+            return self.tag_python_
+        else:
+            return 'cp' + ''.join(platform.python_version().split('.')[:2])
+
+    def tag_abi(self):
+        '''
+        ABI tag.
+        '''
+        return self.tag_abi_ if self.tag_abi_ else 'none'
+
+    def tag_platform(self):
+        '''
+        Find platform tag used in wheel filename.
+        '''
+        ret = self.tag_platform_
+        
+        if not ret:
+            # Prefer this to PEP-425. Appears to be undocumented,
+            # but set in manylinux docker images and appears
+            # to be used by cibuildwheel and auditwheel, e.g.
+            # https://github.com/rapidsai/shared-action-workflows/issues/80
+            ret = os.environ.get( 'AUDITWHEEL_PLAT')
+
+        if not ret:
+            # PEP-425. On Linux gives `linux_x86_64` which is rejected by
+            # pypi.org.
+            #
+            ret = sysconfig.get_platform()
+            ret = ret.replace('-', '_').replace('.', '_').lower()
+
+            # We need to patch things on MacOS.
+            #
+            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
+            # causes `pip` to fail with: `not a supported wheel on this
+            # platform`. We seem to need to add `_0` to the OS version.
+            #
+            m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', ret)
+            if m:
+                ret2 = f'{m.group(1)}_0{m.group(2)}'
+                log2( f'Changing from {ret!r} to {ret2!r}')
+                ret = ret2
+
+        return ret
+
+    def wheel_name(self):
+        return f'{self.name}-{self.version}-{self.tag_python()}-{self.tag_abi()}-{self.tag_platform()}.whl'
+
+    def wheel_name_match(self, wheel):
+        '''
+        Returns true if `wheel` matches our wheel. We basically require the
+        name to be the same, except that we accept platform tags that contain
+        extra items (see pep-0600/), for example we return true with:
+
+            self:   foo-cp38-none-manylinux2014_x86_64.whl
+            wheel:  foo-cp38-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+        '''
+        log2(f'{wheel=}')
+        assert wheel.endswith('.whl')
+        wheel2 = wheel[:-len('.whl')]
+        name, version, tag_python, tag_abi, tag_platform = wheel2.split('-')
+        
+        log2(f'{self.name == name=}')
+        log2(f'{self.version == version=}')
+        log2(f'{self.tag_python() == tag_python=} {self.tag_python()=} {tag_python=}')
+        log2(f'{self.tag_abi() == tag_abi=}')
+        log2(f'{self.tag_platform() in tag_platform.split(".")=}')
+        log2(f'{self.tag_platform()=}')
+        log2(f'{tag_platform.split(".")=}')
+        ret = (1
+                and self.name == name
+                and self.version == version
+                and self.tag_python() == tag_python
+                and self.tag_abi() == tag_abi
+                and self.tag_platform() in tag_platform.split('.')
+                )
+        log2(f'Returning {ret=}.')
+        return ret
+    
     def _entry_points_text(self):
         if self.entry_points:
             if isinstance(self.entry_points, str):
@@ -1157,9 +1196,9 @@ class Package:
             f' fn_build={self.fn_build!r}'
             f' fn_sdist={self.fn_sdist!r}'
             f' fn_clean={self.fn_clean!r}'
-            f' tag_python={self.tag_python!r}'
-            f' tag_abi={self.tag_abi!r}'
-            f' tag_platform={self.tag_platform!r}'
+            f' tag_python={self.tag_python_!r}'
+            f' tag_abi={self.tag_abi_!r}'
+            f' tag_platform={self.tag_platform_!r}'
             '}'
             )
 
@@ -1320,6 +1359,7 @@ def build_extension(
         prerequisites_compile=None,
         prerequisites_link=None,
         infer_swig_includes=True,
+        use_so_versioning=True,
         ):
     '''
     Builds a Python extension module using SWIG. Works on Windows, Linux, MacOS
@@ -1401,6 +1441,10 @@ def build_extension(
             that it can see the same header files as C/C++. This is useful
             when using enviromment variables such as `CC` and `CXX` to set
             `compile_extra.
+        use_so_versioning:
+            If true (the default) we use shared-library versioning on platforms
+            that support it such as Linux. Use false to disable suffix when
+            using Py_LIMITED_API.
 
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
@@ -1455,7 +1499,8 @@ def build_extension(
             prerequisites_swig2,
             )
 
-    path_so_leaf = f'_{name}{_so_suffix()}'
+    so_suffix = _so_suffix(use_so_versioning=use_so_versioning)
+    path_so_leaf = f'_{name}{so_suffix}'
     path_so = f'{outdir}/{path_so_leaf}'
 
     if windows():
@@ -2285,12 +2330,16 @@ def _log(text, level):
         sys.stdout.flush()
 
 
-def _so_suffix():
+def _so_suffix(use_so_versioning):
     '''
     Filename suffix for shared libraries is defined in pep-3149.  The
     pep claims to only address posix systems, but the recommended
     sysconfig.get_config_var('EXT_SUFFIX') also seems to give the
     right string on Windows.
+    
+    If use_so_versioning we return only the last component of the suffix, which
+    removes any version number, for example changing `.cp312-win_amd64.pyd` to
+    `.pyd`.
     '''
     # Example values:
     #   linux:      .cpython-311-x86_64-linux-gnu.so
@@ -2302,7 +2351,11 @@ def _so_suffix():
     # libraries in numpy-1.25.2-cp311-cp311-macosx_11_0_arm64.whl are called
     # things like `numpy/core/_simd.cpython-311-darwin.so`.
     #
-    return sysconfig.get_config_var('EXT_SUFFIX')
+    ret = sysconfig.get_config_var('EXT_SUFFIX')
+    if not use_so_versioning:
+        # Use last component only.
+        ret = os.path.splitext(ret)[1]
+    return ret
 
 
 def get_soname(path):
