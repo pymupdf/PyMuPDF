@@ -13195,6 +13195,9 @@ class IRect:
     def __getitem__(self, i):
         return (self.x0, self.y0, self.x1, self.y1)[i]
 
+    def __hash__(self):
+        return hash(tuple(self))
+
     def __init__(self, *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None):
         self.x0, self.y0, self.x1, self.y1 = util_make_irect( *args, p0=p0, p1=p1, x0=x0, y0=y0, x1=x1, y1=y1)
 
