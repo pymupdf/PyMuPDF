@@ -52,7 +52,10 @@ action inputs, which can't be easily translated into command-line arguments.
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD.
         E.g. 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
     inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE
-        Used to directly set PYMUPDF_SETUP_MUPDF_BUILD_TYPE.
+        Used to directly set PYMUPDF_SETUP_MUPDF_BUILD_TYPE. Note that as of
+        2024-09-10 .github/workflows/build_wheels.yml does not set this.
+    Py_LIMITED_API
+        If specified we build a single wheel for all python versions using the Python Limited API.
 
 Building for Pyodide
 
@@ -64,6 +67,11 @@ Building for Pyodide
     `emsdk.git`, set it up, and run `pyodide build`. This runs our setup.py
     with CC etc set up to create Pyodide binaries in a wheel called, for
     example, `PyMuPDF-1.23.2-cp311-none-emscripten_3_1_32_wasm32.whl`.
+
+Set up for use outside Github
+
+    sudo apt install docker.io
+    sudo usermod -aG docker $USER
 
 Example usage:
 
@@ -192,6 +200,8 @@ def build( platform_=None, valgrind=False):
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE')
     
+    PYMUPDF_SETUP_Py_LIMITED_API = os.environ.get('PYMUPDF_SETUP_Py_LIMITED_API')
+    
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
     log( f'{inputs_skeleton=}')
@@ -205,6 +215,7 @@ def build( platform_=None, valgrind=False):
     log( f'{inputs_wheels_cps=}')
     log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
     log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE=}')
+    log( f'{PYMUPDF_SETUP_Py_LIMITED_API=}')
     
     # Build Pyodide wheel if specified.
     #
@@ -254,7 +265,7 @@ def build( platform_=None, valgrind=False):
                 env_extra[ name] = value
             else:
                 log( f'Not changing {name}={v!r} to {value!r}')
-        set_if_unset( 'CIBW_BUILD_VERBOSITY', '3')
+        set_if_unset( 'CIBW_BUILD_VERBOSITY', '1')
         # We exclude pp* because of `fitz_wrap.obj : error LNK2001: unresolved
         # external symbol PyUnicode_DecodeRawUnicodeEscape`.
         # 2024-06-05: musllinux on aarch64 fails because libclang cannot find
@@ -337,7 +348,7 @@ def build( platform_=None, valgrind=False):
         def env_set(name, value, pass_=False):
             assert isinstance( value, str)
             if not name.startswith('CIBW'):
-                assert pass_, f'{name=} {value=}'
+                assert pass_, f'Non-CIBW* name requires `pass_` to be true. {name=} {value=}.'
             env_extra[ name] = value
             if pass_:
                 env_pass(name)
@@ -373,7 +384,44 @@ def build( platform_=None, valgrind=False):
         # We include MuPDF build-time files.
         flavour_d = True
         
-        if inputs_flavours:
+        if PYMUPDF_SETUP_Py_LIMITED_API:
+            # Build one wheel with oldest python, then fake build with other python
+            # versions so we test everything.
+            log(f'{PYMUPDF_SETUP_Py_LIMITED_API=}')
+            env_pass('PYMUPDF_SETUP_Py_LIMITED_API')
+            # This isn't actually necessary - PYMUPDF_SETUP_Py_LIMITED_API is
+            # already in the environment - but we set it anyway for clarity.
+            env_set('PYMUPDF_SETUP_Py_LIMITED_API', PYMUPDF_SETUP_Py_LIMITED_API, pass_=1)
+            CIBW_BUILD_old = env_extra.get('CIBW_BUILD')
+            assert CIBW_BUILD_old is not None
+            env_set('CIBW_BUILD', 'cp38*')
+            log(f'Building single wheel.')
+            run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
+            
+            # Fake-build with all python versions, using the wheel we have
+            # just created. This works by setting PYMUPDF_SETUP_URL_WHEEL
+            # which makes PyMuPDF's setup.py copy an existing wheel instead
+            # of building a wheel itself; it also copes with existing
+            # wheels having extra platform tags (from cibuildwheel's use of
+            # auditwheel).
+            #
+            env_set('PYMUPDF_SETUP_URL_WHEEL', f'file://wheelhouse/', pass_=True)
+            
+            set_cibuild_test()
+            env_set('CIBW_BUILD', CIBW_BUILD_old)
+            
+            # Disable cibuildwheels use of auditwheel. The wheel was repaired
+            # when it was created above so we don't need to do so again. This
+            # also avoids problems with musl wheels on a Linux glibc host where
+            # auditwheel fails with: `ValueError: Cannot repair wheel, because
+            # required library "libgcc_s-a3a07607.so.1" could not be located`.
+            #
+            env_set('CIBW_REPAIR_WHEEL_COMMAND', '')
+            
+            log(f'Testing on all python versions using wheels in wheelhouse/.')
+            run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
+            
+        elif inputs_flavours:
             # Build and test PyMuPDF and PyMuPDFb wheels.
             #
         
@@ -734,13 +782,15 @@ def run(command, env_extra=None, check=1, timeout=None):
             leave processes running if timeout expires.
     '''
     env = None
-    message = 'Running:'
+    message = 'Running: '
     if env_extra:
         env = os.environ.copy()
         env.update(env_extra)
+        message += '\n[environment:\n'
         for n, v in env_extra.items():
-            message += f' {n}={v}'
-    message += f' {command}'
+            message += f'    {n}={shlex.quote(v)}\n'
+        message += ']\n'
+    message += f'{command}'
     log(message, caller=1)
     return subprocess.run(command, check=check, shell=1, env=env, timeout=timeout)
 
