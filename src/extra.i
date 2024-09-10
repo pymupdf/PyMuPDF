@@ -104,12 +104,32 @@ static std::string repr(PyObject* x)
 {
     PyObject* repr = PyObject_Repr(x);
     PyObject* repr_str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
-    const char* repr_str_s = PyBytes_AS_STRING(repr_str);
+    #ifdef Py_LIMITED_API
+        const char* repr_str_s = PyBytes_AsString(repr_str);
+    #else
+        const char* repr_str_s = PyBytes_AS_STRING(repr_str);
+    #endif
     std::string ret = repr_str_s;
     Py_DECREF(repr_str);
     Py_DECREF(repr);
     return ret;
 }
+
+#ifdef Py_LIMITED_API
+    static PyObject* PySequence_ITEM(PyObject* o, Py_ssize_t i)
+    {
+        return PySequence_GetItem(o, i);
+    }
+
+    static const char* PyUnicode_AsUTF8(PyObject* o)
+    {
+        static PyObject* string = nullptr;
+        Py_XDECREF(string);
+        string = PyUnicode_AsUTF8String(o);
+        return PyBytes_AsString(string);
+    }
+#endif
+
 
 /* These are also in pymupdf/__init__.py. */
 const char MSG_BAD_ANNOT_TYPE[] = "bad annot type";
