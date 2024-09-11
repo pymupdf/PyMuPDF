@@ -1,0 +1,367 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.24.10\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-11 21:42+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 8afebcb38f0147ab89d4b950593b4aa6
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 aa606b3e1f134b5c895174dc8755cdaa
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 768e371610c34128a9e96d7e117dcebb
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:9 2f20dd68093f4023978ec523792b18ad
+msgid "API"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:12 5ccf4f49885246f9b7fce14520df07d9
+msgid "The |PyMuPDF4LLM| API"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:17 dd174663f7fb4f118048b564615ecebc
+msgid "Prints the version of the library."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:21 60fef68123794a43afec5b6a6f0b1914
+msgid ""
+"Read the pages of the file and outputs the text of its pages in "
+"|Markdown| format. How this should happen in detail can be influenced by "
+"a number of parameters. Please note that there exists **support for "
+"building page chunks** from the |Markdown|  text."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst cba906c6a0e446f28ec497f6951f6a58
+msgid "Parameters"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:23 273df82f7e124f879848f6a1078317cb
+msgid ""
+"the file, to be specified either as a file path string, or as a |PyMuPDF|"
+" Document (created via `pymupdf.open`). In order to use `pathlib.Path` "
+"specifications, Python file-like objects, documents in memory etc. you "
+"**must** use a |PyMuPDF| Document."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:25 5a31839413434b36ad65c8b6ec6580ad
+msgid ""
+"optional, the pages to consider for output (caution: specify 0-based page"
+" numbers). If omitted all pages are processed."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:27 40a7cdb2ab4e41f0b296524e6b99a21f
+msgid ""
+"optional. Use this if you want to provide your own header detection "
+"logic. This may be a callable or an object having a method named "
+"`get_header_id`. It must accept a text span (a span dictionary as "
+"contained in :meth:`~.extractDICT`) and a keyword parameter \"page\" "
+"(which is the owning :ref:`Page <page>` object). It must return a string "
+"\"\" or up to 6 \"#\" characters followed by 1 space. If omitted, a full "
+"document scan will be performed to find the most popular font sizes and "
+"derive header levels based on them. To completely avoid this behavior "
+"specify `hdr_info=lambda s, page=None: \"\"` or `hdr_info=False`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:29 25295eaa921243348fe32059165c65ce
+msgid ""
+"when encountering images or vector graphics, images will be created from "
+"the respective page area and stored in the specified folder. Markdown "
+"references will be generated pointing to these images. Any text contained"
+" in these areas will not be included in the text output (but appear as "
+"part of the images). Therefore, if for instance your document has text "
+"written on full page images, make sure to set this parameter to `False`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:31 158f40a4d91b413186c434049ddbd428
+msgid ""
+"specify the desired image resolution in dots per inch. Relevant only if "
+"`write_images=True`. Default value is 150."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:33 f0e8c2344ef94d9e889de2694bfec3fd
+msgid ""
+"store images in this folder. Relevant if `write_images=True`. Default is "
+"the path of the script directory."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:35 1fee89b79047494f8150749cb9118f3c
+msgid ""
+"specify the desired image format via its extension. Default is \"png\" "
+"(portable network graphics). Another popular format may be \"jpg\". "
+"Possible values are all :ref:`supported output formats "
+"<Supported_File_Types>`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:37 03a758a2f9a741618cf20dd47f266be7
+msgid ""
+"generate text output even when overlapping images / graphics. This text "
+"then appears after the respective image. If `write_images=True` this "
+"parameter may be `False` to suppress repetition of text on images."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:39 65c8369e089f4fdfb3d0933550e54d62
+msgid ""
+"a float or a sequence of 2 or 4 floats specifying page borders. Only "
+"objects inside the margins will be considered for output.  * `margin=f` "
+"yields `(f, f, f, f)` for `(left, top, right, bottom)`. * `(top, bottom)`"
+" yields  `(0, top, 0, bottom)`. * To always read full pages, use "
+"`margins=0`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:39 f3c27bb69c734802a1b28831727534c7
+msgid ""
+"a float or a sequence of 2 or 4 floats specifying page borders. Only "
+"objects inside the margins will be considered for output."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:41 fba4d995c2184708870334d7257cd94c
+msgid "`margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:42 1e89e5ef9e9c47d5a50329dfd719168a
+msgid "`(top, bottom)` yields  `(0, top, 0, bottom)`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:43 43f16f43d8124795b307351931283b20
+msgid "To always read full pages, use `margins=0`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:45 e7a65283e3e54470a97b48a01f0943b9
+msgid ""
+"if `True` the output will be a list of `Document.page_count` dictionaries"
+" (one per page). Each dictionary has the following structure:  - "
+"**\"metadata\"** - a dictionary consisting of the document's metadata "
+":attr:`Document.metadata`, enriched with additional keys "
+"**\"file_path\"** (the file name), **\"page_count\"** (number of pages in"
+" document), and **\"page_number\"** (1-based page number).  - "
+"**\"toc_items\"** - a list of Table of Contents items pointing to this "
+"page. Each item of this list has the format `[lvl, title, pagenumber]`, "
+"where `lvl` is the hierarchy level, `title` a string and `pagenumber` as "
+"a 1-based page number.  - **\"tables\"** - a list of tables on this page."
+" Each item is a dictionary with keys \"bbox\", \"row_count\" and "
+"\"col_count\". Key \"bbox\" is a `pymupdf.Rect` in tuple format of the "
+"table's position on the page.  - **\"images\"** - a list of images on the"
+" page. This a copy of page method :meth:`Page.get_image_info`.  - "
+"**\"graphics\"** - a list of vector graphics rectangles on the page. This"
+" is a list of boundary boxes of clustered vector graphics as delivered by"
+" method :meth:`Page.cluster_drawings`.  - **\"text\"** - page content as "
+"|Markdown| text."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:45 63a2813e0fda42f8961480384cdcfe1c
+msgid ""
+"if `True` the output will be a list of `Document.page_count` dictionaries"
+" (one per page). Each dictionary has the following structure:"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:47 f15e83e5e84a4c378d538bab5152ea80
+msgid ""
+"**\"metadata\"** - a dictionary consisting of the document's metadata "
+":attr:`Document.metadata`, enriched with additional keys "
+"**\"file_path\"** (the file name), **\"page_count\"** (number of pages in"
+" document), and **\"page_number\"** (1-based page number)."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:49 8a94428d141941f098dec4c87d9ffb67
+msgid ""
+"**\"toc_items\"** - a list of Table of Contents items pointing to this "
+"page. Each item of this list has the format `[lvl, title, pagenumber]`, "
+"where `lvl` is the hierarchy level, `title` a string and `pagenumber` as "
+"a 1-based page number."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:51 e8ec6641456647cea13d71c9d0dfded0
+msgid ""
+"**\"tables\"** - a list of tables on this page. Each item is a dictionary"
+" with keys \"bbox\", \"row_count\" and \"col_count\". Key \"bbox\" is a "
+"`pymupdf.Rect` in tuple format of the table's position on the page."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:53 5dcea29c996b43b8b144b0f3fdd34bb0
+msgid ""
+"**\"images\"** - a list of images on the page. This a copy of page method"
+" :meth:`Page.get_image_info`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:55 78ce8c10f74443aea43616d44d02e9ca
+msgid ""
+"**\"graphics\"** - a list of vector graphics rectangles on the page. This"
+" is a list of boundary boxes of clustered vector graphics as delivered by"
+" method :meth:`Page.cluster_drawings`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:57 d6068786455041fcb68a8f184fa1d05d
+msgid "**\"text\"** - page content as |Markdown| text."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:59 7399e1a707f24c5db3474ba20094699e
+msgid ""
+"specify a desired page width. This is ignored for documents with a fixed "
+"page width like PDF, XPS etc. **Reflowable** documents however, like "
+"e-books, office or text files have no fixed page dimensions and by "
+"default are assumed to have Letter format width (612) and an "
+"**\"infinite\"** page height. This means that the full document is "
+"treated as one large page."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:61 a85e3721f7604144a46e253b5c3a2f37
+msgid ""
+"specify a desired page height. For relevance see the `page_width` "
+"parameter. If using the default `None`, the document will appear as one "
+"large page with a width of `page_width`. Consequently in this case, no "
+"markdown page separators will occur (except the final one), respectively "
+"only one page chunk will be returned."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:63 ad30de63ce9f42a1a17b23489d85bbc4
+msgid ""
+"table detection strategy. Default is `\"lines_strict\"` which ignores "
+"background colors. In some occasions, other strategies may be more "
+"successful, for example `\"lines\"` which uses all vector graphics "
+"objects for detection."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:65 b32cc29ce7634fa78423415e084760f1
+msgid ""
+"use this to limit dealing with excess amounts of vector graphics "
+"elements. Typically, scientific documents or pages simulating text using "
+"graphics commands may contain tens of thousands of these objects. As "
+"vector graphics are used for table detection mainly, analyzing pages of "
+"this kind may result in excessive runtimes. You can exclude problematic "
+"pages via for instance `graphics_limit=5000` or even a smaller value as "
+"desired. The respective pages will then be ignored and be represented by "
+"one message line in the output text."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:67 e8beeb129d634a32a65d24bdbcca9f49
+msgid ""
+"if `True` then mono-spaced text does not receive special formatting "
+"treatment. Code blocks will also no longer be generated."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:69 4adc3832ccb04f61b5b1b8a030e35903
+msgid ""
+"a value of `True` enforces `page_chunks=True` and adds key \"words\" to "
+"each page dictionary. Its value is a list of words as delivered by "
+"PyMuPDF's `Page` method `get_text(\"words\")`. The sequence of the words "
+"in this list is the same as the extracted text."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:71 d35ede38bf244031ae3ca7709e408e60
+msgid ""
+"a value of `True` (the default) displays a text-based progress bar as "
+"pages are being converted to Markdown. It will look similar to the "
+"following::  Processing input.pdf... [===================="
+"                    ] (148/291)"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:71 fa6fa12db10e4be798a4327dcab4425e
+msgid ""
+"a value of `True` (the default) displays a text-based progress bar as "
+"pages are being converted to Markdown. It will look similar to the "
+"following::"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:73 4b61464437a44008ad42e40949c76b77
+msgid ""
+"Processing input.pdf... [====================                    ] "
+"(148/291)"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst 92fcb9f73e684409a83b7bab7310558e
+#: 961734fec55b40c6b7bf77ed1027de07 98eb05aed91c4be4a49e611793e8c9ec
+msgid "Returns"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:76 abf0a2df38bb4240a41dbf3a9847c458
+msgid ""
+"Either a string of the combined text of all selected document pages or a "
+"list of dictionaries."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:80 59bfdfbfe633484da7deab6b1a02fb62
+msgid ""
+"Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex`_ "
+"package. Please note that this package will **not automatically be "
+"installed** when installing **pymupdf4llm**."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:82 f926e33acb2a42a8b4c8da4554c925ea
+msgid ""
+"For details on the possible arguments, please consult the LlamaIndex "
+"documentation [#f1]_."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst 068d41e421f44803a35260557da9d22f
+msgid "raises"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:84 a6d54720ddf94129b4614a05af84a990
+msgid "`NotImplementedError`: Please install required `LlamaIndex`_ package."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:85 dc8916ef922e447a9f22b0a2341bb648
+msgid ""
+"a `pdf_markdown_reader.PDFMarkdownReader` and issues message "
+"\"Successfully imported LlamaIndex\". Please note that this method needs "
+"several seconds to execute. For details on using the markdown reader "
+"please see below."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:94 18fdf8f984e54cb6a75c66f8eb3934d6
+msgid ""
+"This is the only method of the markdown reader you should currently use "
+"to extract markdown data. Please in any case ignore methods "
+"`aload_data()` and `lazy_load_data()`. Other methods like "
+"`use_doc_meta()` may or may not make sense. For more information, please "
+"consult the LlamaIndex documentation [#f1]_."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:96 ffac621f35e24c0fb4488ed62356de97
+msgid "Under the hood the method will execute `to_markdown()`."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:98 ea72c593bc11481ab244fcea8b024adb
+msgid "a list of `LlamaIndexDocument` documents - one for each page."
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:102 f7e3889b196e4bdf91ee7bc7a88d6bde
+msgid "Footnotes"
+msgstr ""
+
+#: ../../pymupdf4llm/api.rst:103 bea90f2acc534ecc8a28a8ccb55f7f6d
+msgid "`LlamaIndex documentation <https://docs.llamaindex.ai/en/stable/>`_"
+msgstr ""
+
+#: ../../footer.rst:60 3faedde686fd4e8fb544ab6c545644ee
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+
+#: ../../footer.rst:-1 5197f5b28c7e4fb4a895d2f9e50cea57
+msgid "Discord logo"
+msgstr ""
+
