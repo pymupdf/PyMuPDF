@@ -11,6 +11,7 @@ import pymupdf
 import pathlib
 import pickle
 import platform
+import re
 import time
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -1339,3 +1340,17 @@ def test_3450():
     pix = page.get_pixmap(alpha=False, dpi=150)
     t = time.time() - t
     print(f'test_3450(): {t=}')
+
+def test_3859():
+    if pymupdf.mupdf_version_tuple > (1, 24, 9):
+        print(f'{pymupdf.mupdf.PDF_NULL=}.')
+        print(f'{pymupdf.mupdf.PDF_TRUE=}.')
+        print(f'{pymupdf.mupdf.PDF_FALSE=}.')
+        print(f'{pymupdf.mupdf.PDF_LIMIT=}.')
+        for name in ('NULL', 'TRUE', 'FALSE', 'LIMIT'):
+            name2 = f'PDF_{name}'
+            v = getattr(pymupdf.mupdf, name2)
+            print(f'{name=} {name2=} {v=} {type(v)=}')
+            assert type(v)==pymupdf.mupdf.PdfObj, f'`v` is not a pymupdf.mupdf.PdfObj.'
+    else:
+        assert not hasattr(pymupdf.mupdf, 'PDF_TRUE')
