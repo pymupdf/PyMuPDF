@@ -274,16 +274,21 @@ def test_2533():
     if hasattr(pymupdf, 'mupdf') and not pymupdf.g_use_extra:
         print('Not running test_2533() because rebased with use_extra=0 known to fail')
         return
-    doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
-    page = doc[0]
-    NEEDLE = "民"
-    ord_NEEDLE = ord(NEEDLE)
-    for span in page.get_texttrace():
-        for char in span["chars"]:
-            if char[0] == ord_NEEDLE:
-                bbox = pymupdf.Rect(char[3])
-                break
-    assert page.search_for(NEEDLE)[0] == bbox
+    pymupdf.TOOLS.set_small_glyph_heights(True)
+    try:
+        doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
+        page = doc[0]
+        NEEDLE = "民"
+        ord_NEEDLE = ord(NEEDLE)
+        for span in page.get_texttrace():
+            for char in span["chars"]:
+                if char[0] == ord_NEEDLE:
+                    bbox = pymupdf.Rect(char[3])
+                    break
+        bbox2 = page.search_for(NEEDLE)[0]
+        assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
+    finally:
+        pymupdf.TOOLS.set_small_glyph_heights(False)
 
 
 def test_2645():
