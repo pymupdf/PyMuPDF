@@ -2330,16 +2330,16 @@ def _log(text, level):
         sys.stdout.flush()
 
 
-def _so_suffix(use_so_versioning):
+def _so_suffix(use_so_versioning=True):
     '''
     Filename suffix for shared libraries is defined in pep-3149.  The
     pep claims to only address posix systems, but the recommended
     sysconfig.get_config_var('EXT_SUFFIX') also seems to give the
     right string on Windows.
     
-    If use_so_versioning we return only the last component of the suffix, which
-    removes any version number, for example changing `.cp312-win_amd64.pyd` to
-    `.pyd`.
+    If use_so_versioning is false, we return only the last component of
+    the suffix, which removes any version number, for example changing
+    `.cp312-win_amd64.pyd` to `.pyd`.
     '''
     # Example values:
     #   linux:      .cpython-311-x86_64-linux-gnu.so
