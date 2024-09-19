@@ -440,9 +440,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         # Show sha of checkout.
         run( f'cd {local_dir} && git show --pretty=oneline|head -n 1', check=False)
         if sha:
-            command = f'cd mupdf && git checkout {sha}'
-            log( f'Running: {command}')
-            run( f'cd mupdf && git checkout {sha}')
+            run( f'cd {local_dir} && git checkout {sha}')
     elif '://' in location:
         # Download .tgz.
         local_tgz = os.path.basename( location)
