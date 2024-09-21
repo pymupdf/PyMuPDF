@@ -425,7 +425,7 @@ def test(
         if venv_quick:
             log(f'{venv_quick=}: Not installing test packages: {gh_release.test_packages}')
         else:
-            gh_release.run(f'pip install {gh_release.test_packages}')
+            gh_release.run(f'pip install --upgrade {gh_release.test_packages}')
         run_compound_args = ''
         if implementations:
             run_compound_args += f' -i {implementations}'
@@ -435,7 +435,7 @@ def test(
         if valgrind:
             log('Installing valgrind.')
             gh_release.run(f'sudo apt update')
-            gh_release.run(f'sudo apt install valgrind')
+            gh_release.run(f'sudo apt install --upgrade valgrind')
             gh_release.run(f'valgrind --version')
         
             log('Running PyMuPDF tests under valgrind.')
