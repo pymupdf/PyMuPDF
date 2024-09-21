@@ -82,6 +82,7 @@ def test_pylint():
             W0719: Raising too general exception: Exception (broad-exception-raised)
             C3001: Lambda expression assigned to a variable. Define a function using the "def" keyword instead. (unnecessary-lambda-assignment)
             R0801: Similar lines in 2 files
+            R0917: Too many positional arguments (7/5) (too-many-positional-arguments)
             '''
             )
     ignores_list = list()
