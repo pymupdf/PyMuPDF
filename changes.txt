@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.?? (2024-??-??)**
+
+* Use MuPDF-1.24.?.
+
+* Fixed issues:
+
+
+* Other:
+
+  * The funcionality of parameter `sort=True` of the variants "text" and "words" of `Page.get_text() <>`_ has been greatly improved: It will now cause words, respectively text lines to be more precisely identified. In this way for instance `Page.get_text(sort=True)` will produce natural reading sequence, no pesky line breaks and a layout that is closer to the original.
+
+
+ 
 **Changes in version 1.24.10 (2024-09-02)**
 
 * Use MuPDF-1.24.9.

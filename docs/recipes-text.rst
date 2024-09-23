@@ -109,10 +109,25 @@ The text sequence extracted from a page modified in this way will look like this
 
 PyMuPDF has several means to re-establish some reading sequence or even to re-generate a layout close to the original:
 
-1. Use `sort` parameter of :meth:`Page.get_text`. It will sort the output from top-left to bottom-right (ignored for XHTML, HTML and XML output).
-2. Use the `pymupdf` module in CLI: `python -m pymupdf gettext ...`, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
+1. Use the `pymupdf` module in CLI: `python -m pymupdf gettext -mode layout ...`, which produces a text file where text has been re-arranged in layout-preserving mode. Many options are available to control the output.
 
-You can also use the above mentioned `script <https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-from-a-rectangle>`_ with your modifications.
+2. Use the greatly improved :meth:`Page.get_text` variant "text" with parameter `sort=True`. This will establish Western reading order by re-creating the visible text lines. The following snippet combines this method with |PyMuPDF4LLM| capabilities such that multi-column pages will be correctly extracted, too::
+
+    import pymupdf
+    
+    # import the PyMuPDF4LLM utility for column recognition:
+    from pymupdf4llm.helpers.multi_column import column_boxes
+    
+    doc = pymupdf.open("input.pdf")
+    page = doc[0]
+    text = ""  # all page text here
+    boxes = column_boxes(page)  # identify text columns on page
+    for box in boxes:  # walk through columns
+        text += page.get_text(sort=True, clip=box)  # append text of box
+        text += "\n"
+    
+    print(text)  # output complete text of the page faithfully by column
+
 
 ----------
 

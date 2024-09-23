@@ -1360,7 +1360,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: sort; Page.get_text
       pair: delimiters; Page.get_text
 
-   .. method:: get_text(option,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None)
+   .. method:: get_text(option,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None, tolerance=3)
 
       Retrieves the content of a page in a variety of formats. This is a wrapper for multiple :ref:`TextPage` methods by choosing the output option `opt` as follows:
 
@@ -1383,11 +1383,13 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int flags: indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings. (New in v1.16.2)
 
-      :arg textpage: use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage-only properties. If omitted, a new, temporary textpage will be created. (New in v1.19.0)
+      :arg textpage: use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If omitted, a new, temporary textpage will be created for each execution. If specified, the 'flags' argument will be ignored because it is a :ref:`TextPage` property. and 'clip' arguments are ignored, because they are textpage-only properties. 
 
-      :arg bool sort: sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. Output option **"words"** sorts by `(y1, x0)` of the words' bboxes. Similar is true for "blocks", "dict", "json", "rawdict", "rawjson": they all are sorted by `(y1, x0)` of the resp. block bbox. If specified for "text", then internally "blocks" is used. (New in v1.19.1)
+      :arg bool sort: sort the output by vertical, then horizontal coordinates. Has no effect on (X)HTML and XML. Output options "blocks", "dict", "json", "rawdict", "rawjson" are sorted by `(y1, x0)` of the respective block bbox. For options **"words"** and **"text"**, `sort=True` causes text lines to be completely re-composed, based on the `tolerance` value (see there). Apart from corner cases, this will produce output in natural (Western) reading sequence and prevent meaningless technical line breaks within a text line as visible for the user.
 
-      :arg str delimiters: use these characters as *additional* word separators with the "words" output option (ignored otherwise). By default, all white spaces (including non-breaking space `0xA0`) indicate start and end of a word. Now you can specify more characters causing this. For instance, the default will return `"john.doe@outlook.com"` as **one** word. If you specify `delimiters="@."` then the **four** words `"john"`, `"doe"`, `"outlook"`, `"com"` will be returned. Other possible uses include ignoring punctuation characters `delimiters=string.punctuation`. The "word" strings will not contain any delimiting character. (New in v1.23.5)
+      :arg str delimiters: use these characters as *additional* word separators with the "words" output option (ignored otherwise). By default, all white spaces (including non-breaking space `chr(0xA0) = chr(160)`) indicate start and end of a word. Now you can specify more characters causing this. For instance, the default will return `"john.doe@outlook.com"` as **one** word. If you specify `delimiters="@."` then the **four** words `"john"`, `"doe"`, `"outlook"`, `"com"` will be returned. Other possible uses include ignoring punctuation characters `delimiters=string.punctuation`. The "word" strings will not contain any of the standard or additional delimiting characters. (New in v1.23.5)
+
+      :arg float tolerance: Words are considered to belong to the same line if either of their top or bottom coordinates do not deviate more than that value (given in points, 1 point = 1/72 inches). This value is relevant for `sort=True` of the "words" or "text" extraction variants only.
 
       :rtype: *str, list, dict*
       :returns: The page's content as a string, a list or a dictionary. Refer to the corresponding :ref:`TextPage` method for details.
@@ -1403,6 +1405,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.19.1: added `sort` parameter
       * Changed in v1.19.6: added new constants for defining default flags per method.
       * Changed in v1.23.5: added `delimiters` parameter
+      * Changed in v1.24.10: added `tolerance` parameter and refactored "text" and "words" variants when `sort=True` is used.
 
       |history_end|
 
