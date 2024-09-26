@@ -119,6 +119,9 @@ def main():
         run_command(f'sudo PATH={os.environ["PATH"]} python -V', check=0)
         run_command(f'sudo PATH={os.environ["PATH"]} python3 -V', check=0)
     
+    if test_py.github_workflow_unimportant():
+        return
+    
     # Set default behaviour.
     #
     use_installer = True

@@ -129,6 +129,9 @@ pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
 def main(argv):
 
+    if github_workflow_unimportant():
+        return
+    
     if len(argv) == 1:
         show_help()
         return
@@ -285,6 +288,21 @@ def show_help():
     print(__doc__)
     print(venv_info())
 
+
+def github_workflow_unimportant():
+    '''
+    Returns true if we are running a Github scheduled workflow but in a
+    repository not called 'PyMuPDF'. This can be used to avoid consuming
+    unnecessary Github minutes running workflows on non-main repositories such
+    as ArtifexSoftware/PyMuPDF-julian.
+    '''
+    GITHUB_EVENT_NAME = os.environ.get('GITHUB_EVENT_NAME')
+    GITHUB_REPOSITORY = os.environ.get('GITHUB_REPOSITORY')
+    if GITHUB_EVENT_NAME == 'schedule' and GITHUB_REPOSITORY != 'pymupdf/PyMuPDF':
+            log(f'## This is an unimportant Github workflow: a scheduled event, not in the main repository `pymupdf/PyMuPDF`.')
+            log(f'## {GITHUB_EVENT_NAME=}.')
+            log(f'## {GITHUB_REPOSITORY=}.')
+            return True
 
 def venv_info(pytest_args=None):
     '''
