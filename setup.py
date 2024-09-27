@@ -107,6 +107,18 @@ Environmental variables:
     PYMUPDF_SETUP_MUPDF_CLEAN
         Unix only. If '1', we do a clean MuPDF build.
 
+    PYMUPDF_SETUP_MUPDF_REFCHECK_IF
+        Should be preprocessor statement to enable MuPDF reference count
+        checking.
+        
+        As of 2024-09-27, MuPDF default is `#ifndef NDEBUG`.
+
+    PYMUPDF_SETUP_MUPDF_TRACE_IF
+        Should be preprocessor statement to enable MuPDF runtime diagnostics in
+        response to environment variables such as MUPDF_trace.
+        
+        As of 2024-09-27, MuPDF default is `#ifndef NDEBUG`.
+
     PYMUPDF_SETUP_MUPDF_THIRD
         If '0' and we are building on Linux with the system MuPDF
         (i.e. PYMUPDF_SETUP_MUPDF_BUILD=''), then don't link with
@@ -548,6 +560,9 @@ def build():
     
     overwrite_config = os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG', '1') == '1'
     
+    PYMUPDF_SETUP_MUPDF_REFCHECK_IF = os.environ.get('PYMUPDF_SETUP_MUPDF_REFCHECK_IF')
+    PYMUPDF_SETUP_MUPDF_TRACE_IF = os.environ.get('PYMUPDF_SETUP_MUPDF_TRACE_IF')
+    
     # Build MuPDF shared libraries.
     #
     if windows:
@@ -556,6 +571,8 @@ def build():
                 build_type,
                 overwrite_config,
                 Py_LIMITED_API,
+                PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+                PYMUPDF_SETUP_MUPDF_TRACE_IF,
                 )
     else:
         if 'p' not in PYMUPDF_SETUP_FLAVOUR and 'b' not in PYMUPDF_SETUP_FLAVOUR:
@@ -568,6 +585,8 @@ def build():
                     build_type,
                     overwrite_config,
                     Py_LIMITED_API,
+                    PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+                    PYMUPDF_SETUP_MUPDF_TRACE_IF,
                     )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
@@ -688,7 +707,14 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
         log(f'Returning with {name}={env[name]!r}')
 
 
-def build_mupdf_windows( mupdf_local, build_type, overwrite_config, Py_LIMITED_API):
+def build_mupdf_windows(
+        mupdf_local,
+        build_type,
+        overwrite_config,
+        Py_LIMITED_API,
+        PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+        PYMUPDF_SETUP_MUPDF_TRACE_IF,
+        ):
     
     assert mupdf_local
 
@@ -740,7 +766,10 @@ def build_mupdf_windows( mupdf_local, build_type, overwrite_config, Py_LIMITED_A
                 devenv = devenv[1:-1]
     command += f' -d {windows_build_tail}'
     command += f' -b'
-    command += f' --refcheck-if "#if 1"'
+    if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
+        command += f'--refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}" '
+    if PYMUPDF_SETUP_MUPDF_TRACE_IF:
+        command += f'--trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}" '
     command += f' --devenv "{devenv}"'
     command += f' all'
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
@@ -772,7 +801,14 @@ def _cpu_bits():
     return 64
 
 
-def build_mupdf_unix( mupdf_local, build_type, overwrite_config, Py_LIMITED_API):
+def build_mupdf_unix(
+        mupdf_local,
+        build_type,
+        overwrite_config,
+        Py_LIMITED_API,
+        PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+        PYMUPDF_SETUP_MUPDF_TRACE_IF,
+        ):
     '''
     Builds MuPDF.
 
@@ -855,6 +891,10 @@ def build_mupdf_unix( mupdf_local, build_type, overwrite_config, Py_LIMITED_API)
     for n, v in env.items():
         command += f' {n}={shlex.quote(v)}'
     command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
+    if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
+        command += f'--refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}" '
+    if PYMUPDF_SETUP_MUPDF_TRACE_IF:
+        command += f'--trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}" '
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
         command += 'all'
     else:
