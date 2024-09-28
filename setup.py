@@ -767,9 +767,9 @@ def build_mupdf_windows(
     command += f' -d {windows_build_tail}'
     command += f' -b'
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
-        command += f'--refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}" '
+        command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
-        command += f'--trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}" '
+        command += f' --trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}"'
     command += f' --devenv "{devenv}"'
     command += f' all'
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
@@ -890,15 +890,15 @@ def build_mupdf_unix(
     command = f'cd {mupdf_local} &&'
     for n, v in env.items():
         command += f' {n}={shlex.quote(v)}'
-    command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
+    command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b'
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
-        command += f'--refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}" '
+        command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
-        command += f'--trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}" '
+        command += f' --trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}"'
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
-        command += 'all'
+        command += ' all'
     else:
-        command += 'm01'    # No need for C++/Python bindings.
+        command += ' m01'    # No need for C++/Python bindings.
     command += f' && echo {unix_build_dir}:'
     command += f' && ls -l {unix_build_dir}'
 
