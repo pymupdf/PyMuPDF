@@ -1346,8 +1346,7 @@ def test_3859():
         print(f'{pymupdf.mupdf.PDF_NULL=}.')
         print(f'{pymupdf.mupdf.PDF_TRUE=}.')
         print(f'{pymupdf.mupdf.PDF_FALSE=}.')
-        print(f'{pymupdf.mupdf.PDF_LIMIT=}.')
-        for name in ('NULL', 'TRUE', 'FALSE', 'LIMIT'):
+        for name in ('NULL', 'TRUE', 'FALSE'):
             name2 = f'PDF_{name}'
             v = getattr(pymupdf.mupdf, name2)
             print(f'{name=} {name2=} {v=} {type(v)=}')
