@@ -1353,3 +1353,14 @@ def test_3859():
             assert type(v)==pymupdf.mupdf.PdfObj, f'`v` is not a pymupdf.mupdf.PdfObj.'
     else:
         assert not hasattr(pymupdf.mupdf, 'PDF_TRUE')
+
+def test_3905():
+    data = b'A,B,C,D\r\n1,2,1,2\r\n2,2,1,2\r\n'
+    try:
+        document = pymupdf.open(stream=data)
+    except pymupdf.FileDataError as e:
+        pass
+    else:
+        assert 0
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
