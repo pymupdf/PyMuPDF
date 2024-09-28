@@ -2812,7 +2812,11 @@ class Document:
                 #   handler = fz_recognize_document(gctx, filetype);
                 #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
                 # but prefer to leave fz_open_document_with_stream() to raise.
-                doc = mupdf.fz_open_document_with_stream(magic, data)
+                try:
+                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                except Exception as e:
+                    if g_exceptions_verbose > 1:    exception_info()
+                    raise FileDataError(f'Failed to open stream') from e
             else:
                 if filename:
                     if not filetype:
@@ -13168,7 +13172,7 @@ if 1:
                     pass
                 else:
                     #assert not inspect.isroutine(value)
-                    #log(f'importing {name}')
+                    #log(f'importing {_name=} {_value=}.')
                     setattr(_self, _name, _value)
                     #log(f'{getattr( self, name, None)=}')
     else:
