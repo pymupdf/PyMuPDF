@@ -558,7 +558,7 @@ def venv( command=None, packages=None, quick=False, system_site_packages=False):
     if platform.system() == 'OpenBSD':
         # libclang not available from pypi.org, but system py3-llvm package
         # works. `pip install` should be run with --no-build-isolation and
-        # explicit `pip install swig setuptools psutil`.
+        # explicit `pip install swig psutil`.
         system_site_packages = True
         #ssp = ' --system-site-packages'
         log(f'OpenBSD: libclang not available from pypi.org.')
