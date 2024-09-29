@@ -1147,7 +1147,7 @@ if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     log(f'Specifying dummy PyMuPDFb wheel.')
     
     def get_requires_for_build_wheel(config_settings=None):
-        return ['setuptools']
+        return list()
     
     p = pipcl.Package(
             'PyMuPDFb',
@@ -1252,7 +1252,6 @@ else:
             return r
             
         ret = list()
-        ret.append('setuptools')
         libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
         if libclang:
             print(f'Overriding to use {libclang=}.')
