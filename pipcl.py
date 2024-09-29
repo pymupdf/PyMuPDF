@@ -463,9 +463,10 @@ class Package:
                 `none`.
 
             tag_platform:
-                Third element of wheel tag defined in PEP-425. Default is
-                `os.environ('AUDITWHEEL_PLAT')` if set, otherwise derived
-                from `setuptools.distutils.util.get_platform()` (was
+                Third element of wheel tag defined in PEP-425. Default
+                is `os.environ('AUDITWHEEL_PLAT')` if set, otherwise
+                derived from `sysconfig.get_platform()` (was
+                `setuptools.distutils.util.get_platform(), before that
                 `distutils.util.get_platform()` as specified in the PEP), e.g.
                 `openbsd_7_0_amd64`.
 
