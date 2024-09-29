@@ -375,11 +375,12 @@ def build(
         import setup
         names = setup.get_requires_for_build_wheel()
         del sys.path[0]
-        names = ' '.join(names)
-        if venv_quick:
-            log(f'{venv_quick=}: Not installing packages with pip: {names}')
-        else:
-            gh_release.run( f'python -m pip install --upgrade {names}')
+        if names:
+            names = ' '.join(names)
+            if venv_quick:
+                log(f'{venv_quick=}: Not installing packages with pip: {names}')
+            else:
+                gh_release.run( f'python -m pip install --upgrade {names}')
         build_isolation_text = ' --no-build-isolation'
     
     env_extra = dict()
