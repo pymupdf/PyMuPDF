@@ -63,9 +63,9 @@ Args:
         from a generated wheel. [Otherwise we use `pip install`, which refuses
         to do a system install with `--root /`, referencing PEP-668.]
     -i <implementations>
-        Passed through to scripts/test.py.
+        Passed through to scripts/test.py. Default is 'rR'.
     -f <test-fitz>
-        Passed through to scripts/test.py.
+        Passed through to scripts/test.py. Default is '1'.
     -p <pytest-options>
         Passed through to scripts/test.py.
     -t <names>
@@ -140,8 +140,8 @@ def main():
     pytest_name = None
     test_venv = 'venv-pymupdf-sysinstall-test'
     pip = 'venv'
-    test_fitz = None
-    test_implementations = None
+    test_fitz = '1'
+    test_implementations = 'rR'
     
     # Parse command-line.
     #
