@@ -46,13 +46,13 @@ Options:
     -d
         Equivalent to `--build-type debug`.
     -f 0|1
-        If 1 (the default) we also test alias `fitz` as well as `pymupdf`.
+        If 1 we also test alias `fitz` as well as `pymupdf`. Default is '0'.
     -i <implementations>
         Set PyMuPDF implementations to test.
         <implementations> must contain only these individual characters:
              'r' - rebased.
              'R' - rebased without optimisations.
-            Default is 'rR'. Also see `PyMuPDF:tests/run_compound.py`.
+            Default is 'r'. Also see `PyMuPDF:tests/run_compound.py`.
     -k <expression>
         Passed straight through to pytest's `-k`.
     -m <location> | --mupdf <location>
@@ -144,8 +144,8 @@ def main(argv):
     build_mupdf = True
     build_flavour = 'pb'
     gdb = False
-    test_fitz = True
-    implementations = None
+    test_fitz = False
+    implementations = 'r'
     test_names = list()
     venv = 2
     pytest_options = None
