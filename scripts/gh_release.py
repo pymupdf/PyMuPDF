@@ -200,7 +200,7 @@ def build( platform_=None, valgrind=False):
     inputs_PYMUPDF_SETUP_MUPDF_BUILD = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD')
     inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE = os.environ.get('inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE')
     
-    PYMUPDF_SETUP_Py_LIMITED_API = os.environ.get('PYMUPDF_SETUP_Py_LIMITED_API')
+    PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
     
     log( f'{inputs_flavours=}')
     log( f'{inputs_sdist=}')
@@ -215,7 +215,7 @@ def build( platform_=None, valgrind=False):
     log( f'{inputs_wheels_cps=}')
     log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
     log( f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE=}')
-    log( f'{PYMUPDF_SETUP_Py_LIMITED_API=}')
+    log( f'{PYMUPDF_SETUP_PY_LIMITED_API=}')
     
     # Build Pyodide wheel if specified.
     #
@@ -384,14 +384,14 @@ def build( platform_=None, valgrind=False):
         # We include MuPDF build-time files.
         flavour_d = True
         
-        if PYMUPDF_SETUP_Py_LIMITED_API:
+        if PYMUPDF_SETUP_PY_LIMITED_API:
             # Build one wheel with oldest python, then fake build with other python
             # versions so we test everything.
-            log(f'{PYMUPDF_SETUP_Py_LIMITED_API=}')
-            env_pass('PYMUPDF_SETUP_Py_LIMITED_API')
-            # This isn't actually necessary - PYMUPDF_SETUP_Py_LIMITED_API is
+            log(f'{PYMUPDF_SETUP_PY_LIMITED_API=}')
+            env_pass('PYMUPDF_SETUP_PY_LIMITED_API')
+            # This isn't actually necessary - PYMUPDF_SETUP_PY_LIMITED_API is
             # already in the environment - but we set it anyway for clarity.
-            env_set('PYMUPDF_SETUP_Py_LIMITED_API', PYMUPDF_SETUP_Py_LIMITED_API, pass_=1)
+            env_set('PYMUPDF_SETUP_PY_LIMITED_API', PYMUPDF_SETUP_PY_LIMITED_API, pass_=1)
             CIBW_BUILD_old = env_extra.get('CIBW_BUILD')
             assert CIBW_BUILD_old is not None
             env_set('CIBW_BUILD', 'cp38*')
