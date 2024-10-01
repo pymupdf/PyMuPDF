@@ -309,6 +309,7 @@ class Package:
             tag_python = None,
             tag_abi = None,
             tag_platform = None,
+            py_limited_api = None,
 
             wheel_compression = zipfile.ZIP_DEFLATED,
             wheel_compresslevel = None,
@@ -472,6 +473,12 @@ class Package:
 
                 For pure python packages use: `tag_platform=any`
 
+            py_limited_api:
+                If true we build wheels that use the Python Limited API. We use
+                the version of `sys.executable` to define `Py_LIMITED_API` when
+                compiling extensions, and use ABI tag `abi3` in the wheel name
+                if argument `tag_abi` is None.
+
             wheel_compression:
                 Used as `zipfile.ZipFile()`'s `compression` parameter when
                 creating wheels.
@@ -557,6 +564,7 @@ class Package:
         self.tag_python_ = tag_python
         self.tag_abi_ = tag_abi
         self.tag_platform_ = tag_platform
+        self.py_limited_api = py_limited_api
 
         self.wheel_compression = wheel_compression
         self.wheel_compresslevel = wheel_compresslevel
@@ -759,7 +767,12 @@ class Package:
         '''
         ABI tag.
         '''
-        return self.tag_abi_ if self.tag_abi_ else 'none'
+        if self.tag_abi_:
+            return self.tag_abi_
+        elif self.py_limited_api:
+            return 'abi3'
+        else:
+            return 'none'
 
     def tag_platform(self):
         '''
@@ -812,9 +825,23 @@ class Package:
         wheel2 = wheel[:-len('.whl')]
         name, version, tag_python, tag_abi, tag_platform = wheel2.split('-')
         
+        py_limited_api_compatible = False
+        if self.py_limited_api and tag_abi == 'abi3':
+            # Allow lower tag_python number.
+            m = re.match('cp([0-9]+)', tag_python)
+            tag_python_int = int(m.group(1))
+            m = re.match('cp([0-9]+)', self.tag_python())
+            tag_python_int_self = int(m.group(1))
+            if tag_python_int <= tag_python_int_self:
+                # This wheel uses Python stable ABI same or older than ours, so
+                # we can use it.
+                log2(f'py_limited_api; {tag_python=} compatible with {self.tag_python()=}.')
+                py_limited_api_compatible = True
+            
         log2(f'{self.name == name=}')
         log2(f'{self.version == version=}')
         log2(f'{self.tag_python() == tag_python=} {self.tag_python()=} {tag_python=}')
+        log2(f'{py_limited_api_compatible=}')
         log2(f'{self.tag_abi() == tag_abi=}')
         log2(f'{self.tag_platform() in tag_platform.split(".")=}')
         log2(f'{self.tag_platform()=}')
@@ -822,7 +849,7 @@ class Package:
         ret = (1
                 and self.name == name
                 and self.version == version
-                and self.tag_python() == tag_python
+                and (self.tag_python() == tag_python or py_limited_api_compatible)
                 and self.tag_abi() == tag_abi
                 and self.tag_platform() in tag_platform.split('.')
                 )
@@ -1360,7 +1387,7 @@ def build_extension(
         prerequisites_compile=None,
         prerequisites_link=None,
         infer_swig_includes=True,
-        use_so_versioning=True,
+        py_limited_api=False,
         ):
     '''
     Builds a Python extension module using SWIG. Works on Windows, Linux, MacOS
@@ -1442,10 +1469,8 @@ def build_extension(
             that it can see the same header files as C/C++. This is useful
             when using enviromment variables such as `CC` and `CXX` to set
             `compile_extra.
-        use_so_versioning:
-            If true (the default) we use shared-library versioning on platforms
-            that support it such as Linux. Use false to disable suffix when
-            using Py_LIMITED_API.
+        py_limited_api:
+            If true we build for current Python's limited API / stable ABI.
 
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
@@ -1500,12 +1525,14 @@ def build_extension(
             prerequisites_swig2,
             )
 
-    so_suffix = _so_suffix(use_so_versioning=use_so_versioning)
+    so_suffix = _so_suffix(use_so_versioning = not py_limited_api)
     path_so_leaf = f'_{name}{so_suffix}'
     path_so = f'{outdir}/{path_so_leaf}'
 
+    py_limited_api2 = current_py_limited_api() if py_limited_api else None
+
     if windows():
-        path_obj        = f'{path_so}.obj'
+        path_obj = f'{path_so}.obj'
 
         permissive = '/permissive-'
         EHsc = '/EHsc'
@@ -1515,6 +1542,8 @@ def build_extension(
         if debug:
             debug2 = '/Zi'  # Generate .pdb.
             # debug2 = '/Z7'    # Embed debug info in .obj files.
+        
+        py_limited_api3 = f'/DPy_LIMITED_API={py_limited_api2}' if py_limited_api2 else ''
 
         # As of 2023-08-23, it looks like VS tools create slightly
         # .dll's each time, even with identical inputs.
@@ -1555,6 +1584,8 @@ def build_extension(
 
                     {defines_text}
                     {compiler_extra}
+
+                    {py_limited_api3}
                 '''
         run_if( command, path_obj, path_cpp, prerequisites_compile)
 
@@ -1593,6 +1624,8 @@ def build_extension(
             general_flags += ' -g'
         if optimise:
             general_flags += ' -O2 -DNDEBUG'
+
+        py_limited_api3 = f'-DPy_LIMITED_API={py_limited_api2}' if py_limited_api2 else ''
 
         if darwin():
             # MacOS's linker does not like `-z origin`.
@@ -1633,6 +1666,7 @@ def build_extension(
                         -c {path_cpp}
                         -o {path_cpp}.o
                         {compiler_extra}
+                        {py_limited_api3}
                     '''
             prerequisites_link_path = f'{path_cpp}.o.d'
             prerequisites += _get_prerequisites( prerequisites_link_path)
@@ -1670,6 +1704,7 @@ def build_extension(
                         {pythonflags.ldflags}
                         {libs_text}
                         {rpath_flag}
+                        {py_limited_api3}
                     '''
         command_was_run = run_if(
                 command,
@@ -2384,6 +2419,14 @@ def get_soname(path):
         return sos2[-1]
     return path
 
+
+def current_py_limited_api():
+    '''
+    Returns value of PyLIMITED_API to build for current Python.
+    '''
+    a, b = map(int, platform.python_version().split('.')[:2])
+    return f'0x{a:02x}{b:02x}0000'
+    
 
 def install_dir(root=None):
     '''
