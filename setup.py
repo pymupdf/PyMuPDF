@@ -149,13 +149,8 @@ Environmental variables:
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
     
-    PYMUPDF_SETUP_Py_LIMITED_API
-        None, 'default' or the value of `Py_LIMITED_API` macro when building
-        MuPDF and PyMuPDF Python client code. If 'defaut', we use hard-coded
-        default.
-
-        This will hopefully allow the same build of PyMuPDF to be used with
-        multiple Python versions.
+    PYMUPDF_SETUP_PY_LIMITED_API
+        If '1', we build for current Python's stable ABI.
     
     PYMUPDF_SETUP_URL_WHEEL
         If set, we use an existing wheel instead of building a new wheel.
@@ -240,9 +235,10 @@ g_root = os.path.abspath( f'{__file__}/..')
 # Name of file that identifies that we are in a PyMuPDF sdist.
 g_pymupdfb_sdist_marker = 'pymupdfb_sdist'
 
-Py_LIMITED_API = os.environ.get('PYMUPDF_SETUP_Py_LIMITED_API')
-if Py_LIMITED_API == 'default':
-    Py_LIMITED_API = '0x03080000'
+PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
+assert PYMUPDF_SETUP_PY_LIMITED_API in (None, '0', '1'), \
+        f'Should be "0", "1" or undefined: {PYMUPDF_SETUP_PY_LIMITED_API=}.'
+g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API == '1')
 
 PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
 log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
@@ -570,7 +566,7 @@ def build():
                 mupdf_local,
                 build_type,
                 overwrite_config,
-                Py_LIMITED_API,
+                g_py_limited_api,
                 PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
                 PYMUPDF_SETUP_MUPDF_TRACE_IF,
                 )
@@ -584,7 +580,7 @@ def build():
                     mupdf_local,
                     build_type,
                     overwrite_config,
-                    Py_LIMITED_API,
+                    g_py_limited_api,
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
                     PYMUPDF_SETUP_MUPDF_TRACE_IF,
                     )
@@ -597,7 +593,7 @@ def build():
                 mupdf_local,
                 mupdf_build_dir,
                 build_type,
-                Py_LIMITED_API,
+                g_py_limited_api,
                 )
     else:
         log(f'Not building extension.')
@@ -711,7 +707,7 @@ def build_mupdf_windows(
         mupdf_local,
         build_type,
         overwrite_config,
-        Py_LIMITED_API,
+        g_py_limited_api,
         PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
         PYMUPDF_SETUP_MUPDF_TRACE_IF,
         ):
@@ -736,8 +732,8 @@ def build_mupdf_windows(
     wp = pipcl.wdev.WindowsPython()
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
     windows_build_tail = f'build\\shared-{tesseract}{build_type}'
-    if Py_LIMITED_API:
-        windows_build_tail += f'-Py_LIMITED_API={Py_LIMITED_API}'
+    if g_py_limited_api:
+        windows_build_tail += f'-Py_LIMITED_API={pipcl.current_py_limited_api()}'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
@@ -805,7 +801,7 @@ def build_mupdf_unix(
         mupdf_local,
         build_type,
         overwrite_config,
-        Py_LIMITED_API,
+        g_py_limited_api,
         PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
         PYMUPDF_SETUP_MUPDF_TRACE_IF,
         ):
@@ -880,9 +876,9 @@ def build_mupdf_unix(
             ):
         log(f'Appending `bsymbolic-` to MuPDF build path.')
         build_prefix += 'bsymbolic-'
-    log(f'{Py_LIMITED_API=}')
-    if Py_LIMITED_API:
-        build_prefix += f'Py_LIMITED_API={Py_LIMITED_API}-'
+    log(f'{g_py_limited_api=}')
+    if g_py_limited_api:
+        build_prefix += f'Py_LIMITED_API={pipcl.current_py_limited_api()}-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
@@ -937,15 +933,15 @@ def _fs_update(text, path):
             f.write( text)
     
 
-def _build_extension( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API):
+def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api):
     '''
     Builds Python extension module `_extra`.
 
     Returns leafname of the generated shared libraries within mupdf_build_dir.
     '''
     (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
-        = _extension_flags( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API)
-    log(f'_build_extension(): {Py_LIMITED_API=} {defines=}')
+        = _extension_flags( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api)
+    log(f'_build_extension(): {g_py_limited_api=} {defines=}')
     if mupdf_local:
         includes = (
                 f'{mupdf_local}/platform/c++/include',
@@ -988,13 +984,13 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API):
             prerequisites_swig = None,
             prerequisites_compile = f'{mupdf_local}/include',
             prerequisites_link = libraries,
-            use_so_versioning=not Py_LIMITED_API,
+            py_limited_api = g_py_limited_api,
             )
     
     return path_so_leaf
 
 
-def _extension_flags( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API):
+def _extension_flags( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api):
     '''
     Returns various flags to pass to pipcl.build_extension().
     '''
@@ -1010,9 +1006,9 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type, Py_LIMITED_API):
     debug = 'debug' in mupdf_build_dir_flags
     r_extra = ''
     defines = list()
-    log(f'{Py_LIMITED_API=}')
-    if Py_LIMITED_API:
-        defines.append(f'Py_LIMITED_API={Py_LIMITED_API}')
+    log(f'{g_py_limited_api=}')
+    if g_py_limited_api:
+        defines.append(f'Py_LIMITED_API={g_py_limited_api}')
     if windows:
         defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
@@ -1188,9 +1184,6 @@ else:
                 [console_scripts]
                 pymupdf = pymupdf.__main__:main
                 ''')
-        if Py_LIMITED_API:
-            # Wheel will work on all Python versions.
-            tag_python = 'py3'
     elif 'b' in PYMUPDF_SETUP_FLAVOUR:
         version = version_b
         name = 'PyMuPDFb'
@@ -1231,6 +1224,7 @@ else:
             fn_sdist=sdist,
         
             tag_python=tag_python,
+            py_limited_api=g_py_limited_api,
 
             # 30MB: 9 ZIP_DEFLATED
             # 28MB: 9 ZIP_BZIP2

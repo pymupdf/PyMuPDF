@@ -48,7 +48,7 @@ on:
       #  default: '-'
       # We can't currently have more than 10 inputs
       
-      PYMUPDF_SETUP_Py_LIMITED_API:
+      PYMUPDF_SETUP_PY_LIMITED_API:
         description: 'If not "", is used to build single wheel for each OS.'
         type: string
         default: ''
@@ -147,7 +147,7 @@ jobs:
             
             inputs_wheels_cps: ${{inputs.wheels_cps}}
             
-            PYMUPDF_SETUP_Py_LIMITED_API: ${{inputs.PYMUPDF_SETUP_Py_LIMITED_API}}
+            PYMUPDF_SETUP_PY_LIMITED_API: ${{inputs.PYMUPDF_SETUP_PY_LIMITED_API}}
             
         run:
           python scripts/gh_release.py
