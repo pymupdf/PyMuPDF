@@ -33,6 +33,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
 :meth:`Pixmap.pdfocr_save`       save the pixmap as an OCRed 1-page PDF
 :meth:`Pixmap.pdfocr_tobytes`    save the pixmap as an OCRed 1-page PDF
+:meth:`Pixmap.pil`               get as pillow image
 :meth:`Pixmap.pil_save`          save as image using pillow
 :meth:`Pixmap.pil_tobytes`       write to `bytes` object using pillow
 :meth:`Pixmap.pixel`             return the value of a pixel
@@ -388,7 +389,15 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                doc.save("ocr-images.pdf")
 
 
-   ..  method:: pil_save(*args, unmultiply=False, **kwargs)
+   ..  method:: pil()
+
+      * New in v1.17.3
+
+      Get the pixmap as Pillow image object. The returned image has the same colorspace as the pixmap.
+
+      :raises ImportError: if Pillow is not installed.
+
+   ..  method:: pil_save(*args, **kwargs)
 
       * New in v1.17.3
 
@@ -400,8 +409,6 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`.
       
-      :arg bool unmultiply: If the pixmap's colorspace is RGB with transparency, the alpha values may or may not already be multiplied into the color components ref/green/blue (called "premultiplied"). To enforce undoing premultiplication, set this parameter to `True`. To learn about some background, e.g. look for "Premultiplied alpha" `here <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
-
 
       For details on other parameters see the Pillow documentation.
 
@@ -409,7 +416,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :raises ImportError: if Pillow is not installed.
 
-   ..  method:: pil_tobytes(*args, unmultiply=False, **kwargs)
+   ..  method:: pil_tobytes(*args, **kwargs)
 
       * New in v1.17.3
 

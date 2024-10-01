@@ -10168,12 +10168,8 @@ class Pixmap:
         self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
         return bio.getvalue()
 
-    def pil_save(self, *args, **kwargs):
-        """Write to image file using Pillow.
-
-        Args are passed to Pillow's Image.save method, see their documentation.
-        Use instead of save when other output formats are desired.
-        """
+    def pil(self):
+        """Get pixmap as a Pillow image."""
         try:
             from PIL import Image
         except ImportError:
@@ -10190,7 +10186,15 @@ class Pixmap:
         else:
             mode = "CMYK"
 
-        img = Image.frombytes(mode, (self.width, self.height), self.samples)
+        return Image.frombytes(mode, (self.width, self.height), self.samples)
+
+    def pil_save(self, *args, **kwargs):
+        """Write to image file using Pillow.
+
+        Args are passed to Pillow's Image.save method, see their documentation.
+        Use instead of save when other output formats are desired.
+        """
+        img = self.pil()
 
         if "dpi" not in kwargs.keys():
             kwargs["dpi"] = (self.xres, self.yres)
