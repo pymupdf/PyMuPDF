@@ -14,6 +14,8 @@ import platform
 import re
 import time
 
+import gentle_compare
+
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
 
@@ -1364,3 +1366,18 @@ def test_3905():
         assert 0
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
+
+def test_3624():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
+    path_png_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3624_expected.png')
+    path_png = os.path.normpath(f'{__file__}/../../tests/test_3624.png')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap(matrix=pymupdf.Matrix(2, 2))
+        print(f'Saving to {path_png=}.')
+        pixmap.save(path_png)
+        rms = gentle_compare.pixmaps_rms(path_png_expected, path_png)
+        if pymupdf.mupdf_version_tuple < (1, 24, 10):
+            assert rms > 12
+        else:
+            assert rms == 0
