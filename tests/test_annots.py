@@ -2,8 +2,12 @@
 """
 Test PDF annotation insertions.
 """
-import pymupdf
+
 import os
+
+import pymupdf
+import gentle_compare
+
 
 pymupdf.TOOLS.set_annot_stem("jorj")
 
@@ -364,3 +368,52 @@ def test_3209():
     assert n == 1
     path = os.path.abspath(f'{__file__}/../../tests/test_3209_out.pdf')
     pdf.save(path)  # Check the output PDF that the annotation is correctly drawn
+
+def test_3863():
+    if pymupdf.mupdf_version_tuple < (1, 24, 10):
+        print(f'test_3863(): not running because {pymupdf.mupdf_version_tuple=} < 1.24.10.')
+        return
+    
+    path_in = os.path.normpath(f'{__file__}/../../tests/resources/test_3863.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_3863.pdf.pdf')
+    
+    # Create redacted PDF.
+    print(f'Loading {path_in=}.')
+    with pymupdf.open(path_in) as document:
+    
+        for num, page in enumerate(document):
+            print(f"Page {num + 1} - {page.rect}:")
+    
+            for image in page.get_images(full=True):
+                print(f"  - Image: {image}")
+
+            redact_rect = page.rect
+
+            if page.rotation in (90, 270):
+                redact_rect = pymupdf.Rect(0, 0, page.rect.height, page.rect.width)
+
+            page.add_redact_annot(redact_rect)
+            page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
+
+        print(f'Writing to {path_out=}.')
+        document.save(path_out)
+    
+    with pymupdf.open(path_out) as document:
+        assert len(document) == 8
+        
+        # Create PNG for each page of redacted PDF.
+        for num, page in enumerate(document):
+            path_png = f'{path_out}.{num}.png'
+            pixmap = page.get_pixmap()
+            print(f'Writing to {path_png=}.')
+            pixmap.save(path_png)
+            # Compare with expected png.
+    
+        print(f'Comparing page PNGs with expected PNGs.')
+        for num, _ in enumerate(document):
+            path_png = f'{path_out}.{num}.png'
+            path_png_expected = f'{path_in}.pdf.{num}.png'
+            print(f'{path_png=}.')
+            print(f'{path_png_expected=}.')
+            rms = gentle_compare.pixmaps_rms(path_png, path_png_expected, '    ')
+            assert rms == 0
