@@ -1380,4 +1380,6 @@ def test_3624():
         if pymupdf.mupdf_version_tuple < (1, 24, 10):
             assert rms > 12
         else:
-            assert rms == 0
+            # We get small differences in sysinstall tests, where some
+            # thirdparty libraries can differ.
+            assert rms < 1
