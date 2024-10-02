@@ -284,7 +284,7 @@ def test_3493():
     in_path = f'{root}/tests/resources/test_3493.epub'
     
     def run(command, check=1, stdout=None):
-        print(f'Running: {command}')
+        print(f'Running with {check=}: {command}')
         return subprocess.run(command, shell=1, check=check, stdout=stdout, text=1)
     
     def run_code(code, code_path, *, check=True, venv=None, venv_args='', pythonpath=None, stdout=None):
@@ -293,7 +293,14 @@ def test_3493():
             f.write(code)
         prefix = f'PYTHONPATH={pythonpath} ' if pythonpath else ''
         if venv:
-            run(f'{sys.executable} -m venv {venv_args} {venv}')
+            # Have seen this fail on Github in a curious way:
+            #
+            #   Running: /tmp/tmp.fBeKNLJQKk/venv/bin/python -m venv --system-site-packages /project/tests/resources/test_3493_venv
+            #   Error: [Errno 2] No such file or directory: '/project/tests/resources/test_3493_venv/bin/python'
+            #
+            r = run(f'{sys.executable} -m venv {venv_args} {venv}', check=check)
+            if r.returncode:
+                return r
             r = run(f'. {venv}/bin/activate && {prefix}python {code_path}', check=check, stdout=stdout)
         else:
             r = run(f'{prefix}{sys.executable} {code_path}', check=check, stdout=stdout)
