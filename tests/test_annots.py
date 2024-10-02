@@ -416,4 +416,6 @@ def test_3863():
             print(f'{path_png=}.')
             print(f'{path_png_expected=}.')
             rms = gentle_compare.pixmaps_rms(path_png, path_png_expected, '    ')
-            assert rms == 0
+            # We get small differences in sysinstall tests, where some
+            # thirdparty libraries can differ.
+            assert rms < 1
