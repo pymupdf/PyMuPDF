@@ -2,6 +2,32 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.11 (2024-10-03)**
+
+* Use MuPDF-1.24.10.
+
+* Fixed issues:
+
+  * **Fixed** `3624 <https://github.com/pymupdf/PyMuPDF/issues/3624>`_: Pdf file transform to image have a black block
+  * **Fixed** `3859 <https://github.com/pymupdf/PyMuPDF/issues/3859>`_: doc.need_appearances() fails with "AttributeError: module 'pymupdf.mupdf' has no attribute 'PDF_TRUE' "
+  * **Fixed** `3863 <https://github.com/pymupdf/PyMuPDF/issues/3863>`_: apply_redactions() does not work as expected
+  * **Fixed** `3905 <https://github.com/pymupdf/PyMuPDF/issues/3905>`_: open stream can raise a FzErrorFormat error instead of FileDataError
+
+* Wheels now use the Python Stable ABI:
+
+  * There is one PyMuPDF wheel for each platform.
+  * Each wheel works with all supported Python versions.
+  * Each wheel is built using the oldest supported Python version (currently 3.8).
+  * There is no PyMuPDFb wheel.
+
+* Other:
+
+  * Improvements to get_text_words() with sort=True.
+  * Tests now always get the latest versions of required Python packages.
+  * Removed dependency on setuptools.
+  * Added item to PyMuPDF-1.24.10 changes below - fix of #3630.
+
+
 **Changes in version 1.24.10 (2024-09-02)**
 
 * Use MuPDF-1.24.9.
@@ -22,6 +48,8 @@ Change Log
   * **Fixed** `3774 <https://github.com/pymupdf/PyMuPDF/issues/3774>`_: fitz.__version__` does not work anymore
   * **Fixed** `3789 <https://github.com/pymupdf/PyMuPDF/issues/3789>`_: ValueError: not enough values to unpack (expected 3, got 2) is thrown when call insert_pdf
   * **Fixed** `3820 <https://github.com/pymupdf/PyMuPDF/issues/3820>`_: class improves namedDest handling
+
+  * **Fixed** `3630 <https://github.com/pymupdf/PyMuPDF/issues/3630>`_: page.apply_redactions gives unwanted black rectangle
 
 * Other:
 
