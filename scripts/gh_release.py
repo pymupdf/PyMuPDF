@@ -88,6 +88,7 @@ import subprocess
 import sys
 import textwrap
 
+import test as test_py
 
 pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
@@ -112,6 +113,9 @@ def main():
     for k in sorted( os.environ.keys()):
         v = os.environ[ k]
         log( f'    {k}: {v!r}')
+    
+    if test_py.github_workflow_unimportant():
+        return
     
     valgrind = False
     if len( sys.argv) == 1:
