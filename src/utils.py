@@ -2105,8 +2105,7 @@ def insert_htmlbox(
     scale_max = None if scale_low == 0 else 1 / scale_low
 
     fit = story.fit_scale(temp_rect, scale_min=1, scale_max=scale_max)
-
-    if fit.big_enough is False:  # there was no fit
+    if not fit.big_enough:  # there was no fit
         return (-1, scale_low)
 
     filled = fit.filled

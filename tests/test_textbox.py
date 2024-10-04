@@ -271,3 +271,11 @@ def test_3559():
     text_insert="""<body><h3></h3></body>"""
     rect = pymupdf.Rect(100, 100, 200, 200)
     page.insert_htmlbox(rect, text_insert)
+
+
+def test_3916():
+    doc = pymupdf.open()
+    rect = pymupdf.Rect(100, 100, 101, 101) # Too small for the text.
+    page = doc.new_page()
+    spare_height, scale = page.insert_htmlbox(rect, "Hello, World!", scale_low=0.5)
+    assert spare_height == -1
