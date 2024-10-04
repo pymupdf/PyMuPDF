@@ -118,7 +118,28 @@ Problems after installation
 Notes
 ---------------------------------------------------------
 
-* Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), for Python versions marked as "Supported" on https://devguide.python.org/versions/.
+*
+  Wheels are available for the following platforms:
+  
+   * Windows 32-bit Intel.
+   * Windows 64-bit Intel.
+   * Linux 64-bit Intel.
+   * Linux 64-bit ARM.
+   * MacOS 64-bit Intel.
+   * MacOS 64-bit ARM.
+  
+  Details:
+  
+  * We release a single wheel for each of the above platforms.
+  
+  *
+    Each wheel uses the Python Stable ABI of the current oldest supported
+    Python version, and so works with all later Python versions, including new
+    Python releases.
+  
+  *
+    Wheels are tested on all Python versions currently marked as "Supported" on
+    https://devguide.python.org/versions/.
 
 *
   Wheels are not available for Python installed with `Chocolatey
