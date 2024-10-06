@@ -8,7 +8,10 @@ on:
           description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g.: git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
           type: string
           default: 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
-
+      PYMUPDF_SETUP_PY_LIMITED_API:
+        type: string
+        default: '1'
+  
   schedule:
     - cron: '13 5 * * *'
 
@@ -40,6 +43,7 @@ jobs:
         env:
             inputs_sdist: 0
             inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
+            PYMUPDF_SETUP_PY_LIMITED_API: ${{inputs.PYMUPDF_SETUP_PY_LIMITED_API}}
             inputs_wheels_default: 0
             inputs_wheels_linux_pyodide: 1
         run:
