@@ -150,7 +150,7 @@ Environmental variables:
         If 0 we do not (re)build mupdf.
     
     PYMUPDF_SETUP_PY_LIMITED_API
-        If '1', we build for current Python's stable ABI.
+        If not '0', we build for current Python's stable ABI.
     
     PYMUPDF_SETUP_URL_WHEEL
         If set, we use an existing wheel instead of building a new wheel.
@@ -238,7 +238,7 @@ g_pymupdfb_sdist_marker = 'pymupdfb_sdist'
 PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
 assert PYMUPDF_SETUP_PY_LIMITED_API in (None, '0', '1'), \
         f'Should be "0", "1" or undefined: {PYMUPDF_SETUP_PY_LIMITED_API=}.'
-g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API == '1')
+g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API != '0')
 
 PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
 log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
