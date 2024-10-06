@@ -49,7 +49,7 @@ on:
       # We can't currently have more than 10 inputs
       
       PYMUPDF_SETUP_PY_LIMITED_API:
-        description: 'If not "", is used to build single wheel for each OS.'
+        description: 'If not "0", we build a single wheel for each platform.'
         type: string
         default: ''
 
