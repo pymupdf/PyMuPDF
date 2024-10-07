@@ -54,8 +54,9 @@ action inputs, which can't be easily translated into command-line arguments.
     inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD_TYPE. Note that as of
         2024-09-10 .github/workflows/build_wheels.yml does not set this.
-    Py_LIMITED_API
-        If specified we build a single wheel for all python versions using the Python Limited API.
+    PYMUPDF_SETUP_PY_LIMITED_API
+        If not '0' we build a single wheel for all python versions using the
+        Python Limited API.
 
 Building for Pyodide
 
@@ -232,7 +233,11 @@ def build( platform_=None, valgrind=False):
                 log(f'Overriding inputs_PYMUPDF_SETUP_MUPDF_BUILD because {GITHUB_EVENT_NAME=} {inputs_PYMUPDF_SETUP_MUPDF_BUILD=}.')
                 inputs_PYMUPDF_SETUP_MUPDF_BUILD = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
                 log(f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
-        build_pyodide_wheel(inputs_PYMUPDF_SETUP_MUPDF_BUILD)
+        command = f'{sys.executable} scripts/test.py'
+        if inputs_PYMUPDF_SETUP_MUPDF_BUILD:
+            command += f' -m {shlex.quote(inputs_PYMUPDF_SETUP_MUPDF_BUILD)}'
+        command += ' pyodide_wheel'
+        run(command)
     
     # Build sdist(s).
     #
@@ -388,14 +393,11 @@ def build( platform_=None, valgrind=False):
         # We include MuPDF build-time files.
         flavour_d = True
         
-        if PYMUPDF_SETUP_PY_LIMITED_API:
+        if PYMUPDF_SETUP_PY_LIMITED_API != '0':
             # Build one wheel with oldest python, then fake build with other python
             # versions so we test everything.
             log(f'{PYMUPDF_SETUP_PY_LIMITED_API=}')
             env_pass('PYMUPDF_SETUP_PY_LIMITED_API')
-            # This isn't actually necessary - PYMUPDF_SETUP_PY_LIMITED_API is
-            # already in the environment - but we set it anyway for clarity.
-            env_set('PYMUPDF_SETUP_PY_LIMITED_API', PYMUPDF_SETUP_PY_LIMITED_API, pass_=1)
             CIBW_BUILD_old = env_extra.get('CIBW_BUILD')
             assert CIBW_BUILD_old is not None
             env_set('CIBW_BUILD', 'cp38*')
@@ -487,56 +489,6 @@ def build( platform_=None, valgrind=False):
         run( 'ls -lt wheelhouse')
 
 
-def build_pyodide_wheel(inputs_PYMUPDF_SETUP_MUPDF_BUILD):
-    '''
-    Build Pyodide wheel.
-
-    This does not use cibuildwheel but instead runs `pyodide build` inside
-    the PyMuPDF directory, which in turn runs setup.py in a Pyodide build
-    environment.
-    '''
-    log(f'## Building Pyodide wheel.')
-
-    # Our setup.py does not know anything about Pyodide; we set a few
-    # required environmental variables here.
-    #
-    env_extra = dict()
-
-    # Disable libcrypto because not available in Pyodide.
-    env_extra['HAVE_LIBCRYPTO'] = 'no'
-
-    # Set PYMUPDF_SETUP_MUPDF_BUILD.
-    if inputs_PYMUPDF_SETUP_MUPDF_BUILD:
-        env_extra['PYMUPDF_SETUP_MUPDF_BUILD'] = inputs_PYMUPDF_SETUP_MUPDF_BUILD
-
-    # Tell MuPDF to build for Pyodide.
-    env_extra['OS'] = 'pyodide'
-
-    # Build a single wheel without a separate PyMuPDFb wheel.
-    env_extra['PYMUPDF_SETUP_FLAVOUR'] = 'pb'
-    
-    # 2023-08-30: We set PYMUPDF_SETUP_MUPDF_BUILD_TESSERACT=0 because
-    # otherwise mupdf thirdparty/tesseract/src/ccstruct/dppoint.cpp fails to
-    # build because `#include "errcode.h"` finds a header inside emsdk. This is
-    # pyodide bug https://github.com/pyodide/pyodide/issues/3839. It's fixed in
-    # https://github.com/pyodide/pyodide/pull/3866 but the fix has not reached
-    # pypi.org's pyodide-build package. E.g. currently in tag 0.23.4, but
-    # current devuan pyodide-build is pyodide_build-0.23.4.
-    #
-    env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
-    
-    command = pyodide_setup()
-    command += ' && pyodide build --exports pyinit'
-    run(command, env_extra=env_extra)
-    
-    # Copy wheel into `wheelhouse/` so it is picked up as a workflow
-    # artifact.
-    #
-    run('ls -l dist/')
-    run('mkdir -p wheelhouse && cp -p dist/* wheelhouse/')
-    run('ls -l wheelhouse/')
-
-
 def cpu_bits():
     return 32 if sys.maxsize == 2**31 - 1 else 64
 
@@ -621,127 +573,6 @@ def test( project, package, valgrind):
                 )
     else:
         run(f'{sys.executable} {project}/tests/run_compound.py pytest {project}/tests')
-    
-
-def pyodide_setup(clean=False):
-    '''
-    Returns a command that will set things up for a pyodide build.
-    
-    Args:
-        clean:
-            If true we create an entirely new environment. Otherwise
-            we reuse any existing emsdk repository and venv.
-    
-    * Clone emsdk repository to `pipcl_emsdk` if not already present.
-    * Create and activate a venv `pipcl_venv_pyodide` if not already present.
-    * Install/upgrade package `pyodide-build`.
-    * Run emsdk install scripts and enter emsdk environment.
-    * Replace emsdk/upstream/bin/wasm-opt
-      (https://github.com/pyodide/pyodide/issues/4048).
-    
-    Example usage in a build function:
-    
-        command = pipcl_wasm.pyodide_setup()
-        command += ' && pyodide build --exports pyinit'
-        subprocess.run(command, shell=1, check=1)
-    '''
-    command = 'true'
-    
-    # Clone emsdk.
-    #
-    dir_emsdk = 'emsdk'
-    if clean:
-        shutil.rmtree(dir_emsdk, ignore_errors=1)
-        # 2024-06-25: old `.pyodide-xbuildenv` directory was breaking build, so
-        # important to remove it here.
-        shutil.rmtree('.pyodide-xbuildenv', ignore_errors=1)
-    if not os.path.exists(dir_emsdk):
-        command += f' && echo "### cloning emsdk.git"'
-        command += f' && git clone https://github.com/emscripten-core/emsdk.git {dir_emsdk}'
-    
-    # Create and enter Python venv.
-    #
-    venv_pyodide = 'venv_pyodide'
-    if not os.path.exists( venv_pyodide):
-        command += f' && echo "### creating venv {venv_pyodide}"'
-        command += f' && {sys.executable} -m venv {venv_pyodide}'
-    command += f' && . {venv_pyodide}/bin/activate'
-    command += f' && echo "### running pip install ..."'
-    command += f' && python -m pip install --upgrade pip wheel pyodide-build==0.23.4'
-    
-    # Run emsdk install scripts and enter emsdk environment.
-    #
-    command += f' && cd {dir_emsdk}'
-    command += ' && PYODIDE_EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version)'
-    command += ' && echo "### running ./emsdk install"'
-    command += ' && ./emsdk install ${PYODIDE_EMSCRIPTEN_VERSION}'
-    command += ' && echo "### running ./emsdk activate"'
-    command += ' && ./emsdk activate ${PYODIDE_EMSCRIPTEN_VERSION}'
-    command += ' && echo "### running ./emsdk_env.sh"'
-    command += ' && . ./emsdk_env.sh'   # Need leading `./` otherwise weird 'Not found' error.
-    
-    if 1:
-        # Make our returned command replace emsdk/upstream/bin/wasm-opt
-        # with a script that does nothing, otherwise the linker
-        # command fails after it has created the output file. See:
-        # https://github.com/pyodide/pyodide/issues/4048
-        #
-        
-        def write( text, path):
-            with open( path, 'w') as f:
-                f.write( text)
-            os.chmod( path, 0o755)
-        
-        # Create a script that our command runs, that overwrites
-        # `emsdk/upstream/bin/wasm-opt`, hopefully in a way that is
-        # idempotent.
-        #
-        # The script moves the original wasm-opt to wasm-opt-0.
-        #
-        write(
-                textwrap.dedent('''
-                    #! /usr/bin/env python3
-                    import os
-                    p = 'upstream/bin/wasm-opt'
-                    p0 = 'upstream/bin/wasm-opt-0'
-                    p1 = '../wasm-opt-1'
-                    if os.path.exists( p0):
-                        print(f'### {__file__}: {p0!r} already exists so not overwriting from {p!r}.')
-                    else:
-                        s = os.stat( p)
-                        assert s.st_size > 15000000, f'File smaller ({s.st_size}) than expected: {p!r}'
-                        print(f'### {__file__}: Moving {p!r} -> {p0!r}.')
-                        os.rename( p, p0)
-                    print(f'### {__file__}: Moving {p1!r} -> {p!r}.')
-                    os.rename( p1, p)
-                    '''
-                    ).strip(),
-                'wasm-opt-replace.py',
-                )
-        
-        # Create a wasm-opt script that basically does nothing, except
-        # defers to the original script when run with `--version`.
-        #
-        write(
-                textwrap.dedent('''
-                    #!/usr/bin/env python3
-                    import os
-                    import sys
-                    import subprocess
-                    if sys.argv[1:] == ['--version']:
-                        root = os.path.dirname(__file__)
-                        subprocess.run(f'{root}/wasm-opt-0 --version', shell=1, check=1)
-                    else:
-                        print(f'{__file__}: Doing nothing. {sys.argv=}')
-                    '''
-                    ).strip(),
-                'wasm-opt-1',
-                )
-        command += ' && ../wasm-opt-replace.py'
-    
-    command += ' && cd ..'
-    
-    return command
 
 
 if platform.system() == 'Windows':
