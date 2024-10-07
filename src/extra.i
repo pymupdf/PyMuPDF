@@ -7,6 +7,10 @@
 %begin
 %{
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG
+
+/* This seems to be necessary on some Windows machines with Py_LIMITED_API,
+otherwise compilation can fail because free() and malloc() are not declared. */
+#include <stdlib.h>
 %}
 
 %init
