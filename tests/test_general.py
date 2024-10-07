@@ -12,6 +12,9 @@ import pathlib
 import pickle
 import platform
 import re
+import subprocess
+import sys
+import textwrap
 import time
 
 import gentle_compare
@@ -1016,6 +1019,32 @@ def test_cli():
     import subprocess
     subprocess.run(f'pymupdf -h', shell=1, check=1)
 
+
+def check_lines(expected_regexes, actual):
+    '''
+    Checks lines in <actual> match regexes in <expected_regexes>.
+    '''
+    print(f'check_lines():', flush=1)
+    print(f'{expected_regexes=}', flush=1)
+    print(f'{actual=}', flush=1)
+    def str_to_list(s):
+        if isinstance(s, str):
+            return s.split('\n') if s else list()
+        return s
+    expected_regexes = str_to_list(expected_regexes)
+    actual = str_to_list(actual)
+    if expected_regexes and expected_regexes[-1]:
+        expected_regexes.append('') # Always expect a trailing empty line.
+    # Remove `None` regexes and make all regexes match entire lines.
+    expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
+    print(f'{expected_regexes=}', flush=1)
+    for expected_regex_line, actual_line in zip(expected_regexes, actual):
+        print(f'    {expected_regex_line=}', flush=1)
+        print(f'            {actual_line=}', flush=1)
+        assert re.match(expected_regex_line, actual_line)
+    assert len(expected_regexes) == len(actual), \
+            f'expected/actual lines mismatch: {len(expected_regexes)=} {len(actual)=}.'
+
 def test_cli_out():
     '''
     Check redirection of messages and log diagnostics with environment
@@ -1031,36 +1060,32 @@ def test_cli_out():
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
-    def check_lines(expected_regex, actual):
-        if isinstance(expected_regex, str):
-            expected_regex = expected_regex.split('\n')
-        if isinstance(actual, str):
-            actual = actual.split('\n')
-        if expected_regex[-1]:
-            expected_regex.append('') # Always expect a trailing newline.
-        # Remove `None` lines and make all regexes match entire lines.
-        expected_regex = [f'^{i}$' for i in expected_regex if i is not None]
-        for expected_regex_line, actual_line in zip(expected_regex, actual):
-            print(f'    {expected_regex_line=}')
-            print(f'            {actual_line=}')
-            assert re.match(expected_regex_line, actual_line)
-        assert len(expected_regex) == len(actual), \
-                f'expected/actual lines mismatch: {len(expected_regex)=} {len(actual)=}.'
-    
-    def check(expect_out, expect_err, message=None, log=None, ):
+    def check(
+            expect_out,
+            expect_err,
+            message=None,
+            log=None,
+            verbose=0,
+            ):
         '''
         Sets PYMUPDF_MESSAGE to `message` and PYMUPDF_LOG to `log`, runs
         `pymupdf internal`, and checks lines stdout and stderr match regexes in
         `expect_out` and `expect_err`. Note that we enclose regexes in `^...$`.
         '''
-        env = os.environ.copy()
+        env = dict()
         if log:
             env['PYMUPDF_LOG'] = log
         if message:
             env['PYMUPDF_MESSAGE'] = message
-        print(f'Running `pymupdf internal`. {env.get("PATH")=}.')
+        env = os.environ | env
+        print(f'Running with {env=}: pymupdf internal', flush=1)
         cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
         
+        if verbose:
+            #print(f'{cp.stdout=}.', flush=1)
+            #print(f'{cp.stderr=}.', flush=1)
+            sys.stdout.write(f'stdout:\n{textwrap.indent(cp.stdout, "    ")}')
+            sys.stdout.write(f'stderr:\n{textwrap.indent(cp.stderr, "    ")}')
         check_lines(expect_out, cp.stdout)
         check_lines(expect_err, cp.stderr)
     
@@ -1105,8 +1130,146 @@ def test_cli_out():
             ],
             'fd:1',
             'fd:2',
-    
             )
+
+
+def test_use_python_logging():
+    '''
+    Checks pymupdf.use_python_logging().
+    '''
+    log_prefix = None
+    if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
+        log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
+    
+    def check(
+            code,
+            regexes_stdout,
+            regexes_stderr,
+            env = None,
+            ):
+        code = textwrap.dedent(code)
+        path = os.path.abspath(f'{__file__}/../../tests/resources_test_logging.py')
+        with open(path, 'w') as f:
+            f.write(code)
+        command = f'{sys.executable} {path}'
+        if env:
+            print(f'{env=}.')
+            env = os.environ | env
+        print(f'Running: {command}', flush=1)
+        try:
+            cp = subprocess.run(command, shell=1, check=1, capture_output=1, text=True, env=env)
+        except Exception as e:
+            print(f'Command failed: {command}.', flush=1)
+            print(f'Stdout\n{textwrap.indent(e.stdout, "    ")}', flush=1)
+            print(f'Stderr\n{textwrap.indent(e.stderr, "    ")}', flush=1)
+            raise
+        check_lines(regexes_stdout, cp.stdout)
+        check_lines(regexes_stderr, cp.stderr)
+    
+    print(f'## Basic use of `logging` sends output to stderr instead of default stdout.')
+    check(
+            '''
+            import pymupdf
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            pymupdf.use_python_logging()
+            pymupdf.message('this is pymupdf.message() 2')
+            pymupdf.log('this is pymupdf.log() 2')
+            ''',
+            [
+                log_prefix,
+                'this is pymupdf.message[(][)]',
+                '.+this is pymupdf.log[(][)]',
+            ],
+            [
+                'this is pymupdf.message[(][)] 2',
+                '.+this is pymupdf.log[(][)] 2',
+            ],
+            )
+    
+    print(f'## Calling logging.basicConfig() makes logging output contain <LEVEL>:<name> prefixes.')
+    check(
+            '''
+            import pymupdf
+            
+            import logging
+            logging.basicConfig()
+            pymupdf.use_python_logging()
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [
+                log_prefix,
+            ],
+            [
+                'WARNING:pymupdf:this is pymupdf.message[(][)]',
+                'ERROR:pymupdf:.+this is pymupdf.log[(][)]',
+            ],
+            )
+    
+    print(f'## Setting PYMUPDF_USE_PYTHON_LOGGING=1 makes PyMuPDF use logging on startup.')
+    check(
+            '''
+            import pymupdf
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            '',
+            [
+                log_prefix,
+                'this is pymupdf.message[(][)]',
+                '.+this is pymupdf.log[(][)]',
+            ],
+            env = dict(PYMUPDF_USE_PYTHON_LOGGING='1'),
+            )
+    
+    print(f'## Pass explicit logger to pymupdf.use_python_logging().')
+    check(
+            '''
+            import pymupdf
+            
+            import logging
+            logging.basicConfig()
+            
+            logger = logging.getLogger('foo')
+            pymupdf.use_python_logging(logger)
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [
+                log_prefix,
+            ],
+            [
+                'WARNING:foo:this is pymupdf.message[(][)]',
+                'ERROR:foo:.+this is pymupdf.log[(][)]',
+            ],
+            )
+    
+    print(f'## Check pymupdf.use_python_logging() fn_message and fn_log args.')
+    check(
+            '''
+            import pymupdf
+            
+            import logging
+            logging.basicConfig(level=logging.DEBUG)
+            logger = logging.getLogger('pymupdf')
+            
+            pymupdf.use_python_logging(None, logger.critical, logger.info)
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [
+                log_prefix,
+            ],
+            [
+                'CRITICAL:pymupdf:this is pymupdf.message[(][)]',
+                'INFO:pymupdf:.+this is pymupdf.log[(][)]',
+            ],
+            )
+    
 
 def relpath(path, start=None):
     '''

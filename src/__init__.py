@@ -103,8 +103,51 @@ def message(text=''):
     '''
     For user messages.
     '''
-    print(text, file=_g_out_message)
-    _g_out_message.flush()
+    print(text, file=_g_out_message, flush=1)
+
+
+def use_python_logging(logger=None, fn_message=None, fn_log=None):
+    '''
+    Uses Python's `logging` module for PyMuPDF messages and logs.
+    
+    Args:
+        logger:
+            If None we use `logging.getLogger('pymupdf')`.
+        fn_message:
+            Function that is called with PyMuPDF message text. If None we
+            use `logger.warning()`.
+        fn_logs:
+            Function that is called with PyMuPDF log text. If None we
+            use `logger.error()`.
+    
+    If environment variable PYMUPDF_USE_PYTHON_LOGGING is '1', this function is
+    called with default args when PyMuPDF is first imported.
+    '''
+    import logging
+    
+    if not logger:
+        logger = logging.getLogger('pymupdf')
+    
+    class Out:
+        def __init__(self, fn):
+            self.fn = fn
+        def write(self, text):
+            # `logging` module appends newlines, but so does the `print()`
+            # functions in our caller message() and log() fns, so we need to
+            # remove them here.
+            text = text.rstrip('\n')
+            if text:
+                self.fn(text)
+        def flush(self):
+            pass
+    global _g_out_message
+    global _g_out_log
+    _g_out_message = Out(fn_message or logger.warning)
+    _g_out_log = Out(fn_log or logger.error)
+
+
+if os.environ.get('PYMUPDF_USE_PYTHON_LOGGING') == '1':
+    use_python_logging()
 
 
 def exception_info():
