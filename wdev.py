@@ -271,8 +271,9 @@ class WindowsPython:
 
         if '.'.join(platform.python_version().split('.')[:2]) == version:
             # Current python matches, so use it directly. This avoids problems
-            # on Github where experimental python-3.13 is not available via
-            # `py`.
+            # on Github where experimental python-3.13 was not available via
+            # `py`, and is kept here in case a similar problems happens with
+            # future Python versions.
             _log(f'{cpu=} {version=}: using {sys.executable=}.')
             self.path = sys.executable
             self.version = version

@@ -1209,7 +1209,7 @@ else:
             author = 'Artifex',
             author_email = 'support@artifex.com',
             requires_dist = requires_dist,
-            requires_python = '>=3.8',
+            requires_python = '>=3.9',
             license = 'GNU AFFERO GPL 3.0',
             project_url = [
                 ('Documentation, https://pymupdf.readthedocs.io/'),

@@ -90,10 +90,10 @@ body:
       # Need quotes around `3.10` otherwise it is treated as a number and shows as `3.1`.
       options:
         -
+        - "3.13"
         - "3.12"
         - "3.11"
         - "3.10"
         - "3.9"
-        - "3.8"
     validations:
       required: true

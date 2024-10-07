@@ -280,13 +280,12 @@ def build( platform_=None, valgrind=False):
         # 2024-06-05: musllinux on aarch64 fails because libclang cannot find
         # libclang.so.
         #
-        # 2024-07-09: exclude Windows 32-bit Python-3.13 because when running
-        # under 32-bit Python-3.13, there is no 64-bit Python-3.13 available
-        # via `py -3.13`, which we need because libclang fails on 32-bit
-        # Windows. Hopefully this will work when Python-3.13 is officially
-        # released.
+        # Note that we had to disable cp313-win32 when 3.13 was experimental
+        # because there was no 64-bit Python-3.13 available via `py
+        # -3.13`. (Win32 builds need to use win64 Python because win32
+        # libclang is broken.)
         #
-        set_if_unset( 'CIBW_SKIP', 'pp* *i686 cp36* cp37* *musllinux*aarch64* cp313-win32')
+        set_if_unset( 'CIBW_SKIP', 'pp* *i686 cp36* cp37* *musllinux*aarch64*')
     
         def make_string(*items):
             ret = list()
@@ -295,13 +294,13 @@ def build( platform_=None, valgrind=False):
                     ret.append(item)
             return ' '.join(ret)
     
-        cps = inputs_wheels_cps if inputs_wheels_cps else 'cp38* cp39* cp310* cp311* cp312*'
+        cps = inputs_wheels_cps if inputs_wheels_cps else 'cp39* cp310* cp311* cp312* cp313'
         set_if_unset( 'CIBW_BUILD', cps)
         for cp in cps.split():
             m = re.match('cp([0-9]+)[*]', cp)
             assert m
             v = int(m.group(1))
-            if v == 313:
+            if v == 314:
                 # Need to set CIBW_PRERELEASE_PYTHONS, otherwise cibuildwheel
                 # will refuse.
                 log(f'Setting CIBW_PRERELEASE_PYTHONS for Python version {cp=}.')
@@ -400,7 +399,7 @@ def build( platform_=None, valgrind=False):
             env_pass('PYMUPDF_SETUP_PY_LIMITED_API')
             CIBW_BUILD_old = env_extra.get('CIBW_BUILD')
             assert CIBW_BUILD_old is not None
-            env_set('CIBW_BUILD', 'cp38*')
+            env_set('CIBW_BUILD', 'cp39*')
             log(f'Building single wheel.')
             run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
             
