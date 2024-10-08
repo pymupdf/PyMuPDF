@@ -2,10 +2,12 @@
 
 '''
 Build+test script for PyMuPDF using cibuildwheel. Mostly for use with github
-builds but can also be used to build Pyodide wheels.
+builds.
 
-We run cibuild manually, in order to build and test the two wheel
-flavours that make up PyMuPDF:
+We run cibuild manually, in order to build and test PyMuPDF wheels.
+
+As of 2024-10-08 we also support the old two wheel flavours that make up
+PyMuPDF:
 
     PyMuPDFb
         Not specific to particular versions of Python. Contains shared
@@ -16,7 +18,7 @@ flavours that make up PyMuPDF:
 
 Args:
     build
-        Build using cibuild.
+        Build using cibuildwheel.
     build-devel
         Build using cibuild with `--platform` set.
     pip_install <prefix>
@@ -28,26 +30,26 @@ Args:
     test
         Internal.
 
-We also look at specific items in the environment, should be unset (treated as
-'0'), '0' or '1'. We use environment variables here to allow use with Github
+We also look at specific items in the environment. This allows use with Github
 action inputs, which can't be easily translated into command-line arguments.
 
     inputs_flavours
-        If unset or '1', build separate PyMuPDF and PyMuPDFb wheels.
-        If '0', build complete PyMuPDF wheels.
+        If '0' or unset, build complete PyMuPDF wheels.
+        If '1', build separate PyMuPDF and PyMuPDFb wheels.
     inputs_sdist
     inputs_skeleton
         Build minimal wheel; for testing only.
     inputs_wheels_cps:
-        Python versions to build for. E.g. 'cp38* cp312*'.
+        Python versions to build for. E.g. 'cp39* cp313*'.
     inputs_wheels_default
-        Default value for other inputs_wheels_*.
+        Default value for other inputs_wheels_* if unset.
     inputs_wheels_linux_aarch64
     inputs_wheels_linux_auto
     inputs_wheels_linux_pyodide
     inputs_wheels_macos_arm64
     inputs_wheels_macos_auto
     inputs_wheels_windows_auto
+        If '1' we build the relevant wheels.
     inputs_PYMUPDF_SETUP_MUPDF_BUILD
         Used to directly set PYMUPDF_SETUP_MUPDF_BUILD.
         E.g. 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git'
@@ -60,14 +62,8 @@ action inputs, which can't be easily translated into command-line arguments.
 
 Building for Pyodide
 
-    If GITHUB_EVENT_NAME is 'schedule' we assume we are running as a scheduled
-    Github workflow, and if inputs_PYMUPDF_SETUP_MUPDF_BUILD is unset we change
-    it to use MuPDF master branch.
-    
-    If `inputs_wheels_linux_pyodide` is true and we are on Linux, we clone
-    `emsdk.git`, set it up, and run `pyodide build`. This runs our setup.py
-    with CC etc set up to create Pyodide binaries in a wheel called, for
-    example, `PyMuPDF-1.23.2-cp311-none-emscripten_3_1_32_wasm32.whl`.
+    If `inputs_wheels_linux_pyodide` is true and we are on Linux, we build a
+    Pyodide wheel, using scripts/test.py.
 
 Set up for use outside Github
 
@@ -225,14 +221,8 @@ def build( platform_=None, valgrind=False):
     # Build Pyodide wheel if specified.
     #
     if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
-        # In scheduled runs (by .github/workflows/test_pyodide.yml), use MuPDF
-        # master.
-        GITHUB_EVENT_NAME = os.getenv('GITHUB_EVENT_NAME')
-        if GITHUB_EVENT_NAME == 'schedule':
-            if inputs_PYMUPDF_SETUP_MUPDF_BUILD in ('', None):
-                log(f'Overriding inputs_PYMUPDF_SETUP_MUPDF_BUILD because {GITHUB_EVENT_NAME=} {inputs_PYMUPDF_SETUP_MUPDF_BUILD=}.')
-                inputs_PYMUPDF_SETUP_MUPDF_BUILD = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
-                log(f'{inputs_PYMUPDF_SETUP_MUPDF_BUILD=}')
+        # Pyodide wheels are built by running scripts/test.py, not
+        # cibuildwheel.
         command = f'{sys.executable} scripts/test.py'
         if inputs_PYMUPDF_SETUP_MUPDF_BUILD:
             command += f' -m {shlex.quote(inputs_PYMUPDF_SETUP_MUPDF_BUILD)}'
