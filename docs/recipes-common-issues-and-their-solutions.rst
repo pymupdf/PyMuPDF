@@ -127,56 +127,6 @@ It features maintaining any metadata, table of contents and links contained in t
 
 
 
-How to Deal with Messages Issued by :title:`MuPDF`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Since |PyMuPDF| v1.16.0, **error messages** issued by the underlying :title:`MuPDF` library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
-
-In addition, these messages go to the internal buffer together with any :title:`MuPDF` warnings -- see below.
-
-We always prefix these messages with an identifying string *"mupdf:"*.
-If you prefer to not see recoverable MuPDF errors at all, issue the command `pymupdf.TOOLS.mupdf_display_errors(False)`.
-
-MuPDF warnings continue to be stored in an internal buffer and can be viewed using :meth:`Tools.mupdf_warnings`.
-
-Please note that MuPDF errors may or may not lead to Python exceptions. In other words, you may see error messages from which MuPDF can recover and continue processing.
-
-Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during `pymupdf.open` the document had to be repaired:
-
->>> import pymupdf
->>> doc = pymupdf.open("damaged-file.pdf")  # leads to a sys.stderr message:
-mupdf: cannot find startxref
->>> print(pymupdf.TOOLS.mupdf_warnings())  # check if there is more info:
-cannot find startxref
-trying to repair broken xref
-repairing PDF document
-object missing 'endobj' token
->>> doc.can_save_incrementally()  # this is to be expected:
-False
->>> # the following indicates whether there are updates so far
->>> # this is the case because of the repair actions:
->>> doc.is_dirty
-True
->>> # the document has nevertheless been created:
->>> doc
-pymupdf.Document('damaged-file.pdf')
->>> # we now know that any save must occur to a new file
-
-Example output for an **unrecoverable error**:
-
->>> import pymupdf
->>> doc = pymupdf.open("does-not-exist.pdf")
-mupdf: cannot open does-not-exist.pdf: No such file or directory
-Traceback (most recent call last):
-  File "<pyshell#1>", line 1, in <module>
-    doc = pymupdf.open("does-not-exist.pdf")
-  File "C:\Users\Jorj\AppData\Local\Programs\Python\Python37\lib\site-packages\fitz\pymupdf.py", line 2200, in __init__
-    _pymupdf.Document_swiginit(self, _pymupdf.new_Document(filename, stream, filetype, rect, width, height, fontsize))
-RuntimeError: cannot open does-not-exist.pdf: No such file or directory
->>>
-
-
-
 Changing Annotations: Unexpected Behaviour
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

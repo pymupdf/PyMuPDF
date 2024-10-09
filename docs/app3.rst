@@ -294,11 +294,81 @@ This design approach ensures that:
 
 .. _RedirectMessages:
 
-Redirecting Error and Warning Messages
---------------------------------------------
-Since MuPDF version 1.16 error and warning messages can be redirected via an official plugin.
+Diagnostics
+----------------------------
 
-PyMuPDF will put error messages to `sys.stderr` prefixed with the string "mupdf:". Warnings are internally stored and can be accessed via *pymupdf.TOOLS.mupdf_warnings()*. There also is a function to empty this store.
+.. _Messages:
+
+|PyMuPDF| messages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+|PyMuPDF| has a Message system for showing text diagnostics.
+
+By default messages are written to `sys.stdout`. This can be controlled in
+two ways:
+
+*
+  Set environment variable `PYMUPDF_MESSAGE` before |PyMuPDF| is imported.
+
+*
+  Call `set_messages()`:
+
+
+MuPDF errors and warnings
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+MuPDF generates text errors and warnings.
+
+*
+  These errors and warnings are appended to an internal list, accessible with
+  `Tools.mupdf_warnings()`. Also see `Tools.reset_mupdf_warnings()`.
+
+*
+  By default these errors and warnings are also sent to the |PyMuPDF| message
+  system.
+  
+  * This can be controlled with `mupdf_display_errors()` and
+    `mupdf_display_warnings()`.
+  
+  *
+    These messages are prefixed with `MuPDF error: ` and `MuPDF warning: `
+    respectively.
+  
+Some MuPDF errors may lead to Python exceptions.
+
+Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during `pymupdf.open` the document had to be repaired:
+
+>>> import pymupdf
+>>> doc = pymupdf.open("damaged-file.pdf")  # leads to a sys.stderr message:
+mupdf: cannot find startxref
+>>> print(pymupdf.TOOLS.mupdf_warnings())  # check if there is more info:
+cannot find startxref
+trying to repair broken xref
+repairing PDF document
+object missing 'endobj' token
+>>> doc.can_save_incrementally()  # this is to be expected:
+False
+>>> # the following indicates whether there are updates so far
+>>> # this is the case because of the repair actions:
+>>> doc.is_dirty
+True
+>>> # the document has nevertheless been created:
+>>> doc
+pymupdf.Document('damaged-file.pdf')
+>>> # we now know that any save must occur to a new file
+
+Example output for an **unrecoverable error**:
+
+>>> import pymupdf
+>>> doc = pymupdf.open("does-not-exist.pdf")
+mupdf: cannot open does-not-exist.pdf: No such file or directory
+Traceback (most recent call last):
+  File "<pyshell#1>", line 1, in <module>
+    doc = pymupdf.open("does-not-exist.pdf")
+  File "C:\Users\Jorj\AppData\Local\Programs\Python\Python37\lib\site-packages\fitz\pymupdf.py", line 2200, in __init__
+    _pymupdf.Document_swiginit(self, _pymupdf.new_Document(filename, stream, filetype, rect, width, height, fontsize))
+RuntimeError: cannot open does-not-exist.pdf: No such file or directory
+>>>
 
 
 

@@ -61,11 +61,13 @@ Yet others are handy, general-purpose utilities.
 :meth:`recover_line_quad`            compute the quad of a subset of line spans
 :meth:`recover_quad`                 compute the quad of a span ("dict", "rawdict")
 :meth:`recover_span_quad`            compute the quad of a subset of span characters
+:meth:`set_messages`                 set destination of |PyMuPDF| messages.
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
+:attr:`PYMUPDF_MESSAGE`              destination of |PyMuPDF| messages.
 :attr:`TESSDATA_PREFIX`              a copy of `os.environ["TESSDATA_PREFIX"]`
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
 ==================================== ==============================================================
@@ -98,6 +100,40 @@ Yet others are handy, general-purpose utilities.
       >>> pymupdf.paper_rect("letter-l")
       pymupdf.Rect(0.0, 0.0, 792.0, 612.0)
       >>>
+
+-----
+
+   .. method:: set_messages(*, text=None, fd=None, stream=None, path=None, path_append=None, pylogging=None, pylogging_logger=None, pylogging_level=None, pylogging_name=None, )
+
+      Sets destination of |PyMuPDF| messages to a file descriptor,
+      a file, an existing stream or `Python's logging system
+      <https://docs.python.org/3/library/logging.html>`_.
+
+      Usually one would only set one arg, or one or more `pylogging*` args.
+
+      :arg str text:
+          A text specification of destination; for details see description of
+          environmental variable `PYMUPDF_MESSAGE`.
+      :arg int fd:
+          Write to file descriptor.
+      :arg stream:
+          Write to existing stream, which must have methods .write(text) and .flush().
+      :arg str path:
+          Write to a file.
+      :arg str path_append:
+          Append to a file.
+      :arg pylogging:
+          Write to Python's `logging` system.
+      :arg logging.Logger pylogging_logger:
+          Write to Python's `logging` system using specified Logger.
+      :arg int pylogging_level:
+          Write to Python's `logging` system using specified level.
+      :arg str pylogging_name:
+          Write to Python's `logging` system using specified logger name.
+          Only used if `pylogging_logger` is None. Default is `pymupdf`.
+
+      If any `pylogging*` arg is not None, we write to `Python's logging system
+      <https://docs.python.org/3/library/logging.html>`_.
 
 -----
 
@@ -305,6 +341,42 @@ Yet others are handy, general-purpose utilities.
       If `pymupdf-fonts` is not installed, the dictionary is empty.
 
       The dictionary keys can be used to define a :ref:`Font` via e.g. `font = pymupdf.Font("fimo")` -- just like you can do it with the builtin fonts "Helvetica" and friends.
+
+-----
+
+   .. attribute:: PYMUPDF_MESSAGE
+   
+      If in `os.environ` when |PyMuPDF| is imported, sets destination of
+      |PyMuPDF| messages. Otherwise messages are sent to `sys.stdout`.
+      
+      *
+        If the value starts with `fd:`, the remaining text should be an integer
+        file descriptor to which messages are written.
+    
+        * For example `PYMUPDF_MESSAGE=fd:2` will send messages to stderr.
+      *
+        If the value starts with `path:`, the remaining text is the path of a
+        file to which messages are written. If the file already exists, it is
+        truncated.
+      *
+        If the value starts with `path+:`, the remaining text is the path of
+        file to which messages are written. If the file already exists, we
+        append output.
+
+      *
+        If the value starts with `logging:`, messages are written to `Python's
+        logging system <https://docs.python.org/3/library/logging.html>`_. The
+        remaining text can contain comma-separated name=value items:
+    
+        * `level=<int>` sets the logging level.
+        * `name=<str>` sets the logger name (default is `pymupdf`).
+    
+        Other items are ignored.
+    
+      * Other prefixes will cause an error.
+      
+      Also see `set_messages()`.
+
 
 -----
 
