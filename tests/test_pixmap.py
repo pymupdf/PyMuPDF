@@ -10,7 +10,6 @@ import pymupdf
 import os
 import platform
 import sys
-import tempfile
 import pytest
 import textwrap
 
@@ -57,7 +56,31 @@ def test_filepixmap():
     assert pix1.digest == pix2.digest
 
 
-def test_pilsave():
+def test_pil(tmpdir):
+    # pixmaps from file then get pillow image
+    # make pixmap from this and confirm equality
+    try:
+        pix1 = pymupdf.Pixmap(imgfile)
+        pix1.pil().save(tmpdir / "foo.png")
+        pix2 = pymupdf.Pixmap(str(tmpdir / "foo.png"))
+        assert repr(pix1) == repr(pix2)
+    except ModuleNotFoundError:
+        assert platform.system() == 'Windows' and sys.maxsize == 2**31 - 1
+
+
+def test_pil_save(tmpdir):
+    # pixmaps from file then save pillow image to temporary file
+    # make pixmap from this and confirm equality
+    try:
+        pix1 = pymupdf.Pixmap(imgfile)
+        pix1.pil_save(tmpdir / "foo.png")
+        pix2 = pymupdf.Pixmap(str(tmpdir / "foo.png"))
+        assert repr(pix1) == repr(pix2)
+    except ModuleNotFoundError:
+        assert platform.system() == 'Windows' and sys.maxsize == 2**31 - 1
+
+
+def test_pil_tobytes():
     # pixmaps from file then save to pillow image
     # make pixmap from this and confirm equality
     try:
