@@ -18922,6 +18922,11 @@ def jm_lineart_path(dev, ctx, path):
         # globally, each time takes 0.3s.
         #
         walker = Walker(dev)
+        # Unlike fz_run_page(), fz_path_walker callbacks are not passed
+        # a pointer to the struct, instead they get an arbitrary
+        # void*. The underlying C++ Director callbacks use this void* to
+        # identify the fz_path_walker instance so in turn we need to pass
+        # arg=walker.m_internal.
         mupdf.fz_walk_path( mupdf.FzPath(mupdf.ll_fz_keep_path(path)), walker, walker.m_internal)
         # Check if any items were added ...
         if not dev.pathdict[ dictkey_items]:
