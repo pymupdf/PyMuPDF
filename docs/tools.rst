@@ -13,8 +13,9 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.gen_id`                   generate a unique identifier
 :meth:`Tools.store_shrink`             shrink the storables cache [#f1]_
 :meth:`Tools.mupdf_warnings`           return the accumulated MuPDF warnings
-:meth:`Tools.mupdf_display_errors`     return the accumulated MuPDF warnings
-:meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
+:meth:`Tools.mupdf_display_errors`     control whether MuPDF errors are displayed as messages.
+:meth:`Tools.mupdf_display_warnings`   control whether MuPDF warnings are displayed as messages.
+:meth:`Tools.reset_mupdf_warnings`     empty MuPDF warnings/errors message buffer.
 :meth:`Tools.set_aa_level`             set the anti-aliasing values
 :meth:`Tools.set_annot_stem`           set the prefix of new annotation / link ids
 :meth:`Tools.set_small_glyph_heights`  search and extract using small bbox heights
@@ -131,13 +132,34 @@ This class is a collection of utility methods and attributes, mainly around memo
 
    .. method:: mupdf_display_errors(value=None)
 
+      Control whether MuPDF errors should be displayed as |PyMuPDF| messages.
+
+      :arg value:
+      * If `None`, the current setting is left unchanged.
+      * Otherwise changes the current setting to `bool(value)`;
+        if *True*, future MuPDF errors will be shown as :ref:`Messages`.
+      * Regardless of this setting, MuPDF errors will always be stored in the warnings store.
+      * Upon import of |PyMuPDF| this value is *True*.
+
+      :returns: The current setting as *True* or *False*.
+
       * New in version 1.16.8
 
-      Show or set whether MuPDF errors should be displayed.
 
-      :arg bool value: if not a bool, the current setting is returned. If true, MuPDF errors will be shown on *sys.stderr*, otherwise suppressed. In any case, messages continue to be stored in the warnings store. Upon import of PyMuPDF this value is *True*.
+   .. method:: mupdf_display_warnings(value=None)
 
-      :returns: *True* or *False*
+      Control whether MuPDF warnings should be displayed as |PyMuPDF| messages.
+
+      :arg value:
+      * If `None`, the current setting is left unchanged.
+      * Otherwise changes the current setting to `bool(value)`;
+        if *True*, future MuPDF warnings will be shown as :ref:`Messages`.
+      * Regardless of this setting, MuPDF warnings will always be stored in the warnings store.
+      * Upon import of |PyMuPDF| this value is *True*.
+
+      :returns: The current setting as *True* or *False*.
+
+      * New in version 1.16.8
 
 
    .. method:: mupdf_warnings(reset=True)
