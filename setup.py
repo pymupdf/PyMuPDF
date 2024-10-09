@@ -887,6 +887,7 @@ def build_mupdf_unix(
     for n, v in env.items():
         command += f' {n}={shlex.quote(v)}'
     command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b'
+    #command += f' --m-target libs'
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
@@ -940,7 +941,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
     Returns leafname of the generated shared libraries within mupdf_build_dir.
     '''
     (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
-        = _extension_flags( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api)
+        = _extension_flags( mupdf_local, mupdf_build_dir, build_type)
     log(f'_build_extension(): {g_py_limited_api=} {defines=}')
     if mupdf_local:
         includes = (
@@ -990,7 +991,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
     return path_so_leaf
 
 
-def _extension_flags( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api):
+def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     '''
     Returns various flags to pass to pipcl.build_extension().
     '''
@@ -1006,9 +1007,6 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
     debug = 'debug' in mupdf_build_dir_flags
     r_extra = ''
     defines = list()
-    log(f'{g_py_limited_api=}')
-    if g_py_limited_api:
-        defines.append(f'Py_LIMITED_API={g_py_limited_api}')
     if windows:
         defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
@@ -1319,7 +1317,7 @@ if PYMUPDF_SETUP_URL_WHEEL:
         else:
             assert 0, f'Unrecognised prefix in {PYMUPDF_SETUP_URL_WHEEL=}.'
         
-        log(f'Renaming from {out_path_temp=} to {out_path=}.')
+        log(f'Renaming from:\n    {out_path_temp}\nto:\n    {out_path}.')
         os.rename(out_path_temp, out_path)
         return os.path.basename(out_path)
 else:
