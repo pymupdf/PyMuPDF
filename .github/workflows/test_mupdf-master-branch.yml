@@ -32,7 +32,7 @@ jobs:
             inputs_wheels_cps: "cp312* cp313*"
             inputs_wheels_default: "0"
             inputs_wheels_linux_auto: "1"
-            inputs_wheels_linux_pyodide: "1"
+            inputs_wheels_linux_pyodide: "0"
             inputs_wheels_macos_auto: "1"
             inputs_wheels_windows_auto: "1"
         run:
