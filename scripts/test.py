@@ -500,6 +500,7 @@ def pyodide_setup(directory, clean=False):
     command += f' && . {venv_pyodide}/bin/activate'
     command += f' && echo "### running pip install ..."'
     command += f' && python -m pip install --upgrade pip wheel pyodide-build==0.23.4'
+    #command += f' && python -m pip install --upgrade pip wheel pyodide-build'
     
     # Run emsdk install scripts and enter emsdk environment.
     #
@@ -689,6 +690,13 @@ def test(
          log(f'Timeout when running tests.')
          raise
     finally:
+        log(f'\n'
+                f'[As of 2024-10-10 we get warnings from pytest/Python such as:\n'
+                f'    DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n'
+                f'This seems to be due to Swig\'s handling of Py_LIMITED_API.\n'
+                f'For details see https://github.com/swig/swig/issues/2881.\n'
+                f']'
+                )
         log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
 
 
