@@ -31,7 +31,10 @@ A Font object also contains useful general information, like the font bbox, the 
 :attr:`~Font.flags`                  Collection of font properties
 :attr:`~Font.glyph_count`            Number of supported glyphs
 :attr:`~Font.name`                   Name of font
-:attr:`~Font.is_writable`            Font usable with :ref:`TextWriter`
+:attr:`~Font.is_bold`                `True` if bold
+:attr:`~Font.is_monospaced`          `True` if mono-spaced
+:attr:`~Font.is_serif`               `True` if serif, `False` if sans-serif
+:attr:`~Font.is_italic`              `True` if italic
 ==================================== ============================================
 
 
@@ -349,18 +352,22 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :rtype: float
 
-   .. attribute:: is_writable
+   .. attribute:: is_bold
 
-      * New in v1.18.0
+   .. attribute:: is_italic
 
-      Indicates whether this font can be used with :ref:`TextWriter`.
+   .. attribute:: is_monospaced
+
+   .. attribute:: is_serif
+
+      A number of attributes with obvious meanings. Reflect some values of the :attr:`Font.flags` dictionary.
 
       :rtype: bool
 
 .. rubric:: Footnotes
 
-.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues. The :ref:`TextWriter` methods check :attr:`Font.is_writable`.
+.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues.
 
-.. [#f2] The built-in module *array* has been chosen for its speed and its compact representation of values.
+.. [#f2] The built-in Python module `array` has been chosen for its speed and low memory requirement.
 
 .. include:: footer.rst
