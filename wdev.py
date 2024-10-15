@@ -11,6 +11,7 @@ import sys
 import sysconfig
 import textwrap
 
+import pipcl
 
 class WindowsVS:
     r'''
@@ -164,6 +165,7 @@ class WindowsVS:
             self.vcvars = vcvars
             self.version = version
             self.year = year
+            self.cpu = cpu
         except Exception as e:
             raise Exception( f'Unable to find Visual Studio') from e
 
@@ -182,10 +184,11 @@ class WindowsVS:
                 csc:          {self.csc}
                 msbuild:      {self.msbuild}
                 devenv:       {self.devenv}
+                cpu:          {self.cpu}
                 ''')
         return textwrap.indent( ret, indent)
 
-    def __str__( self):
+    def __repr__( self):
         return ' '.join( self._description())
 
 
@@ -224,7 +227,7 @@ class WindowsCpu:
         else:
             assert 0, f'Unrecognised cpu name: {name}'
 
-    def __str__(self):
+    def __repr__(self):
         return self.name
 
 
@@ -362,10 +365,8 @@ def _cpu_name():
 
 
 
-def _log(text=''):
+def _log(text='', caller=1):
     '''
     Logs lines with prefix.
     '''
-    for line in text.split('\n'):
-        print(f'{__file__}: {line}')
-    sys.stdout.flush()
+    pipcl.log1(text, caller+1)
