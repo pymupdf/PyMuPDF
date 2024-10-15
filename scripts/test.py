@@ -493,10 +493,16 @@ def pyodide_setup(directory, clean=False):
     
     # Create and enter Python venv.
     #
-    venv_pyodide = 'venv_pyodide'
+    # 2024-10-11: we only work with python-3.11; later versions fail with
+    # pyodide-build==0.23.4 because `distutils` not available.
+    venv_pyodide = 'venv_pyodide_3.11'
+    python = sys.executable
+    if sys.version_info[:2] != (3, 11):
+        log(f'Forcing use of python-3.11 because {sys.version=} is not 3.11.')
+        python = 'python3.11'
     if not os.path.exists( f'{directory}/{venv_pyodide}'):
         command += f' && echo "### creating venv {venv_pyodide}"'
-        command += f' && {sys.executable} -m venv {venv_pyodide}'
+        command += f' && {python} -m venv {venv_pyodide}'
     command += f' && . {venv_pyodide}/bin/activate'
     command += f' && echo "### running pip install ..."'
     command += f' && python -m pip install --upgrade pip wheel pyodide-build==0.23.4'
