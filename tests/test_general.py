@@ -1172,7 +1172,8 @@ def test_use_python_logging():
             import pymupdf
             pymupdf.message('this is pymupdf.message()')
             pymupdf.log('this is pymupdf.log()')
-            pymupdf.use_python_logging()
+            pymupdf.set_messages(pylogging=1)
+            pymupdf.set_log(pylogging=1)
             pymupdf.message('this is pymupdf.message() 2')
             pymupdf.log('this is pymupdf.log() 2')
             ''',
@@ -1194,7 +1195,8 @@ def test_use_python_logging():
             
             import logging
             logging.basicConfig()
-            pymupdf.use_python_logging()
+            pymupdf.set_messages(pylogging=1)
+            pymupdf.set_log(pylogging=1)
             
             pymupdf.message('this is pymupdf.message()')
             pymupdf.log('this is pymupdf.log()')
@@ -1204,7 +1206,7 @@ def test_use_python_logging():
             ],
             [
                 'WARNING:pymupdf:this is pymupdf.message[(][)]',
-                'ERROR:pymupdf:.+this is pymupdf.log[(][)]',
+                'WARNING:pymupdf:.+this is pymupdf.log[(][)]',
             ],
             )
     
@@ -1221,10 +1223,13 @@ def test_use_python_logging():
                 'this is pymupdf.message[(][)]',
                 '.+this is pymupdf.log[(][)]',
             ],
-            env = dict(PYMUPDF_USE_PYTHON_LOGGING='1'),
+            env = dict(
+                    PYMUPDF_MESSAGE='logging:',
+                    PYMUPDF_LOG='logging:',
+                    ),
             )
     
-    print(f'## Pass explicit logger to pymupdf.use_python_logging().')
+    print(f'## Pass explicit logger to pymupdf.use_python_logging() with logging.basicConfig().')
     check(
             '''
             import pymupdf
@@ -1233,7 +1238,8 @@ def test_use_python_logging():
             logging.basicConfig()
             
             logger = logging.getLogger('foo')
-            pymupdf.use_python_logging(logger)
+            pymupdf.set_messages(pylogging_logger=logger, pylogging_level=logging.WARNING)
+            pymupdf.set_log(pylogging_logger=logger, pylogging_level=logging.ERROR)
             
             pymupdf.message('this is pymupdf.message()')
             pymupdf.log('this is pymupdf.log()')
@@ -1247,7 +1253,7 @@ def test_use_python_logging():
             ],
             )
     
-    print(f'## Check pymupdf.use_python_logging() fn_message and fn_log args.')
+    print(f'## Check pymupdf.set_messages() pylogging_level args.')
     check(
             '''
             import pymupdf
@@ -1256,7 +1262,8 @@ def test_use_python_logging():
             logging.basicConfig(level=logging.DEBUG)
             logger = logging.getLogger('pymupdf')
             
-            pymupdf.use_python_logging(None, logger.critical, logger.info)
+            pymupdf.set_messages(pylogging_level=logging.CRITICAL)
+            pymupdf.set_log(pylogging_level=logging.INFO)
             
             pymupdf.message('this is pymupdf.message()')
             pymupdf.log('this is pymupdf.log()')
