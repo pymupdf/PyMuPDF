@@ -32,37 +32,141 @@ from . import extra
 
 # Set up g_out_log and g_out_message from environment variables.
 #
-# PYMUPDF_MESSAGE controls the destination of user messages (the `message()`
-# function).
+# PYMUPDF_MESSAGE controls the destination of user messages (from function
+# `pymupdf.message()`).
 #
-# PYMUPDF_LOG controls the destination of internal development logging (the
-# `log()` function).
+# PYMUPDF_LOG controls the destination of internal development logging (from
+# function `pymupdf.log()`).
 #
-# Each should be either `fd:<int>` to set to a file descriptor (e.g. `fd:1`
-# for stdout, `fd:2` for stderr), `path:<string>` to write to a file or
-# `path+:<string>` to append to a file. If not specified, the default is
-# stdout.
+# For syntax, see _make_output()'s `text` arg.
 #
 
-def _set_stream(name, default):
+def _make_output(
+        *,
+        text=None,
+        fd=None,
+        stream=None,
+        path=None,
+        path_append=None,
+        pylogging=None,
+        pylogging_logger=None,
+        pylogging_level=None,
+        pylogging_name=None,
+        default=None,
+        ):
     '''
-    Returns a stream to use based on environmental variable `name`.
+    Returns a stream that writes to a specified destination, which can be a
+    file descriptor, a file, an existing stream or Python's `logging' system.
+    
+    Args:
+        text: text specification of destination.
+            fd:<int> - write to file descriptor.
+            path:<str> - write to file.
+            path+:<str> - append to file.
+            logging:<items> - write to Python `logging` module.
+                items: comma-separated <name=value> pairs.
+                    level=<int>
+                    name=<str>.
+                Other names are ignored.
+        
+        fd: an int file descriptor.
+        stream: something with methods .write(text) and .flush().
+            If specified we simply return <stream>.
+        path: a file path.
+            If specified we return a stream that writes to this file.
+        path_append: a file path.
+            If specified we return a stream that appends to this file.
+        pylogging*:
+            if any of these args is not None, we return a stream that writes to
+            Python's `logging` module.
+            
+            pylogging:
+                Unused other than to activate use of logging module.
+            pylogging_logger:
+                A logging.Logger; If None, set from <pylogging_name>.
+            pylogging_level:
+                An int log level, if None we use
+                pylogging_logger.getEffectiveLevel().
+            pylogging_name:
+                Only used if <pylogging_logger> is None:
+                    If <pylogging_name> is None, we set it to 'pymupdf'.
+                    Then we do: pylogging_logger = logging.getLogger(pylogging_name)
     '''
-    t = os.environ.get(name)
-    if t is None:
-        return default
-    elif t.startswith('fd:'):
-        return open(int(t[3:]), mode='w', closefd=False)
-    elif t.startswith('path:'):
-        return open(t[5:], 'w')
-    elif t.startswith('path+:'):
-        return open(t[6:], 'a')
+    if text is not None:
+        # Textual specification, for example from from environment variable.
+        if text.startswith('fd:'):
+            fd = int(text[3:])
+        elif text.startswith('path:'):
+            path = text[5:]
+        elif text.startswith('path+'):
+            path_append = text[5:]
+        elif text.startswith('logging:'):
+            pylogging = True
+            items_d = dict()
+            items = text[8:].split(',')
+            #items_d = {n: v for (n, v) in [item.split('=', 1) for item in items]}
+            for item in items:
+                if not item:
+                    continue
+                nv = item.split('=', 1)
+                assert len(nv) == 2, f'Need `=` in {item=}.'
+                n, v = nv
+                items_d[n] = v
+            pylogging_level = items_d.get('level')
+            if pylogging_level is not None:
+                pylogging_level = int(pylogging_level)
+            pylogging_name = items_d.get('name', 'pymupdf')
+        else:
+            assert 0, f'Unrecognised {text=}.'
+    
+    if fd is not None:
+        ret = open(fd, mode='w', closefd=False)
+    elif stream is not None:
+        assert hasattr(stream, 'write')
+        assert hasattr(stream, 'flush')
+        ret = stream
+    elif path is not None:
+        ret = open(path, 'w')
+    elif path_append is not None:
+        ret = open(path_append, 'a')
+    elif (0
+            or pylogging is not None
+            or pylogging_logger is not None
+            or pylogging_level is not None
+            or pylogging_name is not None
+            ):
+        import logging
+        if pylogging_logger is None:
+            if pylogging_name is None:
+                pylogging_name = 'pymupdf'
+            pylogging_logger = logging.getLogger(pylogging_name)
+        assert isinstance(pylogging_logger, logging.Logger)
+        if pylogging_level is None:
+            pylogging_level = pylogging_logger.getEffectiveLevel()
+        class Out:
+            def write(self, text):
+                # `logging` module appends newlines, but so does the `print()`
+                # functions in our caller message() and log() fns, so we need to
+                # remove them here.
+                text = text.rstrip('\n')
+                if text:
+                    pylogging_logger.log(pylogging_level, text)
+            def flush(self):
+                pass
+        ret = Out()
+    elif default:
+        ret = default
     else:
-        raise Exception(f'Unrecognised stream specification for {name!r} should match `fd:<int>`, `path:<string>` or `path+:<string>`: {t!r}')
+        assert 0, f'No output specified.'
+    return ret
 
-_g_out_log = _set_stream('PYMUPDF_LOG', sys.stdout)
-_g_out_message = _set_stream('PYMUPDF_MESSAGE', sys.stdout)
+# Set steam used by PyMuPDF messaging.
+_g_out_message = _make_output(text=os.environ.get('PYMUPDF_MESSAGE'), default=sys.stdout)
 
+# Set steam used by PyMuPDF development/debugging logging.
+_g_out_log = _make_output(text=os.environ.get('PYMUPDF_LOG'), default=sys.stdout)
+
+# Things for testing logging.
 _g_log_items = list()
 _g_log_items_active = False
 
@@ -76,6 +180,65 @@ def _log_items_active(active):
 def _log_items_clear():
     del _g_log_items[:]
 
+
+def set_messages(
+        *,
+        text=None,
+        fd=None,
+        stream=None,
+        path=None,
+        path_append=None,
+        pylogging=None,
+        pylogging_logger=None,
+        pylogging_level=None,
+        pylogging_name=None,
+        ):
+    '''
+    Sets destination of PyMuPDF messages. See _make_output() for details.
+    '''
+    global _g_out_message
+    _g_out_message = _make_output(
+            text=text,
+            fd=fd,
+            stream=stream,
+            path=path,
+            path_append=path_append,
+            pylogging=pylogging,
+            pylogging_logger=pylogging_logger,
+            pylogging_level=pylogging_level,
+            pylogging_name=pylogging_name,
+            default=_g_out_message,
+            )
+
+def set_log(
+        *,
+        text=None,
+        fd=None,
+        stream=None,
+        path=None,
+        path_append=None,
+        pylogging=None,
+        pylogging_logger=None,
+        pylogging_level=None,
+        pylogging_name=None,
+        ):
+    '''
+    Sets destination of PyMuPDF development/debugging logging. See
+    _make_output() for details.
+    '''
+    global _g_out_log
+    _g_out_log = _make_output(
+            text=text,
+            fd=fd,
+            stream=stream,
+            path=path,
+            path_append=path_append,
+            pylogging=pylogging,
+            pylogging_logger=pylogging_logger,
+            pylogging_level=pylogging_level,
+            pylogging_name=pylogging_name,
+            default=_g_out_log,
+            )
 
 def log( text='', caller=1):
     '''
@@ -104,50 +267,6 @@ def message(text=''):
     For user messages.
     '''
     print(text, file=_g_out_message, flush=1)
-
-
-def use_python_logging(logger=None, fn_message=None, fn_log=None):
-    '''
-    Uses Python's `logging` module for PyMuPDF messages and logs.
-    
-    Args:
-        logger:
-            If None we use `logging.getLogger('pymupdf')`.
-        fn_message:
-            Function that is called with PyMuPDF message text. If None we
-            use `logger.warning()`.
-        fn_logs:
-            Function that is called with PyMuPDF log text. If None we
-            use `logger.error()`.
-    
-    If environment variable PYMUPDF_USE_PYTHON_LOGGING is '1', this function is
-    called with default args when PyMuPDF is first imported.
-    '''
-    import logging
-    
-    if not logger:
-        logger = logging.getLogger('pymupdf')
-    
-    class Out:
-        def __init__(self, fn):
-            self.fn = fn
-        def write(self, text):
-            # `logging` module appends newlines, but so does the `print()`
-            # functions in our caller message() and log() fns, so we need to
-            # remove them here.
-            text = text.rstrip('\n')
-            if text:
-                self.fn(text)
-        def flush(self):
-            pass
-    global _g_out_message
-    global _g_out_log
-    _g_out_message = Out(fn_message or logger.warning)
-    _g_out_log = Out(fn_log or logger.error)
-
-
-if os.environ.get('PYMUPDF_USE_PYTHON_LOGGING') == '1':
-    use_python_logging()
 
 
 def exception_info():
