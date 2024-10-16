@@ -601,8 +601,7 @@ Yet others are handy, general-purpose utilities.
       
       In versions 1.24.1+ of PyMuPDF the method was improved and is being executed automatically as required, so you should no longer need to concern yourself with it.
 
-      This method obsoletes the use of :meth:`Page.clean_contents` in most cases.      
-      The advantage this method is a small footprint in terms of processing time and a low impact on the data size of incremental saves.
+      We discourage using :meth:`Page.clean_contents` to achieve this.
 
 -----
 
@@ -641,7 +640,7 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: Page.get_contents()
 
-      PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be one entry at most. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one `bytes` object.
+      PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of a page. May be empty or contain multiple integers. If the page is cleaned (:meth:`Page.clean_contents`), it will be no more than one entry. The "source" of each `/Contents` object can be individually read by :meth:`Document.xref_stream` using an item of this list. Method :meth:`Page.read_contents` in contrast walks through this list and concatenates the corresponding sources into one `bytes` object.
 
       :rtype: list[int]
 
@@ -664,6 +663,8 @@ Yet others are handy, general-purpose utilities.
       :arg bool sanitize: *(new in v1.17.6)* if true, synchronization between resources and their actual use in the contents object is snychronized. For example, if a font is not actually used for any text of the page, then it will be deleted from the `/Resources/Font` object.
 
       .. warning:: This is a complex function which may generate large amounts of new data and render old data unused. It is **not recommended** using it together with the **incremental save** option. Also note that the resulting singleton new */Contents* object is **uncompressed**. So you should save to a **new file** using options *"deflate=True, garbage=3"*.
+
+         Do not any longer use this method to ensure correct insertions on PDF pages. Since PyMuPDF version 1.24.2 this is taken care of automatically.
 
 -----
 
