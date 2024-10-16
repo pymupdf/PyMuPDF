@@ -15697,7 +15697,7 @@ def JM_get_widget_properties(annot, Widget):
     field_name = mupdf.pdf_load_field_name(annot_obj)
     SETATTR_DROP(Widget, "field_name", field_name)
 
-    obj = mupdf.pdf_dict_get(annot_obj, PDF_NAME('TU'))
+    obj = mupdf.pdf_dict_get_inheritable(annot_obj, PDF_NAME('TU'))
     if obj.m_internal:
         label = mupdf.pdf_to_text_string(obj)
         SETATTR_DROP(Widget, "field_label", label)
