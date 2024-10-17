@@ -2180,44 +2180,45 @@ def run_if( command, out, *prerequisites):
 
         >>> verbose(1)
         1
+        >>> log_line_numbers(0)
         >>> out = 'run_if_test_out'
         >>> if os.path.exists( out):
         ...     os.remove( out)
         >>> if os.path.exists( f'{out}.cmd'):
         ...     os.remove( f'{out}.cmd')
         >>> run_if( f'touch {out}', out)
-        pipcl.py: run_if(): Running command because: File does not exist: 'run_if_test_out'
-        pipcl.py: run(): Running: touch run_if_test_out
+        pipcl.py:run_if(): Running command because: File does not exist: 'run_if_test_out'
+        pipcl.py:run_if(): Running: touch run_if_test_out
         True
 
     If we repeat, the output file will be up to date so the command is not run:
 
         >>> run_if( f'touch {out}', out)
-        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
+        pipcl.py:run_if(): Not running command because up to date: 'run_if_test_out'
 
     If we change the command, the command is run:
 
         >>> run_if( f'touch  {out}', out)
-        pipcl.py: run_if(): Running command because: Command has changed
-        pipcl.py: run(): Running: touch  run_if_test_out
+        pipcl.py:run_if(): Running command because: Command has changed
+        pipcl.py:run_if(): Running: touch  run_if_test_out
         True
 
     If we add a prerequisite that is newer than the output, the command is run:
 
         >>> time.sleep(1)
         >>> prerequisite = 'run_if_test_prerequisite'
-        >>> run( f'touch {prerequisite}')
-        pipcl.py: run(): Running: touch run_if_test_prerequisite
+        >>> run( f'touch {prerequisite}', caller=0)
+        pipcl.py:run(): Running: touch run_if_test_prerequisite
         >>> run_if( f'touch  {out}', out, prerequisite)
-        pipcl.py: run_if(): Running command because: Prerequisite is new: 'run_if_test_prerequisite'
-        pipcl.py: run(): Running: touch  run_if_test_out
+        pipcl.py:run_if(): Running command because: Prerequisite is new: 'run_if_test_prerequisite'
+        pipcl.py:run_if(): Running: touch  run_if_test_out
         True
 
     If we repeat, the output will be newer than the prerequisite, so the
     command is not run:
 
         >>> run_if( f'touch  {out}', out, prerequisite)
-        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
+        pipcl.py:run_if(): Not running command because up to date: 'run_if_test_out'
     '''
     doit = False
     cmd_path = f'{out}.cmd'
@@ -2376,6 +2377,15 @@ def verbose(level=None):
         g_verbose = level
     return g_verbose
 
+g_log_line_numbers = True
+
+def log_line_numbers(yes):
+    '''
+    Sets whether to include line numbers; helps with doctest.
+    '''
+    global g_log_line_numbers
+    g_log_line_numbers = bool(yes)
+
 def log0(text='', caller=1):
     _log(text, 0, caller+1)
 
@@ -2393,7 +2403,10 @@ def _log(text, level, caller):
         fr = inspect.stack(context=0)[caller]
         filename = relpath(fr.filename)
         for line in text.split('\n'):
-            print(f'{filename}:{fr.lineno}:{fr.function}(): {line}', file=sys.stdout, flush=1)
+            if g_log_line_numbers:
+                print(f'{filename}:{fr.lineno}:{fr.function}(): {line}', file=sys.stdout, flush=1)
+            else:
+                print(f'{filename}:{fr.function}(): {line}', file=sys.stdout, flush=1)
 
 
 def relpath(path, start=None):
