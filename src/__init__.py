@@ -6301,14 +6301,6 @@ class Font:
     def __repr__(self):
         return "Font('%s')" % self.name
 
-    def _valid_unicodes(self, arr):
-        # fixme
-        assert 0, 'Not implemented because implementation requires FT_Get_First_Char() etc.'
-        #font = self.this
-        #temp = arr[0]
-        #ptr = temp
-        #JM_valid_chars(font, ptr)
-
     @property
     def ascender(self):
         """Return the glyph ascender value."""
@@ -6495,16 +6487,18 @@ class Font:
 
     def valid_codepoints(self):
         '''
-        list of valid unicodes of a fz_font
+        Returns sorted list of valid unicodes of a fz_font.
         '''
-        return []
-        # fixme: uses _valid_unicodes() which is not implemented.
-        from array import array
-        gc = self.glyph_count
-        cp = array("l", (0,) * gc)
-        arr = cp.buffer_info()
-        self._valid_unicodes(arr)
-        return array("l", sorted(set(cp))[1:])
+        if 1 or mupdf_version_tuple < (1, 25):
+            # Not available.
+            return []
+        # This code should be used when MuPDF has been updated to provide
+        # fz_ft_font_reverse_cmap().
+        gid_to_ucs = mupdf.fz_ft_font_reverse_cmap(self.this)
+        ucs_unique = set(gid_to_ucs)
+        ucs_unique_sorted = sorted(ucs_unique)
+        assert ucs_unique_sorted[0] == 0
+        return ucs_unique_sorted[1:]
 
 
 class Graftmap:
