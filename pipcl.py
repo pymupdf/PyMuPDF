@@ -333,7 +333,9 @@ class Package:
             summary:
                 A string, short description of the package.
             description:
-                A string, a detailed description of the package.
+                A string. If contains newlines, a detailed description of the
+                package. Otherwise the path of a file containing the detailed
+                description of the package.
             description_content_type:
                 A string describing markup of `description` arg. For example
                 `text/markdown; variant=GFM`.
@@ -779,6 +781,7 @@ class Package:
         Find platform tag used in wheel filename.
         '''
         ret = self.tag_platform_
+        log0(f'From self.tag_platform_: {ret=}.')
         
         if not ret:
             # Prefer this to PEP-425. Appears to be undocumented,
@@ -786,13 +789,22 @@ class Package:
             # to be used by cibuildwheel and auditwheel, e.g.
             # https://github.com/rapidsai/shared-action-workflows/issues/80
             ret = os.environ.get( 'AUDITWHEEL_PLAT')
+            log0(f'From AUDITWHEEL_PLAT: {ret=}.')
 
         if not ret:
+            # Notes:
+            #
             # PEP-425. On Linux gives `linux_x86_64` which is rejected by
             # pypi.org.
             #
+            # On local MacOS/arm64 mac-mini have seen sysconfig.get_platform()
+            # unhelpfully return `macosx-10.9-universal2` if `python3` is the
+            # system Python /usr/bin/python3; this happens if we source `.
+            # /etc/profile`.
+            #
             ret = sysconfig.get_platform()
             ret = ret.replace('-', '_').replace('.', '_').lower()
+            log0(f'From sysconfig.get_platform(): {ret=}.')
 
             # We need to patch things on MacOS.
             #
@@ -803,9 +815,10 @@ class Package:
             m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', ret)
             if m:
                 ret2 = f'{m.group(1)}_0{m.group(2)}'
-                log2( f'Changing from {ret!r} to {ret2!r}')
+                log0(f'After macos patch, changing from {ret!r} to {ret2!r}.')
                 ret = ret2
 
+        log0( f'tag_platform(): returning {ret=}.')
         return ret
 
     def wheel_name(self):
@@ -1295,8 +1308,13 @@ class Package:
 
         # Append description as the body
         if self.description:
+            if '\n' in self.description:
+                description_text = self.description.strip()
+            else:
+                with open(self.description) as f:
+                    description_text = f.read()
             ret += '\n' # Empty line separates headers from body.
-            ret += self.description.strip()
+            ret += description_text
             ret += '\n'
         return ret
 
@@ -1427,9 +1445,9 @@ def build_extension(
         debug:
             Whether to build with debug symbols.
         compiler_extra:
-            Extra compiler flags.
+            Extra compiler flags. Can be None.
         linker_extra:
-            Extra linker flags.
+            Extra linker flags. Can be None.
         swig:
             Base swig command.
         cpp:
@@ -1475,6 +1493,10 @@ def build_extension(
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
     '''
+    if compiler_extra is None:
+        compiler_extra = ''
+    if linker_extra is None:
+        linker_extra = ''
     if builddir is None:
         builddir = outdir
     includes_text = _flags( includes, '-I')
@@ -1876,7 +1898,7 @@ def git_items( directory, submodules=False):
     return ret
 
 
-def run( command, capture=False, check=1, verbose=1):
+def run( command, capture=False, check=1, verbose=1, env_extra=None, caller=1):
     '''
     Runs a command using `subprocess.run()`.
 
@@ -1884,12 +1906,12 @@ def run( command, capture=False, check=1, verbose=1):
         command:
             A string, the command to run.
 
-            Multiple lines in `command` are are treated as a single command.
+            Multiple lines in `command` are treated as a single command.
 
             * If a line starts with `#` it is discarded.
             * If a line contains ` #`, the trailing text is discarded.
 
-            When running the command, on Windows newlines are replaced by
+            When running the command on Windows, newlines are replaced by
             spaces; otherwise each line is terminated by a backslash character.
         capture:
             If true, we include the command's output in our return value.
@@ -1898,6 +1920,8 @@ def run( command, capture=False, check=1, verbose=1):
             command's returncode in our return value.
         verbose:
             If true we show the command.
+        env_extra:
+            None or dict to add to environ.
     Returns:
         check capture   Return
         --------------------------
@@ -1906,10 +1930,14 @@ def run( command, capture=False, check=1, verbose=1):
           true  false   None or raise exception
           true   true   output or raise exception
     '''
+    env = None
+    if env_extra:
+        env = os.environ.copy()
+        env.update(env_extra)
     lines = _command_lines( command)
     nl = '\n'
     if verbose:
-        log1( f'Running: {nl.join(lines)}')
+        log1( f'Running: {nl.join(lines)}', caller=caller+1)
     sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
     cp = subprocess.run(
@@ -1919,6 +1947,7 @@ def run( command, capture=False, check=1, verbose=1):
             stderr=subprocess.STDOUT if capture else None,
             check=check,
             encoding='utf8',
+            env=env,
             )
     if check:
         return cp.stdout if capture else None
@@ -2307,7 +2336,7 @@ def _flags( items, prefix='', quote=''):
     if not items:
         return ''
     if isinstance( items, str):
-        return items
+        items = items,
     ret = ''
     for item in items:
         if ret:
@@ -2346,25 +2375,39 @@ def verbose(level=None):
         g_verbose = level
     return g_verbose
 
-def log0(text=''):
-    _log(text, 0)
+def log0(text='', caller=1):
+    _log(text, 0, caller+1)
 
-def log1(text=''):
-    _log(text, 1)
+def log1(text='', caller=1):
+    _log(text, 1, caller+1)
 
-def log2(text=''):
-    _log(text, 2)
+def log2(text='', caller=1):
+    _log(text, 2, caller+1)
 
-def _log(text, level):
+def _log(text, level, caller):
     '''
     Logs lines with prefix.
     '''
-    if g_verbose >= level:
-        caller = inspect.stack()[2].function
+    if level <= g_verbose:
+        fr = inspect.stack(context=0)[caller]
+        filename = relpath(fr.filename)
         for line in text.split('\n'):
-            print(f'pipcl.py: {caller}(): {line}')
-        sys.stdout.flush()
+            print(f'{filename}:{fr.lineno}:{fr.function}(): {line}', file=sys.stdout, flush=1)
 
+
+def relpath(path, start=None):
+    '''
+    A safe alternative to os.path.relpath(), avoiding an exception on Windows
+    if the drive needs to change - in this case we use os.path.abspath().
+    '''
+    if windows():
+        try:
+            return os.path.relpath(path, start)
+        except ValueError:
+            # os.path.relpath() fails if trying to change drives.
+            return os.path.abspath(path)
+    else:
+        return os.path.relpath(path, start)
 
 def _so_suffix(use_so_versioning=True):
     '''
