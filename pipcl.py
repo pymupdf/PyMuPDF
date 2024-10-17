@@ -1439,7 +1439,8 @@ def build_extension(
             A string, or a sequence of library paths to be prefixed with
             `/LIBPATH:` on Windows or `-L` on Unix.
         libs
-            A string, or a sequence of library names to be prefixed with `-l`.
+            A string, or a sequence of library names. Each item is prefixed
+            with `-l` on non-Windows.
         optimise:
             Whether to use compiler optimisations.
         debug:
@@ -1502,7 +1503,7 @@ def build_extension(
     includes_text = _flags( includes, '-I')
     defines_text = _flags( defines, '-D')
     libpaths_text = _flags( libpaths, '/LIBPATH:', '"') if windows() else _flags( libpaths, '-L')
-    libs_text = _flags( libs, '-l')
+    libs_text = _flags( libs, '' if windows() else '-l')
     path_cpp = f'{builddir}/{os.path.basename(path_i)}'
     path_cpp += '.cpp' if cpp else '.c'
     os.makedirs( outdir, exist_ok=True)
