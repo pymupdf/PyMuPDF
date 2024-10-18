@@ -165,12 +165,12 @@ def test_3933():
         print(f'{len(page.get_fonts())=}')
     
         expected = {
-                'BCDEEE+Calibri': 36,
+                'BCDEEE+Calibri': 39,
                 'BCDFEE+SwissReSan-Regu':  53,
                 'BCDGEE+SwissReSan-Ital':  20,
                 'BCDHEE+SwissReSan-Bold':  20,
                 'BCDIEE+SwissReSan-Regu':  53,
-                'BCDJEE+Calibri':  36,
+                'BCDJEE+Calibri':  39,
                 }
                 
         for xref, _, _, name, _, _ in page.get_fonts():
@@ -180,9 +180,7 @@ def test_3933():
                 font = pymupdf.Font(fontname=name, fontbuffer=content)
                 supported_symbols = font.valid_codepoints()
                 print(f'Font {name}: {len(supported_symbols)=}.', flush=1)
-                if 1 or pymupdf.mupdf_version_tuple < (1, 25):
+                if pymupdf.mupdf_version_tuple < (1, 25):
                     assert len(supported_symbols) == 0
                 else:
-                    # We have a fix but as of 2024-10-17 it is not yet on MuPDF
-                    # master.
                     assert len(supported_symbols) == expected.get(name)

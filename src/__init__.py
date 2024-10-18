@@ -6489,16 +6489,14 @@ class Font:
         '''
         Returns sorted list of valid unicodes of a fz_font.
         '''
-        if 1 or mupdf_version_tuple < (1, 25):
-            # Not available.
+        if mupdf_version_tuple < (1, 25):
+            # mupdf.fz_enumerate_font_cmap2() not available.
             return []
-        # This code should be used when MuPDF has been updated to provide
-        # fz_ft_font_reverse_cmap().
-        gid_to_ucs = mupdf.fz_ft_font_reverse_cmap(self.this)
-        ucs_unique = set(gid_to_ucs)
-        ucs_unique_sorted = sorted(ucs_unique)
-        assert ucs_unique_sorted[0] == 0
-        return ucs_unique_sorted[1:]
+        ucs_gids = mupdf.fz_enumerate_font_cmap2(self.this)
+        ucss = [i.ucs for i in ucs_gids]
+        ucss_unique = set(ucss)
+        ucss_unique_sorted = sorted(ucss_unique)
+        return ucss_unique_sorted
 
 
 class Graftmap:
