@@ -1141,6 +1141,12 @@ def test_use_python_logging():
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
+    if os.path.basename(__file__).startswith(f'test_fitz_'):
+        # Do nothing, because command `pymupdf` outputs diagnostics containing
+        # `pymupdf` which are not renamed to `fitz`, which breaks our checking.
+        print(f'Not testing with fitz alias.')
+        return
+    
     def check(
             code,
             regexes_stdout,
