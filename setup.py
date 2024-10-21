@@ -80,7 +80,8 @@ Environmental variables:
         For internal testing.
         
     PYMUPDF_SETUP_MUPDF_BUILD
-        If set, overrides location of MuPDF when building PyMuPDF:
+        If unset or '-', use internal hard-coded default MuPDF location.
+        Otherwise overrides location of MuPDF when building PyMuPDF:
             Empty string:
                 Build PyMuPDF with the system MuPDF.
             A string starting with 'git:':
@@ -526,6 +527,9 @@ def get_mupdf(path=None, sha=None):
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
     m = os.environ.get('PYMUPDF_SETUP_MUPDF_BUILD')
+    if m == '-':
+        # This allows easy specification in Github actions.
+        m = None
     if m is None and os.path.isfile(mupdf_tgz):
         # This makes us use tgz inside sdist.
         log(f'Using local tgz: {mupdf_tgz=}')
