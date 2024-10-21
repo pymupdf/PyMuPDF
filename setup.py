@@ -1132,7 +1132,7 @@ classifier = [
 # We generate different wheels depending on PYMUPDF_SETUP_FLAVOUR.
 #
 
-version_p = '1.24.11'
+version_p = '1.24.12'
 version_b = '1.24.10'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
