@@ -10,9 +10,9 @@ Change Log
   * **Fixed** `3916 <https://github.com/pymupdf/PyMuPDF/issues/3916>`_:  insert_htmlbox error: int too large to convert to float
   * **Fixed** `3950 <https://github.com/pymupdf/PyMuPDF/issues/3950>`_:  Unable to consistently extract field labels from PDFs
 
-* Supported Python versions are now 3.8-3.13.
+* Supported Python versions are now 3.9-3.13.
 
-  * Dropped support for Python-3.7 because end-of-life.
+  * Dropped support for Python-3.8 because end-of-life.
   * Added support for Python-3.13 because now released.
   * See: https://devguide.python.org/versions/
 
