@@ -2101,7 +2101,7 @@ Clear metadata information. If you do this out of privacy / data protection conc
 {'producer': 'none', 'format': 'PDF 1.4', 'encryption': None, 'author': 'none',
 'modDate': 'none', 'keywords': 'none', 'title': 'none', 'creationDate': 'none',
 'creator': 'none', 'subject': 'none'}
->>> doc._delXmlMetadata()    # clear any XML metadata
+>>> doc.del_xml_metadata()    # clear any XML metadata
 >>> doc.save("anonymous.pdf", garbage = 4)       # save anonymized doc
 
 :meth:`set_toc` Demonstration
