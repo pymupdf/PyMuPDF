@@ -10171,8 +10171,6 @@ class Pixmap:
         '''
         pm = self.this
         rc = JM_color_count( pm, clip)
-        if not rc:
-            raise RuntimeError( MSG_COLOR_COUNT_FAILED)
         if not colors:
             return len( rc)
         return rc
@@ -14219,6 +14217,9 @@ def _read_samples( pixmap, offset, n):
     # fixme: need to be able to get a sample in one call, as a Python
     # bytes or similar.
     ret = []
+    if not pixmap.samples():
+        # mupdf.fz_samples_get() gives a segv if pixmap->samples is null.
+        return ret
     for i in range( n):
         ret.append( mupdf.fz_samples_get( pixmap, offset + i))
     return bytes( ret)

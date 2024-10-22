@@ -363,3 +363,16 @@ def test_3493():
     else:
         assert out1 != out0
     assert out2 == out0
+
+
+def test_3848():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3848.pdf')
+    with pymupdf.open(path) as document:
+        for i in range(len(document)):
+            page = document.load_page(i)
+            print(f'{page=}.')
+            for annot in page.get_drawings():
+                if page.get_textbox(annot['rect']):
+                    rect = annot['rect']
+                    pixmap = page.get_pixmap(clip=rect)
+                    color_bytes = pixmap.color_topusage()
