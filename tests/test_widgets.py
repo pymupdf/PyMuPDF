@@ -317,3 +317,20 @@ def test_interfield_calculation():
             pymupdf.mupdf.pdf_to_num(pymupdf.mupdf.pdf_array_get(CO, i))
             == list(page.widgets())[-1].xref
         )
+
+
+def test_3950():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3950.pdf')
+    items = list()
+    with pymupdf.open(path) as document:
+        for page in document:
+            for widget in page.widgets():
+                items.append(widget.field_label)
+                print(f'test_3950(): {widget.field_label=}.')
+    assert items == [
+            '',
+            #'{{ named_insured }}',
+            '{{ policy_period_start_date }}',
+            '{{ policy_period_end_date }}',
+            '{{ insurance_line }}',
+            ]
