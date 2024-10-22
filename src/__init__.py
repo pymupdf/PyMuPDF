@@ -15809,9 +15809,36 @@ def JM_get_widget_properties(annot, Widget):
     field_name = mupdf.pdf_load_field_name(annot_obj)
     SETATTR_DROP(Widget, "field_name", field_name)
 
-    obj = mupdf.pdf_dict_get_inheritable(annot_obj, PDF_NAME('TU'))
-    if obj.m_internal:
-        label = mupdf.pdf_to_text_string(obj)
+    def pdf_dict_get_inheritable_nonempty_label(node, key):
+        '''
+        This is a modified version of MuPDF's pdf_dict_get_inheritable(), with
+        some changes:
+        * Returns string from pdf_to_text_string() or None if not found.
+        * Recurses to parent if current node exists but with empty string
+          value.
+        '''
+        slow = node
+        halfbeat = 11   # Don't start moving slow pointer for a while.
+        while 1:
+            if not node.m_internal:
+                return
+            val = mupdf.pdf_dict_get(node, key)
+            if val.m_internal:
+                label = mupdf.pdf_to_text_string(val)
+                if label:
+                    return label
+            node = mupdf.pdf_dict_get(node, PDF_NAME('Parent'))
+            if node.m_internal == slow.m_internal:
+                raise Exception("cycle in resources")
+            halfbeat -= 1
+            if halfbeat == 0:
+                slow = mupdf.pdf_dict_get(slow, PDF_NAME('Parent'))
+                halfbeat = 2
+    
+    # In order to address #3950, we use our modified pdf_dict_get_inheritable()
+    # to ignore empty-string child values.
+    label = pdf_dict_get_inheritable_nonempty_label(annot_obj, PDF_NAME('TU'))
+    if label is not None:
         SETATTR_DROP(Widget, "field_label", label)
 
     fvalue = None

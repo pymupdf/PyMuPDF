@@ -328,8 +328,7 @@ def test_3950():
                 items.append(widget.field_label)
                 print(f'test_3950(): {widget.field_label=}.')
     assert items == [
-            '',
-            #'{{ named_insured }}',
+            '{{ named_insured }}',
             '{{ policy_period_start_date }}',
             '{{ policy_period_end_date }}',
             '{{ insurance_line }}',
