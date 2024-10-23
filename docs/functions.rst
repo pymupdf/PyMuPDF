@@ -117,7 +117,8 @@ Yet others are handy, general-purpose utilities.
       :arg int fd:
           Write to file descriptor.
       :arg stream:
-          Write to existing stream, which must have methods .write(text) and .flush().
+          Write to existing stream, which must have methods `.write(text)` and
+          `.flush()`.
       :arg str path:
           Write to a file.
       :arg str path_append:
