@@ -658,17 +658,22 @@ def build():
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
 
         if 'd' in PYMUPDF_SETUP_FLAVOUR:
-            # Add MuPDF headers to `ret_d`. Would prefer to use
+            # Add MuPDF C and C++ headers to `ret_d`. Would prefer to use
             # pipcl.git_items() but hard-coded mupdf tree is not a git
             # checkout.
             #
-            include = f'{mupdf_local}/include'
-            for dirpath, dirnames, filenames in os.walk(include):
-                for filename in filenames:
-                    header_abs = os.path.join(dirpath, filename)
-                    assert header_abs.startswith(include)
-                    header_rel = header_abs[len(include)+1:]
-                    add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
+            for root in (
+                    f'{mupdf_local}/include',
+                    f'{mupdf_local}/platform/c++/include',
+                    ):
+                for dirpath, dirnames, filenames in os.walk(root):
+                    for filename in filenames:
+                        if not filename.endswith('.h'):
+                            continue
+                        header_abs = os.path.join(dirpath, filename)
+                        assert header_abs.startswith(root)
+                        header_rel = header_abs[len(root)+1:]
+                        add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
     
     # Add a .py file containing location of MuPDF.
     text = f"mupdf_location='{mupdf_location}'\n"
