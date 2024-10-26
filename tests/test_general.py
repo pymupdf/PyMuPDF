@@ -1283,6 +1283,20 @@ def test_use_python_logging():
             ],
             )
     
+    print(f'## Check messages() with sys.stdout=None.')
+    check(
+            '''
+            import sys
+            sys.stdout = None
+            import pymupdf
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [],
+            [],
+            )
+    
 
 def relpath(path, start=None):
     '''

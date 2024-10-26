@@ -117,7 +117,7 @@ def _make_output(
                 pylogging_level = int(pylogging_level)
             pylogging_name = items_d.get('name', 'pymupdf')
         else:
-            assert 0, f'Unrecognised {text=}.'
+            assert 0, f'Expected prefix `fd:`, `path:`. `path+:` or `logging:` in {text=}.'
     
     if fd is not None:
         ret = open(fd, mode='w', closefd=False)
@@ -154,10 +154,8 @@ def _make_output(
             def flush(self):
                 pass
         ret = Out()
-    elif default:
-        ret = default
     else:
-        assert 0, f'No output specified.'
+        ret = default
     return ret
 
 # Set steam used by PyMuPDF messaging.
@@ -259,14 +257,18 @@ def log( text='', caller=1):
         text = f'{filename}:{line}:{function}(): {text}'
     if _g_log_items_active:
         _g_log_items.append(text)
-    print(text, file=_g_out_log, flush=1)
+    if _g_out_log:
+        print(text, file=_g_out_log, flush=1)
 
 
 def message(text=''):
     '''
     For user messages.
     '''
-    print(text, file=_g_out_message, flush=1)
+    # It looks like `print()` does nothing if sys.stdout is None (without
+    # raising an exception), but we don't rely on this.
+    if _g_out_message:
+        print(text, file=_g_out_message, flush=1)
 
 
 def exception_info():
