@@ -97,6 +97,8 @@ Options:
     --valgrind 0|1
         Use valgrind in `test` or `buildtest`.
         This will run `sudo apt update` and `sudo apt install valgrind`.
+    --valgrind-args <valgrind_args>
+        Extra args to valgrind.
 
 Commands:
     build
@@ -145,6 +147,7 @@ def main(argv):
 
     build_isolation = None
     valgrind = False
+    valgrind_args = ''
     s = True
     build_do = 'i'
     build_type = None
@@ -216,6 +219,8 @@ def main(argv):
             gdb = int(next(args))
         elif arg == '--valgrind':
             valgrind = int(next(args))
+        elif arg == '--valgrind-args':
+            valgrind_args = next(args)
         else:
             assert 0, f'Unrecognised option: {arg=}.'
     
@@ -259,6 +264,7 @@ def main(argv):
         test(
                 implementations=implementations,
                 valgrind=valgrind,
+                valgrind_args=valgrind_args,
                 venv_quick=venv_quick,
                 test_names=test_names,
                 pytest_options=pytest_options,
@@ -586,6 +592,7 @@ def pyodide_setup(directory, clean=False):
 def test(
         implementations,
         valgrind,
+        valgrind_args,
         venv_quick=False,
         test_names=None,
         pytest_options=None,
@@ -600,6 +607,8 @@ def test(
             See top-level option `-i`.
         valgrind:
             See top-level option `--valgrind`.
+        valgrind_args:
+            See top-level option `--valgrind-args`.
         venv_quick:
             .
         test_names:
@@ -647,7 +656,7 @@ def test(
             log('Running PyMuPDF tests under valgrind.')
             command = (
                     f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args}'
-                        f' valgrind --suppressions={pymupdf_dir_rel}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after='
+                        f' valgrind --suppressions={pymupdf_dir_rel}/valgrind.supp --error-exitcode=100 --errors-for-leak-kinds=none --fullpath-after= {valgrind_args}'
                         f' {python} -m pytest {pytest_options}{pytest_arg}'
                         )
             env_extra=dict(
