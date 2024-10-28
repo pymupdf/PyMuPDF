@@ -376,3 +376,15 @@ def test_3848():
                     rect = annot['rect']
                     pixmap = page.get_pixmap(clip=rect)
                     color_bytes = pixmap.color_topusage()
+
+
+def test_3994():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3994.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        txt_blocks = [blk for blk in page.get_text('dict')['blocks'] if blk['type']==0]
+        for blk in txt_blocks:
+            pix = page.get_pixmap(clip=pymupdf.Rect([int(v) for v in blk['bbox']]), colorspace=pymupdf.csRGB, alpha=False)
+            percent, color = pix.color_topusage()
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'premature end of data in flate filter\n... repeated 2 times...'
