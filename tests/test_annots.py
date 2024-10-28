@@ -419,3 +419,23 @@ def test_3863():
             # We get small differences in sysinstall tests, where some
             # thirdparty libraries can differ.
             assert rms < 1
+
+def test_3758():
+    # This test requires input file that is not public, so is usually not
+    # available.
+    path = os.path.normpath(f'{__file__}/../../../test_3758.pdf')
+    if not os.path.exists(path):
+        print(f'test_3758(): not running because does not exist: {path=}.')
+        return
+    import json
+    with pymupdf.open(path) as document:
+        for page in document:
+            info = json.loads(page.get_text('json', flags=pymupdf.TEXTFLAGS_TEXT))
+            for block_ind, block in enumerate(info['blocks']):
+                for line_ind, line in enumerate(block['lines']):
+                    for span_ind, span in enumerate(line['spans']):
+                        # print(span)
+                        page.add_redact_annot(pymupdf.Rect(*span['bbox']))
+            page.apply_redactions()
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt
