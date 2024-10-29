@@ -162,6 +162,7 @@ def main(argv):
     timeout = None
     pytest_k = None
     system_site_packages = False
+    pyodide_build_version = None
     
     options = os.environ.get('PYMUDF_SCRIPTS_TEST_options', '')
     options = shlex.split(options)
@@ -221,6 +222,8 @@ def main(argv):
             valgrind = int(next(args))
         elif arg == '--valgrind-args':
             valgrind_args = next(args)
+        elif arg == '--pyodide-build-version':
+            pyodide_build_version = next(args)
         else:
             assert 0, f'Unrecognised option: {arg=}.'
     
@@ -287,7 +290,7 @@ def main(argv):
         elif command == 'wheel':
             do_build(wheel=True)
         elif command == 'pyodide_wheel':
-            build_pyodide_wheel()
+            build_pyodide_wheel(pyodide_build_version=pyodide_build_version)
         else:
             assert 0
 
@@ -415,7 +418,7 @@ def build(
         gh_release.run(f'pip install{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
 
 
-def build_pyodide_wheel():
+def build_pyodide_wheel(pyodide_build_version=None):
     '''
     Build Pyodide wheel.
 
@@ -447,8 +450,8 @@ def build_pyodide_wheel():
     # current devuan pyodide-build is pyodide_build-0.23.4.
     #
     env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
-    
-    command = f'{pyodide_setup(pymupdf_dir)} && pyodide build --exports pyinit'
+    setup = pyodide_setup(pymupdf_dir, pyodide_build_version=pyodide_build_version)
+    command = f'{setup} && pyodide build --exports pyinit'
     gh_release.run(command, env_extra=env_extra)
     
     # Copy wheel into `wheelhouse/` so it is picked up as a workflow
@@ -459,7 +462,11 @@ def build_pyodide_wheel():
     gh_release.run(f'ls -l {pymupdf_dir}/wheelhouse/')    
 
 
-def pyodide_setup(directory, clean=False):
+def pyodide_setup(
+        directory,
+        clean=False,
+        pyodide_build_version=None,
+        ):
     '''
     Returns a command that will set things up for a pyodide build.
     
@@ -501,17 +508,23 @@ def pyodide_setup(directory, clean=False):
     #
     # 2024-10-11: we only work with python-3.11; later versions fail with
     # pyodide-build==0.23.4 because `distutils` not available.
-    venv_pyodide = 'venv_pyodide_3.11'
-    python = sys.executable
-    if sys.version_info[:2] != (3, 11):
-        log(f'Forcing use of python-3.11 because {sys.version=} is not 3.11.')
-        python = 'python3.11'
+    if pyodide_build_version:
+        python = sys.executable
+        a, b = sys.version_info[:2]
+        venv_pyodide = f'venv_pyodide_{a}.{b}'
+    else:
+        pyodide_build_version = '0.23.4'
+        venv_pyodide = 'venv_pyodide_3.11'
+        python = sys.executable
+        if sys.version_info[:2] != (3, 11):
+            log(f'Forcing use of python-3.11 because {sys.version=} is not 3.11.')
+            python = 'python3.11'
     if not os.path.exists( f'{directory}/{venv_pyodide}'):
         command += f' && echo "### creating venv {venv_pyodide}"'
         command += f' && {python} -m venv {venv_pyodide}'
     command += f' && . {venv_pyodide}/bin/activate'
     command += f' && echo "### running pip install ..."'
-    command += f' && python -m pip install --upgrade pip wheel pyodide-build==0.23.4'
+    command += f' && python -m pip install --upgrade pip wheel pyodide-build=={pyodide_build_version}'
     #command += f' && python -m pip install --upgrade pip wheel pyodide-build'
     
     # Run emsdk install scripts and enter emsdk environment.
@@ -525,7 +538,9 @@ def pyodide_setup(directory, clean=False):
     command += ' && echo "### running ./emsdk_env.sh"'
     command += ' && . ./emsdk_env.sh'   # Need leading `./` otherwise weird 'Not found' error.
     
-    if 1:
+    if pyodide_build_version:
+        command += ' && echo "### Not patching emsdk"'
+    else:
         # Make our returned command replace emsdk/upstream/bin/wasm-opt
         # with a script that does nothing, otherwise the linker
         # command fails after it has created the output file. See:
