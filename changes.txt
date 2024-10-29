@@ -2,6 +2,16 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.13 (2024-10-29)**
+
+* Fixed issues:
+
+  * **Fixed** `3848 <https://github.com/pymupdf/PyMuPDF/issues/3848>`_:  Piximap program crash
+  * **Fixed** `3950 <https://github.com/pymupdf/PyMuPDF/issues/3950>`_:  Unable to consistently extract field labels from PDFs
+  * **Fixed** `3981 <https://github.com/pymupdf/PyMuPDF/issues/3981>`_:  PyMuPDF 1.24.12 with pyinstaller throws error.
+  * **Fixed** `3994 <https://github.com/pymupdf/PyMuPDF/issues/3994>`_:  pix.color_topusage raise Segmentation fault (core dumped)
+
+
 **Changes in version 1.24.12 (2024-10-21)**
 
 * Fixed issues:
