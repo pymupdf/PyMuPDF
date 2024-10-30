@@ -7186,6 +7186,7 @@ class Widget:
     def _validate(self):
         """Validate the class entries.
         """
+        CheckParent(self)  # ensure page still exists
         if (self.rect.is_infinite
             or self.rect.is_empty
            ):
@@ -7305,6 +7306,7 @@ class Widget:
 
     @property
     def next(self):
+        CheckParent(self)  # ensure page still exists
         return self._annot.next
 
     def on_state(self):
@@ -17996,9 +17998,13 @@ def CheckMorph(o: typing.Any) -> bool:
 
 
 def CheckParent(o: typing.Any):
+    try:
+        check = str(o.parent)  # will raise if no parent or weakref is dead
+        if check == "None":
+            raise ValueError(f"orphaned object: parent is None")
+    except (ReferenceError, ValueError):
+        raise ValueError(f"orphaned object: parent is dead")
     return
-    if not hasattr(o, "parent") or o.parent is None:
-        raise ValueError(f"orphaned object {type(o)=}: parent is None")
 
 
 def CheckQuad(q: typing.Any) -> bool:
