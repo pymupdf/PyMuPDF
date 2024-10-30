@@ -439,3 +439,22 @@ def test_3758():
             page.apply_redactions()
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt
+
+
+def test_parent():
+    """Test invalidating parent on page re-assignment."""
+    doc = pymupdf.open()
+    page = doc.new_page()
+    a = page.add_highlight_annot(page.rect)  # insert annotation on page 0
+    page = doc.new_page()  # make a new page, should orphanate annotation
+    try:
+        print(a)  # should raise
+    except Exception as e:
+        if pymupdf.mupdf_version_tuple >= (1, 25):
+            assert isinstance(e, pymupdf.mupdf.FzErrorArgument)
+            assert str(e) == 'code=4: annotation not bound to any page'
+        else:
+            assert isinstance(e, ReferenceError)
+            assert str(e) == 'weakly-referenced object no longer exists'
+    else:
+        assert 0, f'Failed to get expected exception.'

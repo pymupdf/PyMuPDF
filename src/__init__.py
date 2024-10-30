@@ -514,6 +514,21 @@ def _as_pdf_page(page, required=True):
         assert 0, f'Unrecognised {type(page)=}'
 
 
+def _pdf_annot_page(annot):
+    '''
+    Wrapper for mupdf.pdf_annot_page() which raises an exception if <annot>
+    is not bound to a page instead of returning a mupdf.PdfPage with
+    `.m_internal=None`.
+
+    [Some other MuPDF functions such as pdf_update_annot()` already raise a
+    similar exception if a pdf_annot's .page field is null.]
+    '''
+    page = mupdf.pdf_annot_page(annot)
+    if not page.m_internal:
+        raise RuntimeError('Annot is not bound to a page')
+    return page
+
+
 # Fixme: we don't support JM_MEMORY=1.
 JM_MEMORY = 0
 
@@ -599,7 +614,7 @@ class Annot:
         try:
             annot = self.this
             annot_obj = mupdf.pdf_annot_obj( annot)
-            page = mupdf.pdf_annot_page( annot)
+            page = _pdf_annot_page(annot)
             apobj = mupdf.pdf_dict_getl( annot_obj, PDF_NAME('AP'), PDF_NAME('N'))
             if not apobj.m_internal:
                 raise RuntimeError( MSG_BAD_APN)
@@ -619,7 +634,7 @@ class Annot:
         annot = self.this
         assert annot.m_internal
         annot_obj = mupdf.pdf_annot_obj( annot)
-        page = mupdf.pdf_annot_page( annot)
+        page = _pdf_annot_page(annot)
         pdf = page.doc()
         type_ = mupdf.pdf_annot_type( annot)
         nfcol, fcol = JM_color_FromSequence(fill_color)
@@ -830,7 +845,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         annot_obj = mupdf.pdf_annot_obj(annot)
-        page = mupdf.pdf_annot_page(annot)
+        page = _pdf_annot_page(annot)
         while 1:
             irt_annot = JM_find_annot_irt(annot)
             if not irt_annot.m_internal:
@@ -942,7 +957,7 @@ class Annot:
         try:
             ret = getattr( self, 'parent')
         except AttributeError:
-            page = mupdf.pdf_annot_page(self.this)
+            page = _pdf_annot_page(self.this)
             assert isinstance( page, mupdf.PdfPage)
             document = Document( page.doc()) if page.m_internal else None
             ret = Page(page, document)
@@ -1374,7 +1389,7 @@ class Annot:
         '''
         annot = self.this
         annot_obj = mupdf.pdf_annot_obj( annot)
-        page = mupdf.pdf_annot_page( annot)
+        page = _pdf_annot_page(annot)
         if xref < 1 or xref >= mupdf.pdf_xref_len( page.doc()):
             raise ValueError( MSG_BAD_XREF)
         irt = mupdf.pdf_new_indirect( page.doc(), xref, 0)
@@ -1429,7 +1444,7 @@ class Annot:
             return
         mupdf.pdf_set_annot_opacity(annot, opacity)
         if opacity < 1.0:
-            page = mupdf.pdf_annot_page(annot)
+            page = _pdf_annot_page(annot)
             page.transparency = 1
 
     def set_open(self, is_open):
@@ -1444,7 +1459,7 @@ class Annot:
         '''
         CheckParent(self)
         annot = self.this
-        pdfpage = mupdf.pdf_annot_page( annot)
+        pdfpage = _pdf_annot_page(annot)
         rot = JM_rotate_page_matrix(pdfpage)
         r = mupdf.fz_transform_rect(JM_rect_from_py(rect), rot)
         mupdf.pdf_set_annot_popup(annot, r)
@@ -1454,7 +1469,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         
-        pdfpage = mupdf.pdf_annot_page(annot)
+        pdfpage = _pdf_annot_page(annot)
         rot = JM_rotate_page_matrix(pdfpage)
         r = mupdf.fz_transform_rect(JM_rect_from_py(rect), rot)
         if mupdf.fz_is_empty_rect(r) or mupdf.fz_is_infinite_rect(r):
@@ -1850,7 +1865,7 @@ class Annot:
         annot = self.this
         assert isinstance(annot, mupdf.PdfAnnot)
         annot_obj = mupdf.pdf_annot_obj(annot)
-        page = mupdf.pdf_annot_page(annot)
+        page = _pdf_annot_page(annot)
         page_ctm = mupdf.FzMatrix()   # page transformation matrix
         dummy = mupdf.FzRect()  # Out-param for mupdf.pdf_page_transform().
         mupdf.pdf_page_transform(page, dummy, page_ctm)
@@ -14470,7 +14485,7 @@ def JM_add_annot_id(annot, stem):
     Append a number to 'stem' such that the result is a unique name.
     '''
     assert isinstance(annot, mupdf.PdfAnnot)
-    page = mupdf.pdf_annot_page( annot)
+    page = _pdf_annot_page(annot)
     annot_obj = mupdf.pdf_annot_obj( annot)
     names = JM_get_annot_id_list(page)
     i = 0
@@ -15315,7 +15330,7 @@ def JM_find_annot_irt(annot):
     annot_obj = mupdf.pdf_annot_obj(annot)
     found = 0
     # loop thru MuPDF's internal annots array
-    page = mupdf.pdf_annot_page(annot)
+    page = _pdf_annot_page(annot)
     irt_annot = mupdf.pdf_first_annot(page)
     while 1:
         assert isinstance(irt_annot, mupdf.PdfAnnot)
@@ -15781,7 +15796,7 @@ def JM_get_widget_properties(annot, Widget):
     #log( '{type(annot)=}')
     annot_obj = mupdf.pdf_annot_obj(annot.this)
     #log( 'Have called mupdf.pdf_annot_obj()')
-    page = mupdf.pdf_annot_page(annot.this)
+    page = _pdf_annot_page(annot.this)
     pdf = page.doc()
     tw = annot
 
@@ -17596,7 +17611,8 @@ def JM_set_widget_properties(annot, Widget):
     if isinstance( annot, Annot):
         annot = annot.this
     assert isinstance( annot, mupdf.PdfAnnot), f'{type(annot)=} {type=}'
-    page = mupdf.pdf_annot_page(annot)
+    page = _pdf_annot_page(annot)
+    assert page.m_internal, 'Annot is not bound to a page'
     annot_obj = mupdf.pdf_annot_obj(annot)
     pdf = page.doc()
     def GETATTR(name):
