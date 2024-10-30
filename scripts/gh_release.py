@@ -389,7 +389,8 @@ def build( platform_=None, valgrind=False):
             env_pass('PYMUPDF_SETUP_PY_LIMITED_API')
             CIBW_BUILD_old = env_extra.get('CIBW_BUILD')
             assert CIBW_BUILD_old is not None
-            env_set('CIBW_BUILD', 'cp39*')
+            cp = cps.split()[0]
+            env_set('CIBW_BUILD', cp)
             log(f'Building single wheel.')
             run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
             
@@ -413,7 +414,16 @@ def build( platform_=None, valgrind=False):
             #
             env_set('CIBW_REPAIR_WHEEL_COMMAND', '')
             
-            log(f'Testing on all python versions using wheels in wheelhouse/.')
+            if platform.system() == 'Linux' and env_extra.get('CIBW_ARCHS_LINUX') == 'aarch64':
+                log(f'Testing all Python versions on linux-aarch64 is too slow and is killed by github after 6h.')
+                log(f'Testing on restricted python versions using wheels in wheelhouse/.')
+                # Testing only on first and last python versions.
+                cp1 = cps.split()[0]
+                cp2 = cps.split()[-1]
+                cp = cp1 if cp1 == cp2 else f'{cp1} {cp2}'
+                env_set('CIBW_BUILD', cp)
+            else:
+                log(f'Testing on all python versions using wheels in wheelhouse/.')
             run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
             
         elif inputs_flavours:
