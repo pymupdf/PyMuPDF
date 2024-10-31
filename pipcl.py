@@ -1899,7 +1899,16 @@ def git_items( directory, submodules=False):
     return ret
 
 
-def run( command, capture=False, check=1, verbose=1, env_extra=None, caller=1):
+def run(
+        command,
+        *,
+        capture=False,
+        check=1,
+        verbose=1,
+        env_extra=None,
+        timeout=None,
+        caller=1,
+        ):
     '''
     Runs a command using `subprocess.run()`.
 
@@ -1923,6 +1932,10 @@ def run( command, capture=False, check=1, verbose=1, env_extra=None, caller=1):
             If true we show the command.
         env_extra:
             None or dict to add to environ.
+        timeout:
+            If not None, timeout in seconds; passed directly to
+            subprocess.run(). Note that on MacOS subprocess.run() seems to
+            leave processes running if timeout expires.
     Returns:
         check capture   Return
         --------------------------
@@ -1949,6 +1962,7 @@ def run( command, capture=False, check=1, verbose=1, env_extra=None, caller=1):
             check=check,
             encoding='utf8',
             env=env,
+            timeout=timeout,
             )
     if check:
         return cp.stdout if capture else None
