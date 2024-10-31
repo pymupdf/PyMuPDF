@@ -135,6 +135,13 @@ import textwrap
 
 pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
+sys.path.insert(0, pymupdf_dir)
+import pipcl
+del sys.path[0]
+
+log = pipcl.log0
+run = pipcl.run
+
 
 def main(argv):
 
@@ -402,7 +409,7 @@ def build(
             if venv_quick:
                 log(f'{venv_quick=}: Not installing packages with pip: {names}')
             else:
-                gh_release.run( f'python -m pip install --upgrade {names}')
+                run( f'python -m pip install --upgrade {names}')
         build_isolation_text = ' --no-build-isolation'
     
     env_extra = dict()
@@ -413,9 +420,9 @@ def build(
     if build_flavour:
         env_extra['PYMUPDF_SETUP_FLAVOUR'] = build_flavour
     if wheel:
-        gh_release.run(f'pip wheel{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
+        run(f'pip wheel{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
     else:
-        gh_release.run(f'pip install{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
+        run(f'pip install{build_isolation_text} -v {pymupdf_dir}', env_extra=env_extra)
 
 
 def build_pyodide_wheel(pyodide_build_version=None):
@@ -452,14 +459,14 @@ def build_pyodide_wheel(pyodide_build_version=None):
     env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
     setup = pyodide_setup(pymupdf_dir, pyodide_build_version=pyodide_build_version)
     command = f'{setup} && pyodide build --exports pyinit'
-    gh_release.run(command, env_extra=env_extra)
+    run(command, env_extra=env_extra)
     
     # Copy wheel into `wheelhouse/` so it is picked up as a workflow
     # artifact.
     #
-    gh_release.run(f'ls -l {pymupdf_dir}/dist/')
-    gh_release.run(f'mkdir -p {pymupdf_dir}/wheelhouse && cp -p {pymupdf_dir}/dist/* {pymupdf_dir}/wheelhouse/')
-    gh_release.run(f'ls -l {pymupdf_dir}/wheelhouse/')    
+    run(f'ls -l {pymupdf_dir}/dist/')
+    run(f'mkdir -p {pymupdf_dir}/wheelhouse && cp -p {pymupdf_dir}/dist/* {pymupdf_dir}/wheelhouse/')
+    run(f'ls -l {pymupdf_dir}/wheelhouse/')    
 
 
 def pyodide_setup(
@@ -655,7 +662,7 @@ def test(
         if venv_quick:
             log(f'{venv_quick=}: Not installing test packages: {gh_release.test_packages}')
         else:
-            gh_release.run(f'pip install --upgrade {gh_release.test_packages}')
+            run(f'pip install --upgrade {gh_release.test_packages}')
         run_compound_args = ''
         if implementations:
             run_compound_args += f' -i {implementations}'
@@ -664,9 +671,9 @@ def test(
         env_extra = None
         if valgrind:
             log('Installing valgrind.')
-            gh_release.run(f'sudo apt update')
-            gh_release.run(f'sudo apt install --upgrade valgrind')
-            gh_release.run(f'valgrind --version')
+            run(f'sudo apt update')
+            run(f'sudo apt install --upgrade valgrind')
+            run(f'valgrind --version')
         
             log('Running PyMuPDF tests under valgrind.')
             command = (
@@ -714,7 +721,7 @@ def test(
                     f.write(text2)
         
         log(f'Running tests with tests/run_compound.py and pytest.')
-        gh_release.run(command, env_extra=env_extra, timeout=timeout)
+        run(command, env_extra=env_extra, timeout=timeout)
             
     except subprocess.TimeoutExpired as e:
          log(f'Timeout when running tests.')
@@ -766,10 +773,6 @@ def wrap_get_requires_for_build_wheel(dir_):
         finally:
             del sys.path[0]
     return ' '.join(ret)
-
-
-def log(text):
-    gh_release.log(text, caller=1)
 
 
 if __name__ == '__main__':

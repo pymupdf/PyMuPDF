@@ -89,6 +89,14 @@ import test as test_py
 
 pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
+sys.path.insert(0, pymupdf_dir)
+import pipcl
+del sys.path[0]
+
+log = pipcl.log0
+run = pipcl.run
+
+
 def main():
 
     log( '### main():')
@@ -584,49 +592,6 @@ if platform.system() == 'Windows':
 else:
     def relpath(path, start=None):
         return os.path.relpath(path, start)
-
-
-def log(text, caller=0):
-    '''
-    Writes `text` to stdout with prefix showing caller path relative to
-    pymupdf_dir and fn name.
-    '''
-    frame_record = inspect.stack( context=0)[ caller+1]
-    filename    = frame_record.filename
-    line        = frame_record.lineno
-    function    = frame_record.function
-    prefix = f'{relpath(filename, pymupdf_dir)}:{line}:{function}(): '
-    print(textwrap.indent(text, prefix), flush=1)
-
-
-def run(command, env_extra=None, check=1, timeout=None):
-    '''
-    Runs a command using subprocess.run().
-    Args:
-        command:
-            The command to run.
-        env_extra:
-            None or dict containing extra environment variable settings to add
-            to os.environ.
-        check:
-            Whether to raise exception if command fails.
-        timeout:
-            If not None, timeout in seconds; passed directory to
-            subprocess.run(). Note that on MacOS subprocess.run() seems to
-            leave processes running if timeout expires.
-    '''
-    env = None
-    message = 'Running: '
-    if env_extra:
-        env = os.environ.copy()
-        env.update(env_extra)
-        message += '\n[environment:\n'
-        for n, v in env_extra.items():
-            message += f'    {n}={shlex.quote(v)}\n'
-        message += ']\n'
-    message += f'{command}'
-    log(message, caller=1)
-    return subprocess.run(command, check=check, shell=1, env=env, timeout=timeout)
 
 
 def platform_tag():
