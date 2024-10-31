@@ -12800,6 +12800,7 @@ class TextPage:
         if g_use_extra:
             return extra.extractWORDS(self.this, delimiters)
         buflen = 0
+        last_char_rtl = 0
         block_n = -1
         wbbox = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)  # word bbox
         this_tpage = self.this
@@ -12825,16 +12826,19 @@ class TextPage:
                             ):
                         continue
                     word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
-                    if word_delimiter:
-                        if buflen == 0:
+                    this_char_rtl = JM_is_rtl_char(ch.m_internal.c)
+                    if word_delimiter or this_char_rtl != last_char_rtl:
+                        if buflen == 0 and word_delimiter:
                             continue    # skip delimiters at line start
                         if not mupdf.fz_is_empty_rect(wbbox):
                             word_n, wbbox = JM_append_word(lines, buff, wbbox, block_n, line_n, word_n)
                         mupdf.fz_clear_buffer(buff)
                         buflen = 0  # reset char counter
-                        continue
+                        if word_delimiter:
+                            continue
                     # append one unicode character to the word
                     JM_append_rune(buff, ch.m_internal.c)
+                    last_char_rtl = this_char_rtl
                     buflen += 1
                     # enlarge word bbox
                     wbbox = mupdf.fz_union_rect(wbbox, JM_char_bbox(line, ch))
@@ -15371,7 +15375,13 @@ def JM_font_descender(font):
 def JM_is_word_delimiter(ch, delimiters):
     """Check if ch is an extra word delimiting character.
     """
-    if ch <= 32 or ch == 160:  # any whitespace?
+    if (0
+        or ch <= 32
+        or ch == 160
+        or 0x202a <= ch <= 0x202e
+    ):
+        # covers any whitespace plus unicodes that switch between
+        # right-to-left and left-to-right languages
         return True
     if not delimiters:  # no extra delimiters provided
         return False
@@ -15380,6 +15390,12 @@ def JM_is_word_delimiter(ch, delimiters):
         if d == char:
             return True
     return False
+    
+
+def JM_is_rtl_char(ch):
+    if ch < 0x590 or ch > 0x900:
+        return False;
+    return True
 
 
 def JM_font_name(font):

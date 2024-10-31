@@ -632,7 +632,7 @@ def get_sorted_text(
             # convert distance to previous word to multiple spaces
             dist = max(
                 int(round((r.x0 - x1) / r.width * len(t))),
-                0 if x1 == clip.x0 else 1,
+                0 if (x1 == clip.x0 or r.x0 <= x1) else 1,
             )  # number of space characters
 
             ltext += " " * dist + t  # append word string
