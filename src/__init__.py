@@ -15379,7 +15379,7 @@ def JM_is_word_delimiter(ch, delimiters):
 
 def JM_is_rtl_char(ch):
     if ch < 0x590 or ch > 0x900:
-        return False;
+        return False
     return True
 
 
