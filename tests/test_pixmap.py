@@ -6,6 +6,7 @@ Pixmap tests
 """
 
 import pymupdf
+import gentle_compare
 
 import os
 import platform
@@ -388,3 +389,21 @@ def test_3994():
             percent, color = pix.color_topusage()
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'premature end of data in flate filter\n... repeated 2 times...'
+
+
+def test_3448():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3448.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap(alpha=False, dpi=150)
+        path_out = f'{path}.png'
+        pixmap.save(path_out)
+        print(f'Have written to: {path_out}')
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3448.pdf-expected.png')
+    pixmap_expected = pymupdf.Pixmap(path_expected)
+    diff = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
+    print(f'{diff=}')
+    if pymupdf.mupdf_version_tuple < (1, 25):
+        assert 30 <= diff < 45
+    else:
+        assert 0 <= diff < 0.5
