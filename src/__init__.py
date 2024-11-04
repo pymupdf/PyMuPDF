@@ -5281,6 +5281,8 @@ class Document:
 
         Arguments have the same meaning as for the range() built-in.
         """
+        if not self.page_count:
+            raise ValueError("document has no pages")
         # set the start value
         start = start or 0
         while start < 0:
