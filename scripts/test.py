@@ -84,8 +84,8 @@ Options:
         current venv.
     --build-flavour <build_flavour>
         Combination of 'p', 'b', 'd'. See ../setup.py's description of
-        PYMUPDF_SETUP_FLAVOUR. Default is 'pb', i.e. self-contained PyMuPDF
-        wheels without MuPDF build-time files.
+        PYMUPDF_SETUP_FLAVOUR. Default is 'pbd', i.e. self-contained PyMuPDF
+        wheels including MuPDF build-time files.
     --build-mupdf 0|1
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
@@ -159,7 +159,7 @@ def main(argv):
     build_do = 'i'
     build_type = None
     build_mupdf = True
-    build_flavour = 'pb'
+    build_flavour = 'pbd'
     gdb = False
     test_fitz = False
     implementations = 'r'
