@@ -553,7 +553,9 @@ def build():
     # Download MuPDF.
     #
     mupdf_local, mupdf_location = get_mupdf()
-    mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    if mupdf_local:
+        mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    # else we cannot determine version this way and do not use it
 
     build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
     assert build_type in ('debug', 'memento', 'release'), \
