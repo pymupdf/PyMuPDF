@@ -49,7 +49,7 @@ Args:
     --pymupdf-do 0|1
         Whether to build and install pymupdf.
     --root <root>
-        Root of install directory; default is `/`.
+        Root of install directory; default is 'pymupdf-sysinstall-test-root'.
     --tesseract5 0|1
         If 1 (the default), we force installation of libtesseract-dev version
         5 (which is not available as a default package in Ubuntu-22.04) from
@@ -140,7 +140,7 @@ def main():
     packages = True
     prefix = '/usr/local'
     pymupdf_do = True
-    root = 'sysinstall_test'
+    root = 'pymupdf-sysinstall-test-root'
     tesseract5 = True
     pytest_args = None
     pytest_do = True
