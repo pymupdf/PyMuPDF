@@ -122,7 +122,7 @@ The following will deliver the **middle point of a line** that connects two poin
   Point(2356.0, 1571.5)
   >>> 
 
-Compute the ** vector dot product** of two points. You can compute the **cosine of angles** and check orthogonality.
+Compute the **vector dot product** of two points. You can compute the **cosine of angles** and check orthogonality.
 
   >>> p1 = pymupdf.Point(1, 0)
   >>> p2 = pymupdf.Point(1, 1)
