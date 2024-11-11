@@ -19,18 +19,18 @@ General Remarks
 -----------------
 1. Operators can be either **binary** (i.e. involving two objects) or **unary**.
 
-2. The resulting type of **binary** operations is either a **new object of the left operand's class** or a bool.
+2. The resulting type of **binary** operations is either a **new object of the left operand's class,** a bool or (for dot products) a float.
 
 3. The result of **unary** operations is either a **new object** of the same class, a bool or a float.
 
-4. The binary operators *+, -, *, /* are defined for all classes. They *roughly* do what you would expect -- **except, that the second operand ...**
+4. The binary operators `+, -, *, /` are defined for all classes. They *roughly* do what you would expect -- **except, that the second operand ...**
 
     - may always be a number which then performs the operation on every component of the first one,
     - may always be a numeric sequence of the same length (2, 4 or 6) -- we call such sequences :data:`point_like`, :data:`rect_like`, :data:`quad_like` or :data:`matrix_like`, respectively.
 
-5. Rectangles support additional binary operations: **intersection** (operator *"&"*), **union** (operator *"|"*) and **containment** checking.
+5. Rectangles support **additional binary** operations: **intersection** (operator `"&"`), **union** (operator `"|"`) and **containment** checking.
 
-6. Binary operators fully support in-place operations, so expressions like `a /= b` are valid if b is numeric or "a_like".
+6. Binary operators fully support in-place operations. So if "°" is a binary operator then the expression `a °= b` is always valid and the same as `a = a ° b`. Therefore, be careful and do **not** do `p1 *= p2` for two points, because thereafter "p1" is a **float**.
 
 
 Unary Operations
@@ -50,17 +50,21 @@ Oper.       Result
 
 Binary Operations
 ------------------
-For every geometry object "a" and every number "b", the operations "a ° b" and "a °= b" are always defined for the operators *+, -, *, /*. The respective operation is simply executed for each component of "a". If the **second operand is not a number**, then the following is defined:
+These are expressions like `a ° b` where "°" is any of the operators `+, -, *, /`. Also binary operations are expressions of the form `a == b` and `b in a`.
 
-========= =======================================================================
+If "b" is a number, then the respective operation is executed for each component of "a". Otherwise, if "b" is **not a number,** then the following happens:
+
+
+========= ===========================================================================
 Oper.     Result
-========= =======================================================================
+========= ===========================================================================
 a+b, a-b  component-wise execution, "b" must be "a-like".
-a*m, a/m  "a" can be a point, rectangle or matrix, but "m" must be
+a*m, a/m  "a" can be a point, rectangle or matrix and "m" is a
           :data:`matrix_like`. *"a/m"* is treated as *"a*~m"* (see note below
           for non-invertible matrices). If "a" is a **point** or a **rectangle**,
           then *"a.transform(m)"* is executed. If "a" is a matrix, then
           matrix concatenation takes place.
+a*b       returns the **vector dot product** for a point "a" and point-like "b".
 a&b       **intersection rectangle:** "a" must be a rectangle and
           "b" :data:`rect_like`. Delivers the **largest rectangle**
           contained in both operands.
@@ -71,7 +75,7 @@ b in a    if "b" is a number, then `b in tuple(a)` is returned.
           If "b" is :data:`point_like`, :data:`rect_like` or :data:`quad_like`,
           then "a" must be a rectangle, and `a.contains(b)` is returned.
 a == b    *True* if *bool(a-b)* is *False* ("b" may be "a-like").
-========= =======================================================================
+========= ===========================================================================
 
 
 .. note:: Please note an important difference to usual arithmetic:
@@ -117,6 +121,29 @@ The following will deliver the **middle point of a line** that connects two poin
   >>> mp
   Point(2356.0, 1571.5)
   >>> 
+
+Compute the ** vector dot product** of two points. You can compute the **cosine of angles** and check orthogonality.
+
+  >>> p1 = pymupdf.Point(1, 0)
+  >>> p2 = pymupdf.Point(1, 1)
+  >>> dot = p1 * p2
+  >>> dot
+  1.0
+
+  >>> # compute the cosine of the angle between p1 and p2:
+  >>> cosine = dot / (abs(p1) * abs(p2))
+  >>> cosine  # cosine of 45 degrees
+  0.7071067811865475
+
+  >>> math.cos(mat.radians(45))  # verify:
+  0.7071067811865476
+
+  >>> # check orhogonality
+  >>> p3 = pymupdf.Point(0, 1)
+  >>> # p1 and p3 are orthogonal so, as expected:
+  >>> p1 * p3  
+  0.0
+
 
 Manipulation with "like" Objects
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

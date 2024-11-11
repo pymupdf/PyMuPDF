@@ -10765,6 +10765,9 @@ class Point:
     def __mul__(self, m):
         if hasattr(m, "__float__"):
             return Point(self.x * m, self.y * m)
+        if hasattr(m, "__getitem__") and len(m) == 2:
+            # dot product
+            return self.x * m[0] + self.y * m[1]
         p = Point(self)
         return p.transform(m)
 
