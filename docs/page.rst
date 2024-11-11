@@ -491,7 +491,7 @@ In a nutshell, this is what you can do with PyMuPDF:
            * `bbox`: the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
            * `cells`: bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
            * `extract()`: this method returns the text content of each table cell as a list of list of strings.
-           * `to_markdown()`: this method returns the table as a **string in markdown format** (compatible to Github). Supporting viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye.
+           * ``to_markdown()``: this method returns the table as a **string in markdown format** (compatible to Github). Supporting viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye.
            * `to_pandas()`: this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. DataFrames are very versatile objects allowing a plethora of table manipulation methods and outputs to almost 20 well-known formats, among them Excel files, CSV, JSON, markdown-formatted tables and more. `DataFrame.to_markdown()` generates a Github-compatible markdown format optimized for human readability. This method however requires the package [tablutate](https://pypi.org/project/tabulate/) to installed in addition to pandas itself.
            * ``header``: a `TableHeader` object containing header information of the table.
            * `col_count`: an integer containing the number of table columns.
@@ -507,9 +507,21 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
 
-         .. caution:: The lifetime of the TableFinder object, as well as that of all its tables **equals the lifetime of the page**. If the page object is deleted or reassigned, all tables are no longer valid.
+         .. caution:: The lifetime of the `TableFinder` object, as well as that of all its tables **equals the lifetime of the page**. If the page object is deleted or reassigned, all tables are no longer valid.
          
             The only way to keep table content beyond the page's availability is to **extract it** via methods `Table.to_markdown()`, `Table.to_pandas()` or a copy of `Table.extract()` (e.g. `Table.extract()[:]`).
+
+         .. note::
+
+            Once a table has been extracted to a **Pandas DataFrame** with `to_pandas()` it is easy to convert to other file types with the **Pandas API**:
+
+            - table to Markdown, use `to_markdown <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_markdown.html#pandas.DataFrame.to_markdown>`_
+            - table to JSON, use: `to_json <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_json.html>`_
+            - table to Excel, use: `to_excel <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_excel.html>`_
+            - table to CSV, use: `to_csv <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html>`_
+            - table to HTML, use: `to_html <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_html.html>`_
+            - table to SQL, use: `to_sql <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html>`_
+
 
       |history_begin|
 
