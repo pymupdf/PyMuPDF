@@ -34,9 +34,9 @@ jobs:
       - name: sysinstall_venv
         run:
           # Use venv.
-          python3 scripts/sysinstall.py --root / --mupdf-git '--branch master https://github.com/ArtifexSoftware/mupdf.git'
+          python3 scripts/sysinstall.py --mupdf-git '--branch master https://github.com/ArtifexSoftware/mupdf.git'
           
       - name: sysinstall_sudo
         run:
           # Do not use a venv, instead install required packages with sudo.
-          python3 scripts/sysinstall.py --pip sudo --root / --mupdf-git '--branch master https://github.com/ArtifexSoftware/mupdf-julian.git'
+          python3 scripts/sysinstall.py --mupdf-git '--branch master https://github.com/ArtifexSoftware/mupdf.git' --pip sudo --root /
