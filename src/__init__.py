@@ -4373,7 +4373,7 @@ class Document:
             res = JM_read_contents( page1)
 
             # create new /Contents object for page2
-            if res.m_internal:
+            if res and res.m_internal:
                 #contents = mupdf.pdf_add_stream( pdf, mupdf.fz_new_buffer_from_copied_data( b"  ", 1), NULL, 0)
                 contents = mupdf.pdf_add_stream( pdf, mupdf.fz_new_buffer_from_copied_data( b" "), mupdf.PdfObj(), 0)
                 JM_update_stream( pdf, contents, res, 1)
