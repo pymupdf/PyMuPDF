@@ -488,15 +488,15 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * The `Table` object has the following attributes:
 
-           * `bbox`: the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
-           * `cells`: bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
-           * `extract()`: this method returns the text content of each table cell as a list of list of strings.
+           * ``bbox``: the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
+           * ``cells``: bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
+           * ``extract()``: this method returns the text content of each table cell as a list of list of strings.
            * ``to_markdown()``: this method returns the table as a **string in markdown format** (compatible to Github). Supporting viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye.
-           * `to_pandas()`: this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. DataFrames are very versatile objects allowing a plethora of table manipulation methods and outputs to almost 20 well-known formats, among them Excel files, CSV, JSON, markdown-formatted tables and more. `DataFrame.to_markdown()` generates a Github-compatible markdown format optimized for human readability. This method however requires the package [tablutate](https://pypi.org/project/tabulate/) to installed in addition to pandas itself.
+           * `to_pandas()`: this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. DataFrames are very versatile objects allowing a plethora of table manipulation methods and outputs to almost 20 well-known formats, among them Excel files, CSV, JSON, markdown-formatted tables and more. `DataFrame.to_markdown()` generates a Github-compatible markdown format optimized for human readability. This method however requires the package `tabulate <https://pypi.org/project/tabulate/>`_ to be installed in addition to pandas itself.
            * ``header``: a `TableHeader` object containing header information of the table.
-           * `col_count`: an integer containing the number of table columns.
-           * `row_count`: an integer containing the number of table rows. 
-           * `rows`: a list of `TableRow` objects containing two attributes, ``bbox`` is the boundary box of the row, and `cells` is a list of table cells contained in this row.
+           * ``col_count``: an integer containing the number of table columns.
+           * ``row_count``: an integer containing the number of table rows.
+           * ``rows``: a list of `TableRow` objects containing two attributes, ``bbox`` is the boundary box of the row, and `cells` is a list of table cells contained in this row.
 
          * The `TableHeader` object has the following attributes:
 
@@ -782,7 +782,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       **PDF only:** Insert text into the specified rectangle. The method has similarities with methods :meth:`Page.insert_textbox` and :meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is achieved by letting a :ref:`Story` object do all the required processing.
 
-      * Parameter `text` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
+      * Parameter ``text`` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
 
       * Automatic line breaks are generated at word boundaries. The "soft hyphen" character `"&#173;"` (or `&shy;`) can be used to cause hyphenation and thus may also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag `<br>` - `"\\n"` is ignored and will be treated like a space.
 
@@ -802,9 +802,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like rect: rectangle on page to receive the text.
       :arg str,Story text: the text to be written. Can contain a mixture of plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
-      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if `text` is a Story.
+      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if ``text`` is a Story.
       :arg float scale_low: if necessary, scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling permitted. A value of e.g. 0.2 means maximum down-scaling by 80%.
-      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If `text` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if `text` is a Story.
+      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If ``text`` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if ``text`` is a Story.
       :arg int rotate: one of the values 0, 90, 180, 270. Depending on this, text will be filled:
       
           - 0: top-left to bottom-right.
