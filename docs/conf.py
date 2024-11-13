@@ -31,7 +31,7 @@ templates_path = ["_templates"]
 source_suffix = ".rst"
 
 # from: pip install sphinxcontrib-googleanalytics
-googleanalytics_id = "G-CNPM7TB3DC"
+googleanalytics_id = "G-JZTN4VTL9M"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
