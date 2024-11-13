@@ -364,7 +364,7 @@ class Package:
                 * https://pypi.org/classifiers/
 
             requires_dist:
-                A string or list of strings. Also see PEP-508.
+                A string or list of strings. None items are ignored. Also see PEP-508.
             requires_python:
                 A string or list of strings.
             requires_external:
@@ -489,6 +489,7 @@ class Package:
                 Used as `zipfile.ZipFile()`'s `compresslevel` parameter when
                 creating wheels.
 
+        Occurrences of `None` in lists are ignored.
         '''
         assert name
         assert version
@@ -1261,7 +1262,8 @@ class Package:
                 return
             if isinstance( value, (tuple, list)):
                 for v in value:
-                    add( key, v)
+                    if v is not None:
+                        add( key, v)
                 return
             if key == 'License' and '\n' in value:
                 # This is ok because we write `self.license` into
