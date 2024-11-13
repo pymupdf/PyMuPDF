@@ -90,6 +90,9 @@ Options:
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
         Run tests under gdb.
+    --pybind 0|1
+        Run tests inside C++ pybind.Requires `sudo apt install pybind11-dev` or
+        similar.
     --system-site-packages 0|1
         If 1, use `--system-site-packages` when creating venv.
     --timeout <seconds>
@@ -165,6 +168,7 @@ def main(argv):
     implementations = 'r'
     test_names = list()
     venv = 2
+    pybind = False
     pytest_options = None
     timeout = None
     pytest_k = None
@@ -211,6 +215,8 @@ def main(argv):
             value = next(args)
             assert value in ('0', '1'), f'`-s` must be followed by `0` or `1`, not {value=}.'
             os.environ['PYMUPDF_SETUP_PY_LIMITED_API'] = value
+        elif arg == '--pybind':
+            pybind = int(next(args))
         elif arg == '--system-site-packages':
             system_site_packages = int(next(args))
         elif arg == '-t':
@@ -282,6 +288,7 @@ def main(argv):
                 gdb=gdb,
                 test_fitz=test_fitz,
                 pytest_k=pytest_k,
+                pybind=pybind,
                 )
     
     for command in commands:
@@ -621,7 +628,8 @@ def test(
         timeout=None,
         gdb=False,
         test_fitz=True,
-        pytest_k=None
+        pytest_k=None,
+        pybind=False,
         ):
     '''
     Args:
@@ -642,6 +650,65 @@ def test(
         test_fitz:
             See top-level option `-f`.
     '''
+    if pybind:
+        cpp_path = 'pymupdf_test_pybind.cpp'
+        cpp_exe = 'pymupdf_test_pybind.exe'
+        cpp = textwrap.dedent('''
+                #include <pybind11/embed.h>
+                
+                int main()
+                {
+                    pybind11::scoped_interpreter guard{};
+                    pybind11::exec(R"(
+                            print('Hello world', flush=1)
+                            import pymupdf
+                            pymupdf.JM_mupdf_show_warnings = 1
+                            print(f'{pymupdf.version=}', flush=1)
+                            doc = pymupdf.Document()
+                            pymupdf.mupdf.fz_warn('Dummy warning.')
+                            pymupdf.mupdf.fz_warn('Dummy warning.')
+                            pymupdf.mupdf.fz_warn('Dummy warning.')
+                            print(f'{doc=}', flush=1)
+                            )");
+                }
+                ''')
+        def fs_read(path):
+            try:
+                with open(path) as f:
+                    return f.read()
+            except Exception:
+                return
+        def fs_remove(path):
+            try:
+                os.remove(path)
+            except Exception:
+                pass
+        cpp_existing = fs_read(cpp_path)
+        if cpp == cpp_existing:
+            log(f'Not creating {cpp_exe} because unchanged: {cpp_path}')
+        else:
+            with open(cpp_path, 'w') as f:
+                f.write(cpp)
+        def getmtime(path):
+            try:
+                return os.path.getmtime(path)
+            except Exception:
+                return 0
+        python_config = f'{os.path.realpath(sys.executable)}-config'
+        # `--embed` adds `-lpython3.11` to the link command, which appears to
+        # be necessary when building an executable.
+        flags = run(f'{python_config} --cflags --ldflags --embed', capture=1)
+        build_command = f'c++ {cpp_path} -o {cpp_exe} -g -W -Wall {flags}'
+        build_path = f'{cpp_exe}.cmd'
+        build_command_prev = fs_read(build_path)
+        if build_command != build_command_prev or getmtime(cpp_path) >= getmtime(cpp_exe):
+            fs_remove(build_path)
+            run(build_command)
+            with open(build_path, 'w') as f:
+                f.write(build_command)
+        run(f'./{cpp_exe}')
+        return
+    
     pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
     if pytest_options is None:
         if valgrind:
