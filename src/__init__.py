@@ -8560,6 +8560,8 @@ class Page:
                     fill = (fill, fill, fill)
                 if len(fill) > 3:
                     fill = fill[:3]
+        else:
+            text = None
 
         old_rotation = annot_preprocess(self)
         try:
