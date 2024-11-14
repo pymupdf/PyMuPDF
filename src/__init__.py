@@ -16548,7 +16548,10 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
         style.size = ch.m_internal.size
         style.flags = flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
-        style.color = ch.m_internal.color
+        if mupdf_version_tuple >= (1, 26):
+            style.color = ch.m_internal.argb
+        else:
+            style.color = ch.m_internal.color
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
 
@@ -21058,10 +21061,12 @@ def sRGB_to_rgb(srgb: int) -> tuple:
     There is **no error checking** for performance reasons!
 
     Args:
-        srgb: (int) RRGGBB (red, green, blue), each color in range(255).
+        srgb: (int) SSRRGGBB (red, green, blue), each color in range(255).
+        With MuPDF < 1.26, `s` is always 0.
     Returns:
         Tuple (red, green, blue) each item in interval 0 <= item <= 255.
     """
+    srgb &= 0xffffff
     r = srgb >> 16
     g = (srgb - (r << 16)) >> 8
     b = srgb - (r << 16) - (g << 8)
