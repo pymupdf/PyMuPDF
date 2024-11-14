@@ -343,8 +343,8 @@ def test_file_info():
                 print(f'{file_info=}')
                 results.append(file_info)
     assert results == [
-            {'filename': 'example.pdf', 'descender': '', 'length': 8416, 'size': 8992},
-            {'filename': 'photo1.jpeg', 'descender': '', 'length': 10154, 'size': 8012},
+            {'filename': 'example.pdf', 'description': '', 'length': 8416, 'size': 8992},
+            {'filename': 'photo1.jpeg', 'description': '', 'length': 10154, 'size': 8012},
             ]
 
 def test_3131():
