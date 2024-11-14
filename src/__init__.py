@@ -912,7 +912,7 @@ class Annot:
             size = mupdf.pdf_to_int(o)
 
         res[ dictkey_filename] = JM_EscapeStrFromStr(filename)
-        res[ dictkey_desc] = JM_UnicodeFromStr(desc)
+        res[ dictkey_descr] = JM_UnicodeFromStr(desc)
         res[ dictkey_length] = length
         res[ dictkey_size] = size
         return res
@@ -3255,7 +3255,7 @@ class Document:
         infodict[dictkey_ufilename] = JM_EscapeStrFromStr(name)
 
         name = mupdf.pdf_to_text_string(mupdf.pdf_dict_get(o, PDF_NAME('Desc')))
-        infodict[dictkey_desc] = JM_UnicodeFromStr(name)
+        infodict[dictkey_descr] = JM_UnicodeFromStr(name)
 
         len_ = -1
         DL = -1
@@ -13668,7 +13668,7 @@ dictkey_creationDate = "creationDate"
 dictkey_cs_name = "cs-name"
 dictkey_da = "da"
 dictkey_dashes = "dashes"
-dictkey_desc = "desc"
+dictkey_descr = "description"
 dictkey_desc = "descender"
 dictkey_dir = "dir"
 dictkey_effect = "effect"
