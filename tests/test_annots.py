@@ -458,3 +458,17 @@ def test_parent():
             assert str(e) == 'weakly-referenced object no longer exists'
     else:
         assert 0, f'Failed to get expected exception.'
+
+def test_4047():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4047.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        fontname = page.get_fonts()[0][3]
+        if fontname not in pymupdf.Base14_fontnames:
+            fontname = "Courier"
+        hits = page.search_for("|")
+        for rect in hits:
+            page.add_redact_annot(
+                rect, " ", fontname=fontname, align=pymupdf.TEXT_ALIGN_CENTER, fontsize=10
+            )  # Segmentation Fault...
+        page.apply_redactions()
