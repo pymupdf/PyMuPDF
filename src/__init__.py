@@ -7750,6 +7750,7 @@ class Page:
                 mupdf.pdf_array_push_real(arr, fcol[i])
             mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('IC'), arr)
         if text:
+            assert da_str
             mupdf.pdf_dict_puts(
                     mupdf.pdf_annot_obj(annot),
                     "OverlayText",
