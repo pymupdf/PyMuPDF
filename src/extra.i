@@ -3045,7 +3045,7 @@ mupdf::FzRect JM_make_spanlist(
         float size = -1;
         int flags = -1;
         const char *font = "";
-        int color = -1;
+        unsigned int color = -1;
         float asc = 0;
         float desc = 0;
     };
@@ -3064,7 +3064,11 @@ mupdf::FzRect JM_make_spanlist(
         style.size = ch.m_internal->size;
         style.flags = flags;
         style.font = JM_font_name(ch.m_internal->font);
-        style.color = ch.m_internal->color;
+        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 26))
+            style.color = ch.m_internal->argb;
+        #else
+            style.color = ch.m_internal->color;
+        #endif
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
 
