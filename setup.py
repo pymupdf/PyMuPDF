@@ -756,7 +756,10 @@ def build_mupdf_windows(
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
     windows_build_tail = f'build\\shared-{tesseract}{build_type}'
     if g_py_limited_api:
-        windows_build_tail += f'-Py_LIMITED_API={pipcl.current_py_limited_api()}'
+        if get_mupdf_version(mupdf_local) >= (1, 24, 11):
+            windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
+        else:
+            windows_build_tail += f'-Py_LIMITED_API={pipcl.current_py_limited_api()}'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
@@ -901,7 +904,10 @@ def build_mupdf_unix(
         build_prefix += 'bsymbolic-'
     log(f'{g_py_limited_api=}')
     if g_py_limited_api:
-        build_prefix += f'Py_LIMITED_API={pipcl.current_py_limited_api()}-'
+        if get_mupdf_version(mupdf_local) >= (1, 24, 11):
+            build_prefix += f'Py_LIMITED_API_{pipcl.current_py_limited_api()}-'
+        else:
+            build_prefix += f'Py_LIMITED_API={pipcl.current_py_limited_api()}-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
