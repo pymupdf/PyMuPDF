@@ -1586,3 +1586,9 @@ def test_4043():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4043.pdf')
     doc = pymupdf.open(path)
     doc.fullcopy_page(1)
+
+
+def test_4018():
+    document = pymupdf.open()
+    for page in document.pages(-1, -1):
+        pass
