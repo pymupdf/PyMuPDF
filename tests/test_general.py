@@ -1580,3 +1580,9 @@ def test_3624():
             # We get small differences in sysinstall tests, where some
             # thirdparty libraries can differ.
             assert rms < 1
+
+
+def test_4043():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4043.pdf')
+    doc = pymupdf.open(path)
+    doc.fullcopy_page(1)
