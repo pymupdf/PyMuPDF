@@ -2,6 +2,28 @@ Change Log
 ==========
 
 
+**Changes in version 1.24.14 (?)**
+
+* Use MuPDF-1.24.11.
+
+* Fixed issues:
+
+  * **Fixed** `3448 <https://github.com/pymupdf/PyMuPDF/issues/3448>`_: get_pixmap function removes the table and leaves just the content behind
+  * **Fixed** `3758 <https://github.com/pymupdf/PyMuPDF/issues/3758>`_: Got "malloc(): unaligned tcache chunk detected Aborted (core dumped)" while using add_redact_annot/apply_redactions
+  * **Fixed** `3813 <https://github.com/pymupdf/PyMuPDF/issues/3813>`_: Stories: Ordered list count broken with nested unordered list
+  * **Fixed** `3933 <https://github.com/pymupdf/PyMuPDF/issues/3933>`_: font.valid_codepoints() - malfunction
+  * **Fixed** `4018 <https://github.com/pymupdf/PyMuPDF/issues/4018>`_: PyMuPDF hangs when iterating over zero page PDF pages backwards
+  * **Fixed** `4043 <https://github.com/pymupdf/PyMuPDF/issues/4043>`_: fullcopypage bug
+  * **Fixed** `4047 <https://github.com/pymupdf/PyMuPDF/issues/4047>`_: Segmentation Fault in add_redact_annot
+  * **Fixed** `4050 <https://github.com/pymupdf/PyMuPDF/issues/4050>`_: Content of dict returned by doc.embfile_info() does not fit to documentation
+
+* Other:
+
+  * Ensure that words from `Page.get_text()` never contain RTL/LTR char mixtures.
+  * Fix building with system MuPDF.
+  * Add dot product for points and vectors.
+
+
 **Changes in version 1.24.13 (2024-10-29)**
 
 * Fixed issues:
