@@ -392,11 +392,15 @@ def test_2238():
     rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
         wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                'format error: cannot recognize version marker\n'
-                'trying to repair broken xref\n'
-                'repairing PDF document'
-                ), f'{wt=}'
+        wt_expected = ''
+        if pymupdf.mupdf_version_tuple >= (1, 26):
+            wt_expected += 'garbage bytes before version marker\n'
+            wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
+        else:
+            wt_expected += 'format error: cannot recognize version marker\n'
+        wt_expected += 'trying to repair broken xref\n'
+        wt_expected += 'repairing PDF document'
+        assert wt == wt_expected, f'{wt=}'
     first_page = doc.load_page(0).get_text('text', pymupdf.INFINITE_RECT())
     last_page = doc.load_page(-1).get_text('text', pymupdf.INFINITE_RECT())
 
@@ -1555,7 +1559,10 @@ def test_3905():
     else:
         assert 0
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
+    if pymupdf.mupdf_version_tuple >= (1, 26):
+        assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
+    else:
+        assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
 
 def test_3624():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
