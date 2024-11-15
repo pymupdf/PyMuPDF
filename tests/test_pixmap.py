@@ -403,7 +403,7 @@ def test_3448():
     pixmap_expected = pymupdf.Pixmap(path_expected)
     diff = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
     print(f'{diff=}')
-    if pymupdf.mupdf_version_tuple < (1, 25):
+    if pymupdf.mupdf_version_tuple < (1, 24, 11):
         assert 30 <= diff < 45
     else:
         assert 0 <= diff < 0.5
