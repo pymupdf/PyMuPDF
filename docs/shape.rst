@@ -133,7 +133,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Draw a standard cubic Bézier curve from *p1* to *p4*, using *p2* and *p3* as control points.
 
-      All arguments are :data:`point_like` \s.
+      All arguments are :data:`point_like` objects.
 
       :rtype: :ref:`Point`
       :returns: the end point, *p4*.
@@ -300,7 +300,7 @@ Several draw methods can be executed in a row and each one of them will contribu
          .. image:: images/img-inserttext.*
             :scale: 33
 
-      :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks *\n*, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
+      :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks ``\n``, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
 
       :arg float lineheight: a factor to override the line height calculated from font properties. If not `None`, a line height of `fontsize * lineheight` will be used.
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors (the **border line** of a character). Only  `0 <= value <= 1` will be considered. Default is 1 (intransparent).
@@ -555,7 +555,7 @@ Common Parameters
 
 **dashes** (*str*)
 
-  Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. `n` is the dash length, `m` (optional) is the subsequent gap length, and `p` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If `m` is omitted, it defaults to `n`.
+  Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. ``n`` is the dash length, ``m`` (optional) is the subsequent gap length, and ``p`` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If ``m`` is omitted, it defaults to ``n``.
   
   A continuous line (no dashes) is drawn with `"[] 0"` or *None* or `""`. Examples:
   
@@ -583,7 +583,7 @@ Common Parameters
   The stroke ("border") width of the elements in a shape (if applicable). The default value is 1. The values width, color and fill have the following relationship / dependency:
 
   * If `fill=None` shape elements will always be drawn with a border - even if `color=None` (in which case black is taken) or `width=0` (in which case 1 is taken).
-  * Shapes without border can only be achieved if a fill color is specified (which may be white of course). To achieve this, specify `width=0`. In this case, the `color` parameter is ignored.
+  * Shapes without border can only be achieved if a fill color is specified (which may be white of course). To achieve this, specify `width=0`. In this case, the ``color`` parameter is ignored.
 
 ----
 

@@ -479,7 +479,7 @@ Command::
 * **noligatures:** (bool) corresponds to **not** :data:`TEXT_PRESERVE_LIGATURES`. If specified, ligatures (present in advanced fonts: glyphs combining multiple characters like "fi") are split up into their components (i.e. "f", "i"). Default is passing them through.
 * **convert-white:** corresponds to **not** :data:`TEXT_PRESERVE_WHITESPACE`. If specified, all white space characters (like tabs) are replaced with one or more spaces. Default is passing them through.
 * **extra-spaces:**  (bool) corresponds to **not** :data:`TEXT_INHIBIT_SPACES`. If specified, large gaps between adjacent characters will be filled with one or more spaces. Default is off.
-* **noformfeed:**  (bool) instead of `hex(12)` (formfeed), write linebreaks `\n` at end of output pages.
+* **noformfeed:**  (bool) instead of `hex(12)` (formfeed), write linebreaks ``\n`` at end of output pages.
 * **skip-empty:**  (bool) skip pages with no text.
 * **grid:** lines with a vertical coordinate difference of no more than this value (in points) will be merged into the same output line. Only relevant for "layout" mode. **Use with care:** 3 or the default 2 should be adequate in most cases. If **too large**, lines that are *intended* to be different in the original may be merged and will result in garbled and / or incomplete output. If **too low**, artifact separate output lines may be generated for some spans in the input line, just because they are coded in a different font with slightly deviating properties.
 * **fontsize:** include text with :data:`fontsize` larger than this value only (default 3). Only relevant for "layout" option.

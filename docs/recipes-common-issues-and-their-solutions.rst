@@ -165,7 +165,7 @@ Unfortunately there is not much you can do in most of these cases.
   * :meth:`Annot.set_flags` (annotation behaviour)
   * :meth:`Annot.set_info` (meta information, except changes to *content*)
   * :meth:`Annot.set_popup` (create popup or change its rect)
-  * :meth:`Annot.set_optional_content` (add / remove reference to optional content information)
+  * :meth:`Annot.set_oc` (add / remove reference to optional content information)
   * :meth:`Annot.set_open`
   * :meth:`Annot.update_file` (file attachment changes)
 

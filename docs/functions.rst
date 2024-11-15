@@ -618,7 +618,7 @@ Yet others are handy, general-purpose utilities.
 
       1. Information above tagged with "(1)" has the same meaning and value as explained in :ref:`TextPage`.
 
-         - Please note that the font `flags` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
+         - Please note that the font ``flags`` value will never contain a *superscript* flag bit: the detection of superscripts is done within MuPDF :ref:`TextPage` code -- it is not a property of any font.
          - Also note, that the text *color* is encoded as the usual tuple of floats 0 <= f <= 1 -- not in sRGB format. Depending on `span["type"]`, interpret this as fill color or stroke color.
 
       2. There are 3 text span types:

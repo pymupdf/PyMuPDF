@@ -42,7 +42,7 @@ In PyMuPDF, archives are currently only used by :ref:`Story` objects to specify 
 
       * a Python binary object (`bytes`, `bytearray`, `io.BytesIO`): this will add a single-member sub-archive. In this case, the `path` parameter is **mandatory** and should be the member name under which this item can be found / retrieved.
 
-      * a tuple `(data, name)`: This will add a single-member sub-archive with the member name `name`. `data` may be a Python binary object or a local file name (in which case its binary file content is used). Use this format if you need to specify `path`.
+      * a tuple `(data, name)`: This will add a single-member sub-archive with the member name ``name``. ``data`` may be a Python binary object or a local file name (in which case its binary file content is used). Use this format if you need to specify `path`.
 
       * a Python sequence: This is a convenience format to specify any combination of the above.
 

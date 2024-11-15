@@ -35,7 +35,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 :meth:`~.add_var`                Add code text (:htmlTag:`code` tag) - inline element, treated like text.
 :meth:`~.add_samp`               Add code text (:htmlTag:`code` tag) - inline element, treated like text.
 :meth:`~.add_kbd`                Add code text (:htmlTag:`code` tag) - inline element, treated like text.
-:meth:`~.add_text`               Add a text string. Line breaks `\n` are honored as :htmlTag:`br` tags.
+:meth:`~.add_text`               Add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
 :meth:`~.append_child`           Append a child node.
 :meth:`~.clone`                  Make a copy if this node.
 :meth:`~.create_element`         Make a new node with a given tag name.
@@ -159,7 +159,7 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
     .. method:: add_text(text)
 
-       Add a text string. Line breaks `\n` are honored as :htmlTag:`br` tags.
+       Add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
 
     .. method:: set_align(value)
 

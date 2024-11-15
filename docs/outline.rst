@@ -67,13 +67,13 @@ Outline
       be evaluated in conjunction with property `is_external`:
       
       *
-        `is_external` is true: `uri` points to some target outside the current
-        PDF, which may be an internet resource (`uri` starts with "http://" or
-        similar), another file (`uri` starts with "file:" or "file://") or some
-        other service like an e-mail address (`uri` starts with "mailto:").
+        `is_external` is true: ``uri`` points to some target outside the current
+        PDF, which may be an internet resource (``uri`` starts with ``http://`` or
+        similar), another file (``uri`` starts with ``file:`` or ``file://``) or some
+        other service like an e-mail address (``uri`` starts with ``mailto:``).
 
       *
-        `is_external` is false: `uri` will be `None` or point to an
+        `is_external` is false: ``uri`` will be `None` or point to an
         internal location. In case of PDF documents, this should either be
         *#nnnn* to indicate a 1-based (!) page number *nnnn*, or a named
         location. The format varies for other document types, for example

@@ -784,7 +784,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * Parameter ``text`` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
 
-      * Automatic line breaks are generated at word boundaries. The "soft hyphen" character `"&#173;"` (or `&shy;`) can be used to cause hyphenation and thus may also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag `<br>` - `"\\n"` is ignored and will be treated like a space.
+      * Automatic line breaks are generated at word boundaries. The "soft hyphen" character `"&#173;"` (or `&shy;`) can be used to cause hyphenation and thus may also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag ``<br>`` - ``\n`` is ignored and will be treated like a space.
 
       * With this method the following can be achieved:
 
@@ -1500,7 +1500,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          
             **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
 
-            `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
+            `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
 
       |history_begin|
 
@@ -1557,7 +1557,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note::, quads and rectangles are more reliably recognized as such. (Starting with v1.19.2)
 
-      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
+      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in :ref:`How to Extract Drawings <RecipesDrawingAndGraphics_Extract_Drawings>`.
 
       Specifying `extended=True` significantly alters the output. Most importantly, new dictionary types are present: "clip" and "group". All paths will now be organized in a hierarchic structure which is encoded by the new integer key "level", the hierarchy level. Each group or clip establishes a new hierarchy, which applies to all subsequent paths having a *larger* level value. (New in v1.22.0)
 
