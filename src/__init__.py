@@ -6508,7 +6508,7 @@ class Font:
         '''
         Returns sorted list of valid unicodes of a fz_font.
         '''
-        if mupdf_version_tuple < (1, 25):
+        if mupdf_version_tuple < (1, 24, 11):
             # mupdf.fz_enumerate_font_cmap2() not available.
             return []
         ucs_gids = mupdf.fz_enumerate_font_cmap2(self.this)
