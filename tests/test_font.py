@@ -180,7 +180,7 @@ def test_3933():
                 font = pymupdf.Font(fontname=name, fontbuffer=content)
                 supported_symbols = font.valid_codepoints()
                 print(f'Font {name}: {len(supported_symbols)=}.', flush=1)
-                if pymupdf.mupdf_version_tuple < (1, 25):
+                if pymupdf.mupdf_version_tuple < (1, 24, 11):
                     assert len(supported_symbols) == 0
                 else:
                     assert len(supported_symbols) == expected.get(name)
