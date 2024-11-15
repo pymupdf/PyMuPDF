@@ -331,7 +331,7 @@ MuPDF generates text errors and warnings.
     `mupdf_display_warnings()`.
   
   *
-    These messages are prefixed with `MuPDF error: ` and `MuPDF warning: `
+    These messages are prefixed with `MuPDF error:` and `MuPDF warning:`
     respectively.
   
 Some MuPDF errors may lead to Python exceptions.

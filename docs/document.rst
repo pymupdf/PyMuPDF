@@ -1088,7 +1088,7 @@ For details on **embedded files** refer to Appendix 3.
 
     PDF only: Return the :data:`xref` of the outline item. This is mainly used for internal purposes.
 
-    arg int idx: index of the item in list :meth:`Document.get_toc`.
+    :arg int idx: index of the item in list :meth:`Document.get_toc`.
 
     :returns: :data:`xref`.
 
