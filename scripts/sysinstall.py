@@ -49,7 +49,7 @@ Args:
     --pymupdf-do 0|1
         Whether to build and install pymupdf.
     --root <root>
-        Root of install directory; default is `/`.
+        Root of install directory; default is 'pymupdf-sysinstall-test-root'.
     --tesseract5 0|1
         If 1 (the default), we force installation of libtesseract-dev version
         5 (which is not available as a default package in Ubuntu-22.04) from
@@ -63,9 +63,9 @@ Args:
         from a generated wheel. [Otherwise we use `pip install`, which refuses
         to do a system install with `--root /`, referencing PEP-668.]
     -i <implementations>
-        Passed through to scripts/test.py.
+        Passed through to scripts/test.py. Default is 'rR'.
     -f <test-fitz>
-        Passed through to scripts/test.py.
+        Passed through to scripts/test.py. Default is '1'.
     -p <pytest-options>
         Passed through to scripts/test.py.
     -t <names>
@@ -85,6 +85,14 @@ import sys
 import sysconfig
 
 import test as test_py
+
+pymupdf_dir = os.path.abspath( f'{__file__}/../..')
+
+sys.path.insert(0, pymupdf_dir)
+import pipcl
+del sys.path[0]
+
+log = pipcl.log0
 
 # Requirements for a system build and install:
 #
@@ -106,18 +114,21 @@ g_sys_packages = [
 def main():
     
     if 1:
-        print(f'## {__file__}: Starting.')
-        print(f'{sys.executable=}')
-        print(f'{platform.python_version()=}')
-        print(f'{__file__=}')
-        print(f'{sys.argv=}')
-        print(f'{sysconfig.get_path("platlib")=}')
+        log(f'## {__file__}: Starting.')
+        log(f'{sys.executable=}')
+        log(f'{platform.python_version()=}')
+        log(f'{__file__=}')
+        log(f'{sys.argv=}')
+        log(f'{sysconfig.get_path("platlib")=}')
         run_command(f'python -V', check=0)
         run_command(f'python3 -V', check=0)
         run_command(f'sudo python -V', check=0)
         run_command(f'sudo python3 -V', check=0)
         run_command(f'sudo PATH={os.environ["PATH"]} python -V', check=0)
         run_command(f'sudo PATH={os.environ["PATH"]} python3 -V', check=0)
+    
+    if test_py.github_workflow_unimportant():
+        return
     
     # Set default behaviour.
     #
@@ -129,16 +140,15 @@ def main():
     packages = True
     prefix = '/usr/local'
     pymupdf_do = True
-    pymupdf_dir = os.path.abspath( f'{__file__}/../..')
-    root = 'sysinstall_test'
+    root = 'pymupdf-sysinstall-test-root'
     tesseract5 = True
     pytest_args = None
     pytest_do = True
     pytest_name = None
     test_venv = 'venv-pymupdf-sysinstall-test'
     pip = 'venv'
-    test_fitz = None
-    test_implementations = None
+    test_fitz = '1'
+    test_implementations = 'rR'
     
     # Parse command-line.
     #
@@ -149,7 +159,7 @@ def main():
         except StopIteration:
             break
         if arg in ('-h', '--help'):
-            print(__doc__)
+            log(__doc__)
             return
         elif arg == '--mupdf-do':       mupdf_do = int(next(args))
         elif arg == '--mupdf-dir':      mupdf_dir = next(args)
@@ -158,7 +168,6 @@ def main():
         elif arg == '--packages':       packages = int(next(args))
         elif arg == '--prefix':         prefix = next(args)
         elif arg == '--pymupdf-do':     pymupdf_do = int(next(args))
-        elif arg == '--pymupdf-dir':    pymupdf_dir = next(args)
         elif arg == '--root':           root = next(args)
         elif arg == '--tesseract5':     tesseract5 = int(next(args))
         elif arg == '--pytest-do':      pytest_do = int(next(args))
@@ -188,23 +197,23 @@ def main():
     if mupdf_git:
         # Update existing checkout or do `git clone`.
         if os.path.exists(mupdf_dir):
-            print(f'## Update MuPDF checkout {mupdf_dir}.')
+            log(f'## Update MuPDF checkout {mupdf_dir}.')
             run(f'cd {mupdf_dir} && git pull && git submodule update --init')
         else:
             # No existing git checkout, so do a fresh clone.
-            print(f'## Clone MuPDF into {mupdf_dir}.')
+            log(f'## Clone MuPDF into {mupdf_dir}.')
             run(f'git clone --recursive --depth 1 --shallow-submodules {mupdf_git} {mupdf_dir}')
     
     if packages:
         # Install required system packages. We assume a Debian package system.
         #
-        print('## Install system packages required by MuPDF.')
+        log('## Install system packages required by MuPDF.')
         run(f'sudo apt update')
         run(f'sudo apt install {" ".join(g_sys_packages)}')
         # Ubuntu-22.04 has freeglut3-dev, not libglut-dev.
         run(f'sudo apt install libglut-dev | sudo apt install freeglut3-dev')
         if tesseract5:
-            print(f'## Force installation of libtesseract-dev version 5.')
+            log(f'## Force installation of libtesseract-dev version 5.')
             # https://stackoverflow.com/questions/76834972/how-can-i-run-pytesseract-python-library-in-ubuntu-22-04
             #
             run('sudo apt install -y software-properties-common')
@@ -217,12 +226,12 @@ def main():
     # Build+install MuPDF. We use mupd:Makefile's install-shared-python target.
     #
     if pip == 'sudo':
-        print('## Installing Python packages required for building MuPDF and PyMuPDF.')
+        log('## Installing Python packages required for building MuPDF and PyMuPDF.')
         run(f'sudo pip install --upgrade pip')
         names = test_py.wrap_get_requires_for_build_wheel(f'{__file__}/../..')
         run(f'sudo pip install {names}')
     
-    print('## Build and install MuPDF.')
+    log('## Build and install MuPDF.')
     command = f'cd {mupdf_dir}'
     command += f' && {sudo}make'
     command += f' -j {multiprocessing.cpu_count()}'
@@ -243,10 +252,10 @@ def main():
     
     # Build+install PyMuPDF.
     #
-    print('## Build and install PyMuPDF.')
+    log('## Build and install PyMuPDF.')
     def run(command):
         return run_command(command, doit=pymupdf_do)
-    flags_freetype2 = run_command('pkg-config --cflags freetype2', capture_output=1).stdout.strip()
+    flags_freetype2 = run_command('pkg-config --cflags freetype2', capture=1)
     compile_flags = f'-I {root_prefix}/include {flags_freetype2}'
     link_flags = f'-L {root_prefix}/lib'
     env = ''
@@ -255,7 +264,7 @@ def main():
     env += f'LDFLAGS="-L {root}/{prefix}/lib" '
     env += f'PYMUPDF_SETUP_MUPDF_BUILD= '       # Use system MuPDF.
     if use_installer:
-        print(f'## Building wheel.')
+        log(f'## Building wheel.')
         if pip == 'venv':
             venv_name = 'venv-pymupdf-sysinstall'
         run(f'pwd')
@@ -274,7 +283,7 @@ def main():
         wheel = glob.glob(f'dist/*')
         assert len(wheel) == 1, f'{wheel=}'
         wheel = wheel[0]
-        print(f'## Installing wheel using `installer`.')
+        log(f'## Installing wheel using `installer`.')
         pv = '.'.join(platform.python_version_tuple()[:2])
         p = f'{root_prefix}/lib/python{pv}'
         # `python -m installer` fails to overwrite existing files.
@@ -312,13 +321,10 @@ def main():
                     if leaf in dirnames:
                         pythonpath.append(os.path.join(dirpath, leaf))
         pythonpath = ':'.join(pythonpath)
-        print(f'{pythonpath=}')
+        log(f'{pythonpath=}')
     else:
         command = f'{env} pip install -vv --root {root} {os.path.abspath(pymupdf_dir)}'
         run( command)
-        sys.path.insert(0, pymupdf_dir)
-        import pipcl
-        del sys.path[0]
         pythonpath = pipcl.install_dir(root)
     
     # Show contents of installation directory. This is very slow on github,
@@ -327,7 +333,7 @@ def main():
         
     # Run pytest tests.
     #
-    print('## Run PyMuPDF pytest tests.')
+    log('## Run PyMuPDF pytest tests.')
     def run(command):
         return run_command(command, doit=pytest_do)
     import gh_release
@@ -384,13 +390,11 @@ def main():
     run(command)
 
 
-def run_command(command, capture_output=False, check=True, doit=True):
+def run_command(command, capture=False, check=True, doit=True):
     if doit:
-        print(f'## Running: {command}')
-        sys.stdout.flush()
-        return subprocess.run(command, shell=1, check=check, text=1, capture_output=capture_output)
+        return pipcl.run(command, capture=capture, check=check, caller=2)
     else:
-        print(f'## Would have run: {command}')
+        log(f'## Would have run: {command}', caller=2)
 
 
 if __name__ == '__main__':

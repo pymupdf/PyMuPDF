@@ -11,6 +11,7 @@ import sys
 import sysconfig
 import textwrap
 
+import pipcl
 
 class WindowsVS:
     r'''
@@ -164,6 +165,7 @@ class WindowsVS:
             self.vcvars = vcvars
             self.version = version
             self.year = year
+            self.cpu = cpu
         except Exception as e:
             raise Exception( f'Unable to find Visual Studio') from e
 
@@ -182,10 +184,11 @@ class WindowsVS:
                 csc:          {self.csc}
                 msbuild:      {self.msbuild}
                 devenv:       {self.devenv}
+                cpu:          {self.cpu}
                 ''')
         return textwrap.indent( ret, indent)
 
-    def __str__( self):
+    def __repr__( self):
         return ' '.join( self._description())
 
 
@@ -224,7 +227,7 @@ class WindowsCpu:
         else:
             assert 0, f'Unrecognised cpu name: {name}'
 
-    def __str__(self):
+    def __repr__(self):
         return self.name
 
 
@@ -271,8 +274,9 @@ class WindowsPython:
 
         if '.'.join(platform.python_version().split('.')[:2]) == version:
             # Current python matches, so use it directly. This avoids problems
-            # on Github where experimental python-3.13 is not available via
-            # `py`.
+            # on Github where experimental python-3.13 was not available via
+            # `py`, and is kept here in case a similar problems happens with
+            # future Python versions.
             _log(f'{cpu=} {version=}: using {sys.executable=}.')
             self.path = sys.executable
             self.version = version
@@ -361,10 +365,8 @@ def _cpu_name():
 
 
 
-def _log(text=''):
+def _log(text='', caller=1):
     '''
     Logs lines with prefix.
     '''
-    for line in text.split('\n'):
-        print(f'{__file__}: {line}')
-    sys.stdout.flush()
+    pipcl.log1(text, caller+1)

@@ -32,37 +32,139 @@ from . import extra
 
 # Set up g_out_log and g_out_message from environment variables.
 #
-# PYMUPDF_MESSAGE controls the destination of user messages (the `message()`
-# function).
+# PYMUPDF_MESSAGE controls the destination of user messages (from function
+# `pymupdf.message()`).
 #
-# PYMUPDF_LOG controls the destination of internal development logging (the
-# `log()` function).
+# PYMUPDF_LOG controls the destination of internal development logging (from
+# function `pymupdf.log()`).
 #
-# Each should be either `fd:<int>` to set to a file descriptor (e.g. `fd:1`
-# for stdout, `fd:2` for stderr), `path:<string>` to write to a file or
-# `path+:<string>` to append to a file. If not specified, the default is
-# stdout.
+# For syntax, see _make_output()'s `text` arg.
 #
 
-def _set_stream(name, default):
+def _make_output(
+        *,
+        text=None,
+        fd=None,
+        stream=None,
+        path=None,
+        path_append=None,
+        pylogging=None,
+        pylogging_logger=None,
+        pylogging_level=None,
+        pylogging_name=None,
+        default=None,
+        ):
     '''
-    Returns a stream to use based on environmental variable `name`.
+    Returns a stream that writes to a specified destination, which can be a
+    file descriptor, a file, an existing stream or Python's `logging' system.
+    
+    Args:
+        text: text specification of destination.
+            fd:<int> - write to file descriptor.
+            path:<str> - write to file.
+            path+:<str> - append to file.
+            logging:<items> - write to Python `logging` module.
+                items: comma-separated <name=value> pairs.
+                    level=<int>
+                    name=<str>.
+                Other names are ignored.
+        
+        fd: an int file descriptor.
+        stream: something with methods .write(text) and .flush().
+            If specified we simply return <stream>.
+        path: a file path.
+            If specified we return a stream that writes to this file.
+        path_append: a file path.
+            If specified we return a stream that appends to this file.
+        pylogging*:
+            if any of these args is not None, we return a stream that writes to
+            Python's `logging` module.
+            
+            pylogging:
+                Unused other than to activate use of logging module.
+            pylogging_logger:
+                A logging.Logger; If None, set from <pylogging_name>.
+            pylogging_level:
+                An int log level, if None we use
+                pylogging_logger.getEffectiveLevel().
+            pylogging_name:
+                Only used if <pylogging_logger> is None:
+                    If <pylogging_name> is None, we set it to 'pymupdf'.
+                    Then we do: pylogging_logger = logging.getLogger(pylogging_name)
     '''
-    t = os.environ.get(name)
-    if t is None:
-        return default
-    elif t.startswith('fd:'):
-        return open(int(t[3:]), mode='w', closefd=False)
-    elif t.startswith('path:'):
-        return open(t[5:], 'w')
-    elif t.startswith('path+:'):
-        return open(t[6:], 'a')
+    if text is not None:
+        # Textual specification, for example from from environment variable.
+        if text.startswith('fd:'):
+            fd = int(text[3:])
+        elif text.startswith('path:'):
+            path = text[5:]
+        elif text.startswith('path+'):
+            path_append = text[5:]
+        elif text.startswith('logging:'):
+            pylogging = True
+            items_d = dict()
+            items = text[8:].split(',')
+            #items_d = {n: v for (n, v) in [item.split('=', 1) for item in items]}
+            for item in items:
+                if not item:
+                    continue
+                nv = item.split('=', 1)
+                assert len(nv) == 2, f'Need `=` in {item=}.'
+                n, v = nv
+                items_d[n] = v
+            pylogging_level = items_d.get('level')
+            if pylogging_level is not None:
+                pylogging_level = int(pylogging_level)
+            pylogging_name = items_d.get('name', 'pymupdf')
+        else:
+            assert 0, f'Expected prefix `fd:`, `path:`. `path+:` or `logging:` in {text=}.'
+    
+    if fd is not None:
+        ret = open(fd, mode='w', closefd=False)
+    elif stream is not None:
+        assert hasattr(stream, 'write')
+        assert hasattr(stream, 'flush')
+        ret = stream
+    elif path is not None:
+        ret = open(path, 'w')
+    elif path_append is not None:
+        ret = open(path_append, 'a')
+    elif (0
+            or pylogging is not None
+            or pylogging_logger is not None
+            or pylogging_level is not None
+            or pylogging_name is not None
+            ):
+        import logging
+        if pylogging_logger is None:
+            if pylogging_name is None:
+                pylogging_name = 'pymupdf'
+            pylogging_logger = logging.getLogger(pylogging_name)
+        assert isinstance(pylogging_logger, logging.Logger)
+        if pylogging_level is None:
+            pylogging_level = pylogging_logger.getEffectiveLevel()
+        class Out:
+            def write(self, text):
+                # `logging` module appends newlines, but so does the `print()`
+                # functions in our caller message() and log() fns, so we need to
+                # remove them here.
+                text = text.rstrip('\n')
+                if text:
+                    pylogging_logger.log(pylogging_level, text)
+            def flush(self):
+                pass
+        ret = Out()
     else:
-        raise Exception(f'Unrecognised stream specification for {name!r} should match `fd:<int>`, `path:<string>` or `path+:<string>`: {t!r}')
+        ret = default
+    return ret
 
-_g_out_log = _set_stream('PYMUPDF_LOG', sys.stdout)
-_g_out_message = _set_stream('PYMUPDF_MESSAGE', sys.stdout)
+# Set steam used by PyMuPDF messaging.
+_g_out_message = _make_output(text=os.environ.get('PYMUPDF_MESSAGE'), default=sys.stdout)
 
+# Set steam used by PyMuPDF development/debugging logging.
+_g_out_log = _make_output(text=os.environ.get('PYMUPDF_LOG'), default=sys.stdout)
+
+# Things for testing logging.
 _g_log_items = list()
 _g_log_items_active = False
 
@@ -76,6 +178,65 @@ def _log_items_active(active):
 def _log_items_clear():
     del _g_log_items[:]
 
+
+def set_messages(
+        *,
+        text=None,
+        fd=None,
+        stream=None,
+        path=None,
+        path_append=None,
+        pylogging=None,
+        pylogging_logger=None,
+        pylogging_level=None,
+        pylogging_name=None,
+        ):
+    '''
+    Sets destination of PyMuPDF messages. See _make_output() for details.
+    '''
+    global _g_out_message
+    _g_out_message = _make_output(
+            text=text,
+            fd=fd,
+            stream=stream,
+            path=path,
+            path_append=path_append,
+            pylogging=pylogging,
+            pylogging_logger=pylogging_logger,
+            pylogging_level=pylogging_level,
+            pylogging_name=pylogging_name,
+            default=_g_out_message,
+            )
+
+def set_log(
+        *,
+        text=None,
+        fd=None,
+        stream=None,
+        path=None,
+        path_append=None,
+        pylogging=None,
+        pylogging_logger=None,
+        pylogging_level=None,
+        pylogging_name=None,
+        ):
+    '''
+    Sets destination of PyMuPDF development/debugging logging. See
+    _make_output() for details.
+    '''
+    global _g_out_log
+    _g_out_log = _make_output(
+            text=text,
+            fd=fd,
+            stream=stream,
+            path=path,
+            path_append=path_append,
+            pylogging=pylogging,
+            pylogging_logger=pylogging_logger,
+            pylogging_level=pylogging_level,
+            pylogging_name=pylogging_name,
+            default=_g_out_log,
+            )
 
 def log( text='', caller=1):
     '''
@@ -96,15 +257,18 @@ def log( text='', caller=1):
         text = f'{filename}:{line}:{function}(): {text}'
     if _g_log_items_active:
         _g_log_items.append(text)
-    print(text, file=_g_out_log, flush=1)
+    if _g_out_log:
+        print(text, file=_g_out_log, flush=1)
 
 
 def message(text=''):
     '''
     For user messages.
     '''
-    print(text, file=_g_out_message)
-    _g_out_message.flush()
+    # It looks like `print()` does nothing if sys.stdout is None (without
+    # raising an exception), but we don't rely on this.
+    if _g_out_message:
+        print(text, file=_g_out_message, flush=1)
 
 
 def exception_info():
@@ -209,9 +373,9 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.24.10"
+pymupdf_version = "1.24.13"
 mupdf_version = mupdf.FZ_VERSION
-pymupdf_date = "2024-09-02 00:00:01"
+pymupdf_date = "2024-10-29 00:00:01"
 
 # Versions as tuples; useful when comparing versions.
 #
@@ -350,6 +514,21 @@ def _as_pdf_page(page, required=True):
         assert 0, f'Unrecognised {type(page)=}'
 
 
+def _pdf_annot_page(annot):
+    '''
+    Wrapper for mupdf.pdf_annot_page() which raises an exception if <annot>
+    is not bound to a page instead of returning a mupdf.PdfPage with
+    `.m_internal=None`.
+
+    [Some other MuPDF functions such as pdf_update_annot()` already raise a
+    similar exception if a pdf_annot's .page field is null.]
+    '''
+    page = mupdf.pdf_annot_page(annot)
+    if not page.m_internal:
+        raise RuntimeError('Annot is not bound to a page')
+    return page
+
+
 # Fixme: we don't support JM_MEMORY=1.
 JM_MEMORY = 0
 
@@ -435,7 +614,7 @@ class Annot:
         try:
             annot = self.this
             annot_obj = mupdf.pdf_annot_obj( annot)
-            page = mupdf.pdf_annot_page( annot)
+            page = _pdf_annot_page(annot)
             apobj = mupdf.pdf_dict_getl( annot_obj, PDF_NAME('AP'), PDF_NAME('N'))
             if not apobj.m_internal:
                 raise RuntimeError( MSG_BAD_APN)
@@ -455,7 +634,7 @@ class Annot:
         annot = self.this
         assert annot.m_internal
         annot_obj = mupdf.pdf_annot_obj( annot)
-        page = mupdf.pdf_annot_page( annot)
+        page = _pdf_annot_page(annot)
         pdf = page.doc()
         type_ = mupdf.pdf_annot_type( annot)
         nfcol, fcol = JM_color_FromSequence(fill_color)
@@ -666,7 +845,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         annot_obj = mupdf.pdf_annot_obj(annot)
-        page = mupdf.pdf_annot_page(annot)
+        page = _pdf_annot_page(annot)
         while 1:
             irt_annot = JM_find_annot_irt(annot)
             if not irt_annot.m_internal:
@@ -733,7 +912,7 @@ class Annot:
             size = mupdf.pdf_to_int(o)
 
         res[ dictkey_filename] = JM_EscapeStrFromStr(filename)
-        res[ dictkey_desc] = JM_UnicodeFromStr(desc)
+        res[ dictkey_descr] = JM_UnicodeFromStr(desc)
         res[ dictkey_length] = length
         res[ dictkey_size] = size
         return res
@@ -778,7 +957,7 @@ class Annot:
         try:
             ret = getattr( self, 'parent')
         except AttributeError:
-            page = mupdf.pdf_annot_page(self.this)
+            page = _pdf_annot_page(self.this)
             assert isinstance( page, mupdf.PdfPage)
             document = Document( page.doc()) if page.m_internal else None
             ret = Page(page, document)
@@ -1210,7 +1389,7 @@ class Annot:
         '''
         annot = self.this
         annot_obj = mupdf.pdf_annot_obj( annot)
-        page = mupdf.pdf_annot_page( annot)
+        page = _pdf_annot_page(annot)
         if xref < 1 or xref >= mupdf.pdf_xref_len( page.doc()):
             raise ValueError( MSG_BAD_XREF)
         irt = mupdf.pdf_new_indirect( page.doc(), xref, 0)
@@ -1265,7 +1444,7 @@ class Annot:
             return
         mupdf.pdf_set_annot_opacity(annot, opacity)
         if opacity < 1.0:
-            page = mupdf.pdf_annot_page(annot)
+            page = _pdf_annot_page(annot)
             page.transparency = 1
 
     def set_open(self, is_open):
@@ -1280,7 +1459,7 @@ class Annot:
         '''
         CheckParent(self)
         annot = self.this
-        pdfpage = mupdf.pdf_annot_page( annot)
+        pdfpage = _pdf_annot_page(annot)
         rot = JM_rotate_page_matrix(pdfpage)
         r = mupdf.fz_transform_rect(JM_rect_from_py(rect), rot)
         mupdf.pdf_set_annot_popup(annot, r)
@@ -1290,7 +1469,7 @@ class Annot:
         CheckParent(self)
         annot = self.this
         
-        pdfpage = mupdf.pdf_annot_page(annot)
+        pdfpage = _pdf_annot_page(annot)
         rot = JM_rotate_page_matrix(pdfpage)
         r = mupdf.fz_transform_rect(JM_rect_from_py(rect), rot)
         if mupdf.fz_is_empty_rect(r) or mupdf.fz_is_infinite_rect(r):
@@ -1686,7 +1865,7 @@ class Annot:
         annot = self.this
         assert isinstance(annot, mupdf.PdfAnnot)
         annot_obj = mupdf.pdf_annot_obj(annot)
-        page = mupdf.pdf_annot_page(annot)
+        page = _pdf_annot_page(annot)
         page_ctm = mupdf.FzMatrix()   # page transformation matrix
         dummy = mupdf.FzRect()  # Out-param for mupdf.pdf_page_transform().
         mupdf.pdf_page_transform(page, dummy, page_ctm)
@@ -2812,7 +2991,11 @@ class Document:
                 #   handler = fz_recognize_document(gctx, filetype);
                 #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
                 # but prefer to leave fz_open_document_with_stream() to raise.
-                doc = mupdf.fz_open_document_with_stream(magic, data)
+                try:
+                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                except Exception as e:
+                    if g_exceptions_verbose > 1:    exception_info()
+                    raise FileDataError(f'Failed to open stream') from e
             else:
                 if filename:
                     if not filetype:
@@ -3072,7 +3255,7 @@ class Document:
         infodict[dictkey_ufilename] = JM_EscapeStrFromStr(name)
 
         name = mupdf.pdf_to_text_string(mupdf.pdf_dict_get(o, PDF_NAME('Desc')))
-        infodict[dictkey_desc] = JM_UnicodeFromStr(name)
+        infodict[dictkey_descr] = JM_UnicodeFromStr(name)
 
         len_ = -1
         DL = -1
@@ -4190,7 +4373,7 @@ class Document:
             res = JM_read_contents( page1)
 
             # create new /Contents object for page2
-            if res.m_internal:
+            if res and res.m_internal:
                 #contents = mupdf.pdf_add_stream( pdf, mupdf.fz_new_buffer_from_copied_data( b"  ", 1), NULL, 0)
                 contents = mupdf.pdf_add_stream( pdf, mupdf.fz_new_buffer_from_copied_data( b" "), mupdf.PdfObj(), 0)
                 JM_update_stream( pdf, contents, res, 1)
@@ -5098,6 +5281,8 @@ class Document:
 
         Arguments have the same meaning as for the range() built-in.
         """
+        if not self.page_count:
+            return
         # set the start value
         start = start or 0
         while start < 0:
@@ -6135,14 +6320,6 @@ class Font:
     def __repr__(self):
         return "Font('%s')" % self.name
 
-    def _valid_unicodes(self, arr):
-        # fixme
-        assert 0, 'Not implemented because implementation requires FT_Get_First_Char() etc.'
-        #font = self.this
-        #temp = arr[0]
-        #ptr = temp
-        #JM_valid_chars(font, ptr)
-
     @property
     def ascender(self):
         """Return the glyph ascender value."""
@@ -6329,16 +6506,16 @@ class Font:
 
     def valid_codepoints(self):
         '''
-        list of valid unicodes of a fz_font
+        Returns sorted list of valid unicodes of a fz_font.
         '''
-        return []
-        # fixme: uses _valid_unicodes() which is not implemented.
-        from array import array
-        gc = self.glyph_count
-        cp = array("l", (0,) * gc)
-        arr = cp.buffer_info()
-        self._valid_unicodes(arr)
-        return array("l", sorted(set(cp))[1:])
+        if mupdf_version_tuple < (1, 25):
+            # mupdf.fz_enumerate_font_cmap2() not available.
+            return []
+        ucs_gids = mupdf.fz_enumerate_font_cmap2(self.this)
+        ucss = [i.ucs for i in ucs_gids]
+        ucss_unique = set(ucss)
+        ucss_unique_sorted = sorted(ucss_unique)
+        return ucss_unique_sorted
 
 
 class Graftmap:
@@ -7575,6 +7752,7 @@ class Page:
                 mupdf.pdf_array_push_real(arr, fcol[i])
             mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('IC'), arr)
         if text:
+            assert da_str
             mupdf.pdf_dict_puts(
                     mupdf.pdf_annot_obj(annot),
                     "OverlayText",
@@ -8385,6 +8563,8 @@ class Page:
                     fill = (fill, fill, fill)
                 if len(fill) > 3:
                     fill = fill[:3]
+        else:
+            text = None
 
         old_rotation = annot_preprocess(self)
         try:
@@ -10013,8 +10193,6 @@ class Pixmap:
         '''
         pm = self.this
         rc = JM_color_count( pm, clip)
-        if not rc:
-            raise RuntimeError( MSG_COLOR_COUNT_FAILED)
         if not colors:
             return len( rc)
         return rc
@@ -10592,6 +10770,9 @@ class Point:
     def __mul__(self, m):
         if hasattr(m, "__float__"):
             return Point(self.x * m, self.y * m)
+        if hasattr(m, "__getitem__") and len(m) == 2:
+            # dot product
+            return self.x * m[0] + self.y * m[1]
         p = Point(self)
         return p.transform(m)
 
@@ -12627,6 +12808,7 @@ class TextPage:
         if g_use_extra:
             return extra.extractWORDS(self.this, delimiters)
         buflen = 0
+        last_char_rtl = 0
         block_n = -1
         wbbox = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)  # word bbox
         this_tpage = self.this
@@ -12652,16 +12834,19 @@ class TextPage:
                             ):
                         continue
                     word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
-                    if word_delimiter:
-                        if buflen == 0:
+                    this_char_rtl = JM_is_rtl_char(ch.m_internal.c)
+                    if word_delimiter or this_char_rtl != last_char_rtl:
+                        if buflen == 0 and word_delimiter:
                             continue    # skip delimiters at line start
                         if not mupdf.fz_is_empty_rect(wbbox):
                             word_n, wbbox = JM_append_word(lines, buff, wbbox, block_n, line_n, word_n)
                         mupdf.fz_clear_buffer(buff)
                         buflen = 0  # reset char counter
-                        continue
+                        if word_delimiter:
+                            continue
                     # append one unicode character to the word
                     JM_append_rune(buff, ch.m_internal.c)
+                    last_char_rtl = this_char_rtl
                     buflen += 1
                     # enlarge word bbox
                     wbbox = mupdf.fz_union_rect(wbbox, JM_char_bbox(line, ch))
@@ -13171,7 +13356,7 @@ if 1:
                     pass
                 else:
                     #assert not inspect.isroutine(value)
-                    #log(f'importing {name}')
+                    #log(f'importing {_name=} {_value=}.')
                     setattr(_self, _name, _value)
                     #log(f'{getattr( self, name, None)=}')
     else:
@@ -13322,14 +13507,26 @@ TEXT_OUTPUT_JSON = 2
 TEXT_OUTPUT_XML = 3
 TEXT_OUTPUT_XHTML = 4
 
-TEXT_PRESERVE_LIGATURES = 1
-TEXT_PRESERVE_WHITESPACE = 2
-TEXT_PRESERVE_IMAGES = 4
-TEXT_INHIBIT_SPACES = 8
-TEXT_DEHYPHENATE = 16
-TEXT_PRESERVE_SPANS = 32
-TEXT_MEDIABOX_CLIP = 64
-TEXT_CID_FOR_UNKNOWN_UNICODE = 128
+TEXT_PRESERVE_LIGATURES = mupdf.FZ_STEXT_PRESERVE_LIGATURES
+TEXT_PRESERVE_WHITESPACE = mupdf.FZ_STEXT_PRESERVE_WHITESPACE
+TEXT_PRESERVE_IMAGES = mupdf.FZ_STEXT_PRESERVE_IMAGES
+TEXT_INHIBIT_SPACES = mupdf.FZ_STEXT_INHIBIT_SPACES
+TEXT_DEHYPHENATE = mupdf.FZ_STEXT_DEHYPHENATE
+TEXT_PRESERVE_SPANS = mupdf.FZ_STEXT_PRESERVE_SPANS
+TEXT_MEDIABOX_CLIP = mupdf.FZ_STEXT_MEDIABOX_CLIP
+TEXT_CID_FOR_UNKNOWN_UNICODE = mupdf.FZ_STEXT_USE_CID_FOR_UNKNOWN_UNICODE
+if mupdf_version_tuple >= (1, 25):
+    TEXT_COLLECT_STRUCTURE = mupdf.FZ_STEXT_COLLECT_STRUCTURE
+    TEXT_ACCURATE_BBOXES = mupdf.FZ_STEXT_ACCURATE_BBOXES
+    TEXT_COLLECT_VECTORS = mupdf.FZ_STEXT_COLLECT_VECTORS
+    TEXT_IGNORE_ACTUALTEXT = mupdf.FZ_STEXT_IGNORE_ACTUALTEXT
+    TEXT_STEXT_SEGMENT = mupdf.FZ_STEXT_SEGMENT
+else:
+    TEXT_COLLECT_STRUCTURE = 256
+    TEXT_ACCURATE_BBOXES = 512
+    TEXT_COLLECT_VECTORS = 1024
+    TEXT_IGNORE_ACTUALTEXT = 2048
+    TEXT_STEXT_SEGMENT = 4096
 
 TEXTFLAGS_WORDS = (0
         | TEXT_PRESERVE_LIGATURES
@@ -13476,7 +13673,7 @@ dictkey_creationDate = "creationDate"
 dictkey_cs_name = "cs-name"
 dictkey_da = "da"
 dictkey_dashes = "dashes"
-dictkey_desc = "desc"
+dictkey_descr = "description"
 dictkey_desc = "descender"
 dictkey_dir = "dir"
 dictkey_effect = "effect"
@@ -14052,6 +14249,9 @@ def _read_samples( pixmap, offset, n):
     # fixme: need to be able to get a sample in one call, as a Python
     # bytes or similar.
     ret = []
+    if not pixmap.samples():
+        # mupdf.fz_samples_get() gives a segv if pixmap->samples is null.
+        return ret
     for i in range( n):
         ret.append( mupdf.fz_samples_get( pixmap, offset + i))
     return bytes( ret)
@@ -14300,7 +14500,7 @@ def JM_add_annot_id(annot, stem):
     Append a number to 'stem' such that the result is a unique name.
     '''
     assert isinstance(annot, mupdf.PdfAnnot)
-    page = mupdf.pdf_annot_page( annot)
+    page = _pdf_annot_page(annot)
     annot_obj = mupdf.pdf_annot_obj( annot)
     names = JM_get_annot_id_list(page)
     i = 0
@@ -15145,7 +15345,7 @@ def JM_find_annot_irt(annot):
     annot_obj = mupdf.pdf_annot_obj(annot)
     found = 0
     # loop thru MuPDF's internal annots array
-    page = mupdf.pdf_annot_page(annot)
+    page = _pdf_annot_page(annot)
     irt_annot = mupdf.pdf_first_annot(page)
     while 1:
         assert isinstance(irt_annot, mupdf.PdfAnnot)
@@ -15186,7 +15386,13 @@ def JM_font_descender(font):
 def JM_is_word_delimiter(ch, delimiters):
     """Check if ch is an extra word delimiting character.
     """
-    if ch <= 32 or ch == 160:  # any whitespace?
+    if (0
+        or ch <= 32
+        or ch == 160
+        or 0x202a <= ch <= 0x202e
+    ):
+        # covers any whitespace plus unicodes that switch between
+        # right-to-left and left-to-right languages
         return True
     if not delimiters:  # no extra delimiters provided
         return False
@@ -15195,6 +15401,12 @@ def JM_is_word_delimiter(ch, delimiters):
         if d == char:
             return True
     return False
+    
+
+def JM_is_rtl_char(ch):
+    if ch < 0x590 or ch > 0x900:
+        return False
+    return True
 
 
 def JM_font_name(font):
@@ -15611,7 +15823,7 @@ def JM_get_widget_properties(annot, Widget):
     #log( '{type(annot)=}')
     annot_obj = mupdf.pdf_annot_obj(annot.this)
     #log( 'Have called mupdf.pdf_annot_obj()')
-    page = mupdf.pdf_annot_page(annot.this)
+    page = _pdf_annot_page(annot.this)
     pdf = page.doc()
     tw = annot
 
@@ -15641,9 +15853,36 @@ def JM_get_widget_properties(annot, Widget):
     field_name = mupdf.pdf_load_field_name(annot_obj)
     SETATTR_DROP(Widget, "field_name", field_name)
 
-    obj = mupdf.pdf_dict_get(annot_obj, PDF_NAME('TU'))
-    if obj.m_internal:
-        label = mupdf.pdf_to_text_string(obj)
+    def pdf_dict_get_inheritable_nonempty_label(node, key):
+        '''
+        This is a modified version of MuPDF's pdf_dict_get_inheritable(), with
+        some changes:
+        * Returns string from pdf_to_text_string() or None if not found.
+        * Recurses to parent if current node exists but with empty string
+          value.
+        '''
+        slow = node
+        halfbeat = 11   # Don't start moving slow pointer for a while.
+        while 1:
+            if not node.m_internal:
+                return
+            val = mupdf.pdf_dict_get(node, key)
+            if val.m_internal:
+                label = mupdf.pdf_to_text_string(val)
+                if label:
+                    return label
+            node = mupdf.pdf_dict_get(node, PDF_NAME('Parent'))
+            if node.m_internal == slow.m_internal:
+                raise Exception("cycle in resources")
+            halfbeat -= 1
+            if halfbeat == 0:
+                slow = mupdf.pdf_dict_get(slow, PDF_NAME('Parent'))
+                halfbeat = 2
+    
+    # In order to address #3950, we use our modified pdf_dict_get_inheritable()
+    # to ignore empty-string child values.
+    label = pdf_dict_get_inheritable_nonempty_label(annot_obj, PDF_NAME('TU'))
+    if label is not None:
         SETATTR_DROP(Widget, "field_label", label)
 
     fvalue = None
@@ -16314,7 +16553,10 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
         style.size = ch.m_internal.size
         style.flags = flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
-        style.color = ch.m_internal.color
+        if mupdf_version_tuple >= (1, 26):
+            style.color = ch.m_internal.argb
+        else:
+            style.color = ch.m_internal.color
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
 
@@ -17399,7 +17641,8 @@ def JM_set_widget_properties(annot, Widget):
     if isinstance( annot, Annot):
         annot = annot.this
     assert isinstance( annot, mupdf.PdfAnnot), f'{type(annot)=} {type=}'
-    page = mupdf.pdf_annot_page(annot)
+    page = _pdf_annot_page(annot)
+    assert page.m_internal, 'Annot is not bound to a page'
     annot_obj = mupdf.pdf_annot_obj(annot)
     pdf = page.doc()
     def GETATTR(name):
@@ -18866,6 +19109,11 @@ def jm_lineart_path(dev, ctx, path):
         # globally, each time takes 0.3s.
         #
         walker = Walker(dev)
+        # Unlike fz_run_page(), fz_path_walker callbacks are not passed
+        # a pointer to the struct, instead they get an arbitrary
+        # void*. The underlying C++ Director callbacks use this void* to
+        # identify the fz_path_walker instance so in turn we need to pass
+        # arg=walker.m_internal.
         mupdf.fz_walk_path( mupdf.FzPath(mupdf.ll_fz_keep_path(path)), walker, walker.m_internal)
         # Check if any items were added ...
         if not dev.pathdict[ dictkey_items]:
@@ -20818,10 +21066,12 @@ def sRGB_to_rgb(srgb: int) -> tuple:
     There is **no error checking** for performance reasons!
 
     Args:
-        srgb: (int) RRGGBB (red, green, blue), each color in range(255).
+        srgb: (int) SSRRGGBB (red, green, blue), each color in range(255).
+        With MuPDF < 1.26, `s` is always 0.
     Returns:
         Tuple (red, green, blue) each item in interval 0 <= item <= 255.
     """
+    srgb &= 0xffffff
     r = srgb >> 16
     g = (srgb - (r << 16)) >> 8
     b = srgb - (r << 16) - (g << 8)

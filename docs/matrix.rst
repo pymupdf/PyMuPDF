@@ -220,6 +220,34 @@ Here are examples that illustrate some of the achievable effects. All pictures s
 .. image:: images/img-matrix-7.*
    :scale: 66
 
+9. Show some effects on a rectangle::
 
+      import pymupdf
+      
+      # just definitions and a temp PDF
+      RED = (1, 0, 0)
+      BLUE = (0, 0, 1)
+      GREEN = (0, 1, 0)
+      doc = pymupdf.open()
+      page = doc.new_page()
+      
+      # rectangle
+      r1 = pymupdf.Rect(100, 100, 200, 200)
+      
+      # scales down by 50% in x- and up by 50% in y-direction
+      mat1 = pymupdf.Matrix(0.5, 1.5)
+      
+      # shifts by 50 in both directions
+      mat2 = pymupdf.Matrix(1, 0, 0, 1, 50, 50)
+      
+      # draw corresponding rectangles
+      page.draw_rect(r1, color=RED)  # original
+      page.draw_rect(r1 * mat1, color=GREEN)  # scaled
+      page.draw_rect(r1 * mat2, color=BLUE)  # shifted
+      doc.ez_save("matrix-effects.pdf")
+
+
+.. image:: images/img-matrix-9.*
+   :scale: 66
 
 .. include:: footer.rst

@@ -507,19 +507,53 @@ def get_text_words(
     textpage: pymupdf.TextPage = None,
     sort: bool = False,
     delimiters=None,
+    tolerance=3,
 ) -> list:
     """Return the text words as a list with the bbox for each word.
 
     Args:
+        page: pymupdf.Page
+        clip: (rect-like) area on page to consider
         flags: (int) control the amount of data parsed into the textpage.
-        delimiters: (str,list) characters to use as word delimiters
+        textpage: (pymupdf.TextPage) either passed-in or None.
+        sort: (bool) sort the words in reading sequence.
+        delimiters: (str,list) characters to use as word delimiters.
+        tolerance: (float) consider words to be part of the same line if
+            top or bottom coordinate are not larger than this. Relevant
+            only if sort=True.
 
     Returns:
         Word tuples (x0, y0, x1, y1, "word", bno, lno, wno).
     """
+
+    def sort_words(words):
+        """Sort words line-wise, forgiving small deviations."""
+        words.sort(key=lambda w: (w[3], w[0]))
+        nwords = []  # final word list
+        line = [words[0]]  # collects words roughly in same line
+        lrect = pymupdf.Rect(words[0][:4])  # start the line rectangle
+        for w in words[1:]:
+            wrect = pymupdf.Rect(w[:4])
+            if (
+                abs(wrect.y0 - lrect.y0) <= tolerance
+                or abs(wrect.y1 - lrect.y1) <= tolerance
+            ):
+                line.append(w)
+                lrect |= wrect
+            else:
+                line.sort(key=lambda w: w[0])  # sort words in line l-t-r
+                nwords.extend(line)  # append to final words list
+                line = [w]  # start next line
+                lrect = wrect  # start next line rect
+
+        line.sort(key=lambda w: w[0])  # sort words in line l-t-r
+        nwords.extend(line)  # append to final words list
+
+        return nwords
+
     pymupdf.CheckParent(page)
     if flags is None:
-        flags = pymupdf.TEXT_PRESERVE_WHITESPACE | pymupdf.TEXT_PRESERVE_LIGATURES | pymupdf.TEXT_MEDIABOX_CLIP
+        flags = pymupdf.TEXTFLAGS_WORDS
     tp = textpage
     if tp is None:
         tp = page.get_textpage(clip=clip, flags=flags)
@@ -527,12 +561,139 @@ def get_text_words(
         raise ValueError("not a textpage of this page")
 
     words = tp.extractWORDS(delimiters)
+
+    # if textpage was given, we subselect the words in clip
+    if textpage is not None and clip is not None:
+        # sub-select words contained in clip
+        clip = pymupdf.Rect(clip)
+        words = [
+            w for w in words if abs(clip & w[:4]) >= 0.5 * abs(pymupdf.Rect(w[:4]))
+        ]
+
     if textpage is None:
         del tp
-    if sort is True:
-        words.sort(key=lambda w: (w[3], w[0]))
+    if words and sort is True:
+        # advanced sort if any words found
+        words = sort_words(words)
 
     return words
+
+
+def get_sorted_text(
+    page: pymupdf.Page,
+    clip: rect_like = None,
+    flags: OptInt = None,
+    textpage: pymupdf.TextPage = None,
+    tolerance=3,
+) -> str:
+    """Extract plain text avoiding unacceptable line breaks.
+
+    Text contained in clip will be sorted in reading sequence. Some effort
+    is also spent to simulate layout vertically and horizontally.
+
+    Args:
+        page: pymupdf.Page
+        clip: (rect-like) only consider text inside
+        flags: (int) text extraction flags
+        textpage: pymupdf.TextPage
+        tolerance: (float) consider words to be on the same line if their top
+            or bottom coordinates do not differ more than this.
+
+    Notes:
+        If a TextPage is provided, all text is checked for being inside clip
+        with at least 50% of its bbox.
+        This allows to use some "global" TextPage in conjunction with sub-
+        selecting words in parts of the defined TextPage rectangle.
+
+    Returns:
+        A text string in reading sequence. Left indentation of each line,
+        inter-line and inter-word distances strive to reflect the layout.
+    """
+
+    def line_text(clip, line):
+        """Create the string of one text line.
+
+        We are trying to simulate some horizontal layout here, too.
+
+        Args:
+            clip: (pymupdf.Rect) the area from which all text is being read.
+            line: (list) word tuples (rect, text) contained in the line
+        Returns:
+            Text in this line. Generated from words in 'line'. Distance from
+            predecessor is translated to multiple spaces, thus simulating
+            text indentations and large horizontal distances.
+        """
+        line.sort(key=lambda w: w[0].x0)
+        ltext = ""  # text in the line
+        x1 = clip.x0  # end coordinate of ltext
+        lrect = pymupdf.EMPTY_RECT()  # bbox of this line
+        for r, t in line:
+            lrect |= r  # update line bbox
+            # convert distance to previous word to multiple spaces
+            dist = max(
+                int(round((r.x0 - x1) / r.width * len(t))),
+                0 if (x1 == clip.x0 or r.x0 <= x1) else 1,
+            )  # number of space characters
+
+            ltext += " " * dist + t  # append word string
+            x1 = r.x1  # update new end position
+        return ltext
+
+    # Extract words in correct sequence first.
+    words = [
+        (pymupdf.Rect(w[:4]), w[4])
+        for w in get_text_words(
+            page,
+            clip=clip,
+            flags=flags,
+            textpage=textpage,
+            sort=True,
+            tolerance=tolerance,
+        )
+    ]
+
+    if not words:  # no text present
+        return ""
+    totalbox = pymupdf.EMPTY_RECT()  # area covering all text
+    for wr, text in words:
+        totalbox |= wr
+
+    lines = []  # list of reconstituted lines
+    line = [words[0]]  # current line
+    lrect = words[0][0]  # the line's rectangle
+
+    # walk through the words
+    for wr, text in words[1:]:  # start with second word
+        w0r, _ = line[-1]  # read previous word in current line
+
+        # if this word matches top or bottom of the line, append it
+        if abs(lrect.y0 - wr.y0) <= tolerance or abs(lrect.y1 - wr.y1) <= tolerance:
+            line.append((wr, text))
+            lrect |= wr
+        else:
+            # output current line and re-initialize
+            ltext = line_text(totalbox, line)
+            lines.append((lrect, ltext))
+            line = [(wr, text)]
+            lrect = wr
+
+    # also append unfinished last line
+    ltext = line_text(totalbox, line)
+    lines.append((lrect, ltext))
+
+    # sort all lines vertically
+    lines.sort(key=lambda l: (l[0].y1))
+
+    text = lines[0][1]  # text of first line
+    y1 = lines[0][0].y1  # its bottom coordinate
+    for lrect, ltext in lines[1:]:
+        distance = min(int(round((lrect.y0 - y1) / lrect.height)), 5)
+        breaks = "\n" * (distance + 1)
+        text += breaks + ltext
+        y1 = lrect.y1
+
+    # return text in clip
+    return text
 
 
 def get_textbox(
@@ -731,14 +892,15 @@ def get_image_rects(page: pymupdf.Page, name, transform=False) -> list:
 
 
 def get_text(
-        page: pymupdf.Page,
-        option: str = "text",
-        clip: rect_like = None,
-        flags: OptInt = None,
-        textpage: pymupdf.TextPage = None,
-        sort: bool = False,
-        delimiters=None,
-        ):
+    page: pymupdf.Page,
+    option: str = "text",
+    clip: rect_like = None,
+    flags: OptInt = None,
+    textpage: pymupdf.TextPage = None,
+    sort: bool = False,
+    delimiters=None,
+    tolerance=3,
+):
     """Extract text from a page or an annotation.
 
     This is a unifying wrapper for various methods of the pymupdf.TextPage class.
@@ -787,6 +949,16 @@ def get_text(
         return get_text_blocks(
             page, clip=clip, flags=flags, textpage=textpage, sort=sort
         )
+
+    if option == "text" and sort is True:
+        return get_sorted_text(
+            page,
+            clip=clip,
+            flags=flags,
+            textpage=textpage,
+            tolerance=tolerance,
+        )
+
     pymupdf.CheckParent(page)
     cb = None
     if option in ("html", "xml", "xhtml"):  # no clipping for MuPDF functions
@@ -1933,8 +2105,7 @@ def insert_htmlbox(
     scale_max = None if scale_low == 0 else 1 / scale_low
 
     fit = story.fit_scale(temp_rect, scale_min=1, scale_max=scale_max)
-
-    if fit.big_enough is False:  # there was no fit
+    if not fit.big_enough:  # there was no fit
         return (-1, scale_low)
 
     filled = fit.filled
@@ -5367,8 +5538,8 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> pymupdf.Quad:
 # -------------------------------------------------------------------
 # Building font subsets using fontTools
 # -------------------------------------------------------------------
-def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = False) -> None:
-    """Build font subsets of a PDF. Requires package 'fontTools'.
+def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = False) -> OptInt:
+    """Build font subsets in a PDF.
 
     Eligible fonts are potentially replaced by smaller versions. Page text is
     NOT rewritten and thus should retain properties like being hidden or
@@ -5377,6 +5548,17 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
     This method by default uses MuPDF's own internal feature to create subset
     fonts. As this is a new function, errors may still occur. In this case,
     please fall back to using the previous version by using "fallback=True".
+    Fallback mode requires the external package 'fontTools'.
+
+    Args:
+        fallback: use the older deprecated implementation.
+        verbose: only used by fallback mode.
+
+    Returns:
+        The new MuPDF-based code returns None.  The deprecated fallback
+        mode returns 0 if there are no fonts to subset.  Otherwise, it
+        returns the decrease in fontsize (the difference in fontsize),
+        measured in bytes.
     """
     # Font binaries: -  "buffer" -> (names, xrefs, (unicodes, glyphs))
     # An embedded font is uniquely defined by its fontbuffer only. It may have

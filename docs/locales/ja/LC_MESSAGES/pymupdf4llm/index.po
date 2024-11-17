@@ -1,0 +1,248 @@
+# PyMuPDF Japanese documentation
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2024.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
+"Language: ja\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../pymupdf4llm/index.rst:8 5b8fb9003a704ca6b7fdb23f05023024
+msgid "PyMuPDF4LLM"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:10 5489e517df2f47f498f82040822ba124
+msgid ""
+"|PyMuPDF4LLM| is aimed to make it easier to extract **PDF** content in "
+"the format you need for **LLM** & **RAG** environments. It supports "
+":ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex"
+" document output <extracting_as_llamaindex>`."
+msgstr "|PyMuPDF4LLM| は、**LLM** や **RAG** 環境で必要な形式で **PDF** コンテンツを簡単に抽出できるようにすることを目的としています。 **Markdown** 形式での抽出や、 **LlamaIndex** ドキュメント出力もサポートしています。"
+
+#: ../../pymupdf4llm/index.rst:14 69882351177c40e28baed2d5997c44b9
+msgid ""
+"You can extend the supported file types to also include **Office** "
+"document formats (DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX) by :ref:`using "
+"PyMuPDF Pro with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`."
+msgstr ":ref:`PyMuPDF ProをPyMuPDF4LLMと併用することで <using_pymupdf4llm_withpymupdfpro>`、対応するファイル形式を拡張し、 **Office** ドキュメント形式（DOC/DOCX、XLS/XLSX、PPT/PPTX、HWP/HWPX）も含めることができます。"
+
+#: ../../pymupdf4llm/index.rst:17 7a616078fd824010ad54f3558207a1b5
+msgid "Features"
+msgstr "特徴"
+
+#: ../../pymupdf4llm/index.rst:19 400c06ae14c349aaacd8f5424376525f
+msgid "Support for multi-column pages"
+msgstr "マルチカラムページのサポート"
+
+#: ../../pymupdf4llm/index.rst:20 a7b127916a6647809cc5f7c630db6697
+msgid ""
+"Support for image and vector graphics extraction (and inclusion of "
+"references in the MD text)"
+msgstr "画像およびベクターグラフィックスの抽出のサポート（MDテキストへの参照の挿入を含む）"
+
+#: ../../pymupdf4llm/index.rst:21 49db5c47138d4af4827f9d33a97299ac
+msgid "Support for page chunking output."
+msgstr "ページ分割出力のサポート"
+
+#: ../../pymupdf4llm/index.rst:22 0f60a9dbc1cd40b2bcc7cab3076a8f28
+msgid ""
+"Direct support for output as :ref:`LlamaIndex Documents "
+"<extracting_as_llamaindex>`."
+msgstr ":ref:`LlamaIndexドキュメント <extracting_as_llamaindex>` としての直接出力のサポート"
+
+#: ../../pymupdf4llm/index.rst:26 e17e5cab17dc47f196f6a94fa23ff7b1
+msgid "Functionality"
+msgstr "機能"
+
+#: ../../pymupdf4llm/index.rst:28 53e904952e964eecb34f58916c83aec1
+msgid ""
+"This package converts the pages of a file to text in **Markdown** format "
+"using |PyMuPDF|."
+msgstr "このパッケージは、**PyMuPDF** を使用して **PDF** のページを **Markdown** 形式のテキストに変換します。"
+
+#: ../../pymupdf4llm/index.rst:30 28ffd2e3f3c74f1089cdd35d3db7a45f
+msgid ""
+"Standard text and tables are detected, brought in the right reading "
+"sequence and then together converted to **GitHub**-compatible "
+"**Markdown** text."
+msgstr ""
+"標準のテキストやテーブルが検出され、適切な読み取り順序で取り込まれ、その後一緒に **GitHub** 互換の **Markdown** "
+"テキストに変換されます。"
+
+#: ../../pymupdf4llm/index.rst:32 f8f07e7e7e9d4f6fa5d28e1eee7d7eb9
+msgid ""
+"Header lines are identified via the font size and appropriately prefixed "
+"with one or more `#` tags."
+msgstr "ヘッダー行はフォントサイズで識別され、適切に1つまたは複数の＃タグで接頭語が付けられます。"
+
+#: ../../pymupdf4llm/index.rst:34 a9bc3e297256481d882567b0e464a3b8
+msgid ""
+"Bold, italic, mono-spaced text and code blocks are detected and formatted"
+" accordingly. Similar applies to ordered and unordered lists."
+msgstr "太字、斜体、等幅テキスト、およびコードブロックが検出され、それに応じて書式が付けられます。順序付けられたリストと順不同リストにも同様のことが適用されます。"
+
+#: ../../pymupdf4llm/index.rst:36 f40de678033c4ac99eb72054a4f6becc
+msgid ""
+"By default, all document pages are processed. If desired, a subset of "
+"pages can be specified by providing a list of `0`-based page numbers."
+msgstr "デフォルトでは、すべての文書ページが処理されます。必要に応じて、`0` から始まるページ番号のリストを指定してサブセットのページを指定できます。"
+
+#: ../../pymupdf4llm/index.rst:40 2d939cfb6eb04904bae00df0c3f92134
+msgid "Installation"
+msgstr "インストール"
+
+#: ../../pymupdf4llm/index.rst:43 7a4ae15762224602accc03800171f6fe
+msgid "Install the package via **pip** with:"
+msgstr "パッケージを **pip** を使用してインストールするには、次のコマンドを使用します:"
+
+#: ../../pymupdf4llm/index.rst:54 9fe67d7e6a0d485290197a3b4e9ebf86
+msgid "Extracting a file as **Markdown**"
+msgstr "ファイルをMarkdown形式で抽出する"
+
+#: ../../pymupdf4llm/index.rst:56 620f51ebd7bd492581a361a00bdc14c5
+msgid ""
+"To retrieve your document content in **Markdown** simply install the "
+"package and then use a couple of lines of **Python** code to get results."
+msgstr "ドキュメントの内容を **Markdown** で取得するには、パッケージをインストールし、数行の **Python** コードを使用するだけで結果を得ることができます。"
+
+#: ../../pymupdf4llm/index.rst:60 c1eb2d7417d14757a0ee1807899c7972
+msgid "Then in your **Python** script do:"
+msgstr "**Python** スクリプトでは:"
+
+#: ../../pymupdf4llm/index.rst:71 a0450ade72524ebe95797db73a5dda99
+msgid ""
+"Instead of the filename string as above, one can also provide a "
+":ref:`PyMuPDF Document <Document>`. A second parameter may be a list of "
+"`0`-based page numbers, e.g. `[0,1]` would just select the first and "
+"second pages of the document."
+msgstr ""
+"上記のファイル名文字列の代わりに、 :ref:`PyMuPDFの Document <Document>` "
+"を指定することもできます。2番目のパラメータは、`0` から始まるページ番号のリストであり、例えば `[0,1]` "
+"はドキュメントの最初のページと2番目のページを選択します。"
+
+#: ../../pymupdf4llm/index.rst:74 c2110a48a53f42ad8a763f0b7d47395e
+msgid ""
+"If you want to store your **Markdown** file, e.g. store as a UTF8-encoded"
+" file, then do:"
+msgstr "**Markdown** ファイルを保存したい場合、例えばUTF8でエンコードされたファイルとして保存する場合は、次のようにします。"
+
+#: ../../pymupdf4llm/index.rst:87 ce66fa78070f4b069dee4ee7a06e4d46
+msgid "Extracting a file as a **LlamaIndex** document"
+msgstr "ファイルをLlamaIndexドキュメントとして抽出する"
+
+#: ../../pymupdf4llm/index.rst:89 a6e64ac317cb4d47be831a483551a55e
+msgid ""
+"|PyMuPDF4LLM| supports direct conversion to a **LLamaIndex** document. A "
+"document is first converted into **Markdown** format and then a "
+"**LlamaIndex** document is returned as follows:"
+msgstr "|PyMuPDF4LLM| は **LlamaIndex** ドキュメントへの直接変換をサポートしています。ドキュメントはまず **Markdown** 形式に変換され、その後、以下のように **LlamaIndex** ドキュメントとして返されます。"
+
+#: ../../pymupdf4llm/index.rst:103 3b3da1d1ea184fe893f569542a283b78
+msgid "Using with |PyMuPDF Pro|"
+msgstr "PyMuPDF Proとの使用 "
+
+#: ../../pymupdf4llm/index.rst:106 49ac5a3bf11b434ab14b9382035daa90
+msgid ""
+"For **Office** document support, |PyMuPDF4LLM| works seamlessly with "
+"|PyMuPDF Pro|. Assuming you have :doc:`../pymupdf-pro` installed you will"
+" be able to work with **Office** documents as expected:"
+msgstr "**Office** ドキュメントのサポートのために、|PyMuPDF4LLM| は |PyMuPDF Pro| とシームレスに動作します。:doc:`../pymupdf-pro` がインストールされている場合、期待通りに **Office** ドキュメントを操作できます。"
+
+#: ../../pymupdf4llm/index.rst:117 07d4d1e29ca74026b0876fbca84bee45
+msgid ""
+"As you can see |PyMuPDF Pro| functionality will be available within the "
+"|PyMuPDF4LLM| context!"
+msgstr "ご覧のとおり、|PyMuPDF Pro| の機能は |PyMuPDF4LLM| のコンテキスト内で利用可能になります！"
+
+#: ../../pymupdf4llm/index.rst:122 ad2bb3f07e2d4eaa9d6007a9ef49cd50
+msgid "API"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:124 b1a56eb7953743348477b8776ee757d9
+msgid "See :ref:`the PyMuPDF4LLM API <pymupdf4llm-api>`."
+msgstr ":ref:`PyMuPDF4LLM API <pymupdf4llm-api>` をご覧ください。"
+
+#: ../../pymupdf4llm/index.rst:127 f0dfd6180e04469e85e7e092cba6a112
+msgid "Further Resources"
+msgstr "追加リソース"
+
+#: ../../pymupdf4llm/index.rst:131 550ae136e65e49f49ed46d2687ab4cfc
+msgid "Sample code"
+msgstr "サンプルコード"
+
+#: ../../pymupdf4llm/index.rst:133 12b1c1ea770a44c88722ee1841815177
+msgid ""
+"`Command line RAG Chatbot with PyMuPDF "
+"<https://github.com/pymupdf/RAG/tree/main/country-capitals>`_"
+msgstr ""
+"`PyMuPDFを使用したコマンドラインRAGチャットボット <https://github.com/pymupdf/RAG/tree/main"
+"/country-capitals>`_"
+
+#: ../../pymupdf4llm/index.rst:134 8652d218208447b4a3806ed032cccc19
+msgid ""
+"`Example of a Browser Application using Langchain and PyMuPDF "
+"<https://github.com/pymupdf/RAG/tree/main/GUI>`_"
+msgstr ""
+"`LangchainとPyMuPDFを使用したブラウザアプリケーションの例 "
+"<https://github.com/pymupdf/RAG/tree/main/GUI>`_"
+
+#: ../../pymupdf4llm/index.rst:138 7b37408477ee496eb25cb7dc7f603075
+msgid "Blogs"
+msgstr "ブログ"
+
+#: ../../pymupdf4llm/index.rst:140 8d90b87f32874ad6a27b9ed073dde7d2
+msgid ""
+"`RAG/LLM and PDF: Enhanced Text Extraction <https://artifex.com/blog/rag-"
+"llm-and-pdf-enhanced-text-extraction>`_"
+msgstr ""
+"`RAG/LLMとPDF: テキスト抽出の強化 <https://qiita.com/jamie-"
+"lemon/items/455e14f83b4f5c81034b>`_"
+
+#: ../../pymupdf4llm/index.rst:141 507e8befa06b4d4c8f80da8c1650a038
+msgid ""
+"`Creating a RAG Chatbot with ChatGPT and PyMuPDF "
+"<https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-"
+"pymupdf>`_"
+msgstr ""
+"`ChatGPTとPyMuPDFを使用したRAGチャットボットの作成 <https://qiita.com/jamie-"
+"lemon/items/df6703906392ae8295f3>`_"
+
+#: ../../pymupdf4llm/index.rst:142 06422ac2815641a2a66438250f1ea4ff
+msgid ""
+"`Building a RAG Chatbot GUI with the ChatGPT API and PyMuPDF "
+"<https://artifex.com/blog/building-a-rag-chatbot-gui-with-the-chatgpt-"
+"api-and-pymupdf>`_"
+msgstr ""
+"`ChatGPT APIとPyMuPDFを使用してRAGチャットボットGUIを構築 <https://qiita.com/jamie-"
+"lemon/items/f075ae56cf56723c9409>`_"
+
+#: ../../pymupdf4llm/index.rst:143 70bc717e6af048a4b32795386b9dbb81
+msgid ""
+"`RAG/LLM and PDF: Conversion to Markdown Text with PyMuPDF "
+"<https://artifex.com/blog/rag-llm-and-pdf-conversion-to-markdown-text-"
+"with-pymupdf>`_"
+msgstr ""
+"`RAG/LLMとPDF：PyMuPDFを使用したMarkdownテキストへの変換 <https://qiita.com/jamie-"
+"lemon/items/1f2eb43f439fd28202a0>`_"
+
+#: ../../footer.rst:60 4d1bb6b57d3946d19254fcf3f4486bf1
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 450942a8ed68488683e30fe733d11816
+msgid "Discord logo"
+msgstr ""
+
+

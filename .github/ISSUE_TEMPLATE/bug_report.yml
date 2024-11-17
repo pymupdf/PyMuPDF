@@ -47,6 +47,9 @@ body:
       label: PyMuPDF version
       options:
         - 
+        - 1.24.13
+        - 1.24.12
+        - 1.24.11
         - 1.24.10
         - 1.24.9
         - 1.24.8
@@ -89,10 +92,10 @@ body:
       # Need quotes around `3.10` otherwise it is treated as a number and shows as `3.1`.
       options:
         -
+        - "3.13"
         - "3.12"
         - "3.11"
         - "3.10"
         - "3.9"
-        - "3.8"
     validations:
       required: true

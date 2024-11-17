@@ -1551,20 +1551,18 @@ For details on **embedded files** refer to Appendix 3.
     :rtype: dict
     :returns: a dictionary with the following keys:
 
-        * *name* -- (*str*) name under which this entry is stored
-        * *filename* -- (*str*) filename
-        * *ufilename* -- (*unicode*) filename
-        * *desc* -- (*str*) description
-        * *size* -- (*int*) original file size
-        * *length* -- (*int*) compressed file length
-        * *creationDate* -- *(New in v1.18.13)* (*str*) date-time of item creation in PDF format
-        * *modDate* -- *(New in v1.18.13)* (*str*) date-time of last change in PDF format
-        * *collection* -- *(New in v1.18.13)* (*int*) :data:`xref` of the associated PDF portfolio item if any, else zero.
-        * *checksum* -- *(New in v1.18.13)* (*str*) a hashcode of the stored file content as a hexadecimal string. Should be MD5 according to PDF specifications, but be prepared to see other hashing algorithms.
+        * ``name`` -- (*str*) name under which this entry is stored
+        * ``filename`` -- (*str*) filename
+        * ``ufilename`` -- (*unicode*) filename
+        * ``description`` -- (*str*) description
+        * ``size`` -- (*int*) original file size
+        * ``length`` -- (*int*) compressed file length
+        * ``creationDate`` -- (*str*) date-time of item creation in PDF format
+        * ``modDate`` -- (*str*) date-time of last change in PDF format
+        * ``collection`` -- (*int*) :data:`xref` of the associated PDF portfolio item if any, else zero.
+        * ``checksum`` -- (*str*) a hashcode of the stored file content as a hexadecimal string. Should be MD5 according to PDF specifications, but be prepared to see other hashing algorithms.
 
   .. method:: embfile_names()
-
-    * New in v1.14.16
 
     PDF only: Return a list of embedded file names. The sequence of the names equals the physical sequence in the document.
 
@@ -2101,7 +2099,7 @@ Clear metadata information. If you do this out of privacy / data protection conc
 {'producer': 'none', 'format': 'PDF 1.4', 'encryption': None, 'author': 'none',
 'modDate': 'none', 'keywords': 'none', 'title': 'none', 'creationDate': 'none',
 'creator': 'none', 'subject': 'none'}
->>> doc._delXmlMetadata()    # clear any XML metadata
+>>> doc.del_xml_metadata()    # clear any XML metadata
 >>> doc.save("anonymous.pdf", garbage = 4)       # save anonymized doc
 
 :meth:`set_toc` Demonstration

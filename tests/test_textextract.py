@@ -387,3 +387,16 @@ def test_3650():
             'RECUEIL DES ACTES ADMINISTRATIFS\n',
             'n° 78 du 28 avril 2023\n',
             ]
+
+def test_4026():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4026.pdf')
+    with pymupdf.open(path) as document:
+        page = document[4]
+        blocks = page.get_text('blocks')
+        for i, block in enumerate(blocks):
+            print(f'block {i}: {block}')
+        if pymupdf.mupdf_version_tuple < (1, 25):
+            assert len(blocks) == 15
+        else:
+            assert len(blocks) == 5
+

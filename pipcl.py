@@ -309,6 +309,7 @@ class Package:
             tag_python = None,
             tag_abi = None,
             tag_platform = None,
+            py_limited_api = None,
 
             wheel_compression = zipfile.ZIP_DEFLATED,
             wheel_compresslevel = None,
@@ -332,7 +333,9 @@ class Package:
             summary:
                 A string, short description of the package.
             description:
-                A string, a detailed description of the package.
+                A string. If contains newlines, a detailed description of the
+                package. Otherwise the path of a file containing the detailed
+                description of the package.
             description_content_type:
                 A string describing markup of `description` arg. For example
                 `text/markdown; variant=GFM`.
@@ -361,7 +364,7 @@ class Package:
                 * https://pypi.org/classifiers/
 
             requires_dist:
-                A string or list of strings. Also see PEP-508.
+                A string or list of strings. None items are ignored. Also see PEP-508.
             requires_python:
                 A string or list of strings.
             requires_external:
@@ -463,13 +466,20 @@ class Package:
                 `none`.
 
             tag_platform:
-                Third element of wheel tag defined in PEP-425. Default is
-                `os.environ('AUDITWHEEL_PLAT')` if set, otherwise derived
-                from `setuptools.distutils.util.get_platform()` (was
+                Third element of wheel tag defined in PEP-425. Default
+                is `os.environ('AUDITWHEEL_PLAT')` if set, otherwise
+                derived from `sysconfig.get_platform()` (was
+                `setuptools.distutils.util.get_platform(), before that
                 `distutils.util.get_platform()` as specified in the PEP), e.g.
                 `openbsd_7_0_amd64`.
 
                 For pure python packages use: `tag_platform=any`
+
+            py_limited_api:
+                If true we build wheels that use the Python Limited API. We use
+                the version of `sys.executable` to define `Py_LIMITED_API` when
+                compiling extensions, and use ABI tag `abi3` in the wheel name
+                if argument `tag_abi` is None.
 
             wheel_compression:
                 Used as `zipfile.ZipFile()`'s `compression` parameter when
@@ -479,6 +489,7 @@ class Package:
                 Used as `zipfile.ZipFile()`'s `compresslevel` parameter when
                 creating wheels.
 
+        Occurrences of `None` in lists are ignored.
         '''
         assert name
         assert version
@@ -553,9 +564,10 @@ class Package:
         self.fn_build = fn_build
         self.fn_clean = fn_clean
         self.fn_sdist = fn_sdist
-        self.tag_python = tag_python
-        self.tag_abi = tag_abi
-        self.tag_platform = tag_platform
+        self.tag_python_ = tag_python
+        self.tag_abi_ = tag_abi
+        self.tag_platform_ = tag_platform
+        self.py_limited_api = py_limited_api
 
         self.wheel_compression = wheel_compression
         self.wheel_compresslevel = wheel_compresslevel
@@ -579,58 +591,8 @@ class Package:
                 f' metadata_directory={metadata_directory!r}'
                 )
 
-        # Get two-digit python version, e.g. 'cp3.8' for python-3.8.6.
-        #
-        if self.tag_python:
-            tag_python = self.tag_python
-        else:
-            tag_python = 'cp' + ''.join(platform.python_version().split('.')[:2])
-
-        # ABI tag.
-        if self.tag_abi:
-            tag_abi = self.tag_abi
-        else:
-            tag_abi = 'none'
-
-        # Find platform tag used in wheel filename.
-        #
-        tag_platform = None
-        if not tag_platform:
-            tag_platform = self.tag_platform
-        if not tag_platform:
-            # Prefer this to PEP-425. Appears to be undocumented,
-            # but set in manylinux docker images and appears
-            # to be used by cibuildwheel and auditwheel, e.g.
-            # https://github.com/rapidsai/shared-action-workflows/issues/80
-            tag_platform = os.environ.get( 'AUDITWHEEL_PLAT')
-        if not tag_platform:
-            # PEP-425. On Linux gives `linux_x86_64` which is rejected by
-            # pypi.org.
-            #
-            import setuptools
-            tag_platform1 = setuptools.distutils.util.get_platform()
-            tag_platform2 = sysconfig.get_platform()
-            assert tag_platform1 == tag_platform2, f'{tag_platform1=} != {tag_platform2=}'
-            tag_platform = tag_platform2.replace('-', '_').replace('.', '_').lower()
-
-            # We need to patch things on MacOS.
-            #
-            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
-            # causes `pip` to fail with: `not a supported wheel on this
-            # platform`. We seem to need to add `_0` to the OS version.
-            #
-            m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', tag_platform)
-            if m:
-                tag_platform2 = f'{m.group(1)}_0{m.group(2)}'
-                log2( f'Changing from {tag_platform!r} to {tag_platform2!r}')
-                tag_platform = tag_platform2
-
-        # Final tag is, for example, 'cp39-none-win32', 'cp39-none-win_amd64'
-        # or 'cp38-none-openbsd_6_8_amd64'.
-        #
-        tag = f'{tag_python}-{tag_abi}-{tag_platform}'
-
-        path = f'{wheel_directory}/{self.name}-{self.version}-{tag}.whl'
+        wheel_name = self.wheel_name()
+        path = f'{wheel_directory}/{wheel_name}'
 
         # Do a build and get list of files to copy into the wheel.
         #
@@ -670,7 +632,7 @@ class Package:
                     f'Wheel-Version: 1.0\n'
                     f'Generator: pipcl\n'
                     f'Root-Is-Purelib: false\n'
-                    f'Tag: {tag}\n'
+                    f'Tag: {self.wheel_tag_string()}\n'
                     ,
                     f'{dist_info_dir}/WHEEL',
                     )
@@ -789,6 +751,125 @@ class Package:
         log1( f'Have created sdist: {tarpath}')
         return os.path.basename(tarpath)
 
+    def wheel_tag_string(self):
+        '''
+        Returns <tag_python>-<tag_abi>-<tag_platform>.
+        '''
+        return f'{self.tag_python()}-{self.tag_abi()}-{self.tag_platform()}'
+
+    def tag_python(self):
+        '''
+        Get two-digit python version, e.g. 'cp3.8' for python-3.8.6.
+        '''
+        if self.tag_python_:
+            return self.tag_python_
+        else:
+            return 'cp' + ''.join(platform.python_version().split('.')[:2])
+
+    def tag_abi(self):
+        '''
+        ABI tag.
+        '''
+        if self.tag_abi_:
+            return self.tag_abi_
+        elif self.py_limited_api:
+            return 'abi3'
+        else:
+            return 'none'
+
+    def tag_platform(self):
+        '''
+        Find platform tag used in wheel filename.
+        '''
+        ret = self.tag_platform_
+        log0(f'From self.tag_platform_: {ret=}.')
+        
+        if not ret:
+            # Prefer this to PEP-425. Appears to be undocumented,
+            # but set in manylinux docker images and appears
+            # to be used by cibuildwheel and auditwheel, e.g.
+            # https://github.com/rapidsai/shared-action-workflows/issues/80
+            ret = os.environ.get( 'AUDITWHEEL_PLAT')
+            log0(f'From AUDITWHEEL_PLAT: {ret=}.')
+
+        if not ret:
+            # Notes:
+            #
+            # PEP-425. On Linux gives `linux_x86_64` which is rejected by
+            # pypi.org.
+            #
+            # On local MacOS/arm64 mac-mini have seen sysconfig.get_platform()
+            # unhelpfully return `macosx-10.9-universal2` if `python3` is the
+            # system Python /usr/bin/python3; this happens if we source `.
+            # /etc/profile`.
+            #
+            ret = sysconfig.get_platform()
+            ret = ret.replace('-', '_').replace('.', '_').lower()
+            log0(f'From sysconfig.get_platform(): {ret=}.')
+
+            # We need to patch things on MacOS.
+            #
+            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
+            # causes `pip` to fail with: `not a supported wheel on this
+            # platform`. We seem to need to add `_0` to the OS version.
+            #
+            m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', ret)
+            if m:
+                ret2 = f'{m.group(1)}_0{m.group(2)}'
+                log0(f'After macos patch, changing from {ret!r} to {ret2!r}.')
+                ret = ret2
+
+        log0( f'tag_platform(): returning {ret=}.')
+        return ret
+
+    def wheel_name(self):
+        return f'{self.name}-{self.version}-{self.tag_python()}-{self.tag_abi()}-{self.tag_platform()}.whl'
+
+    def wheel_name_match(self, wheel):
+        '''
+        Returns true if `wheel` matches our wheel. We basically require the
+        name to be the same, except that we accept platform tags that contain
+        extra items (see pep-0600/), for example we return true with:
+
+            self:   foo-cp38-none-manylinux2014_x86_64.whl
+            wheel:  foo-cp38-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl
+        '''
+        log2(f'{wheel=}')
+        assert wheel.endswith('.whl')
+        wheel2 = wheel[:-len('.whl')]
+        name, version, tag_python, tag_abi, tag_platform = wheel2.split('-')
+        
+        py_limited_api_compatible = False
+        if self.py_limited_api and tag_abi == 'abi3':
+            # Allow lower tag_python number.
+            m = re.match('cp([0-9]+)', tag_python)
+            tag_python_int = int(m.group(1))
+            m = re.match('cp([0-9]+)', self.tag_python())
+            tag_python_int_self = int(m.group(1))
+            if tag_python_int <= tag_python_int_self:
+                # This wheel uses Python stable ABI same or older than ours, so
+                # we can use it.
+                log2(f'py_limited_api; {tag_python=} compatible with {self.tag_python()=}.')
+                py_limited_api_compatible = True
+            
+        log2(f'{self.name == name=}')
+        log2(f'{self.version == version=}')
+        log2(f'{self.tag_python() == tag_python=} {self.tag_python()=} {tag_python=}')
+        log2(f'{py_limited_api_compatible=}')
+        log2(f'{self.tag_abi() == tag_abi=}')
+        log2(f'{self.tag_platform() in tag_platform.split(".")=}')
+        log2(f'{self.tag_platform()=}')
+        log2(f'{tag_platform.split(".")=}')
+        ret = (1
+                and self.name == name
+                and self.version == version
+                and (self.tag_python() == tag_python or py_limited_api_compatible)
+                and self.tag_abi() == tag_abi
+                and self.tag_platform() in tag_platform.split('.')
+                )
+        log2(f'Returning {ret=}.')
+        return ret
+    
     def _entry_points_text(self):
         if self.entry_points:
             if isinstance(self.entry_points, str):
@@ -1157,9 +1238,9 @@ class Package:
             f' fn_build={self.fn_build!r}'
             f' fn_sdist={self.fn_sdist!r}'
             f' fn_clean={self.fn_clean!r}'
-            f' tag_python={self.tag_python!r}'
-            f' tag_abi={self.tag_abi!r}'
-            f' tag_platform={self.tag_platform!r}'
+            f' tag_python={self.tag_python_!r}'
+            f' tag_abi={self.tag_abi_!r}'
+            f' tag_platform={self.tag_platform_!r}'
             '}'
             )
 
@@ -1181,7 +1262,8 @@ class Package:
                 return
             if isinstance( value, (tuple, list)):
                 for v in value:
-                    add( key, v)
+                    if v is not None:
+                        add( key, v)
                 return
             if key == 'License' and '\n' in value:
                 # This is ok because we write `self.license` into
@@ -1228,8 +1310,13 @@ class Package:
 
         # Append description as the body
         if self.description:
+            if '\n' in self.description:
+                description_text = self.description.strip()
+            else:
+                with open(self.description) as f:
+                    description_text = f.read()
             ret += '\n' # Empty line separates headers from body.
-            ret += self.description.strip()
+            ret += description_text
             ret += '\n'
         return ret
 
@@ -1320,6 +1407,7 @@ def build_extension(
         prerequisites_compile=None,
         prerequisites_link=None,
         infer_swig_includes=True,
+        py_limited_api=False,
         ):
     '''
     Builds a Python extension module using SWIG. Works on Windows, Linux, MacOS
@@ -1353,15 +1441,16 @@ def build_extension(
             A string, or a sequence of library paths to be prefixed with
             `/LIBPATH:` on Windows or `-L` on Unix.
         libs
-            A string, or a sequence of library names to be prefixed with `-l`.
+            A string, or a sequence of library names. Each item is prefixed
+            with `-l` on non-Windows.
         optimise:
             Whether to use compiler optimisations.
         debug:
             Whether to build with debug symbols.
         compiler_extra:
-            Extra compiler flags.
+            Extra compiler flags. Can be None.
         linker_extra:
-            Extra linker flags.
+            Extra linker flags. Can be None.
         swig:
             Base swig command.
         cpp:
@@ -1401,16 +1490,22 @@ def build_extension(
             that it can see the same header files as C/C++. This is useful
             when using enviromment variables such as `CC` and `CXX` to set
             `compile_extra.
+        py_limited_api:
+            If true we build for current Python's limited API / stable ABI.
 
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
     '''
+    if compiler_extra is None:
+        compiler_extra = ''
+    if linker_extra is None:
+        linker_extra = ''
     if builddir is None:
         builddir = outdir
     includes_text = _flags( includes, '-I')
     defines_text = _flags( defines, '-D')
     libpaths_text = _flags( libpaths, '/LIBPATH:', '"') if windows() else _flags( libpaths, '-L')
-    libs_text = _flags( libs, '-l')
+    libs_text = _flags( libs, '' if windows() else '-l')
     path_cpp = f'{builddir}/{os.path.basename(path_i)}'
     path_cpp += '.cpp' if cpp else '.c'
     os.makedirs( outdir, exist_ok=True)
@@ -1455,11 +1550,14 @@ def build_extension(
             prerequisites_swig2,
             )
 
-    path_so_leaf = f'_{name}{_so_suffix()}'
+    so_suffix = _so_suffix(use_so_versioning = not py_limited_api)
+    path_so_leaf = f'_{name}{so_suffix}'
     path_so = f'{outdir}/{path_so_leaf}'
 
+    py_limited_api2 = current_py_limited_api() if py_limited_api else None
+
     if windows():
-        path_obj        = f'{path_so}.obj'
+        path_obj = f'{path_so}.obj'
 
         permissive = '/permissive-'
         EHsc = '/EHsc'
@@ -1469,6 +1567,8 @@ def build_extension(
         if debug:
             debug2 = '/Zi'  # Generate .pdb.
             # debug2 = '/Z7'    # Embed debug info in .obj files.
+        
+        py_limited_api3 = f'/DPy_LIMITED_API={py_limited_api2}' if py_limited_api2 else ''
 
         # As of 2023-08-23, it looks like VS tools create slightly
         # .dll's each time, even with identical inputs.
@@ -1509,6 +1609,8 @@ def build_extension(
 
                     {defines_text}
                     {compiler_extra}
+
+                    {py_limited_api3}
                 '''
         run_if( command, path_obj, path_cpp, prerequisites_compile)
 
@@ -1547,6 +1649,8 @@ def build_extension(
             general_flags += ' -g'
         if optimise:
             general_flags += ' -O2 -DNDEBUG'
+
+        py_limited_api3 = f'-DPy_LIMITED_API={py_limited_api2}' if py_limited_api2 else ''
 
         if darwin():
             # MacOS's linker does not like `-z origin`.
@@ -1587,6 +1691,7 @@ def build_extension(
                         -c {path_cpp}
                         -o {path_cpp}.o
                         {compiler_extra}
+                        {py_limited_api3}
                     '''
             prerequisites_link_path = f'{path_cpp}.o.d'
             prerequisites += _get_prerequisites( prerequisites_link_path)
@@ -1624,6 +1729,7 @@ def build_extension(
                         {pythonflags.ldflags}
                         {libs_text}
                         {rpath_flag}
+                        {py_limited_api3}
                     '''
         command_was_run = run_if(
                 command,
@@ -1795,7 +1901,16 @@ def git_items( directory, submodules=False):
     return ret
 
 
-def run( command, capture=False, check=1, verbose=1):
+def run(
+        command,
+        *,
+        capture=False,
+        check=1,
+        verbose=1,
+        env_extra=None,
+        timeout=None,
+        caller=1,
+        ):
     '''
     Runs a command using `subprocess.run()`.
 
@@ -1803,12 +1918,12 @@ def run( command, capture=False, check=1, verbose=1):
         command:
             A string, the command to run.
 
-            Multiple lines in `command` are are treated as a single command.
+            Multiple lines in `command` are treated as a single command.
 
             * If a line starts with `#` it is discarded.
             * If a line contains ` #`, the trailing text is discarded.
 
-            When running the command, on Windows newlines are replaced by
+            When running the command on Windows, newlines are replaced by
             spaces; otherwise each line is terminated by a backslash character.
         capture:
             If true, we include the command's output in our return value.
@@ -1817,6 +1932,12 @@ def run( command, capture=False, check=1, verbose=1):
             command's returncode in our return value.
         verbose:
             If true we show the command.
+        env_extra:
+            None or dict to add to environ.
+        timeout:
+            If not None, timeout in seconds; passed directly to
+            subprocess.run(). Note that on MacOS subprocess.run() seems to
+            leave processes running if timeout expires.
     Returns:
         check capture   Return
         --------------------------
@@ -1825,10 +1946,14 @@ def run( command, capture=False, check=1, verbose=1):
           true  false   None or raise exception
           true   true   output or raise exception
     '''
+    env = None
+    if env_extra:
+        env = os.environ.copy()
+        env.update(env_extra)
     lines = _command_lines( command)
     nl = '\n'
     if verbose:
-        log1( f'Running: {nl.join(lines)}')
+        log1( f'Running: {nl.join(lines)}', caller=caller+1)
     sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
     cp = subprocess.run(
@@ -1838,6 +1963,8 @@ def run( command, capture=False, check=1, verbose=1):
             stderr=subprocess.STDOUT if capture else None,
             check=check,
             encoding='utf8',
+            env=env,
+            timeout=timeout,
             )
     if check:
         return cp.stdout if capture else None
@@ -2069,44 +2196,45 @@ def run_if( command, out, *prerequisites):
 
         >>> verbose(1)
         1
+        >>> log_line_numbers(0)
         >>> out = 'run_if_test_out'
         >>> if os.path.exists( out):
         ...     os.remove( out)
         >>> if os.path.exists( f'{out}.cmd'):
         ...     os.remove( f'{out}.cmd')
         >>> run_if( f'touch {out}', out)
-        pipcl.py: run_if(): Running command because: File does not exist: 'run_if_test_out'
-        pipcl.py: run(): Running: touch run_if_test_out
+        pipcl.py:run_if(): Running command because: File does not exist: 'run_if_test_out'
+        pipcl.py:run_if(): Running: touch run_if_test_out
         True
 
     If we repeat, the output file will be up to date so the command is not run:
 
         >>> run_if( f'touch {out}', out)
-        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
+        pipcl.py:run_if(): Not running command because up to date: 'run_if_test_out'
 
     If we change the command, the command is run:
 
         >>> run_if( f'touch  {out}', out)
-        pipcl.py: run_if(): Running command because: Command has changed
-        pipcl.py: run(): Running: touch  run_if_test_out
+        pipcl.py:run_if(): Running command because: Command has changed
+        pipcl.py:run_if(): Running: touch  run_if_test_out
         True
 
     If we add a prerequisite that is newer than the output, the command is run:
 
         >>> time.sleep(1)
         >>> prerequisite = 'run_if_test_prerequisite'
-        >>> run( f'touch {prerequisite}')
-        pipcl.py: run(): Running: touch run_if_test_prerequisite
+        >>> run( f'touch {prerequisite}', caller=0)
+        pipcl.py:run(): Running: touch run_if_test_prerequisite
         >>> run_if( f'touch  {out}', out, prerequisite)
-        pipcl.py: run_if(): Running command because: Prerequisite is new: 'run_if_test_prerequisite'
-        pipcl.py: run(): Running: touch  run_if_test_out
+        pipcl.py:run_if(): Running command because: Prerequisite is new: 'run_if_test_prerequisite'
+        pipcl.py:run_if(): Running: touch  run_if_test_out
         True
 
     If we repeat, the output will be newer than the prerequisite, so the
     command is not run:
 
         >>> run_if( f'touch  {out}', out, prerequisite)
-        pipcl.py: run_if(): Not running command because up to date: 'run_if_test_out'
+        pipcl.py:run_if(): Not running command because up to date: 'run_if_test_out'
     '''
     doit = False
     cmd_path = f'{out}.cmd'
@@ -2226,7 +2354,7 @@ def _flags( items, prefix='', quote=''):
     if not items:
         return ''
     if isinstance( items, str):
-        return items
+        items = items,
     ret = ''
     for item in items:
         if ret:
@@ -2265,32 +2393,62 @@ def verbose(level=None):
         g_verbose = level
     return g_verbose
 
-def log0(text=''):
-    _log(text, 0)
+g_log_line_numbers = True
 
-def log1(text=''):
-    _log(text, 1)
+def log_line_numbers(yes):
+    '''
+    Sets whether to include line numbers; helps with doctest.
+    '''
+    global g_log_line_numbers
+    g_log_line_numbers = bool(yes)
 
-def log2(text=''):
-    _log(text, 2)
+def log0(text='', caller=1):
+    _log(text, 0, caller+1)
 
-def _log(text, level):
+def log1(text='', caller=1):
+    _log(text, 1, caller+1)
+
+def log2(text='', caller=1):
+    _log(text, 2, caller+1)
+
+def _log(text, level, caller):
     '''
     Logs lines with prefix.
     '''
-    if g_verbose >= level:
-        caller = inspect.stack()[2].function
+    if level <= g_verbose:
+        fr = inspect.stack(context=0)[caller]
+        filename = relpath(fr.filename)
         for line in text.split('\n'):
-            print(f'pipcl.py: {caller}(): {line}')
-        sys.stdout.flush()
+            if g_log_line_numbers:
+                print(f'{filename}:{fr.lineno}:{fr.function}(): {line}', file=sys.stdout, flush=1)
+            else:
+                print(f'{filename}:{fr.function}(): {line}', file=sys.stdout, flush=1)
 
 
-def _so_suffix():
+def relpath(path, start=None):
+    '''
+    A safe alternative to os.path.relpath(), avoiding an exception on Windows
+    if the drive needs to change - in this case we use os.path.abspath().
+    '''
+    if windows():
+        try:
+            return os.path.relpath(path, start)
+        except ValueError:
+            # os.path.relpath() fails if trying to change drives.
+            return os.path.abspath(path)
+    else:
+        return os.path.relpath(path, start)
+
+def _so_suffix(use_so_versioning=True):
     '''
     Filename suffix for shared libraries is defined in pep-3149.  The
     pep claims to only address posix systems, but the recommended
     sysconfig.get_config_var('EXT_SUFFIX') also seems to give the
     right string on Windows.
+    
+    If use_so_versioning is false, we return only the last component of
+    the suffix, which removes any version number, for example changing
+    `.cp312-win_amd64.pyd` to `.pyd`.
     '''
     # Example values:
     #   linux:      .cpython-311-x86_64-linux-gnu.so
@@ -2302,7 +2460,11 @@ def _so_suffix():
     # libraries in numpy-1.25.2-cp311-cp311-macosx_11_0_arm64.whl are called
     # things like `numpy/core/_simd.cpython-311-darwin.so`.
     #
-    return sysconfig.get_config_var('EXT_SUFFIX')
+    ret = sysconfig.get_config_var('EXT_SUFFIX')
+    if not use_so_versioning:
+        # Use last component only.
+        ret = os.path.splitext(ret)[1]
+    return ret
 
 
 def get_soname(path):
@@ -2330,6 +2492,14 @@ def get_soname(path):
         return sos2[-1]
     return path
 
+
+def current_py_limited_api():
+    '''
+    Returns value of PyLIMITED_API to build for current Python.
+    '''
+    a, b = map(int, platform.python_version().split('.')[:2])
+    return f'0x{a:02x}{b:02x}0000'
+    
 
 def install_dir(root=None):
     '''

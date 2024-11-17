@@ -29,10 +29,6 @@ on:
         type: boolean
         default: true
         
-      #wheels_macos_arm64:
-      #  type: boolean
-      #  default: true
-      
       wheels_macos_auto:
         type: boolean
         default: true
@@ -46,11 +42,16 @@ on:
         type: string
         default: '-'
       
-      PYMUPDF_SETUP_MUPDF_BUILD_TYPE:
-        description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g. debug.'
-        type: string
-        default: '-'
+      #PYMUPDF_SETUP_MUPDF_BUILD_TYPE:
+      #  description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g. debug.'
+      #  type: string
+      #  default: '-'
       # We can't currently have more than 10 inputs
+      
+      PYMUPDF_SETUP_PY_LIMITED_API:
+        description: 'If not "0", we build a single wheel for each platform.'
+        type: string
+        default: ''
 
 jobs:
 
@@ -142,9 +143,12 @@ jobs:
             inputs_wheels_windows_auto: ${{inputs.wheels_windows_auto}}
             
             inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
-            inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD_TYPE}}
+            #inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD_TYPE}}
             
             inputs_wheels_cps: ${{inputs.wheels_cps}}
+            
+            PYMUPDF_SETUP_PY_LIMITED_API: ${{inputs.PYMUPDF_SETUP_PY_LIMITED_API}}
+            
         run:
           python scripts/gh_release.py
       

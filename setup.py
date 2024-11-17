@@ -80,7 +80,8 @@ Environmental variables:
         For internal testing.
         
     PYMUPDF_SETUP_MUPDF_BUILD
-        If set, overrides location of MuPDF when building PyMuPDF:
+        If unset or '-', use internal hard-coded default MuPDF location.
+        Otherwise overrides location of MuPDF when building PyMuPDF:
             Empty string:
                 Build PyMuPDF with the system MuPDF.
             A string starting with 'git:':
@@ -106,6 +107,18 @@ Environmental variables:
 
     PYMUPDF_SETUP_MUPDF_CLEAN
         Unix only. If '1', we do a clean MuPDF build.
+
+    PYMUPDF_SETUP_MUPDF_REFCHECK_IF
+        Should be preprocessor statement to enable MuPDF reference count
+        checking.
+        
+        As of 2024-09-27, MuPDF default is `#ifndef NDEBUG`.
+
+    PYMUPDF_SETUP_MUPDF_TRACE_IF
+        Should be preprocessor statement to enable MuPDF runtime diagnostics in
+        response to environment variables such as MUPDF_trace.
+        
+        As of 2024-09-27, MuPDF default is `#ifndef NDEBUG`.
 
     PYMUPDF_SETUP_MUPDF_THIRD
         If '0' and we are building on Linux with the system MuPDF
@@ -136,6 +149,24 @@ Environmental variables:
     
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
+    
+    PYMUPDF_SETUP_PY_LIMITED_API
+        If not '0', we build for current Python's stable ABI.
+    
+    PYMUPDF_SETUP_URL_WHEEL
+        If set, we use an existing wheel instead of building a new wheel.
+        
+        If starts with `http://` or `https://`:
+            If ends with '/', we append our wheel name and download. Otherwise
+            we download directly.
+        
+        If starts with `file://`:
+            If ends with '/' we look for a matching wheel name, `using
+            pipcl.wheel_name_match()` to cope with differing platform tags,
+            for example our `manylinux2014_x86_64` will match with an existing
+            wheel with `manylinux2014_x86_64.manylinux_2_17_x86_64`.
+        
+        Any other prefix is an error.
 
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
@@ -204,6 +235,14 @@ g_root = os.path.abspath( f'{__file__}/..')
 
 # Name of file that identifies that we are in a PyMuPDF sdist.
 g_pymupdfb_sdist_marker = 'pymupdfb_sdist'
+
+PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
+assert PYMUPDF_SETUP_PY_LIMITED_API in (None, '', '0', '1'), \
+        f'Should be "", "0", "1" or undefined: {PYMUPDF_SETUP_PY_LIMITED_API=}.'
+g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API != '0')
+
+PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
+log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
 
 def _fs_remove(path):
     '''
@@ -386,7 +425,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.9-source.tar.gz'
+        location = 'https://mupdf.com/downloads/archive/mupdf-1.24.10-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -410,9 +449,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         # Show sha of checkout.
         run( f'cd {local_dir} && git show --pretty=oneline|head -n 1', check=False)
         if sha:
-            command = f'cd mupdf && git checkout {sha}'
-            log( f'Running: {command}')
-            run( f'cd mupdf && git checkout {sha}')
+            run( f'cd {local_dir} && git checkout {sha}')
     elif '://' in location:
         # Download .tgz.
         local_tgz = os.path.basename( location)
@@ -490,6 +527,9 @@ def get_mupdf(path=None, sha=None):
     PYMUPDF_SETUP_MUPDF_BUILD; see docs at start of this file for details.
     '''
     m = os.environ.get('PYMUPDF_SETUP_MUPDF_BUILD')
+    if m == '-':
+        # This allows easy specification in Github actions.
+        m = None
     if m is None and os.path.isfile(mupdf_tgz):
         # This makes us use tgz inside sdist.
         log(f'Using local tgz: {mupdf_tgz=}')
@@ -513,6 +553,9 @@ def build():
     # Download MuPDF.
     #
     mupdf_local, mupdf_location = get_mupdf()
+    if mupdf_local:
+        mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    # else we cannot determine version this way and do not use it
 
     build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
     assert build_type in ('debug', 'memento', 'release'), \
@@ -520,17 +563,34 @@ def build():
     
     overwrite_config = os.environ.get('PYMUPDF_SETUP_MUPDF_OVERWRITE_CONFIG', '1') == '1'
     
+    PYMUPDF_SETUP_MUPDF_REFCHECK_IF = os.environ.get('PYMUPDF_SETUP_MUPDF_REFCHECK_IF')
+    PYMUPDF_SETUP_MUPDF_TRACE_IF = os.environ.get('PYMUPDF_SETUP_MUPDF_TRACE_IF')
+    
     # Build MuPDF shared libraries.
     #
     if windows:
-        mupdf_build_dir = build_mupdf_windows( mupdf_local, build_type, overwrite_config)
+        mupdf_build_dir = build_mupdf_windows(
+                mupdf_local,
+                build_type,
+                overwrite_config,
+                g_py_limited_api,
+                PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+                PYMUPDF_SETUP_MUPDF_TRACE_IF,
+                )
     else:
         if 'p' not in PYMUPDF_SETUP_FLAVOUR and 'b' not in PYMUPDF_SETUP_FLAVOUR:
             # We only need MuPDF headers, so no point building MuPDF.
             log(f'Not building MuPDF because not Windows and {PYMUPDF_SETUP_FLAVOUR=}.')
             mupdf_build_dir = None
         else:
-            mupdf_build_dir = build_mupdf_unix( mupdf_local, build_type, overwrite_config)
+            mupdf_build_dir = build_mupdf_unix(
+                    mupdf_local,
+                    build_type,
+                    overwrite_config,
+                    g_py_limited_api,
+                    PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+                    PYMUPDF_SETUP_MUPDF_TRACE_IF,
+                    )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
     # Build rebased `extra` module.
@@ -540,6 +600,7 @@ def build():
                 mupdf_local,
                 mupdf_build_dir,
                 build_type,
+                g_py_limited_api,
                 )
     else:
         log(f'Not building extension.')
@@ -586,10 +647,17 @@ def build():
             # Add Windows .lib files.
             mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
             add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
+            if mupdf_version_tuple >= (1, 25):
+                # MuPDF-1.25+ language bindings build also builds libmuthreads.
+                add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
         elif darwin:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdf.dylib', f'{to_dir}libmupdf.dylib')
+            add('b', f'{mupdf_build_dir}/libmupdf.dylib', to_dir)
+            if mupdf_version_tuple >= (1, 25):
+                # MuPDF-1.25+ language bindings build also builds
+                # libmupdf-threads.a.
+                add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
         elif pyodide:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdfcpp.so', 'PyMuPDF.libs/')
@@ -598,19 +666,28 @@ def build():
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
+            if mupdf_version_tuple >= (1, 25):
+                # MuPDF-1.25+ language bindings build also builds
+                # libmupdf-threads.a.
+                add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
 
         if 'd' in PYMUPDF_SETUP_FLAVOUR:
-            # Add MuPDF headers to `ret_d`. Would prefer to use
+            # Add MuPDF C and C++ headers to `ret_d`. Would prefer to use
             # pipcl.git_items() but hard-coded mupdf tree is not a git
             # checkout.
             #
-            include = f'{mupdf_local}/include'
-            for dirpath, dirnames, filenames in os.walk(include):
-                for filename in filenames:
-                    header_abs = os.path.join(dirpath, filename)
-                    assert header_abs.startswith(include)
-                    header_rel = header_abs[len(include)+1:]
-                    add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
+            for root in (
+                    f'{mupdf_local}/include',
+                    f'{mupdf_local}/platform/c++/include',
+                    ):
+                for dirpath, dirnames, filenames in os.walk(root):
+                    for filename in filenames:
+                        if not filename.endswith('.h'):
+                            continue
+                        header_abs = os.path.join(dirpath, filename)
+                        assert header_abs.startswith(root)
+                        header_rel = header_abs[len(root)+1:]
+                        add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
     
     # Add a .py file containing location of MuPDF.
     text = f"mupdf_location='{mupdf_location}'\n"
@@ -649,7 +726,14 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
         log(f'Returning with {name}={env[name]!r}')
 
 
-def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
+def build_mupdf_windows(
+        mupdf_local,
+        build_type,
+        overwrite_config,
+        g_py_limited_api,
+        PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+        PYMUPDF_SETUP_MUPDF_TRACE_IF,
+        ):
     
     assert mupdf_local
 
@@ -670,7 +754,10 @@ def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
         
     wp = pipcl.wdev.WindowsPython()
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
-    windows_build_tail = f'build\\shared-{tesseract}{build_type}-x{wp.cpu.bits}-py{wp.version}'
+    windows_build_tail = f'build\\shared-{tesseract}{build_type}'
+    if g_py_limited_api:
+        windows_build_tail += f'-Py_LIMITED_API={pipcl.current_py_limited_api()}'
+    windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
     devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
@@ -698,7 +785,10 @@ def build_mupdf_windows( mupdf_local, build_type, overwrite_config):
                 devenv = devenv[1:-1]
     command += f' -d {windows_build_tail}'
     command += f' -b'
-    command += f' --refcheck-if "#if 1"'
+    if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
+        command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
+    if PYMUPDF_SETUP_MUPDF_TRACE_IF:
+        command += f' --trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}"'
     command += f' --devenv "{devenv}"'
     command += f' all'
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
@@ -730,7 +820,14 @@ def _cpu_bits():
     return 64
 
 
-def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
+def build_mupdf_unix(
+        mupdf_local,
+        build_type,
+        overwrite_config,
+        g_py_limited_api,
+        PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+        PYMUPDF_SETUP_MUPDF_TRACE_IF,
+        ):
     '''
     Builds MuPDF.
 
@@ -802,6 +899,9 @@ def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
             ):
         log(f'Appending `bsymbolic-` to MuPDF build path.')
         build_prefix += 'bsymbolic-'
+    log(f'{g_py_limited_api=}')
+    if g_py_limited_api:
+        build_prefix += f'Py_LIMITED_API={pipcl.current_py_limited_api()}-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
@@ -809,11 +909,16 @@ def build_mupdf_unix( mupdf_local, build_type, overwrite_config):
     command = f'cd {mupdf_local} &&'
     for n, v in env.items():
         command += f' {n}={shlex.quote(v)}'
-    command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b '
+    command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b'
+    #command += f' --m-target libs'
+    if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
+        command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
+    if PYMUPDF_SETUP_MUPDF_TRACE_IF:
+        command += f' --trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}"'
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
-        command += 'all'
+        command += ' all'
     else:
-        command += 'm01'    # No need for C++/Python bindings.
+        command += ' m01'    # No need for C++/Python bindings.
     command += f' && echo {unix_build_dir}:'
     command += f' && ls -l {unix_build_dir}'
 
@@ -852,7 +957,7 @@ def _fs_update(text, path):
             f.write( text)
     
 
-def _build_extension( mupdf_local, mupdf_build_dir, build_type):
+def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api):
     '''
     Builds Python extension module `_extra`.
 
@@ -860,7 +965,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type):
     '''
     (compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries) \
         = _extension_flags( mupdf_local, mupdf_build_dir, build_type)
-
+    log(f'_build_extension(): {g_py_limited_api=} {defines=}')
     if mupdf_local:
         includes = (
                 f'{mupdf_local}/platform/c++/include',
@@ -903,6 +1008,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type):
             prerequisites_swig = None,
             prerequisites_compile = f'{mupdf_local}/include',
             prerequisites_link = libraries,
+            py_limited_api = g_py_limited_api,
             )
     
     return path_so_leaf
@@ -923,8 +1029,9 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     optimise = 'release' in mupdf_build_dir_flags
     debug = 'debug' in mupdf_build_dir_flags
     r_extra = ''
+    defines = list()
     if windows:
-        defines = ('FZ_DLL_CLIENT',)
+        defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
         if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
             # MuPDF C++ build uses a parallel build tree with updated VS files.
@@ -941,7 +1048,6 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         compiler_extra = ''
     else:
         libs = ['mupdf']
-        defines = None
         compiler_extra += (
                 ' -Wall'
                 ' -Wno-deprecated-declarations'
@@ -1045,7 +1151,7 @@ classifier = [
 # We generate different wheels depending on PYMUPDF_SETUP_FLAVOUR.
 #
 
-version_p = '1.24.10'
+version_p = '1.24.13'
 version_b = '1.24.10'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
@@ -1058,7 +1164,7 @@ if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     log(f'Specifying dummy PyMuPDFb wheel.')
     
     def get_requires_for_build_wheel(config_settings=None):
-        return ['setuptools']
+        return list()
     
     p = pipcl.Package(
             'PyMuPDFb',
@@ -1099,7 +1205,6 @@ else:
                 [console_scripts]
                 pymupdf = pymupdf.__main__:main
                 ''')
-            
     elif 'b' in PYMUPDF_SETUP_FLAVOUR:
         version = version_b
         name = 'PyMuPDFb'
@@ -1125,7 +1230,7 @@ else:
             author = 'Artifex',
             author_email = 'support@artifex.com',
             requires_dist = requires_dist,
-            requires_python = '>=3.8',
+            requires_python = '>=3.9',
             license = 'GNU AFFERO GPL 3.0',
             project_url = [
                 ('Documentation, https://pymupdf.readthedocs.io/'),
@@ -1140,6 +1245,7 @@ else:
             fn_sdist=sdist,
         
             tag_python=tag_python,
+            py_limited_api=g_py_limited_api,
 
             # 30MB: 9 ZIP_DEFLATED
             # 28MB: 9 ZIP_BZIP2
@@ -1161,7 +1267,6 @@ else:
             return r
             
         ret = list()
-        ret.append('setuptools')
         libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
         if libclang:
             print(f'Overriding to use {libclang=}.')
@@ -1184,7 +1289,63 @@ else:
             ret.append( 'swig')
         return ret
 
-build_wheel = p.build_wheel
+
+if PYMUPDF_SETUP_URL_WHEEL:
+    def build_wheel(
+            wheel_directory,
+            config_settings=None,
+            metadata_directory=None,
+            p=p,
+            ):
+        '''
+        Instead of building wheel, we look for and copy a wheel from location
+        specified by PYMUPDF_SETUP_URL_WHEEL.
+        '''
+        log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
+        log(f'{p.wheel_name()=}')
+        url = PYMUPDF_SETUP_URL_WHEEL
+        if url.startswith(('http://', 'https://')):
+            leaf = p.wheel_name()
+            out_path = f'{wheel_directory}{leaf}'
+            out_path_temp = out_path + '-'
+            if url.endswith('/'):
+                url += leaf
+            log(f'Downloading from {url=} to {out_path_temp=}.')
+            urllib.request.urlretrieve(url, out_path_temp)
+        elif url.startswith(f'file://'):
+            in_path = url[len('file://'):]
+            log(f'{in_path=}')
+            if in_path.endswith('/'):
+                # Look for matching wheel within this directory.
+                wheels = glob.glob(f'{in_path}*.whl')
+                log(f'{len(wheels)=}')
+                for in_path in wheels:
+                    log(f'{in_path=}')
+                    leaf = os.path.basename(in_path)
+                    if p.wheel_name_match(leaf):
+                        log(f'Match: {in_path=}')
+                        break
+                else:
+                    message = f'Cannot find matching for {p.wheel_name()=} in ({len(wheels)=}):\n'
+                    wheels_text = ''
+                    for wheel in wheels:
+                        wheels_text += f'    {wheel}\n'
+                    assert 0, f'Cannot find matching for {p.wheel_name()=} in:\n{wheels_text}'
+            else:
+                leaf = os.path.basename(in_path)
+            out_path = os.path.join(wheel_directory, leaf)
+            out_path_temp = out_path + '-'
+            log(f'Copying from {in_path=} to {out_path_temp=}.')
+            shutil.copy2(in_path, out_path_temp)
+        else:
+            assert 0, f'Unrecognised prefix in {PYMUPDF_SETUP_URL_WHEEL=}.'
+        
+        log(f'Renaming from:\n    {out_path_temp}\nto:\n    {out_path}.')
+        os.rename(out_path_temp, out_path)
+        return os.path.basename(out_path)
+else:
+    build_wheel = p.build_wheel
+
 build_sdist = p.build_sdist
 
 

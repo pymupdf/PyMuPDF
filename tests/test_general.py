@@ -11,7 +11,13 @@ import pymupdf
 import pathlib
 import pickle
 import platform
+import re
+import subprocess
+import sys
+import textwrap
 import time
+
+import gentle_compare
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
@@ -274,16 +280,21 @@ def test_2533():
     if hasattr(pymupdf, 'mupdf') and not pymupdf.g_use_extra:
         print('Not running test_2533() because rebased with use_extra=0 known to fail')
         return
-    doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
-    page = doc[0]
-    NEEDLE = "民"
-    ord_NEEDLE = ord(NEEDLE)
-    for span in page.get_texttrace():
-        for char in span["chars"]:
-            if char[0] == ord_NEEDLE:
-                bbox = pymupdf.Rect(char[3])
-                break
-    assert page.search_for(NEEDLE)[0] == bbox
+    pymupdf.TOOLS.set_small_glyph_heights(True)
+    try:
+        doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
+        page = doc[0]
+        NEEDLE = "民"
+        ord_NEEDLE = ord(NEEDLE)
+        for span in page.get_texttrace():
+            for char in span["chars"]:
+                if char[0] == ord_NEEDLE:
+                    bbox = pymupdf.Rect(char[3])
+                    break
+        bbox2 = page.search_for(NEEDLE)[0]
+        assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
+    finally:
+        pymupdf.TOOLS.set_small_glyph_heights(False)
 
 
 def test_2645():
@@ -381,11 +392,15 @@ def test_2238():
     rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
         wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                'format error: cannot recognize version marker\n'
-                'trying to repair broken xref\n'
-                'repairing PDF document'
-                ), f'{wt=}'
+        wt_expected = ''
+        if pymupdf.mupdf_version_tuple >= (1, 26):
+            wt_expected += 'garbage bytes before version marker\n'
+            wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
+        else:
+            wt_expected += 'format error: cannot recognize version marker\n'
+        wt_expected += 'trying to repair broken xref\n'
+        wt_expected += 'repairing PDF document'
+        assert wt == wt_expected, f'{wt=}'
     first_page = doc.load_page(0).get_text('text', pymupdf.INFINITE_RECT())
     last_page = doc.load_page(-1).get_text('text', pymupdf.INFINITE_RECT())
 
@@ -1008,6 +1023,32 @@ def test_cli():
     import subprocess
     subprocess.run(f'pymupdf -h', shell=1, check=1)
 
+
+def check_lines(expected_regexes, actual):
+    '''
+    Checks lines in <actual> match regexes in <expected_regexes>.
+    '''
+    print(f'check_lines():', flush=1)
+    print(f'{expected_regexes=}', flush=1)
+    print(f'{actual=}', flush=1)
+    def str_to_list(s):
+        if isinstance(s, str):
+            return s.split('\n') if s else list()
+        return s
+    expected_regexes = str_to_list(expected_regexes)
+    actual = str_to_list(actual)
+    if expected_regexes and expected_regexes[-1]:
+        expected_regexes.append('') # Always expect a trailing empty line.
+    # Remove `None` regexes and make all regexes match entire lines.
+    expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
+    print(f'{expected_regexes=}', flush=1)
+    for expected_regex_line, actual_line in zip(expected_regexes, actual):
+        print(f'    {expected_regex_line=}', flush=1)
+        print(f'            {actual_line=}', flush=1)
+        assert re.match(expected_regex_line, actual_line)
+    assert len(expected_regexes) == len(actual), \
+            f'expected/actual lines mismatch: {len(expected_regexes)=} {len(actual)=}.'
+
 def test_cli_out():
     '''
     Check redirection of messages and log diagnostics with environment
@@ -1023,36 +1064,32 @@ def test_cli_out():
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
-    def check_lines(expected_regex, actual):
-        if isinstance(expected_regex, str):
-            expected_regex = expected_regex.split('\n')
-        if isinstance(actual, str):
-            actual = actual.split('\n')
-        if expected_regex[-1]:
-            expected_regex.append('') # Always expect a trailing newline.
-        # Remove `None` lines and make all regexes match entire lines.
-        expected_regex = [f'^{i}$' for i in expected_regex if i is not None]
-        for expected_regex_line, actual_line in zip(expected_regex, actual):
-            print(f'    {expected_regex_line=}')
-            print(f'            {actual_line=}')
-            assert re.match(expected_regex_line, actual_line)
-        assert len(expected_regex) == len(actual), \
-                f'expected/actual lines mismatch: {len(expected_regex)=} {len(actual)=}.'
-    
-    def check(expect_out, expect_err, message=None, log=None, ):
+    def check(
+            expect_out,
+            expect_err,
+            message=None,
+            log=None,
+            verbose=0,
+            ):
         '''
         Sets PYMUPDF_MESSAGE to `message` and PYMUPDF_LOG to `log`, runs
         `pymupdf internal`, and checks lines stdout and stderr match regexes in
         `expect_out` and `expect_err`. Note that we enclose regexes in `^...$`.
         '''
-        env = os.environ.copy()
+        env = dict()
         if log:
             env['PYMUPDF_LOG'] = log
         if message:
             env['PYMUPDF_MESSAGE'] = message
-        print(f'Running `pymupdf internal`. {env.get("PATH")=}.')
+        env = os.environ | env
+        print(f'Running with {env=}: pymupdf internal', flush=1)
         cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
         
+        if verbose:
+            #print(f'{cp.stdout=}.', flush=1)
+            #print(f'{cp.stderr=}.', flush=1)
+            sys.stdout.write(f'stdout:\n{textwrap.indent(cp.stdout, "    ")}')
+            sys.stdout.write(f'stderr:\n{textwrap.indent(cp.stderr, "    ")}')
         check_lines(expect_out, cp.stdout)
         check_lines(expect_err, cp.stderr)
     
@@ -1097,8 +1134,173 @@ def test_cli_out():
             ],
             'fd:1',
             'fd:2',
-    
             )
+
+
+def test_use_python_logging():
+    '''
+    Checks pymupdf.use_python_logging().
+    '''
+    log_prefix = None
+    if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
+        log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
+    
+    if os.path.basename(__file__).startswith(f'test_fitz_'):
+        # Do nothing, because command `pymupdf` outputs diagnostics containing
+        # `pymupdf` which are not renamed to `fitz`, which breaks our checking.
+        print(f'Not testing with fitz alias.')
+        return
+    
+    def check(
+            code,
+            regexes_stdout,
+            regexes_stderr,
+            env = None,
+            ):
+        code = textwrap.dedent(code)
+        path = os.path.abspath(f'{__file__}/../../tests/resources_test_logging.py')
+        with open(path, 'w') as f:
+            f.write(code)
+        command = f'{sys.executable} {path}'
+        if env:
+            print(f'{env=}.')
+            env = os.environ | env
+        print(f'Running: {command}', flush=1)
+        try:
+            cp = subprocess.run(command, shell=1, check=1, capture_output=1, text=True, env=env)
+        except Exception as e:
+            print(f'Command failed: {command}.', flush=1)
+            print(f'Stdout\n{textwrap.indent(e.stdout, "    ")}', flush=1)
+            print(f'Stderr\n{textwrap.indent(e.stderr, "    ")}', flush=1)
+            raise
+        check_lines(regexes_stdout, cp.stdout)
+        check_lines(regexes_stderr, cp.stderr)
+    
+    print(f'## Basic use of `logging` sends output to stderr instead of default stdout.')
+    check(
+            '''
+            import pymupdf
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            pymupdf.set_messages(pylogging=1)
+            pymupdf.set_log(pylogging=1)
+            pymupdf.message('this is pymupdf.message() 2')
+            pymupdf.log('this is pymupdf.log() 2')
+            ''',
+            [
+                log_prefix,
+                'this is pymupdf.message[(][)]',
+                '.+this is pymupdf.log[(][)]',
+            ],
+            [
+                'this is pymupdf.message[(][)] 2',
+                '.+this is pymupdf.log[(][)] 2',
+            ],
+            )
+    
+    print(f'## Calling logging.basicConfig() makes logging output contain <LEVEL>:<name> prefixes.')
+    check(
+            '''
+            import pymupdf
+            
+            import logging
+            logging.basicConfig()
+            pymupdf.set_messages(pylogging=1)
+            pymupdf.set_log(pylogging=1)
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [
+                log_prefix,
+            ],
+            [
+                'WARNING:pymupdf:this is pymupdf.message[(][)]',
+                'WARNING:pymupdf:.+this is pymupdf.log[(][)]',
+            ],
+            )
+    
+    print(f'## Setting PYMUPDF_USE_PYTHON_LOGGING=1 makes PyMuPDF use logging on startup.')
+    check(
+            '''
+            import pymupdf
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            '',
+            [
+                log_prefix,
+                'this is pymupdf.message[(][)]',
+                '.+this is pymupdf.log[(][)]',
+            ],
+            env = dict(
+                    PYMUPDF_MESSAGE='logging:',
+                    PYMUPDF_LOG='logging:',
+                    ),
+            )
+    
+    print(f'## Pass explicit logger to pymupdf.use_python_logging() with logging.basicConfig().')
+    check(
+            '''
+            import pymupdf
+            
+            import logging
+            logging.basicConfig()
+            
+            logger = logging.getLogger('foo')
+            pymupdf.set_messages(pylogging_logger=logger, pylogging_level=logging.WARNING)
+            pymupdf.set_log(pylogging_logger=logger, pylogging_level=logging.ERROR)
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [
+                log_prefix,
+            ],
+            [
+                'WARNING:foo:this is pymupdf.message[(][)]',
+                'ERROR:foo:.+this is pymupdf.log[(][)]',
+            ],
+            )
+    
+    print(f'## Check pymupdf.set_messages() pylogging_level args.')
+    check(
+            '''
+            import pymupdf
+            
+            import logging
+            logging.basicConfig(level=logging.DEBUG)
+            logger = logging.getLogger('pymupdf')
+            
+            pymupdf.set_messages(pylogging_level=logging.CRITICAL)
+            pymupdf.set_log(pylogging_level=logging.INFO)
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [
+                log_prefix,
+            ],
+            [
+                'CRITICAL:pymupdf:this is pymupdf.message[(][)]',
+                'INFO:pymupdf:.+this is pymupdf.log[(][)]',
+            ],
+            )
+    
+    print(f'## Check messages() with sys.stdout=None.')
+    check(
+            '''
+            import sys
+            sys.stdout = None
+            import pymupdf
+            
+            pymupdf.message('this is pymupdf.message()')
+            pymupdf.log('this is pymupdf.log()')
+            ''',
+            [],
+            [],
+            )
+    
 
 def relpath(path, start=None):
     '''
@@ -1334,3 +1536,47 @@ def test_3450():
     pix = page.get_pixmap(alpha=False, dpi=150)
     t = time.time() - t
     print(f'test_3450(): {t=}')
+
+def test_3859():
+    if pymupdf.mupdf_version_tuple > (1, 24, 9):
+        print(f'{pymupdf.mupdf.PDF_NULL=}.')
+        print(f'{pymupdf.mupdf.PDF_TRUE=}.')
+        print(f'{pymupdf.mupdf.PDF_FALSE=}.')
+        for name in ('NULL', 'TRUE', 'FALSE'):
+            name2 = f'PDF_{name}'
+            v = getattr(pymupdf.mupdf, name2)
+            print(f'{name=} {name2=} {v=} {type(v)=}')
+            assert type(v)==pymupdf.mupdf.PdfObj, f'`v` is not a pymupdf.mupdf.PdfObj.'
+    else:
+        assert not hasattr(pymupdf.mupdf, 'PDF_TRUE')
+
+def test_3905():
+    data = b'A,B,C,D\r\n1,2,1,2\r\n2,2,1,2\r\n'
+    try:
+        document = pymupdf.open(stream=data)
+    except pymupdf.FileDataError as e:
+        pass
+    else:
+        assert 0
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    if pymupdf.mupdf_version_tuple >= (1, 26):
+        assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
+    else:
+        assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
+
+def test_3624():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
+    path_png_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3624_expected.png')
+    path_png = os.path.normpath(f'{__file__}/../../tests/test_3624.png')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap(matrix=pymupdf.Matrix(2, 2))
+        print(f'Saving to {path_png=}.')
+        pixmap.save(path_png)
+        rms = gentle_compare.pixmaps_rms(path_png_expected, path_png)
+        if pymupdf.mupdf_version_tuple < (1, 24, 10):
+            assert rms > 12
+        else:
+            # We get small differences in sysinstall tests, where some
+            # thirdparty libraries can differ.
+            assert rms < 1

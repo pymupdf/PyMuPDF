@@ -317,3 +317,65 @@ def test_interfield_calculation():
             pymupdf.mupdf.pdf_to_num(pymupdf.mupdf.pdf_array_get(CO, i))
             == list(page.widgets())[-1].xref
         )
+
+
+def test_3950():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3950.pdf')
+    items = list()
+    with pymupdf.open(path) as document:
+        for page in document:
+            for widget in page.widgets():
+                items.append(widget.field_label)
+                print(f'test_3950(): {widget.field_label=}.')
+    assert items == [
+            '{{ named_insured }}',
+            '{{ policy_period_start_date }}',
+            '{{ policy_period_end_date }}',
+            '{{ insurance_line }}',
+            ]
+
+
+def test_4004():
+    if pymupdf.mupdf_version_tuple < (1, 25):
+        print(f'test_4004(): not running because requires MuPDF >= 1.25.')
+        return
+    
+    import collections
+    
+    def get_widgets_by_name(doc):
+        """
+        Extracts and returns a dictionary of widgets indexed by their names.
+        """
+        widgets_by_name = collections.defaultdict(list)
+        for page_num in range(len(doc)):
+            page = doc.load_page(page_num)
+            for field in page.widgets():
+                widgets_by_name[field.field_name].append({
+                    "page_num": page_num,
+                    "widget": field
+                })
+        return widgets_by_name
+
+    # Open document and get widgets
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4004.pdf')
+    doc = pymupdf.open(path)
+    widgets_by_name = get_widgets_by_name(doc)
+
+    # Print widget information
+    for name, widgets in widgets_by_name.items():
+        print(f"Widget Name: {name}")
+        for entry in widgets:
+            widget = entry["widget"]
+            page_num = entry["page_num"]
+            print(f"  Page: {page_num + 1}, Type: {widget.field_type}, Value: {widget.field_value}, Rect: {widget.rect}")
+
+    # Attempt to update field value
+    w = widgets_by_name["Text1"][0]
+    field = w['widget']
+    field.value = "1234567890"
+    try:
+        field.update()
+    except Exception as e:
+        assert str(e) == 'Annot is not bound to a page'
+
+    doc.close()

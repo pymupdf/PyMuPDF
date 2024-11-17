@@ -6,6 +6,7 @@ Pixmap tests
 """
 
 import pymupdf
+import gentle_compare
 
 import os
 import platform
@@ -284,7 +285,7 @@ def test_3493():
     in_path = f'{root}/tests/resources/test_3493.epub'
     
     def run(command, check=1, stdout=None):
-        print(f'Running: {command}')
+        print(f'Running with {check=}: {command}')
         return subprocess.run(command, shell=1, check=check, stdout=stdout, text=1)
     
     def run_code(code, code_path, *, check=True, venv=None, venv_args='', pythonpath=None, stdout=None):
@@ -293,7 +294,14 @@ def test_3493():
             f.write(code)
         prefix = f'PYTHONPATH={pythonpath} ' if pythonpath else ''
         if venv:
-            run(f'{sys.executable} -m venv {venv_args} {venv}')
+            # Have seen this fail on Github in a curious way:
+            #
+            #   Running: /tmp/tmp.fBeKNLJQKk/venv/bin/python -m venv --system-site-packages /project/tests/resources/test_3493_venv
+            #   Error: [Errno 2] No such file or directory: '/project/tests/resources/test_3493_venv/bin/python'
+            #
+            r = run(f'{sys.executable} -m venv {venv_args} {venv}', check=check)
+            if r.returncode:
+                return r
             r = run(f'. {venv}/bin/activate && {prefix}python {code_path}', check=check, stdout=stdout)
         else:
             r = run(f'{prefix}{sys.executable} {code_path}', check=check, stdout=stdout)
@@ -356,3 +364,46 @@ def test_3493():
     else:
         assert out1 != out0
     assert out2 == out0
+
+
+def test_3848():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3848.pdf')
+    with pymupdf.open(path) as document:
+        for i in range(len(document)):
+            page = document.load_page(i)
+            print(f'{page=}.')
+            for annot in page.get_drawings():
+                if page.get_textbox(annot['rect']):
+                    rect = annot['rect']
+                    pixmap = page.get_pixmap(clip=rect)
+                    color_bytes = pixmap.color_topusage()
+
+
+def test_3994():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3994.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        txt_blocks = [blk for blk in page.get_text('dict')['blocks'] if blk['type']==0]
+        for blk in txt_blocks:
+            pix = page.get_pixmap(clip=pymupdf.Rect([int(v) for v in blk['bbox']]), colorspace=pymupdf.csRGB, alpha=False)
+            percent, color = pix.color_topusage()
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'premature end of data in flate filter\n... repeated 2 times...'
+
+
+def test_3448():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3448.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap(alpha=False, dpi=150)
+        path_out = f'{path}.png'
+        pixmap.save(path_out)
+        print(f'Have written to: {path_out}')
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3448.pdf-expected.png')
+    pixmap_expected = pymupdf.Pixmap(path_expected)
+    diff = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
+    print(f'{diff=}')
+    if pymupdf.mupdf_version_tuple < (1, 25):
+        assert 30 <= diff < 45
+    else:
+        assert 0 <= diff < 0.5

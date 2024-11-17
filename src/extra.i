@@ -7,6 +7,10 @@
 %begin
 %{
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG
+
+/* This seems to be necessary on some Windows machines with Py_LIMITED_API,
+otherwise compilation can fail because free() and malloc() are not declared. */
+#include <stdlib.h>
 %}
 
 %init
@@ -104,12 +108,32 @@ static std::string repr(PyObject* x)
 {
     PyObject* repr = PyObject_Repr(x);
     PyObject* repr_str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
-    const char* repr_str_s = PyBytes_AS_STRING(repr_str);
+    #ifdef Py_LIMITED_API
+        const char* repr_str_s = PyBytes_AsString(repr_str);
+    #else
+        const char* repr_str_s = PyBytes_AS_STRING(repr_str);
+    #endif
     std::string ret = repr_str_s;
     Py_DECREF(repr_str);
     Py_DECREF(repr);
     return ret;
 }
+
+#ifdef Py_LIMITED_API
+    static PyObject* PySequence_ITEM(PyObject* o, Py_ssize_t i)
+    {
+        return PySequence_GetItem(o, i);
+    }
+
+    static const char* PyUnicode_AsUTF8(PyObject* o)
+    {
+        static PyObject* string = nullptr;
+        Py_XDECREF(string);
+        string = PyUnicode_AsUTF8String(o);
+        return PyBytes_AsString(string);
+    }
+#endif
+
 
 /* These are also in pymupdf/__init__.py. */
 const char MSG_BAD_ANNOT_TYPE[] = "bad annot type";
@@ -1652,6 +1676,10 @@ static int
 JM_is_word_delimiter(int c, PyObject *delimiters)
 {
     if (c <= 32 || c == 160) return 1;  // a standard delimiter
+    if (0x202a <= c && c <= 0x202e)
+    {
+        return 1; // change between writing directions
+    }
 
     // extra delimiters must be a non-empty sequence
     if (!delimiters || PyObject_Not(delimiters) || !PySequence_Check(delimiters)) {  
@@ -1683,6 +1711,12 @@ JM_is_word_delimiter(int c, PyObject *delimiters)
     return 0;
 }
 
+static int 
+JM_is_rtl_char(int c)
+{
+    if (c < 0x590 || c > 0x900) return 0;
+    return 1;
+}
 
 static const char* JM_font_name(fz_font* font)
 {
@@ -3011,7 +3045,7 @@ mupdf::FzRect JM_make_spanlist(
         float size = -1;
         int flags = -1;
         const char *font = "";
-        int color = -1;
+        unsigned int color = -1;
         float asc = 0;
         float desc = 0;
     };
@@ -3030,7 +3064,11 @@ mupdf::FzRect JM_make_spanlist(
         style.size = ch.m_internal->size;
         style.flags = flags;
         style.font = JM_font_name(ch.m_internal->font);
-        style.color = ch.m_internal->color;
+        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 26))
+            style.color = ch.m_internal->argb;
+        #else
+            style.color = ch.m_internal->color;
+        #endif
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
 
@@ -3199,6 +3237,7 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
             int word_n = 0;                 // word counter per line
             mupdf::fz_clear_buffer(buff);   // reset word buffer
             size_t buflen = 0;              // reset char counter
+            int last_char_rtl = 0;          // was last character RTL?
             for (mupdf::FzStextChar ch: line)
             {
                 mupdf::FzRect cbbox = JM_char_bbox(line, ch);
@@ -3208,9 +3247,10 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                 }
 
                 int word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
-                if (word_delimiter)
+                int this_char_rtl = JM_is_rtl_char(ch.m_internal->c);
+                if (word_delimiter || this_char_rtl != last_char_rtl)
                 {
-                    if (buflen == 0)
+                    if (buflen == 0 && word_delimiter)
                     {
                         continue;  // skip delimiters at line start
                     }
@@ -3227,10 +3267,11 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                     }
                     mupdf::fz_clear_buffer(buff);
                     buflen = 0;  // reset char counter
-                    continue;
+                    if (word_delimiter) continue;
                 }
                 // append one unicode character to the word
                 JM_append_rune(buff.m_internal, ch.m_internal->c);
+                last_char_rtl = this_char_rtl;
                 buflen++;
                 // enlarge word bbox
                 wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));

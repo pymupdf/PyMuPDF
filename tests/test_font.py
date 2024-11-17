@@ -15,6 +15,14 @@ def test_font1():
     for i in range(len(cl)):
         assert cl[i] == font.glyph_advance(ord(text[i])) * 20
     font2 = pymupdf.Font(fontbuffer=font.buffer)
+    codepoints1 = font.valid_codepoints()
+    codepoints2 = font2.valid_codepoints()
+    print('')
+    print(f'{len(codepoints1)=}')
+    print(f'{len(codepoints2)=}')
+    if 0:
+        for i, (ucs1, ucs2) in enumerate(zip(codepoints1, codepoints2)):
+            print(f'    {i}: {ucs1=} {ucs2=} {"" if ucs2==ucs2 else "*"}')
     assert font2.valid_codepoints() == font.valid_codepoints()
     
     # Also check we can get font's bbox.
@@ -56,7 +64,8 @@ def test_2608():
         text = blocks[10][4]
         with open(os.path.abspath(f'{__file__}/../../tests/test_2608_out'), 'wb') as f:
             f.write(text.encode('utf8'))
-        with open(os.path.abspath(f'{__file__}/../../tests/resources/test_2608_expected'), 'rb') as f:
+        path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_2608_expected')
+        with open(path_expected, 'rb') as f:
             expected = f.read().decode('utf8')
         # Github windows x32 seems to insert \r characters; maybe something to
         # do with the Python installation's line endings settings.
@@ -147,3 +156,31 @@ def test_3677():
                                     print(font_name)
                                     font_names.append(font_name)
     assert font_names == font_names_expected, f'{font_names=}'
+
+
+def test_3933():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3933.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        print(f'{len(page.get_fonts())=}')
+    
+        expected = {
+                'BCDEEE+Calibri': 39,
+                'BCDFEE+SwissReSan-Regu':  53,
+                'BCDGEE+SwissReSan-Ital':  20,
+                'BCDHEE+SwissReSan-Bold':  20,
+                'BCDIEE+SwissReSan-Regu':  53,
+                'BCDJEE+Calibri':  39,
+                }
+                
+        for xref, _, _, name, _, _ in page.get_fonts():
+            _, _, _, content = document.extract_font(xref)
+
+            if content:
+                font = pymupdf.Font(fontname=name, fontbuffer=content)
+                supported_symbols = font.valid_codepoints()
+                print(f'Font {name}: {len(supported_symbols)=}.', flush=1)
+                if pymupdf.mupdf_version_tuple < (1, 25):
+                    assert len(supported_symbols) == 0
+                else:
+                    assert len(supported_symbols) == expected.get(name)

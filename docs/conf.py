@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("."))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
-extensions = ['sphinx_copybutton','notfound.extension']
+extensions = ['sphinx_copybutton','notfound.extension','sphinxcontrib.googleanalytics']
 # rst2pdf is not available on OpenBSD.
 if hasattr(os, "uname") and os.uname()[0] != "OpenBSD":
     extensions.append("rst2pdf.pdfbuilder")
@@ -29,6 +29,9 @@ templates_path = ["_templates"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"
+
+# from: pip install sphinxcontrib-googleanalytics
+googleanalytics_id = "G-JZTN4VTL9M"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'

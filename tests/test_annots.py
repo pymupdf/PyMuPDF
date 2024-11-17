@@ -2,8 +2,12 @@
 """
 Test PDF annotation insertions.
 """
-import pymupdf
+
 import os
+
+import pymupdf
+import gentle_compare
+
 
 pymupdf.TOOLS.set_annot_stem("jorj")
 
@@ -339,8 +343,8 @@ def test_file_info():
                 print(f'{file_info=}')
                 results.append(file_info)
     assert results == [
-            {'filename': 'example.pdf', 'descender': '', 'length': 8416, 'size': 8992},
-            {'filename': 'photo1.jpeg', 'descender': '', 'length': 10154, 'size': 8012},
+            {'filename': 'example.pdf', 'description': '', 'length': 8416, 'size': 8992},
+            {'filename': 'photo1.jpeg', 'description': '', 'length': 10154, 'size': 8012},
             ]
 
 def test_3131():
@@ -364,3 +368,107 @@ def test_3209():
     assert n == 1
     path = os.path.abspath(f'{__file__}/../../tests/test_3209_out.pdf')
     pdf.save(path)  # Check the output PDF that the annotation is correctly drawn
+
+def test_3863():
+    if pymupdf.mupdf_version_tuple < (1, 24, 10):
+        print(f'test_3863(): not running because {pymupdf.mupdf_version_tuple=} < 1.24.10.')
+        return
+    
+    path_in = os.path.normpath(f'{__file__}/../../tests/resources/test_3863.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_3863.pdf.pdf')
+    
+    # Create redacted PDF.
+    print(f'Loading {path_in=}.')
+    with pymupdf.open(path_in) as document:
+    
+        for num, page in enumerate(document):
+            print(f"Page {num + 1} - {page.rect}:")
+    
+            for image in page.get_images(full=True):
+                print(f"  - Image: {image}")
+
+            redact_rect = page.rect
+
+            if page.rotation in (90, 270):
+                redact_rect = pymupdf.Rect(0, 0, page.rect.height, page.rect.width)
+
+            page.add_redact_annot(redact_rect)
+            page.apply_redactions(images=pymupdf.PDF_REDACT_IMAGE_NONE)
+
+        print(f'Writing to {path_out=}.')
+        document.save(path_out)
+    
+    with pymupdf.open(path_out) as document:
+        assert len(document) == 8
+        
+        # Create PNG for each page of redacted PDF.
+        for num, page in enumerate(document):
+            path_png = f'{path_out}.{num}.png'
+            pixmap = page.get_pixmap()
+            print(f'Writing to {path_png=}.')
+            pixmap.save(path_png)
+            # Compare with expected png.
+    
+        print(f'Comparing page PNGs with expected PNGs.')
+        for num, _ in enumerate(document):
+            path_png = f'{path_out}.{num}.png'
+            path_png_expected = f'{path_in}.pdf.{num}.png'
+            print(f'{path_png=}.')
+            print(f'{path_png_expected=}.')
+            rms = gentle_compare.pixmaps_rms(path_png, path_png_expected, '    ')
+            # We get small differences in sysinstall tests, where some
+            # thirdparty libraries can differ.
+            assert rms < 1
+
+def test_3758():
+    # This test requires input file that is not public, so is usually not
+    # available.
+    path = os.path.normpath(f'{__file__}/../../../test_3758.pdf')
+    if not os.path.exists(path):
+        print(f'test_3758(): not running because does not exist: {path=}.')
+        return
+    import json
+    with pymupdf.open(path) as document:
+        for page in document:
+            info = json.loads(page.get_text('json', flags=pymupdf.TEXTFLAGS_TEXT))
+            for block_ind, block in enumerate(info['blocks']):
+                for line_ind, line in enumerate(block['lines']):
+                    for span_ind, span in enumerate(line['spans']):
+                        # print(span)
+                        page.add_redact_annot(pymupdf.Rect(*span['bbox']))
+            page.apply_redactions()
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt
+
+
+def test_parent():
+    """Test invalidating parent on page re-assignment."""
+    doc = pymupdf.open()
+    page = doc.new_page()
+    a = page.add_highlight_annot(page.rect)  # insert annotation on page 0
+    page = doc.new_page()  # make a new page, should orphanate annotation
+    try:
+        print(a)  # should raise
+    except Exception as e:
+        if pymupdf.mupdf_version_tuple >= (1, 25):
+            assert isinstance(e, pymupdf.mupdf.FzErrorArgument)
+            assert str(e) == 'code=4: annotation not bound to any page'
+        else:
+            assert isinstance(e, ReferenceError)
+            assert str(e) == 'weakly-referenced object no longer exists'
+    else:
+        assert 0, f'Failed to get expected exception.'
+
+def test_4047():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4047.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        fontname = page.get_fonts()[0][3]
+        if fontname not in pymupdf.Base14_fontnames:
+            fontname = "Courier"
+        hits = page.search_for("|")
+        for rect in hits:
+            page.add_redact_annot(
+                rect, " ", fontname=fontname, align=pymupdf.TEXT_ALIGN_CENTER, fontsize=10
+            )  # Segmentation Fault...
+        page.apply_redactions()

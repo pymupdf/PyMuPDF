@@ -118,7 +118,29 @@ Problems after installation
 Notes
 ---------------------------------------------------------
 
-* Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), for Python versions marked as "Supported" on https://devguide.python.org/versions/.
+*
+  Wheels are available for the following platforms:
+  
+   * Windows 32-bit Intel.
+   * Windows 64-bit Intel.
+   * Linux 64-bit Intel.
+   * Linux 64-bit ARM.
+   * MacOS 64-bit Intel.
+   * MacOS 64-bit ARM.
+  
+  Details:
+  
+  * We release a single wheel for each of the above platforms.
+  
+  *
+    Each wheel uses the Python Stable ABI of the current oldest supported
+    Python version (currently 3.9), and so works with all later Python
+    versions, including new Python releases.
+  
+  *
+    Wheels are tested on all Python versions currently marked as "Supported" on
+    https://devguide.python.org/versions/, currently 3.9, 3.10, 3.11, 3.12 and
+    3.13.
 
 *
   Wheels are not available for Python installed with `Chocolatey
@@ -131,10 +153,6 @@ Notes
   <https://musl.libc.org/>`_ (For example `Alpine Linux
   <https://alpinelinux.org/>`_ on aarch64), and building from source is known
   to fail.
-
-* PyMuPDF does not support Python versions prior to 3.8. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
-
-* Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
 
 * There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
 
