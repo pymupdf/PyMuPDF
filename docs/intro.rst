@@ -24,7 +24,7 @@ With PyMuPDF you can access files with extensions like “.pdf”, “.xps”, �
 
 PyMuPDF provides access to many important functions of MuPDF from within a Python environment, and we are continuously seeking to expand this function set.
 
-PyMuPDF runs and has been tested on Mac, Linux and Windows for Python versions 3.8 [#f1]_ and up. Other platforms should work too, as long as MuPDF and Python support them.
+PyMuPDF runs and has been tested on Mac, Linux and Windows for all currently supported Python versions. Other platforms should work too, as long as MuPDF and Python support them.
 
 PyMuPDF is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
@@ -32,15 +32,20 @@ For MS Windows, Mac OSX and Linux Python wheels are available -- please see the 
 
 The GitHub repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
 
-Note on the Name *fitz*
---------------------------
-The top level Python import name for this library is **"fitz"**. This has historical reasons:
+Note on the legacy module name *fitz*
+-------------------------------------
+Prior to release 1.24.3, the top level Python import name for this library was **"fitz"**. This has historical reasons:
 
 The original rendering library for MuPDF was called *Libart*.
 
 *"After Artifex Software acquired the MuPDF project, the development focus shifted on writing a new modern graphics library called "Fitz". Fitz was originally intended as an R&D project to replace the aging Ghostscript graphics library, but has instead become the rendering engine powering MuPDF."* (Quoted from `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_).
 
-So PyMuPDF **cannot coexist** with packages named "fitz" in the same Python environment.
+`import fitz` is still supported for backwards compatibility.
+
+.. note::
+
+  Use of legacy name `fitz` can fail if defunct package pypi.org `fitz` is installed; see :ref:`problems-after-installation`.
+
 
 License and Copyright
 ----------------------
@@ -58,7 +63,5 @@ Artifex, the Artifex logo, MuPDF, and the MuPDF logo are registered trademarks o
 
 .. rubric:: Footnotes
 
-
-.. [#f1] PyMuPDF generally only supports Python versions that are still maintained by the Python Software Foundation. Once a Python version is being retired, PyMuPDF support will also be ended. This means that wheels for a retired Python platform will no longer be provided, and that Python language features may be used that did not exist in the retired Python version.
 
 .. include:: footer.rst

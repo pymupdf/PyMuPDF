@@ -48,9 +48,6 @@ General steps
     *
       `CFLAGS`, `CXXFLAGS` and `LDFLAGS` set to allow visibility of the
       installed MuPDF headers and shared libraries.
-    *
-      `PYMUPDF_SETUP_IMPLEMENTATIONS=b` to build only the rebased
-      implementation. [This will become the default in a future release.]
 
 * Run PyMuPDF tests:
 

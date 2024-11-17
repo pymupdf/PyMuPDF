@@ -1,0 +1,233 @@
+# PyMuPDF Japanese documentation
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2024.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.24.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-11 21:42+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
+"Language: ja\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 f032bf30ed9142289a862925518f5b31
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 ea22b77e9dbf4a6285e3e32135e0a37e
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDFは、PDF（およびその他）ドキュメントのデータ抽出、解析、変換、および操作のための高性能なPythonライブラリです。"
+
+#: ../../header.rst:-1 112f6ca0a87941ecb5ad834584495d4c
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFテキスト抽出、PDF画像抽出、PDF変換、PDFテーブル、PDF分割、PDF作成、Pyodide、PyScript"
+
+#: ../../rag.rst:6 8aceb8a4a1554f7f98c014c03cd8c211
+msgid "PyMuPDF, LLM & RAG"
+msgstr "PyMuPDF、LLM、およびRAG"
+
+#: ../../rag.rst:9 4cee612223fd4ff8bfaf22df84989cb1
+msgid ""
+"Integrating |PyMuPDF| into your :title:`Large Language Model (LLM)` "
+"framework and overall :title:`RAG (Retrieval-Augmented Generation`) "
+"solution provides the fastest and most reliable way to deliver document "
+"data."
+msgstr ""
+"|PyMuPDF| を :title:`大規模言語モデル（LLM）` フレームワークおよび全体的な :title:`RAG（Retrieval-"
+"Augmented Generation）` ソリューションに統合することで、文書データを提供する最も高速かつ信頼性の高い方法が提供されます。"
+
+#: ../../rag.rst:11 833c3495c1d34b92bad70b007d886850
+msgid ""
+"There are a few well known :title:`LLM` solutions which have their own "
+"interfaces with |PyMuPDF| - it is a fast growing area, so please let us "
+"know if you discover any more!"
+msgstr ""
+"いくつかのよく知られた :title:`LLM` ソリューションは、|PyMuPDF| "
+"と独自のインターフェースを持っています。この分野は急速に成長しているため、もっと見つけた場合はお知らせください。"
+
+#: ../../rag.rst:13 fc88fce4b4304886b8e469acbbb0c0af
+msgid ""
+"If you need to export to :title:`Markdown` or obtain a "
+":title:`LlamaIndex` Document from a file:"
+msgstr ":title:`Markdown` へのエクスポートやファイルから :title:`LlamaIndex` ドキュメントを取得する必要がある場合は:"
+
+#: ../../rag.rst:31 1dea71fa597e4f018ac60f80c04c4461
+msgid "Integration with :title:`LangChain`"
+msgstr ":title:`LangChain` との統合"
+
+#: ../../rag.rst:33 6b7d62a573f64a2bb03641729fa38c5c
+msgid ""
+"It is simple to integrate directly with :title:`LangChain` by using their"
+" dedicated loader as follows:"
+msgstr ":title:`LangChain` の専用ローダーを使用して直接統合するのは簡単です。以下のようにします："
+
+#: ../../rag.rst:43 6fd2bc431ceb45ddbe27a16bbd2f7756
+msgid ""
+"See `LangChain Using PyMuPDF "
+"<https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf"
+"/#using-pymupdf>`_ for full details."
+msgstr ""
+"`LangChainを完全に利用する詳細については、PyMuPDF "
+"<https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf"
+"/#using-pymupdf>`_ を参照してください。"
+
+#: ../../rag.rst:47 5ca73199324b4625bc90a11753be427c
+msgid "Integration with :title:`LlamaIndex`"
+msgstr ":title:`LlamaIndex` との統合"
+
+#: ../../rag.rst:50 7cdf18569ec24f8d94e31d2084320f85
+msgid ""
+"Use the dedicated `PyMuPDFReader` from :title:`LlamaIndex` 🦙 to manage "
+"your document loading."
+msgstr ":title:`LlamaIndex` 🦙 の専用 `PyMuPDFReader` を使用して、文書の読み込みを管理します。"
+
+#: ../../rag.rst:58 64b07c5fa5494110911e682998ee7ca6
+msgid ""
+"See `Building RAG from Scratch "
+"<https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval>`_"
+" for more."
+msgstr ""
+"詳細は、 `ゼロからRAGを構築する "
+"<https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval>`_"
+"  をご覧ください。"
+
+#: ../../rag.rst:62 955d502129074b2c8fb6f7a9fc3df0a4
+msgid "Preparing Data for Chunking"
+msgstr "データのチャンキングの準備"
+
+#: ../../rag.rst:64 c0aa532e08294b64a319ba28351e4980
+msgid ""
+"Chunking (or splitting) data is essential to give context to your "
+":title:`LLM` data and with :title:`Markdown` output now supported by "
+"|PyMuPDF| this means that `Level 3 chunking "
+"<https://medium.com/@anuragmishra_27746/five-levels-of-chunking-"
+"strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ is "
+"supported."
+msgstr ""
+"データのチャンキング（または分割）は、:title:`LLM` データに文脈を与えるために不可欠であり、|PyMuPDF| が "
+":title:`Markdown` 出力をサポートするようになったことで、`レベル3のチャンキング "
+"<https://medium.com/@anuragmishra_27746/five-levels-of-chunking-"
+"strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ "
+"がサポートされることを意味します。"
+
+#: ../../rag.rst:71 6e9f40dfe36b4e979ad54d74ac49b588
+msgid "Outputting as :title:`Markdown`"
+msgstr ":title:`Markdown` 形式で出力"
+
+#: ../../rag.rst:73 5ebe999aae1d4280a49f362e8c98df2e
+#, fuzzy
+msgid ""
+"In order to export your document in :title:`Markdown` format you will "
+"need a separate helper. Package :doc:`pymupdf4llm/index` is a high-level "
+"wrapper of |PyMuPDF| functions which for each page outputs standard and "
+"table text in an integrated Markdown-formatted string across all document"
+" pages:"
+msgstr ""
+":title:`Markdown` 形式で文書をエクスポートするには、別途のヘルパーが必要です。パッケージ `pymupdf4llm "
+"<https://pypi.org/project/pymupdf4llm/>`_ "
+"は、各ページに対して標準テキストとテーブルテキストを統合されたMarkdown形式の文字列で出力する、|PyMuPDF| "
+"関数の高レベルなラッパーです。"
+
+#: ../../rag.rst:87 c568327b53524b52adfa07243e7d0cba
+#, fuzzy
+msgid "For further information please refer to: :doc:`pymupdf4llm/index`."
+msgstr ""
+"詳細については、次を参照してください： `pymupdf4llmのドキュメント "
+"<https://pymupdf4llm.readthedocs.io>`_。"
+
+#: ../../rag.rst:91 5bc9a063eef74bb59525ea8258940c4d
+msgid "How to use :title:`Markdown` output"
+msgstr ":title:`Markdown` 出力の使用方法"
+
+#: ../../rag.rst:93 541255844d5444e0af095ed416a53f3c
+msgid ""
+"Once you have your data in :title:`Markdown` format you are ready to "
+"chunk/split it and supply it to your :title:`LLM`, for example, if this "
+"is :title:`LangChain` then do the following:"
+msgstr ""
+":title:`Markdown` 形式のデータが準備できたら、データをチャンク化/分割して :title:`LLM` "
+"に供給する準備が整います。例えば、:title:`LangChain` の場合は、次の手順を行います。"
+
+#: ../../rag.rst:109 5c8fa8a3300a4c14b5b482cce05e741d
+msgid ""
+"For more see `5 Levels of Text Splitting <https://github.com"
+"/FullStackRetrieval-"
+"com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_"
+msgstr ""
+"詳細は `「テキスト分割の5レベル」 <https://github.com/FullStackRetrieval-"
+"com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_"
+"  を参照してください。"
+
+#: ../../rag.rst:113 98f572f4e9144ea0b42dc6120ecfb497
+msgid "Related Blogs"
+msgstr "関連ブログ"
+
+#: ../../rag.rst:115 0bca2292f16d4bf4b98296f9ee22df1a
+msgid ""
+"To find out more about |PyMuPDF|, :title:`LLM` & :title:`RAG` check out "
+"our blogs for implementations & tutorials."
+msgstr ""
+"|PyMuPDF| 、 :title:`LLM` 、および :title:`RAG` "
+"について詳しく知りたい場合は、実装やチュートリアルに関するブログをチェックしてください。"
+
+#: ../../rag.rst:119 c8d7f6fd882042649895107cb597934e
+msgid "Methodologies to Extract Text"
+msgstr "テキストを抽出するための方法論"
+
+#: ../../rag.rst:121 52dc74f018564ebc98b53bd28dc86240
+msgid ""
+"`Enhanced Text Extraction <https://artifex.com/blog/rag-llm-and-pdf-"
+"enhanced-text-extraction>`_"
+msgstr "`テキスト抽出の強化 <https://qiita.com/jamie-lemon/items/455e14f83b4f5c81034b>`_ "
+
+#: ../../rag.rst:122 e495b248bc83443a9b3b969c4d0be098
+msgid ""
+"`Conversion to Markdown Text with PyMuPDF <https://artifex.com/blog/rag-"
+"llm-and-pdf-conversion-to-markdown-text-with-pymupdf>`_"
+msgstr ""
+"`PyMuPDFを使用したMarkdownテキストへの変換 <https://qiita.com/jamie-"
+"lemon/items/1f2eb43f439fd28202a0>`_"
+
+#: ../../rag.rst:127 16faac60219a4c1cbc09da5212d905ca
+msgid "Create a Chatbot to discuss your documents"
+msgstr "文書を議論するためのチャットボットを作成する"
+
+#: ../../rag.rst:129 62eb98c3df4943118965715f004b491b
+msgid ""
+"`Make a simple command line Chatbot <https://artifex.com/blog/creating-a"
+"-rag-chatbot-with-chatgpt-and-pymupdf>`_"
+msgstr ""
+"`シンプルなコマンドラインのチャットボットを作成するシンプルなコマンドラインのチャットボットを作成する <https://qiita.com"
+"/jamie-lemon/items/df6703906392ae8295f3>`_"
+
+#: ../../rag.rst:130 cfe692f5e4c54aac8c7c73c23be59272
+msgid ""
+"`Make a Chatbot GUI <https://artifex.com/blog/building-a-rag-chatbot-gui-"
+"with-the-chatgpt-api-and-pymupdf>`_"
+msgstr ""
+"`チャットボットGUIを作成する <https://qiita.com/jamie-"
+"lemon/items/f075ae56cf56723c9409>`_"
+
+#: ../../footer.rst:60 dc73f90c9e0e41ecb3a92d670aaac3da
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは、|version| までのすべてのバージョンをカバーしています。"
+
+#: ../../footer.rst:-1 a810e0f1a9ba4e6d996a8ac59df4b0d8
+msgid "Discord logo"
+msgstr ""
+
+#~ msgid "If you need to export to :title:`Markdown`:"
+#~ msgstr ":title:`Markdown` にエクスポートする必要がある場合："
+

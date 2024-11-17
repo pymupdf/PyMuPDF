@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,74 +19,84 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 fe2576242c254689a9b200669a2eaa35
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 3e6a1d7d9528466eb9edcc50308a904e
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 c6dcb0755d9b4cd19d3d75e773df4bae
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../device.rst:7 e80804c0692b4c75aa94b7052d1957c0
+#: ../../device.rst:7 8ba05fc3c3054d698fdbdec5e880c8d4
 msgid "Device"
 msgstr "Device (デバイス)"
 
-#: ../../device.rst:9 183512aaf36e4fa19d6f5ddd8c9d1810
+#: ../../device.rst:9 8b9300098c7f4c95b0db78843d8e629b
 msgid ""
 "The different format handlers (pdf, xps, etc.) interpret pages to a "
 "\"device\". Devices are the basis for everything that can be done with a "
 "page: rendering, text extraction and searching. The device type is "
 "determined by the selected construction method."
-msgstr "異なるフォーマットハンドラ（pdf、xps など）はページを「デバイス」に解釈します。デバイスはページで行うすべてのことの基盤であり、レンダリング、テキスト抽出、検索などが行えます。デバイスのタイプは選択した構築方法によって決まります。"
+msgstr ""
+"異なるフォーマットハンドラ（pdf、xps "
+"など）はページを「デバイス」に解釈します。デバイスはページで行うすべてのことの基盤であり、レンダリング、テキスト抽出、検索などが行えます。デバイスのタイプは選択した構築方法によって決まります。"
 
-#: ../../device.rst:11 62b56176b9d54183871831210975926a
+#: ../../device.rst:11 c777f81e0620421992bf3f79a0cc917d
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../device.rst:17 d306746b4de34cb69a4c3ef9cf0aeeb9
+#: ../../device.rst:17 66461b451d6a4de28a40d793d0316425
 msgid "Constructor for either a pixel map or a display list device."
 msgstr "ピクセルマップまたは表示リストデバイスのコンストラクタ。"
 
-#: ../../device.rst 5267bd5a806640d0be1ae66c885b69a2
-#: cd04f145cc3c4154a84b19db11dca49b
+#: ../../device.rst 1c17c09f077b4fd6bbd49145369888a4
+#: e8161768bf99436f8520d4810bc899a4
 msgid "Parameters"
 msgstr ""
 
-#: ../../device.rst:19 388c911cea69460c95dcb4aa20368bd7
+#: ../../device.rst:19 318bafa96d164867857828ab66d99dd4
 msgid "either a *Pixmap* or  a *DisplayList*."
 msgstr "*Pixmap* または *DisplayList* のいずれか。"
 
-#: ../../device.rst:22 b2d2672b8e9a4c3ab5b3790bf7c07b36
+#: ../../device.rst:22 3ab538117d9d4cbf96f449fcdafb0260
 msgid ""
 "An optional `IRect` for *Pixmap* devices to restrict rendering to a "
 "certain area of the page. If the complete page is required, specify "
 "*None*. For display list devices, this parameter must be omitted."
-msgstr "*Pixmap* デバイス用の任意の `IRect` で、ページの特定の領域にレンダリングを制限するためのものです。完全なページが必要な場合は、*None* を指定してください。表示リストデバイスの場合、このパラメータは省略する必要があります。"
+msgstr ""
+"*Pixmap* デバイス用の任意の `IRect` "
+"で、ページの特定の領域にレンダリングを制限するためのものです。完全なページが必要な場合は、*None* "
+"を指定してください。表示リストデバイスの場合、このパラメータは省略する必要があります。"
 
-#: ../../device.rst:27 bc9372a549ee40be885da074aa376f27
+#: ../../device.rst:27 33861c8084374c259e3c6708aea00c10
 msgid "Constructor for a text page device."
 msgstr "テキストページデバイスのコンストラクタ。"
 
-#: ../../device.rst:29 b10a27841e1e4b0caf2a9420558c0dd6
+#: ../../device.rst:29 a30cf7e99efa4409a4adc2930b18db5e
 msgid "*TextPage* object"
 msgstr "TextPageオブジェクト"
 
-#: ../../device.rst:32 99aaeaca5f5747609bce3b8ed2ee5d86
+#: ../../device.rst:32 8db2aa5e40654497b061f9aa49f766b8
 msgid ""
 "control the way how text is parsed into the text page. Currently 3 "
 "options can be coded into this parameter, see :ref:`TextPreserve`. To set"
 " these options use something like *flags=0 | TEXT_PRESERVE_LIGATURES | "
 "...*."
-msgstr "テキストがテキストページに解析される方法を制御するフラグです。
-現在、このパラメータには3つのオプションがコード化できます。:ref:`TextPreserve` を参照してください。これらのオプションを設定するには、*flags=0 | TEXT_PRESERVE_LIGATURES | ...*. のように使用します"
+msgstr "テキストがテキストページに解析される方法を制御するフラグです"
 
-#: ../../footer.rst:-1 396222c97696432298ebceee7df682d8
+#: ../../footer.rst:71 6297032dce7e4a4d9dbbda9cf45cbe4c
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 0ed39d0ad0c04da4b8617222101d3e6f
 msgid "Discord logo"
 msgstr ""
-
-
 

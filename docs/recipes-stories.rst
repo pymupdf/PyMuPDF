@@ -42,17 +42,17 @@ Here is the inevitable "Hello World" example. We will show two variants:
 
 Variant using an existing HTML source [#f1]_ -- which in this case is defined as a constant in the script::
 
-    import fitz
+    import pymupdf
 
     HTML = """
     <p style="font-family: sans-serif;color: blue">Hello World!</p>
     """
 
-    MEDIABOX = fitz.paper_rect("letter")  # output page format: Letter
+    MEDIABOX = pymupdf.paper_rect("letter")  # output page format: Letter
     WHERE = MEDIABOX + (36, 36, -36, -36)  # leave borders of 0.5 inches
 
-    story = fitz.Story(html=HTML)  # create story from HTML
-    writer = fitz.DocumentWriter("output.pdf")  # create the writer
+    story = pymupdf.Story(html=HTML)  # create story from HTML
+    writer = pymupdf.DocumentWriter("output.pdf")  # create the writer
     
     more = 1  # will indicate end of input once it is set to 0
 
@@ -68,7 +68,7 @@ Variant using an existing HTML source [#f1]_ -- which in this case is defined as
     
     The above effect (sans-serif and blue text) could have been achieved by using a separate CSS source like so::
 
-        import fitz
+        import pymupdf
 
         CSS = """
         body {
@@ -82,24 +82,24 @@ Variant using an existing HTML source [#f1]_ -- which in this case is defined as
         """
 
         # the story would then be created like this:
-        story = fitz.Story(html=HTML, user_css=CSS)
+        story = pymupdf.Story(html=HTML, user_css=CSS)
 
 
 -----
 
 The Python API variant -- everything is created programmatically::
 
-    import fitz
+    import pymupdf
     
-    MEDIABOX = fitz.paper_rect("letter")
+    MEDIABOX = pymupdf.paper_rect("letter")
     WHERE = MEDIABOX + (36, 36, -36, -36)
 
-    story = fitz.Story()  # create an empty story
+    story = pymupdf.Story()  # create an empty story
     body = story.body  # access the body of its DOM
     with body.add_paragraph() as para:  # store desired content
         para.set_font("sans-serif").set_color("blue").add_text("Hello World!")
 
-    writer = fitz.DocumentWriter("output.pdf")
+    writer = pymupdf.DocumentWriter("output.pdf")
     
     more = 1
 
@@ -127,13 +127,13 @@ Images can be referenced in the provided HTML source, or the reference to a desi
 
 We extend our "Hello World" example from above and display an image of our planet right after the text. Assuming the image has the name "world.jpg" and is present in the script's folder, then this is the modified version of the above Python API variant::
 
-    import fitz
+    import pymupdf
 
-    MEDIABOX = fitz.paper_rect("letter")
+    MEDIABOX = pymupdf.paper_rect("letter")
     WHERE = MEDIABOX + (36, 36, -36, -36)
 
     # create story, let it look at script folder for resources
-    story = fitz.Story(archive=".")
+    story = pymupdf.Story(archive=".")
     body = story.body  # access the body of its DOM
 
     with body.add_paragraph() as para:
@@ -145,7 +145,7 @@ We extend our "Hello World" example from above and display an image of our plane
         # store image in another paragraph
         para.add_image("world.jpg")
 
-    writer = fitz.DocumentWriter("output.pdf")
+    writer = pymupdf.DocumentWriter("output.pdf")
 
     more = 1
 
@@ -172,7 +172,7 @@ These cases are fairly straightforward.
 As a general recommendation, HTML and CSS sources should be **read as binary files** and decoded before using them in a story. The Python `pathlib.Path` provides convenient ways to do this::
 
     import pathlib
-    import fitz
+    import pymupdf
 
     htmlpath = pathlib.Path("myhtml.html")
     csspath = pathlib.Path("mycss.css")
@@ -180,7 +180,7 @@ As a general recommendation, HTML and CSS sources should be **read as binary fil
     HTML = htmlpath.read_bytes().decode()
     CSS = csspath.read_bytes().decode()
 
-    story = fitz.Story(html=HTML, user_css=CSS)
+    story = pymupdf.Story(html=HTML, user_css=CSS)
 
 
 -----
@@ -335,7 +335,7 @@ Outputting HTML tables is supported as follows:
 * Column widths are computed automatically based on column content. They cannot be directly set.
 * Table **cells may contain images** which will be considered in the column width calculation magic.
 * Row heights are computed automatically based on row content - leading to multi-line rows where needed.
-* The potentially multiple lines of a table row will always be kept together on one page (respectively "where" rectangle) and not be splitted.
+* The potentially multiple lines of a table row will always be kept together on one page (respectively "where" rectangle) and not be split.
 * Table header rows are only **shown on the first page / "where" rectangle.**
 * The "style" attribute is ignored when given directly in HTML table elements. Styling for a table and its elements must happen separately, in CSS source or within the :htmlTag:`style` tag.
 * Styling for :htmlTag:`tr` elements is not supported and ignored. Therefore, a table-wide grid or alternating row background colors are not supported. One of the following example scripts however shows an easy way to deal with this limitation.

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,45 +19,49 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 2a860f8585624ad89f0f751ddb6918d3
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 5390987fde4945528b46c4a9b9aee25b
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 5c0cc97673de4a0d8efeeaeff3b27284
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../app1.rst:7 99753112b6ae47c6bf2c4ab0ce4a33ee
+#: ../../app1.rst:7 8b5b166b183e4b11bbb256f335ddb654
 msgid "Appendix 1: Details on Text Extraction"
 msgstr "付録1: テキスト抽出の詳細"
 
-#: ../../app1.rst:8 ff833f4715fb40f98eddc0fcc00925a3
+#: ../../app1.rst:8 94cb906c52b94f7386f7407c2edcfacc
 msgid ""
 "This chapter provides background on the text extraction methods of "
 "PyMuPDF."
 msgstr "この章では、PyMuPDFのテキスト抽出メソッドに関する背景情報を提供します。"
 
-#: ../../app1.rst:10 e6610dd9591e4bc685055985d24215b4
+#: ../../app1.rst:10 fdf02886603e4e53ac52bc6a1d1eb245
 msgid "Information of interest are"
 msgstr "興味のある情報は以下です"
 
-#: ../../app1.rst:12 780cfc96521041a2b17eac2337c68912
+#: ../../app1.rst:12 ef65dc11dce74050a842475e5bee4353
 msgid "what do they provide?"
 msgstr "彼らは何を提供するのか？"
 
-#: ../../app1.rst:13 786bae04b23c4f1ba554a37b52c6e213
+#: ../../app1.rst:13 4019febb74c1440f95ccfed52a38edd1
 msgid "what do they imply (processing time / data sizes)?"
 msgstr "それらは何を意味するのか（処理時間 / データサイズ）？"
 
-#: ../../app1.rst:16 265862e2312e456eb8c93e73a58b9844
+#: ../../app1.rst:16 b5668527833a431882e40abbbc6429b7
 msgid "General structure of a TextPage"
 msgstr "TextPageの一般的な構造"
 
-#: ../../app1.rst:17 739053a0ef5749de82d9677b11c91760
+#: ../../app1.rst:17 933edb0162d1428fa97217db31928211
 msgid ""
 ":ref:`TextPage` is one of (Py-) MuPDF's classes. It is normally created "
 "(and destroyed again) behind the curtain, when :ref:`Page` text "
@@ -68,29 +72,29 @@ msgstr ""
 ":ref:`TextPage` は（Py-）MuPDFのクラスの一つです。通常、:ref:`Page` "
 "のテキスト抽出メソッドが使用されるときにカーテンの後ろで作成され（および破棄され）ますが、直接利用することもでき、永続オブジェクトとして使用することができます。その名前が示すよりも、テキストページにはオプションで画像も含まれる場合があります："
 
-#: ../../app1.rst:27 9470ac00756245c8b453e9be7e6d94a6
+#: ../../app1.rst:27 2097897ce8ba4b6e902c4c21c5c0fcb9
 msgid "A **text page** consists of blocks (= roughly paragraphs)."
 msgstr "**テキストページ** は、ブロック（おおよそ段落）で構成されています。"
 
-#: ../../app1.rst:29 edc911a202964683855141e767f3be49
+#: ../../app1.rst:29 19d8b720c96743809268ea998e9fbef9
 msgid "A **block** consists of either lines and their characters, or an image."
 msgstr "**ブロック** は、行とその文字、または画像のいずれかから成り立っています。"
 
-#: ../../app1.rst:31 d92e3653ab7541d8a1fb071483751649
+#: ../../app1.rst:31 fc034d85b4cc4b3ba8123683eb972743
 msgid "A **line** consists of spans."
 msgstr "**行** は、スパンから成り立っています。"
 
-#: ../../app1.rst:33 889b09f4179f4b1bb6754d6c8c03fc69
+#: ../../app1.rst:33 f300d0a9a7b64e2091fcf71842074b75
 msgid ""
 "A **span** consists of adjacent characters with identical font "
 "properties: name, size, flags and color."
 msgstr "**スパン** は、同一のフォントプロパティ（名前、サイズ、フラグ、色）を持つ隣接する文字から成り立っています。"
 
-#: ../../app1.rst:36 75680a7aff6c4242a0c92e189a0ef14b
+#: ../../app1.rst:36 bcb65e770ed447528f22ece81a0d204d
 msgid "Plain Text"
 msgstr "プレーンテキスト"
 
-#: ../../app1.rst:38 65fdf79ed4dc4914ab03cf1021524104
+#: ../../app1.rst:38 d40b5de926f9493c9baae38d129509d8
 msgid ""
 "Function :meth:`TextPage.extractText` (or *Page.get_text(\"text\")*) "
 "extracts a page's plain **text in original order** as specified by the "
@@ -99,11 +103,11 @@ msgstr ""
 "関数  :meth:`TextPage.extractText` （または *Page.get_text(\"text\")* "
 "）は、ドキュメントの作成者によって指定された元の順序で、ページのプレーンテキストを抽出します。"
 
-#: ../../app1.rst:40 09ddde6acadf47d3afea35fbb1f61670
+#: ../../app1.rst:40 c3680b176108486a93ca9db997565764
 msgid "An example output::"
 msgstr "例の出力："
 
-#: ../../app1.rst:45 76134acd8a5f462cb7859bc85523c1ff
+#: ../../app1.rst:45 e9a611463e034cc0b4999c0bd1090047
 msgid ""
 "The output may not equal an accustomed \"natural\" reading order. "
 "However, you can request a reordering following the scheme \"top-left to "
@@ -112,12 +116,12 @@ msgstr ""
 "出力は通常の「自然な」読み順と一致しない場合があります。ただし、`page.get_text(\"text\", sort=True)` "
 "を実行することで、「左上から右下」のスキームに従った並べ替えを要求することができます。"
 
-#: ../../app1.rst:49 ../../app1.rst:336 154dc9255d3c4a80a227637c1b77d359
-#: 32fa21b31d3741188b150f5924943366
+#: ../../app1.rst:49 ../../app1.rst:337 44ec7768412d4b4689ddb9648f204245
+#: 83cfba3ae5604fad8c2ad2387565bb67
 msgid "BLOCKS"
 msgstr "ブロック"
 
-#: ../../app1.rst:51 0fbb3c9fca024f52a7d17f556a5d845b
+#: ../../app1.rst:51 cae7116a208c4a94892be479271b56ed
 msgid ""
 "Function :meth:`TextPage.extractBLOCKS` (or *Page.get_text(\"blocks\")*) "
 "extracts a page's text blocks as a list of items like::"
@@ -125,36 +129,36 @@ msgstr ""
 "関数  :meth:`TextPage.extractBLOCKS` （または `Page.get_text(\"blocks\")` "
 "）は、ページのテキストブロックを以下のような項目のリストとして抽出します："
 
-#: ../../app1.rst:55 f4e8689e57db4fce8d75be22026c45c9
+#: ../../app1.rst:55 8e9c25cb0963475e9c92ecdb3c6b119e
 msgid ""
 "Where the first 4 items are the float coordinates of the block's bbox. "
 "The lines within each block are concatenated by a new-line character."
 msgstr "最初の4つの項目は、ブロックのバウンディングボックスの浮動小数点座標です。各ブロック内の行は改行文字で連結されます。"
 
-#: ../../app1.rst:57 b4ea069c8c254dc3bf78e2b13974448c
+#: ../../app1.rst:57 ca1346ab56f14adebb00f3627a74af21
 msgid ""
 "This is a high-speed method, which by default also extracts image meta "
 "information: Each image appears as a block with one text line, which "
 "contains meta information. The image itself is not shown."
 msgstr "これは高速なメソッドであり、デフォルトでは画像のメタ情報も抽出されます。各画像はメタ情報を含む1行のテキスト行で表されるブロックとして表示されます。画像そのものは表示されません。"
 
-#: ../../app1.rst:59 bf1978eedece4e9ebc6f1ee09a34a3cf
+#: ../../app1.rst:59 df2195a0f327471ba56ed2022d2d8873
 msgid ""
 "As with simple text output above, the `sort` argument can be used as well"
 " to obtain a reading order."
 msgstr "前述の単純なテキスト出力と同様に、`sort` 引数を使用して読み順を取得することもできます。"
 
-#: ../../app1.rst:61 ../../app1.rst:79 1f3452a4890649968c4dd7c4e3681653
-#: f4f5565dd9d54f56b721f2795428432f
+#: ../../app1.rst:61 ../../app1.rst:79 222e453c786c4cb48f9da59b90a49f7f
+#: 747793be9b814c168e0bed9a7ba0fa7d
 msgid "Example output::"
 msgstr "例の出力："
 
-#: ../../app1.rst:69 ../../app1.rst:337 6ac25c2b133d4a47ae9505a075b54abe
-#: 729783865ae74228b5100045f3b6572b
+#: ../../app1.rst:69 ../../app1.rst:338 631c698e870e4fe69d5ede856d97d92f
+#: ebc9f86973954cb5b4cfbc8c140dbc4e
 msgid "WORDS"
 msgstr "単語"
 
-#: ../../app1.rst:71 c676ad649fc04e67a22295a10da621c4
+#: ../../app1.rst:71 4fe406725ebb46978362284593243d2c
 msgid ""
 "Function :meth:`TextPage.extractWORDS` (or *Page.get_text(\"words\")*) "
 "extracts a page's text **words** as a list of items like::"
@@ -162,25 +166,25 @@ msgstr ""
 "関数 :meth:`TextPage.extractWORDS` （または *Page.get_text(\"words\")* "
 "）は、ページのテキスト単語を以下のような項目のリストとして抽出します："
 
-#: ../../app1.rst:75 458863969e7f4d55aae0e065eb16a89c
+#: ../../app1.rst:75 a74e862234ca473cb7be7680ddc7935f
 msgid ""
 "Where the first 4 items are the float coordinates of the words's bbox. "
 "The last three integers provide some more information on the word's "
 "whereabouts."
 msgstr "最初の4つの項目は、単語のバウンディングボックスの浮動小数点座標です。最後の3つの整数は、単語の位置に関する追加情報を提供します"
 
-#: ../../app1.rst:77 230d3582cc1d4f719cb7a46c33f65f52
+#: ../../app1.rst:77 f2706b53b8e04bd3869a26e70e180112
 msgid ""
 "This is a high-speed method. As with the previous methods, argument "
 "`sort=True` will reorder the words."
 msgstr "これは高速なメソッドです。前のメソッドと同様に、引数 `sort=True` を使用すると単語が再並べ替えされます。"
 
-#: ../../app1.rst:95 ../../app1.rst:340 63aa67c5039d442ba65da057720c843a
-#: f58b263a82e640969bdd183870d3ef40
+#: ../../app1.rst:95 ../../app1.rst:341 4f9e4566f8f6440fb70c95f9909a320d
+#: 7fbcd00324d141deb4f8478b67652e50
 msgid "HTML"
 msgstr ""
 
-#: ../../app1.rst:97 99d7ed54136b4ab4bacfbe1210286ae2
+#: ../../app1.rst:97 9705c9b338dc48528c26bbc1a7d77049
 msgid ""
 ":meth:`TextPage.extractHTML` (or *Page.get_text(\"html\")* output fully "
 "reflects the structure of the page's *TextPage* -- much like DICT / JSON "
@@ -192,11 +196,11 @@ msgstr ""
 "`TextPage` の構造を完全に反映します。これは、以下のDICT / "
 "JSONのようなものです。これには画像、フォント情報、テキスト位置が含まれます。HTMLヘッダーとトレイラーコードで囲むと、インターネットブラウザで簡単に表示できます。上記の例："
 
-#: ../../app1.rst:113 b602d91ab7ae4347900cba5b312a6473
+#: ../../app1.rst:113 2499bf675a104d489d381cb45b5419eb
 msgid "Controlling Quality of HTML Output"
 msgstr "HTML出力の品質の制御"
 
-#: ../../app1.rst:114 56283392bcb24b128974c921d41c8b55
+#: ../../app1.rst:114 32f104ca2ff242c3bd943d1043956e8a
 msgid ""
 "While HTML output has improved a lot in MuPDF v1.12.0, it is not yet bug-"
 "free: we have found problems in the areas **font support** and **image "
@@ -205,7 +209,7 @@ msgstr ""
 "MuPDF v1.12.0でHTML出力はかなり改善されましたが、まだバグがないわけではありません。**フォントサポート** や**画像の配置**"
 " に関する問題が見つかっています。"
 
-#: ../../app1.rst:116 756a995417a94694b9e9e0500a09d4de
+#: ../../app1.rst:116 218f7b75d1a24c54bb15bd3b86b2d991
 msgid ""
 "HTML text contains references to the fonts used of the original document."
 " If these are not known to the browser (a fat chance!), it will replace "
@@ -216,7 +220,7 @@ msgstr ""
 "HTMLテキストには元のドキュメントで使用されたフォントへの参照が含まれています。もしブラウザがそれらを認識できない場合（少ない確率ですが）、他のフォントで置き換えられ、結果が奇妙に見えるかもしれません。この問題はブラウザによって大きく異なります。Windowsマシンでは、MS"
 " Edgeはうまく動作するかもしれませんが、Firefoxはひどく見えるかもしれません。"
 
-#: ../../app1.rst:118 14a80adc5ffc4f88be82242b4e303970
+#: ../../app1.rst:118 f402ec98152547c69c7dc23e1576b625
 msgid ""
 "For PDFs with a complex structure, images may not be positioned and / or "
 "sized correctly. This seems to be the case for rotated pages and pages, "
@@ -227,7 +231,7 @@ msgstr ""
 "複雑な構造を持つPDFの場合、画像の位置やサイズが正しく配置されないことがあります。これは回転したページや、さまざまなページbboxのバリアントが一致しない場合に起こる可能性があります（たとえば、*MediaBox"
 " != CropBox* ）。これに対処する方法はまだわかっていませんが、MuPDFのサイトにバグを報告しました。"
 
-#: ../../app1.rst:120 deb74fb352e94767bb9f83ee0742fcae
+#: ../../app1.rst:120 de2aba1e2b224759b1557455c833e66d
 msgid ""
 "To address the font issue, you can use a simple utility script to scan "
 "through the HTML file and replace font references. Here is a little "
@@ -237,11 +241,11 @@ msgid ""
 "\"bold\", \"italic\", etc. are hopefully done correctly by your browser::"
 msgstr "フォントの問題に対処するために、HTMLファイルをスキャンし、フォントの参照を置換するシンプルなユーティリティスクリプトを使用できます。以下は、すべてのフォントをPDFのベース14フォントの一つに置き換える例です：セリフフォントは「Times」になり、セリフのないフォントは「Helvetica」になり、等幅フォントは「Courier」になります。太字、斜体などの各バリエーションは、おそらくブラウザによって正しく処理されるでしょう。"
 
-#: ../../app1.rst:160 d227794258b34558b4842261255d3308
+#: ../../app1.rst:160 8c33eed00302488b8be91f720a98aef0
 msgid "DICT (or JSON)"
 msgstr "DICT（またはJSON）"
 
-#: ../../app1.rst:162 3f49562c0f264c9e9ed43ea2ed552176
+#: ../../app1.rst:162 b9673012777647499aab0529f6db6356
 msgid ""
 ":meth:`TextPage.extractDICT` (or *Page.get_text(\"dict\", sort=False)*) "
 "output fully reflects the structure of a *TextPage* and provides image "
@@ -254,21 +258,21 @@ msgstr ""
 "ピクセル単位の境界ボックス）を提供します。画像はDICT出力では *バイト* "
 "として格納され、JSON出力ではbase64エンコードされた文字列として格納されます。"
 
-#: ../../app1.rst:164 84ace10aa9ae46a88c2785a446a3b55a
+#: ../../app1.rst:164 4e2d17568d6a4247a5a731de1cafc718
 msgid ""
 "For a visualization of the dictionary structure have a look at "
 ":ref:`textpagedict`."
 msgstr "辞書の構造の可視化については、辞書出力の構造をご覧ください。"
 
-#: ../../app1.rst:166 f6671d7feafa4f2aac49493448b9bc8a
+#: ../../app1.rst:166 09d04d4f64f44b5ab80310c1e822087b
 msgid "Here is how this looks like::"
 msgstr "以下がその様子です："
 
-#: ../../app1.rst:192 0eceb2ddb639443697db8d5591401991
+#: ../../app1.rst:192 0fb39d75ab46486ca6bdbd8417fa6c47
 msgid "RAWDICT (or RAWJSON)"
 msgstr "RAWDICT（またはRAWJSON）"
 
-#: ../../app1.rst:193 a7c02714843f4193b60432fba6f8393a
+#: ../../app1.rst:193 a2e79ba9d4074387b0288b809cef2a19
 msgid ""
 ":meth:`TextPage.extractRAWDICT` (or *Page.get_text(\"rawdict\", "
 "sort=False)*) is an **information superset of DICT** and takes the detail"
@@ -284,12 +288,12 @@ msgstr ""
 "というリストに置き換えられます。各 *「chars」* エントリは文字の *dict* です。例えば、 *「Text in black "
 "color.」* の代わりに以下のような項目が表示されます："
 
-#: ../../app1.rst:224 ../../app1.rst:338 bb76b0769e5b45d3bfcae10033cd36a5
-#: ed581c4d74454c22af2e3d1d948ab3d6
+#: ../../app1.rst:224 ../../app1.rst:339 34fe1d2013914da6a8b8b60b9df17051
+#: fdbdc716f71f43bdaf3a814c1c6d3fdf
 msgid "XML"
 msgstr ""
 
-#: ../../app1.rst:226 22c8a9bc282544408b75e291df14d757
+#: ../../app1.rst:226 9a46ed5ca923435e9cedb58e14f266bd
 msgid ""
 "The :meth:`TextPage.extractXML` (or *Page.get_text(\"xml\")*) version "
 "extracts text (no images) with the detail level of RAWDICT::"
@@ -297,18 +301,18 @@ msgstr ""
 ":meth:`TextPage.extractXML` （または *Page.get_text(\"xml\"）* "
 "バージョンは、RAWDICTの詳細レベルでテキスト（画像なし）を抽出します："
 
-#: ../../app1.rst:255 51ea11ccb58348d79dea3928b3606875
+#: ../../app1.rst:255 0143e6142039487cb2770c0ccec72813
 msgid ""
 "We have successfully tested `lxml <https://pypi.org/project/lxml/>`_ to "
 "interpret this output."
 msgstr "この出力を解釈するためにlxmlを使用して正常にテストしました。"
 
-#: ../../app1.rst:258 ../../app1.rst:339 65e64e5ec35046b1919d1d6d3a6d912a
-#: 77177847c9d345518a229eefb017de2f
+#: ../../app1.rst:258 ../../app1.rst:340 7a849192a5b84c85802238cbdc4b4e6c
+#: c104684dff6d445888eb36ea13070c2a
 msgid "XHTML"
 msgstr ""
 
-#: ../../app1.rst:259 0aa41f62add04e19a2a2262b45a31f3b
+#: ../../app1.rst:259 fd1b2cd6057447af9487acc9795d74b0
 msgid ""
 ":meth:`TextPage.extractXHTML` (or *Page.get_text(\"xhtml\")*) is a "
 "variation of TEXT but in HTML format, containing the bare text and images"
@@ -317,11 +321,11 @@ msgstr ""
 ":meth:`TextPage.extractXHTML` （または *Page.get_text(\"xhtml\"）* "
 "は、テキストと画像を含むHTML形式のTEXTのバリエーションです（「セマンティック」出力）："
 
-#: ../../app1.rst:268 29f1c9836c6749b597002ba50b078b69
+#: ../../app1.rst:268 49e3d20a60eb4418a23fdf32462741f8
 msgid "Text Extraction Flags Defaults"
 msgstr "テキスト抽出フラグのデフォルト値"
 
-#: ../../app1.rst:269 3156672e56b14e15aba499e87c6c7f85
+#: ../../app1.rst:269 896050d5e5b34525bef126eb5a2fa1a8
 msgid ""
 "New in version 1.16.2: Method :meth:`Page.get_text` supports a keyword "
 "parameter *flags* *(int)* to control the amount and the quality of "
@@ -337,7 +341,7 @@ msgstr ""
 "パラメータが省略されたかNoneの場合）を示しています。 `None` 以外の値でflagsを指定する場合は、**すべての必要なオプション** "
 "を設定する必要があることに注意してください。各ビット設定の説明は「テキスト抽出フラグ」で確認できます。"
 
-#: ../../app1.rst:271 6c93f6770b0f485f9fe440504562ca22
+#: ../../app1.rst:271 db1dc8bb2f74498592235ac45c4394d0
 msgid ""
 "New in v1.19.6: The default combinations in the following table are now "
 "available as Python constants: :data:`TEXTFLAGS_TEXT`, "
@@ -354,155 +358,163 @@ msgstr ""
 ":data:`TEXTFLAGS_XHTML` 、 :data:`TEXTFLAGS_XML` 、 "
 ":data:`TEXTFLAGS_SEARCH` 。これにより、デフォルトのフラグを簡単に変更できます。例えば、"
 
-#: ../../app1.rst:273 fdf90a2978534299955864643c58c66f
+#: ../../app1.rst:273 2cc8520362e8401fb21c5b41221f4dea
 msgid "**include** images in a \"blocks\" output:"
 msgstr "「blocks」出力に画像を **含める** 場合："
 
-#: ../../app1.rst:275 8ea14978a39f4322a37ae1dbd9156b7c
+#: ../../app1.rst:275 b22ae38df67c4388a6bcb68be5c5ac72
 msgid "`flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES`"
 msgstr ""
 
-#: ../../app1.rst:277 7c18f88170194eee9a9d8d9f5a757025
+#: ../../app1.rst:277 491ce0635df34aa8aa46f1cb0c27b21b
 msgid "**exclude** images from a \"dict\" output:"
 msgstr "「dict」出力から画像を **除外する** 場合："
 
-#: ../../app1.rst:279 7566a007cb7847c7a9361a43c0a1ddd7
+#: ../../app1.rst:279 870754e4381541e0919d370a17d798cd
 msgid "`flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES`"
 msgstr ""
 
-#: ../../app1.rst:281 4e60069f9d904f5080004bb4f0b7db2d
+#: ../../app1.rst:281 7ecf5a54e86a4bf1933be51b8fb27d49
 msgid "set **dehyphenation off** in text searches:"
 msgstr "テキスト検索での **ハイフネーション** をオフに設定する："
 
-#: ../../app1.rst:283 4b92bd56a7464777926ce795084cece9
+#: ../../app1.rst:283 ba87eeca7aa4436c861fec5c4b5a24aa
 msgid "`flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE`"
 msgstr ""
 
-#: ../../app1.rst:287 caf8c196c320415493c17150788b8ea4
+#: ../../app1.rst:287 4cf3dbadeb6f4843a81b95a57c76c3ee
 msgid "Indicator"
 msgstr "指標"
 
-#: ../../app1.rst:287 06437d8148054cb39ed609add7404566
+#: ../../app1.rst:287 5a6128d2022240f88e73a6a20f9edaf6
 msgid "text"
 msgstr ""
 
-#: ../../app1.rst:287 5363a76423974f07b422a1b35e631575
+#: ../../app1.rst:287 e72ad4208f264070917517a98014631e
 msgid "html"
 msgstr ""
 
-#: ../../app1.rst:287 3e67ba12e38843beb230061ab84d0e0a
+#: ../../app1.rst:287 bf49c7bb3193428084a05a576dffebe6
 msgid "xhtml"
 msgstr ""
 
-#: ../../app1.rst:287 1a6da0804fb24d01a2eecf17b9b6f02c
+#: ../../app1.rst:287 8e6c5553795b4782935ecb9763c55812
 msgid "xml"
 msgstr ""
 
-#: ../../app1.rst:287 4a1005df4bfb4a49bcc1b5eb7d53ba52
+#: ../../app1.rst:287 510f1bfb723f41b7847d2a8365917c7b
 msgid "dict"
 msgstr ""
 
-#: ../../app1.rst:287 c4532fce68cf423bba9f1e1247258319
+#: ../../app1.rst:287 77967918895e4b9fa5d7c2763c80d401
 msgid "rawdict"
 msgstr ""
 
-#: ../../app1.rst:287 56de00329312429bb187d772c9ad64b1
+#: ../../app1.rst:287 f8ba0fa87fa24d9ba30f45ba036b5562
 msgid "words"
 msgstr ""
 
-#: ../../app1.rst:287 408247907f4542259b5e1ce2e11a6824
+#: ../../app1.rst:287 29d6cb0a1bb44caca91a286c01263b48
 msgid "blocks"
 msgstr ""
 
-#: ../../app1.rst:287 a34bb63e508a49739f65f9a4c5ce46d7
+#: ../../app1.rst:287 37316c3e6c0c4190abb34e2aba082e16
 msgid "search"
 msgstr ""
 
-#: ../../app1.rst:289 4e1e8a05e0f344e8a0b4751886c0e601
+#: ../../app1.rst:289 7dfaafa7bcef4e46a1880ac1e33e68a4
 msgid "preserve ligatures"
 msgstr "連結を保持"
 
 #: ../../app1.rst:289 ../../app1.rst:290 ../../app1.rst:291 ../../app1.rst:293
-#: ../../app1.rst:294 1a90cf59a49d48be881b445c6391497e
-#: 22b993ec5dc74d1cb1a88bae8edabc6d 2c5ebab8e47249f3ab069dbba0756ce4
-#: 37104276c0694862ba41692127df161e 440ece6263be462db5af61f3802020df
-#: 496b462835af43d4ba94f76c53d2a5be 4a994083a1df42e2b8dcf6cc8d6f0608
-#: 4c06da0808b24e9f8bad7dd11e0cb29b 52ac3575d0a84ae588ae1640a6696db9
-#: 533ca09becf241488a94445b0373453e 5a4c8ce08752433c834e61506b06bcb1
-#: 627192f8ce8641a0b9bac4ce83ac512b 636588aae8c94f6f980e9e176fdd23f4
-#: 6cbed2cd175a4a88827ce7e23147776d 6e13c427d91346a38a22dceefcf94396
-#: 6f98144641034c84b24718b4d7b083c1 7fabe6f15d624d59ab4d150bd65c8004
-#: a0d1f2b231e347eea612b9d69f6a8d58 a19e153bef6e47dbb51b682d6861c06e
-#: a55f13d3e0a6430e92213a0a2506e337 a62af4e7241c4e4da835e3a421b57cb5
-#: b319e46adb5e42b284b7a5eb649c562a c0c0ec8707ec4082aa6ca2ed59e4f847
-#: c2c43edbce694883bd72870ca4cd70b5 c579c370b2da422180103e3328a64558
-#: cbdcc091e9f148e3a0080b90c1fdea74 d7b1fea999d3449cb7130c91dc30fcec
-#: e77cd2629d1d44a8982369a070154743 e9ba6a7997fc4558b5f3d39774cf5ffb
-#: ed87375f0e8c403e93122053c64d98ad fc8a3a5f62694c7cbb5ee4ef3109f3bf
-#: ff512a2cc46140b3abbbf02daaae765d
+#: ../../app1.rst:294 ../../app1.rst:295 02e04efe8d564d1095bd6614084bf237
+#: 09493ed848d9454c8d5284a4a5e09239 0ca7e0ba1241492f85e5d0cd3d2e47dd
+#: 15d81574f61441e0bfb49108396e8adf 1b41c85bc4f74840afa930109dafa89f
+#: 24b89faf653b41cbb9c46b94a5d36845 2ce329c65bbc49b7aaee28bfd9a42043
+#: 2eb4dae2a1ab433386aad70771a266e0 40056625ef614ca4b5c2c3e0fde13423
+#: 46cf2073cd7c44a4a4303e2bcd9a8341 4981ddd2ddb4481aa2e9c086aef09948
+#: 4a5cb0fc59064d58b793452ee70cd737 709991653a6f4790b1aa96a546c9ae8d
+#: 7145e59cf15b4385bf3d4df1e9cae659 74743342e988418ab8fb7fa0762c612a
+#: 748e93c8d82340da8f28db7846059e32 7685478b60ae44d0aef067d165d13e32
+#: 77449d5057f647699b89f57a868a6ffd 82ccb713a3d44a87aa3a5a559ef111e6
+#: 8e5996cdb58d44e98b2bc97b5e7d5c0b 8f2e5b3754b549bda380c0889295aac8
+#: 921ab332a0974cff9f2580b352188d33 93ed5c932e8b401ca4b1f96d1b619ded
+#: 9a917f7f56184cdabfbbfc332613d111 9e24099952c6453eb8ae831d7dcf90ac
+#: a03166f7c820475989916200378f63ee a218f4f08fd44079b4bd75efd913cd76
+#: a8a4ce62a4cc494382abc74325514418 b1803e298f9e45878bb8dd6e37efc998
+#: b28b8a5baad041e395cd8b95ab8a008d b590d3d7d5f44889b5eb4a8633f61738
+#: beb5e66f39024deb8d6ff8d5845d8752 c0e2c76ea55343e9bb1e34fb997a2789
+#: cf0d5e8a77304ba7a32d3aa367191baf d50b8ff484f9410d969867e3e7ac0022
+#: d84ac71af0a3458eb35501aa1434a45a e1383637c1e6489089d92a704bedd3f3
+#: ee27949532e14736b52e976c31cdb532 f7ddc45f0719443ba75d14d038e66741
+#: ff673d945f1648deb01121ec6563f2b5
 msgid "1"
 msgstr ""
 
-#: ../../app1.rst:290 616712f1bf034115ad22c29204eec007
+#: ../../app1.rst:290 25dead8148bd4bf699c85ebc8b3fcce5
 msgid "preserve whitespace"
 msgstr "空白を保持"
 
-#: ../../app1.rst:291 123f351ca73d4da3b0cf4b5eb0368cd6
+#: ../../app1.rst:291 ca281f5aea224ac0a1a2833c6dda0cf6
 msgid "preserve images"
 msgstr "画像を保持"
 
-#: ../../app1.rst:291 0567bbe5ecb6452bb8a8cf89cce5e536
-#: 742de40b798e4b9ba1fdee15b744afa4 fc67e091aaf54e39aad5575eb6b5d8a0
+#: ../../app1.rst:291 3aac39dec92f4f598f8be3a9a23cc050
+#: 59a9e023c85e43f1b655dce407606e9c afc2e3975fd34a4d8dddf1115d9b0c06
 msgid "n/a"
 msgstr ""
 
-#: ../../app1.rst:291 ../../app1.rst:292 ../../app1.rst:293
-#: 034344314e2f4d70a6455a591e2f97fa 053150f4f8bb46f4b397a4076be8a2fd
-#: 0ffee24e756b45f5b4cfe69c61826961 170d1b68b5a442c7a03d98958c15ee82
-#: 1fb9a6639bc645b7b93e90c2a04e023f 29210de0f81b4d71b9f6582af159ef50
-#: 5d4e1b3ef11542c0860749cfc2780ef1 71a7f2417da64c05ba24864c813e62e3
-#: 729dae74545c4f158b6afc7259614b81 9103dc0c816c4a4f9235eb72ab5dde13
-#: 947d3d9f7540419fb71ae105b5021a6c 9b3b18e67d6f45659a837cd8621c9a03
-#: a6b0c355877f4333968e21730658eb4f c2b80d79aaee4a33b9e73aae3fe9e1b2
-#: c58020d568f848debd764ffc5bfb4b9d cf8636551ff04ede93cc7f3acc13d8ec
-#: d17fdcdb02194f66baa81d88bd7e5ac4 ea3176c0fcc84a4a9431c9ec2af3963b
-#: f03e6bbcbcf94986b98a04e6f6751d9e
+#: ../../app1.rst:291 ../../app1.rst:292 ../../app1.rst:293 ../../app1.rst:295
+#: 013cab2aca894359a665ce4800105409 05d3ee30c05b45a78425e8e1ef622739
+#: 0ed64e90d13241098a2b594d1a3fb46c 143c17b506154ae7a66186af9d7a9b69
+#: 23aa7e8c93374a78857a53bd4bdeb52e 2588532e89fd42408cd6fea40f59161b
+#: 2aeec4fce3444c428866a206768c05ec 38f68840f1ba466da9d9c407267ea958
+#: 47d6e25a01d64b7681cdbc671892304f 55e383c035a64abb8c9b5b3ea75ef728
+#: 677131a130eb460ebb597bfd82700cbb 6f5816ceef7c477eaeef5550467c3ac9
+#: 77bac29b2b1443bfb53babb62c391106 77d105d83e1840d1b9baea6c144831e7
+#: 8ab3824f309b4832804d88e46612a96d 90d27c4ce1504832a750ceceda77ce4c
+#: a04f6a7c5f214b94b77c5a771053a4b8 ccaea946956a4f88b6b89f1463472341
+#: f845fce532b54ba18586160b70ce5665 ffdb10d0ed4d48569109d3c111d1d06e
 msgid "0"
 msgstr ""
 
-#: ../../app1.rst:292 fe776bc1064d43a3b8d9cc0456d52169
+#: ../../app1.rst:292 12f38aa106af49fcb4a4c7fa42373aa4
 msgid "inhibit spaces"
 msgstr "スペースの抑制"
 
-#: ../../app1.rst:293 83bc99bcc9864191bac3ddd93046a6e5
+#: ../../app1.rst:293 1a27304e6623442b95a7913d89d022bd
 msgid "dehyphenate"
 msgstr "ハイフネーション解除"
 
-#: ../../app1.rst:294 87dbe1dc0e9242fca8b6a9c71c38b4d8
+#: ../../app1.rst:294 713bfe65d2fb4cb082489147410b9ecb
 msgid "clip to mediabox"
 msgstr "メディアボックスにクリップ"
 
-#: ../../app1.rst:297 7d11aad086f04bafa1468534c577ff9c
+#: ../../app1.rst:295 7fcb6fcbcd424bdbbc79be6cb137eb11
+msgid "use CID instead of U+FFFD"
+msgstr ""
+
+#: ../../app1.rst:298 4293537b8a4d48aebadc39e5f8b3d451
 msgid "**search** refers to the text search function."
 msgstr "**検索** はテキスト検索機能を指します。"
 
-#: ../../app1.rst:298 febea18fde9e4cb8998cc0b4bbaad187
+#: ../../app1.rst:299 cd53d8f11ad946428137e5fec7cb9404
 msgid "**\"json\"** is handled exactly like **\"dict\"** and is hence left out."
 msgstr "**「json」** は **「dict」** とまったく同様に処理されるため、省略されています。"
 
-#: ../../app1.rst:299 7b5486b5b2cf45c886727825aa95ccdf
+#: ../../app1.rst:300 907d031f0eab4620a54f273d96a139ff
 msgid ""
 "**\"rawjson\"** is handled exactly like **\"rawdict\"** and is hence left"
 " out."
 msgstr "**「rawjson」** は **「rawdict」** とまったく同様に処理されるため、省略されています。"
 
-#: ../../app1.rst:300 3ecb91b9c949436ea2f519e441a4fb33
+#: ../../app1.rst:301 11c131c3832f4f08b9d99a54c208337d
 msgid ""
 "An \"n/a\" specification means a value of 0 and setting this bit never "
 "has any effect on the output (but an adverse effect on performance)."
 msgstr "「n/a」の指定は値が0であり、このビットを設定しても出力に影響を与えることはありません（ただしパフォーマンスに悪影響を及ぼす可能性があります）。"
 
-#: ../../app1.rst:301 b262995bcda9407c877c1653f2c5410c
+#: ../../app1.rst:302 e9039b4afb9f47458de59300a7dfb249
 msgid ""
 "If you are not interested in images when using an output variant which "
 "includes them by default, then by all means set the respective bit off: "
@@ -510,15 +522,16 @@ msgid ""
 "requirements."
 msgstr "画像を含む出力バリアントを使用する際に画像に興味がない場合、必ず該当するビットをオフに設定してください。これにより、パフォーマンスが向上し、スペース要件が大幅に削減されます。"
 
-#: ../../app1.rst:303 f01d6213d34d4bcd8b36f58d5daf67b3
-msgid "To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::"
+#: ../../app1.rst:304 806b7dadfb7e466995dd4e7b3e532e5f
+#, fuzzy
+msgid "To show the effect of `TEXT_INHIBIT_SPACES` have a look at this example::"
 msgstr "`TEXT_INHIBIT_SPACES`  の効果を示すために、この例をご覧ください："
 
-#: ../../app1.rst:323 7bfee07f10c24dd0814f834dcc8b83d4
+#: ../../app1.rst:324 68729abbc0cf4e9ea7b5f4afed97695a
 msgid "Performance"
 msgstr "パフォーマンス"
 
-#: ../../app1.rst:324 9b421690d7bc48ffb952549f0a42cd83
+#: ../../app1.rst:325 aaa853e33a8143ae8b050e329abfc319
 msgid ""
 "The text extraction methods differ significantly both: in terms of "
 "information they supply, and in terms of resource requirements and "
@@ -526,7 +539,7 @@ msgid ""
 "processing is required and a higher data volume is generated."
 msgstr "テキスト抽出メソッドは、情報の提供方法とリソース要件、実行時間の両方で大きく異なります。一般的に、情報が多いほど処理が必要であり、より多くのデータが生成されることを意味します。"
 
-#: ../../app1.rst:326 8563ad2f4e684558bb26e787d71090a7
+#: ../../app1.rst:327 5fa74e39a5c941829f21b29b11ba420c
 #, python-format
 msgid ""
 "Especially images have a **very significant** impact. Make sure to "
@@ -539,7 +552,7 @@ msgstr ""
 "特に画像は **非常に大きな** "
 "影響を持ちます。必要のない場合は、必ず画像を除外する（フラグパラメータを使用）ようにしてください。以下で言及されている2,700ページの総ページ数をデフォルトのフラグ設定で処理するには、全ての抽出メソッドで160秒が必要でした。画像をすべて除外した場合、その時間の50%未満（77秒）が必要でした。"
 
-#: ../../app1.rst:328 4b59be75864f49cf8faab66361c38125
+#: ../../app1.rst:329 c6b523a1b9a744c5b0fd013bc3edfa76
 msgid ""
 "To begin with, all methods are **very fast** in relation to other "
 "products out there in the market. In terms of processing speed, we are "
@@ -551,119 +564,119 @@ msgstr ""
 "です。処理速度の観点から、より速い（無料の）ツールは私たちの知る限り存在しません。最も詳細なメソッドであるRAWDICTでも、 "
 ":ref:`AdobeManual` リファレンスの1,310ページを5秒未満で処理できます（ここでは簡単なテキストは2秒未満で処理されます）。"
 
-#: ../../app1.rst:330 9439866d8c664509b5d6876cfa5caff8
+#: ../../app1.rst:331 5d65abf2035a4c3e8bc1d48f10d4ff80
 msgid ""
 "The following table shows average relative speeds (\"RSpeed\", baseline "
 "1.00 is TEXT), taken across ca. 1400 text-heavy and 1300 image-heavy "
 "pages."
 msgstr "以下の表は、約1400ページのテキストが多く、約1300ページが画像が多いページでの平均相対速度（ベースライン1.00はTEXT）を示しています。"
 
-#: ../../app1.rst:333 927d90fefbb14366907d1505a9d05506
+#: ../../app1.rst:334 3cbf7d19cff44a23ba6db25d970f3f6a
 msgid "Method"
 msgstr "メソッド"
 
-#: ../../app1.rst:333 109f12c2742d4825846e4a514c8883d1
+#: ../../app1.rst:334 73fc57f505d24dc594edc961069201ef
 msgid "RSpeed"
 msgstr "平均相対"
 
-#: ../../app1.rst:333 d2d62bf6d0684f28b71ddb4cf9a28d55
+#: ../../app1.rst:334 97ff70f48f404b8f836a54803ac776b3
 msgid "Comments"
 msgstr "コメント"
 
-#: ../../app1.rst:333 3cf302c51df84b98bfc2f5d6e75e5f5b
+#: ../../app1.rst:334 5c67c714d87b46508a28ea9330822e16
 msgid "no images"
 msgstr "画像なし"
 
-#: ../../app1.rst:335 7aaba71529334113968b1d290497270d
+#: ../../app1.rst:336 a2aa626778104c818238a4fe160c1b63
 msgid "TEXT"
 msgstr ""
 
-#: ../../app1.rst:335 ../../app1.rst:336 ../../app1.rst:339
-#: 26057ee291584cb69efd08246cbe2dc6 4ebea0e8ec024dadad12a7cfb4807981
-#: 87aa6a1968774e9e9448971e6940676a f88fbb1258264e21b3b63457c6a2e400
-#: fa6f40990e83433793e5d6ce18e4480d
+#: ../../app1.rst:336 ../../app1.rst:337 ../../app1.rst:340
+#: 389f7901d2654cebbdb2249482ebf21e 41cc3387570a41c1ae38d09dd67830fe
+#: 977e0048dc1e4808b0c04dafa9de2acb afbf34a491944d9c9e284944ed2b92ba
+#: cef3349602a74d1bb70d83f01f10ef30
 msgid "1.00"
 msgstr ""
 
-#: ../../app1.rst:335 f89375117034408889a303ba6cd57f14
+#: ../../app1.rst:336 77d6a256f0a44a27a2a965b7c5bd03fe
 msgid "no images, **plain** text, line breaks"
 msgstr "画像なし、 **プレーン** テキスト、改行"
 
-#: ../../app1.rst:336 3c9a1fcf52e24d65bd7286d02d7c3fdc
+#: ../../app1.rst:337 76beec0a77df46b9991b3bb3cffdd84c
 msgid "image bboxes (only), **block** level text with bboxes, line breaks"
 msgstr "画像のバウンディングボックス（のみ）、 **ブロック** レベルのテキストとバウンディングボックス、改行"
 
-#: ../../app1.rst:337 3459a48746564a73985e6986e2aaf91d
-#: 9ef95f64c21c439b80f6ab735e7621c0
+#: ../../app1.rst:338 50fa173064c64222b3768d21522661d3
+#: 65e74fe36c5241a2adcb69dba2b57601
 msgid "1.02"
 msgstr ""
 
-#: ../../app1.rst:337 56ed1ae665344f96b79b8f264454a34b
+#: ../../app1.rst:338 8e18ec5ea31d4c02b4d36a0332401c84
 msgid "no images, **word** level text with bboxes"
 msgstr "画像なし、 **ワード** レベルのテキストとバウンディングボックス"
 
-#: ../../app1.rst:338 6a8b60e6a0e84d5f8af7b09e46038491
-#: 6addd69425c04e7fa2783a8004e6b64f
+#: ../../app1.rst:339 4b7c0db464c640bba505776b7c37ba1e
+#: d1b996772cb541f583071bcdea63bc53
 msgid "2.72"
 msgstr ""
 
-#: ../../app1.rst:338 098ebd9ab9b540e5b3a1c2f4474b8c05
+#: ../../app1.rst:339 1d23c31cbeb4409f8bf8603b5b6cd5a3
 msgid "no images, **char** level text, layout and font details"
 msgstr "画像なし、**文字** レベルのテキスト、レイアウトとフォントの詳細"
 
-#: ../../app1.rst:339 b70afbd3399149ca9f1bd6ba13a95ad1
+#: ../../app1.rst:340 339147fff69347aeabfda95e05ebb717
 msgid "3.32"
 msgstr ""
 
-#: ../../app1.rst:339 f9cdb22caf7249138a6edbe0d5d7a1ce
+#: ../../app1.rst:340 59d11202c7514a14a304bf1c4bab5af6
 msgid "**base64** images, **span** level text, no layout info"
 msgstr "**base64** 画像、 **スパン** レベルのテキスト、レイアウト情報なし"
 
-#: ../../app1.rst:340 f93ad6eb00ce4a12871e2561d325419f
+#: ../../app1.rst:341 f89a9f9f9c824855afcc148193e1f4d8
 msgid "3.54"
 msgstr ""
 
-#: ../../app1.rst:340 a49be4464ef645e8a076ccdf6aa1a6d6
+#: ../../app1.rst:341 709d2a8eaf224a5794955edc5aae24cc
 msgid "**base64** images, **span** level text, layout and font details"
 msgstr "**base64画像** 、 **スパン** レベルのテキスト、レイアウトとフォントの詳細"
 
-#: ../../app1.rst:340 f43b0118bd8846afaaccabdfd1893aa0
+#: ../../app1.rst:341 28b2de4324e7460ab00d3f298a0ce226
 msgid "1.01"
 msgstr ""
 
-#: ../../app1.rst:341 f8513fa2459a40a1a06170f75338b82a
+#: ../../app1.rst:342 a871641a06df4b328d1f5da0db083ac6
 msgid "DICT"
 msgstr ""
 
-#: ../../app1.rst:341 c51ea68cffed47ed937ccd4437644e5a
+#: ../../app1.rst:342 84b8a19232a041c9ab82ada80cdcc0f8
 msgid "3.93"
 msgstr ""
 
-#: ../../app1.rst:341 393e5c3deeaa44cdaa212e656a3344bb
+#: ../../app1.rst:342 2e0bd9bc74fa438dbb09ff18fbdef53e
 msgid "**binary** images, **span** level text, layout and font details"
 msgstr "**バイナリ** 画像、 **スパン** レベルのテキスト、レイアウトとフォントの詳細"
 
-#: ../../app1.rst:341 7b34d7bb6407404fa977cd511206fe2b
+#: ../../app1.rst:342 a5e3f92d46a64c8285a2deed81573eb9
 msgid "1.04"
 msgstr ""
 
-#: ../../app1.rst:342 70c7bdac71184dfda28e0024744b76b4
+#: ../../app1.rst:343 c88f5dafe2684d95b5fb3d47aeefebef
 msgid "RAWDICT"
 msgstr ""
 
-#: ../../app1.rst:342 aa5643a2488948fda1b483f4fa46c1aa
+#: ../../app1.rst:343 ad9baa9977844a628f2437097357aca6
 msgid "4.50"
 msgstr ""
 
-#: ../../app1.rst:342 538f47177a4940169f94bc5520b84bae
+#: ../../app1.rst:343 f79697a7a1994df1bace36569b8b99ce
 msgid "**binary** images, **char** level text, layout and font details"
 msgstr "**バイナリ** 画像、**文字** レベルのテキスト、レイアウトとフォントの詳細"
 
-#: ../../app1.rst:342 0921aedeff51473da5cbe5463425e221
+#: ../../app1.rst:343 ce825302a1c14010a7b0902b4e073e5a
 msgid "1.68"
 msgstr ""
 
-#: ../../app1.rst:345 b9fa78cef2fa48549950afd359836b02
+#: ../../app1.rst:346 1494541f28f243cba9f4c115c6767cbd
 #, python-format
 msgid ""
 "As mentioned: when excluding image extraction (last column), the relative"
@@ -674,11 +687,15 @@ msgstr ""
 "前述のように、画像の抽出を除外する場合（最後の列）、相対速度は大きく変わります。RAWDICTとXMLを除いて、他のメソッドはほぼ同じ速さであり、RAWDICTは"
 " **今では遅いXML** よりも40％少ない実行時間を必要とします。"
 
-#: ../../app1.rst:347 8c982c784b384102a5f173523bf75092
+#: ../../app1.rst:348 2cc3bc592b9c44a089dcc6e8b9ac7ec2
 msgid "Look at chapter **Appendix 1** for more performance information."
 msgstr "もっとパフォーマンス情報については、 **付録1章** をご覧ください。"
 
-#: ../../footer.rst:-1 567fd55fb6ed4d32a8ec285f8ed960b7
+#: ../../footer.rst:60 57800ba0b1de4ef3b02e5d710688173b
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 10875e96faaf4f4d92f84351f1d06a7c
 msgid "Discord logo"
 msgstr ""
 

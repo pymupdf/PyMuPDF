@@ -19,11 +19,11 @@ jobs:
 
     steps:
 
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
 
       - name: test_mupdf-master-branch
         env:
             PYMUDF_SCRIPTS_TEST_options: ${{inputs.scripts_test_options}}
         run:
-          python scripts/test.py -m 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git' --valgrind 1 buildtest
+          python scripts/test.py -m 'git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git' --valgrind 1 -f 0 -i r buildtest

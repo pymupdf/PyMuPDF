@@ -5,7 +5,7 @@ Check some low-level PDF object manipulations:
    proper page property.
 3. Read the PDF trailer and verify it has the keys "/Root", "/ID", etc.
 """
-import fitz
+import pymupdf
 import os
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -14,14 +14,14 @@ filename = os.path.join(resources, "001003ED.pdf")
 
 
 def test_rotation1():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     page.set_rotation(270)
     assert doc.xref_get_key(page.xref, "Rotate") == ("int", "270")
 
 
 def test_rotation2():
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
     doc.xref_set_key(page.xref, "Rotate", "270")
     assert page.rotation == 270
@@ -29,7 +29,7 @@ def test_rotation2():
 
 def test_trailer():
     """Access PDF trailer information."""
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     xreflen = doc.xref_length()
     _, xreflen_str = doc.xref_get_key(-1, "Size")
     assert xreflen == int(xreflen_str)
@@ -40,7 +40,7 @@ def test_trailer():
 
 def test_valid_name():
     """Verify correct PDF names in method xref_set_key."""
-    doc = fitz.open()
+    doc = pymupdf.open()
     page = doc.new_page()
 
     # testing name in "key": confirm correct spec is accepted

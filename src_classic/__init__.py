@@ -19,6 +19,9 @@ if os.path.exists( 'fitz/__init__.py'):
         print( '# Suggest changing to a different current directory.')
         print( '#' * 40)
 
+def message(text=''):
+    print(text)
+
 from fitz_old.fitz_old import *
 
 # Allow this to work:
@@ -74,20 +77,6 @@ mupdf_version_tuple = v_str_to_tuple(fitz_old.TOOLS.mupdf_version())
 mupdf_version_tuple_required = v_str_to_tuple(fitz_old.VersionFitz)
 mupdf_version_tuple_required_prev = (mupdf_version_tuple_required[0], mupdf_version_tuple_required[1]-1)
 mupdf_version_tuple_required_next = (mupdf_version_tuple_required[0], mupdf_version_tuple_required[1]+1)
-
-if mupdf_version_tuple[:2] not in (
-        mupdf_version_tuple_required_prev[:2],
-        mupdf_version_tuple_required[:2], 
-        mupdf_version_tuple_required_next[:2],
-        ):
-    raise ValueError(
-            f'MuPDF library {v_tuple_to_string(mupdf_version_tuple)!r} mismatch:'
-            f' require'
-            f' {v_tuple_to_string(mupdf_version_tuple_required_prev)!r}'
-            f' or {v_tuple_to_string(mupdf_version_tuple_required)!r}'
-            f' or {v_tuple_to_string(mupdf_version_tuple_required_next)!r}'
-            f'.'
-            )
 
 # copy functions in 'utils' to their respective fitz classes
 import fitz_old.utils

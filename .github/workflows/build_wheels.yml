@@ -29,10 +29,6 @@ on:
         type: boolean
         default: true
         
-      wheels_macos_arm64:
-        type: boolean
-        default: true
-      
       wheels_macos_auto:
         type: boolean
         default: true
@@ -46,7 +42,16 @@ on:
         type: string
         default: '-'
       
+      #PYMUPDF_SETUP_MUPDF_BUILD_TYPE:
+      #  description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g. debug.'
+      #  type: string
+      #  default: '-'
       # We can't currently have more than 10 inputs
+      
+      PYMUPDF_SETUP_PY_LIMITED_API:
+        description: 'If not "0", we build a single wheel for each platform.'
+        type: string
+        default: ''
 
 jobs:
 
@@ -56,15 +61,18 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
-      #with:
-      #  fetch-depth: 0  # Optional, use if you use setuptools_scm
-      #  submodules: true  # Optional, use if you have submodules
+    - uses: actions/checkout@v4
 
     - name: Build sdist
-      run: pipx run build --sdist
+      env:
+            inputs_wheels_default: 0
+            inputs_sdist: 1
+            inputs_flavours: ${{inputs.flavours}}
+            inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
+      run:
+        python scripts/gh_release.py
 
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3
       with:
         path: dist/*.tar.gz    
 
@@ -75,27 +83,28 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2019, macos-latest]
+        # 2024-05-08: Need to specify macos-13/14 to get x86_64/arm64.
+        os: [ubuntu-latest, windows-2019, macos-13, macos-14]
 
       # Avoid cancelling of all cibuildwheel runs after a single failure.
       fail-fast: false
     
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       # Get Python 3.12 x32 and x64 on Windows. (As of 2023-10-12 these are not
       # always available by default.)
       #
       - name: Install Python 3.12 x32 on Windows.
         if: runner.os == 'Windows'
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           architecture: x86
       - name: Install Python 3.12 x64 on Windows.
         if: runner.os == 'Windows'
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
@@ -107,7 +116,7 @@ jobs:
       # `python-config3` return settings for Python-3.12, instead of for
       # whatever Python is being used by cibuildwheel.
       #
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v5
 
       # On Linux, get qemu so we can build for aarch64.
       #
@@ -129,19 +138,23 @@ jobs:
             inputs_wheels_linux_aarch64: ${{inputs.wheels_linux_aarch64}}
             inputs_wheels_linux_auto: ${{inputs.wheels_linux_auto}}
             inputs_wheels_linux_pyodide: ${{inputs.wheels_linux_pyodide}}
-            inputs_wheels_macos_arm64: ${{inputs.wheels_macos_arm64}}
+            #inputs_wheels_macos_arm64: ${{inputs.wheels_macos_arm64}}
             inputs_wheels_macos_auto: ${{inputs.wheels_macos_auto}}
             inputs_wheels_windows_auto: ${{inputs.wheels_windows_auto}}
             
             inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
+            #inputs_PYMUPDF_SETUP_MUPDF_BUILD_TYPE: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD_TYPE}}
             
             inputs_wheels_cps: ${{inputs.wheels_cps}}
+            
+            PYMUPDF_SETUP_PY_LIMITED_API: ${{inputs.PYMUPDF_SETUP_PY_LIMITED_API}}
+            
         run:
           python scripts/gh_release.py
       
 
       # Upload generated wheels, to be accessible from github Actions page.
       #
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl

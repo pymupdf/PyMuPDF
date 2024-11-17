@@ -2,10 +2,13 @@
 
 **PyMuPDF** is a high performance **Python** library for data extraction, analysis, conversion & manipulation of [PDF (and other) documents](https://pymupdf.readthedocs.io/en/latest/the-basics.html#supported-file-types).
 
+# Community
+Join us on **Discord** here: [#pymupdf](https://discord.gg/TSpYGBW4eq)
+
 
 # Installation
 
-**PyMuPDF** requires **Python 3.8 or later**, install using **pip** with:
+**PyMuPDF** requires **Python 3.9 or later**, install using **pip** with:
 
 `pip install PyMuPDF`
 
@@ -19,8 +22,8 @@ You can also try without installing by visiting [PyMuPDF.io](https://pymupdf.io/
 Basic usage is as follows:
 
 ```python
-import fitz # imports the pymupdf library
-doc = fitz.open("example.pdf") # open a document
+import pymupdf # imports the pymupdf library
+doc = pymupdf.open("example.pdf") # open a document
 for page in doc: # iterate the document pages
   text = page.get_text() # get plain text encoded as UTF-8
 
@@ -54,5 +57,4 @@ Full documentation can be found on [pymupdf.readthedocs.io](https://pymupdf.read
 
 
 
-# Contact
-Join us on **Discord** here: [#pymupdf](https://discord.gg/TSpYGBW4eq)
+

@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 import os
 import subprocess
@@ -9,7 +9,7 @@ def test_flake8():
     '''
     Check rebased Python code with flake8.
     '''
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'Not running flake8 with classic implementation.')
         return
     ignores = (
@@ -43,6 +43,7 @@ def test_flake8():
             'W293', # blank line contains whitespace
             'W503', # line break before binary operator
             'W504', # line break after binary operator
+            'E731', # do not assign a lambda expression, use a def
             )
     ignores = ','.join(ignores)
     root = os.path.abspath(f'{__file__}/../..')

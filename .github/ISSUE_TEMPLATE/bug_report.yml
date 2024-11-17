@@ -47,26 +47,24 @@ body:
       label: PyMuPDF version
       options:
         - 
-        - 1.23.21
-        - 1.23.22
-        - 1.23.20
-        - 1.23.19
-        - 1.23.18
-        - 1.23.17
-        - 1.23.16
-        - 1.23.15
-        - 1.23.14
-        - 1.23.13
-        - 1.23.12
-        - 1.23.11
-        - 1.23.10
-        - 1.23.9
-        - 1.23.9rc2
-        - 1.23.9rc1
-        - 1.23.8 or earlier
+        - 1.24.13
+        - 1.24.12
+        - 1.24.11
+        - 1.24.10
+        - 1.24.9
+        - 1.24.8
+        - 1.24.7
+        - 1.24.6
+        - 1.24.5
+        - 1.24.4
+        - 1.24.3
+        - 1.24.2
+        - 1.24.1
+        - 1.24.0
+        - 1.23.x or earlier
         - Built from source
       description: |
-        * For example from `fitz.VersionBind`.
+        * For example from `pymupdf.VersionBind`.
         * We generally only look at bugs in the most recent release of PyMuPDF.
     validations:
       required: true
@@ -94,10 +92,10 @@ body:
       # Need quotes around `3.10` otherwise it is treated as a number and shows as `3.1`.
       options:
         -
+        - "3.13"
         - "3.12"
         - "3.11"
         - "3.10"
         - "3.9"
-        - "3.8"
     validations:
       required: true

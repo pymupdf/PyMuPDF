@@ -19,9 +19,9 @@ The following three sections deal with different performance aspects:
 
 * :ref:`Document Copying<app4_copying>` - This includes opening and parsing :title:`PDFs`, then writing them to an output file. Because the same basic activities are also used for joining (merging) :title:`PDFs`, the results also apply to these use cases.
 * :ref:`Text Extraction<app4_text_extraction>` - This extracts plain text from :title:`PDFs` and writes it to an output text file.
-* :ref:`Page Rendering<app4_page_rendering>` - This converts :title:`PDF` pages to image files looking identical to the pages. This ability is the basic prerequisite for using a tool in :title:`Python GUI` scripts to scroll through documents. We have chosen a medium-quality (resolution 150 DPI) version.
+* :ref:`Page Rendering<app4_page_rendering>` - This converts |PDF| pages to image files looking identical to the pages. This ability is the basic prerequisite for using a tool in :title:`Python GUI` scripts to scroll through documents. We have chosen a medium-quality (resolution 150 DPI) version.
 
-Please note that in all cases the actual speed in dealing with :title:`PDF` structures is not directly measured: instead, the timings also include the durations of writing files to the operating system's file system. This cannot be avoided because tools other than :title:`PyMuPDF` do not offer the option to e.g., separate the image **creation** step from the following step, which **writes** the image into a file.
+Please note that in all cases the actual speed in dealing with |PDF| structures is not directly measured: instead, the timings also include the durations of writing files to the operating system's file system. This cannot be avoided because tools other than |PyMuPDF| do not offer the option to e.g., separate the image **creation** step from the following step, which **writes** the image into a file.
 
 So all timings documented include a common, OS-oriented base effort. Therefore, performance **differences per tool are actually larger** than the numbers suggest.
 
@@ -130,7 +130,7 @@ A set of eight files is used for the performance testing. With each file we have
 Tools used
 -------------
 
-In each section, the same fixed set of :title:`PDF` files is being processed by a set of tools. The set of tools used per performance aspect however varies, depending on the supported tool features.
+In each section, the same fixed set of |PDF| files is being processed by a set of tools. The set of tools used per performance aspect however varies, depending on the supported tool features.
 
 All tools are either platform independent, or at least can run on both, :title:`Windows` and :title:`Unix` / :title:`Linux`.
 
@@ -140,20 +140,20 @@ All tools are either platform independent, or at least can run on both, :title:`
 
    * - **Tool**
      - **Description**
-   * - :title:`PyMuPDF`
+   * - |PyMuPDF|
      - The tool of this manual.
    * - PDFrw_
      - A pure :title:`Python` tool, being used by :title:`rst2pdf`, has interface to :title:`ReportLab`.
    * - PyPDF2_
      - A pure :title:`Python` tool with a large function set.
    * - PDFMiner_
-     - A pure :title:`Python` to extract text and other data from :title:`PDF`.
+     - A pure :title:`Python` to extract text and other data from |PDF|.
    * - XPDF_
      - A command line utility with multiple functions.
    * - PikePDF_
      - A :title:`Python` package similar to :title:`PDFrw`, but based on :title:`C++` library :title:`QPDF`.
    * - PDF2JPG_
-     - A :title:`Python` package specialized on rendering :title:`PDF` pages to :title:`JPG` images.
+     - A :title:`Python` package specialized on rendering |PDF| pages to :title:`JPG` images.
 
 
 
@@ -163,18 +163,18 @@ All tools are either platform independent, or at least can run on both, :title:`
 Copying / Joining / Merging
 ----------------------------------
 
-How fast is a :title:`PDF` file read and its content parsed for further processing? The sheer parsing performance cannot directly be compared, because batch utilities always execute a requested task completely, in one go, front to end. :title:`PDFrw` too, has a *lazy* strategy for parsing, meaning it only parses those parts of a document that are required in any moment.
+How fast is a |PDF| file read and its content parsed for further processing? The sheer parsing performance cannot directly be compared, because batch utilities always execute a requested task completely, in one go, front to end. :title:`PDFrw` too, has a *lazy* strategy for parsing, meaning it only parses those parts of a document that are required in any moment.
 
-To find an answer to the question, we therefore measure the time to copy a :title:`PDF` file to an output file with each tool, and do nothing else.
+To find an answer to the question, we therefore measure the time to copy a |PDF| file to an output file with each tool, and do nothing else.
 
 These are the :title:`Python` commands for how each tool is used:
 
-:title:`PyMuPDF`
+|PyMuPDF|
 
 .. code-block:: python
 
-    import fitz
-    doc = fitz.open("input.pdf")
+    import pymupdf
+    doc = pymupdf.open("input.pdf")
     doc.save("output.pdf")
 
 :title:`PDFrw`
@@ -209,7 +209,7 @@ These are the :title:`Python` commands for how each tool is used:
 
 **Observations**
 
-These are our run time findings in **seconds** along with a base rate summary compared to :title:`PyMuPDF`:
+These are our run time findings in **seconds** along with a base rate summary compared to |PyMuPDF|:
 
 .. list-table::
    :header-rows: 1
@@ -287,7 +287,7 @@ The following table shows plain text extraction durations. All tools have been u
 
 **Observations**
 
-These are our run time findings in **seconds** along with a base rate summary compared to :title:`PyMuPDF`:
+These are our run time findings in **seconds** along with a base rate summary compared to |PyMuPDF|:
 
 .. list-table::
    :header-rows: 1
@@ -359,20 +359,20 @@ These are our run time findings in **seconds** along with a base rate summary co
 Page Rendering
 --------------------------
 
-We have tested rendering speed of :title:`PyMuPDF` against :title:`pdf2jpg` and :title:`XPDF` at a resolution of 150 DPI,
+We have tested rendering speed of |PyMuPDF| against :title:`pdf2jpg` and :title:`XPDF` at a resolution of 150 DPI,
 
 
 These are the :title:`Python` commands for how each tool is used:
 
 
-:title:`PyMuPDF`
+|PyMuPDF|
 
 .. code-block:: python
 
     def ProcessFile(datei):
     print "processing:", datei
-    doc=fitz.open(datei)
-    for p in fitz.Pages(doc):
+    doc=pymupdf.open(datei)
+    for p in pymupdf.Pages(doc):
         pix = p.get_pixmap(dpi=150)
         pix.save("t-%s.png" % p.number)
         pix = None
@@ -398,7 +398,7 @@ These are the :title:`Python` commands for how each tool is used:
 
 **Observations**
 
-These are our run time findings in **seconds** along with a base rate summary compared to :title:`PyMuPDF`:
+These are our run time findings in **seconds** along with a base rate summary compared to |PyMuPDF|:
 
 
 .. list-table::

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 13:53+0000\n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,31 +19,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 18cee26b57614fccbb5ce57f8f5c4123
+#: ../../header.rst:-1 f58faa14969d4c498db94bf9a88538df
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 c66e245dc244477ca11fc5fc3f127370
+#: ../../header.rst:-1 d04d6dc4aac249c78283cbe109973a04
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 c09d017ca6e14f69b65047b9b9f3c7e7
+#: ../../header.rst:-1 1a724598276e4fbfad419ff5de764741
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../annot.rst:7 6443dbdc86c04ae58f1358dbd81784f7
+#: ../../annot.rst:7 8bc9eab9e0a94e4c9b37d530f9189232
 msgid "Annot"
 msgstr "Annot (注釈)"
 
-#: ../../annot.rst:8 7c4fa6b8af4f41c4b60b5f2faeb63816
-msgid "**This class is supported for PDF documents only.**"
-msgstr "**このクラスはPDFドキュメントのみに対応しています。** "
+#: ../../annot.rst:9 2bbd8c25d43448378e20567cb38ee63d
+msgid "|pdf_only_class|"
+msgstr "PDFのみ。"
 
-#: ../../annot.rst:10 68ea207e330a496eb658894ccb0de0b8
+#: ../../annot.rst:11 c167a796f5d0401e9bbb9086d43b8504
 msgid ""
 "Quote from the :ref:`AdobeManual`: \"An annotation associates an object "
 "such as a note, sound, or movie with a location on a page of a PDF "
@@ -53,7 +53,7 @@ msgstr ""
 ":ref:`AdobeManual` からの引用: "
 "「注釈は、ノート、音声、動画などのオブジェクトをPDFドキュメントのページ上の位置に関連付けるか、マウスとキーボードを介してユーザーと対話する手段を提供します。」"
 
-#: ../../annot.rst:12 f34b51aa927d4967829811b16ab980fd
+#: ../../annot.rst:13 73fdf164d538471899ce67f58342c9f2
 msgid ""
 "There is a parent-child relationship between an annotation and its page. "
 "If the page object becomes unusable (closed document, any document "
@@ -62,344 +62,344 @@ msgid ""
 " whenever an annotation property or method is accessed."
 msgstr "注釈とそのページとの間には親子関係があります。ページオブジェクトが使用できなくなる場合（閉じたドキュメント、文書構造の変更など）、そのページに存在するすべての注釈オブジェクトも同様に使用できなくなります。注釈のプロパティやメソッドにアクセスされるたびに、オブジェクトが「孤立した」という例外が発生します。"
 
-#: ../../annot.rst:15 d0ff63b8b5d74028979a8b58c3b76da5
+#: ../../annot.rst:16 c93f68f07a5e42dfa820a4346dab999c
 msgid "**Attribute**"
 msgstr "**アトリビュート** "
 
-#: ../../annot.rst:15 d8897a83077140649d75c07c0b58c524
+#: ../../annot.rst:16 c3d7143cdb2349038066e7e79a4a5993
 msgid "**Short Description**"
 msgstr "**短い説明** "
 
-#: ../../annot.rst:17 ba89a3ac581c4836b9f4fdc28f671282
+#: ../../annot.rst:18 a8b273b6d03f4a99b4a65e00127a5cc8
 msgid ":meth:`Annot.delete_responses`"
 msgstr ""
 
-#: ../../annot.rst:17 684165f7b0b148e985ec2eb969e227b7
-msgid "delete all responding annotions"
+#: ../../annot.rst:18 4bb5054e003e4a0eab4557a602962f43
+msgid "delete all responding annotations"
 msgstr "すべての応答アノテーションを削除します"
 
-#: ../../annot.rst:18 6521bedb83b24c39bddab4c822b5f0d4
+#: ../../annot.rst:19 be33f456bc764e028444f979903ac32d
 msgid ":meth:`Annot.get_file`"
 msgstr ""
 
-#: ../../annot.rst:18 91b64c99199e40ad8e70a766c47a0e8f
+#: ../../annot.rst:19 be081dafafdf4901987890df7c97b228
 msgid "get attached file content"
 msgstr "添付ファイルの内容を取得します"
 
-#: ../../annot.rst:19 e90bf8cafe4d4fed95a75cfb97ebf88a
+#: ../../annot.rst:20 eff2da38e8144a40850b02a9239caf75
 msgid ":meth:`Annot.get_oc`"
 msgstr ""
 
-#: ../../annot.rst:19 92d6763cc7704b249e6542fb1ab41842
+#: ../../annot.rst:20 c17b43c3fc414c1ea7e9114bddff056a
 msgid "get :data:`xref` of an :data:`OCG` / :data:`OCMD`"
 msgstr ":data:`xref` を :data:`OCG` または :data:`OCMD` に取得します。"
 
-#: ../../annot.rst:20 1655aa6a9d7e4e69bb8af60bd82e7007
+#: ../../annot.rst:21 77bb4efd19cb4e3da9c5b95b7d038d34
 msgid ":meth:`Annot.get_pixmap`"
 msgstr ""
 
-#: ../../annot.rst:20 c82b63229de84d0fa7e74a0d87dfc4ba
+#: ../../annot.rst:21 8c73fe7e84774b4fa82787655c075425
 msgid "image of the annotation as a pixmap"
 msgstr "アノテーションの画像をピクマップとして取得します"
 
-#: ../../annot.rst:21 004a8f84063e467ebe0de34a68dc694e
+#: ../../annot.rst:22 ce77a66ab3d54db382a1585eb7fede15
 msgid ":meth:`Annot.get_sound`"
 msgstr ""
 
-#: ../../annot.rst:21 a604b301888f4915b72b7b245a6ca18a
+#: ../../annot.rst:22 4e4fa3ef3b174e649c216a83d7867564
 msgid "get the sound of an audio annotation"
 msgstr "オーディオアノテーションの音声を取得します"
 
-#: ../../annot.rst:22 947b4663c11049979a776c03f8ad26b1
+#: ../../annot.rst:23 b947269ccbae4a28b43cfb146bbd3071
 msgid ":meth:`Annot.get_text`"
 msgstr ""
 
-#: ../../annot.rst:22 ../../annot.rst:23 729b107756524d82905c86da84598e56
-#: fcf8c2c7d921431d95245a464d51aaf5
+#: ../../annot.rst:23 ../../annot.rst:24 7f8ff67ff1a9499aa98fdc552d68437a
+#: bb03942fc87441b2bf67afc145f85abb
 msgid "extract annotation text"
 msgstr "アノテーションテキストを抽出します"
 
-#: ../../annot.rst:23 968f0e87ec99486cb1f53c86ac65cf85
+#: ../../annot.rst:24 568e92c1d7f846e195a42a21f1ad2a67
 msgid ":meth:`Annot.get_textbox`"
 msgstr ""
 
-#: ../../annot.rst:24 2b5209f399d14d93bf61499d542508d6
+#: ../../annot.rst:25 4acdf700d42548bfa5bf5423fda7bbbe
 msgid ":meth:`Annot.set_border`"
 msgstr ""
 
-#: ../../annot.rst:24 51c2ce9758384adaad34e3ec699d1c94
+#: ../../annot.rst:25 30b50c49125d4a14965f25476af02d0f
 msgid "set annotation's border properties"
 msgstr "アノテーションの境界線のプロパティを設定します"
 
-#: ../../annot.rst:25 6910a70b06584676adb9eaf9df0f02e0
+#: ../../annot.rst:26 37665ea74bd74540a2a0255601238e6d
 msgid ":meth:`Annot.set_blendmode`"
 msgstr ""
 
-#: ../../annot.rst:25 68f5e207b4804a178d3e8b482eccba75
+#: ../../annot.rst:26 f3d329c13b414365b888960f2d0005b5
 msgid "set annotation's blend mode"
 msgstr "アノテーションのブレンドモードを設定します"
 
-#: ../../annot.rst:26 a9cb11e6552e4d578705ccad227fc7e7
+#: ../../annot.rst:27 10e2dc93452a416ca144666cd9b01825
 msgid ":meth:`Annot.set_colors`"
 msgstr ""
 
-#: ../../annot.rst:26 4fe7a9f292d145f6b8cb521114d1229b
+#: ../../annot.rst:27 8a32c70363a9458d8003fe33fdee26dd
 msgid "set annotation's colors"
 msgstr "アノテーションの色を設定します"
 
-#: ../../annot.rst:27 ../../annot.rst:324 7cf36def9bbf4e4cbdc65dd132b42ca5
-#: 8dfb615d049d458c81d6513ff798746c
+#: ../../annot.rst:28 ../../annot.rst:325 a48261eeb1124c3ebf6cf938eb667a9c
+#: cbc7bbc35ebb478cb46f59c4e71cc028
 msgid ":meth:`Annot.set_flags`"
 msgstr ""
 
-#: ../../annot.rst:27 986b2be0edb94216ac069dddb0ea9875
+#: ../../annot.rst:28 0454cc3962eb47deab3d5096d62dbe4c
 msgid "set annotation's flags field"
 msgstr "アノテーションのフラグフィールドを設定します"
 
-#: ../../annot.rst:28 8473af7fa11f48b0bdf1daf6f517e31c
+#: ../../annot.rst:29 2d8385a084074ff5a91fd60d8be86f34
 msgid ":meth:`Annot.set_irt_xref`"
 msgstr ""
 
-#: ../../annot.rst:28 938dea31223a43df81c2a2cb20c1a2c1
+#: ../../annot.rst:29 686785502a864fc5a528a7009b5025ee
 msgid "define the annotation to being \"In Response To\""
 msgstr "アノテーションを「応答対象」として定義します"
 
-#: ../../annot.rst:29 e4f9b052ca924fbe8419ced7569992b6
+#: ../../annot.rst:30 409352bcaf5e4e648524acbe25d7730a
 msgid ":meth:`Annot.set_name`"
 msgstr ""
 
-#: ../../annot.rst:29 a86e850b7b9f49d7b9f273e2d23d245a
+#: ../../annot.rst:30 6d0fee3a41e9472d89f8ab1be94434ca
 msgid "set annotation's name field"
 msgstr "アノテーションの名前フィールドを設定します"
 
-#: ../../annot.rst:30 ../../annot.rst:325 34a69185f7d34ce29ebeecbdcd642eb5
-#: e4f2e5baf7024d28aee6dec0291301a9
+#: ../../annot.rst:31 ../../annot.rst:326 731b64bee53f4898b852d2971c4c5c53
+#: ccd8fa4a256748048b917ef70341ccc9
 msgid ":meth:`Annot.set_oc`"
 msgstr ""
 
-#: ../../annot.rst:30 ba2e871f4cae4ac78330d7b75af79f92
+#: ../../annot.rst:31 d166b85bab534619803e4992b259c332
 msgid "set :data:`xref` to an :data:`OCG` / :data:`OCMD`"
 msgstr ":data:`xref` を :data:`OCG` または :data:`OCMD` に設定します。"
 
-#: ../../annot.rst:31 b965d02ffecb4f17aafb34eb6addafeb
+#: ../../annot.rst:32 c109decb34064d528898b6e4fc2fa2ec
 msgid ":meth:`Annot.set_opacity`"
 msgstr ""
 
-#: ../../annot.rst:31 9a8ef8fdd3224522ac4494936c18485b
+#: ../../annot.rst:32 f23ca422a2794397b2d8ae99eeb5fd82
 msgid "change transparency"
 msgstr "透明度を変更します"
 
-#: ../../annot.rst:32 9c19464a6c374fe0a75bc38920d5684c
+#: ../../annot.rst:33 c3e2b6c5f65143019c9d3e38a7698c20
 msgid ":meth:`Annot.set_open`"
 msgstr ""
 
-#: ../../annot.rst:32 893cb332c6124132bdf49ade2ee4b21d
+#: ../../annot.rst:33 cebb3931ce844c4093c5abed06775a7a
 msgid "open / close annotation or its Popup"
 msgstr "アノテーションまたはそのポップアップを開く/閉じる"
 
-#: ../../annot.rst:33 03c87254fa5a498983627570e90c25ca
+#: ../../annot.rst:34 7ee1acc4627e422fbaba47fdd0ab28bb
 msgid ":meth:`Annot.set_popup`"
 msgstr ""
 
-#: ../../annot.rst:33 15ad2bddae544da6a0b60cd08ee265f8
+#: ../../annot.rst:34 9fa7c75644e5462a9929445944c559ad
 msgid "create a Popup for the annotation"
 msgstr "アノテーションのためのポップアップを作成します"
 
-#: ../../annot.rst:34 ../../annot.rst:323 24acf7ba640e48468018f04b837e9065
-#: 74b2c98468d94534a3aa7a229b57c38c
+#: ../../annot.rst:35 ../../annot.rst:324 9070ef4169534831bc9dcc042c1b14a5
+#: b3265e34ca75410f9f2a281538d0a027
 msgid ":meth:`Annot.set_rect`"
 msgstr ""
 
-#: ../../annot.rst:34 ac703f83b12444119787c562c364e7e9
+#: ../../annot.rst:35 a3bff12ea7084209b8d9f930ec2f9ccf
 msgid "change annotation rectangle"
 msgstr "アノテーションの長方形を変更します"
 
-#: ../../annot.rst:35 3928ed1c082541e1a3d1a55baa6785b5
+#: ../../annot.rst:36 b0190b57eb0d488882b14c5a42a8f0c3
 msgid ":meth:`Annot.set_rotation`"
 msgstr ""
 
-#: ../../annot.rst:35 de70d067befd4c36bd4de51239342691
+#: ../../annot.rst:36 e7487a00971246919e35cc6285b94093
 msgid "change rotation"
 msgstr "回転を変更します"
 
-#: ../../annot.rst:36 ../../annot.rst:326 388dbb8b2edc4191a7a6dc01e1bc97b8
-#: 4f79e2d087ec4da0a723323936404ad2
+#: ../../annot.rst:37 ../../annot.rst:327 2c9bec3202b8419aac57f67e3cf72586
+#: e9c40cdde9eb44d7adace1522969b611
 msgid ":meth:`Annot.update_file`"
 msgstr ""
 
-#: ../../annot.rst:36 ef34405eae484af990ffb2a52bbb1506
+#: ../../annot.rst:37 4e06928de9a040c7ab9fc412842385f7
 msgid "update attached file content"
 msgstr "添付ファイルの内容を更新します"
 
-#: ../../annot.rst:37 ff67b85525a34796a0cd9f3bb535aaaf
+#: ../../annot.rst:38 a4c6a14598124b7882fc0891157bea30
 msgid ":meth:`Annot.update`"
 msgstr ""
 
-#: ../../annot.rst:37 16943cd31a8441f1bc3a9b494fba06f1
+#: ../../annot.rst:38 7a0bb70efce54c8caafb9b70f2418dff
 msgid "apply accumulated annot changes"
 msgstr "蓄積されたアノテーションの変更を適用します"
 
-#: ../../annot.rst:38 31613c5c2ce14a60b3dacd43d7b1daa4
+#: ../../annot.rst:39 d2ba4ef292994e709dc4380c4bbabde6
 msgid ":attr:`Annot.blendmode`"
 msgstr ""
 
-#: ../../annot.rst:38 76697b358f144f65be1761f54db4c7e7
+#: ../../annot.rst:39 ec71849cb97a41338ea3dbfc6e1bbdaa
 msgid "annotation BlendMode"
 msgstr "アノテーションのブレンドモード"
 
-#: ../../annot.rst:39 31c3d526067d4f409e739a19a9d99850
+#: ../../annot.rst:40 33f75de1f22d4b8cb7e2beb77c51172e
 msgid ":attr:`Annot.border`"
 msgstr ""
 
-#: ../../annot.rst:39 98ac187568d24b22aa9b9c4c478b279f
+#: ../../annot.rst:40 3cb3932a615d4280be92cc9ddbdefb34
 msgid "border details"
 msgstr "境界線の詳細"
 
-#: ../../annot.rst:40 2306b5fd77814b6d8f2db3f5a0108d62
+#: ../../annot.rst:41 cc1bbfd26c2d45b080acef345a907316
 msgid ":attr:`Annot.colors`"
 msgstr ""
 
-#: ../../annot.rst:40 4dac6c066a924eb68dc346fc3a1f65d7
+#: ../../annot.rst:41 20292b07b663479ba4fd75775b055d26
 msgid "border / background and fill colors"
 msgstr "境界線/背景および塗りつぶしの色"
 
-#: ../../annot.rst:41 a4f8faaf194a4f75b72257442469c66c
+#: ../../annot.rst:42 c27389071be14e469ff2bb8ec0ba217c
 msgid ":attr:`Annot.file_info`"
 msgstr ""
 
-#: ../../annot.rst:41 904bc33cdb9f44358df71d3a223dac5f
+#: ../../annot.rst:42 125d3acc5bb048ac82eaa8146606bb85
 msgid "get attached file information"
 msgstr "添付ファイル情報を取得します"
 
-#: ../../annot.rst:42 422de6821e624f81bdceb8eb0d2cc72a
+#: ../../annot.rst:43 a81da555aba546beb39dc1aa3f65833c
 msgid ":attr:`Annot.flags`"
 msgstr ""
 
-#: ../../annot.rst:42 7525823593f447bb9dcf9d28b2d33dfe
+#: ../../annot.rst:43 e76017b2adc3455699aadf22c56a8938
 msgid "annotation flags"
 msgstr "アノテーションフラグ"
 
-#: ../../annot.rst:43 e3314a83495c49b8929b85fe488e689d
+#: ../../annot.rst:44 92d525c3334e40c6b2a2477fc3dd2ebd
 msgid ":attr:`Annot.has_popup`"
 msgstr ""
 
-#: ../../annot.rst:43 ed0642ffe61d468c9efd60326545b125
+#: ../../annot.rst:44 4867fb143500494c92cecaebca7f7e24
 msgid "whether annotation has a Popup"
 msgstr "アノテーションにポップアップがあるかどうか"
 
-#: ../../annot.rst:44 7b2fef4981d246aa992cfda305bbdc08
+#: ../../annot.rst:45 a2b36b11cbc94d4b89cb15f414269d5d
 msgid ":attr:`Annot.irt_xref`"
 msgstr ""
 
-#: ../../annot.rst:44 728f1a0daa3c47acbedaaa070f1bd949
+#: ../../annot.rst:45 a82c4cf5016542ea8efb8f2e5c2cd9ce
 msgid "annotation to which this one responds"
 msgstr "このアノテーションへの応答としてのアノテーション"
 
-#: ../../annot.rst:45 c44f71b6799c45c687ca9efe6ce8a66e
+#: ../../annot.rst:46 0c84f297efc94646bfa58440e29e073d
 msgid ":attr:`Annot.info`"
 msgstr ""
 
-#: ../../annot.rst:45 5c90210f79e44978b3c3ae31a6b3e14d
+#: ../../annot.rst:46 e4067b8dd5694572839c67a57582a628
 msgid "various information"
 msgstr "さまざまな情報"
 
-#: ../../annot.rst:46 f37500b7d0b945ea88597cf6b63dc0e2
+#: ../../annot.rst:47 0442a526d0ca4cdda4907bedf8c15185
 msgid ":attr:`Annot.is_open`"
 msgstr ""
 
-#: ../../annot.rst:46 d56a130d7d8747f9bc51bed121789192
+#: ../../annot.rst:47 cd0bca2861da4a1c95f841da1f30404b
 msgid "whether annotation or its Popup is open"
 msgstr "アノテーションまたはそのポップアップが開いているかどうか"
 
-#: ../../annot.rst:47 0f76e9cef2fa4357bc01eb5c19ad3875
+#: ../../annot.rst:48 51a1a01e00ac4580acbd81afa85977df
 msgid ":attr:`Annot.line_ends`"
 msgstr ""
 
-#: ../../annot.rst:47 1e6e4952ffc040b4b16a9c227db58ef8
+#: ../../annot.rst:48 ae74191600374b6fa817fe66f406009f
 msgid "start / end appearance of line-type annotations"
 msgstr "線タイプのアノテーションの始点/終点の外観"
 
-#: ../../annot.rst:48 0ab7ecd530e542d8949a3dd2deb8fe95
+#: ../../annot.rst:49 0a7c9e0cb1b046e4ba4568ccb35b1583
 msgid ":attr:`Annot.next`"
 msgstr ""
 
-#: ../../annot.rst:48 efb85c1b433d48b4ac71866836d31f13
+#: ../../annot.rst:49 4efd0cc967734749b80947ebde43f366
 msgid "link to the next annotation"
 msgstr "次のアノテーションへのリンク"
 
-#: ../../annot.rst:49 bea3c2d5d51d4f899172728cc0650942
+#: ../../annot.rst:50 fc4307cab4d54c3e941a5c304d056db7
 msgid ":attr:`Annot.opacity`"
 msgstr ""
 
-#: ../../annot.rst:49 d4fe35d1555943db9fe94d344d44ba0c
+#: ../../annot.rst:50 01f50211ff4944ce8aa168c014930a9c
 msgid "the annot's transparency"
 msgstr "アノテーションの透明度"
 
-#: ../../annot.rst:50 43917703bb5a4f6d9fe7d78ba9b340c1
+#: ../../annot.rst:51 5884163c5ba44d2a8404db655bdbf5a8
 msgid ":attr:`Annot.parent`"
 msgstr ""
 
-#: ../../annot.rst:50 c794e32568f9446c95efd103e8a4bdeb
+#: ../../annot.rst:51 93100253f2824a6aa670dd6c77de460c
 msgid "page object of the annotation"
 msgstr "アノテーションのページオブジェクト"
 
-#: ../../annot.rst:51 9b486d92c5dd4faab7d721d54c4f611d
+#: ../../annot.rst:52 f065cb4b1d53435987c0588012576a8d
 msgid ":attr:`Annot.popup_rect`"
 msgstr ""
 
-#: ../../annot.rst:51 54777d751af14441bb49e1e1e270bb03
+#: ../../annot.rst:52 dfec2a092d0048d5a80183c996a73ae6
 msgid "rectangle of the annotation's Popup"
 msgstr "アノテーションのポップアップの長方形"
 
-#: ../../annot.rst:52 603e67b8ff6c4733950e9bf9b0f4ca29
+#: ../../annot.rst:53 daa22cccd54e495b8e70eec579b17cd7
 msgid ":attr:`Annot.popup_xref`"
 msgstr ""
 
-#: ../../annot.rst:52 cf706c2372974909a0b1b46eaac8857b
+#: ../../annot.rst:53 2b30147d54d643df8c5fa5eb81e7bf6f
 msgid "the PDF :data:`xref` number of the annotation's Popup"
 msgstr "アノテーションのポップアップのPDF :data:`xref` 番号"
 
-#: ../../annot.rst:53 6f1e5b564c1745f18078de8f40083a57
+#: ../../annot.rst:54 359f3658ca844fdca1df613046794a01
 msgid ":attr:`Annot.rect`"
 msgstr ""
 
-#: ../../annot.rst:53 77416ad9feb14bffb571f4391697e663
+#: ../../annot.rst:54 3e1bad066d0f4446ac257cd76750d5c2
 msgid "rectangle containing the annotation"
 msgstr "アノテーションを含む長方形"
 
-#: ../../annot.rst:54 aeb61253971843d7bbc90e1fcd602496
+#: ../../annot.rst:55 99b8214e81324156b9687bb3149f0586
 msgid ":attr:`Annot.type`"
 msgstr ""
 
-#: ../../annot.rst:54 0c5feef1e34c4f5c9dde61aa840dafad
+#: ../../annot.rst:55 68e661e292ad4f6c9bda9bac668664eb
 msgid "type of the annotation"
 msgstr "アノテーションのタイプ"
 
-#: ../../annot.rst:55 624486cc4c1742e9b15a78a312298dcd
+#: ../../annot.rst:56 e47fe4e5f9374ea0845c2e1eb06b35fa
 msgid ":attr:`Annot.vertices`"
 msgstr ""
 
-#: ../../annot.rst:55 15a08ea01f9748ebb761f0f49a1fe89f
+#: ../../annot.rst:56 0f51f183d1a94e7c8ca5d6bbdf1b3a11
 msgid "point coordinates of Polygons, PolyLines, etc."
 msgstr "ポリゴン、ポリラインなどの点の座標"
 
-#: ../../annot.rst:56 73ad2c93895b453d93052bc0c355c86c
+#: ../../annot.rst:57 e4331ee3637847c5a651575724ebe618
 msgid ":attr:`Annot.xref`"
 msgstr ""
 
-#: ../../annot.rst:56 06a07b88f7d84645af0d057f6655b5a2
+#: ../../annot.rst:57 6bb7481f0f144222ad16e25aeee85449
 msgid "the PDF :data:`xref` number"
 msgstr "PDF :data:`xref` 番号"
 
-#: ../../annot.rst:59 e1a9795c022c40bea2071a3eb262d3e4
+#: ../../annot.rst:60 00da2356251b47e7b171c918f7661d34
 msgid "**Class API**"
 msgstr " **APIクラス** "
 
-#: ../../annot.rst:71 4a82845c23704d27b367543639bef5cb
+#: ../../annot.rst:72 8f24cd13a69a40d981c934b1c6030986
 msgid "Changed in v1.19.2: added support of dpi parameter."
 msgstr "v1.19.2で変更: dpiパラメータのサポートが追加されました。"
 
-#: ../../annot.rst:73 aca00596518542ffa075c6552bcb3782
+#: ../../annot.rst:74 414ad1d83aad40e3b3e3bb4e90caf00b
 msgid ""
 "Creates a pixmap from the annotation as it appears on the page in "
 "untransformed coordinates. The pixmap's :ref:`IRect` equals "
@@ -408,58 +408,58 @@ msgstr ""
 "変換されていない座標でページ上に表示される注釈からピクスマップを作成します。ピクスマップの :ref:`IRect` は "
 "*Annot.rect.irect* と同じです（以下を参照）。 **すべてのパラメータはキーワード専用です。** "
 
-#: ../../annot.rst 052b618d149447dea352bf6ec10c27ec
-#: 1d7eae078b6e4e61a0480175be310678 2d290df8d665452f840e162760fe30ab
-#: 3367d206195a4d09a003f42d0374f379 373a0daed91d40ea8450336da1a08056
-#: 3d11b6eb3ec649608086a5f52c513c31 41f06b075dd94f218630459bf1f6639c
-#: 67c756dabe1849e98faf751c77b068a8 748ed8a8fde344d7ae2d5eedff0c14b7
-#: 76a68356bd19405ebea767c9747432bd 8ff9f681a8994387ba932a53ea881ccc
-#: 902004849e754683b9ea3bf69ff8b470 90e3e1f1ff444fd38d917f0f1f56cb57
-#: 99cc5914ca774cce84cd034f49e70c96 aaf4ddbe27cf46cfb671ccd2c62293d2
-#: abffd234952e4698a72a7c425d8be818 bd139df0527046f1bed171af674dc2c1
-#: bf9ec58488b04a5fa8b34c0b013bb14c c3488e5a950542d388e8b5c30d08dbd8
+#: ../../annot.rst 0fce00f251374863b4f89a4e8dfdc9ba
+#: 18c5d905d17b4314913786d0fc6725c8 23ca0b11f6c04e34bead0ac5090c355c
+#: 2c13ad7203994ac3bd3f4cb72f9e3a50 365ad206531c42f99beb4357f3bf9f47
+#: 5f94a192fe784fddba8f493accf1cbf2 73f8f5b3e31f41269c7568e58c7fd52d
+#: 81ba22622544488cad50074cbec82775 85dc3cf6c4f54958b9196c7d723b7bca
+#: a3ec666ee2c3473b87dc71f943b97ff0 ac282398d48a4b6b93c08e46c90b42e6
+#: aea88fb6d34c447a843190604780ddd7 b1aad47dc76146b5bc499302e338b3bd
+#: c1a9d87771ae40f38b0ed2384d3568f1 cf87165eb5614ef8954aaefbf43fe8b5
+#: d6f605074223416a9808bec439dd7fd1 e0d6ad8c631c484391f7c381d889e0d0
+#: e32be9236b62407b940a0f49ab9f26e3 f00d98a4b1d649a08cfafb534104d3c2
 msgid "Parameters"
 msgstr "パラメータ"
 
-#: ../../annot.rst:75 a8a5df15797e495e801fa74c9e903655
+#: ../../annot.rst:76 bb926393440540d18c337c2c62e09d6b
 msgid "a matrix to be used for image creation. Default is :ref:`Identity`."
 msgstr "画像の作成に使用される行列。デフォルトは :ref:`Identity` です。"
 
-#: ../../annot.rst:77 818964d7af7c4ce6b279d9976b66767c
+#: ../../annot.rst:78 dd8ac5da67554766af659d0745dcd6b0
 msgid ""
 "(new in v1.19.2) desired resolution in dots per inch. If not `None`, the "
 "matrix parameter is ignored."
 msgstr "（v1.19.2で新規追加）インチあたりのドット数で指定された解像度。 `None` でない場合、matrixパラメータは無視されます。"
 
-#: ../../annot.rst:79 c6934f1c9d0549b9b22fa0a5760532de
-msgid "a colorspace to be used for image creation. Default is *fitz.csRGB*."
-msgstr "画像の作成に使用されるカラースペース。デフォルトは *fitz.csRGB* です。"
+#: ../../annot.rst:80 472388915f304edaa87f5c6ee0c0602d
+msgid "a colorspace to be used for image creation. Default is *pymupdf.csRGB*."
+msgstr "画像の作成に使用されるカラースペース。デフォルトは *pymupdf.csRGB* です。"
 
-#: ../../annot.rst:82 e6ee378407084a96bd1ba8de8e81bb2d
+#: ../../annot.rst:83 fcfedb41f14e4061ba26f9747b54769d
 msgid "whether to include transparency information. Default is *False*."
 msgstr "透明情報を含めるかどうか。デフォルトは *False* です。"
 
-#: ../../annot.rst 021153c1cf1b449e83bf81b428f04eea
-#: 03b378c8adcd464685d242e4a795c6e1 084ba89278cb4b8183000a99edee5292
-#: 0fc9f6a871ea4b69a187eadd5c21e367 10f7fd89d7fe44f7a098b15331bb1b26
-#: 2131783ba0a04484b1c35d241245b981 2c4a1fc295f642bfbff2831ad9b99766
-#: 3146599be14f40689ffa19ee6d069c0e 478f6c6939f04de1b7eb1c0dd5944346
-#: 480ab71a23814e6fabe4092eadc09499 50f289c16c364a4ba88f7a9cec50e50f
-#: 5f5584c36213477bab8b14c244b2585d 68c5fb4a7efb4dc6b05185ff546d10fa
-#: 755929815c2a4e6e93745b2ac83877d6 7638d5a89a7b4ab6bcea391291729ea6
-#: 829375e719cf41c9ac003fc9aacba590 9440c52fd1f0450793aa7afd76d2c53b
-#: b10fdbf2523e4c17843290a1adb82b80 beec4f4d96c94797a14ae6ac0737f56f
-#: c3331a155a8e428a8a796792373d14dd c91c992be41e4a88810c984ab4204cae
-#: d1483d07ad1349aa936b5596e2f0ac65 d1bbb753e961417590e727fb40753b74
-#: de7511f9f44c4f45a364f9a55b79ef42
+#: ../../annot.rst 016e1cf6953b4897a30d2c05d8655bff
+#: 0d71ec2bc6c94992af02136160e906d5 1ac58ca510184d47872825b637006208
+#: 1c87c66dc8eb4df493ec7a39049895e8 22cdfe9077d44f94ba239fb9d014226e
+#: 23c044472fa6401fb4093057d8c66f19 2b0698ca09d44883a9b38a5615188c5a
+#: 2bf6911b1a054c008e81c50421f625d5 2d11f6e070fa488f9ce1fbb1729f286d
+#: 2eefd884ab77424fa5b05800693c1877 3fe5cfba11da4582af82072d9e4c6614
+#: 4199014531b44dfba09e2b67e66c5c07 45b0da5a3a414d0b8f5e39be69c859e2
+#: 46353d244f3442e384dc1c91e17f0a09 5012e75dbb8041f5a4415c4323bc76f4
+#: 63df2d22ed1e46cba0beb0b43bc28150 6a0c5d1ad85d481eb3b32a2301ba3c56
+#: 897239cf863344aab55281b108fa364e 92cd3598868f4c03b0fd2413bcd79ea6
+#: b4e004ffc7844812b8d0ff8c10ad482b d0b6b25e71374810a98c56d2169b70a3
+#: d55477231b0a4eb0ba3e3572be8b462f d8e2e5888b4d41009b8e30875b8a94b6
+#: fd1168467b2942c08746f7195979a399
 msgid "Return type"
 msgstr "戻り値の型"
 
-#: ../../annot.rst:84 4345ade61fc944e2a518a57c7fc86b0c
+#: ../../annot.rst:85 9e61de727a4a4a08968231bf4c3cc79d
 msgid ":ref:`Pixmap`"
 msgstr ""
 
-#: ../../annot.rst:88 71fc48f1806c4cea83daabddef5e0550
+#: ../../annot.rst:89 0cfe984cbd28424eb40d22e386a1ff26
 #, fuzzy
 msgid ""
 "If the annotation has just been created or modified, you should "
@@ -469,19 +469,19 @@ msgstr ""
 "注釈が作成または変更されたばかりの場合、まず *page = doc.reload_page(page)* "
 "を使用してページを再読み込みする必要があります。"
 
-#: ../../annot.rst:90 fdad013d0c244c728aba9692b73a6950
+#: ../../annot.rst:91 075e6da012db4ba78216ec06d48184b0
 msgid ""
 "The pixmap will have *\"premultiplied\"* pixels if `alpha=True`. To learn"
 " about some background, e.g. look for \"Premultiplied alpha\" `here "
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
 msgstr ""
 
-#: ../../annot.rst:108 ../../annot.rst:129 f2a13409f2b74a1388f54ab7a747cc12
-#: f683398c7a904d4d9ba6c4dda1d51e16
+#: ../../annot.rst:109 ../../annot.rst:130 9291196a2ee24345a1282e7ebea53ae0
+#: b6d4689968a545cb8f1b1b43cac74827
 msgid "New in 1.18.0"
 msgstr "1.18.0 で新たに追加"
 
-#: ../../annot.rst:110 a9bcaf00bf0b4b90ab567e529e7ea07d
+#: ../../annot.rst:111 90ada283fa1c4194bb091129358215ab
 msgid ""
 "Retrieves the content of the annotation in a variety of formats -- much "
 "like the same method for :ref:`Page`.. This currently only delivers "
@@ -491,7 +491,7 @@ msgstr ""
 "さまざまなフォーマットで注釈の内容を取得します - これは :ref:`Page` "
 "の同じメソッドのように動作します。現在、これはアノテーションタイプ「FreeText」と「Stamp」に関連するデータのみを提供します。他の種類は空の文字列（または同等のオブジェクト）を返します。"
 
-#: ../../annot.rst:112 408c0e32a188417cb48ea8f35e7e4817
+#: ../../annot.rst:113 f8f400cd53404748a7dd44b41f143258
 msgid ""
 "(positional only) the desired format - one of the following values. "
 "Please note that this method works exactly like the same-named method of "
@@ -504,7 +504,7 @@ msgid ""
 ":meth:`TextPage.extractRAWDICT`"
 msgstr ""
 
-#: ../../annot.rst:112 f250c9272da04316aa11b469a5b116e8
+#: ../../annot.rst:113 d2e4b95d132e47869aa8f01a290ad534
 msgid ""
 "(positional only) the desired format - one of the following values. "
 "Please note that this method works exactly like the same-named method of "
@@ -513,69 +513,69 @@ msgstr ""
 "(位置指定のみ) 望ましいフォーマット - 以下のいずれかの値の1つです。このメソッドは、:ref:`Page` "
 "の同名のメソッドとまったく同じように動作することに注意してください。"
 
-#: ../../annot.rst:114 063e3ab047e94d1c8d31938fe5474b5e
+#: ../../annot.rst:115 5f6f56ccc7cf4b83991370d549b6ba4a
 msgid "\"text\" -- :meth:`TextPage.extractTEXT`, default"
 msgstr "\"text\" -- :meth:`TextPage.extractTEXT`、デフォルト"
 
-#: ../../annot.rst:115 8616d5c948074d5b8ea00848a4d23355
+#: ../../annot.rst:116 bba0bcb694a3411b84901cc732314b47
 msgid "\"blocks\" -- :meth:`TextPage.extractBLOCKS`"
 msgstr ""
 
-#: ../../annot.rst:116 3aff5e33191c4730bea9be8afb3f35e0
+#: ../../annot.rst:117 5cb5c3e312234a7eac81b4b7a6d0d554
 msgid "\"words\" -- :meth:`TextPage.extractWORDS`"
 msgstr ""
 
-#: ../../annot.rst:117 f6c6134c75b14314b1fb58558cd408a6
+#: ../../annot.rst:118 d6fc7d7fdafb40d5adfa32932a005d83
 msgid "\"html\" -- :meth:`TextPage.extractHTML`"
 msgstr ""
 
-#: ../../annot.rst:118 36e8c253333940f4b14f4ff48e633a5e
+#: ../../annot.rst:119 e28f215d1bda4c87a1398e75febad37a
 msgid "\"xhtml\" -- :meth:`TextPage.extractXHTML`"
 msgstr ""
 
-#: ../../annot.rst:119 967dc12217284872b8789a4f88ba4597
+#: ../../annot.rst:120 3395d6b9a09e429d83d02c69ade8688f
 msgid "\"xml\" -- :meth:`TextPage.extractXML`"
 msgstr ""
 
-#: ../../annot.rst:120 85db982f27e6408bae3f5d3127969bf3
+#: ../../annot.rst:121 568d1ab1321944bb98f95c5aef680226
 msgid "\"dict\" -- :meth:`TextPage.extractDICT`"
 msgstr ""
 
-#: ../../annot.rst:121 f1c256d8d9a54395811ea93925809f0e
+#: ../../annot.rst:122 800b364bf02246a7adc6d4b6f1524c50
 msgid "\"json\" -- :meth:`TextPage.extractJSON`"
 msgstr ""
 
-#: ../../annot.rst:122 3d1f18b757e6489b82ebf3b272184ae6
+#: ../../annot.rst:123 bb9793317ebe457fba6153858be288d9
 msgid "\"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
 msgstr ""
 
-#: ../../annot.rst:124 38403ebb375d4d84ab19e15b32b8dd08
+#: ../../annot.rst:125 8b4fb0199b904d05a2ff7899e3f8c576
 msgid ""
 "(keyword only) restrict the extraction to this area. Should hardly ever "
 "be required, defaults to :attr:`Annot.rect`."
 msgstr "(キーワードのみ) このエリアに抽出を制限します。ほとんど必要ない場合がほとんどで、デフォルトは :attr:`Annot.rect` です。"
 
-#: ../../annot.rst:125 fe1a2f6754e149d59b1dd466bfc45ef9
+#: ../../annot.rst:126 7d99ffc24ae4413089bbc3cc6692fcbd
 msgid ""
 "(keyword only) control the amount of data returned. Defaults to simple "
 "text extraction."
 msgstr "(キーワードのみ) 返されるデータの量を制御します。単純なテキスト抽出がデフォルトです。"
 
-#: ../../annot.rst:131 6a4fc8c9a8ef4092a9efde616467b352
+#: ../../annot.rst:132 a94f1c0b59004f5886598e158922fad4
 msgid ""
 "Return the annotation text. Mostly (except line breaks) equal to "
 ":meth:`Annot.get_text` with the \"text\" option."
 msgstr "注釈のテキストを返します。主に（改行を除く）「text」オプションを使用した :meth:`Annot.get_text` と同等です"
 
-#: ../../annot.rst:133 88bcedf3925841ac86140d715405fe9b
+#: ../../annot.rst:134 bfaf40ca0eb042f58237529dff2ce541
 msgid "the area to consider, defaults to :attr:`Annot.rect`."
 msgstr "rect (rect-like) – 考慮する領域、デフォルトは :attr:`Annot.rect` です。"
 
-#: ../../annot.rst:138 1853fdf4290043ce86e877120993f52d
+#: ../../annot.rst:139 b102cffdb2f141d9ac68a9fd0e279c54
 msgid "Changed in version 1.16.10"
 msgstr "バージョン 1.16.10 で変更"
 
-#: ../../annot.rst:140 70471286b8574fa4b6c2d9aa4e383af6
+#: ../../annot.rst:141 72067836dcef4c0dafeed7442c6029a5
 msgid ""
 "Changes annotation properties. These include dates, contents, subject and"
 " author (title). Changes for *name* and *id* will be ignored. The update "
@@ -586,7 +586,7 @@ msgstr ""
 "の変更は無視されます。更新は選択的に行われます：プロパティを変更しない場合は、それを *None* "
 "に設定します。既存のデータを削除するには、空の文字列を使用します。"
 
-#: ../../annot.rst:142 f3dee9fd25c04d22b28dbd955482e4ac
+#: ../../annot.rst:143 b559a50cdee64ba7872d7ced4a94e51b
 msgid ""
 "a dictionary compatible with the *info* property (see below). All entries"
 " must be strings. If this argument is not a dictionary, the other "
@@ -595,25 +595,25 @@ msgstr ""
 "*info* "
 "プロパティと互換性のある辞書（以下参照）。すべてのエントリは文字列である必要があります。この引数が辞書でない場合、他の引数が代わりに使用されます。それ以外の場合、無視されます。"
 
-#: ../../annot.rst:143 ../../annot.rst:144 ../../annot.rst:147
-#: 9d83225f793e40e991eb7a26fb368512 bb6c7ed07fde47558e83112686dc831f
-#: d9d302fdbbd14c599569d635e899140b
+#: ../../annot.rst:144 ../../annot.rst:145 ../../annot.rst:148
+#: 15f12cde73614e239ccc4f355efcd6ae a770a66f6b134d67884a70673446b9d8
+#: d64e063eb8634d7c86081d6286dfae22
 msgid "*(new in v1.16.10)* see description in :attr:`info`."
 msgstr "*（v1.16.10 で新規追加）* :attr:`info` の説明を参照してください。"
 
-#: ../../annot.rst:145 37827759fd9e42dbad8ede5190379302
+#: ../../annot.rst:146 4fad1c688e3e4cd2bea7463cf0b336ac
 msgid ""
 "*(new in v1.16.10)* date of annot creation. If given, should be in PDF "
 "datetime format."
 msgstr "*（v1.16.10 で新規追加）* 注釈の作成日。指定する場合、PDF 日時形式である必要があります。"
 
-#: ../../annot.rst:146 d2d157995450468cb75b2d376aa3a3a1
+#: ../../annot.rst:147 01d83ca87f554c3f9d7d3721ed739f35
 msgid ""
 "*(new in v1.16.10)* date of last modification. If given, should be in PDF"
 " datetime format."
 msgstr "*（v1.16.10 で新規追加）* 最終変更日。指定する場合、PDF 日時形式である必要があります。"
 
-#: ../../annot.rst:151 01c999c233d74d73bc526bcdacae4de0
+#: ../../annot.rst:152 8baecc99235f4e26aff998d17f237b0d
 msgid ""
 "Sets an annotation's line ending styles. Each of these annotation types "
 "is defined by a list of points which are connected by lines. The symbol "
@@ -625,7 +625,7 @@ msgstr ""
 "で指定されたシンボルは、最初の点に、*end* "
 "はこのリストの最後の点に取り付けられます。サポートされていない注釈タイプの場合、警告メッセージとともに無操作となります。"
 
-#: ../../annot.rst:155 f45ba57705874b6394feaaac954c2aa4
+#: ../../annot.rst:156 712dd03feca349a0b3476b70683f1de6
 msgid ""
 "While 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have "
 "these properties, (Py-) MuPDF does not support line ends for 'FreeText', "
@@ -634,7 +634,7 @@ msgstr ""
 "「FreeText」、「Line」、「PolyLine」、および「Polygon」注釈はこれらのプロパティを持つことができますが、（Py-）MuPDF"
 " は「FreeText」の線終端をサポートしていません。なぜなら、そのコールアウトバリアントはサポートされていないからです。"
 
-#: ../../annot.rst:156 a9b543c8a3204f7a8169d74e059359c0
+#: ../../annot.rst:157 1daf59fbbe424526a9012de57379e1d1
 msgid ""
 "*(Changed in v1.16.16)* Some symbols have an interior area (diamonds, "
 "circles, squares, etc.). By default, these areas are filled with the fill"
@@ -647,15 +647,15 @@ msgstr ""
 "*None* の場合、白色が選択されます。:meth:`Annot.update` の *fill_color* "
 "引数を使用して、線終端シンボルに独自の塗りつぶし色を設定することができるようになりました。"
 
-#: ../../annot.rst:158 656c21cdaa8c41daa7877549bd4f562f
+#: ../../annot.rst:159 1d196d375e03485f8edda9c3a99e6b10
 msgid "The symbol number for the first point."
 msgstr "最初の点のシンボル番号。"
 
-#: ../../annot.rst:159 0cf0d867def04331ab30032fe1ac322c
+#: ../../annot.rst:160 eac2d0a402094746b3f16c11ccf26843
 msgid "The symbol number for the last point."
 msgstr "最後の点のシンボル番号。"
 
-#: ../../annot.rst:163 ce4f087c503d4468a9953ba489221525
+#: ../../annot.rst:164 c585c38c544d4b179b7efb98b943076a
 msgid ""
 "Set the annotation's visibility using PDF optional content mechanisms. "
 "This visibility is controlled by the user interface of supporting PDF "
@@ -665,7 +665,7 @@ msgstr ""
 "PDFのオプションコンテンツメカニズムを使用して、注釈の表示/非表示を設定します。この表示は、サポートするPDFビューアのユーザーインターフェースによって制御されます。:attr:`Annot.flags`"
 " のような他の属性とは独立しています。"
 
-#: ../../annot.rst:165 f9a42749766144bcb2a9dcf05b79a0f8
+#: ../../annot.rst:166 2d345fb5410846569566d5afea9cd55f
 msgid ""
 "the :data:`xref` of an optional contents group (OCG or OCMD). Any "
 "previous xref will be overwritten. If zero, a previous entry will be "
@@ -675,109 +675,109 @@ msgstr ""
 "オプションコンテンツグループ（OCGまたはOCMD）のxref。以前の :data:`xref` "
 "は上書きされます。ゼロの場合、以前のエントリが削除されます。xrefがゼロでない場合かつ有効なPDFオブジェクトを指していない場合、例外が発生します。"
 
-#: ../../annot.rst:167 170909f13ce242d8ae7886416f5f7164
+#: ../../annot.rst:168 43814cf880c341688fcd829352485e18
 msgid "This does **not require executing** :meth:`Annot.update` to take effect."
 msgstr "これは :meth:`Annot.update` の **実行を必要としません。** "
 
-#: ../../annot.rst:171 5435a09d7d294940ba8c8905d3423351
+#: ../../annot.rst:172 90ca5fd4d12c4ba5aecc410cff1cafcd
 msgid ""
 "Return the :data:`xref` of an optional content object, or zero if there "
 "is none."
 msgstr "オプションコンテンツオブジェクトの :data:`xref` 、または存在しない場合はゼロを返します。"
 
-#: ../../annot.rst 18eb9cafd0f34520a47ab5715fb30ec2
-#: 29355b68c2e84a5c99bf5bae8f67b0fa 5532c4d178964326b13825384ed7c65e
-#: 7f12c6038936454d8eb2f632d848dc07 b0562fbb21f14aaf8861029dd89fc7be
-#: ba7005208b184ae1821d430ed5faf3ba
+#: ../../annot.rst 1b2e47bf7a0540ff8911f99b032a9545
+#: a90dd1078d7d4e359cd1ac24cc0083be ba7033d076f546acabd2ae8821e0a72b
+#: beffbafdde4f48a794f446bc77b1849c d46dfd3d0d3842e99058a3a995b3d881
+#: dafd3208f1ad4ffaa36b8242b1c1ddbe
 msgid "Returns"
 msgstr "戻り値"
 
-#: ../../annot.rst:173 3517441d3a6047e6aae5b21ea3f54456
+#: ../../annot.rst:174 e3467ed51507480f91da6df271b68070
 msgid "zero or the xref of an OCG (or OCMD)."
 msgstr "ゼロまたはOCG（またはOCMD）のxref。"
 
-#: ../../annot.rst:178 a6d8483d83b441de9f9fa69a4b6bd6fe
+#: ../../annot.rst:179 87ec8d4e9aa64b4eb544053e9a259740
 msgid "New in v1.19.3"
 msgstr "v1.19.3 で新規追加"
 
-#: ../../annot.rst:180 2d8245b7be924b738dfc4a1dc9f064d2
+#: ../../annot.rst:181 26e99a69c12d46b4aec177471541edae
 msgid "Set annotation to be \"In Response To\" another one."
 msgstr "注釈を別の注釈への「応答として」設定します。"
 
-#: ../../annot.rst:182 85401cdd65f94ab28e15536dafafe896
+#: ../../annot.rst:183 9e8a85d788194d4aaa7282262891b9f4
 msgid ""
 "The :data:`xref` of another annotation.  .. note:: Must refer to an "
 "existing annotation on this page. Setting this property requires no "
 "subsequent `update()`."
 msgstr ""
 
-#: ../../annot.rst:182 8ff18b33e83345bdb1bba34bfab2b683
+#: ../../annot.rst:183 5984e6b7b2ef403bb936d5a4127bd777
 msgid "The :data:`xref` of another annotation."
 msgstr "別の注釈の :data:`xref` 。"
 
-#: ../../annot.rst:184 fb3f34a190544e0c819ef90b24fc994d
+#: ../../annot.rst:185 5e39451c14e04e38af7e43d60c90af0b
 msgid ""
 "Must refer to an existing annotation on this page. Setting this property "
 "requires no subsequent `update()`."
 msgstr "このプロパティを設定するには、このページの既存の注釈を参照する必要があります。このプロパティを設定する際、後続の `update()` は不要です。"
 
-#: ../../annot.rst:189 ../../annot.rst:198 ../../annot.rst:218
-#: 704a63e2388b4846b574347b11df934f 8a0cc69267cd4303add81ecf8ec307c3
-#: a0afbc4436c345b58b0bd50a69fd8542
+#: ../../annot.rst:190 ../../annot.rst:199 ../../annot.rst:219
+#: 7d51c75255ca42c58d8bbd989d49c765 a48fde4b22594fe68ac66a37560928d6
+#: d41a8548432241c1a2c70f04607a7a86
 msgid "New in v1.18.4"
 msgstr "v1.18.4 で新たに追加"
 
-#: ../../annot.rst:191 573bcc84f86c467ea1f9b61e5decfb34
+#: ../../annot.rst:192 dd94030820a74b6f8279aa33f9fb941f
 msgid ""
 "Set the annotation's Popup annotation to open or closed -- **or** the "
 "annotation itself, if its type is 'Text' (\"sticky note\")."
 msgstr "注釈のポップアップ注釈を開いた状態または閉じた状態に設定します – *または* その注釈自体、そのタイプが 'Text'（「付箋」）の場合。"
 
-#: ../../annot.rst:193 9cfa59dd4d4a49239cb920608720beb1
+#: ../../annot.rst:194 0bc82eba310d4dc3a0ee0eadee53215b
 msgid "the desired open state."
 msgstr "望ましい開いた状態。"
 
-#: ../../annot.rst:200 9891925cbd64429db4b7fa0864e1d25a
+#: ../../annot.rst:201 fc1c439a021e4ae88f1324fa4542868e
 msgid ""
 "Create a Popup annotation for the annotation and specify its rectangle. "
 "If the Popup already exists, only its rectangle is updated."
 msgstr "注釈のためのポップアップ注釈を作成し、その矩形を指定します。ポップアップが既に存在する場合、その矩形のみが更新されます。"
 
-#: ../../annot.rst:202 14ab425cec1d4c14829544c01c3be834
+#: ../../annot.rst:203 82e9e776cbe54dd3b5309044a7f7f0f3
 msgid "the desired rectangle."
 msgstr "望ましい矩形。"
 
-#: ../../annot.rst:208 21275e6e1d284eb4ba0f2194be99bdbc
+#: ../../annot.rst:209 a082992dc4864c4ea2f4e404045d6d08
 msgid ""
 "Set the annotation's transparency. Opacity can also be set in "
 ":meth:`Annot.update`."
 msgstr "注釈の透明度を設定します。透明度は :meth:`Annot.update` でも設定できます。"
 
-#: ../../annot.rst:210 9de547dedf4548758f8c253b6470b8a1
+#: ../../annot.rst:211 f322e0e987c54ef1923ea0435427faaa
 msgid ""
 "a float in range *[0, 1]*. Any value outside is assumed to be 1. E.g. a "
 "value of 0.5 sets the transparency to 50%."
 msgstr "*[0、1]* の範囲内の浮動小数点数。範囲外の値は 1 と見なされます。例：0.5 の値は透明度を 50% に設定します。"
 
-#: ../../annot.rst:212 cf1f78afce8f4639ad81831e1d29672a
+#: ../../annot.rst:213 43202c5acc704da19562841daa2dc0ca
 msgid "Three overlapping 'Circle' annotations with each opacity set to 0.5:"
 msgstr "透明度がそれぞれ 0.5 に設定された3つの重なる「Circle」注釈："
 
-#: ../../annot.rst:220 4909e018131a4c75b0c5ae26aa9b8f6d
+#: ../../annot.rst:221 cdebf5829a15468d97060e3f700c7c4f
 msgid ""
 "The annotation's blend mode. See :ref:`AdobeManual`, page 324 for "
 "explanations."
 msgstr "注釈のブレンドモード。詳細については :ref:`AdobeManual` 、ページ324を参照してください。"
 
-#: ../../annot.rst:223 1511af1e3a1f4c60a31bc8a311250241
+#: ../../annot.rst:224 e9ed482e6e23459aaf953c46cc3be588
 msgid "the blend mode or *None*."
 msgstr "ブレンドモードまたは *None* 。"
 
-#: ../../annot.rst:228 bc07f9ca84b3463ba556cecaca017f53
+#: ../../annot.rst:229 e180015a649e4a8aa6f0fdb91010a732
 msgid "New in v1.16.14"
 msgstr "v1.16.14 で新たに追加"
 
-#: ../../annot.rst:230 2fcf3e653b484a948c7a6a16360d7e8a
+#: ../../annot.rst:231 91be449efd3c4ee9ba2647215f5bd32a
 msgid ""
 "Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for "
 "explanations. The blend mode can also be set in :meth:`Annot.update`."
@@ -785,7 +785,7 @@ msgstr ""
 "注釈のブレンドモードを設定します。詳細については :ref:`AdobeManual` 、ページ324を参照してください。ブレンドモードは "
 ":meth:`Annot.update` でも設定できます。"
 
-#: ../../annot.rst:232 cd8810028fa94acd9a4e90e8617c62ab
+#: ../../annot.rst:233 b7e6d344879446fc9be5306f3038ee2c
 msgid ""
 "set the blend mode. Use :meth:`Annot.update` to reflect this in the "
 "visual appearance. For predefined values see :ref:`BlendModes`. Use "
@@ -795,11 +795,11 @@ msgstr ""
 "を使用します。事前定義の値についてはPDF標準のブレンドモードを参照してください。ブレンドモードを **削除する** には "
 "`PDF_BM_Normal` を使用します。"
 
-#: ../../annot.rst:237 b7654077273a4b6aa8f90eedd3043827
+#: ../../annot.rst:238 8e6a187457784fd0bc943fd45fb2f021
 msgid "New in version 1.16.0"
 msgstr "バージョン1.16.0で新たに追加"
 
-#: ../../annot.rst:239 b3a2914e511a41c7b7c24591434957e3
+#: ../../annot.rst:240 ffd41fe88cd74692a2057a91a9e937a2
 msgid ""
 "Change the name field of any annotation type. For 'FileAttachment' and "
 "'Text' annotations, this is the icon name, for 'Stamp' annotations the "
@@ -809,11 +809,11 @@ msgstr ""
 "すべての注釈タイプの名前フィールドを変更します。「FileAttachment」と「Text」注釈の場合、これはアイコンの名前であり、「Stamp」注釈の場合はスタンプのテキストです。視覚的な結果（ある場合）は、PDFビューアに依存します。:ref:`mupdficons`"
 " も参照してください。"
 
-#: ../../annot.rst:241 833d3ea252504283b456146c18a828d5
+#: ../../annot.rst:242 48f1a7560612471abf01dca545b8f497
 msgid "the new name."
 msgstr "新しい名前。"
 
-#: ../../annot.rst:243 b44dafea101047889aa66549b900753b
+#: ../../annot.rst:244 5aeb35e8fc1643fcae40ee1a561358a3
 msgid ""
 "If you set the name of a 'Stamp' annotation, then this will **not "
 "change** the rectangle, nor will the text be layouted in any way. If you "
@@ -823,16 +823,16 @@ msgid ""
 "font \"Times-Bold\" as is, horizontally centered in **one line** and be "
 "shortened to fit. To get your text fully displayed, its length using "
 ":data:`fontsize` 20 must not exceed 190 points. So please make sure that "
-"the following inequality is true: `fitz.get_text_length(text, "
+"the following inequality is true: `pymupdf.get_text_length(text, "
 "fontname=\"tibo\", fontsize=20) <= 190`."
 msgstr ""
 "「Stamp」注釈の名前を設定した場合、これは矩形を **変更せず** 、テキストもレイアウトされません。:ref:`StampIcons` "
 "から標準のテキストを選択すると（ `\"STAMP_\"` の後の **正確な** 名前部分）、元のレイアウトが表示されるはずです。**任意** "
 "のテキストは大文字に変更されず、「Times-Bold」フォントで水平中央揃えで **1行** "
 "に表示され、収まるように短縮されます。テキストを完全に表示するには、フォントサイズ20を使用してのテキストの長さが190ピクセルを超えてはいけません。したがって、以下の不等式が成り立つことを確認してください:"
-" `fitz.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190` 。"
+" `pymupdf.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190` 。"
 
-#: ../../annot.rst:247 2edea98cef5c444b89d6eb8f4909b52f
+#: ../../annot.rst:248 0c83c13908074354b67569584deba79f
 msgid ""
 "Change the rectangle of an annotation. The annotation can be moved around"
 " and both sides of the rectangle can be independently scaled. However, "
@@ -845,7 +845,7 @@ msgstr ""
 " [#f2]_  、それ以外の場合はPythonの `sys.stderr` にメッセージが表示されます。例外は発生しませんが、`False` "
 "が返されます。"
 
-#: ../../annot.rst:249 63a5a93e75ab469690ab26b84338e858
+#: ../../annot.rst:250 b54cc5845428492a9b826edbe78a6169
 msgid ""
 "the new rectangle of the annotation (finite and not empty). E.g. using a "
 "value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 "
@@ -854,28 +854,28 @@ msgstr ""
 "rect (rect_like) – 注釈の新しい矩形（有限で空ではない）です。たとえば、*annot.rect + (5, 5, 5, 5)* "
 "の値を使用すると、注釈を右に5ピクセル、下に5ピクセル移動させます。"
 
-#: ../../annot.rst:251 bdc3c85e739f4d319b243dbf139206c8
+#: ../../annot.rst:252 b24664fc332841e2afe47f2ad0061cb4
 msgid "You **need not** invoke :meth:`Annot.update` for activation of the effect."
 msgstr "効果の有効化には :meth:`Annot.update` を呼び出す **必要はありません** 。"
 
-#: ../../annot.rst:256 8e49750d1f4b41fc8e48a597044c4cf5
+#: ../../annot.rst:257 92459da6dfb84ecd95725ea116c5062f
 msgid ""
 "Set the rotation of an annotation. This rotates the annotation rectangle "
 "around its center point. Then a **new annotation rectangle** is "
 "calculated from the resulting quad."
 msgstr "注釈の回転を設定します。これにより、注釈の矩形はその中心点を中心に回転します。その後、結果の四角形から **新しい注釈の矩形** が計算されます。"
 
-#: ../../annot.rst:258 7322c156a50a4ab89d456cff3600b23f
+#: ../../annot.rst:259 2aa8122c0f2a41bd9eb051e10fac697d
 msgid ""
 "rotation angle in degrees. Arbitrary values are possible, but will be "
 "clamped to the interval `[0, 360)`."
 msgstr "度数法での回転角度。任意の値が可能ですが、区間 `[0, 360)` にクランプされます。"
 
-#: ../../annot.rst:261 930f709378224dedbbff612b17b2f9a7
+#: ../../annot.rst:262 084f1ced51744adcae655d3d2eade880
 msgid "You **must invoke** :meth:`Annot.update` to activate the effect."
 msgstr "効果を有効にするには、:meth:`Annot.update` を **呼び出す必要があります** 。"
 
-#: ../../annot.rst:262 0112afad6cc3444ea7acdb2b5ed08136
+#: ../../annot.rst:263 bfb6df75ae0e4b7eaeaf862d50149bcf
 msgid ""
 "For PDF_ANNOT_FREE_TEXT, only one of the values 0, 90, 180 and 270 is "
 "possible and will **rotate the text** inside the current rectangle (which"
@@ -884,7 +884,7 @@ msgstr ""
 "PDF_ANNOT_FREE_TEXTの場合、値0、90、180、270のいずれかの値のみが可能で、現在の矩形内の **テキストを回転させます**"
 " （矩形自体は変更されません）。その他の値は静かに無視され、0に置き換えられます。"
 
-#: ../../annot.rst:263 5dffeb500c654562a34e8b9ae7592f12
+#: ../../annot.rst:264 8f863300954046cfae58436ad359dde5
 msgid ""
 "Otherwise, only the following :ref:`AnnotationTypes` can be rotated: "
 "'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', "
@@ -893,18 +893,18 @@ msgstr ""
 "それ以外の場合、次の :ref:`AnnotationTypes` "
 "のみが回転できます：'Square'、'Circle'、'Caret'、'Text'、'FileAttachment'、'Ink'、'Line'、'Polyline'、'Polygon'、および'Stamp'。それ以外のすべての場合、このメソッドは無効です。"
 
-#: ../../annot.rst:268 b02cd5c5669d4f689976646e8f68aa30
+#: ../../annot.rst:269 17835d05090a49e88daa134deb4b7432
 msgid ""
 "Changed in version 1.16.9: Allow specification without using a "
 "dictionary. The direct parameters are used if *border* is not a "
 "dictionary."
 msgstr "バージョン1.16.9で変更: 辞書を使用せずに指定を許可。*border* が辞書でない場合、直接のパラメータが使用されます。"
 
-#: ../../annot.rst:270 71d104ebaf784f5fbfbc588f0b477a50
+#: ../../annot.rst:271 4f3ca73fc5024c36a644eb5dc364df11
 msgid "Changed in version 1.22.5: Support of the \"cloudy\" border effect."
 msgstr "バージョン1.22.5で変更: \"cloudy\"ボーダーエフェクトのサポート。"
 
-#: ../../annot.rst:272 6495422a0c70421a84382c59d8d40e0c
+#: ../../annot.rst:273 bedf7fa547c34f2c9492ddd149f41c11
 msgid ""
 "PDF only: Change border width, dashing, style and cloud effect. See the "
 ":attr:`Annot.border` attribute for more details."
@@ -912,7 +912,7 @@ msgstr ""
 "PDFのみ: ボーダーの幅、点線、スタイル、およびクラウド効果を変更します。詳細については :attr:`Annot.border` "
 "属性を参照してください。"
 
-#: ../../annot.rst:275 a89c505dbeb24e7797a8cb00a76abca8
+#: ../../annot.rst:276 574222025a134863a00cc002bdb161b3
 msgid ""
 "a dictionary as returned by the :attr:`border` property, with keys "
 "*\"width\"* (*float*), *\"style\"* (*str*),  *\"dashes\"* (*sequence*) "
@@ -925,15 +925,15 @@ msgstr ""
 "\"clouds\"（int）を持っています。省略されたキーはそれぞれのプロパティを変更しないままにします。他の引数を使用する場合、border引数を"
 " `None` （デフォルト）に設定します。"
 
-#: ../../annot.rst:277 0f27603b8d09470ebf51147c4a4d9f78
+#: ../../annot.rst:278 01ddb64bb6a14667a32876e6b2cabac2
 msgid "A non-negative value will change the border line width."
 msgstr "非負の値はボーダーの線幅を変更します。"
 
-#: ../../annot.rst:278 fbde7358daf449318db67caecb337865
+#: ../../annot.rst:279 2bf876c635f84882bc63dd3fe1c5a907
 msgid "A value other than `None` will change this border property."
 msgstr "`None` 以外の値はこのボーダープロパティを変更します。"
 
-#: ../../annot.rst:279 708607f1005b4552a50a50af08a68fdf
+#: ../../annot.rst:280 be267f858688404fbd5dcbfa3778bc79
 msgid ""
 "All items of the sequence must be integers, otherwise the parameter is "
 "ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty "
@@ -942,7 +942,7 @@ msgstr ""
 "シーケンスのすべてのアイテムは整数である必要があり、それ以外の場合、パラメータは無視されます。点線を削除するには、`dashes=[]` "
 "を使用します。dashesが空でないシーケンスの場合、\"style\"は自動的に \"D\"（点線）に設定されます。"
 
-#: ../../annot.rst:280 af6e52d31a51484e83ca188ee048b262
+#: ../../annot.rst:281 ca65d52bc9a0498dbf6009ffa11a204d
 msgid ""
 "A value >= 0 will change this property. Use `clouds=0` to remove the "
 "cloudy appearance completely. Only annotation types 'Square', 'Circle', "
@@ -951,27 +951,27 @@ msgstr ""
 "0以上の値はこのプロパティを変更します。クラウディな外観を完全に削除するには、`clouds=0` "
 "を使用します。このプロパティはアノテーションタイプ 'Square'、'Circle'、および 'Polygon' のみでサポートされています。"
 
-#: ../../annot.rst:284 9c57507a10c54be998caf1dc34e67882
+#: ../../annot.rst:285 e58b61c8bb204becb23c89e21a29fa87
 msgid "Changes the annotation flags. Use the `|` operator to combine several."
 msgstr "注釈のフラグを変更します。複数のフラグを組み合わせるには `|` 演算子を使用します。"
 
-#: ../../annot.rst:286 db17511baf1c45b6b860ff8408cbf95d
+#: ../../annot.rst:287 27a5a59ba3634df5a7cee7c1e72f4e7e
 msgid "an integer specifying the required flags."
 msgstr "必要なフラグを指定する整数。"
 
-#: ../../annot.rst:290 93d65e1e685b4ebf8398f918804bf4cc
+#: ../../annot.rst:291 43d873a6d1d141cb853e29649ef0ed4e
 msgid ""
 "Changed in version 1.16.9: Allow colors to be directly set. These "
 "parameters are used if *colors* is not a dictionary."
 msgstr "バージョン1.16.9で変更: 色を直接設定できるようにしました。これらのパラメータは、*colors* が辞書でない場合に使用されます。"
 
-#: ../../annot.rst:292 aa3aef2d00e2444d920fdfd68ec11f5f
+#: ../../annot.rst:293 9fd24d944a7c421fa9afaa8f9b96e2b7
 msgid ""
 "Changes the \"stroke\" and \"fill\" colors for supported annotation types"
 " -- not all annotations accept both."
 msgstr "サポートされている注釈タイプに対して「ストローク」と「塗りつぶし」の色を変更します – すべての注釈が両方を受け入れるわけではありません。"
 
-#: ../../annot.rst:294 2cd8a7431694448eb0a0f3329771d367
+#: ../../annot.rst:295 d6aac7418e074fbc9cbcfa6f13e52be5
 msgid ""
 "a dictionary containing color specifications. For accepted dictionary "
 "keys and values see below. The most practical way should be to first make"
@@ -981,12 +981,12 @@ msgstr ""
 "色の仕様を含む辞書。受け入れられる辞書のキーと値については以下を参照してください。最も実用的な方法は、まず ** "
 "プロパティのコピーを作成し、その後必要に応じてこの辞書を変更することです。"
 
-#: ../../annot.rst:295 ../../annot.rst:296 52cb11431693455aab7dbbd36c3026b4
-#: 799aa44019dc4f19b8586f5d1b0e922c
+#: ../../annot.rst:296 ../../annot.rst:297 86afb9de70b4460e8bfafd4c4c98e954
+#: e8135962d849482aa5b767f9d97e6726
 msgid "see above."
 msgstr "上記を参照してください。"
 
-#: ../../annot.rst:298 28f5f6567d4b45d78190465ba11f2fee
+#: ../../annot.rst:299 fbfad03720d747ba99b96742174269c8
 msgid ""
 "*Changed in v1.18.5:* To completely remove a color specification, use an "
 "empty sequence like `[]`. If you specify `None`, an existing "
@@ -995,31 +995,31 @@ msgstr ""
 "*バージョン1.18.5で変更:*  色の仕様を完全に削除するには、`[]` のような空のシーケンスを使用してください。`None` "
 "を指定した場合、既存の仕様は変更されません。"
 
-#: ../../annot.rst:303 1ac80c89ab9046e19efac7b1f6a2f1a7
+#: ../../annot.rst:304 3a067e83867c4a7c880d45074fc9aeec
 msgid "New in version 1.16.12"
 msgstr "バージョン1.16.12で新規追加"
 
-#: ../../annot.rst:305 8cb30daea49640a3827ee2710b82cf71
+#: ../../annot.rst:306 03b55429abf4453f8413097f2af16d7f
 msgid ""
 "Delete annotations referring to this one. This includes any 'Popup' "
 "annotations and all annotations responding to it."
 msgstr "この注釈を参照する注釈を削除します。これには「ポップアップ」注釈とそれに応答するすべての注釈が含まれます。"
 
-#: ../../annot.rst:319 2382472284c64080bb4ad159393e2d55
+#: ../../annot.rst:320 10b693f12b354040a48f9b072aa635f8
 msgid ""
 "Synchronize the appearance of an annotation with its properties after "
 "relevant changes."
 msgstr "関連する変更後に注釈の外観をプロパティに同期させます。"
 
-#: ../../annot.rst:321 6f6ec2663bfd4e4f9f8b775f5fa8eb10
+#: ../../annot.rst:322 ec3cc181314040b599846fa89f09b083
 msgid "You can safely **omit** this method **only** for the following changes:"
 msgstr "以下の変更に関して **のみ** 、このメソッドを安全に **省略できます** :"
 
-#: ../../annot.rst:327 c4db583eeefa4a929f1aaeb662b10a0f
+#: ../../annot.rst:328 8434306f7c8d49a288acb63105440965
 msgid ":meth:`Annot.set_info` (except any changes to *\"content\"*)"
 msgstr ":meth:`Annot.set_info` （*「content」* 以外の変更を除く）"
 
-#: ../../annot.rst:329 2984a19173b34c01a00da0cab9371cfd
+#: ../../annot.rst:330 27ada64457a947ac94c561192377d73a
 msgid ""
 "All arguments are optional. *(Changed in v1.16.14)* Blend mode and "
 "opacity are applicable to **all annotation types**. The other arguments "
@@ -1028,7 +1028,7 @@ msgstr ""
 "すべての引数はオプションです。 *(v1.16.14で変更)* ブレンドモードと不透明度は **すべての注釈タイプ** に適用されます。 "
 "他の引数は主に特殊な用途として、以下で説明されています。"
 
-#: ../../annot.rst:331 d8e66beb37ce4e49acadc2f9ceed31c5
+#: ../../annot.rst:332 7515e8e6f72348648e53b30169a32a81
 msgid ""
 "Color specifications may be made in the usual format used in PuMuPDF as "
 "sequences of floats ranging from 0.0 to 1.0 (including both). The "
@@ -1036,7 +1036,7 @@ msgid ""
 "colorspaces respectively). For GRAY, just a float is also acceptable."
 msgstr "カラーの仕様は、通常のPuMuPDFで使用される形式で指定できます。0.0から1.0までの浮動小数点数のシーケンスです（両方を含む）。シーケンスの長さは1、3、または4である必要があります（GRAY、RGB、およびCMYKのカラースペースをサポートしています）。GRAYの場合、浮動小数点数だけでも受け入れられます。"
 
-#: ../../annot.rst:333 0de0b5d39db24a68bbb5d4588e352a35
+#: ../../annot.rst:334 f0ec7ab65b3e4fc0b66f4f72cc0c8efa
 msgid ""
 "*(new in v1.16.14)* **valid for all annotation types:** change or set the"
 " annotation's transparency. Valid values are *0 <= opacity < 1*."
@@ -1044,7 +1044,7 @@ msgstr ""
 "*（v1.16.14で新規）* **すべての注釈タイプに対して有効：** 注釈の透明度を変更または設定します。有効な値は *0 <= "
 "opacity < 1です* 。"
 
-#: ../../annot.rst:334 0ce6c28cac2d47c0ac9b6dcfb3775363
+#: ../../annot.rst:335 fa0bbca69dd34861980431fb23fae4df
 msgid ""
 "*(new in v1.16.14)* **valid for all annotation types:** change or set the"
 " annotation's blend mode. For valid values see :ref:`BlendModes`."
@@ -1052,31 +1052,31 @@ msgstr ""
 "*（v1.16.14で新規）* **すべての注釈タイプに対して有効：** "
 "注釈のブレンドモードを変更または設定します。有効な値についてはPDF標準のブレンドモードを参照してください。"
 
-#: ../../annot.rst:335 66a1b32b82c546d6bf301cacfdae5c8f
+#: ../../annot.rst:336 2f5eec20745440b88862c664f8f00968
 #, fuzzy
 msgid "change :data:`fontsize` of the text. 'FreeText' annotations only."
 msgstr "テキストのフォントサイズを変更します。 'FreeText' 注釈のみです。"
 
-#: ../../annot.rst:336 ef3049ab35b742e39fd4a56e9e97428c
+#: ../../annot.rst:337 219c52795c6c44a5a3eb678577ce24db
 msgid "change the text color. 'FreeText' annotations only."
 msgstr "テキストの色を変更します。 'FreeText' 注釈のみです。"
 
-#: ../../annot.rst:337 4fb907316884457989004f21c17d6d55
+#: ../../annot.rst:338 caaec9b39b164ddabb8c65aa4c00d597
 msgid "change the border color. 'FreeText' annotations only."
 msgstr "境界線の色を変更します。 'FreeText' 注釈のみです。"
 
-#: ../../annot.rst:338 4be81bff950547d4bbfb2fa0c54ad6e7
+#: ../../annot.rst:339 31ee14f3ef7b4e1e8ced464a98a7d804
 msgid ""
 "the fill color.  * 'Line', 'Polyline', 'Polygon' annotations: use it to "
 "give applicable line end symbols a fill color other than that of the "
 "annotation *(changed in v1.16.16)*."
 msgstr ""
 
-#: ../../annot.rst:338 2a5151dada204d99995c1cd4527d36ce
+#: ../../annot.rst:339 93e11177f0dc4eaba2264096ffbca72e
 msgid "the fill color."
 msgstr "塗りつぶしの色です。"
 
-#: ../../annot.rst:340 c388e4b04c5041a88f4aaee36990a493
+#: ../../annot.rst:341 e0ca1be5795f4d7489235dc4228336d5
 msgid ""
 "'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line"
 " end symbols a fill color other than that of the annotation *(changed in "
@@ -1085,7 +1085,7 @@ msgstr ""
 "'Line'、'Polyline'、'Polygon' 注釈：適用可能な線の端のシンボルに注釈の色以外の塗りつぶしの色を与えるために使用します "
 "*（v1.16.16で変更）* 。"
 
-#: ../../annot.rst:342 1c0b84680cef4071bf8944121149e7d4
+#: ../../annot.rst:343 1adc6e192c79414ca13bd3eb91304333
 msgid ""
 "*(new in v1.17.2)* add two diagonal lines to the annotation rectangle. "
 "'Redact' annotations only. If not desired, *False* must be specified even"
@@ -1094,7 +1094,7 @@ msgstr ""
 "*（v1.17.2で新規）* 注釈の矩形に2本の対角線を追加します。 'Redact' 注釈のみです。希望しない場合、注釈が*False* "
 "で作成された場合でも *False* を指定する必要があります。"
 
-#: ../../annot.rst:343 80d169197be240eea903c54b9797cf46
+#: ../../annot.rst:344 d46bd879c5b84b30a8efa46258ae6221
 msgid ""
 "new rotation value. Default (-1) means no change. Supports 'FreeText' and"
 " several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_."
@@ -1105,7 +1105,7 @@ msgstr ""
 "およびいくつかの他の注釈タイプをサポートします:meth:`Annot.set_rotation` を参照） [#f1]_ 。 "
 "'FreeText' の場合、0、90、180、または270度を選択してください。それ以外の場合、任意の整数が受け入れられます。"
 
-#: ../../annot.rst:347 b4991be36bf84af3adcd8f55454127c5
+#: ../../annot.rst:348 724776c313ba4082b55aa6c14b070b82
 msgid ""
 "Using this method inside a :meth:`Page.annots` loop is **not "
 "recommended!** This is because most annotation updates require the owning"
@@ -1115,11 +1115,11 @@ msgstr ""
 ":meth:`Page.annots` ループ内でこのメソッドを使用することは **お勧めしません！** "
 "これは、ほとんどの注釈の更新には所有ページの再読み込みが必要であり、このループ内で行うことはできないためです。このジェネレータのドキュメントで提供されている例のコーディングパターンを使用してください。"
 
-#: ../../annot.rst:352 2d4ebfd936cd496caf27ace76e0b0031
+#: ../../annot.rst:353 c3edf71660cb42fa8ef8e1a5adf6eb4e
 msgid "Basic information of the annot's attached file."
 msgstr "アノットが添付されたファイルの基本情報。"
 
-#: ../../annot.rst:355 8b248075929746c5b6542b4ec0116052
+#: ../../annot.rst:356 ffd38b06976b45b6a2b0dfbd01ff3a1e
 msgid ""
 "a dictionary with keys *filename*, *ufilename*, *desc* (description), "
 "*size* (uncompressed file size), *length* (compressed length) for "
@@ -1129,51 +1129,51 @@ msgstr ""
 "（Unicodeファイル名）、*desc* （説明）、*size* （非圧縮ファイルサイズ）、*length* "
 "（圧縮長さ）のキーを持つ辞書。それ以外の場合は *None* 。"
 
-#: ../../annot.rst:359 09f44ceaa390400f9e9dfbcffec06af5
+#: ../../annot.rst:360 6ed8e40b0fe64787923674de06c106f5
 msgid "Returns attached file content."
 msgstr "添付ファイルの内容を返します。"
 
-#: ../../annot.rst:362 8c527236eddc4721a4a3a962b9aafb60
+#: ../../annot.rst:363 9ef2167fbcb149aea0e0bed1817d0cea
 msgid "the content of the attached file."
 msgstr "添付ファイルの内容。"
 
-#: ../../annot.rst:372 ecac3c94a69e4f90bbdc48016cd3c1df
+#: ../../annot.rst:373 6ea5545d33684b9689f6fa516af5f332
 msgid ""
 "Updates the content of an attached file. All arguments are optional. No "
 "arguments lead to a no-op."
 msgstr "添付ファイルの内容を更新します。すべての引数はオプションです。引数が指定されない場合、操作は行われません。"
 
-#: ../../annot.rst:374 bb5586feb2804576937e386b42ed5073
+#: ../../annot.rst:375 887c9199019a43d89a3f75653548ce68
 msgid ""
 "the new file content. Omit to only change meta-information.  *(Changed in"
 " version 1.14.13)* *io.BytesIO* is now also supported."
 msgstr ""
 
-#: ../../annot.rst:374 98fa9d89eb0148c09691105ea329fdef
+#: ../../annot.rst:375 455ec0992628400a8ba08f0a3ca4ab35
 msgid "the new file content. Omit to only change meta-information."
 msgstr "新しいファイルの内容。メタ情報のみ変更する場合は省略します。"
 
-#: ../../annot.rst:376 5e412bc431fd4a7b9c37e1ef5c676ab6
+#: ../../annot.rst:377 fe42c5296e974d55a16496defb1afd67
 msgid "*(Changed in version 1.14.13)* *io.BytesIO* is now also supported."
 msgstr "*（バージョン1.14.13で変更）io.BytesIO* もサポートされるようになりました。"
 
-#: ../../annot.rst:378 a0f294a29af741a78f659e52a9bb3d4b
+#: ../../annot.rst:379 c4dbac7584b44a5abd5211d72087e9ba
 msgid "new filename to associate with the file."
 msgstr "ファイルに関連付ける新しいファイル名。"
 
-#: ../../annot.rst:380 d559f30b30a04a1289975dff6097afac
+#: ../../annot.rst:381 2defdbe785ae4655adeb606b7363cf65
 msgid "new unicode filename to associate with the file."
 msgstr "ファイルに関連付ける新しいUnicodeファイル名。"
 
-#: ../../annot.rst:382 559eecd7cb87465cb96c0ef9e6d721f1
+#: ../../annot.rst:383 3f5a325a26904752b6187280f824b12b
 msgid "new description of the file content."
 msgstr "ファイル内容の新しい説明。"
 
-#: ../../annot.rst:386 52d03a864dcd42bc9e2d5c8eb186092d
+#: ../../annot.rst:387 b2812313975548afb4f5218d1ab9e470
 msgid "Return the embedded sound of an audio annotation."
 msgstr "オーディオアノテーションの埋め込まれた音声を返します。"
 
-#: ../../annot.rst:389 29abb963b81a46c58a6f82aa255a570c
+#: ../../annot.rst:390 7a01d9e9c7674efb8f6f2647cf257ea9
 msgid ""
 "the sound audio file and accompanying properties. These are the possible "
 "dictionary keys, of which only \"rate\" and \"stream\" are always "
@@ -1189,70 +1189,70 @@ msgid ""
 "======================================================="
 msgstr ""
 
-#: ../../annot.rst:389 dec7914de7124d2ba96a97dabf109bb4
+#: ../../annot.rst:390 4398abd511ad44a39a49d5b94b2e6941
 msgid ""
 "the sound audio file and accompanying properties. These are the possible "
 "dictionary keys, of which only \"rate\" and \"stream\" are always "
 "present."
 msgstr "音声オーディオファイルと関連するプロパティ。これらは可能な辞書キーで、常に「rate」と「stream」が存在します。"
 
-#: ../../annot.rst:392 3d1d78e449ac460698d3f821d7e29633
+#: ../../annot.rst:393 3f2ba083b0a649cca396ad92e0d47e32
 msgid "Key"
 msgstr "キー"
 
-#: ../../annot.rst:392 e4ad4472f1224ffe87033352ba18cab5
+#: ../../annot.rst:393 61de328cb9cd454ea3ea3b43ade66b38
 msgid "Description"
 msgstr "説明"
 
-#: ../../annot.rst:394 bc61f65ddfdf43149fd0b0b0f72293f3
+#: ../../annot.rst:395 399c2671dabe40dcabe75e1ed7f397a7
 msgid "rate"
 msgstr ""
 
-#: ../../annot.rst:394 5e75ca90f92942e2ab7065bddc9f94c6
+#: ../../annot.rst:395 af2ab9279a4f44978b222b106f65fc65
 msgid "(float, requ.) samples per second"
 msgstr "(float, 必須) 1秒あたりのサンプル数"
 
-#: ../../annot.rst:395 84db9da3af574d289ce43b0f80d0b12a
+#: ../../annot.rst:396 56fbda4ec6dc43fe96ff77f49f291835
 msgid "channels"
 msgstr ""
 
-#: ../../annot.rst:395 d95e459e37b54332b61695e30136855f
+#: ../../annot.rst:396 85184265d83f426e899a1960281340d2
 msgid "(int, opt.) number of sound channels"
 msgstr "(int, オプション) サウンドチャンネルの数"
 
-#: ../../annot.rst:396 b8fea56e215244fbb386b58b0437d29b
+#: ../../annot.rst:397 0544b367a4344812b6177b483f712e2a
 msgid "bps"
 msgstr ""
 
-#: ../../annot.rst:396 190eb40e17d0442fb809964751cb0f89
+#: ../../annot.rst:397 4e8d6766cbf14a61922e69cbf2253804
 msgid "(int, opt.) bits per sample value per channel"
 msgstr "(int, オプション) チャンネルごとのサンプル値のビット数"
 
-#: ../../annot.rst:397 74bd6abe633a4abebe9708ca084b30bf
+#: ../../annot.rst:398 0cec8e2934bb41519562a474cc997efa
 msgid "encoding"
 msgstr ""
 
-#: ../../annot.rst:397 3ef958008aac4160ac77281c96c663ad
+#: ../../annot.rst:398 78552cfbaa8246dba104d1722052738d
 msgid "(str, opt.) encoding format: Raw, Signed, muLaw, ALaw"
 msgstr "(str, オプション) エンコーディング形式: Raw, Signed, muLaw, ALaw"
 
-#: ../../annot.rst:398 ed7d1fa494fe47b7966a7ffb13c2d193
+#: ../../annot.rst:399 daee28624d184e05bbffb06b0141ae4f
 msgid "compression"
 msgstr ""
 
-#: ../../annot.rst:398 d4f730d96c84404f86f09c96f470cf46
+#: ../../annot.rst:399 a76c4d1a539d41fca7bc208a9ad51426
 msgid "(str, opt.) name of compression filter"
 msgstr "(str, オプション) 圧縮フィルタの名前"
 
-#: ../../annot.rst:399 eedcc43b604c4dab81910b0cc916f4e8
+#: ../../annot.rst:400 32a7d38cd0834adf95aa73f872970819
 msgid "stream"
 msgstr ""
 
-#: ../../annot.rst:399 1633098cf79140c99e15fc641ca15f8d
+#: ../../annot.rst:400 caa34f228e284e8c9ac537168fda8a28
 msgid "(bytes, requ.) the sound file content"
 msgstr "(bytes, 必須) サウンドファイルの内容"
 
-#: ../../annot.rst:405 69f1feebfbd44696994d5af1bce75656
+#: ../../annot.rst:406 273f1f5f06914ea297ca9b69b1ab09de
 msgid ""
 "The annotation's transparency. If set, it is a value in range *[0, 1]*. "
 "The PDF default is 1. However, in an effort to tell the difference, we "
@@ -1261,19 +1261,19 @@ msgstr ""
 "アノテーションの透明度。設定されている場合、範囲 *[0, 1]* の値です。PDFのデフォルトは1ですが、違いを示すために設定されていない場合は"
 " *-1.0* を返します。"
 
-#: ../../annot.rst:411 f84d68d906ea470f8e2491859f2d10a5
+#: ../../annot.rst:412 c6d7f6eb7db34364b99de67da1ac96b6
 msgid "The owning page object of the annotation."
 msgstr "アノテーションの所属ページオブジェクト。"
 
-#: ../../annot.rst:413 18b06cce15754645be8e7cf8e36a2e19
+#: ../../annot.rst:414 a5a8dab5b5524f0daa10c5a01e53949e
 msgid ":ref:`Page`"
 msgstr ""
 
-#: ../../annot.rst:417 148c812b55e84dcb9e9ac370434107e7
+#: ../../annot.rst:418 8c603f1d9b5d44f18352a4a9b6544b37
 msgid "The annot rotation."
 msgstr "アノテーションの回転角度。"
 
-#: ../../annot.rst:420 d7002aea68854c82a93fbd03814da3a1
+#: ../../annot.rst:421 78762c4a0e9e4d6d815da28bcb820240
 msgid ""
 "a value [-1, 359]. If rotation is not at all, -1 is returned (and implies"
 " a rotation angle of 0). Other possible values are normalized to some "
@@ -1282,24 +1282,24 @@ msgstr ""
 "値は[-1, 359]です。回転が全くない場合、-1が返されます（回転角度0を意味します）。その他の可能な値は、一定の値0 <= angle < "
 "360に正規化されます。"
 
-#: ../../annot.rst:424 2f619ef6e05840c39448c5096a8bf553
+#: ../../annot.rst:425 1518f77966334f3a95bd2e0fad6e5ab4
 msgid "The rectangle containing the annotation."
 msgstr "アノテーションを含む長方形領域。"
 
-#: ../../annot.rst:426 ../../annot.rst:523 60e9b293b51744e3a7982e2f456283ea
-#: ac4021356e0a44df84f5c14294c0d6ee
+#: ../../annot.rst:427 ../../annot.rst:524 2c9efbb6d09d44948e0a4ec1321d8699
+#: 700c5234bb13435e8f9dde4558926059
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../annot.rst:430 086b1bd06a8b431e9fe2c00cdfb31a21
+#: ../../annot.rst:431 371accb0a6b743b5987f0f4ad201955a
 msgid "The next annotation on this page or None."
 msgstr "このページ上の次のアノテーションまたはNone。"
 
-#: ../../annot.rst:432 e9fa4dccf60a43979a94e32907d593ad
+#: ../../annot.rst:433 e0a286d3d8ad461c8366032a11f9db04
 msgid "*Annot*"
 msgstr ""
 
-#: ../../annot.rst:436 06668a7d0d07490883525d68d4050f13
+#: ../../annot.rst:437 0354e30a4d0c4105abdd7a1efa0cefa9
 msgid ""
 "A number and one or two strings describing the annotation type, like "
 "**[2, 'FreeText', 'FreeTextCallout']**. The second string entry is "
@@ -1310,13 +1310,13 @@ msgstr ""
 "。第2の文字列エントリはオプションで、空であるかもしれません。可能な値とその意味については、付録の :ref:`AnnotationTypes` "
 "のリストを参照してください。"
 
-#: ../../annot.rst:442 f41cc99fba704b51bc785a4c39861bd1
+#: ../../annot.rst:443 e2810fe5ad7f463a9a17840aa99eb4ee
 msgid ""
 "A dictionary containing various information. All fields are optional "
 "strings. For information items not provided, an empty string is returned."
 msgstr "異なる情報を含む辞書。すべてのフィールドはオプションの文字列です。提供されない情報項目については、空の文字列が返されます。"
 
-#: ../../annot.rst:444 115ec609387143488d8048c12749342e
+#: ../../annot.rst:445 be2e2c133ef144bc9fae4a35c5adbb7b
 msgid ""
 "*name* -- e.g. for 'Stamp' annotations it will contain the stamp text "
 "like \"Sold\" or \"Experimental\", for other annot types you will see the"
@@ -1326,7 +1326,7 @@ msgstr ""
 "のようなスタンプテキストが含まれ、他の注釈のタイプでは注釈のアイコンの名前がここに表示されます（FileAttachment の場合は "
 "'PushPin'）。"
 
-#: ../../annot.rst:446 9573de478c4a4a4593ee34638e7115e5
+#: ../../annot.rst:447 7aa255a5e0224790bc9836bbf70bfdf3
 msgid ""
 "*content* -- a string containing the text for type *Text* and *FreeText* "
 "annotations. Commonly used for filling the text field of annotation pop-"
@@ -1335,25 +1335,25 @@ msgstr ""
 "*content*  – *テキスト* タイプと *FreeText* "
 "注釈のテキストを含む文字列。注釈のポップアップウィンドウのテキストフィールドを埋めるために一般的に使用されます。"
 
-#: ../../annot.rst:448 6805146045884356a7584348e51e347f
+#: ../../annot.rst:449 eb4684da338741b6888ec72db50df34c
 msgid ""
 "*title* -- a string containing the title of the annotation pop-up window."
 " By convention, this is used for the **annotation author**."
 msgstr "*title* – 注釈のポップアップウィンドウのタイトルを含む文字列。通常、これは **注釈の著者** に使用されます。"
 
-#: ../../annot.rst:450 a3febd287d4a49e092196a05ab426f9c
+#: ../../annot.rst:451 761ea53ebf64487485daa2233ca70b47
 msgid "*creationDate* -- creation timestamp."
 msgstr "*creationDate* – 作成タイムスタンプ。"
 
-#: ../../annot.rst:451 4ba63d5426224f3c81e22f7372df3690
+#: ../../annot.rst:452 0435fb79ca3d4df6ae67a247c5c000cc
 msgid "*modDate* -- last modified timestamp."
 msgstr "*modDate* – 最終変更タイムスタンプ。"
 
-#: ../../annot.rst:452 d8ff8089d137445d942592868f1eb306
+#: ../../annot.rst:453 a9d0afa9686645a0a19d530c75d9996b
 msgid "*subject* -- subject."
 msgstr "*subject* – 主題。"
 
-#: ../../annot.rst:453 bb10dbedb52c4edea0fd45696fd474ed
+#: ../../annot.rst:454 06f61a30beda48c995ebb887df689fe9
 msgid ""
 "*id* -- *(new in version 1.16.10)* a unique identification of the "
 "annotation. This is taken from PDF key */NM*. Annotations added by "
@@ -1362,13 +1362,13 @@ msgstr ""
 "*id* – （バージョン1.16.10で新規追加）注釈の一意の識別子。これはPDFキー */ NM* "
 "から取得されます。PyMuPDFによって追加された注釈には一意の名前があり、ここに表示されます"
 
-#: ../../annot.rst:460 c75089a37f5f485da9f8dcd1e26cf062
+#: ../../annot.rst:461 78dea2c70c71421b9dbcd6c011e0c97e
 msgid ""
 "An integer whose low order bits contain flags for how the annotation "
 "should be presented."
 msgstr "注釈の表示方法を示すフラグを含む低位ビットを持つ整数。"
 
-#: ../../annot.rst:466 a3205440679e4d8b9ee6d198145cec2e
+#: ../../annot.rst:467 651313d04e8642b8a1e2a8b69649c8c8
 msgid ""
 "A pair of integers specifying start and end symbol of annotations types "
 "'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. "
@@ -1378,29 +1378,29 @@ msgstr ""
 "'FreeText'、'Line'、'PolyLine'、および'Polygon'の注釈タイプの開始および終了シンボルを指定する2つの整数のペア。該当しない場合は"
 " *なし* 。このリストでの可能な値と説明については、:ref:`AdobeManual` のページ400の表1.76を参照してください。"
 
-#: ../../annot.rst:472 b29ddf41c5f04965ab3acfa1913460b2
+#: ../../annot.rst:473 44304b7e1a1f4cff91772e5b7b675e08
 msgid ""
 "A list containing a variable number of point (\"vertices\") coordinates "
 "(each given by a pair of floats) for various types of annotations:"
 msgstr "さまざまな種類の注釈に対する、可変数の点（\"頂点\"）座標（各々が浮動小数点数のペアで指定される）を含むリスト："
 
-#: ../../annot.rst:474 17bb5666969046ca8f4ce950c6fb5f7e
+#: ../../annot.rst:475 0f08723dc7df4bbc8722cf48bd808645
 msgid "'Line' -- the starting and ending coordinates (2 float pairs)."
 msgstr "'Line' – 開始座標と終了座標（2つの浮動小数点数のペア）。"
 
-#: ../../annot.rst:475 f5729861c0ca435a82cbfa1edd3223ba
+#: ../../annot.rst:476 e40bb82484f4438c96dd9e30dc63b4e0
 msgid ""
 "'FreeText' -- 2 or 3 float pairs designating the starting, the (optional)"
 " knee point, and the ending coordinates."
 msgstr "'FreeText' – 開始座標、（オプションの）曲線点、および終了座標を指定する2または3つの浮動小数点数のペア。"
 
-#: ../../annot.rst:476 ba83dad1283b46fabf1f70bc2d859e58
+#: ../../annot.rst:477 8a55e873bcab43a89b1fa21b40c929ac
 msgid ""
 "'PolyLine' / 'Polygon' -- the coordinates of the edges connected by line "
 "pieces (n float pairs for n points)."
 msgstr "'PolyLine' / 'Polygon' – 線分で接続されたエッジの座標（nポイントのためのn個の浮動小数点数のペア）。"
 
-#: ../../annot.rst:477 5a7d4184bf25463291b0103d160b7b56
+#: ../../annot.rst:478 bbdda313526a4d3d9074b3823539c99c
 msgid ""
 "text markup annotations -- 4 float pairs specifying the *QuadPoints* of "
 "the marked text span (see :ref:`AdobeManual`, page 403)."
@@ -1408,13 +1408,13 @@ msgstr ""
 "テキストのマークアップ注釈 – マークされたテキストスパンのQuadPointsを指定する4つの浮動小数点数のペア（Adobe "
 "PDFリファレンス、ページ403を参照）。"
 
-#: ../../annot.rst:478 b09a8609ce974f81bf5de0d78c0643ac
+#: ../../annot.rst:479 f9cda8ed955945379206fa5fedf0b97c
 msgid ""
 "'Ink' -- list of one to many sublists of vertex coordinates. Each such "
 "sublist represents a separate line in the drawing."
 msgstr "'Ink' – 頂点座標の1つから多数のサブリストのリスト。各サブリストは、描画内の別々の線を表します。"
 
-#: ../../annot.rst:485 e84dc0e4ebee4998b3aa253059c1576b
+#: ../../annot.rst:486 33dbfcd91b9142ee879c388591c1985e
 msgid ""
 "dictionary of two lists of floats in range *0 <= float <= 1* specifying "
 "the \"stroke\" and the interior (\"fill\") colors. The stroke color is "
@@ -1430,39 +1430,39 @@ msgstr ""
 " = GRAY、3 = RGB、4 = CMYK。したがって、\"[1.0, 0.0, 0.0]\" "
 "はRGBカラーの赤を表します。どちらのリストも指定されていない場合、空にすることができます。"
 
-#: ../../annot.rst:491 fb0455513c15489f90d72c30128eea72
+#: ../../annot.rst:492 3f8f3645fe5448f8bb8afcc9ebc5ff65
 msgid "The PDF :data:`xref`."
 msgstr "PDFの :data:`xref` 。"
 
-#: ../../annot.rst:497 d378377ce4214d44a3b16641048deb16
+#: ../../annot.rst:498 1264212743404185a96d12e01649311f
 msgid ""
 "The PDF :data:`xref` of an annotation to which this one responds. Return "
 "zero if this is no response annotation."
 msgstr "この注釈が応答する注釈のPDF :data:`xref` 。これが応答注釈でない場合はゼロを返します。"
 
-#: ../../annot.rst:503 83895778d48b4397b6de16906ae68a5c
+#: ../../annot.rst:504 14a9294953834c428468a03bf3770c19
 msgid ""
 "The PDF :data:`xref` of the associated Popup annotation. Zero if non-"
 "existent."
 msgstr "関連するポップアップ注釈のPDF :data:`xref` 。存在しない場合はゼロ。"
 
-#: ../../annot.rst:509 4ca73461e17440c282004a5ad0efbe30
+#: ../../annot.rst:510 bb142ab571454d9ebbf9fe87d7a15c66
 msgid "Whether the annotation has a Popup annotation."
 msgstr "注釈にポップアップ注釈があるかどうか。"
 
-#: ../../annot.rst:515 729d2dc5dd0c401d8ff2338a71456f09
+#: ../../annot.rst:516 cecb7c44853e4366b1902875f8e1cac9
 msgid ""
 "Whether the annotation's Popup is open -- **or** the annotation itself "
 "('Text' annotations only)."
 msgstr "注釈のポップアップが開いているかどうか - **または** 注釈自体（'テキスト'注釈のみ）。"
 
-#: ../../annot.rst:521 6876c0d2f37b4ec78946d6fbb937e6e0
+#: ../../annot.rst:522 3c44cb28ccdd4757a54897f895b88442
 msgid ""
 "The rectangle of the associated Popup annotation. Infinite rectangle if "
 "non-existent."
 msgstr "関連するポップアップ注釈の矩形。存在しない場合は無限の矩形。"
 
-#: ../../annot.rst:527 5d8209bea1e648a290cb2aedb4ba1a51
+#: ../../annot.rst:528 76233963d178406b9c5ff32193d2ca6a
 msgid ""
 "A tuple of four floats representing the `/RD` entry of the annotation. "
 "The four numbers describe the numerical differences (left, top, -right, "
@@ -1480,19 +1480,19 @@ msgstr ""
 "です。注釈の境界線が通常のまっすぐな線である場合、これらの数値は通常、境界線の幅を2で割ったものです。注釈に「雲状」の境界線がある場合、ここで雲の半円の幅が表示されます。一般的に、これらの数値は同一である必要はありません。内側の矩形を計算するには、`a.rect"
 " + a.rect_delta` を使用します。"
 
-#: ../../annot.rst:531 9a56502dd5a34f0399339bde107793fb
+#: ../../annot.rst:532 3af8528320f3419c8813566ce3b4b58c
 msgid ""
 "A dictionary containing border characteristics. Empty if no border "
 "information exists. The following keys may be present:"
 msgstr "境界線の特性を含む辞書。境界線情報が存在しない場合は空です。次のキーが存在する可能性があります："
 
-#: ../../annot.rst:533 188576336d7f4b1ab927624b80cc0727
+#: ../../annot.rst:534 340ba9913e8f4c9ca3d0b82a545155bb
 msgid ""
 "*width* -- a float indicating the border thickness in points. The value "
 "is -1.0 if no width is specified."
 msgstr "*width*  – ポイントでの境界線の太さを示す浮動小数点数。幅が指定されていない場合、値は -1.0 です。"
 
-#: ../../annot.rst:535 e2443647edc045d5881c8e62df83a845
+#: ../../annot.rst:536 0f736220c35f45ad91c15a9d729dd762
 msgid ""
 "*dashes* -- a sequence of integers specifying a line dashing pattern. "
 "*[]* means no dashes, *[n]* means equal on-off lengths of *n* points, "
@@ -1503,7 +1503,7 @@ msgstr ""
 "ポイントの等しいオンオフの長さを意味し、より長いリストは交互のオンオフ長さ値を指定して解釈されます。詳細については、:ref:`AdobeManual`"
 " のページ126を参照してください。"
 
-#: ../../annot.rst:537 099d4b2853c5460e9e00f10eaaa20a76
+#: ../../annot.rst:538 8ae391367f074553ab886603f8d0d982
 msgid ""
 "*style* -- 1-byte border style: **\"S\"** (Solid) = solid line "
 "surrounding the annotation, **\"D\"** (Dashed) = dashed line surrounding "
@@ -1519,7 +1519,7 @@ msgstr ""
 "ページの表面よりも上に浮かぶように見える模擬的な浮き出し矩形、 **\"I\"** （Inset）= "
 "ページの表面よりも下に凹んだように見える模擬的な浮き彫りの矩形、 **\"U\"** （Underline）= 注釈矩形の底部に沿った単一の線。"
 
-#: ../../annot.rst:539 e605b649abfd478bb644fa53ac3842f1
+#: ../../annot.rst:540 56ec44b9f87f4c32b20f4f7402a12e2f
 msgid ""
 "*clouds* -- an integer indicating a \"cloudy\" border, where `n` is an "
 "integer `-1 <= n <= 2`. A value `n = 0` indicates a straight line (no "
@@ -1529,11 +1529,11 @@ msgstr ""
 "*clouds* – “雲状”の境界を示す整数。``n`` は整数 `-1 <= n <= 2` を指します。値 `n = 0` "
 "は直線（雲なし）を示し、1 は小さな半円、2 は大きな半円を模倣した雲の外観を示します。-1 の場合、仕様が存在しないことを示します。"
 
-#: ../../annot.rst:547 dc3d82acbea249dd80ff85a6c6a23e84
+#: ../../annot.rst:548 ec756956143649189c97b88ca807a374
 msgid "Annotation Icons in MuPDF"
 msgstr "MuPDFの注釈アイコン"
 
-#: ../../annot.rst:548 de331c869bdd4d5f99b637373e5b4389
+#: ../../annot.rst:549 173eaff0b62e4eed94c31452b32e07a0
 msgid ""
 "This is a list of icons referenceable by name for annotation types 'Text'"
 " and 'FileAttachment'. You can use them via the *icon* parameter when "
@@ -1547,36 +1547,36 @@ msgstr ""
 "の引数として使用したりできます。どのアイテムを選択するかはあなたの裁量に任されています - "
 "たとえば、「Speaker」アイコンを「FileAttachment」に使用することを防ぐメカニズムは存在しません。"
 
-#: ../../annot.rst:554 f39fb8f1739648e09e9c35e450db57ad
+#: ../../annot.rst:555 5794453816c14d28af08440489a710d2
 msgid "Example"
 msgstr "例"
 
-#: ../../annot.rst:555 f34495338387473ba98c11c52277000f
+#: ../../annot.rst:556 6e6f39ba8fd24c7d91bfbdbcff577eb1
 msgid ""
 "Change the graphical image of an annotation. Also update the \"author\" "
 "and the text to be shown in the popup window::"
 msgstr "注釈のグラフィカルな画像を変更します。また、ポップアップウィンドウに表示される「著者」とテキストを更新します。"
 
-#: ../../annot.rst:578 f2352d6e5533470daa3ed7803c2b9826
+#: ../../annot.rst:579 c44bb5898c82472ab66fea06213f8b9a
 msgid ""
 "This is how the circle annotation looks like before and after the change "
 "(pop-up windows displayed using Nitro PDF viewer):"
 msgstr "これが、変更前と変更後のサークル注釈の見た目です（Nitro PDFビューアを使用して表示されるポップアップウィンドウ）:"
 
-#: ../../annot.rst:580 fd7bddee94694cada399ef203ae383a6
+#: ../../annot.rst:581 d0d8888dee2241e5ae54b8cc3f4f8f3f
 msgid "|circle|"
 msgstr ""
 
-#: ../../annot.rst:582 1ffc30af0a96437e9a80848d08601a25
-#: 727dc39c446a464995a75a45c368ac07
+#: ../../annot.rst:583 439df2d727e3488fa9de8c4e19871c16
+#: f010cb7c6dc44518987b9f5fc84bb79c
 msgid "circle"
 msgstr ""
 
-#: ../../annot.rst:586 18d9abd7d16346af86dd689d03440f40
+#: ../../annot.rst:587 22c69c4bf2f24a87a7e083e730d00662
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../annot.rst:587 432c6c816a5a43f6b113327cd1b23754
+#: ../../annot.rst:588 4d067625802642b8b5abcaf64f225783
 msgid ""
 "Rotating an annotation also changes its rectangle. Depending on how the "
 "annotation was defined, the original rectangle is **cannot be "
@@ -1586,7 +1586,7 @@ msgstr ""
 "注釈を回転させると、その矩形も変更されます。注釈がどのように定義されたかによって、元の矩形は回転値を再びゼロに設定しても **再構築できず** "
 "、失われます。"
 
-#: ../../annot.rst:589 bac421f4ecd641c4ab15dcab04734bd8
+#: ../../annot.rst:590 bbce0217640f4f48991c6ad5feae9c1e
 msgid ""
 "Only the following annotation types support method "
 ":meth:`Annot.set_rect`: Text, FreeText, Square, Circle, Redact, Stamp, "
@@ -1595,7 +1595,11 @@ msgstr ""
 ":meth:`Annot.set_rect` "
 "をサポートする注釈タイプは、次のものだけです：Text、FreeText、Square、Circle、Redact、Stamp、Caret、FileAttachment、Sound、およびMovie。"
 
-#: ../../footer.rst:-1 d99bd4080ea848b2b0b2f235ffaba7d1
+#: ../../footer.rst:60 84670552cb3c47d5aafb332612f3310e
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 8ccd5341e4ca400f9fc4bc6277228cb4
 msgid "Discord logo"
 msgstr ""
 
@@ -1604,4 +1608,7 @@ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 #~ msgstr ""
+
+#~ msgid "**This class is supported for PDF documents only.**"
+#~ msgstr "**このクラスはPDFドキュメントのみに対応しています。** "
 

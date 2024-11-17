@@ -1,7 +1,7 @@
 import os
 import platform
 
-import fitz
+import pymupdf
 
 def test_tesseract():
     '''
@@ -15,19 +15,19 @@ def test_tesseract():
     FzPage.get_textpage_ocr() succeeds.
     '''
     path = os.path.abspath( f'{__file__}/../resources/2.pdf')
-    doc = fitz.open( path)
+    doc = pymupdf.open( path)
     page = doc[5]
-    if hasattr(fitz, 'mupdf'):
+    if hasattr(pymupdf, 'mupdf'):
         # rebased.
-        if fitz.mupdf_version_tuple >= (1, 24):
+        if pymupdf.mupdf_version_tuple >= (1, 24):
             e_expected = 'code=3: OCR initialisation failed'
             if platform.system() == 'OpenBSD':
                 # 2023-12-12: For some reason the SWIG catch code only catches
                 # the exception as FzErrorBase.
-                e_expected_type = fitz.mupdf.FzErrorBase
+                e_expected_type = pymupdf.mupdf.FzErrorBase
                 print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
             else:
-                e_expected_type = fitz.mupdf.FzErrorLibrary
+                e_expected_type = pymupdf.mupdf.FzErrorLibrary
         else:
             e_expected = 'code=2: OCR initialisation failed'
             e_expected_type = None
@@ -53,3 +53,16 @@ def test_tesseract():
                 assert type(e) == e_expected_type, f'{type(e)=} != {e_expected_type=}.'
         else:
             assert 0, f'Expected exception {e_expected!r}'
+        rebased = hasattr(pymupdf, 'mupdf')
+        if rebased:
+            wt = pymupdf.TOOLS.mupdf_warnings()
+            if pymupdf.mupdf_version_tuple < (1, 25):
+                assert wt
+            else:
+                assert wt == (
+                        'UNHANDLED EXCEPTION!\n'
+                        'library error: Tesseract initialisation failed\n'
+                        'dropping unclosed output'
+                        )
+        
+

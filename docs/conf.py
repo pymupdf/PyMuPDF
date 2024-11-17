@@ -19,7 +19,7 @@ sys.path.insert(0, os.path.abspath("."))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 # extensions = ["sphinx.ext.autodoc", "sphinx.ext.coverage", "sphinx.ext.ifconfig"]
-extensions = ['sphinx_copybutton','notfound.extension']
+extensions = ['sphinx_copybutton','notfound.extension','sphinxcontrib.googleanalytics']
 # rst2pdf is not available on OpenBSD.
 if hasattr(os, "uname") and os.uname()[0] != "OpenBSD":
     extensions.append("rst2pdf.pdfbuilder")
@@ -29,6 +29,9 @@ templates_path = ["_templates"]
 
 # The suffix of source filenames.
 source_suffix = ".rst"
+
+# from: pip install sphinxcontrib-googleanalytics
+googleanalytics_id = "G-JZTN4VTL9M"
 
 # The encoding of source files.
 # source_encoding = 'utf-8-sig'
@@ -49,7 +52,7 @@ copyright = "2015-" + str(thisday.year) + ", Artifex"
 _path = os.path.abspath(f'{__file__}/../../src/__init__.py')
 with open(_path) as f:
     for line in f:
-        match = re.search('VersionBind = "([0-9][.][0-9]+[.][0-9]+(rc[0-9]+)?)"', line)
+        match = re.search('pymupdf_version = "([0-9][.][0-9]+[.][0-9]+(rc[0-9]+)?)"', line)
         if match:
             release = match.group(1)
             print(f'{__file__}: setting version from {_path}: {release}')
@@ -155,8 +158,8 @@ html_favicon = "_static/PyMuPDF.ico"
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ["_static"]
 html_theme_options = {
-    "light_logo": "pymupdf-sidebar-logo-dark.png",
-    "dark_logo": "pymupdf-sidebar-logo-light.png",
+    "light_logo": "sidebar-logo-dark.svg",
+    "dark_logo": "sidebar-logo-light.svg",
 }
 
 # A list of CSS files. The entry must be a filename string or a tuple containing

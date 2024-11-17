@@ -5,6 +5,8 @@
 Shape
 ================
 
+|pdf_only_class|
+
 This class allows creating interconnected graphical elements on a PDF page. Its methods have the same meaning and name as the corresponding :ref:`Page` methods.
 
 In fact, each :ref:`Page` draw method is just a convenience wrapper for (1) one shape draw method, (2) the :meth:`Shape.finish` method, and (3) the :meth:`Shape.commit` method. For page text insertion, only the :meth:`Shape.commit` method is invoked. If many draw and text operations are executed for a page, you should always consider using a Shape object.
@@ -50,7 +52,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. method:: __init__(self, page)
 
-      Create a new drawing. During importing PyMuPDF, the *fitz.Page* object is being given the convenience method *new_shape()* to construct a *Shape* object. During instantiation, a check will be made whether we do have a PDF page. An exception is otherwise raised.
+      Create a new drawing. During importing PyMuPDF, the *pymupdf.Page* object is being given the convenience method *new_shape()* to construct a *Shape* object. During instantiation, a check will be made whether we do have a PDF page. An exception is otherwise raised.
 
       :arg page: an existing page of a PDF document.
       :type page: :ref:`Page`
@@ -86,10 +88,10 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Here is an example of three connected lines, forming a closed, filled triangle. Little arrows indicate the stroking direction.
 
-         >>> import fitz
-         >>> doc=fitz.open()
+         >>> import pymupdf
+         >>> doc=pymupdf.open()
          >>> page=doc.new_page()
-         >>> r = fitz.Rect(100, 100, 300, 200)
+         >>> r = pymupdf.Rect(100, 100, 300, 200)
          >>> shape=page.new_shape()
          >>> shape.draw_squiggle(r.tl, r.tr)
          >>> shape.draw_squiggle(r.tr, r.br)
@@ -131,7 +133,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       Draw a standard cubic Bézier curve from *p1* to *p4*, using *p2* and *p3* as control points.
 
-      All arguments are :data:`point_like` \s.
+      All arguments are :data:`point_like` objects.
 
       :rtype: :ref:`Point`
       :returns: the end point, *p4*.
@@ -246,7 +248,7 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: oc; finish
 
 
-   .. method:: finish(width=1, color=None, fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: finish(width=1, color=(0,), fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
 
       Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them.
       
@@ -298,7 +300,7 @@ Several draw methods can be executed in a row and each one of them will contribu
          .. image:: images/img-inserttext.*
             :scale: 33
 
-      :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks *\n*, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
+      :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks ``\n``, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
 
       :arg float lineheight: a factor to override the line height calculated from font properties. If not `None`, a line height of `fontsize * lineheight` will be used.
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors (the **border line** of a character). Only  `0 <= value <= 1` will be considered. Default is 1 (intransparent).
@@ -427,7 +429,7 @@ Several draw methods can be executed in a row and each one of them will contribu
          >>> # assuming ...
          >>> morph = (point, matrix)
          >>> # ... recalculate the shape rectangle like so:
-         >>> shape.rect = (shape.rect - fitz.Rect(point, point)) * ~matrix + fitz.Rect(point, point)
+         >>> shape.rect = (shape.rect - pymupdf.Rect(point, point)) * ~matrix + pymupdf.Rect(point, point)
 
       :type: :ref:`Rect`
 
@@ -482,8 +484,8 @@ Examples
       cols = (...)  # a sequence of RGB color triples
       pieces = len(cols)  # number of pieces to draw
       beta = 360. / pieces  # angle of each piece of pie
-      center = fitz.Point(...)  # center of the pie
-      p0 = fitz.Point(...)  # starting point
+      center = pymupdf.Point(...)  # center of the pie
+      p0 = pymupdf.Point(...)  # starting point
       for i in range(pieces):
           p0 = shape.draw_sector(center, p0, beta,
                                 fullSector=True) # draw piece
@@ -499,8 +501,8 @@ Here is an example for 5 colors:
 
       shape = page.new_shape() # start a new shape
       beta = -360.0 / n  # our angle, drawn clockwise
-      center = fitz.Point(...)  # center of circle
-      p0 = fitz.Point(...)  # start here (1st edge)
+      center = pymupdf.Point(...)  # center of circle
+      p0 = pymupdf.Point(...)  # start here (1st edge)
       points = [p0]  # store polygon edges
       for i in range(n):  # calculate the edges
           p0 = shape.draw_sector(center, p0, beta)
@@ -553,7 +555,7 @@ Common Parameters
 
 **dashes** (*str*)
 
-  Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. `n` is the dash length, `m` (optional) is the subsequent gap length, and `p` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If `m` is omitted, it defaults to `n`.
+  Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. ``n`` is the dash length, ``m`` (optional) is the subsequent gap length, and ``p`` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If ``m`` is omitted, it defaults to ``n``.
   
   A continuous line (no dashes) is drawn with `"[] 0"` or *None* or `""`. Examples:
   
@@ -568,11 +570,20 @@ Common Parameters
 
   Stroke and fill colors can be specified as tuples or list of of floats from 0 to 1. These sequences must have a length of 1 (GRAY), 3 (RGB) or 4 (CMYK). For GRAY colorspace, a single float instead of the unwieldy *(float,)* or *[float]* is also accepted. Accept (default) or use `None` to not use the parameter.
 
-  To simplify color specification, method *getColor()* in *fitz.utils* may be used to get predefined RGB color triples by name. It accepts a string as the name of the color and returns the corresponding triple. The method knows over 540 color names -- see section :ref:`ColorDatabase`.
+  To simplify color specification, method *getColor()* in *pymupdf.utils* may be used to get predefined RGB color triples by name. It accepts a string as the name of the color and returns the corresponding triple. The method knows over 540 color names -- see section :ref:`ColorDatabase`.
 
   Please note that the term *color* usually means "stroke" color when used in conjunction with fill color.
 
   If letting default a color parameter to `None`, then no resp. color selection command will be generated. If *fill* and *color* are both `None`, then the drawing will contain no color specification. But it will still be "stroked", which causes PDF's default color "black" be used by Adobe Acrobat and all other viewers.
+
+----
+
+**width** (*float*)
+
+  The stroke ("border") width of the elements in a shape (if applicable). The default value is 1. The values width, color and fill have the following relationship / dependency:
+
+  * If `fill=None` shape elements will always be drawn with a border - even if `color=None` (in which case black is taken) or `width=0` (in which case 1 is taken).
+  * Shapes without border can only be achieved if a fill color is specified (which may be white of course). To achieve this, specify `width=0`. In this case, the ``color`` parameter is ignored.
 
 ----
 

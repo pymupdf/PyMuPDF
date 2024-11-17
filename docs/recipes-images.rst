@@ -19,9 +19,9 @@ The document can be any :ref:`supported type<Supported_File_Types>`.
 
 The script works as a command line tool which expects the filename being supplied as a parameter. The generated image files (1 per page) are stored in the directory of the script::
 
-    import sys, fitz  # import the bindings
+    import sys, pymupdf  # import the bindings
     fname = sys.argv[1]  # get filename from command line
-    doc = fitz.open(fname)  # open document
+    doc = pymupdf.open(fname)  # open document
     for page in doc:  # iterate through the pages
         pix = page.get_pixmap()  # render page to an image
         pix.save("page-%i.png" % page.number)  # store image as a PNG
@@ -46,7 +46,7 @@ In the following, we apply a :index:`zoom factor <pair: resolution;zoom>` of 2 t
 
     zoom_x = 2.0  # horizontal zoom
     zoom_y = 2.0  # vertical zoom
-    mat = fitz.Matrix(zoom_x, zoom_y)  # zoom factor 2 in each dimension
+    mat = pymupdf.Matrix(zoom_x, zoom_y)  # zoom factor 2 in each dimension
     pix = page.get_pixmap(matrix=mat)  # use 'mat' instead of the identity matrix
 
 
@@ -70,10 +70,10 @@ To achieve this, define a rectangle equal to the area you want to appear in the 
 
 ::
 
-    mat = fitz.Matrix(2, 2)  # zoom factor 2 in each direction
+    mat = pymupdf.Matrix(2, 2)  # zoom factor 2 in each direction
     rect = page.rect  # the page rectangle
     mp = (rect.tl + rect.br) / 2  # its middle point, becomes top-left of clip
-    clip = fitz.Rect(mp, rect.br)  # the area we want
+    clip = pymupdf.Rect(mp, rect.br)  # the area we want
     pix = page.get_pixmap(matrix=mat, clip=clip)
 
 In the above we construct *clip* by specifying two diagonally opposite points: the middle point *mp* of the page rectangle, and its bottom right, *rect.br*.
@@ -99,7 +99,7 @@ Please also read the previous section. This time we want to **compute the zoom f
         zoom = HEIGHT / clip.height
     else:  # clip is broader: zoom to window WIDTH
         zoom = WIDTH / clip.width
-    mat = fitz.Matrix(zoom, zoom)
+    mat = pymupdf.Matrix(zoom, zoom)
     pix = page.get_pixmap(matrix=mat, clip=clip)
 
 For the other way round, now assume you **have** the zoom factor and need to **compute the fitting clip**.
@@ -108,11 +108,11 @@ In this case we have `zoom = HEIGHT/clip.height = WIDTH/clip.width`, so we must 
 
     width = WIDTH / zoom
     height = HEIGHT / zoom
-    clip = fitz.Rect(tl, tl.x + width, tl.y + height)
+    clip = pymupdf.Rect(tl, tl.x + width, tl.y + height)
     # ensure we still are inside the page
     clip &= page.rect
-    mat = fitz.Matrix(zoom, zoom)
-    pix = fitz.Pixmap(matrix=mat, clip=clip)
+    mat = pymupdf.Matrix(zoom, zoom)
+    pix = pymupdf.Pixmap(matrix=mat, clip=clip)
 
 
 ----------
@@ -147,7 +147,7 @@ If you want to recreate the original image in file form or as a memory area, you
 1. Convert your document to a PDF, and then use one of the PDF-only extraction methods. This snippet will convert a document to PDF::
 
     >>> pdfbytes = doc.convert_to_pdf()  # this a bytes object
-    >>> pdf = fitz.open("pdf", pdfbytes)  # open it as a PDF document
+    >>> pdf = pymupdf.open("pdf", pdfbytes)  # open it as a PDF document
     >>> # now use 'pdf' like any PDF document
 
 2. Use :meth:`Page.get_text` with the "dict" parameter. This works for all document types. It will extract all text and images shown on the page, formatted as a Python dictionary. Every image will occur in an image block, containing meta information and **the binary image data**. For details of the dictionary's structure, see :ref:`TextPage`. The method works equally well for PDF files. This creates a list of all images shown on a page::
@@ -183,9 +183,9 @@ How to Extract Images: PDF Documents
 
 Like any other "object" in a PDF, images are identified by a cross reference number (:data:`xref`, an integer). If you know this number, you have two ways to access the image's data:
 
-1. **Create** a :ref:`Pixmap` of the image with instruction *pix = fitz.Pixmap(doc, xref)*. This method is **very** fast (single digit micro-seconds). The pixmap's properties (width, height, ...) will reflect the ones of the image. In this case there is no way to tell which image format the embedded original has.
+1. **Create** a :ref:`Pixmap` of the image with instruction *pix = pymupdf.Pixmap(doc, xref)*. This method is **very** fast (single digit micro-seconds). The pixmap's properties (width, height, ...) will reflect the ones of the image. In this case there is no way to tell which image format the embedded original has.
 
-2. **Extract** the image with *img = doc.extract_image(xref)*. This is a dictionary containing the binary image data as *img["image"]*. A number of meta data are also provided -- mostly the same as you would find in the pixmap of the image. The major difference is string *img["ext"]*, which specifies the image format: apart from "png", strings like "jpeg", "bmp", "tiff", etc. can also occur. Use this string as the file extension if you want to store to disk. The execution speed of this method should be compared to the combined speed of the statements *pix = fitz.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG format, the speed of :meth:`Document.extract_image` is about the same (and the binary image data are identical). Otherwise, this method is **thousands of times faster**, and the **image data is much smaller**.
+2. **Extract** the image with *img = doc.extract_image(xref)*. This is a dictionary containing the binary image data as *img["image"]*. A number of meta data are also provided -- mostly the same as you would find in the pixmap of the image. The major difference is string *img["ext"]*, which specifies the image format: apart from "png", strings like "jpeg", "bmp", "tiff", etc. can also occur. Use this string as the file extension if you want to store to disk. The execution speed of this method should be compared to the combined speed of the statements *pix = pymupdf.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG format, the speed of :meth:`Document.extract_image` is about the same (and the binary image data are identical). Otherwise, this method is **thousands of times faster**, and the **image data is much smaller**.
 
 The question remains: **"How do I know those 'xref' numbers of images?"**. There are two answers to this:
 
@@ -225,9 +225,9 @@ To recover the original image using PyMuPDF, the procedure depicted as follows m
 .. image:: images/img-stencil.*
    :scale: 60
 
->>> pix1 = fitz.Pixmap(doc.extract_image(xref)["image"])    # (1) pixmap of image w/o alpha
->>> mask = fitz.Pixmap(doc.extract_image(smask)["image"])   # (2) mask pixmap
->>> pix = fitz.Pixmap(pix1, mask)                           # (3) copy of pix1, image mask added
+>>> pix1 = pymupdf.Pixmap(doc.extract_image(xref)["image"])    # (1) pixmap of image w/o alpha
+>>> mask = pymupdf.Pixmap(doc.extract_image(smask)["image"])   # (2) mask pixmap
+>>> pix = pymupdf.Pixmap(pix1, mask)                           # (3) copy of pix1, image mask added
 
 Step (1) creates a pixmap of the basic image. Step (2) does the same with the image mask. Step (3) adds an alpha channel and fills it with transparency information.
 
@@ -254,19 +254,19 @@ We show here **three scripts** that take a list of (image and other) files and p
 
 The first one converts each image to a PDF page with the same dimensions. The result will be a PDF with one page per image. It will only work for :ref:`supported image<Supported_File_Types>` file formats::
 
- import os, fitz
+ import os, pymupdf
  import PySimpleGUI as psg  # for showing a progress bar
- doc = fitz.open()  # PDF with the pictures
+ doc = pymupdf.open()  # PDF with the pictures
  imgdir = "D:/2012_10_05"  # where the pics are
  imglist = os.listdir(imgdir)  # list of them
  imgcount = len(imglist)  # pic count
 
  for i, f in enumerate(imglist):
-     img = fitz.open(os.path.join(imgdir, f))  # open pic as document
+     img = pymupdf.open(os.path.join(imgdir, f))  # open pic as document
      rect = img[0].rect  # pic dimension
      pdfbytes = img.convert_to_pdf()  # make a PDF stream
      img.close()  # no longer needed
-     imgPDF = fitz.open("pdf", pdfbytes)  # open stream as PDF
+     imgPDF = pymupdf.open("pdf", pdfbytes)  # open stream as PDF
      page = doc.new_page(width = rect.width,  # new page with ...
                         height = rect.height)  # pic dimension
      page.show_pdf_page(rect, imgPDF, 0)  # image fills the page
@@ -290,9 +290,9 @@ Look `here <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/in
 
 The second script **embeds** arbitrary files -- not only images. The resulting PDF will have just one (empty) page, required for technical reasons. To later access the embedded files again, you would need a suitable PDF viewer that can display and / or extract embedded files::
 
- import os, fitz
+ import os, pymupdf
  import PySimpleGUI as psg  # for showing progress bar
- doc = fitz.open()  # PDF with the pictures
+ doc = pymupdf.open()  # PDF with the pictures
  imgdir = "D:/2012_10_05"  # where my files are
 
  imglist = os.listdir(imgdir)  # list of pictures
@@ -344,7 +344,7 @@ The usual way to create an image from a document page is :meth:`Page.get_pixmap`
 
 PyMuPDF also offers a way to create a **vector image** of a page in SVG format (scalable vector graphics, defined in XML syntax). SVG images remain precise across zooming levels (of course with the exception of any raster graphic elements embedded therein).
 
-Instruction *svg = page.get_svg_image(matrix=fitz.Identity)* delivers a UTF-8 string *svg* which can be stored with extension ".svg".
+Instruction *svg = page.get_svg_image(matrix=pymupdf.Identity)* delivers a UTF-8 string *svg* which can be stored with extension ".svg".
 
 ----------
 
@@ -386,35 +386,35 @@ PAM               PAM                Portable Arbitrary Map
 
 The general scheme is just the following two lines::
 
-    pix = fitz.Pixmap("input.xxx")  # any supported input format
+    pix = pymupdf.Pixmap("input.xxx")  # any supported input format
     pix.save("output.yyy")  # any supported output format
 
 **Remarks**
 
-1. The **input** argument of *fitz.Pixmap(arg)* can be a file or a bytes / io.BytesIO object containing an image.
+1. The **input** argument of *pymupdf.Pixmap(arg)* can be a file or a bytes / io.BytesIO object containing an image.
 2. Instead of an output **file**, you can also create a bytes object via *pix.tobytes("yyy")* and pass this around.
 3. As a matter of course, input and output formats must be compatible in terms of colorspace and transparency. The *Pixmap* class has batteries included if adjustments are needed.
 
 .. note::
         **Convert JPEG to Photoshop**::
 
-          pix = fitz.Pixmap("myfamily.jpg")
+          pix = pymupdf.Pixmap("myfamily.jpg")
           pix.save("myfamily.psd")
 
 .. note::
         Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image works exactly the same. Conversion to one of the **Portable Anymap** formats (PPM, PGM, etc.) does the trick, because they are supported by all Tkinter versions::
 
           import tkinter as tk
-          pix = fitz.Pixmap("input.jpg")  # or any RGB / no-alpha image
+          pix = pymupdf.Pixmap("input.jpg")  # or any RGB / no-alpha image
           tkimg = tk.PhotoImage(data=pix.tobytes("ppm"))
 
 .. note::
         Convert **PNG with alpha** to Tkinter PhotoImage. This requires **removing the alpha bytes**, before we can do the PPM conversion::
 
           import tkinter as tk
-          pix = fitz.Pixmap("input.png")  # may have an alpha channel
+          pix = pymupdf.Pixmap("input.png")  # may have an alpha channel
           if pix.alpha:  # we have an alpha channel!
-              pix = fitz.Pixmap(pix, 0)  # remove it
+              pix = pymupdf.Pixmap(pix, 0)  # remove it
           tkimg = tk.PhotoImage(data=pix.tobytes("ppm"))
 
 ----------
@@ -430,15 +430,15 @@ How to Use Pixmaps: Gluing Images
 
 This shows how pixmaps can be used for purely graphical, non-document purposes. The script reads an image file and creates a new image which consist of 3 * 4 tiles of the original::
 
- import fitz
- src = fitz.Pixmap("img-7edges.png")      # create pixmap from a picture
+ import pymupdf
+ src = pymupdf.Pixmap("img-7edges.png")      # create pixmap from a picture
  col = 3                                  # tiles per row
  lin = 4                                  # tiles per column
  tar_w = src.width * col                  # width of target
  tar_h = src.height * lin                 # height of target
 
  # create target pixmap
- tar_pix = fitz.Pixmap(src.colorspace, (0, 0, tar_w, tar_h), src.alpha)
+ tar_pix = pymupdf.Pixmap(src.colorspace, (0, 0, tar_w, tar_h), src.alpha)
 
  # now fill target with the tiles
  for i in range(col):
@@ -476,8 +476,8 @@ Here is another Pixmap example that creates **Sierpinski's Carpet** -- a fractal
 
 This script creates an approximate image of it as a PNG, by going down to one-pixel granularity. To increase the image precision, change the value of n (precision)::
 
-    import fitz, time
-    if not list(map(int, fitz.VersionBind.split("."))) >= [1, 14, 8]:
+    import pymupdf, time
+    if not list(map(int, pymupdf.VersionBind.split("."))) >= [1, 14, 8]:
         raise SystemExit("need PyMuPDF v1.14.8 for this script")
     n = 6                             # depth (precision)
     d = 3**n                          # edge length
@@ -485,14 +485,14 @@ This script creates an approximate image of it as a PNG, by going down to one-pi
     t0 = time.perf_counter()
     ir = (0, 0, d, d)                 # the pixmap rectangle
 
-    pm = fitz.Pixmap(fitz.csRGB, ir, False)
+    pm = pymupdf.Pixmap(pymupdf.csRGB, ir, False)
     pm.set_rect(pm.irect, (255,255,0)) # fill it with some background color
 
     color = (0, 0, 255)               # color to fill the punch holes
 
     # alternatively, define a 'fill' pixmap for the punch holes
     # this could be anything, e.g. some photo image ...
-    fill = fitz.Pixmap(fitz.csRGB, ir, False) # same size as 'pm'
+    fill = pymupdf.Pixmap(pymupdf.csRGB, ir, False) # same size as 'pm'
     fill.set_rect(fill.irect, (0, 255, 255))   # put some color in
 
     def punch(x, y, step):
@@ -543,9 +543,9 @@ How to Interface with NumPy
 This shows how to create a PNG file from a numpy array (several times faster than most other methods)::
 
  import numpy as np
- import fitz
+ import pymupdf
  #==============================================================================
- # create a fun-colored width * height PNG with fitz and numpy
+ # create a fun-colored width * height PNG with pymupdf and numpy
  #==============================================================================
  height = 150
  width  = 100
@@ -557,7 +557,7 @@ This shows how to create a PNG file from a numpy array (several times faster tha
          bild[i, j] = [(i+j)%256, i%256, j%256]
 
  samples = bytearray(bild.tostring())    # get plain pixel data from numpy array
- pix = fitz.Pixmap(fitz.csRGB, width, height, samples, alpha=False)
+ pix = pymupdf.Pixmap(pymupdf.csRGB, width, height, samples, alpha=False)
  pix.save("test.png")
 
 

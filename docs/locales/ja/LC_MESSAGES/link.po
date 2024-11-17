@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 13:53+0000\n"
+"POT-Creation-Date: 2024-05-01 16:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 47078cbb94614cd4a97ab517224c839a
+#: ../../header.rst:-1 c6e1d07b0fa3448781eaf6a5bae35195
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 62d2ca82f8ef4393a670b320690045d4
+#: ../../header.rst:-1 a8239beccc304a1f9a6ea5b47a174587
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 2ddfdb91096d44879079a9236b282f40
+#: ../../header.rst:-1 6f860f9b5be3467d8e61fe2423c0d53d
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../link.rst:7 230b3f24c47f4d358c1bab06bbe2495c
+#: ../../link.rst:7 92ff2fcb6ff2484e80fc0a9e81f759b8
 msgid "Link"
 msgstr "Link (リンク)"
 
-#: ../../link.rst:8 9932df6d5edd46478d09cf3c3281aff3
+#: ../../link.rst:8 883622d1b4b949a196edfdf0ffb1fdbf
 msgid ""
 "Represents a pointer to somewhere (this document, other documents, the "
 "internet). Links exist per document page, and they are forward-chained to"
@@ -49,7 +49,7 @@ msgstr ""
 "リンクは、どこかへのポインタを表します（この文書、他の文書、インターネットなど）。リンクは文書のページごとに存在し、最初のリンクは "
 ":attr:`Page.first_link` プロパティでアクセスできます。リンクはお互いにフォワードチェーンされ、最初のリンクから始まります。"
 
-#: ../../link.rst:10 f083881ce0cd4fb69620f72dabd4ac2d
+#: ../../link.rst:10 062c9e01a89b4b3ab7689ab577e8f5d4
 msgid ""
 "There is a parent-child relationship between a link and its page. If the "
 "page object becomes unusable (closed document, any document structure "
@@ -58,133 +58,133 @@ msgid ""
 "link property or method is accessed."
 msgstr "リンクとそのページとの親子関係があります。ページオブジェクトが使用できなくなると（ドキュメントがクローズされた場合、ドキュメント構造が変更された場合など）、そのページに存在するリンクオブジェクトも使用できなくなります。リンクのプロパティまたはメソッドにアクセスしようとすると、「オーファン」というオブジェクトが発生し、例外が発生します。"
 
-#: ../../link.rst:13 df73da45a58b4af582c489403beab50e
+#: ../../link.rst:13 fde98350c6f045728db903fa18d098d7
 msgid "**Attribute**"
 msgstr "**属性**"
 
-#: ../../link.rst:13 3e78ba0674a34a17a4ebb52c03dd8c26
+#: ../../link.rst:13 66bdf829a8ec43afa11090497f90d54b
 msgid "**Short Description**"
 msgstr "**短い説明**"
 
-#: ../../link.rst:15 e8f4763f90624f91a9327d85b6d6e7b1
+#: ../../link.rst:15 634000ad7eb64039bea0f7f0b2a3b35d
 msgid ":meth:`Link.set_border`"
 msgstr ""
 
-#: ../../link.rst:15 65d7a056295a4030a2ed3ffa804779bc
+#: ../../link.rst:15 3bb847a0c2e54c77b3fa762178e7a596
 msgid "modify border properties"
 msgstr "境界線のプロパティを変更します"
 
-#: ../../link.rst:16 30ed39bcc18a429c85efe86430ab86f2
+#: ../../link.rst:16 2b35ef5ca79f4984b3d379d598a5d21a
 msgid ":meth:`Link.set_colors`"
 msgstr ""
 
-#: ../../link.rst:16 fd9c1645716d417baa45ba5121ec68dc
+#: ../../link.rst:16 be79ca40dc6941589fb9b0299601523c
 msgid "modify color properties"
 msgstr "色のプロパティを変更します"
 
-#: ../../link.rst:17 2c5146b78d2b4bf9b01a1e8bbb050396
+#: ../../link.rst:17 13710b794a1b43d48f76b112599f490b
 msgid ":meth:`Link.set_flags`"
 msgstr ""
 
-#: ../../link.rst:17 09c51bcc91184aeca8009ea4939c16a4
+#: ../../link.rst:17 a040cf896e674d1081b48e052f013920
 msgid "modify link flags"
 msgstr "リンクフラグを変更します"
 
-#: ../../link.rst:18 2c9b2b3877d04fb2ac8f06c21d5834ab
+#: ../../link.rst:18 3c8a0cc09cab4790af00faf23b86024e
 msgid ":attr:`Link.border`"
 msgstr ""
 
-#: ../../link.rst:18 2be0f074a2e14e24b06b41ee60438cbd
+#: ../../link.rst:18 be862c211e0f48c383e0c22d52001188
 msgid "border characteristics"
 msgstr "境界線の特性"
 
-#: ../../link.rst:19 a1801bb5f01e484a92458da75d15bd7e
+#: ../../link.rst:19 b67e1da4a98c42e6924eb8bc9d01143c
 msgid ":attr:`Link.colors`"
 msgstr ""
 
-#: ../../link.rst:19 2bb4c313f028492d853ff1cb707454fe
+#: ../../link.rst:19 bbf65c311bba4493bc2cca7f74dc5a73
 msgid "border line color"
 msgstr "境界線の色"
 
-#: ../../link.rst:20 2907372428754d0abaa3ff1a91a46ce7
+#: ../../link.rst:20 06d233b9e5ac4d12aa2a001e651fd16c
 msgid ":attr:`Link.dest`"
 msgstr ""
 
-#: ../../link.rst:20 0f73f11e35e54482b575ff39db1a38a1
+#: ../../link.rst:20 9b802d85d71d4a8eaf690d81f73809ef
 msgid "points to destination details"
 msgstr "宛先の詳細を指します"
 
-#: ../../link.rst:21 70ae94e0d7bb41208f5d881fd814de36
+#: ../../link.rst:21 c004c267dcc748a3a191381f76bc337d
 msgid ":attr:`Link.is_external`"
 msgstr ""
 
-#: ../../link.rst:21 d81ec14d87d64e2286dc391d9c8af58d
+#: ../../link.rst:21 4aae33e8b27442df88fbdae43626633d
 #, fuzzy
 msgid "checks if the link is an external destination"
 msgstr "外部宛先ですか？"
 
-#: ../../link.rst:22 0b7c479bc5834ca395479183ca491bd4
+#: ../../link.rst:22 10dd54ab5a3a4a3f8ef98da2d3bc6e08
 msgid ":attr:`Link.flags`"
 msgstr ""
 
-#: ../../link.rst:22 89dbef48271f42ad99794cd4adcf8e8a
+#: ../../link.rst:22 5715e9b8e4814261a08c8cf8b45ef97e
 msgid "link annotation flags"
 msgstr "リンク注釈のフラグ"
 
-#: ../../link.rst:23 6071b0040002422391a15ce3988773f1
+#: ../../link.rst:23 059b1f10380b444184d919f55c05339f
 msgid ":attr:`Link.next`"
 msgstr ""
 
-#: ../../link.rst:23 31e56e54b1a849b2ad77ccd8e6943082
+#: ../../link.rst:23 d0375975f81149d894ac82ad245f03cc
 msgid "points to next link"
 msgstr "次のリンクを指します"
 
-#: ../../link.rst:24 684a00a4bfbe4ff194ba4ce37cba18df
+#: ../../link.rst:24 39ba8becc1e049a580bd4d811ee69107
 msgid ":attr:`Link.rect`"
 msgstr ""
 
-#: ../../link.rst:24 42aff2ba41db4765a7eef4930e1b8641
+#: ../../link.rst:24 9acc8a2e658f4a1b8283846bdcf804bc
 #, fuzzy
 msgid "clickable area in untransformed coordinates"
 msgstr "変換されていない座標内のクリック可能な領域"
 
-#: ../../link.rst:25 5812900dbe1f4ba8a3252da0b2b1cad9
+#: ../../link.rst:25 e6e38288c44e4b00b14e118420419def
 msgid ":attr:`Link.uri`"
 msgstr ""
 
-#: ../../link.rst:25 ef1b75bac5e44c06ac7ab3de580bf7a3
+#: ../../link.rst:25 b35052f7fbf646119a09fba137382825
 msgid "link destination"
 msgstr "リンクの宛先"
 
-#: ../../link.rst:26 727ce6fcc1d14ce69e293bdb4b8edc14
+#: ../../link.rst:26 74bbf26781a84fa6a97cdd51b34861b3
 msgid ":attr:`Link.xref`"
 msgstr ""
 
-#: ../../link.rst:26 b7d71f3871514c9985ee3206af3d8cd3
+#: ../../link.rst:26 dbd099a505fc4a1694e68b07a0f18f03
 msgid ":data:`xref` number of the entry"
 msgstr "エントリの :data:`xref` 番号"
 
-#: ../../link.rst:29 5a8358b593cf40c7b0134c8c87269ff6
+#: ../../link.rst:29 b2e4e8357aab4517bf5ae183566e1922
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../link.rst:35 426d51c2b43342d98475b8b131a76833
+#: ../../link.rst:35 ae7d41f99e3743568c0f57caa31c51ec
 msgid "PDF only: Change border width and dashing properties."
 msgstr "PDFのみ：境界線の幅と破線プロパティを変更します。"
 
-#: ../../link.rst:37 4d40816149454ce0b95d3b83eab55f85
+#: ../../link.rst:37 38e95172531c4461b86d31c50e437204
 msgid ""
 "*(Changed in version 1.16.9)* Allow specification without using a "
 "dictionary. The direct parameters are used if *border* is not a "
 "dictionary."
 msgstr "*（バージョン1.16.9で変更）* 辞書を使用せずに仕様を許可します。*border* が辞書でない場合、直接のパラメータが使用されます。"
 
-#: ../../link.rst 1424a660618b4b8ab7abfc73aa1a634b
-#: 95ba0fff101341acba175bdc6ce939f7
+#: ../../link.rst 961898d85adb4376bb70ee66303b22f3
+#: fba02e2c64874cb880822d6b593ea62b
 msgid "Parameters"
 msgstr ""
 
-#: ../../link.rst:39 03806515a7f14b389018c8d54233589e
+#: ../../link.rst:39 9917bafd424f49f39a4f233372612bf1
 msgid ""
 "a dictionary as returned by the :attr:`border` property, with keys "
 "*\"width\"* (*float*), *\"style\"* (*str*) and *\"dashes\"* (*sequence*)."
@@ -197,16 +197,16 @@ msgstr ""
 " を使用します。dashes が空のシーケンスでない場合、「style」は自動的に \"D\"（点線）に設定されます。"
 
 #: ../../link.rst:41 ../../link.rst:42 ../../link.rst:43 ../../link.rst:54
-#: 430658cc38f545fbba5e3c149e2aea46 5ed66aa018924d0aa7bb950c1c129c7a
-#: 8fb8937bdff44cc893586d8f8cb17549 ac68b0299b66471bb36d7f316fe83c9b
+#: 05f540ab566b472480cf910a7bd2582f 4943da3515764221a542640fea1e0497
+#: 4df19b1ed02148c3a7a7ff9d58f20f28 ec9a647b80b247bbb812c3d82bda1db2
 msgid "see above."
 msgstr "上記を参照してください。"
 
-#: ../../link.rst:47 e40e15838f5243afb2a1c0eec94b8be5
+#: ../../link.rst:47 16911c4cf045441383cad9d188a72de2
 msgid "PDF only: Changes the \"stroke\" color."
 msgstr "PDFのみ： \"stroke\" 色を変更します。"
 
-#: ../../link.rst:49 32e94946e0014b9db804a2120c3fff14
+#: ../../link.rst:49 5096009aa48841d0978440414ff55693
 msgid ""
 "In PDF, links are a subtype of annotations technically and **do not "
 "support fill colors**. However, to keep a consistent API, we do allow "
@@ -216,13 +216,13 @@ msgstr ""
 "PDFでは、リンクは技術的には注釈のサブタイプであり、**塗りつぶし色はサポートしていません**。ただし、一貫したAPIを維持するために、すべての注釈と同様に"
 " `fill=` パラメータを指定することを許可しており、警告とともに無視されます。"
 
-#: ../../link.rst:51 638c1fc1bd064676be5ffd821575a4de
+#: ../../link.rst:51 f77d81b5ede24167995571df56cd85d1
 msgid ""
 "*(Changed in version 1.16.9)* Allow colors to be directly set. These "
 "parameters are used if *colors* is not a dictionary."
 msgstr "*(バージョン1.16.9で変更)*: 色を直接設定することを許可します。これらのパラメータは、*colors* が辞書でない場合に使用されます。"
 
-#: ../../link.rst:53 13b33795b5f44b9e8b60d5c66e55547d
+#: ../../link.rst:53 77c55ed61a9f409199068ecc893f4eb8
 msgid ""
 "a dictionary containing color specifications. For accepted dictionary "
 "keys and values see below. The most practical way should be to first make"
@@ -232,12 +232,12 @@ msgstr ""
 "色仕様を含む辞書。受け入れられる辞書のキーと値については以下を参照してください。最も実用的な方法は、まず *colors* "
 "プロパティのコピーを作成し、必要に応じてこの辞書を修正することです。"
 
-#: ../../link.rst:58 ../../link.rst:65 8abd6ddefb2747fca14f762f2438126c
-#: f8cc7abc1eab451aaa9e184c0795a5b2
+#: ../../link.rst:58 ../../link.rst:65 2615a3ddfff64813a70192fd00cc8dbf
+#: 533fc28774974c03b6ee569d110a301e
 msgid "*New in v1.18.16*"
 msgstr "*(新バージョン1.18.16で追加)*"
 
-#: ../../link.rst:60 eca88e6c6e134336b2d21c38e1f4b759
+#: ../../link.rst:60 d6269a4c81374d3987f4521603e02817
 msgid ""
 "Set the PDF `/F` property of the link annotation. See "
 ":meth:`Annot.set_flags` for details. If not a PDF, this method is a no-"
@@ -246,13 +246,13 @@ msgstr ""
 "リンク注釈のPDF  `/F` プロパティを設定します。詳細については、:meth:`Annot.set_flags` "
 "を参照してください。PDFでない場合、このメソッドは無効です。"
 
-#: ../../link.rst:67 56ec7388f1b845fcaacdf183c84d39dd
+#: ../../link.rst:67 305372eee87e467888923c9f56d90c81
 msgid ""
 "Return the link annotation flags, an integer (see :attr:`Annot.flags` for"
 " details). Zero if not a PDF."
 msgstr "リンク注釈フラグ、整数（詳細については :attr:`Annot.flags` を参照）。PDFでない場合、ゼロです。"
 
-#: ../../link.rst:72 06a216f52d5f4dd48ba6f18ac84a0e51
+#: ../../link.rst:72 c8319e0308ba43dd8d5ad5cc04f8e14e
 msgid ""
 "Meaningful for PDF only: A dictionary of two tuples of floats in range `0"
 " <= float <= 1` specifying the *stroke* and the interior (*fill*) colors."
@@ -269,12 +269,12 @@ msgstr ""
 "CMYK。したがって、 `(1.0、0.0、0.0)` はRGBカラーの赤を表します。各浮動小数点数 *f* の値は、*f = i / 255* "
 "の計算を介して範囲0から255の整数値 *i* にマップされます。"
 
-#: ../../link.rst 12b29ab6c81949e5ac0827a4417736ae
-#: 7172df22ba714ab98b5c27bddc4c152b
+#: ../../link.rst f4cdc554751c46a5a409b347d02aa7ec
+#: f94a4ff4717240beb479c1c030c7e389
 msgid "Return type"
 msgstr "戻り値のタイプ"
 
-#: ../../link.rst:78 860cfdb281ac47c4a01951fce5095724
+#: ../../link.rst:78 048325ce1e9d4813b85b0d3c94cfe1f5
 msgid ""
 "Meaningful for PDF only: A dictionary containing border characteristics. "
 "It will be *None* for non-PDFs and an empty dictionary if no border "
@@ -283,13 +283,13 @@ msgstr ""
 "(意味があるのはPDFのみ): ボーダーの特性を含む辞書。非PDFの場合、またはボーダー情報が存在しない場合、*None* "
 "になります。次のキーが含まれる場合があります:"
 
-#: ../../link.rst:80 6fd3e774efaf49598a591ca5f2137d79
+#: ../../link.rst:80 524fc58b5fc04f8cb62f0d88e25efd47
 msgid ""
 "*width* -- a float indicating the border thickness in points. The value "
 "is -1.0 if no width is specified."
 msgstr "*width* - ポイント単位でのボーダーの厚さを示す浮動小数点数。幅が指定されていない場合、値は-1.0になります。"
 
-#: ../../link.rst:82 6dcfc37cf8c546fa9fe979245c6cc487
+#: ../../link.rst:82 1daa81095c6a489cb8f15652d0a28b34
 msgid ""
 "*dashes* -- a sequence of integers specifying a line dash pattern. *[]* "
 "means no dashes, *[n]* means equal on-off lengths of *n* points, longer "
@@ -300,7 +300,7 @@ msgstr ""
 "*n*ポイントの等しいオンオフの長さを指定し、長いリストは交互にオンオフの長さ値を指定すると解釈されます。詳細については "
 ":ref:`AdobeManual` のページ126を参照してください。"
 
-#: ../../link.rst:84 cb77fbec06fd4caaab7b0b3b5e628c76
+#: ../../link.rst:84 4d12ef6959284f7386c5efd8de1ce83d
 msgid ""
 "*style* -- 1-byte border style: *S* (Solid) = solid rectangle surrounding"
 " the annotation, *D* (Dashed) = dashed rectangle surrounding the link, "
@@ -315,80 +315,120 @@ msgstr ""
 "*B* （ベベル）=ページの表面から持ち上げられたように見える模倣の浮き彫りの四角形、 *I* "
 "（インセット）=ページの表面からくぼみがあるように見える模倣の刻まれた四角形、 *U* （下線）=注釈四角形の底部に沿った単一の線。"
 
-#: ../../link.rst:90 f29f87d389174fce9473a2708b304f42
+#: ../../link.rst:90 ec55d4ecc16c4a8bb56512dd423991bf
 msgid "The area that can be clicked in untransformed coordinates."
 msgstr "クリックできる領域、変換されていない座標での"
 
-#: ../../link.rst 43dfa8aa30814047a3471be524d82f0c
-#: 5a7822410c6d4fed8533948f328f65a6 77f7395aab0c4e6493b97e4dce41aac8
-#: 7fb1cb95b51a401ba93dc87fe8100609 80e67759c70b423ebd8316c19bdc4a33
-#: 82dc6ea124fc4b9db354cbc17f9277cd
+#: ../../link.rst 2f57260fe2484cabb88fbc8d248075d1
+#: 365b588b42354b728d1cbbe62ac22274 473fc255938a4a6596ff715c72f63cad
+#: 4873abb2b81b460ca8d37c4c7772f4c6 7bda422ade9249329e55d81d322ac40a
+#: da42112bd5fc465b8eaf171fcd85db00
 msgid "type"
 msgstr ""
 
-#: ../../link.rst:92 e40e2d11551b4455847fba70e4614275
+#: ../../link.rst:92 3f4f393768da46f3939bbd9603e68acf
 msgid ":ref:`Rect`"
 msgstr ":ref:`Rect` （矩形）"
 
-#: ../../link.rst:96 7a6c1d8738e54c329c026d2dfa576495
+#: ../../link.rst:96 351f5bb22e494262bd51551283122cc6
 msgid ""
 "A bool specifying whether the link target is outside of the current "
 "document."
 msgstr "現在の文書の外部にリンクの対象があるかどうかを指定するブール値。"
 
-#: ../../link.rst:98 975f78420a4c4e2da1bd1a2505876b20
+#: ../../link.rst:98 bbc9b54f50804939a6558110f1a7b698
 msgid "bool"
 msgstr ""
 
-#: ../../link.rst:102 183ad334635b45068ead4ebd091b0727
+#: ../../link.rst:102 2282e24fae8b4dcba1faf4a79c04db42
 msgid ""
 "A string specifying the link target. The meaning of this property should "
-"be evaluated in conjunction with property *isExternal*. The value may be "
-"*None*, in which case *isExternal == False*. If *uri* starts with "
-"*file://*, *mailto:*, or an internet resource name, *isExternal* is "
-"*True*. In all other cases *isExternal == False* and *uri* points to an "
-"internal location. In case of PDF documents, this should either be "
-"*#nnnn* to indicate a 1-based (!) page number *nnnn*, or a named "
-"location. The format varies for other document types, e.g. *uri = "
-"'../FixedDoc.fdoc#PG_2_LNK_1'* for page number 2 (1-based) in an XPS "
-"document."
-msgstr ""
-"リンクの対象を指定する文字列。このプロパティの意味は、プロパティ *isExternal* と共に評価する必要があります。値が *None* "
-"の場合、*isExternal == False* です。 *uri* が *file://、mailto:* "
-"、またはインターネットリソース名で始まる場合、 *isExternal* は *True* です。それ以外の場合、 *isExternal == "
-"False* で *uri* は内部の場所を指します。PDF文書の場合、これは1から始まるページ番号 *nnnn* を示すために *#nnnn* "
-"であるか、名前付きの場所である必要があります。他の文書タイプの場合、フォーマットは異なります。たとえば、XPS文書の場合、 *uri = "
-"'../FixedDoc.fdoc#PG_2_LNK_1'* は、2ページ（1から始まる）を示します。"
+"be evaluated in conjunction with property `is_external`:"
+msgstr "⚠️"
 
-#: ../../link.rst:104 34b3bf38417944fb9b9c3a8d338eee7a
+#: ../../link.rst:106 1ae72418f5a149478c434b4bcc8b2981
+msgid ""
+"`is_external` is true: `uri` points to some target outside the current "
+"PDF, which may be an internet resource (`uri` starts with \"http://\" or "
+"similar), another file (`uri` starts with \"file:\" or \"file://\") or "
+"some other service like an e-mail address (`uri` starts with "
+"\"mailto:\")."
+msgstr "⚠️"
+
+#: ../../link.rst:112 934a89cc4d8d4d6980edcc2534955372
+msgid ""
+"`is_external` is false: `uri` will be `None` or point to an internal "
+"location. In case of PDF documents, this should either be *#nnnn* to "
+"indicate a 1-based (!) page number *nnnn*, or a named location. The "
+"format varies for other document types, for example "
+"\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
+"document."
+msgstr "⚠️"
+
+#: ../../link.rst:119 0075329357674ce396c4fd233b3c538d
 msgid "str"
 msgstr ""
 
-#: ../../link.rst:108 b718dd7f292b4c3ea51fb0cf51e52d5c
+#: ../../link.rst:123 663785619e5842b18aa29cb77d38d4ff
 msgid "An integer specifying the PDF :data:`xref`. Zero if not a PDF."
 msgstr "PDF :data:`xref` を指定する整数。PDFでない場合はゼロ。"
 
-#: ../../link.rst:110 8694b5e16645435f9352beb9526b8a46
+#: ../../link.rst:125 947fdd59c54544fc8cb88c3f8177e0c3
 msgid "int"
 msgstr ""
 
-#: ../../link.rst:114 440bb58a185b48f18ea2efee3c2ad4eb
+#: ../../link.rst:129 a2470e6ab7b64cf0a0f5c37226d7e3f7
 msgid "The next link or *None*."
 msgstr "次のリンクまたは *None*。"
 
-#: ../../link.rst:116 e3ab9a2d18554a0aa478622b9ed89b3a
+#: ../../link.rst:131 3c0c631182134ffd83be6a4e3b6d9c07
 msgid "*Link*"
 msgstr "*Link* （リンク）"
 
-#: ../../link.rst:120 28f38d695fd34f25af83e96785ecbb88
+#: ../../link.rst:135 b3aa0d0eed8a47708b575d0581ea6b0a
 msgid "The link destination details object."
 msgstr "リンクの対象の詳細オブジェクト。"
 
-#: ../../link.rst:122 204f6da85be048d5883cc92ec2163b40
+#: ../../link.rst:137 e0bd96a3ef414c2d8d0d698c066aedcd
 msgid ":ref:`linkDest`"
 msgstr ""
 
-#: ../../footer.rst:-1 fb044d6f56b84e9db1ef79225ac5fe87
+#: ../../footer.rst:60 6e8882d9af814043bb73fb13a2bb0d5a
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 8c269b31e9f145ff93ae33826f73796c
 msgid "Discord logo"
 msgstr ""
+
+#~ msgid ""
+#~ "A string specifying the link target. "
+#~ "The meaning of this property should "
+#~ "be evaluated in conjunction with "
+#~ "property *isExternal*. The value may be"
+#~ " *None*, in which case *isExternal =="
+#~ " False*. If *uri* starts with "
+#~ "*file://*, *mailto:*, or an internet "
+#~ "resource name, *isExternal* is *True*. "
+#~ "In all other cases *isExternal == "
+#~ "False* and *uri* points to an "
+#~ "internal location. In case of PDF "
+#~ "documents, this should either be *#nnnn*"
+#~ " to indicate a 1-based (!) page "
+#~ "number *nnnn*, or a named location. "
+#~ "The format varies for other document "
+#~ "types, e.g. *uri = "
+#~ "'../FixedDoc.fdoc#PG_2_LNK_1'* for page number "
+#~ "2 (1-based) in an XPS document."
+#~ msgstr ""
+#~ "リンクの対象を指定する文字列。このプロパティの意味は、プロパティ *isExternal* "
+#~ "と共に評価する必要があります。値が *None* の場合、*isExternal == "
+#~ "False* です。 *uri* が *file://、mailto:* "
+#~ "、またはインターネットリソース名で始まる場合、 *isExternal* は *True* "
+#~ "です。それ以外の場合、 *isExternal == False* で "
+#~ "*uri* は内部の場所を指します。PDF文書の場合、これは1から始まるページ番号 *nnnn* "
+#~ "を示すために *#nnnn* "
+#~ "であるか、名前付きの場所である必要があります。他の文書タイプの場合、フォーマットは異なります。たとえば、XPS文書の場合、 "
+#~ "*uri = '../FixedDoc.fdoc#PG_2_LNK_1'* "
+#~ "は、2ページ（1から始まる）を示します。"
 

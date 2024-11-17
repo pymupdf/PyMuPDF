@@ -47,7 +47,7 @@ https://en.wikipedia.org/wiki/The_quick_brown_fox_jumps_over_the_lazy_dog.
 import io
 import os
 import zipfile
-import fitz
+import pymupdf
 
 
 thisdir = os.path.dirname(os.path.abspath(__file__))
@@ -75,11 +75,11 @@ def analyze_page(page):
     """
     prect = page.rect  # page rectangle - will be our MEDIABOX later
     where = prect + (BORDER, BORDER, -BORDER, -BORDER)
-    TABLE = fitz.make_table(where, rows=1, cols=COLS)
+    TABLE = pymupdf.make_table(where, rows=1, cols=COLS)
 
     # extract rectangles covered by images on this page
     IMG_RECTS = sorted(  # image rects on page (sort top-left to bottom-right)
-        [fitz.Rect(item["bbox"]) for item in page.get_image_info()],
+        [pymupdf.Rect(item["bbox"]) for item in page.get_image_info()],
         key=lambda b: (b.y1, b.x0),
     )
 
@@ -101,7 +101,7 @@ def analyze_page(page):
             free_stripes.append((column.y0, column.y1))
 
         # make available cells of this column
-        CELLS = [fitz.Rect(column.x0, y0, column.x1, y1) for (y0, y1) in free_stripes]
+        CELLS = [pymupdf.Rect(column.x0, y0, column.x1, y1) for (y0, y1) in free_stripes]
         return CELLS
 
     # collection of available Story rectangles on page
@@ -117,7 +117,7 @@ HTML = myzip.read("quickfox.html").decode()
 # --------------------------------------------------------------
 # Make the Story object
 # --------------------------------------------------------------
-story = fitz.Story(HTML)
+story = pymupdf.Story(HTML)
 
 # modify the DOM somewhat
 body = story.body  # access HTML body
@@ -140,14 +140,14 @@ while img != None:
     img = next_img
 
 page_info = {}  # contains MEDIABOX and free CELLS per page
-doc = fitz.open(docname)
+doc = pymupdf.open(docname)
 for page in doc:
     pno, mediabox, cells = analyze_page(page)
     page_info[pno] = (mediabox, cells)
 doc.close()  # close target PDF for now - re-open later
 
 fileobject = io.BytesIO()  # let DocumentWriter write to memory
-writer = fitz.DocumentWriter(fileobject)  # define output writer
+writer = pymupdf.DocumentWriter(fileobject)  # define output writer
 
 more = 1  # stop if this ever becomes zero
 pno = 0  # count output pages
@@ -169,8 +169,8 @@ writer.close()  # close DocumentWriter output
 
 # Re-open writer output, read its pages and overlay target pages with them.
 # The generated pages have same dimension as their targets.
-src = fitz.open("pdf", fileobject)
-doc = fitz.open(doc.name)
+src = pymupdf.open("pdf", fileobject)
+doc = pymupdf.open(doc.name)
 for page in doc:  # overlay every target page with the prepared text
     if page.number >= src.page_count:
         print(f"Text only uses {src.page_count} target pages!")

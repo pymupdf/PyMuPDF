@@ -13,8 +13,9 @@ This class is a collection of utility methods and attributes, mainly around memo
 :meth:`Tools.gen_id`                   generate a unique identifier
 :meth:`Tools.store_shrink`             shrink the storables cache [#f1]_
 :meth:`Tools.mupdf_warnings`           return the accumulated MuPDF warnings
-:meth:`Tools.mupdf_display_errors`     return the accumulated MuPDF warnings
-:meth:`Tools.reset_mupdf_warnings`     empty MuPDF messages on STDOUT
+:meth:`Tools.mupdf_display_errors`     control whether MuPDF errors are displayed as messages.
+:meth:`Tools.mupdf_display_warnings`   control whether MuPDF warnings are displayed as messages.
+:meth:`Tools.reset_mupdf_warnings`     empty MuPDF warnings/errors message buffer.
 :meth:`Tools.set_aa_level`             set the anti-aliasing values
 :meth:`Tools.set_annot_stem`           set the prefix of new annotation / link ids
 :meth:`Tools.set_small_glyph_heights`  search and extract using small bbox heights
@@ -131,13 +132,34 @@ This class is a collection of utility methods and attributes, mainly around memo
 
    .. method:: mupdf_display_errors(value=None)
 
+      Control whether MuPDF errors should be displayed as |PyMuPDF| messages.
+
+      :arg value:
+      * If `None`, the current setting is left unchanged.
+      * Otherwise changes the current setting to `bool(value)`;
+        if *True*, future MuPDF errors will be shown as :ref:`Messages`.
+      * Regardless of this setting, MuPDF errors will always be stored in the warnings store.
+      * Upon import of |PyMuPDF| this value is *True*.
+
+      :returns: The current setting as *True* or *False*.
+
       * New in version 1.16.8
 
-      Show or set whether MuPDF errors should be displayed.
 
-      :arg bool value: if not a bool, the current setting is returned. If true, MuPDF errors will be shown on *sys.stderr*, otherwise suppressed. In any case, messages continue to be stored in the warnings store. Upon import of PyMuPDF this value is *True*.
+   .. method:: mupdf_display_warnings(value=None)
 
-      :returns: *True* or *False*
+      Control whether MuPDF warnings should be displayed as |PyMuPDF| messages.
+
+      :arg value:
+      * If `None`, the current setting is left unchanged.
+      * Otherwise changes the current setting to `bool(value)`;
+        if *True*, future MuPDF warnings will be shown as :ref:`Messages`.
+      * Regardless of this setting, MuPDF warnings will always be stored in the warnings store.
+      * Upon import of |PyMuPDF| this value is *True*.
+
+      :returns: The current setting as *True* or *False*.
+
+      * New in version 1.16.8
 
 
    .. method:: mupdf_warnings(reset=True)
@@ -184,7 +206,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       For an explanation of the term "TOFU" see `this Wikipedia article <https://en.wikipedia.org/wiki/Noto_fonts>`_::
 
-       In [1]: import fitz
+       In [1]: import pymupdf
        In [2]: TOOLS.fitz_config
        Out[2]:
        {'plotter-g': True,
@@ -231,40 +253,40 @@ Example Session
 
 .. code-block:: python
 
-   >>> import fitz
+   >>> import pymupdf
    # print the maximum and current cache sizes
-   >>> fitz.TOOLS.store_maxsize
+   >>> pymupdf.TOOLS.store_maxsize
    268435456
-   >>> fitz.TOOLS.store_size
+   >>> pymupdf.TOOLS.store_size
    0
-   >>> doc = fitz.open("demo1.pdf")
+   >>> doc = pymupdf.open("demo1.pdf")
    # pixmap creation puts lots of object in cache (text, images, fonts),
    # apart from the pixmap itself
    >>> pix = doc[0].get_pixmap(alpha=False)
-   >>> fitz.TOOLS.store_size
+   >>> pymupdf.TOOLS.store_size
    454519
    # release (at least) 50% of the storage
-   >>> fitz.TOOLS.store_shrink(50)
+   >>> pymupdf.TOOLS.store_shrink(50)
    13471
-   >>> fitz.TOOLS.store_size
+   >>> pymupdf.TOOLS.store_size
    13471
    # get a few unique numbers
-   >>> fitz.TOOLS.gen_id()
+   >>> pymupdf.TOOLS.gen_id()
    1
-   >>> fitz.TOOLS.gen_id()
+   >>> pymupdf.TOOLS.gen_id()
    2
-   >>> fitz.TOOLS.gen_id()
+   >>> pymupdf.TOOLS.gen_id()
    3
    # close document and see how much cache is still in use
    >>> doc.close()
-   >>> fitz.TOOLS.store_size
+   >>> pymupdf.TOOLS.store_size
    0
    >>>
 
 
 .. rubric:: Footnotes
 
-.. [#f1] This memory area is internally used by MuPDF, and it serves as a cache for objects that have already been read and interpreted, thus improving performance. The most bulky object types are images and also fonts. When an application starts up the MuPDF library (in our case this happens as part of *import fitz*), it must specify a maximum size for this area. PyMuPDF's uses the default value (256 MB) to limit memory consumption. Use the methods here to control or investigate store usage. For example: even after a document has been closed and all related objects have been deleted, the store usage may still not drop down to zero. So you might want to enforce that before opening another document.
+.. [#f1] This memory area is internally used by MuPDF, and it serves as a cache for objects that have already been read and interpreted, thus improving performance. The most bulky object types are images and also fonts. When an application starts up the MuPDF library (in our case this happens as part of *import pymupdf*), it must specify a maximum size for this area. PyMuPDF's uses the default value (256 MB) to limit memory consumption. Use the methods here to control or investigate store usage. For example: even after a document has been closed and all related objects have been deleted, the store usage may still not drop down to zero. So you might want to enforce that before opening another document.
 
 .. [#f2] By default PyMuPDF and MuPDF use `malloc()`/`free()` for dynamic memory management. One can instead force them to use the Python allocation functions `PyMem_New()`/`PyMem_Del()`, by modifying *fitz/fitz.i* to do `#define JM_MEMORY 1` and rebuilding PyMuPDF.
 

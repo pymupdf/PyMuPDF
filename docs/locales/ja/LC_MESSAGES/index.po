@@ -1,92 +1,85 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2015-2023, Artifex
+# PyMuPDF Japanese documentation
+# Copyright (C) 2015-2024, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2023.
-#
+# Jamie Lemon <jamie.lemon@artifex.com>, 2024.
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PyMuPDF 1.23.0rc1\n"
+"Project-Id-Version: PyMuPDF 1.24.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-05-06 22:50+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
-"Language-Team: ja <LL@li.org>\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../index.rst:23 07e75c6b81f445559b328d1f4d9df40e
+#: ../../index.rst:33 254b4ced6f9e4139ba51e7031b5b97ca
 msgid "About"
 msgstr ""
 
-#: ../../index.rst:30 ef6a832bbf874125878f98b794aa63f0
+#: ../../index.rst:40 be03f57792ef471c8adbc955816335d3
 msgid "User Guide"
 msgstr "ユーザーガイド"
 
-#: ../../index.rst:40 d4150a92b81946c79ea0f14297a5ea17
+#: ../../index.rst:52 049e220452894e95ba78d826add33ca5
 msgid "How to Guide"
 msgstr "使用方法ガイド"
 
-#: ../../index.rst:47 47b97da9840a421a93af39531d0702f5
+#: ../../index.rst:59 a23de115013e4b9481fe8794b5095510
 msgid "API Reference"
 msgstr "APIリファレンス"
 
-#: ../../index.rst:60 433f3e0f5bd54a4cb51bbb9d01a1e323
+#: ../../index.rst:72 bc219103d8174148ad3af3db5dc52170
 msgid "Other"
 msgstr "その他"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 16ac100c557f457e89fa6ad1246e7a6a
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 12c89f6c9c4e4a03896ea3b73dee2659
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 c601c4ee4cff4a78b54fb13904280e77
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../index.rst:7 b5fd3cd745a240b184ad7815539d1319
-msgid "Welcome to :title:`PyMuPDF`"
+#: ../../index.rst:20 d037326dd41240c084d7d1385edfd86e
+msgid "Welcome to |PyMuPDF|"
 msgstr "PyMuPDFへようこそ"
 
-#: ../../index.rst:15 34ba3f084ae84452bfab0e3a5196cf5e
+#: ../../index.rst:22 78df9fa6db184161a82c78d08ab9e966
 msgid ""
-":title:`PyMuPDF` is a high-performance Python library for data "
-"extraction, analysis, conversion & manipulation of PDF (and other) "
-"documents."
+"|PyMuPDF| is a high-performance **Python** library for data extraction, "
+"analysis, conversion & manipulation of **PDF** (and other) documents."
 msgstr ""
-":title:`PyMuPDF` は、:title:`PDF` （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な "
-":title:`Python` ライブラリです。"
+"|PyMuPDF| は、|PDF| （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な :title:`Python` "
+"ライブラリです。"
 
-#: ../../index.rst:17 5be631e7934641838b9686afc5d52aba
+#: ../../index.rst:24 c09bdeb70ae34cea8e53f75a5677e930
 msgid ""
-":title:`PyMuPDF` is hosted on `GitHub "
-"<https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI "
-"<https://pypi.org/project/PyMuPDF/>`_."
+"|PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and"
+" registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_."
 msgstr ""
-":title:`PyMuPDF` は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  "
-"でホストされ、`PyPI <https://pypi.org/project/PyMuPDF/>`_ に登録されています。"
+"|PyMuPDF| は  `GitHub <https://github.com/pymupdf/PyMuPDF>`_  でホストされ、`PyPI"
+" <https://pypi.org/project/PyMuPDF/>`_ に登録されています。"
 
-#: ../../index.rst:74 ab1ae7a8ea0d443aabc96118bc4983fc
-msgid "Find out about PyMuPDF Utilities"
-msgstr "PyMuPDF Utilitiesについて詳しく知る"
+#: ../../footer.rst:60 ../../index.rst:29 2915833a994f45e3a0bd8fb39e2f15d3
+#: cfa9d7068e8747b68358db3fff7d72ad
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../index.rst:76 667b5db05e8949f3b1e13c5ff51921e6
-msgid ""
-"The :title:`GitHub` repository `PyMuPDF-Utilities "
-"<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
-" examples, demonstrations and use cases."
-msgstr ""
-"GitHubリポジトリ `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-"
-"Utilities>`_ には、さまざまな例、デモンストレーション、およびユースケースが含まれています。"
-
-#: ../../footer.rst:-1 c610abdd3fa448a8b36c9ecc3340fddc
+#: ../../footer.rst:-1 7b4b36e36fac43a6b3475f65de27070e
 msgid "Discord logo"
 msgstr ""
 
@@ -95,4 +88,31 @@ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 #~ msgstr ""
+
+#~ msgid "Find out about **PyMuPDF Utilities**"
+#~ msgstr "PyMuPDF Utilitiesについて詳しく知る"
+
+#~ msgid ""
+#~ "The :title:`GitHub` repository `PyMuPDF-"
+#~ "Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_"
+#~ " contains a full range of examples,"
+#~ " demonstrations and use cases."
+#~ msgstr ""
+#~ "GitHubリポジトリ `PyMuPDF-Utilities "
+#~ "<https://github.com/pymupdf/PyMuPDF-Utilities>`_ "
+#~ "には、さまざまな例、デモンストレーション、およびユースケースが含まれています。"
+
+#~ msgid "Do you need **PDF** to **DOCX** conversion?"
+#~ msgstr "**PDF** から **DOCX** への変換が必要ですか?"
+
+#~ msgid ""
+#~ "We recommend the pdf2docx_ library which"
+#~ " uses **PyMuPDF** and the **python-"
+#~ "docx** library to provide simple "
+#~ "document conversion from **PDF** to "
+#~ "**DOCX** format."
+#~ msgstr ""
+#~ "**PyMuPDF** を使用する pdf2docx_ ライブラリと、**PDF** から"
+#~ " **DOCX** 形式への簡単なドキュメント変換を提供する **python-docx**"
+#~ " ライブラリをお勧めします。"
 

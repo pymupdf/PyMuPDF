@@ -283,16 +283,17 @@ Text Extraction Flags Defaults
     `flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE`
 
 
-=================== ==== ==== ===== === ==== ======= ===== ====== ======
-Indicator           text html xhtml xml dict rawdict words blocks search
-=================== ==== ==== ===== === ==== ======= ===== ====== ======
-preserve ligatures  1    1    1     1   1    1       1     1       1
-preserve whitespace 1    1    1     1   1    1       1     1       1
-preserve images     n/a  1    1     n/a 1    1       n/a   0       0
-inhibit spaces      0    0    0     0   0    0       0     0       0
-dehyphenate         0    0    0     0   0    0       0     0       1
-clip to mediabox    1    1    1     1   1    1       1     1       1
-=================== ==== ==== ===== === ==== ======= ===== ====== ======
+========================= ==== ==== ===== === ==== ======= ===== ====== ======
+Indicator                 text html xhtml xml dict rawdict words blocks search
+========================= ==== ==== ===== === ==== ======= ===== ====== ======
+preserve ligatures        1    1    1     1   1    1       1     1       0
+preserve whitespace       1    1    1     1   1    1       1     1       1
+preserve images           n/a  1    1     n/a 1    1       n/a   0       0
+inhibit spaces            0    0    0     0   0    0       0     0       0
+dehyphenate               0    0    0     0   0    0       0     0       1
+clip to mediabox          1    1    1     1   1    1       1     1       1
+use CID instead of U+FFFD 1    1    1     1   1    1       1     1       0
+========================= ==== ==== ===== === ==== ======= ===== ====== ======
 
 * **search** refers to the text search function.
 * **"json"** is handled exactly like **"dict"** and is hence left out.
@@ -300,7 +301,7 @@ clip to mediabox    1    1    1     1   1    1       1     1       1
 * An "n/a" specification means a value of 0 and setting this bit never has any effect on the output (but an adverse effect on performance).
 * If you are not interested in images when using an output variant which includes them by default, then by all means set the respective bit off: You will experience a better performance and much lower space requirements.
 
-To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::
+To show the effect of `TEXT_INHIBIT_SPACES` have a look at this example::
 
     >>> print(page.get_text("text"))
     H a l l o !
@@ -309,7 +310,7 @@ To show the effect of *TEXT_INHIBIT_SPACES* have a look at this example::
     i n  E n g l i s h
     . . .  l e t ' s  s e e
     w h a t  h a p p e n s .
-    >>> print(page.get_text("text", flags=fitz.TEXT_INHIBIT_SPACES))
+    >>> print(page.get_text("text", flags=pymupdf.TEXT_INHIBIT_SPACES))
     Hallo!
     More text
     is following

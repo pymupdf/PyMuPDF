@@ -9,14 +9,14 @@ Common Issues and their Solutions
 How To Dynamically Clean Up Corrupt :title:`PDFs`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This shows a potential use of :title:`PyMuPDF` with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
+This shows a potential use of |PyMuPDF| with another Python PDF library (the excellent pure Python package `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ is used here as an example).
 
 If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invoke PyMuPDF to recover from many problems like so::
 
  import sys
  from io import BytesIO
  from pdfrw import PdfReader
- import fitz
+ import pymupdf
 
  #---------------------------------------
  # 'Tolerant' PDF reader
@@ -32,7 +32,7 @@ If a clean, non-corrupt / decompressed PDF is needed, one could dynamically invo
 
      # either we need a password or it is a problem-PDF
      # create a repaired / decompressed / decrypted version
-     doc = fitz.open("pdf", ibuffer)
+     doc = pymupdf.open("pdf", ibuffer)
      if password is not None:  # decrypt if password provided
          rc = doc.authenticate(password)
          if not rc > 0:
@@ -51,10 +51,10 @@ With the command line utility *pdftk* (`available <https://www.pdflabs.com/tools
 
 
 
-How to Convert Any Document to :title:`PDF`
+How to Convert Any Document to |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here is a script that converts any :title:`PyMuPDF` :ref:`supported document<Supported_File_Types>` to a :title:`PDF`. These include XPS, EPUB, FB2, CBZ and image formats, including multi-page TIFF images.
+Here is a script that converts any |PyMuPDF| :ref:`supported document<Supported_File_Types>` to a |PDF|. These include XPS, EPUB, FB2, CBZ and image formats, including multi-page TIFF images.
 
 It features maintaining any metadata, table of contents and links contained in the source document::
 
@@ -81,27 +81,27 @@ It features maintaining any metadata, table of contents and links contained in t
     PyMuPDF v1.14.0+
     """
     import sys
-    import fitz
-    if not (list(map(int, fitz.VersionBind.split("."))) >= [1,14,0]):
+    import pymupdf
+    if not (list(map(int, pymupdf.VersionBind.split("."))) >= [1,14,0]):
         raise SystemExit("need PyMuPDF v1.14.0+")
     fn = sys.argv[1]
 
     print("Converting '%s' to '%s.pdf'" % (fn, fn))
 
-    doc = fitz.open(fn)
+    doc = pymupdf.open(fn)
 
     b = doc.convert_to_pdf()  # convert to pdf
-    pdf = fitz.open("pdf", b)  # open as pdf
+    pdf = pymupdf.open("pdf", b)  # open as pdf
 
-    toc= doc.het_toc()  # table of contents of input
+    toc= doc.get_toc()  # table of contents of input
     pdf.set_toc(toc)  # simply set it for output
     meta = doc.metadata  # read and set metadata
     if not meta["producer"]:
-        meta["producer"] = "PyMuPDF v" + fitz.VersionBind
+        meta["producer"] = "PyMuPDF v" + pymupdf.VersionBind
 
     if not meta["creator"]:
         meta["creator"] = "PyMuPDF PDF converter"
-    meta["modDate"] = fitz.get_pdf_now()
+    meta["modDate"] = pymupdf.get_pdf_now()
     meta["creationDate"] = meta["modDate"]
     pdf.set_metadata(meta)
 
@@ -113,7 +113,7 @@ It features maintaining any metadata, table of contents and links contained in t
         link_cnti += len(links)  # count how many
         pout = pdf[pinput.number]  # read corresp. output page
         for l in links:  # iterate though the links
-            if l["kind"] == fitz.LINK_NAMED:  # we do not handle named links
+            if l["kind"] == pymupdf.LINK_NAMED:  # we do not handle named links
                 print("named link page", pinput.number, l)
                 link_skip += 1  # count them
                 continue
@@ -124,56 +124,6 @@ It features maintaining any metadata, table of contents and links contained in t
     # say how many named links we skipped
     if link_cnti > 0:
         print("Skipped %i named links of a total of %i in input." % (link_skip, link_cnti))
-
-
-
-How to Deal with Messages Issued by :title:`MuPDF`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Since :title:`PyMuPDF` v1.16.0, **error messages** issued by the underlying :title:`MuPDF` library are being redirected to the Python standard device *sys.stderr*. So you can handle them like any other output going to this devices.
-
-In addition, these messages go to the internal buffer together with any :title:`MuPDF` warnings -- see below.
-
-We always prefix these messages with an identifying string *"mupdf:"*.
-If you prefer to not see recoverable MuPDF errors at all, issue the command `fitz.TOOLS.mupdf_display_errors(False)`.
-
-MuPDF warnings continue to be stored in an internal buffer and can be viewed using :meth:`Tools.mupdf_warnings`.
-
-Please note that MuPDF errors may or may not lead to Python exceptions. In other words, you may see error messages from which MuPDF can recover and continue processing.
-
-Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during `fitz.open` the document had to be repaired:
-
->>> import fitz
->>> doc = fitz.open("damaged-file.pdf")  # leads to a sys.stderr message:
-mupdf: cannot find startxref
->>> print(fitz.TOOLS.mupdf_warnings())  # check if there is more info:
-cannot find startxref
-trying to repair broken xref
-repairing PDF document
-object missing 'endobj' token
->>> doc.can_save_incrementally()  # this is to be expected:
-False
->>> # the following indicates whether there are updates so far
->>> # this is the case because of the repair actions:
->>> doc.is_dirty
-True
->>> # the document has nevertheless been created:
->>> doc
-fitz.Document('damaged-file.pdf')
->>> # we now know that any save must occur to a new file
-
-Example output for an **unrecoverable error**:
-
->>> import fitz
->>> doc = fitz.open("does-not-exist.pdf")
-mupdf: cannot open does-not-exist.pdf: No such file or directory
-Traceback (most recent call last):
-  File "<pyshell#1>", line 1, in <module>
-    doc = fitz.open("does-not-exist.pdf")
-  File "C:\Users\Jorj\AppData\Local\Programs\Python\Python37\lib\site-packages\fitz\fitz.py", line 2200, in __init__
-    _fitz.Document_swiginit(self, _fitz.new_Document(filename, stream, filetype, rect, width, height, fontsize))
-RuntimeError: cannot open does-not-exist.pdf: No such file or directory
->>>
 
 
 
@@ -215,78 +165,9 @@ Unfortunately there is not much you can do in most of these cases.
   * :meth:`Annot.set_flags` (annotation behaviour)
   * :meth:`Annot.set_info` (meta information, except changes to *content*)
   * :meth:`Annot.set_popup` (create popup or change its rect)
-  * :meth:`Annot.set_optional_content` (add / remove reference to optional content information)
+  * :meth:`Annot.set_oc` (add / remove reference to optional content information)
   * :meth:`Annot.set_open`
   * :meth:`Annot.update_file` (file attachment changes)
-
-Misplaced Item Insertions on PDF Pages
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Problem
-^^^^^^^^^
-
-You inserted an item (like an image, an annotation or some text) on an existing PDF page, but later you find it being placed at a different location than intended. For example an image should be inserted at the top, but it unexpectedly appears near the bottom of the page.
-
-Cause
-^^^^^^
-
-The creator of the PDF has established a non-standard page geometry without keeping it "local" (as they should!). Most commonly, the PDF standard point (0,0) at *bottom-left* has been changed to the *top-left* point. So top and bottom are reversed -- causing your insertion to be misplaced.
-
-The visible image of a PDF page is controlled by commands coded in a special mini-language. For an overview of this language consult "Operator Summary" on pp. 643 of the :ref:`AdobeManual`. These commands are stored in :data:`contents` objects as strings (*bytes* in PyMuPDF).
-
-There are commands in that language, which change the coordinate system of the page for all the following commands. In order to limit the scope of such commands to "local", they must be wrapped by the command pair *q* ("save graphics state", or "stack") and *Q* ("restore graphics state", or "unstack").
-
-.. highlight:: text
-
-So the PDF creator did this::
-
-    stream
-    1 0 0 -1 0 792 cm    % <=== change of coordinate system:
-    ...                  % letter page, top / bottom reversed
-    ...                  % remains active beyond these lines
-    endstream
-
-where they should have done this::
-
-    stream
-    q                    % put the following in a stack
-    1 0 0 -1 0 792 cm    % <=== scope of this is limited by Q command
-    ...                  % here, a different geometry exists
-    Q                    % after this line, geometry of outer scope prevails
-    endstream
-
-.. note::
-
-   * In the mini-language's syntax, spaces and line breaks are equally accepted token delimiters.
-   * Multiple consecutive delimiters are treated as one.
-   * Keywords "stream" and "endstream" are inserted automatically -- not by the programmer.
-
-.. highlight:: python
-
-Solutions
-^^^^^^^^^^
-
-Since v1.16.0, there is the property :attr:`Page.is_wrapped`, which lets you check whether a page's contents are wrapped in that string pair.
-
-If it is *False* or if you want to be on the safe side, pick one of the following:
-
-1. The easiest way: in your script, do a :meth:`Page.clean_contents` before you do your first item insertion.
-2. Pre-process your PDF with the MuPDF command line utility *mutool clean -c ...* and work with its output file instead.
-3. Directly wrap the page's :data:`contents` with the stacking commands before you do your first item insertion.
-
-**Solutions 1. and 2.** use the same technical basis and **do a lot more** than what is required in this context: they also clean up other inconsistencies or redundancies that may exist, multiple */Contents* objects will be concatenated into one, and much more.
-
-.. note:: For **incremental saves,** solution 1. has an unpleasant implication: it will bloat the update delta, because it changes so many things and, in addition, stores the **cleaned contents uncompressed**. So, if you use :meth:`Page.clean_contents` you should consider **saving to a new file** with (at least) *garbage=3* and *deflate=True*.
-
-**Solution 3.** is completely under your control and only does the minimum corrective action. There is a handy utility method :meth:`Page.wrap_contents` which -- as twe name suggests -- **wraps** the page's :data:`contents` object(s) by the PDF commands `q` and `Q`.
-
-This solution is extremely fast and the changes to the PDF are minimal. This is useful in situations where incrementally saving the file is desirable -- or even a must when the PDF has been digitally signed and you cannot change this status.
-
-We recommend the following snippet to get the situation under control:
-
-    >>> if not page.is_wrapped:
-            page.wrap_contents()
-    >>> # start inserting text, images and other objects here
 
 
 Missing or Unreadable Extracted Text

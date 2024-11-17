@@ -110,17 +110,17 @@ The following remarks are also valid for :ref:`IRect` objects:
 
       Creates the smallest containing :ref:`IRect`. This is **not** the same as simply rounding the rectangle's edges: The top left corner is rounded upwards and to the left while the bottom right corner is rounded downwards and to the right.
 
-      >>> fitz.Rect(0.5, -0.01, 123.88, 455.123456).round()
+      >>> pymupdf.Rect(0.5, -0.01, 123.88, 455.123456).round()
       IRect(0, -1, 124, 456)
 
       1. If the rectangle is **empty**, the result is also empty.
       2. **Possible paradox:** The result may be empty, **even if** the rectangle is **not** empty! In such cases, the result obviously does **not** contain the rectangle. This is because MuPDF's algorithm allows for a small tolerance (1e-3). Example:
 
-      >>> r = fitz.Rect(100, 100, 200, 100.001)
+      >>> r = pymupdf.Rect(100, 100, 200, 100.001)
       >>> r.is_empty  # rect is NOT empty
       False
       >>> r.round()  # but its irect IS empty!
-      fitz.IRect(100, 100, 200, 100)
+      pymupdf.IRect(100, 100, 200, 100)
       >>> r.round().is_empty
       True
 
@@ -152,7 +152,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: include_point(p)
 
-      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create a rectangle containing a series of points, start with (the empty) *fitz.Rect(p1, p1)* and successively include the remaining points.
+      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create a rectangle containing a series of points, start with (the empty) *pymupdf.Rect(p1, p1)* and successively include the remaining points.
 
       :arg p: Point to include.
       :type p: :ref:`Point`
@@ -160,7 +160,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: get_area([unit])
 
-      Calculate the area of the rectangle and, with no parameter, equals *abs(rect)*. Like an empty rectangle, the area of an infinite rectangle is also zero. So, at least one of *fitz.Rect(p1, p2)* and *fitz.Rect(p2, p1)* has a zero area.
+      Calculate the area of the rectangle and, with no parameter, equals *abs(rect)*. Like an empty rectangle, the area of an infinite rectangle is also zero. So, at least one of *pymupdf.Rect(p1, p2)* and *pymupdf.Rect(p2, p1)* has a zero area.
 
       :arg str unit: Specify required unit: respective squares of *px* (pixels, default), *in* (inches), *cm* (centimeters), or *mm* (millimeters).
       :rtype: float

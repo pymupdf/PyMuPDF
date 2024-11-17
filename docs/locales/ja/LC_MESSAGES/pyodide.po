@@ -1,0 +1,171 @@
+# PyMuPDF Japanese documentation
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2024.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.24.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-06 22:50+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
+"Language: ja\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 2745b7998ac74329b6e618e30f951139
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 f8c12cab9ad2437d8e9aa6344b8af46f
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDF は、PDF（およびその他の）ドキュメントのデータ抽出、解析、変換、および操作のための高性能な Python ライブラリです。"
+
+#: ../../header.rst:-1 984297a6bc5e42469f1d034a3581de5e
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDF テキスト抽出、PDF 画像抽出、PDF 変換、PDF テーブル、PDF 分割、PDF 作成、Pyodide、PyScript"
+
+#: ../../pyodide.rst:4 c5fe362fa46048e78f3c1936ce31967e
+msgid "Pyodide"
+msgstr ""
+
+#: ../../pyodide.rst:8 838e8b69c35a43c2847d61d273456976
+msgid "Overview"
+msgstr "概要"
+
+#: ../../pyodide.rst:11 84f8f30948ed4e4cb73b2ba6f4c3a521
+msgid ""
+"`Pyodide <https://pyodide.org>`_ is a client-side Python implementation "
+"that runs in a web browser."
+msgstr "`Pyodide <https://pyodide.org>`_ は、ウェブブラウザで実行されるクライアントサイドの Python 実装です"
+
+#: ../../pyodide.rst:14 0b4f3e45fd7b43d4ba834c2e8393eecd
+msgid "The Pyodide build of PyMuPDF is currently experimental."
+msgstr "PyMuPDF の Pyodide ビルドは現在実験的な段階です。"
+
+#: ../../pyodide.rst:18 f44b35eb18764cd4a8afac561ea0e3eb
+msgid "Building a PyMuPDF wheel for Pyodide"
+msgstr "Pyodide 用の PyMuPDF ホイールの構築"
+
+#: ../../pyodide.rst:20 40a7ecfc6b484029bcaf3ebecb7b1315
+msgid ""
+"A PyMuPDF wheel for Pyodide can be built by running "
+"`scripts/gh_release.py` with some environmental variable settings. This "
+"is regularly tested on Github by `.github/workflows/test_pyodide.yml`."
+msgstr "Pyodide 用の PyMuPDF ホイールは、いくつかの環境変数設定を使用して `scripts/gh_release.py` を実行することで構築できます。これは、`.github/workflows/test_pyodide.yml` によって定期的に GitHub 上でテストされています。"
+
+#: ../../pyodide.rst:24 4831ed5a9b4246679ee9fdf9b0ce34f6
+msgid ""
+"Here is an example of this, a single Linux command (to be run with the "
+"current directory set to a PyMuPDF checkout), that builds a Pyodide "
+"wheel::"
+msgstr "以下は、これの例です。現在のディレクトリが PyMuPDF のチェックアウトに設定されている場合に実行される単一の Linux コマンドです。"
+
+#: ../../pyodide.rst:34 aa67f27964e148f48aa1cfbcf773dafd
+msgid "This does the following (all inside Python venv's):"
+msgstr "これは以下の作業を行います（すべて Python venv 内で実行）："
+
+#: ../../pyodide.rst:36 25a80206d6744d0f89669884b6d87c77
+msgid ""
+"Download (git clone and pip install) and customise a Pyodide build "
+"environment."
+msgstr "Pyodide ビルド環境をダウンロード（git clone および pip install）し、カスタマイズします"
+
+#: ../../pyodide.rst:37 b6e3f8b5791b45d3a7edb674e9541406
+msgid "Download (git clone) the latest MuPDF."
+msgstr "最新の MuPDF をダウンロード（git clone）します。"
+
+#: ../../pyodide.rst:38 51f0ba82e13845c2a24fbe64670d7602
+msgid "Build MuPDF and PyMuPDF in the Pyodide build environment."
+msgstr "MuPDF と PyMuPDF を Pyodide ビルド環境でビルドします。"
+
+#: ../../pyodide.rst:39 a6e5c5e35ada4d2f9fd92ac2d957736e
+msgid "Create a wheel in `dist/`."
+msgstr "`dist/` にホイールを作成します"
+
+#: ../../pyodide.rst:41 d5946c4d517e48ebab06b8cbcfecb916
+msgid ""
+"For more information, see the comments for functions "
+"`build_pyodide_wheel()` and `pyodide_setup()` in `scripts/gh_release.py`."
+msgstr "詳細については、`scripts/gh_release.py` 内の関数 `build_pyodide_wheel()` と `pyodide_setup()` のコメントを参照してください。"
+
+#: ../../pyodide.rst:46 6483174053e246b99c0d3578648bb083
+msgid "Using a Pyodide wheel"
+msgstr "Pyodide ホイールの使用方法"
+
+#: ../../pyodide.rst:49 8d76d7e0aa7d406184be496c323cc980
+msgid ""
+"Upload the wheel (for example "
+"`PyMuPDF/dist/PyMuPDF-1.24.2-cp311-cp311-emscripten_3_1_32_wasm32.whl`) "
+"to a webserver which has been configured to allow Cross-origin resource "
+"sharing (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)."
+msgstr "`PyMuPDF/dist/PyMuPDF-1.24.2-cp311-cp311-emscripten_3_1_32_wasm32.whl` のようなホイールを、Cross-origin resource sharing（https://en.wikipedia.org/wiki/Cross-origin_resource_sharing）を許可するように構成されたウェブサーバにアップロードします。"
+
+#: ../../pyodide.rst:55 3745d239e68c44c38632823fe1352307
+msgid ""
+"The wheel can be used in a Pyodide console running in a web browser, or a"
+" JupyterLite notebook running in a web browser."
+msgstr "このホイールは、ウェブブラウザで実行されている Pyodide コンソールまたは JupyterLite ノートブックで使用できます。"
+
+#: ../../pyodide.rst:58 0e2f414692e543e8accd3e621c7e6f7f
+msgid "To create a Pyodide console, go to:"
+msgstr "Pyodide コンソールを作成するには、次のURLにアクセスしてください："
+
+#: ../../pyodide.rst:60 d8f11578ec374322a3063a60f0021753
+msgid "https://pyodide.org/en/stable/console.html"
+msgstr ""
+
+#: ../../pyodide.rst:62 a6ca99c19b0b4b2a90b3cbbbc49bcda9
+msgid "To create a JupyterLite notebook, go to:"
+msgstr "JupyterLite ノートブックを作成するには、次のURLにアクセスしてください："
+
+#: ../../pyodide.rst:64 36d14162034e4a1f84755b839c88d27c
+msgid "https://jupyterlite.readthedocs.io/en/latest/_static/lab/index.html"
+msgstr ""
+
+#: ../../pyodide.rst:67 5772fccf07374895affc3e8c6257536c
+msgid ""
+"In both these cases, one can use the following code to download the wheel"
+" (replace `url` with the URL of the uploaded wheel) and import it::"
+msgstr "れらの場合、以下のコードを使用してホイールをダウンロード（`url` をアップロードされたホイールの URL に置き換える）し、インポートできます："
+
+#: ../../pyodide.rst:75 142592469bfc46799ef407e5e750f1e7
+msgid ""
+"Note that `micropip.install()` does not work, because of PyMuPDF's use of"
+" shared libraries."
+msgstr "`micropip.install()` は PyMuPDF が共有ライブラリを使用しているため機能しないことに注意してください。"
+
+#: ../../pyodide.rst:80 2fdba7706df24a829f3753d40cfef214
+msgid "Loading a PDF document from a URL into PyMuPDF"
+msgstr "PyMuPDF にURLからPDFドキュメントを読み込む"
+
+#: ../../pyodide.rst:83 12691e8a3bd84e6e8598f42bb42ae8ec
+msgid ""
+"Pyodide browser console does not have generic network access, so for "
+"example `urllib.request.urlopen(url)` fails. But Pyodide has a built-in "
+"`pyodide.http` module that uses javascript internally, which one can use "
+"to download into a `bytes` instance, which can be used to create a "
+"PyMuPDF `Document` instance::"
+msgstr "Pyodide ブラウザコンソールには一般的なネットワークアクセスがないため、例えば `urllib.request.urlopen(url)` は失敗します。しかし、Pyodide には JavaScript を内部で使用する組み込みの `pyodide.http` モジュールがあります。これを使用して `bytes` インスタンスにダウンロードし、それを使用して PyMuPDF `Document` インスタンスを作成できます："
+
+#: ../../pyodide.rst:94 9b2e92638ebb431a8641d067fa9df1dc
+msgid "It looks like this only works with `https://`, not `http://`."
+msgstr "これは `https://` でのみ機能するようです。`http://` では機能しません。"
+
+#: ../../footer.rst:60 cff04745d8c348f2b39f3d643df2b573
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは、|version| までのすべてのバージョンをカバーしています"
+
+#: ../../footer.rst:-1 e4e95d4831e14ddbb5238d4d87f4e5b7
+msgid "Discord logo"
+msgstr ""
+

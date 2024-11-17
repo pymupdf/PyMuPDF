@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 
 import gc
 import os
@@ -7,8 +7,8 @@ import sys
 
 
 def merge_pdf(content: bytes, coverpage: bytes):
-   with fitz.Document(stream=coverpage, filetype='pdf') as coverpage_pdf:
-        with fitz.Document(stream=content, filetype='pdf') as content_pdf:
+   with pymupdf.Document(stream=coverpage, filetype='pdf') as coverpage_pdf:
+        with pymupdf.Document(stream=content, filetype='pdf') as content_pdf:
             coverpage_pdf.insert_pdf(content_pdf)
             doc = coverpage_pdf.write()
             return doc
@@ -19,6 +19,9 @@ def test_2791():
     '''
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
         print(f'test_2791(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
+        return
+    if platform.system().startswith('MSYS_NT-'):
+        print(f'test_2791(): not running on msys2 - psutil not available.')
         return
     #stat_type = 'tracemalloc'
     stat_type = 'psutil'
@@ -66,7 +69,7 @@ def test_2791():
         # yet know whether this is because rss is measured differently or a
         # genuine leak is being exposed.
         print(f'test_2791(): not asserting ratio because not running on Linux.')
-    elif not hasattr(fitz, 'mupdf'):
+    elif not hasattr(pymupdf, 'mupdf'):
         # Classic implementation has unfixed leaks.
         print(f'test_2791(): not asserting ratio because using classic implementation.')
     elif [int(x) for x in platform.python_version_tuple()[:2]] < [3, 11]:
@@ -77,7 +80,8 @@ def test_2791():
         assert ratio > 1 and ratio < 1.6
     elif stat_type == 'psutil':
         # Prior to fix, ratio was 1.043. After the fix, improved to 1.005, but
-        # varies and sometimes as high as 1.01.
-        assert ratio >= 1 and ratio < 1.015
+        # varies and sometimes as high as 1.010.
+        # 2024-06-03: have seen 0.99919 on musl linux, and sebras reports .025.
+        assert ratio >= 0.990 and ratio < 1.027, f'{ratio=}'
     else:
         pass

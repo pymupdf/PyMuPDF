@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,44 +19,48 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 b79b8f4355ca439794fe7845e0e70386
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 500d31126de540e9acaa752091d040e0
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 7e0216b9afd74634af4be7d1e25f0379
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../recipes-images.rst:7 d680d186e1fb49419c3b02d80f0c9050
+#: ../../recipes-images.rst:7 75b96aa841a3488fb7ee5a38943b93c6
 msgid "Images"
 msgstr "画像"
 
-#: ../../recipes-images.rst:14 cd8d2986e0464a359b149533113f73bc
+#: ../../recipes-images.rst:14 a298c66d96d64df98340aecb6f5861e4
 msgid "How to Make Images from Document Pages"
 msgstr "ドキュメントページから画像を作成する方法"
 
-#: ../../recipes-images.rst:16 d7278f0c6d684e5e9bc268c79b05a7f2
+#: ../../recipes-images.rst:16 944163981c0d4d7d8b16fd07cd1db5e4
 msgid ""
 "This little script will take a document filename and generate a PNG file "
 "from each of its pages."
 msgstr "この小さなスクリプトは、文書のファイル名を取得し、各ページからPNGファイルを生成します。"
 
-#: ../../recipes-images.rst:18 d03e038602f642d2b76efae5b393b3d2
+#: ../../recipes-images.rst:18 aa126f958ac749d3b2a9b675b5100f8d
 msgid "The document can be any :ref:`supported type<Supported_File_Types>`."
 msgstr "文書の種類は、:ref:`サポートされている <Supported_File_Types>` どんな形式でも構いません。"
 
-#: ../../recipes-images.rst:20 6691d13f6ef2413bbec3790f5eafc953
+#: ../../recipes-images.rst:20 a350535948514ff4892d1e10dd21d21e
 msgid ""
 "The script works as a command line tool which expects the filename being "
 "supplied as a parameter. The generated image files (1 per page) are "
 "stored in the directory of the script::"
 msgstr "このスクリプトはコマンドラインツールとして動作し、ファイル名をパラメータとして指定することを期待しています。生成された画像ファイル（1ページごとに1つ）は、スクリプトが格納されているディレクトリに保存されます。::"
 
-#: ../../recipes-images.rst:29 163ac269ddcc4a5a9829c1a8a799cacf
+#: ../../recipes-images.rst:29 09dcb969f6284b1997613fa11bc2456e
 msgid ""
 "The script directory will now contain PNG image files named *page-0.png*,"
 " *page-1.png*, etc. Pictures have the dimension of their pages with width"
@@ -70,11 +74,11 @@ msgstr ""
 " x 842ピクセルとなります。これらの画像は水平方向と垂直方向の解像度が96 "
 "dpiで、透明度はありません。これらの設定を変更することもできます。詳細については、次のセクションをお読みください。"
 
-#: ../../recipes-images.rst:37 07cee6ab0aed49f1be77fe039bb382d3
+#: ../../recipes-images.rst:37 ae6c1ace6e87407a83f1bded1aae3b0b
 msgid "How to Increase :index:`Image Resolution <pair: image; resolution>`"
 msgstr "画像の解像度を上げる方法"
 
-#: ../../recipes-images.rst:39 ef291a0536404704a0288314d4d417f1
+#: ../../recipes-images.rst:39 09f38ded1efc49f9a61591849b5c1fba
 msgid ""
 "The image of a document page is represented by a :ref:`Pixmap`, and the "
 "simplest way to create a pixmap is via method :meth:`Page.get_pixmap`."
@@ -82,27 +86,27 @@ msgstr ""
 "文書ページの画像はPixmapによって表されます。 :ref:`Pixmap` を作成するもっとも簡単な方法は、メソッド "
 ":meth:`Page.get_pixmap` を使うことです。"
 
-#: ../../recipes-images.rst:41 c8a0c80b7acf44c39cf9329dade3a91d
+#: ../../recipes-images.rst:41 82108f268cc64541ae6c64f0a7219b73
 msgid ""
 "This method has many options to influence the result. The most important "
 "among them is the :ref:`Matrix`, which lets you :index:`zoom`, rotate, "
 "distort or mirror the outcome."
 msgstr "このメソッドには結果に影響を与える多くのオプションがあります。その中でも最も重要なのは行列（Matrix）であり、これによって結果を拡大、回転、歪ませる、または反転することができます。"
 
-#: ../../recipes-images.rst:43 2e764eb04c254de6ba2dd4b0902eef6b
+#: ../../recipes-images.rst:43 cecaf62aa76c4282bcd139dc8326e6d7
 msgid ""
 ":meth:`Page.get_pixmap` by default will use the :ref:`Identity` matrix, "
 "which does nothing."
 msgstr ":meth:`Page.get_pixmap` はデフォルトで :ref:`Identity` 行列を使用しますが、これは何も行いません。"
 
-#: ../../recipes-images.rst:45 83c6537beb1c4fe5bd26a32cde381944
+#: ../../recipes-images.rst:45 aa1334f4b61e420c9ed1ae531363324d
 msgid ""
 "In the following, we apply a :index:`zoom factor <pair: resolution;zoom>`"
 " of 2 to each dimension, which will generate an image with a four times "
 "better resolution for us (and also about 4 times the size)::"
 msgstr "以下では、各次元に2倍のズームを適用し、結果として解像度が4倍向上した画像を生成します（そしてサイズも約4倍になります）。::"
 
-#: ../../recipes-images.rst:53 6287029baa33458a8cfd00d886aa0a24
+#: ../../recipes-images.rst:53 a1ad4e2be3c54c15b32c54fdf0a95f68
 msgid ""
 "Since version 1.19.2 there is a more direct way to set the resolution: "
 "Parameter `\"dpi\"` (dots per inch) can be used in place of `\"matrix\"`."
@@ -117,25 +121,25 @@ msgstr ""
 "page.get_pixmap(dpi=300)` "
 "と指定します。略記法の利便性に加えて、この方法の追加の利点は、dpiの値が画像ファイルとともに保存されることです。これはMatrixの記法を使用する場合に自動的に行われることはありません。"
 
-#: ../../recipes-images.rst:61 c138259599d2454a9e7c0c28050411e7
+#: ../../recipes-images.rst:61 b3ef6e1d5e4743bf959b7d3dea48f476
 msgid "How to Create :index:`Partial Pixmaps` (Clips)"
 msgstr "部分的なPixmap（クリップ）の作成方法"
 
-#: ../../recipes-images.rst:62 da4066486da647aa81dec345c114a660
+#: ../../recipes-images.rst:62 2119c85e3efc44a2aa0cbbdbf9e8c236
 msgid ""
 "You do not always need or want the full image of a page. This is the case"
 " e.g. when you display the image in a GUI and would like to fill the "
 "respective window with a zoomed part of the page."
 msgstr "常にページの完全な画像が必要なわけではありませんし、必要ともしない場合があります。例えば、GUIで画像を表示し、ページのズームされた部分でウィンドウを埋めたい場合などが該当します。"
 
-#: ../../recipes-images.rst:64 1444abbe773c479c892fd298e5330f1a
+#: ../../recipes-images.rst:64 b0c96ccb67494f4aa006dce47fe105d2
 msgid ""
 "Let's assume your GUI window has room to display a full document page, "
 "but you now want to fill this room with the bottom right quarter of your "
 "page, thus using a four times better resolution."
 msgstr "GUIウィンドウにフルの文書ページを表示するスペースがあると仮定しましょうが、現在はページの右下の四分の一でこのスペースを埋めたいとします。これにより、解像度が4倍向上します。"
 
-#: ../../recipes-images.rst:66 d1486ed453f9412b8d294fafc528957b
+#: ../../recipes-images.rst:66 e59f0a8cd5224970a7139421b63ae353
 msgid ""
 "To achieve this, define a rectangle equal to the area you want to appear "
 "in the GUI and call it \"clip\". One way of constructing rectangles in "
@@ -143,7 +147,7 @@ msgid ""
 " are doing here."
 msgstr "これを実現するために、GUIに表示したい領域に等しい矩形を定義し、「クリップ」と呼びます。PyMuPDFでは、矩形を構築する方法の1つは、対角線上にある2つの角を指定することです。これがここで行っていることです。"
 
-#: ../../recipes-images.rst:79 ed8ce4065c43403b9b20a4e7a4f3687a
+#: ../../recipes-images.rst:79 a31f4f0c73cb4cbe82cc4a2a37b9be59
 msgid ""
 "In the above we construct *clip* by specifying two diagonally opposite "
 "points: the middle point *mp* of the page rectangle, and its bottom "
@@ -152,11 +156,11 @@ msgstr ""
 "上記では、 `clip` を構築するために、2つの対角線上の点を指定しています：ページ矩形の中心点である `mp` と、その右下の点である "
 "`rect.br` です。"
 
-#: ../../recipes-images.rst:87 fed3d70d372b4a23a030acc293daec6a
+#: ../../recipes-images.rst:87 d3c74c4cc760494d8af99f5a3eaf5d21
 msgid "How to Zoom a Clip to a GUI Window"
 msgstr "GUIウィンドウにクリップをズームする方法"
 
-#: ../../recipes-images.rst:88 936514c927894e8592dec3565f838844
+#: ../../recipes-images.rst:88 d6d2b703e69a4550851724a8c250c7af
 msgid ""
 "Please also read the previous section. This time we want to **compute the"
 " zoom factor** for a clip, such that its image best fits a given GUI "
@@ -166,13 +170,13 @@ msgid ""
 " clip rectangle."
 msgstr "前のセクションもお読みください。今回は、クリップのズームファクターを計算して、その画像が指定されたGUIウィンドウに最適にフィットするようにします。つまり、画像の幅または高さ（または両方）がウィンドウの寸法と等しくなります。次のコードスニペットでは、GUIウィンドウのWIDTHとHEIGHTを提供する必要があります。それらはページのクリップ矩形を受け取る必要があります。"
 
-#: ../../recipes-images.rst:105 9862699ee9c741f0a73f7d6c704d418e
+#: ../../recipes-images.rst:105 31a3e0cb40ac4c5ab83e1f155622da23
 msgid ""
 "For the other way round, now assume you **have** the zoom factor and need"
 " to **compute the fitting clip**."
 msgstr "逆の場合は、ズームファクターがあると仮定し、フィッティングクリップを計算する必要があります。"
 
-#: ../../recipes-images.rst:107 bf39b6ecad64453ab8dce5407df15cee
+#: ../../recipes-images.rst:107 521e1e4a30214c75a0e66cd0f1458be8
 msgid ""
 "In this case we have `zoom = HEIGHT/clip.height = WIDTH/clip.width`, so "
 "we must set `clip.height = HEIGHT/zoom` and, `clip.width = WIDTH/zoom`. "
@@ -183,23 +187,23 @@ msgstr ""
 " = HEIGHT/zoom`  および  `clip.width = WIDTH/zoom`  "
 "と設定する必要があります。クリップ内のページ上の左上の点 tl を選択して、適切なピクマップを計算します。"
 
-#: ../../recipes-images.rst:124 a86bee99ebee4234b9aa099683d111b6
+#: ../../recipes-images.rst:124 61135fbb826645a0bd0b0046d663b3f2
 msgid "How to Create or Suppress Annotation Images"
 msgstr "注釈画像の作成または抑制方法"
 
-#: ../../recipes-images.rst:125 4b02e04e22df406681c3ecb13edf484d
+#: ../../recipes-images.rst:125 768fa61d60d64abb8bd4504bb8e7bba8
 msgid ""
 "Normally, the pixmap of a page also shows the page's annotations. "
 "Occasionally, this may not be desirable."
 msgstr "通常、ページのピクマップにはページの注釈も表示されます。しかし、時にはこれが望ましくない場合があります。"
 
-#: ../../recipes-images.rst:127 372ec888a18048eca1473ff01092324e
+#: ../../recipes-images.rst:127 fc07bc38b84c4958b75f2a969157d7c0
 msgid ""
 "To suppress the annotation images on a rendered page, just specify "
 "`annots=False` in :meth:`Page.get_pixmap`."
 msgstr "描画されたページから注釈画像を抑制するには、 :meth:`Page.get_pixmap` で  `annots=False` を指定します。"
 
-#: ../../recipes-images.rst:129 1fb5f9e70d254979867c857e3f5ef25b
+#: ../../recipes-images.rst:129 b5bfbe940028429a9c3ee6e1e8f7ff65
 msgid ""
 "You can also render annotations separately: they have their own "
 ":meth:`Annot.get_pixmap` method. The resulting pixmap has the same "
@@ -208,30 +212,30 @@ msgstr ""
 "注釈を個別にレンダリングすることもできます。注釈には独自の :meth:`Annot.get_pixmap` "
 "メソッドがあります。結果のピクマップは注釈の矩形と同じ寸法です。"
 
-#: ../../recipes-images.rst:141 a3726a20542041c1aa053941cc2374f3
+#: ../../recipes-images.rst:141 495413965a72428cb44d4f8bbc0334f2
 msgid "How to Extract Images: Non-PDF Documents"
 msgstr "画像の抽出方法：非PDFドキュメント"
 
-#: ../../recipes-images.rst:143 8f36f5ab8b0f476091c6a88652eec66c
+#: ../../recipes-images.rst:143 e465392a6a4d4b98ab7d171382bf758e
 msgid ""
 "In contrast to the previous sections, this section deals with "
 "**extracting** images **contained** in documents, so they can be "
 "displayed as part of one or more pages."
 msgstr "前のセクションとは対照的に、このセクションではドキュメントに含まれる画像の抽出に取り組みます。これにより、これらの画像を1つ以上のページの一部として表示することができます。"
 
-#: ../../recipes-images.rst:145 0a04779e13f84501b88d6d1dde3ee3f5
+#: ../../recipes-images.rst:145 d958b2143f92441c980704720d9dd8fc
 msgid ""
 "If you want to recreate the original image in file form or as a memory "
 "area, you have basically two options:"
 msgstr "元の画像をファイル形式またはメモリ領域として再作成したい場合、基本的に2つのオプションがあります："
 
-#: ../../recipes-images.rst:147 dc12358e80884436928ac95b3908a476
+#: ../../recipes-images.rst:147 f09bdef45f724ba2893a30d56cb21f6a
 msgid ""
 "Convert your document to a PDF, and then use one of the PDF-only "
 "extraction methods. This snippet will convert a document to PDF::"
 msgstr "ドキュメントをPDFに変換し、その後PDF専用の抽出方法のいずれかを使用します。以下のスニペットはドキュメントをPDFに変換します::"
 
-#: ../../recipes-images.rst:153 88d9ebd296a04153b05fb6977d5a29e9
+#: ../../recipes-images.rst:153 cff657b0b4d64d64894f593967871b63
 msgid ""
 "Use :meth:`Page.get_text` with the \"dict\" parameter. This works for all"
 " document types. It will extract all text and images shown on the page, "
@@ -246,11 +250,11 @@ msgstr ""
 " :ref:`TextPage` "
 "を参照してください。この方法はPDFファイルにも同じくうまく機能します。これにより、ページに表示されているすべての画像のリストが作成されます::"
 
-#: ../../recipes-images.rst:182 84b4377ce8b84c9eb01c6b4f689a0a6d
+#: ../../recipes-images.rst:182 7ebc294861924e2b9b47d6c377cff067
 msgid "How to Extract Images: PDF Documents"
 msgstr "画像の抽出方法：PDFドキュメント"
 
-#: ../../recipes-images.rst:184 bbdc36823bb441dfbd0c28fe3192c761
+#: ../../recipes-images.rst:184 125671b65cf24a649783c846d92d5338
 msgid ""
 "Like any other \"object\" in a PDF, images are identified by a cross "
 "reference number (:data:`xref`, an integer). If you know this number, you"
@@ -259,19 +263,19 @@ msgstr ""
 "PDF内の他のオブジェクトと同様に、画像は交差参照番号（ :data:`xref` "
 "、整数）によって識別されます。この番号を知っていれば、画像のデータにアクセスする方法が2つあります："
 
-#: ../../recipes-images.rst:186 165e362759f74d8f97874fefe5dbc115
+#: ../../recipes-images.rst:186 13aa08e716de4b16a2758745ec9c89d9
 msgid ""
 "**Create** a :ref:`Pixmap` of the image with instruction *pix = "
-"fitz.Pixmap(doc, xref)*. This method is **very** fast (single digit "
+"pymupdf.Pixmap(doc, xref)*. This method is **very** fast (single digit "
 "micro-seconds). The pixmap's properties (width, height, ...) will reflect"
 " the ones of the image. In this case there is no way to tell which image "
 "format the embedded original has."
 msgstr ""
-"**画像の** :ref:`Pixmap` を作成します。指示： `pix = fitz.Pixmap(doc, xref)` "
+"**画像の** :ref:`Pixmap` を作成します。指示： `pix = pymupdf.Pixmap(doc, xref)` "
 "。この方法は非常に高速です（単桁のマイクロ秒）。 :ref:`Pixmap` "
 "のプロパティ（幅、高さなど）は、画像のものと同じになります。この場合、埋め込まれたオリジナルの画像形式を判別する方法はありません。"
 
-#: ../../recipes-images.rst:188 bd4733596ee84c72a0ab21363d4e2e03
+#: ../../recipes-images.rst:188 80b36adc5ecd4cfb849eb2ba9532875b
 msgid ""
 "**Extract** the image with *img = doc.extract_image(xref)*. This is a "
 "dictionary containing the binary image data as *img[\"image\"]*. A number"
@@ -281,7 +285,7 @@ msgid ""
 "\"jpeg\", \"bmp\", \"tiff\", etc. can also occur. Use this string as the "
 "file extension if you want to store to disk. The execution speed of this "
 "method should be compared to the combined speed of the statements *pix = "
-"fitz.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG "
+"pymupdf.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG "
 "format, the speed of :meth:`Document.extract_image` is about the same "
 "(and the binary image data are identical). Otherwise, this method is "
 "**thousands of times faster**, and the **image data is much smaller**."
@@ -291,17 +295,17 @@ msgstr ""
 "で見つけることができるものとほぼ同じです。主な違いは、文字列 img[\"ext\"] であり、画像形式を指定します。\"png\" 以外にも "
 "\"jpeg\" 、 \"bmp\"、 \"tiff\" "
 "などの文字列が出現することがあります。ディスクに保存する場合は、この文字列をファイル拡張子として使用します。このメソッドの実行速度は、以下のステートメントの組み合わせ速度"
-" `pix = fitz.Pixmap(doc, xref);pix.tobytes()` "
+" `pix = pymupdf.Pixmap(doc, xref);pix.tobytes()` "
 "と比較する必要があります。埋め込まれた画像がPNG形式の場合、 :meth:`Document.extract_image` "
 "の速度はほぼ同じで（バイナリ画像データも同じです）、それ以外の場合は、このメソッドは数千倍高速であり、画像データも小さくなります"
 
-#: ../../recipes-images.rst:190 fe4223246a4746608c92017e8356153c
+#: ../../recipes-images.rst:190 c3436a4ae428484a983d168a48d73185
 msgid ""
 "The question remains: **\"How do I know those 'xref' numbers of "
 "images?\"**. There are two answers to this:"
 msgstr "**「どのようにして画像の'xref'番号を知るのか？」** これには2つの答えがあります："
 
-#: ../../recipes-images.rst:192 cc768dbd7fde437d9dd0f841935d068d
+#: ../../recipes-images.rst:192 e4d5be479fe34238a935de2b2d70f282
 msgid ""
 "**\"Inspect the page objects:\"** Loop through the items of "
 ":meth:`Page.get_images`. It is a list of list, and its items look like "
@@ -316,7 +320,7 @@ msgstr ""
 ":data:`xref` を含んでいます。この :data:`xref` "
 "を上記の方法の1つで使用できます。これは有効（損傷していない）なドキュメントに使用しますが、同じ画像が複数回（異なるページで）参照されることがあるため、複数回の抽出を避けるメカニズムを提供することが望ましいかもしれません。"
 
-#: ../../recipes-images.rst:193 050ec7fba75345e2baf8dd422a2d0e7d
+#: ../../recipes-images.rst:193 57cbb5f1a07d405c8e3e1c654d24c89b
 msgid ""
 "**\"No need to know:\"** Loop through the list of **all xrefs** of the "
 "document and perform a :meth:`Document.extract_image` for each one. If "
@@ -332,13 +336,13 @@ msgstr ""
 "を処理します。この :data:`xref` "
 "は画像ではありません。これはPDFが損傷している（使用できないページがある）場合に使用します。PDFにはしばしば他の画像の透明度を定義する特別な目的の「擬似画像」（ステンシルマスク）が含まれていることに注意してください。これらを抽出から除外するためのロジックを提供することがあるかもしれません。次のセクションも参照してください。"
 
-#: ../../recipes-images.rst:195 1a6af758ac4c412287f8975f2dbd1659
+#: ../../recipes-images.rst:195 ebf24f783e70477fbb81d7b228565a63
 msgid ""
 "For both extraction approaches, there exist ready-to-use general purpose "
 "scripts:"
 msgstr "これらの抽出方法の両方に対して、一般的な用途のスクリプトが存在します。"
 
-#: ../../recipes-images.rst:197 ae7a6ed566c846eb847194d6b4628f20
+#: ../../recipes-images.rst:197 60507efd2a2c42cab53a8d415f064423
 msgid ""
 "`extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_ "
@@ -348,7 +352,7 @@ msgstr ""
 "Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_  "
 "はページごとに画像を抽出します。"
 
-#: ../../recipes-images.rst:202 8de191df3a8a426a8e42902c67035d6b
+#: ../../recipes-images.rst:202 62fd9dffcd964f00b3b5376882ea97b9
 msgid ""
 "and `extract-from-xref.py <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ "
@@ -358,11 +362,11 @@ msgstr ""
 "Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_  "
 "はxrefテーブルによって画像を抽出します。"
 
-#: ../../recipes-images.rst:213 2241945cde7141b2926e0b21c36ba921
+#: ../../recipes-images.rst:213 71511e777a3b48e7abf8445f5146f0ae
 msgid "How to Handle Image Masks"
 msgstr "画像マスクの処理方法"
 
-#: ../../recipes-images.rst:214 1e7f01eedb854c3bb1a7454f5546e8ec
+#: ../../recipes-images.rst:214 e74ff92b3e224b1181b7651cf65f59ef
 msgid ""
 "Some images in PDFs are accompanied by **image masks**. In their simplest"
 " form, masks represent alpha (transparency) bytes stored as separate "
@@ -371,13 +375,13 @@ msgid ""
 "mask."
 msgstr "PDF内の一部の画像には画像マスクが付属しています。最も単純な形式では、マスクは別の画像として格納されたアルファ（透明度）バイトを表します。画像の元の形を復元するには、そのマスクから取得した透明度バイトを使用して画像を「補完」する必要があります。"
 
-#: ../../recipes-images.rst:216 f3d159147d5f429db4c50a9fc0cfe8ee
+#: ../../recipes-images.rst:216 5c186870ecdc4a5a8cffa9b38ffd90d4
 msgid ""
 "Whether an image does have such a mask can be recognized in one of two "
 "ways in PyMuPDF:"
 msgstr "PyMuPDFでは、画像にそのようなマスクがあるかどうかは次の2つの方法で認識できます："
 
-#: ../../recipes-images.rst:218 5d3e2656d8fb42399a5298dbb02dece6
+#: ../../recipes-images.rst:218 a4f56f945e124bb6b57ecb8a0f76e66a
 msgid ""
 "An item of :meth:`Document.get_page_images` has the general format "
 "`(xref, smask, ...)`, where *xref* is the image's :data:`xref` and "
@@ -387,7 +391,7 @@ msgstr ""
 "を持ちます。ここで、xrefは画像の :data:`xref` であり、 「smask」 が正の場合、それはマスクの :data:`xref` "
 "です。"
 
-#: ../../recipes-images.rst:219 08c89661af534caa8548f819a7df2245
+#: ../../recipes-images.rst:219 566b2d5dfd694ecdb43fd3aa3f6b0c9a
 msgid ""
 "The (dictionary) results of :meth:`Document.extract_image` have a key "
 "*\"smask\"*, which also contains any mask's :data:`xref` if positive."
@@ -395,26 +399,26 @@ msgstr ""
 ":meth:`Document.extract_image` の結果（辞書）には、キー「smask」があります。このキーには、マスクの "
 ":data:`xref` が含まれています。"
 
-#: ../../recipes-images.rst:221 374412cc50f844fd9f728f183acc0fc3
+#: ../../recipes-images.rst:221 38e96b6c37d848cba39becf9e6c34d83
 msgid ""
 "If *smask == 0* then the image encountered via :data:`xref` can be "
 "processed as it is."
 msgstr "`smask == 0` の場合、 :data:`xref` を介して遭遇した画像はそのまま処理できます。"
 
-#: ../../recipes-images.rst:223 e22aafa4157546f1a113c9bee44f8ecf
+#: ../../recipes-images.rst:223 4c94f9fc8b164c48b3fe64e15c6001d7
 msgid ""
 "To recover the original image using PyMuPDF, the procedure depicted as "
 "follows must be executed:"
 msgstr "PyMuPDFを使用して元の画像を復元するためには、以下に示す手順を実行する必要があります："
 
-#: ../../recipes-images.rst:232 cfeabfb0c9494288b1d48e028fad5be9
+#: ../../recipes-images.rst:232 83b69748e428405c90e52479ca5e9edb
 msgid ""
 "Step (1) creates a pixmap of the basic image. Step (2) does the same with"
 " the image mask. Step (3) adds an alpha channel and fills it with "
 "transparency information."
 msgstr "ステップ（1）では、基本画像のピクマップを作成します。ステップ（2）では、同じことを画像マスクで行います。ステップ（3）では、アルファチャンネルを追加し、透明情報で埋めます。"
 
-#: ../../recipes-images.rst:234 0465e6eba6b1489882b11f765d9cc2fe
+#: ../../recipes-images.rst:234 c315c2eed263410298ebb9fce137b356
 msgid ""
 "The scripts `extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_, "
@@ -428,21 +432,21 @@ msgstr ""
 "Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_  "
 "というスクリプトにもこのロジックが含まれています。"
 
-#: ../../recipes-images.rst:250 edc3938f74d943169adcfce9e59c33a4
+#: ../../recipes-images.rst:250 70d7fe15c7d6423996578130e4ce2927
 msgid "How to Make one PDF of all your Pictures (or Files)"
 msgstr "すべての写真（またはファイル）を1つのPDFにする方法"
 
-#: ../../recipes-images.rst:251 13250b22313447a49378eaa921fa257d
+#: ../../recipes-images.rst:251 f21fa587c5104b31b9ba286019d2684b
 msgid ""
 "We show here **three scripts** that take a list of (image and other) "
 "files and put them all in one PDF."
 msgstr "以下に、（画像およびその他の）ファイルのリストを受け取り、それらをすべて1つのPDFに結合する3つのスクリプトを示します。"
 
-#: ../../recipes-images.rst:253 8db51dc53f2f486bbb5af211dcde0f75
+#: ../../recipes-images.rst:253 9eeaede8a4a9426d936b8103e27d3acc
 msgid "**Method 1: Inserting Images as Pages**"
 msgstr "**方法1：画像をページとして挿入する方法**"
 
-#: ../../recipes-images.rst:255 04cf7f72b9444c11a2e1fa7676a5c764
+#: ../../recipes-images.rst:255 d18d3da4b6894cdea4e80fdcda5a580f
 msgid ""
 "The first one converts each image to a PDF page with the same dimensions."
 " The result will be a PDF with one page per image. It will only work for "
@@ -451,19 +455,19 @@ msgstr ""
 "最初の方法では、各画像を同じ寸法のPDFページに変換します。結果は、1つの画像に1ページのPDFとなります。ただし、 "
 ":ref:`サポートされている <Supported_File_Types>` 画像ファイル形式のみで動作します。::"
 
-#: ../../recipes-images.rst:278 6c7845d1b4374729a698450a0e24c405
+#: ../../recipes-images.rst:278 d0fea7d483754acf806cec4d50ef2f71
 msgid ""
 "This will generate a PDF only marginally larger than the combined "
 "pictures' size. Some numbers on performance:"
 msgstr "これにより、結合された画像のサイズとほとんど変わらないPDFが生成されます。パフォーマンスに関するいくつかの数値："
 
-#: ../../recipes-images.rst:280 09ef134fc0a84ded8f963c3d53cc1262
+#: ../../recipes-images.rst:280 9077d4d15df94d8f8a8362ea83160214
 msgid ""
 "The above script needed about 1 minute on my machine for 149 pictures "
 "with a total size of 514 MB (and about the same resulting PDF size)."
 msgstr "上記のスクリプトは、149枚の画像で合計サイズが514 MBの場合、私のマシン上で約1分かかりました（生成されたPDFのサイズもほぼ同じです）。"
 
-#: ../../recipes-images.rst:285 4f3d72e2427a489f9e0a9d3d2a3ae912
+#: ../../recipes-images.rst:285 ed6d395eb97a421fba84e629255c7e15
 msgid ""
 "Look `here <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/insert-images/insert.py>`_ for a more "
@@ -474,7 +478,7 @@ msgstr ""
 "Utilities/blob/master/examples/insert-images/insert.py>`_ "
 "をご覧ください：ディレクトリ選択ダイアログを提供し、サポートされていないファイルやファイルでないエントリをスキップします。"
 
-#: ../../recipes-images.rst:287 be8ecfd7af974ca684eb5403a6e693b7
+#: ../../recipes-images.rst:287 b8d7d09a8a554e49b37b07202716570d
 msgid ""
 "We might have used :meth:`Page.insert_image` instead of "
 ":meth:`Page.show_pdf_page`, and the result would have been a similar "
@@ -489,11 +493,11 @@ msgstr ""
 " `deflate = True` "
 "を使用する必要がありますが、これにより大量の画像の場合、実行時間が大幅に増加します。そのため、この代替方法はお勧めできません。"
 
-#: ../../recipes-images.rst:289 919f48f71ab74619a91f1eeaaf262290
+#: ../../recipes-images.rst:289 7891a26e4b2b48fd9625bcdb7825ba6d
 msgid "**Method 2: Embedding Files**"
 msgstr "**方法2：ファイルの埋め込み**"
 
-#: ../../recipes-images.rst:291 12a8a2dda35f4978b5aec689b1314d38
+#: ../../recipes-images.rst:291 603d5ff7f9394d65a92050bbd664ad96
 msgid ""
 "The second script **embeds** arbitrary files -- not only images. The "
 "resulting PDF will have just one (empty) page, required for technical "
@@ -501,7 +505,7 @@ msgid ""
 "suitable PDF viewer that can display and / or extract embedded files::"
 msgstr "2つ目のスクリプトは、画像だけでなく、任意のファイルを埋め込みます。技術的な理由で必要なので、結果として得られるPDFには1つだけ（空の）ページがあります。埋め込まれたファイルに後でアクセスするためには、埋め込まれたファイルを表示または抽出できる適切なPDFビューアが必要です::"
 
-#: ../../recipes-images.rst:316 16e83b9f78a84d6885f54a3a0276368f
+#: ../../recipes-images.rst:316 ea92969e9ddc44c18d462cb3def6b307
 msgid ""
 "This is by far the fastest method, and it also produces the smallest "
 "possible output file size. The above pictures needed 20 seconds on my "
@@ -515,11 +519,11 @@ msgstr ""
 "Utilities/tree/master/examples/embed-images/embed.py>`_  "
 "をご覧ください：ディレクトリ選択ダイアログを提供し、ファイルでないエントリをスキップします。"
 
-#: ../../recipes-images.rst:318 a742e991f6874bac88551a9d9f615c4a
+#: ../../recipes-images.rst:318 38574d99e53b4199936a6017e680e85b
 msgid "**Method 3: Attaching Files**"
 msgstr "**方法3：ファイルの添付**"
 
-#: ../../recipes-images.rst:320 5c1f491e07f44f7daef6b2fda2cb298d
+#: ../../recipes-images.rst:320 fc99220d834749fca6587728f1314e3b
 msgid ""
 "A third way to achieve this task is **attaching files** via page "
 "annotations see `here <https://github.com/pymupdf/PyMuPDF-"
@@ -530,20 +534,20 @@ msgstr ""
 "<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
 "/attach-images/attach.py>`_ をご覧ください。"
 
-#: ../../recipes-images.rst:322 9074aa4cfc944772a069149f6639a97c
+#: ../../recipes-images.rst:322 819726f4dd2e4cfc8b3d96f062587cb4
 msgid ""
 "This has a similar performance as the previous script and it also "
 "produces a similar file size. It will produce PDF pages which show a "
 "'FileAttachment' icon for each attached file."
 msgstr "これは前のスクリプトと同様のパフォーマンスを持ち、似たようなファイルサイズも生成します。それぞれの添付ファイルに対して「FileAttachment」アイコンが表示されるPDFページを生成します。"
 
-#: ../../recipes-images.rst:326 8a178b1889d14b25b402f6cfe5fab358
+#: ../../recipes-images.rst:326 3e7fdff8b27f44a69c67b168de97ec59
 msgid ""
 "Both, the **embed** and the **attach** methods can be used for "
 "**arbitrary files** -- not just images."
 msgstr "埋め込みと添付の両方の方法は、画像だけでなく任意のファイルにも使用できます。"
 
-#: ../../recipes-images.rst:328 df521dd605704bd6a5b9d57c542d1775
+#: ../../recipes-images.rst:328 b6368c76a5f24d44ac0210341678a0ff
 msgid ""
 "We strongly recommend using the awesome package `PySimpleGUI "
 "<https://pypi.org/project/PySimpleGUI/>`_ to display a progress meter for"
@@ -555,11 +559,11 @@ msgstr ""
 "<https://pypi.org/project/PySimpleGUI/>`_  "
 "の使用を強くお勧めします。これは純粋なPythonであり、Tkinter（追加のGUIパッケージは不要）を使用し、たった1行のコードを追加するだけで使えます！"
 
-#: ../../recipes-images.rst:342 e6e2f25f49bc4926b7eea9c7afd10f26
+#: ../../recipes-images.rst:342 7733c7f20e90493c806630e66a1c21b8
 msgid "How to Create Vector Images"
 msgstr "ベクター画像の作成方法"
 
-#: ../../recipes-images.rst:343 ede407b0351e42ed9b7870619d05bc62
+#: ../../recipes-images.rst:343 e64115395f224b348ffa400fb6c95149
 msgid ""
 "The usual way to create an image from a document page is "
 ":meth:`Page.get_pixmap`. A pixmap represents a raster image, so you must "
@@ -569,7 +573,7 @@ msgstr ""
 "ドキュメントページから画像を作成する通常の方法は、 :meth:`Page.get_pixmap` "
 "を使用することです。ピクマップはラスター画像を表しますので、作成時にその品質（つまり解像度）を決定する必要があります。後から変更することはできません。"
 
-#: ../../recipes-images.rst:345 b9376743b3b3483c8cb774eff1e5a8b0
+#: ../../recipes-images.rst:345 a72b1c57dc0e469eb055873c27980d29
 msgid ""
 "PyMuPDF also offers a way to create a **vector image** of a page in SVG "
 "format (scalable vector graphics, defined in XML syntax). SVG images "
@@ -577,190 +581,190 @@ msgid ""
 " raster graphic elements embedded therein)."
 msgstr "PyMuPDFはまた、SVG形式（XML構文で定義されたスケーラブルベクターグラフィックス）でページのベクター画像を作成する方法を提供しています。SVG画像はズームレベルで正確性を保持します（もちろん、埋め込まれたラスターグラフィックス要素を除く）。"
 
-#: ../../recipes-images.rst:347 8fe0084895b845dd8319ff6db773419b
+#: ../../recipes-images.rst:347 fac566640b2942dfbc2f872a42e8d8ff
 msgid ""
-"Instruction *svg = page.get_svg_image(matrix=fitz.Identity)* delivers a "
+"Instruction *svg = page.get_svg_image(matrix=pymupdf.Identity)* delivers a "
 "UTF-8 string *svg* which can be stored with extension \".svg\"."
 msgstr ""
-"指示  `svg = page.get_svg_image(matrix=fitz.Identity)`  はUTF-8文字列 *svg* "
+"指示  `svg = page.get_svg_image(matrix=pymupdf.Identity)`  はUTF-8文字列 *svg* "
 "を提供します。これは  \".svg\" の拡張子で保存できます。"
 
-#: ../../recipes-images.rst:363 43f0f5c1bbd84273af63da59948664a1
+#: ../../recipes-images.rst:363 45d87535148148a7887ec6f678612ae7
 msgid "How to Convert Images"
 msgstr "画像の変換方法"
 
-#: ../../recipes-images.rst:364 31d659ff94d649ad97ea04915be513f9
+#: ../../recipes-images.rst:364 9ef67ddbc4fc47a7b4f4c2e3b84e8104
 msgid ""
 "Just as a feature among others, PyMuPDF's image conversion is easy. It "
 "may avoid using other graphics packages like PIL/Pillow in many cases."
 msgstr "PyMuPDFの画像変換も他の機能と同様に簡単です。多くの場合、PIL/Pillowなどの他のグラフィックスパッケージを使用する必要がないかもしれません。"
 
-#: ../../recipes-images.rst:366 8619cfba817445a8ae46b9161c7637d0
+#: ../../recipes-images.rst:366 6d91e8bbda8342ce820ee4c36fcb67d0
 msgid "Notwithstanding that interfacing with Pillow is almost trivial."
 msgstr "ただし、Pillowとの連携はほとんど自明です。"
 
-#: ../../recipes-images.rst:369 5d677214843a45db9059c19ad3b18edb
+#: ../../recipes-images.rst:369 3f42b8ff237540478d4deb54b4c69f22
 msgid "**Input Formats**"
 msgstr "**入力フォーマット**"
 
-#: ../../recipes-images.rst:369 da9a707c5de643b08ea72a936044dc5c
+#: ../../recipes-images.rst:369 8a4ea0d9878641319c469606890fa7ce
 msgid "**Output Formats**"
 msgstr "**出力フォーマット**"
 
-#: ../../recipes-images.rst:369 3da559e3272e4e14a023dc2dadddea49
+#: ../../recipes-images.rst:369 ec2476cee20c4e7da53c857c4661a6c7
 msgid "**Description**"
 msgstr "**説明**"
 
-#: ../../recipes-images.rst:371 68c596d9935a4c3f9bfd1915c4dc63b6
+#: ../../recipes-images.rst:371 4607d5289d0c426e912bc22f304ec077
 msgid "BMP"
 msgstr ""
 
 #: ../../recipes-images.rst:371 ../../recipes-images.rst:373
 #: ../../recipes-images.rst:374 ../../recipes-images.rst:375
 #: ../../recipes-images.rst:376 ../../recipes-images.rst:383
-#: ../../recipes-images.rst:384 26c2bb2af1a04922b22c63b6a7110092
-#: 582a341ef769440e8a572c2992933f89 7280a1809ee74a598665fc9417bff28d
-#: 8e7987dac3584fd789d3379a2cdfd3c8 9d911429c33d4a13bc4ff25c6d01ddd5
-#: d49dc87a72b545e6b33ea2280762c63d fe6dd749add142149deb525afdbb25bf
+#: ../../recipes-images.rst:384 2ead7c36ab0c4053918c72ce66362785
+#: 4e660c8914e843ee9a2e4fb49925bc0a 5f3fe6b0196d41079205ede3fe06230b
+#: 6793c4c049124e9eadf7cae689c3d697 c7641e5643f1484c96af3f75c1cfd32e
+#: e9b2b89a79ed446ab7e45ef636c230be ef4927cf8f9a4ae3ba605110c6b585a6
 msgid "."
 msgstr ""
 
-#: ../../recipes-images.rst:371 636666c5ca874ef493aefcf69f143534
+#: ../../recipes-images.rst:371 3f7a345b61134be69c763f944b86f625
 msgid "Windows Bitmap"
 msgstr ""
 
-#: ../../recipes-images.rst:372 bef01b55053c445cbd71a8ce149ad8d9
-#: f3d521b3cd344873874a377dd48ab3ba
+#: ../../recipes-images.rst:372 81c936be96654750bb37dfa90371fea7
+#: f512eb7d04484c9381abbd53ab0814d2
 msgid "JPEG"
 msgstr ""
 
-#: ../../recipes-images.rst:372 bd1a18e1497a414c9f90538b374845a7
+#: ../../recipes-images.rst:372 060a94640eff454db28d53d4d8512bae
 msgid "Joint Photographic Experts Group"
 msgstr ""
 
-#: ../../recipes-images.rst:373 9b47775eb5c3441884c620e671e7890b
+#: ../../recipes-images.rst:373 5a5bce5762334dccaac717a138600a11
 msgid "JXR"
 msgstr ""
 
-#: ../../recipes-images.rst:373 79c34c211f1343378598e11c6ca18a59
+#: ../../recipes-images.rst:373 8084a429a67b400e95869b5b8e813071
 msgid "JPEG Extended Range"
 msgstr ""
 
-#: ../../recipes-images.rst:374 6071493a5bd54801828d27559a83e1f9
+#: ../../recipes-images.rst:374 ac0008b96fc84574ac51851dde019bf6
 msgid "JPX/JP2"
 msgstr ""
 
-#: ../../recipes-images.rst:374 ed05635948d74f5e9b4a1200a1b55a61
+#: ../../recipes-images.rst:374 ae20d82fbf9946b1a117506f920957ca
 msgid "JPEG 2000"
 msgstr ""
 
-#: ../../recipes-images.rst:375 00b71aa6a89941a38dffe8adda951390
+#: ../../recipes-images.rst:375 7737f497c488449c83644f7befb01c86
 msgid "GIF"
 msgstr ""
 
-#: ../../recipes-images.rst:375 28045997b47b47bc879433409964ef3e
+#: ../../recipes-images.rst:375 773d369d80ed49c6825c3b4703b47a7e
 msgid "Graphics Interchange Format"
 msgstr ""
 
-#: ../../recipes-images.rst:376 5309b8cee9c745b8a54ac0cd0a139f1d
+#: ../../recipes-images.rst:376 a69e97410ed649af8078c860300897c4
 msgid "TIFF"
 msgstr ""
 
-#: ../../recipes-images.rst:376 81f01fd2481c4c6694db03dc2b3c1ced
+#: ../../recipes-images.rst:376 80854bcacce1484e8055ecd1120618cf
 msgid "Tagged Image File Format"
 msgstr ""
 
-#: ../../recipes-images.rst:377 0de4a86c2276459e87d8f2e3f93803f2
-#: b7151a0adb4146b0a50d4a37d5097b97
+#: ../../recipes-images.rst:377 62535ec2b89647b3a1dbfcd2fd445425
+#: fd46daf3b36a4436b9a46a70f48d5a89
 msgid "PNG"
 msgstr ""
 
-#: ../../recipes-images.rst:377 a726b5a567fd4447b2988b8ec221c438
+#: ../../recipes-images.rst:377 3a16243f47ff4cc19d7774e1b3a1faf8
 msgid "Portable Network Graphics"
 msgstr ""
 
-#: ../../recipes-images.rst:378 16867f3d0c6b4919acc7178d8e32b1f6
-#: 2ae6a10c177c4a58b4d477591b0ea992
+#: ../../recipes-images.rst:378 28d47af9538c4bbb8b24f7ef8d21dea7
+#: d647c3224e764ff28b22133a4e7e697c
 msgid "PNM"
 msgstr ""
 
-#: ../../recipes-images.rst:378 504fc0323f064891b208b1e1af8d4768
+#: ../../recipes-images.rst:378 6432a408390f4b53bcf19e951c798432
 msgid "Portable Anymap"
 msgstr ""
 
-#: ../../recipes-images.rst:379 711c6d1d25804c4ab71773bcee4dd939
-#: d0b8de44789e445fb31e9af83cfedabd
+#: ../../recipes-images.rst:379 761c152c5cf94d1daad6980ed000fd05
+#: 7e5987d02baf45f18aa1084fc12247ef
 msgid "PGM"
 msgstr ""
 
-#: ../../recipes-images.rst:379 29d63be370a94cf6839039f33b9ed271
+#: ../../recipes-images.rst:379 f636f061523b4376926720d5c091f9fb
 msgid "Portable Graymap"
 msgstr ""
 
-#: ../../recipes-images.rst:380 4ad91a5ed1a44ab899b5df7489134441
-#: 8df6268a54574ba2a0849c0558d335c4
+#: ../../recipes-images.rst:380 2b6d0620de5b405c96cbfebc923c2627
+#: ea5467c853494cf293d646b04188bd0d
 msgid "PBM"
 msgstr ""
 
-#: ../../recipes-images.rst:380 5964b30bee59478cba58e038cc0bd611
+#: ../../recipes-images.rst:380 2606e0029c144ddca789ec1c87bb1df3
 msgid "Portable Bitmap"
 msgstr ""
 
-#: ../../recipes-images.rst:381 4adf654384dd4e3daa2f489d46d36238
-#: 9d71bc96e29246159e7952f645163064
+#: ../../recipes-images.rst:381 865e5c5173304f8f80504ce5c297c844
+#: cc80910e9f4d47fd828f4b9bea327b7b
 msgid "PPM"
 msgstr ""
 
-#: ../../recipes-images.rst:381 040bc45e328e40b39027aee6e5b77514
+#: ../../recipes-images.rst:381 d046e70faf6349e0945912120d4f3fae
 msgid "Portable Pixmap"
 msgstr ""
 
-#: ../../recipes-images.rst:382 5f5104363075418da1397ca0e05a2856
-#: 6e499b7ece3046eda6980b21a99a1772
+#: ../../recipes-images.rst:382 18d6ff4d6bba469c9b80a8f9ee0f3f09
+#: fd78c57b6d484f2c88a4a1042082d292
 msgid "PAM"
 msgstr ""
 
-#: ../../recipes-images.rst:382 55958b05cc0f478d8bcbc0503c1e2e53
+#: ../../recipes-images.rst:382 e8a77ca7da264a5fa6381654737a6c19
 msgid "Portable Arbitrary Map"
 msgstr ""
 
-#: ../../recipes-images.rst:383 5a8ba4618c714ae8bc04c58b5d91bfb4
+#: ../../recipes-images.rst:383 1231d144c5e843608669c22ec8201d1e
 msgid "PSD"
 msgstr ""
 
-#: ../../recipes-images.rst:383 9f987ea6d9bb41c4a6a0b582d798a778
+#: ../../recipes-images.rst:383 94f903822a6b44b89ed4e3f4221a3de7
 msgid "Adobe Photoshop Document"
 msgstr ""
 
-#: ../../recipes-images.rst:384 c9d17a059b114644acdce5ccdd8732dc
+#: ../../recipes-images.rst:384 2c28ad129a7847059eadbc8e05b5cbf2
 msgid "PS"
 msgstr ""
 
-#: ../../recipes-images.rst:384 737d014cb1614230ac99bcdebbc2f8f9
+#: ../../recipes-images.rst:384 faf1a2c21a6d4bffaa1cd7b2f5907da2
 msgid "Adobe Postscript"
 msgstr ""
 
-#: ../../recipes-images.rst:387 ac6bc5f285744395a8e15b07125cc56b
+#: ../../recipes-images.rst:387 583a4be61a2c4bafa4479cdce669865e
 msgid "The general scheme is just the following two lines::"
 msgstr "一般的なスキームは以下の2行です::"
 
-#: ../../recipes-images.rst:392 47937bb6965140568418f48736c48598
+#: ../../recipes-images.rst:392 3049609de6bc4e1db7867c7976b3e7a8
 msgid "**Remarks**"
 msgstr "**コメント**"
 
-#: ../../recipes-images.rst:394 a825411feada4417bb7ddaa1b95462e7
+#: ../../recipes-images.rst:394 9a4100622e7342b7b668ac0a89525c03
 msgid ""
-"The **input** argument of *fitz.Pixmap(arg)* can be a file or a bytes / "
+"The **input** argument of *pymupdf.Pixmap(arg)* can be a file or a bytes / "
 "io.BytesIO object containing an image."
-msgstr "`fitz.Pixmap(arg)` の入力引数は、画像を含むファイルまたはbytes/io.BytesIOオブジェクトを指定できます。"
+msgstr "`pymupdf.Pixmap(arg)` の入力引数は、画像を含むファイルまたはbytes/io.BytesIOオブジェクトを指定できます。"
 
-#: ../../recipes-images.rst:395 6556487db18f4b64a894fd6395b260ce
+#: ../../recipes-images.rst:395 0ce176989427408ba2c8d5c22fd12e88
 msgid ""
 "Instead of an output **file**, you can also create a bytes object via "
 "*pix.tobytes(\"yyy\")* and pass this around."
 msgstr "出力ファイルの代わりに、 `pix.tobytes(\"yyy\")` を使用してbytesオブジェクトを作成し、それを渡すこともできます。"
 
-#: ../../recipes-images.rst:396 ef9569bd6eb1487f9292203438d8f573
+#: ../../recipes-images.rst:396 013d948a6a4f43628638f2bca596e77e
 msgid ""
 "As a matter of course, input and output formats must be compatible in "
 "terms of colorspace and transparency. The *Pixmap* class has batteries "
@@ -769,11 +773,11 @@ msgstr ""
 "もちろん、入力と出力のフォーマットは、色空間と透過性の面で互換性が必要です。 :ref:`Pixmap` "
 "クラスには、必要に応じて調整を行うための組み込みの機能が備わっています。"
 
-#: ../../recipes-images.rst:399 fbc8088d01074d24aee2f9701622ef9e
+#: ../../recipes-images.rst:399 db5afa95c954491b847c9558b4f467a0
 msgid "**Convert JPEG to Photoshop**::"
 msgstr "**JPEGをPhotoshopに変換する**::"
 
-#: ../../recipes-images.rst:405 b66ec4a6e54d4d49be858a5313b34666
+#: ../../recipes-images.rst:405 5dab59f4100e47dcad8ec5cf2303da65
 msgid ""
 "Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image "
 "works exactly the same. Conversion to one of the **Portable Anymap** "
@@ -781,17 +785,17 @@ msgid ""
 "all Tkinter versions::"
 msgstr "アルファ付きのPNGをTkinterのPhotoImageに変換してください。これには、PPMへの変換を行う前にアルファバイトを削除する必要があります。"
 
-#: ../../recipes-images.rst:412 ef004587eda240b4ae171046e26a50dc
+#: ../../recipes-images.rst:412 35df4de09bcb4e389281f0f6440531ea
 msgid ""
 "Convert **PNG with alpha** to Tkinter PhotoImage. This requires "
 "**removing the alpha bytes**, before we can do the PPM conversion::"
 msgstr "アルファ付きのPNGをTkinterのPhotoImageに変換します。このためには、PPMへの変換を行う前にアルファバイトを取り除く必要があります。"
 
-#: ../../recipes-images.rst:429 8a9cc19f6c014da0963228e38371b4ae
+#: ../../recipes-images.rst:429 0ec56a6c3048426fbc82def0f2b46171
 msgid "How to Use Pixmaps: Gluing Images"
 msgstr "ピクスマップの使用方法：画像の結合"
 
-#: ../../recipes-images.rst:431 6faa8ffb31a8407e86ca4844f44e9a59
+#: ../../recipes-images.rst:431 1e71cdb5ae8f43cab911444027de4a0e
 msgid ""
 "This shows how pixmaps can be used for purely graphical, non-document "
 "purposes. The script reads an image file and creates a new image which "
@@ -800,19 +804,19 @@ msgstr ""
 "これは、ピクスマップを純粋にグラフィカルで、文書ではない目的で使用する方法を示しています。スクリプトは画像ファイルを読み込み、元の画像の3 * "
 "4タイルからなる新しい画像を作成します。"
 
-#: ../../recipes-images.rst:451 af964bfc28e7413ba66efaec78d8861a
+#: ../../recipes-images.rst:451 29a688c26cad4830ba8d587bc5b135e3
 msgid "This is the input picture:"
 msgstr "これが入力画像です。"
 
-#: ../../recipes-images.rst:456 8f9aadd396da441aae747252389abad6
+#: ../../recipes-images.rst:456 94a92ebed7104c9a9d87232b415a6579
 msgid "Here is the output:"
 msgstr "こちらが出力結果です。"
 
-#: ../../recipes-images.rst:473 521a208ba1344e4d880754209fea5107
+#: ../../recipes-images.rst:473 c78d07ca0d0645fe8ce5283291ff7138
 msgid "How to Use Pixmaps: Making a Fractal"
 msgstr "ピクスマップの使用方法：フラクタルの作成"
 
-#: ../../recipes-images.rst:475 ecfbb56d0be54db480e9a3762d6596e3
+#: ../../recipes-images.rst:475 1382f75b7284462d9d90d8c19fad1320
 msgid ""
 "Here is another Pixmap example that creates **Sierpinski's Carpet** -- a "
 "fractal generalizing the **Cantor Set** to two dimensions. Given a square"
@@ -824,32 +828,32 @@ msgstr ""
 "ここでは、もう一つのピクスマップの例を紹介します。シェルピンスキーのカーペット（Sierpinski's "
 "Carpet）と呼ばれるフラクタルで、カントール集合を2次元に一般化したものです。正方形のカーペットにおいて、9つの部分正方形（3行3列）をマークし、中央の正方形を切り抜きます。残りの8つの部分正方形に対しても同じ操作を行い、無限に続けます。その結果、面積がゼロであり、フラクタル次元は1.8928...となります。"
 
-#: ../../recipes-images.rst:477 a2897be7fdcf4f338d702e6d65bddd38
+#: ../../recipes-images.rst:477 1a8fccd933a24fb29b7405b992f2c17c
 msgid ""
 "This script creates an approximate image of it as a PNG, by going down to"
 " one-pixel granularity. To increase the image precision, change the value"
 " of n (precision)::"
 msgstr "このスクリプトは、1ピクセルの精度にまで細かくなったPNGの近似画像を作成します。画像の精度を高めるには、n（精度）の値を変更してください::"
 
-#: ../../recipes-images.rst:531 5fc34657ac9a415492a699ef8f90ff0e
+#: ../../recipes-images.rst:531 c2785789191f4680adb1d3888a3040e5
 msgid "The result should look something like this:"
 msgstr "結果は以下のようになるはずです："
 
-#: ../../recipes-images.rst:541 9ba4ac9543094a56859445cdf4586b3d
+#: ../../recipes-images.rst:541 3f11a635eefb4f1dbe8652ab23d84d32
 msgid "How to Interface with NumPy"
 msgstr "NumPyとのインターフェース方法"
 
-#: ../../recipes-images.rst:543 dab760ca33994a36a4fa3f81348a059a
+#: ../../recipes-images.rst:543 365b84100b8e45429a7578c8e237bd0d
 msgid ""
 "This shows how to create a PNG file from a numpy array (several times "
 "faster than most other methods)::"
 msgstr "これは、NumPy配列からPNGファイルを作成する方法を示しています（他の方法よりも数倍高速です）。"
 
-#: ../../recipes-images.rst:570 814d1607ad784cb3bc42b521e05339f6
+#: ../../recipes-images.rst:570 41f6a0f4ce414d4eb3f4d770433f425a
 msgid "How to Add Images to a PDF Page"
 msgstr "PDFページに画像を追加する方法"
 
-#: ../../recipes-images.rst:572 511ef2c818c64e7a8247849df0eb0a4d
+#: ../../recipes-images.rst:572 fc1f5cd9c6fc4d9783077fd7864755b2
 msgid ""
 "There are two methods to add images to a PDF page: "
 ":meth:`Page.insert_image` and :meth:`Page.show_pdf_page`. Both methods "
@@ -858,123 +862,123 @@ msgstr ""
 "PDFページに画像を追加するには、2つの方法があります： :meth:`Page.insert_image` と "
 ":meth:`Page.show_pdf_page` です。両方の方法には共通点がありますが、違いもあります。"
 
-#: ../../recipes-images.rst:575 245fb55ae5aa475cb63cc638d029a719
+#: ../../recipes-images.rst:575 f6bed4d92b4447548f8e685b63873544
 msgid "**Criterion**"
 msgstr "**基準**"
 
-#: ../../recipes-images.rst:575 7ee9dc2b68564bbeac09763d1b7e3540
+#: ../../recipes-images.rst:575 03eeb849f2fb416b902b8d32988ea350
 msgid ":meth:`Page.insert_image`"
 msgstr ""
 
-#: ../../recipes-images.rst:575 e800ef7f17b54b1491ca01f750198ca5
+#: ../../recipes-images.rst:575 4d3cad53d72841ec90aeccebf7483b58
 msgid ":meth:`Page.show_pdf_page`"
 msgstr ""
 
-#: ../../recipes-images.rst:577 43020c141c1b47a2be7f1ca4c60d3151
+#: ../../recipes-images.rst:577 e7e40ce8c4b948f09365129796d9fcfb
 msgid "displayable content"
 msgstr "表示可能なコンテンツ"
 
-#: ../../recipes-images.rst:577 764b698d1a214ca580aafdf4db1ddce4
+#: ../../recipes-images.rst:577 551e6603672c4e0dafe0e0d7a7298c0a
 msgid "image file, image in memory, pixmap"
 msgstr "画像ファイル、メモリ内の画像、ピクスマップ "
 
-#: ../../recipes-images.rst:577 4d300dd3fbea488e96caa19c1839baaf
+#: ../../recipes-images.rst:577 a8634d2d9eac41189d0ccd8fb7bb6f1f
 msgid "PDF page"
 msgstr "PDFページ"
 
-#: ../../recipes-images.rst:578 086ebe38d20d463b991877b682298846
+#: ../../recipes-images.rst:578 99d8289af4a7498d81841e09e222846d
 msgid "display resolution"
 msgstr "表示解像度 "
 
-#: ../../recipes-images.rst:578 ffeaa0e0d31348b188735720296e73df
+#: ../../recipes-images.rst:578 f7ee2430134e4899b54983345ce20135
 msgid "image resolution"
 msgstr "画像の解像度 "
 
-#: ../../recipes-images.rst:578 0c9c6bd5eed3478fb122ca4c5c2e18e1
+#: ../../recipes-images.rst:578 66e86a84353841ada79831c1ce7f4dc8
 msgid "vectorized (except raster page content)"
 msgstr "ベクトル化（ラスターページコンテンツを除く）"
 
-#: ../../recipes-images.rst:579 f5252f68b3d6465893a24e10301bd159
+#: ../../recipes-images.rst:579 a85104d948b143249aa5cf73d16f6688
 msgid "rotation"
 msgstr "回転"
 
-#: ../../recipes-images.rst:579 3ee6e2e0c02f4e018d014461a59b4edc
+#: ../../recipes-images.rst:579 607ea8bf8b014bd684619f32b956a1a3
 msgid "0, 90, 180 or 270 degrees"
 msgstr "0度、90度、180度または270度"
 
-#: ../../recipes-images.rst:579 4e9b9a7c0f4441b3b74b610cd2c4359f
+#: ../../recipes-images.rst:579 2db9fe6f73574ee7b33649bb0ba9ca21
 msgid "any angle"
 msgstr "任意の角度"
 
-#: ../../recipes-images.rst:580 5e9496cfdbe24b5282ffe076ce56d421
+#: ../../recipes-images.rst:580 92cb77d48fbb4c63af24d009bdae1683
 msgid "clipping"
 msgstr "クリッピング"
 
-#: ../../recipes-images.rst:580 5d5cdf337cb74613a878850e686d44e0
+#: ../../recipes-images.rst:580 6a869dfb1ec94eb597192e33bca23bf5
 msgid "no (full image only)"
 msgstr "いいえ（全体の画像のみ）"
 
 #: ../../recipes-images.rst:580 ../../recipes-images.rst:585
-#: 1c7ba9fed1e04a7fb64977bae38f85dc ac1040a7379f4b1c943fe03c7eda479e
+#: c8dd80f20a02432186369babe3d3c61c faee3b7bab8242d9a19e15a2f9ac4464
 msgid "yes"
 msgstr "はい"
 
-#: ../../recipes-images.rst:581 dc101d48c3524707a81ac6c323d56274
+#: ../../recipes-images.rst:581 1ee1a2e6211f486a90c386bef7dec18f
 msgid "keep aspect ratio"
 msgstr "アスペクト比を保持"
 
-#: ../../recipes-images.rst:581 c33248e6694b4c60b787256b981bdc90
-#: f46778af1f354f5cbc3c1858637968dc
+#: ../../recipes-images.rst:581 adc4a995440d4da496aea4bce6b82466
+#: f332b08e187747f09d8b98a35ef9a0c0
 msgid "yes (default option)"
 msgstr "はい（デフォルトオプション）"
 
-#: ../../recipes-images.rst:582 4a1e3c17fb5e4b80abf342ffbe87c70e
+#: ../../recipes-images.rst:582 05e8dfc30dbe40748aea71fc9619f7af
 msgid "transparency (water marking)"
 msgstr "透明性（ウォーターマーキング）"
 
-#: ../../recipes-images.rst:582 3fca02a8bc354c8f85980949f067cd57
+#: ../../recipes-images.rst:582 050f6199006e4ccfacee78df76a8d05c
 msgid "depends on the image"
 msgstr "画像による"
 
-#: ../../recipes-images.rst:582 d2a1d6ac8aa2498b9de17484074480e1
+#: ../../recipes-images.rst:582 81369e59d75d491e8d678432a35e6e74
 msgid "depends on the page"
 msgstr "ページによる"
 
-#: ../../recipes-images.rst:583 8377b425f594448c9758b2e172527266
+#: ../../recipes-images.rst:583 49aa81a6bb824fd2b3db842c1d2c7b29
 msgid "location / placement"
 msgstr "位置/配置 "
 
-#: ../../recipes-images.rst:583 986ef125a806463db0acd57fc6869a5a
-#: fe82a68b2aa247c6a6176479be5ad2ce
+#: ../../recipes-images.rst:583 a9be6f31c65f49b5b9c2b547af896a26
+#: e8a28741c85c44668a45bdf05a37e4ad
 msgid "scaled to fit target rectangle"
 msgstr "ターゲットの矩形にフィットするようにスケーリング"
 
-#: ../../recipes-images.rst:584 12e11b0f766349aa825471bb3a4c4ee4
+#: ../../recipes-images.rst:584 d93700c638204849bddde53668374202
 msgid "performance"
 msgstr "パフォーマンス"
 
-#: ../../recipes-images.rst:584 3071e35027384d75bdc4333630bca211
-#: ccf089e8315a47c6b6a85ee6b6efaf17
+#: ../../recipes-images.rst:584 1d9f1a8e4a694746aa7059ff5ad1e25f
+#: 5e4b8fd3e2f7483ab2c70701a52a3948
 msgid "automatic prevention of duplicates;"
 msgstr "重複の自動防止"
 
-#: ../../recipes-images.rst:585 255754d8b1f0428da3b8101aaf4c2591
+#: ../../recipes-images.rst:585 cb5b45d5d50f4260a253739da3341799
 msgid "multi-page image support"
 msgstr "マルチページ画像のサポート"
 
-#: ../../recipes-images.rst:585 60f663fd5dd0454590164275f6ae52ce
+#: ../../recipes-images.rst:585 831d03ce54e546b1b3aa02ef72a7a47b
 msgid "no"
 msgstr "いいえ"
 
-#: ../../recipes-images.rst:586 4fb69e920a304e52b27b15b5943439b1
+#: ../../recipes-images.rst:586 d93e83a8c44d4e559acf150584aa5766
 msgid "ease of use"
 msgstr "使いやすさ"
 
-#: ../../recipes-images.rst:586 df7583e806b74d04b26dd3ddc2863131
+#: ../../recipes-images.rst:586 11960f62e46047faa5006a43340aabcd
 msgid "simple, intuitive;"
 msgstr "シンプルで直感的"
 
-#: ../../recipes-images.rst:586 385f99b4a0884ea8998601f9bde1b68f
+#: ../../recipes-images.rst:586 e98055097b174ba5935e1c02fea4d6f5
 msgid ""
 "simple, intuitive; **usable for all document types** (including images!) "
 "after conversion to PDF via :meth:`Document.convert_to_pdf`"
@@ -982,7 +986,7 @@ msgstr ""
 "シンプルで直感的; :meth:`Document.convert_to_pdf` "
 "を介してPDFに変換後、すべてのドキュメントタイプ（画像を含む！）に使用可能"
 
-#: ../../recipes-images.rst:592 a0480cfebd984e65838a88b784875f40
+#: ../../recipes-images.rst:592 ccbaf150ba1b4d9192ce0dcbc8afa5c0
 msgid ""
 "Basic code pattern for :meth:`Page.insert_image`. **Exactly one** of the "
 "parameters **filename / stream / pixmap** must be given, if not re-"
@@ -991,7 +995,7 @@ msgstr ""
 ":meth:`Page.insert_image` の基本的なコードパターン。 **filename / stream / pixmap** "
 "のうち、1つだけを指定する必要があります（既存の画像を再挿入しない場合）::"
 
-#: ../../recipes-images.rst:607 db5e5522ecb14989b8775febf2ff49ff
+#: ../../recipes-images.rst:607 95fc1f1fe4614a4aa9e56ad6f7fc38ea
 msgid ""
 "Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF "
 "must be different :ref:`Document` objects (but may be opened from the "
@@ -1000,42 +1004,42 @@ msgstr ""
 ":meth:`Page.show_pdf_page` の基本的なコードパターン。ソースとターゲットのPDFは異なる :ref:`Document`"
 " オブジェクトである必要があります（ただし、同じファイルから開くこともできます）::"
 
-#: ../../recipes-images.rst:623 8797ad18b7dd417faa6a00fb41725815
+#: ../../recipes-images.rst:623 9e922a74c489421099a0e702712fdd58
 msgid "How to Use Pixmaps: Checking Text Visibility"
 msgstr "ピクスマップの使用方法：テキストの表示可否の確認"
 
-#: ../../recipes-images.rst:625 337f09174c12424797ac89bee1c42538
+#: ../../recipes-images.rst:625 2bdafc651bac41318b4a34e153c824e1
 msgid ""
 "Whether or not a given piece of text is actually visible on a page "
 "depends on a number of factors:"
 msgstr "特定のテキストが実際にページ上で表示されるかどうかは、いくつかの要因に依存します："
 
-#: ../../recipes-images.rst:627 97f49b78a3de48f9a564cba64889c0c4
+#: ../../recipes-images.rst:627 5a50d5aa11034a22b35e0f10a00c889c
 msgid ""
 "Text is not covered by another object but may have the same color as the "
 "background i.e., white-on-white etc."
 msgstr "テキストは他のオブジェクトによって隠されていないが、背景と同じ色を持っている場合があります。例えば、白文字が白地になっているなどです。"
 
-#: ../../recipes-images.rst:628 5b3b90104e1943caa3c793f527d384bf
+#: ../../recipes-images.rst:628 d2afd2e720a942cdbb8b824f28ad2f88
 msgid ""
 "Text may be covered by an image or vector graphics. Detecting this is an "
 "important capability, for example to uncover badly anonymized legal "
 "documents."
 msgstr "テキストは画像やベクトルグラフィックスによって隠されている場合があります。これを検出することは重要な機能であり、例えば不適切に匿名化された法的文書を解明するために使用されます。"
 
-#: ../../recipes-images.rst:629 50d4094df1fa4d6e8a614760cec8b27d
+#: ../../recipes-images.rst:629 60b73873bc724ab3bca737b319b30616
 msgid ""
 "Text is created hidden. This technique is usually used by OCR tools to "
 "store the recognized text in an invisible layer on the page."
 msgstr "テキストが非表示に作成される場合があります。これは通常、OCRツールが認識されたテキストをページ上の非表示レイヤーに保存するために使用されます。"
 
-#: ../../recipes-images.rst:631 289fea3bca034f46a8f788d8a9f4949d
+#: ../../recipes-images.rst:631 2eff9fc0d32f452f9ba37cc0aea8fe8e
 msgid ""
 "The following shows how to detect situation 1. above, or situation 2. if "
 "the covering object is unicolor::"
 msgstr "以下では、1.の状況を検出する方法、または2.の状況を検出する方法（カバーしているオブジェクトが単色である場合）を示します::"
 
-#: ../../recipes-images.rst:645 b5f6461e134c473f8808b58a8bc77844
+#: ../../recipes-images.rst:645 ecfb16ad4ba0444ca956718194752f84
 msgid ""
 "Method :meth:`Pixmap.color_topusage` returns a tuple `(ratio, pixel)` "
 "where 0 < ratio <= 1 and *pixel* is the pixel value of the color. Please "
@@ -1046,7 +1050,7 @@ msgstr ""
 "（比率、ピクセル）を返します。ここで、0 < ratio <= "
 "1であり、pixelは色のピクセル値です。複数のヒット矩形がある場合、ピクスマップを1回だけ作成することに注意してください。これにより、処理時間を大幅に節約できます。"
 
-#: ../../recipes-images.rst:647 b3b1d9014866488099a09d72590d4d33
+#: ../../recipes-images.rst:647 0eb5d30aaa1f4989aa211ee2351dc258
 msgid ""
 "The logic of the above code is: If the needle's rectangle is (\"almost\":"
 " > 95%) unicolor, then the text cannot be visible. A typical result for "
@@ -1056,7 +1060,11 @@ msgstr ""
 "上記のコードのロジックは次の通りです：もしニードルの矩形が「ほぼ」（95％以上）単色であれば、テキストは表示されないと判断します。テキストが表示される場合の典型的な結果は、背景の色（主に白）と比率が0.7から0.8程度で返されることがあります。例えば、`(0.685,"
 " b'xffxffxff')` のような結果が得られます。"
 
-#: ../../footer.rst:-1 027ef2d7ee4b42048191f817b6b61f21
+#: ../../footer.rst:71 e62bf15bea60489ba6796a439b0c5337
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 267d34b8252a473fa583fd41bd935e06
 msgid "Discord logo"
 msgstr ""
 

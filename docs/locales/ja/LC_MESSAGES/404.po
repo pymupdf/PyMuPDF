@@ -1,0 +1,56 @@
+# PyMuPDF Japanese documentation
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2024.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.24.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-05-06 22:50+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
+"Language: ja\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header-404.rst:-1 a6f30f9ef5464d349f5fdabbb8741927
+msgid "Artifex"
+msgstr ""
+
+#: ../../header-404.rst:-1 78c8644ffa434937b986c8c5111ff0c7
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header-404.rst:-1 ddd49518b56b4d249e215d7a61fb7447
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../404.rst:4 35b725124b6d4317ae091e2ae1221f28
+msgid "404!"
+msgstr ""
+
+#: ../../404.rst:7 f4ca6e0bb82f4262b343eb38a550aef7
+msgid "**This page is not available.**"
+msgstr "**このページは利用できません。**"
+
+#: ../../404.rst:10 fa09ea54fa304d9d98c54ed8252476bb
+msgid "Please use the menu or search to find what you are looking for."
+msgstr "メニューまたは検索を使用して、お探しのものを見つけてください。"
+
+#: ../../footer.rst:71 b4323a61d74e4c6fa8f71f222b8366e1
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 cf79ccc8d3c14094822a8f63711e6804
+msgid "Discord logo"
+msgstr ""
+

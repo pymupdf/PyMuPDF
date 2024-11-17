@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 13:53+0000\n"
+"POT-Creation-Date: 2024-09-11 21:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,17 +19,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../version.rst:3 30dbb59aa89f43f996724a33f64e7746
+#: ../../version.rst:3 14fecfaab1d7462ca7db3bed9a24e88d
+#, fuzzy
 msgid ""
-"This documentation covers **PyMuPDF v1.23.8** features as of **2023-12-19"
-" 00:00:01**."
-msgstr ""
+"This documentation covers **PyMuPDF v1.24.10** features as of "
+"**2024-09-02 00:00:01**."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../version.rst:5 44efbe24e53a4013b440119bf903d853
+#: ../../version.rst:5 a791a0fb3fcb472b813fb33b93260627
 msgid ""
 "The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
 " **MuPDF**."
+msgstr ""
+"**PyMuPDF** と **MuPDF** のメジャーおよびマイナーバージョンは常に同じになります。第三の修飾子（パッチレベル）のみが "
+"**MuPDF** のものと異なる場合があります。"
+
+#: ../../version.rst:7 5d97e665327d4a3f84cf075271536562
+msgid ""
+"Typically PyMuPDF is released more frequently than MuPDF so it will often"
+" be the case that the patch level of PyMuPDF will be greater than the "
+"embedded MuPDF."
+msgstr ""
+
+#: ../../version.rst:11 18d60688cbaf4b8a8d02a165228ce66c
+msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
+msgstr ""
+
+#: ../../version.rst:13 2eed4a2fb4024f6f90262b8a7f651dd1
+msgid "Also see `pymupdf_version` and `mupdf_version`."
 msgstr ""
 
 #~ msgid ""
@@ -46,5 +64,10 @@ msgstr ""
 #~ msgid ""
 #~ "This documentation covers **PyMuPDF v1.23.5**"
 #~ " features as of **2023-10-11 00:00:01**."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "This documentation covers **PyMuPDF v1.23.8**"
+#~ " features as of **2023-12-19 00:00:01**."
 #~ msgstr ""
 

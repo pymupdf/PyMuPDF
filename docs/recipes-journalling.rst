@@ -29,8 +29,8 @@ Description:
 * Make a new PDF and enable journalling. Then add a page and some text lines -- each as a separate operation.
 * Navigate within the journal, undoing and redoing these updates and displaying status and file results::
 
-    >>> import fitz
-    >>> doc=fitz.open()
+    >>> import pymupdf
+    >>> doc=pymupdf.open()
     >>> doc.journal_enable()
 
     >>> # try update without an operation:
@@ -103,7 +103,7 @@ Description:
     - the new update operation will become the new last entry.
 
 
-    >>> doc=fitz.open()
+    >>> doc=pymupdf.open()
     >>> doc.journal_enable()
     >>> doc.journal_start_op("Page insert")
     >>> page=doc.new_page()

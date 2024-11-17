@@ -31,7 +31,7 @@ multi-platform tool to maintain or manipulate SQLITE databases.
 import os
 import sqlite3
 
-import fitz
+import pymupdf
 
 # ----------------------------------------------------------------------
 # HTML template for the film report
@@ -73,7 +73,7 @@ select_casts = """SELECT name FROM actors WHERE film = "%s" ORDER BY name"""
 # -------------------------------------------------------------------
 # define the HTML Story and fill it with database data
 # -------------------------------------------------------------------
-story = fitz.Story(festival_template)
+story = pymupdf.Story(festival_template)
 body = story.body  # access the HTML body detail
 template = body.find(None, "id", "filmtemplate")  # find the template part
 
@@ -100,8 +100,8 @@ template.remove()  # remove the template
 # -------------------------------------------------------------------
 # generate the PDF
 # -------------------------------------------------------------------
-writer = fitz.DocumentWriter(__file__.replace(".py", ".pdf"), "compress")
-mediabox = fitz.paper_rect("a4")  # use pages in ISO-A4 format
+writer = pymupdf.DocumentWriter(__file__.replace(".py", ".pdf"), "compress")
+mediabox = pymupdf.paper_rect("a4")  # use pages in ISO-A4 format
 where = mediabox + (72, 36, -36, -72)  # leave page borders
 
 more = 1  # end of output indicator

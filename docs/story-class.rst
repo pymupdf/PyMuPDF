@@ -109,7 +109,7 @@ Story
       :arg float em: the default text font size.
       :arg archive: an :ref:`Archive` from which to load resources for rendering. Currently supported resource types are images and text fonts. If omitted, the story will not try to look up any such data and may thus produce incomplete output.
       
-         .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of `story = fitz.Story(archive=fitz.Archive("myfolder"))`, one can also shorter write `story = fitz.Story(archive="myfolder")`.
+         .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of `story = pymupdf.Story(archive=pymupdf.Archive("myfolder"))`, one can also shorter write `story = pymupdf.Story(archive="myfolder")`.
 
    .. method:: place(where)
 
@@ -258,7 +258,7 @@ Story
         
         :arg fn:
             A callable taking a floating point `parameter` and returning a
-            `fitz.Rect()`. If the rect is empty, we assume the story will
+            `pymupdf.Rect()`. If the rect is empty, we assume the story will
             not fit and do not call `self.place()`.
 
             Must guarantee that `self.place()` behaves monotonically when
@@ -356,10 +356,10 @@ A typical loop for executing a story with using this method would look like this
         </body>
     </html>
     """
-    MEDIABOX = fitz.paper_rect("letter")  # size of a page
+    MEDIABOX = pymupdf.paper_rect("letter")  # size of a page
     WHERE = MEDIABOX + (36, 36, -36, -36)  # leave borders of 0.5 inches
-    story =  fitz.Story(html=HTML)  # make the story
-    writer = fitz.DocumentWriter("test.pdf")  # make the writer
+    story =  pymupdf.Story(html=HTML)  # make the story
+    writer = pymupdf.DocumentWriter("test.pdf")  # make the writer
     pno = 0 # current page number
     more = 1  # will be set to 0 when done
     while more:  # loop until all story content is processed
@@ -397,6 +397,6 @@ The parameter passed to the `recorder` function is an object with the following 
 
 * `elpos.rect_num` (int) -- count of rectangles filled by the story so far.
 
-* `elpos.page_num` (int) -- page number; only present when using `fitz.Story.write*()` functions.
+* `elpos.page_num` (int) -- page number; only present when using `pymupdf.Story.write*()` functions.
 
 .. include:: footer.rst

@@ -15,7 +15,7 @@ import sys
 import os
 import time
 from multiprocessing import Pool, cpu_count
-import fitz
+import pymupdf
 
 # choose a version specific timer function (bytes == str in Python 2)
 mytime = time.clock if str is bytes else time.perf_counter
@@ -44,7 +44,7 @@ def render_page(vector):
     cpu = vector[1]  # number of CPUs
     filename = vector[2]  # document filename
     mat = vector[3]  # the matrix for rendering
-    doc = fitz.open(filename)  # open the document
+    doc = pymupdf.open(filename)  # open the document
     num_pages = doc.page_count  # get number of pages
 
     # pages per segment: make sure that cpu * seg_size >= num_pages!
@@ -64,7 +64,7 @@ def render_page(vector):
 if __name__ == "__main__":
     t0 = mytime()  # start a timer
     filename = sys.argv[1]
-    mat = fitz.Matrix(0.2, 0.2)  # the rendering matrix: scale down to 20%
+    mat = pymupdf.Matrix(0.2, 0.2)  # the rendering matrix: scale down to 20%
     cpu = cpu_count()
 
     # make vectors of arguments for the processes

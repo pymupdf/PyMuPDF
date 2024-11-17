@@ -31,7 +31,10 @@ A Font object also contains useful general information, like the font bbox, the 
 :attr:`~Font.flags`                  Collection of font properties
 :attr:`~Font.glyph_count`            Number of supported glyphs
 :attr:`~Font.name`                   Name of font
-:attr:`~Font.is_writable`            Font usable with :ref:`TextWriter`
+:attr:`~Font.is_bold`                `True` if bold
+:attr:`~Font.is_monospaced`          `True` if mono-spaced
+:attr:`~Font.is_serif`               `True` if serif, `False` if sans-serif
+:attr:`~Font.is_italic`              `True` if italic
 ==================================== ============================================
 
 
@@ -151,8 +154,8 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :returns: an *array.array* [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. *chr()* of every item in this array has a glyph in the font without using fallbacks. This is an example display of the supported glyphs:
 
-         >>> import fitz
-         >>> font = fitz.Font("math")
+         >>> import pymupdf
+         >>> font = pymupdf.Font("math")
          >>> vuc = font.valid_codepoints()
          >>> for i in vuc:
                print("%04X %s (%s)" % (i, chr(i), font.unicode_to_glyph_name(i)))
@@ -203,7 +206,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: `font.glyph_name_to_unicode("Sigma") = 931`, `font.glyph_name_to_unicode("sigma") = 963`. Refer to the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names and their unicode numbers. Example:
 
-         >>> font = fitz.Font("helv")
+         >>> font = pymupdf.Font("helv")
          >>> font.has_glyph(font.glyph_name_to_unicode("infinity"))
          True
 
@@ -228,7 +231,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :returns: a string representing the glyph's name. E.g. `font.glyph_name(ord("#")) = "numbersign"`. For an invalid code ".notfound" is returned.
       
-        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as `fitz.unicode_to_glyph_name()` and resp. `fitz.glyph_name_to_unicode()`.
+        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as `pymupdf.unicode_to_glyph_name()` and resp. `pymupdf.glyph_name_to_unicode()`.
 
    .. index::
       pair: text_length, fontsize
@@ -271,11 +274,11 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :returns: the lengths in points of the characters of a string when stored in the PDF. It works like :meth:`Font.text_length` broken down to single characters. This is a high speed method, used e.g. in :meth:`TextWriter.fill_textbox`. The following is true (allowing rounding errors): `font.text_length(text) == sum(font.char_lengths(text))`.
 
-         >>> font = fitz.Font("helv")
+         >>> font = pymupdf.Font("helv")
          >>> text = "PyMuPDF"
          >>> font.text_length(text)
          50.115999937057495
-         >>> fitz.get_text_length(text, fontname="helv")
+         >>> pymupdf.get_text_length(text, fontname="helv")
          50.115999937057495
          >>> sum(font.char_lengths(text))
          50.115999937057495
@@ -349,18 +352,22 @@ A Font object also contains useful general information, like the font bbox, the 
 
       :rtype: float
 
-   .. attribute:: is_writable
+   .. attribute:: is_bold
 
-      * New in v1.18.0
+   .. attribute:: is_italic
 
-      Indicates whether this font can be used with :ref:`TextWriter`.
+   .. attribute:: is_monospaced
+
+   .. attribute:: is_serif
+
+      A number of attributes with obvious meanings. Reflect some values of the :attr:`Font.flags` dictionary.
 
       :rtype: bool
 
 .. rubric:: Footnotes
 
-.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues. The :ref:`TextWriter` methods check :attr:`Font.is_writable`.
+.. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues.
 
-.. [#f2] The built-in module *array* has been chosen for its speed and its compact representation of values.
+.. [#f2] The built-in Python module `array` has been chosen for its speed and low memory requirement.
 
 .. include:: footer.rst

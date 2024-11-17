@@ -1,12 +1,3 @@
-/* icon sizing in the left menu */
-/*.icon-home {
-    width: 100px;
-    height: auto;
-}
-*/
-
-
-
 /* main document page: ensures pages fit to the available width and height */
 .wy-nav-content {
     min-width: 100%;
@@ -146,7 +137,7 @@ button.cta a {
 }
 
 .sidebar-logo {
-    width: 60px;
+    width: auto;
     height: 60px;
 }
 
@@ -155,16 +146,13 @@ button.cta a {
     padding: 0;
 }
 
-.sidebar-container .sidebar-search-container {
-    display: none;
-}
 
 .sidebar-search-container.top {
     /*position:sticky;
     top:10px;*/
     border-radius: 20px;
     border: solid #333 1px;
-    background-color: #fff;
+    /*background-color: #fff;*/
 }
 
 .sidebar-search-container.top .sidebar-search {
@@ -172,9 +160,8 @@ button.cta a {
     border-bottom: 0 !important;
 }
 
-/* really important ! */
-.sidebar-search {
-    color: #000 !important;
+.sidebar-drawer .sidebar-search-container {
+    width: 95%;
 }
 
 .toc-drawer .toc-title {
@@ -185,7 +172,7 @@ button.cta a {
 :target>h1:first-of-type, span:target~h1:first-of-type {
     background-color: #007aff !important;
     color: #fff !important;
-    padding-top: 40px; /* accomodates header search blocking target */
+    padding-top: 40px; /* accommodates header search blocking target */
     margin-top: -40px;
 }
 
@@ -195,18 +182,11 @@ button.cta a {
 span:target~h2:first-of-type, span:target~h3:first-of-type,
 span:target~h4:first-of-type, span:target~h5:first-of-type, span:target~h6:first-of-type {
     background-color: transparent !important;
-    padding-top: 40px; /* accomodates header search blocking target */
+    padding-top: 40px; /* accommodates header search blocking target */
     margin-top: -40px;
     text-decoration: underline;
 }
 
-
-/* Dark mode colors */
-@media (prefers-color-scheme: dark) {
-
-
-
-}
 
 /* small screens */
 @media all and (max-width : 550px)  {

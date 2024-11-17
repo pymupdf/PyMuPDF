@@ -1,8 +1,16 @@
 %module fitz_extra
 
+%pythoncode %{
+# pylint: disable=all
+%}
+
 %begin
 %{
 #define SWIG_PYTHON_INTERPRETER_NO_DEBUG
+
+/* This seems to be necessary on some Windows machines with Py_LIMITED_API,
+otherwise compilation can fail because free() and malloc() are not declared. */
+#include <stdlib.h>
 %}
 
 %init
@@ -100,14 +108,34 @@ static std::string repr(PyObject* x)
 {
     PyObject* repr = PyObject_Repr(x);
     PyObject* repr_str = PyUnicode_AsEncodedString(repr, "utf-8", "~E~");
-    const char* repr_str_s = PyBytes_AS_STRING(repr_str);
+    #ifdef Py_LIMITED_API
+        const char* repr_str_s = PyBytes_AsString(repr_str);
+    #else
+        const char* repr_str_s = PyBytes_AS_STRING(repr_str);
+    #endif
     std::string ret = repr_str_s;
     Py_DECREF(repr_str);
     Py_DECREF(repr);
     return ret;
 }
 
-/* These are also in fitz/__init__.py. */
+#ifdef Py_LIMITED_API
+    static PyObject* PySequence_ITEM(PyObject* o, Py_ssize_t i)
+    {
+        return PySequence_GetItem(o, i);
+    }
+
+    static const char* PyUnicode_AsUTF8(PyObject* o)
+    {
+        static PyObject* string = nullptr;
+        Py_XDECREF(string);
+        string = PyUnicode_AsUTF8String(o);
+        return PyBytes_AsString(string);
+    }
+#endif
+
+
+/* These are also in pymupdf/__init__.py. */
 const char MSG_BAD_ANNOT_TYPE[] = "bad annot type";
 const char MSG_BAD_APN[] = "bad or missing annot AP/N";
 const char MSG_BAD_ARG_INK_ANNOT[] = "arg must be seq of seq of float pairs";
@@ -140,6 +168,68 @@ const char MSG_PIXEL_OUTSIDE[] = "pixel(s) outside image";
 
 static PyObject *JM_UnicodeFromStr(const char *c);
 
+
+#ifdef _WIN32
+
+/* These functions are not provided on Windows. */
+
+int vasprintf(char** str, const char* fmt, va_list ap)
+{
+    va_list ap2;
+
+    va_copy(ap2, ap);
+    int len = vsnprintf(nullptr, 0, fmt, ap2);
+    va_end(ap2);
+    
+    char* buffer = (char*) malloc(len + 1);
+    if (!buffer)
+    {
+        *str = nullptr;
+        return -1;
+    }
+    va_copy(ap2, ap);
+    int len2 = vsnprintf(buffer, len + 1, fmt, ap2);
+    va_end(ap2);
+    assert(len2 == len);
+    *str = buffer;
+    return len;
+}
+
+int asprintf(char** str, const char* fmt, ...)
+{
+    va_list ap;
+    va_start(ap, fmt);
+    int ret = vasprintf(str, fmt, ap);
+    va_end(ap);
+
+    return ret;
+}
+#endif
+
+
+static void messagev(const char* format, va_list va)
+{
+    static PyObject* pymupdf_module = PyImport_ImportModule("pymupdf");
+    static PyObject* message_fn = PyObject_GetAttrString(pymupdf_module, "message");
+    char* text;
+    vasprintf(&text, format, va);
+    PyObject* text_py = PyString_FromString(text);
+    PyObject* args = PyTuple_Pack(1, text_py);
+    PyObject* ret = PyObject_CallObject(message_fn, args);
+    Py_XDECREF(ret);
+    Py_XDECREF(args);
+    Py_XDECREF(text_py);
+    free(text);
+}
+
+static void messagef(const char* format, ...)
+{
+    va_list args;
+    va_start(args, format);
+    messagev(format, args);
+    va_end(args);
+}
+
 PyObject* JM_EscapeStrFromStr(const char* c)
 {
     if (!c) return PyUnicode_FromString("");
@@ -166,6 +256,7 @@ PyObject* JM_EscapeStrFromBuffer(fz_buffer* buff)
     return val;
 }
 
+// Only used for mupdf < 1.24. mupdf >= 1.24 has pdf_rearrange_pages2().
 void rearrange_pages2(
         mupdf::PdfDocument& doc,
         PyObject *new_pages
@@ -323,7 +414,7 @@ static void JM_merge_range(
             counter++;
             if (show_progress > 0 && counter % show_progress == 0)
             {
-                fprintf(stderr, "Inserted %i of %i pages.\n", counter, total);
+                messagef("Inserted %i of %i pages.", counter, total);
             }
         }
     }
@@ -335,7 +426,7 @@ static void JM_merge_range(
             counter++;
             if (show_progress > 0 && counter % show_progress == 0)
             {
-                fprintf(stderr, "Inserted %i of %i pages.\n", counter, total);
+                messagef("Inserted %i of %i pages.", counter, total);
             }
         }
     }
@@ -468,44 +559,6 @@ static std::vector< std::string> JM_get_annot_id_list(mupdf::PdfPage& page)
     }
     return names;
 }
-
-#ifdef _WIN32
-
-/* These functions are not provided on Windows. */
-
-int vasprintf(char** str, const char* fmt, va_list ap)
-{
-    va_list ap2;
-
-    va_copy(ap2, ap);
-    int len = vsnprintf(nullptr, 0, fmt, ap2);
-    va_end(ap2);
-    
-    char* buffer = (char*) malloc(len + 1);
-    if (!buffer)
-    {
-        *str = nullptr;
-        return -1;
-    }
-    va_copy(ap2, ap);
-    int len2 = vsnprintf(buffer, len + 1, fmt, ap2);
-    va_end(ap2);
-    assert(len2 == len);
-    *str = buffer;
-    return len;
-}
-
-int asprintf(char** str, const char* fmt, ...)
-{
-    va_list ap;
-    va_start(ap, fmt);
-    int ret = vasprintf(str, fmt, ap);
-    va_end(ap);
-
-    return ret;
-}
-#endif
-
 
 //------------------------------------------------------------------------
 // Add a unique /NM key to an annotation or widget.
@@ -703,7 +756,7 @@ static int DICT_SETITEMSTR_DROP(PyObject *dict, const char *key, PyObject *value
 
 
 //-----------------------------------------------------------------------------
-// Functions converting betwenn PySequences and fitz geometry objects
+// Functions converting between PySequences and pymupdf geometry objects
 //-----------------------------------------------------------------------------
 static int
 jm_init_item(PyObject* obj, Py_ssize_t idx, int* result)
@@ -892,7 +945,6 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
         m = PySequence_Size(items);
         if (!n) goto end;
         
-        fflush(stderr);
         if (n != m)
         {
             throw std::runtime_error("internal error finding outline xrefs");
@@ -1281,43 +1333,6 @@ static PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj)
         return names;
     }
     return lll_JM_get_annot_xref_list( page_obj.m_internal);
-    
-    mupdf::PdfObj annots = mupdf::pdf_dict_get(page_obj, PDF_NAME(Annots));
-    /*if (!annots.m_internal)
-    {
-        return names;
-    }*/
-    int n = mupdf::pdf_array_len(annots);
-    for (int i = 0; i < n; i++)
-    {
-        mupdf::PdfObj annot_obj = mupdf::pdf_array_get(annots, i);
-        int xref = mupdf::pdf_to_num(annot_obj);
-        mupdf::PdfObj subtype = mupdf::pdf_dict_get(annot_obj, PDF_NAME(Subtype));
-        if (!subtype.m_internal)
-        {
-            continue;  // subtype is required
-        }
-        int type = mupdf::pdf_annot_type_from_string(mupdf::pdf_to_name(subtype));
-        if (type == PDF_ANNOT_UNKNOWN)
-        {
-            continue;  // only accept valid annot types
-        }
-        mupdf::PdfObj   id = mupdf::pdf_dict_gets(annot_obj, "NM");
-        s_list_append_drop(names, Py_BuildValue("iis", xref, type, mupdf::pdf_to_text_string(id)));
-    }
-    return names;
-}
-
-static PyObject* JM_get_annot_xref_list2(mupdf::PdfPage& page)
-{
-    mupdf::PdfObj   page_obj = page.obj();
-    return JM_get_annot_xref_list(page_obj);
-}
-
-static PyObject* JM_get_annot_xref_list2(mupdf::FzPage& page)
-{
-    mupdf::PdfPage pdf_page = mupdf::pdf_page_from_fz_page(page);
-    return JM_get_annot_xref_list2(pdf_page);
 }
 
 static mupdf::FzBuffer JM_object_to_buffer(const mupdf::PdfObj& what, int compress, int ascii)
@@ -1325,6 +1340,7 @@ static mupdf::FzBuffer JM_object_to_buffer(const mupdf::PdfObj& what, int compre
     mupdf::FzBuffer res = mupdf::fz_new_buffer(512);
     mupdf::FzOutput out(res);
     mupdf::pdf_print_obj(out, what, compress, ascii);
+    out.fz_close_output();
     mupdf::fz_terminate_buffer(res);
     return res;
 }
@@ -1370,274 +1386,9 @@ static PyObject* xref_object(mupdf::FzDocument& document, int xref, int compress
 }
 
 
-//-----------------------------------------------------------------------------
-// perform some cleaning if we have /EmbeddedFiles:
-// (1) remove any /Limits if /Names exists
-// (2) remove any empty /Collection
-// (3) set /PageMode/UseAttachments
-//-----------------------------------------------------------------------------
-static void JM_embedded_clean(mupdf::PdfDocument& pdf)
-{
-    mupdf::PdfObj root = mupdf::pdf_dict_get(mupdf::pdf_trailer(pdf), PDF_NAME(Root));
-
-    // remove any empty /Collection entry
-    mupdf::PdfObj coll = mupdf::pdf_dict_get(root, PDF_NAME(Collection));
-    if (coll.m_internal && mupdf::pdf_dict_len(coll) == 0)
-    {
-        mupdf::pdf_dict_del(root, PDF_NAME(Collection));
-    }
-    mupdf::PdfObj efiles = mupdf::pdf_dict_getl(
-            &root,
-            PDF_NAME(Names),
-            PDF_NAME(EmbeddedFiles),
-            PDF_NAME(Names),
-            nullptr
-            );
-    if (efiles.m_internal)
-    {
-        mupdf::pdf_dict_put_name(root, PDF_NAME(PageMode), "UseAttachments");
-    }
-}
-
-//------------------------------------------------------------------------
-// Store ID in PDF trailer
-//------------------------------------------------------------------------
-static void JM_ensure_identity(mupdf::PdfDocument& pdf)
-{
-    unsigned char rnd[16];
-    mupdf::PdfObj id = mupdf::pdf_dict_get(mupdf::pdf_trailer(pdf), PDF_NAME(ID));
-    if (!id.m_internal)
-    {
-        mupdf::fz_memrnd(rnd, nelem(rnd));
-        id = mupdf::pdf_dict_put_array(mupdf::pdf_trailer(pdf), PDF_NAME(ID), 2);
-        mupdf::pdf_array_push(id, mupdf::pdf_new_string((char*) rnd + 0, nelem(rnd)));
-        mupdf::pdf_array_push(id, mupdf::pdf_new_string((char*) rnd + 0, nelem(rnd)));
-    }
-}
-
-
-// returns bio.tell() -> int
-static int64_t JM_bytesio_tell(fz_context* ctx, void* opaque)
-{
-    PyObject* bio = (PyObject*) opaque;
-    PyObject* name = PyUnicode_FromString("tell");
-    std::string e;
-    int64_t pos = 0;
-    PyObject* rc = PyObject_CallMethodObjArgs(bio, name, nullptr);
-    if (rc) pos = (int64_t) PyLong_AsUnsignedLongLong(rc);
-    else    e = "could not tell Py file obj: " + repr(bio);
-    Py_XDECREF(name);
-    Py_XDECREF(rc);
-    PyErr_Clear();
-    if (!e.empty())
-    {
-        throw std::runtime_error(e);
-    }
-    return pos;
-}
-
-// bio.seek(off, whence=0)
-static void JM_bytesio_seek(fz_context* ctx, void* opaque, int64_t off, int whence)
-{
-    PyObject* bio = (PyObject*) opaque;
-    PyObject* name = PyUnicode_FromString("seek");
-    PyObject* pos = PyLong_FromUnsignedLongLong((unsigned long long) off);
-    PyObject* rc = PyObject_CallMethodObjArgs(bio, name, pos, whence, nullptr);
-    Py_XDECREF(rc);
-    std::string e;
-    rc = PyErr_Occurred();
-    if (rc)
-    {
-        e = "Could not write to Py file obj: " + repr(bio);
-    }
-    Py_XDECREF(rc);
-    Py_XDECREF(name);
-    Py_XDECREF(pos);
-    PyErr_Clear();
-    if (!e.empty())
-    {
-        throw std::runtime_error("JM_bytesio_seek() error");
-    }
-}
-
 //-------------------------------------
 // fz_output for Python file objects
 //-------------------------------------
-
-// bio.write(bytes object)
-static void JM_bytesio_write(fz_context* ctx, void* opaque, const void* data, size_t len)
-{
-    PyObject* bio = (PyObject*) opaque;
-    PyObject* b = PyBytes_FromStringAndSize((const char*) data, (Py_ssize_t) len);
-    PyObject* name = PyUnicode_FromString("write");
-    PyObject* rc = PyObject_CallMethodObjArgs(bio, name, b, nullptr);
-    Py_XDECREF(rc);
-    std::string e;
-    rc = PyErr_Occurred();
-    if (rc)
-    {
-        e = "Could not write to Py file obj: " + repr(bio);
-    }
-    Py_XDECREF(b);
-    Py_XDECREF(name);
-    Py_XDECREF(rc);
-    PyErr_Clear();
-    
-    if (!e.empty())
-    {
-        throw std::runtime_error(e);
-    }
-}
-
-// bio.truncate(bio.tell()) !!!
-static void JM_bytesio_truncate(fz_context* ctx, void* opaque)
-{
-    PyObject* bio = (PyObject*) opaque;
-    PyObject* trunc = PyUnicode_FromString("truncate");
-    PyObject* tell = PyUnicode_FromString("tell");
-    PyObject* rctell = PyObject_CallMethodObjArgs(bio, tell, nullptr);
-    PyObject_CallMethodObjArgs(bio, trunc, rctell, nullptr);
-    std::string e;
-    PyObject* rc = PyErr_Occurred();
-    if (rc) e = "Could not truncate Py file obj: " + repr(bio);
-    Py_XDECREF(tell);
-    Py_XDECREF(trunc);
-    Py_XDECREF(rc);
-    Py_XDECREF(rctell);
-    PyErr_Clear();
-    if (!e.empty())
-    {
-        throw std::runtime_error("could not truncate Py file obj");
-    }
-}
-
-/* Deliberately returns low-level fz_output*, because mupdf::FzOutput is not
-copyable. */
-static fz_output* JM_new_output_fileptr(PyObject* bio)
-{
-    fz_output* out = mupdf::ll_fz_new_output(0, bio, JM_bytesio_write, nullptr, nullptr);
-    out->seek = JM_bytesio_seek;
-    out->tell = JM_bytesio_tell;
-    out->truncate = JM_bytesio_truncate;
-    return out;
-}
-
-
-static void Document_save(
-        mupdf::PdfDocument& pdf,
-        PyObject* filename,
-        int garbage,
-        int clean,
-        int deflate,
-        int deflate_images,
-        int deflate_fonts,
-        int incremental,
-        int ascii,
-        int expand,
-        int linear,
-        int no_new_id,
-        int appearance,
-        int pretty,
-        int encryption,
-        int permissions,
-        char* owner_pw,
-        char* user_pw
-        )
-{
-    mupdf::PdfWriteOptions opts;// = pdf_default_write_options;
-    opts.do_incremental     = incremental;
-    opts.do_ascii           = ascii;
-    opts.do_compress        = deflate;
-    opts.do_compress_images = deflate_images;
-    opts.do_compress_fonts  = deflate_fonts;
-    opts.do_decompress      = expand;
-    opts.do_garbage         = garbage;
-    opts.do_pretty          = pretty;
-    opts.do_linear          = linear;
-    opts.do_clean           = clean;
-    opts.do_sanitize        = clean;
-    opts.dont_regenerate_id = no_new_id;
-    opts.do_appearance      = appearance;
-    opts.do_encrypt         = encryption;
-    opts.permissions        = permissions;
-    if (owner_pw)
-    {
-        memcpy(&opts.opwd_utf8, owner_pw, strlen(owner_pw)+1);
-    }
-    else if (user_pw)
-    {
-        memcpy(&opts.opwd_utf8, user_pw, strlen(user_pw)+1);
-    }
-    if (user_pw)
-    {
-        memcpy(&opts.upwd_utf8, user_pw, strlen(user_pw)+1);
-    }
-    fz_output* out = nullptr;
-    if (!pdf.m_internal)
-    {
-        throw std::runtime_error(MSG_IS_NO_PDF);
-    }
-    pdf.m_internal->resynth_required = 0;
-    JM_embedded_clean(pdf);
-    if (no_new_id == 0)
-    {
-        JM_ensure_identity(pdf);
-    }
-    if (PyUnicode_Check(filename))
-    {
-        mupdf::pdf_save_document(pdf, PyUnicode_AsUTF8(filename), opts);
-    }
-    else
-    {
-        out = JM_new_output_fileptr(filename);
-        mupdf::FzOutput out2(out);
-        mupdf::pdf_write_document(pdf, out2, opts);
-    }
-}
-
-static void Document_save(
-        mupdf::FzDocument& document,
-        PyObject* filename,
-        int garbage,
-        int clean,
-        int deflate,
-        int deflate_images,
-        int deflate_fonts,
-        int incremental,
-        int ascii,
-        int expand,
-        int linear,
-        int no_new_id,
-        int appearance,
-        int pretty,
-        int encryption,
-        int permissions,
-        char* owner_pw,
-        char* user_pw
-        )
-{
-    mupdf::PdfDocument pdf = mupdf::pdf_document_from_fz_document(document);
-    Document_save(
-            pdf,
-            filename,
-            garbage,
-            clean,
-            deflate,
-            deflate_images,
-            deflate_fonts,
-            incremental,
-            ascii,
-            expand,
-            linear,
-            no_new_id,
-            appearance,
-            pretty,
-            encryption,
-            permissions,
-            owner_pw,
-            user_pw
-            );
-}
 
 static PyObject* Link_is_external(mupdf::FzLink& this_link)
 {
@@ -1657,7 +1408,7 @@ static mupdf::FzLink Link_next(mupdf::FzLink& this_link)
 
 
 //-----------------------------------------------------------------------------
-// create PDF object from given string (new in v1.14.0: MuPDF dropped it)
+// create PDF object from given string
 //-----------------------------------------------------------------------------
 static pdf_obj *lll_JM_pdf_obj_from_str(fz_context *ctx, pdf_document *doc, const char *src)
 {
@@ -1720,7 +1471,7 @@ PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist)
             Py_CLEAR(txtpy);
             if (!text)
             {
-                PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                messagef("skipping bad link / annot item %i.", i);
                 continue;
             }
             try
@@ -1737,7 +1488,7 @@ PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist)
              }
             catch (std::exception&)
             {
-                PySys_WriteStderr("skipping bad link / annot item %i.\n", i);
+                messagef("skipping bad link / annot item %i.", i);
             }
         }
     }
@@ -1825,101 +1576,6 @@ static bool Outline_is_external(mupdf::FzOutline* outline)
     return mupdf::ll_fz_is_external_link(outline->m_internal->uri);
 }
 
-static mupdf::FzDocument Document_init(
-        const char* filename,
-        PyObject* stream,
-        const char* filetype,
-        PyObject* rect,
-        float width,
-        float height,
-        float fontsize
-        )
-{
-    mupdf::FzDocument doc((fz_document*) nullptr);
-    
-    float   w = width;
-    float   h = height;
-    fz_rect r = JM_rect_from_py(rect);
-    if (!fz_is_infinite_rect(r))
-    {
-        w = r.x1 - r.x0;
-        h = r.y1 - r.y0;
-    }
-    if (stream != Py_None)
-    {
-        // stream given, **MUST** be bytes!
-        const char* c = PyBytes_AS_STRING(stream); // just a pointer, no new obj
-        size_t len = (size_t) PyBytes_Size(stream);
-        mupdf::FzStream data = mupdf::fz_open_memory((const unsigned char*) c, len);
-        const char* magic = filename ? filename : filetype;
-        const fz_document_handler* handler = mupdf::ll_fz_recognize_document(magic);
-        if (!handler)
-        {
-            throw std::runtime_error(MSG_BAD_FILETYPE);
-        }
-        doc = mupdf::fz_open_document_with_stream(magic, data);
-    }
-    else
-    {
-        if (filename && strlen(filename))
-        {
-            if (!filetype || strlen(filetype) == 0)
-            {
-                doc = mupdf::fz_open_document(filename);
-            }
-            else
-            {
-                const fz_document_handler* handler = mupdf::ll_fz_recognize_document(filetype);
-                if (!handler)
-                {
-                    throw std::runtime_error(MSG_BAD_FILETYPE);
-                }
-                #if FZ_VERSION_MINOR >= 24
-                if (handler->open)
-                {
-                    doc = mupdf::fz_document_open_fn_call(
-                            handler->open,
-                            mupdf::FzStream(filename),
-                            mupdf::FzStream(),
-                            mupdf::FzArchive()
-                            );
-                }
-                #else
-                if (handler->open)
-                {
-                    doc = mupdf::FzDocument(mupdf::ll_fz_document_open_fn_call(handler->open, filename));
-                }
-                else if (handler->open_with_stream)
-                {
-                    mupdf::FzStream data = mupdf::fz_open_file(filename);
-                    doc = mupdf::FzDocument(
-                            mupdf::ll_fz_document_open_with_stream_fn_call(
-                                handler->open_with_stream,
-                                data.m_internal
-                                )
-                            );
-                }
-                #endif
-            }
-        }
-        else
-        {
-            mupdf::PdfDocument pdf = mupdf::pdf_create_document();
-            doc = pdf.super();
-        }
-    }
-    if (w > 0 && h > 0)
-    {
-        mupdf::fz_layout_document(doc, w, h, fontsize);
-    }
-    else
-    if (mupdf::fz_is_document_reflowable(doc))
-    {
-        mupdf::fz_layout_document(doc, 400, 600, 11);
-    }
-    return doc;
-}
-
 int ll_fz_absi(int i)
 {
     return mupdf::ll_fz_absi(i);
@@ -1934,10 +1590,19 @@ enum
     TEXT_FONT_BOLD = 16,
 };
 
-/* todo: implement fns to set these and sync with __init__.py. */
 int g_skip_quad_corrections = 0;
 int g_subset_fontnames = 0;
 int g_small_glyph_heights = 0;
+
+void set_skip_quad_corrections(int on)
+{
+    g_skip_quad_corrections = on;
+}
+
+void set_subset_fontnames(int on)
+{
+    g_subset_fontnames = on;
+}
 
 void set_small_glyph_heights(int on)
 {
@@ -1957,6 +1622,8 @@ struct jm_lineart_device
     fz_matrix ptm = {};
     fz_matrix rot = {};
     fz_point lastpoint = {};
+    fz_point firstpoint = {};
+    int havemove = 0;
     fz_rect pathrect = {};
     int clips = {};
     int linecount = {};
@@ -2009,6 +1676,10 @@ static int
 JM_is_word_delimiter(int c, PyObject *delimiters)
 {
     if (c <= 32 || c == 160) return 1;  // a standard delimiter
+    if (0x202a <= c && c <= 0x202e)
+    {
+        return 1; // change between writing directions
+    }
 
     // extra delimiters must be a non-empty sequence
     if (!delimiters || PyObject_Not(delimiters) || !PySequence_Check(delimiters)) {  
@@ -2040,6 +1711,12 @@ JM_is_word_delimiter(int c, PyObject *delimiters)
     return 0;
 }
 
+static int 
+JM_is_rtl_char(int c)
+{
+    if (c < 0x590 || c > 0x900) return 0;
+    return 1;
+}
 
 static const char* JM_font_name(fz_font* font)
 {
@@ -2096,9 +1773,6 @@ static void jm_trace_text_span(
         // left-right flip
         rot.d = 1;
     }
-    // PySys_WriteStdout("mat: (%g, %g, %g, %g)\n", mat.a, mat.b, mat.c, mat.d);
-    // PySys_WriteStdout("rot: (%g, %g, %g, %g)\n", rot.a, rot.b, rot.c, rot.d);
-
     PyObject* chars = PyTuple_New(span->len);
     double space_adv = 0;
     double last_adv = 0;
@@ -2585,41 +2259,7 @@ static int JM_rects_overlap(const fz_rect a, const fz_rect b)
 
 //
 void JM_append_rune(fz_buffer *buff, int ch);
-void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
-{
-    fz_stext_block *block;
-    fz_stext_line *line;
-    fz_stext_char *ch;
-    fz_rect rect = page->mediabox;
-    fz_rect chbbox;
-    int last_char = 0;
 
-
-    for (block = page->first_block; block; block = block->next)
-    {
-        if (block->type == FZ_STEXT_BLOCK_TEXT)
-        {
-            for (line = block->u.t.first_line; line; line = line->next)
-            {
-                last_char = 0;
-                for (ch = line->first_char; ch; ch = ch->next)
-                {
-                    chbbox = JM_char_bbox(line, ch);
-                    if (mupdf::ll_fz_is_infinite_rect(rect) ||
-                        JM_rects_overlap(rect, chbbox))
-                    {
-                        last_char = ch->c;
-                        JM_append_rune(res, last_char);
-                    }
-                }
-                if (last_char != 10 && last_char > 0)
-                {
-                    mupdf::ll_fz_append_string(res, "\n");
-                }
-            }
-        }
-    }
-}
 //-----------------------------------------------------------------------------
 // Plain text output. An identical copy of fz_print_stext_page_as_text,
 // but lines within a block are concatenated by space instead a new-line
@@ -2627,11 +2267,6 @@ void ll_JM_print_stext_page_as_text(fz_buffer *res, fz_stext_page *page)
 //-----------------------------------------------------------------------------
 void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 {
-    if (0)
-    {
-        return ll_JM_print_stext_page_as_text(res.m_internal, page.m_internal);
-    }
-    
     fz_rect rect = page.m_internal->mediabox;
 
     for (auto block: page)
@@ -2669,8 +2304,8 @@ void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 #define CLIP_PATH 3
 #define CLIP_STROKE_PATH 4
 
-// Every scissor of a clip is a sub rectangle of the preceeding clip
-// scissor if the clip level is larger.
+// Every scissor of a clip is a sub rectangle of the preceding clip scissor if
+// the clip level is larger.
 static fz_rect compute_scissor(jm_lineart_device *dev)
 {
     PyObject *last_scissor = NULL;
@@ -2830,6 +2465,8 @@ trace_moveto(fz_context *ctx, void *dev_, float x, float y)
                 dev->lastpoint.y
                 );
     }
+    dev->firstpoint = dev->lastpoint;
+    dev->havemove = 1;
     dev->linecount = 0;  // reset # of consec. lines
 }
 
@@ -2887,8 +2524,22 @@ trace_close(fz_context *ctx, void *dev_)
             return;
         }
     }
-    DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(1));
     dev->linecount = 0;  // reset # of consec. lines
+	if (dev->havemove) {
+		if (dev->firstpoint.x != dev->lastpoint.x || dev->firstpoint.y != dev->lastpoint.y) {
+			PyObject *list = PyTuple_New(3);
+			PyTuple_SET_ITEM(list, 0, PyUnicode_FromString("l"));
+			PyTuple_SET_ITEM(list, 1, JM_py_from_point(dev->lastpoint));
+			PyTuple_SET_ITEM(list, 2, JM_py_from_point(dev->firstpoint));
+			dev->lastpoint = dev->firstpoint;
+			PyObject *items = PyDict_GetItem(dev->pathdict, dictkey_items);
+			LIST_APPEND_DROP(items, list);
+		}
+		dev->havemove = 0;
+		DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(0));
+	} else {
+		DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(1));
+	}
 }
 
 static const fz_path_walker trace_path_walker =
@@ -2915,6 +2566,7 @@ jm_lineart_path(jm_lineart_device *dev, const fz_path *path)
     dev->pathrect = fz_infinite_rect;
     dev->linecount = 0;
     dev->lastpoint = fz_make_point(0, 0);
+    dev->firstpoint = fz_make_point(0, 0);
     if (dev->pathdict) {
         Py_CLEAR(dev->pathdict);
     }
@@ -2974,7 +2626,7 @@ jm_append_merge(jm_lineart_device *dev)
         DICT_SETITEM_DROP(prev, dictkey_type, PyUnicode_FromString("fs"));
         goto postappend;
     } else {
-        PySys_WriteStderr("could not merge stroke and fill path");
+        messagef("could not merge stroke and fill path");
         goto append;
     }
     append:;
@@ -2994,7 +2646,7 @@ jm_append_merge(jm_lineart_device *dev)
     if (resp) {
         Py_DECREF(resp);
     } else {
-        PySys_WriteStderr("calling cdrawings callback function/method failed!");
+        messagef("calling cdrawings callback function/method failed!");
         PyErr_Clear();
     }
     Py_CLEAR(dev->pathdict);
@@ -3038,8 +2690,12 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     //printf("extra.jm_lineart_stroke_path(): dev->seqno=%zi\n", dev->seqno);
     int i;
     dev->pathfactor = 1;
-    if (fz_abs(ctm.a) == fz_abs(ctm.d)) {
+    if (ctm.a != 0 && fz_abs(ctm.a) == fz_abs(ctm.d)) {
         dev->pathfactor = fz_abs(ctm.a);
+    } else {
+        if (ctm.b != 0 && fz_abs(ctm.b) == fz_abs(ctm.c)) {
+            dev->pathfactor = fz_abs(ctm.b);
+        }
     }
     dev->ctm = ctm; // fz_concat(ctm, trace_device_ptm);
     dev->path_type = STROKE_PATH;
@@ -3389,7 +3045,7 @@ mupdf::FzRect JM_make_spanlist(
         float size = -1;
         int flags = -1;
         const char *font = "";
-        int color = -1;
+        unsigned int color = -1;
         float asc = 0;
         float desc = 0;
     };
@@ -3408,7 +3064,11 @@ mupdf::FzRect JM_make_spanlist(
         style.size = ch.m_internal->size;
         style.flags = flags;
         style.font = JM_font_name(ch.m_internal->font);
-        style.color = ch.m_internal->color;
+        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 26))
+            style.color = ch.m_internal->argb;
+        #else
+            style.color = ch.m_internal->color;
+        #endif
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
 
@@ -3577,6 +3237,7 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
             int word_n = 0;                 // word counter per line
             mupdf::fz_clear_buffer(buff);   // reset word buffer
             size_t buflen = 0;              // reset char counter
+            int last_char_rtl = 0;          // was last character RTL?
             for (mupdf::FzStextChar ch: line)
             {
                 mupdf::FzRect cbbox = JM_char_bbox(line, ch);
@@ -3586,9 +3247,10 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                 }
 
                 int word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
-                if (word_delimiter)
+                int this_char_rtl = JM_is_rtl_char(ch.m_internal->c);
+                if (word_delimiter || this_char_rtl != last_char_rtl)
                 {
-                    if (buflen == 0)
+                    if (buflen == 0 && word_delimiter)
                     {
                         continue;  // skip delimiters at line start
                     }
@@ -3605,10 +3267,11 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                     }
                     mupdf::fz_clear_buffer(buff);
                     buflen = 0;  // reset char counter
-                    continue;
+                    if (word_delimiter) continue;
                 }
                 // append one unicode character to the word
                 JM_append_rune(buff.m_internal, ch.m_internal->c);
+                last_char_rtl = this_char_rtl;
                 buflen++;
                 // enlarge word bbox
                 wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
@@ -3789,7 +3452,7 @@ fz_stext_page* page_get_textpage(
     return tpage;
 }
 
-// return extension for fitz image type
+// return extension for pymupdf image type
 const char *JM_image_extension(int type)
 {
     switch (type) {
@@ -4403,52 +4066,8 @@ PyObject* Annot_rect3(mupdf::PdfAnnot& annot);
 mupdf::FzMatrix Page_derotate_matrix(mupdf::PdfPage& pdfpage);
 mupdf::FzMatrix Page_derotate_matrix(mupdf::FzPage& pdfpage);
 PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj);
-PyObject* JM_get_annot_xref_list2(mupdf::PdfPage& page);
-PyObject* JM_get_annot_xref_list2(mupdf::FzPage& page);
 PyObject* xref_object(mupdf::PdfDocument& pdf, int xref, int compressed=0, int ascii=0);
 PyObject* xref_object(mupdf::FzDocument& document, int xref, int compressed=0, int ascii=0);
-
-void Document_save(
-        mupdf::PdfDocument& pdf,
-        PyObject* filename,
-        int garbage,
-        int clean,
-        int deflate,
-        int deflate_images,
-        int deflate_fonts,
-        int incremental,
-        int ascii,
-        int expand,
-        int linear,
-        int no_new_id,
-        int appearance,
-        int pretty,
-        int encryption,
-        int permissions,
-        char* owner_pw,
-        char* user_pw
-        );
-
-void Document_save(
-        mupdf::FzDocument& document,
-        PyObject* filename,
-        int garbage,
-        int clean,
-        int deflate,
-        int deflate_images,
-        int deflate_fonts,
-        int incremental,
-        int ascii,
-        int expand,
-        int linear,
-        int no_new_id,
-        int appearance,
-        int pretty,
-        int encryption,
-        int permissions,
-        char* owner_pw,
-        char* user_pw
-        );
 
 PyObject* Link_is_external(mupdf::FzLink& this_link);
 PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist);
@@ -4467,16 +4086,6 @@ bool Outline_is_external(mupdf::FzOutline* outline);
 void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items);
 void Document_extend_toc_items(mupdf::FzDocument& document, PyObject* items);
 
-mupdf::FzDocument Document_init(
-        const char* filename,
-        PyObject* stream,
-        const char* filetype,
-        PyObject* rect,
-        float width,
-        float height,
-        float fontsize
-        );
-
 int ll_fz_absi(int i);
 
 mupdf::FzDevice JM_new_texttrace_device(PyObject* out);
@@ -4486,7 +4095,10 @@ fz_rect JM_char_bbox(const mupdf::FzStextLine& line, const mupdf::FzStextChar& c
 static fz_quad JM_char_quad( fz_stext_line *line, fz_stext_char *ch);
 void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page);
 
+void set_skip_quad_corrections(int on);
+void set_subset_fontnames(int on);
 void set_small_glyph_heights(int on);
+
 mupdf::FzRect JM_cropbox(mupdf::PdfObj& page_obj);
 PyObject* get_cdrawings(mupdf::FzPage& page, PyObject *extended=NULL, PyObject *callback=NULL, PyObject *method=NULL);
 

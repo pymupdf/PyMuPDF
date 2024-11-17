@@ -57,14 +57,17 @@ source using a Python sdist.
     2022, can cause problems because one can end up with MuPDF and PyMuPDF code
     being compiled with different compiler versions.
 
-As of `PyMuPDF-1.20.0`, the required MuPDF source code is already in the
-sdist and is automatically built into PyMuPDF.
+The build will automatically download and build MuPDF.
 
+
+.. _problems-after-installation:
 
 Problems after installation
 ---------------------------------------------------------
 
-* On Windows `ImportError: DLL load failed while importing _fitz`.
+* On Windows, Python error::
+
+      ImportError: DLL load failed while importing _fitz
 
   This has been occasionally seen if `MSVCP140.dll` is missing, and appears
   to be caused by a bug in some versions (2015-2017) of `Microsoft Visual C++
@@ -77,69 +80,130 @@ Problems after installation
 
   See https://github.com/pymupdf/PyMuPDF/issues/2678 for more details.
 
+*
+  Python error::
+
+      ModuleNotFoundError: No module named 'frontend'
+  
+  This can happen if PyMuPDF's legacy name `fitz` is used (for example `import
+  fitz` instead of `import pymupdf`), and an unrelated Python package called
+  `fitz` (https://pypi.org/project/fitz/) is installed.
+
+  The fitz package appears to be no longer maintained (the latest release is
+  from 2017), but unfortunately it does not seem possible to remove it from
+  pypi.org. It does not even work on its own, as well as breaking the use of
+  PyMuPDF's legacy name.
+
+  There are a few ways to avoid this problem:
+
+  *
+    Use `import pymupdf` instead of `import fitz`, and update one's code to
+    match.
+
+  * Or uninstall the `fitz` package and reinstall PyMuPDF::
+  
+        pip uninstall fitz
+        pip install --force-reinstall pymupdf
+
+  * Or use `import pymupdf as fitz`. However this has not been well tested.
+
+* With Jupyter labs on Apple Silicon (arm64), Python error::
+
+      ImportError: /opt/conda/lib/python3.11/site-packages/pymupdf/libmupdf.so.24.4: undefined symbol: fz_pclm_write_options_usage
+
+  This appears to be a problem in Jupyter labs; see:
+  https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
+
 
 Notes
 ---------------------------------------------------------
 
-Wheels are available for Windows (32-bit Intel, 64-bit Intel), Linux (64-bit Intel, 64-bit ARM) and Mac OSX (64-bit Intel, 64-bit ARM), Python versions 3.7 and up.
+*
+  Wheels are available for the following platforms:
+  
+   * Windows 32-bit Intel.
+   * Windows 64-bit Intel.
+   * Linux 64-bit Intel.
+   * Linux 64-bit ARM.
+   * MacOS 64-bit Intel.
+   * MacOS 64-bit ARM.
+  
+  Details:
+  
+  * We release a single wheel for each of the above platforms.
+  
+  *
+    Each wheel uses the Python Stable ABI of the current oldest supported
+    Python version (currently 3.9), and so works with all later Python
+    versions, including new Python releases.
+  
+  *
+    Wheels are tested on all Python versions currently marked as "Supported" on
+    https://devguide.python.org/versions/, currently 3.9, 3.10, 3.11, 3.12 and
+    3.13.
 
-Wheels are not available for Python installed with `Chocolatey
-<https://chocolatey.org/>`_ on Windows. Instead install Python
-using the Windows installer from the python.org website, see:
-http://www.python.org/downloads
+*
+  Wheels are not available for Python installed with `Chocolatey
+  <https://chocolatey.org/>`_ on Windows. Instead install Python
+  using the Windows installer from the python.org website, see:
+  http://www.python.org/downloads
 
-PyMuPDF does not support Python versions prior to 3.8. Older wheels can be found in `this <https://github.com/pymupdf/PyMuPDF-Optional-Material/tree/master/wheels-upto-Py3.5>`_ repository and on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
-Please note that we generally follow the official Python release schedules. For Python versions dropping out of official support this means, that generation of wheels will also be ceased for them.
+*
+  Wheels are not available for Linux-aarch64 with `Musl libc
+  <https://musl.libc.org/>`_ (For example `Alpine Linux
+  <https://alpinelinux.org/>`_ on aarch64), and building from source is known
+  to fail.
 
-There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
+* There are no **mandatory** external dependencies. However, some optional feature are available only if additional components are installed:
 
-* `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
-* `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
-* `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-* `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
+  * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
+  * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
+  * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
+  * `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
 
-.. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
+  .. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
 
 
-Build and install from local PyMuPDF checkout and optional local MuPDF checkout
--------------------------------------------------------------------------------
+Build and install from a local PyMuPDF source tree
+---------------------------------------------------------
+
+Initial setup:
 
 * Install C/C++ development tools as described above.
-
 * Enter a Python venv and update pip, as described above.
 
 * Get a PyMuPDF source tree:
 
   * Clone the PyMuPDF git repository::
 
-      git clone https://github.com/pymupdf/PyMuPDF.git
+        git clone https://github.com/pymupdf/PyMuPDF.git
 
-  * Or download and extract a `.zip` or `.tar.gz` source release from
+  *
+    Or download and extract a `.zip` or `.tar.gz` source release from
     https://github.com/pymupdf/PyMuPDF/releases.
 
+Then one can build PyMuPDF in two ways:
 
-* Build and install PyMuPDF::
+* Build and install PyMuPDF with default MuPDF version::
 
-    cd PyMuPDF && pip install .
+      cd PyMuPDF && pip install .
 
-  This will automatically download a specific hard-coded MuPDF source release,
-  and build it into PyMuPDF.
+  This will automatically download a specific hard-coded MuPDF source
+  release, and build it into PyMuPDF.
 
+* Or build and install PyMuPDF using a local MuPDF source tree:
 
-Build and install PyMuPDF using a local MuPDF source tree:
+  * Clone the MuPDF git repository::
 
-* Clone the MuPDF git repository::
+      git clone --recursive https://git.ghostscript.com/mupdf.git
 
-    git clone --recursive https://ghostscript.com:/home/git/mupdf.git
+  *
+    Build PyMuPDF, specifying the location of the local MuPDF tree with the
+    environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::
 
-*
-  Build PyMuPDF, specifying the location of the local MuPDF tree with the
-  environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::
+      cd PyMuPDF && PYMUPDF_SETUP_MUPDF_BUILD=../mupdf pip install .
 
-    cd PyMuPDF && PYMUPDF_SETUP_MUPDF_BUILD=../mupdf pip install .
-
-
-Building for different Python versions in same PyMuPDF tree:
+Also, one can build for different Python versions in the same PyMuPDF tree:
 
 *
   PyMuPDF will build for the version of Python that is being used to run
@@ -153,13 +217,6 @@ Building for different Python versions in same PyMuPDF tree:
   or::
 
     cd PyMuPDF && py -3.10-32 -m pip install .
-
-
-.. note:: When running Python scripts that use PyMuPDF, make sure that the
-  current directory is not the `PyMuPDF/` directory.
-
-  Otherwise, confusingly, Python will attempt to import `fitz` from the local
-  `fitz/` directory, which will fail because it only contains source files.
 
 
 Running tests
@@ -201,24 +258,28 @@ Packaging
 See :doc:`packaging`.
 
 
+Using with Pyodide
+------------------
+
+See :doc:`pyodide`.
+
+
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
 If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
 
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need Tesseract's language support data, so installation of Tesseract-OCR is still required.
+PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract’s language support data <https://github.com/tesseract-ocr/tessdata>`_.
 
 The language support folder location must be communicated either via storing it in the environment variable `"TESSDATA_PREFIX"`, or as a parameter in the applicable functions.
 
 So for a working OCR functionality, make sure to complete this checklist:
 
-1. Install Tesseract.
-
-2. Locate Tesseract's language support folder. Typically you will find it here:
+1. Locate Tesseract's language support folder. Typically you will find it here:
     - Windows: `C:/Program Files/Tesseract-OCR/tessdata`
     - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
-3. Set the environment variable `TESSDATA_PREFIX`
+2. Set the environment variable `TESSDATA_PREFIX`
     - Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
     - Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 

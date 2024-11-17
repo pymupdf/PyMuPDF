@@ -39,6 +39,22 @@
           :width: 0
           :height: 0
 
+.. image:: images/icons/icon-docx.svg
+          :width: 0
+          :height: 0
+
+.. image:: images/icons/icon-pptx.svg
+          :width: 0
+          :height: 0
+
+.. image:: images/icons/icon-xlsx.svg
+          :width: 0
+          :height: 0
+
+.. image:: images/icons/icon-hangul.svg
+          :width: 0
+          :height: 0
+
 .. raw:: html
 
 
@@ -145,6 +161,26 @@
             background-size: 40px 40px;
         }
 
+        #feature-matrix .icon.docx {
+            background: url("_images/icon-docx.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.pptx {
+            background: url("_images/icon-pptx.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.xlsx {
+            background: url("_images/icon-xlsx.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
+        #feature-matrix .icon.hangul {
+            background: url("_images/icon-hangul.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
     </style>
 
 
@@ -172,6 +208,12 @@
                 <span class="icon svg"><cite>SVG</cite></span>
                 <span class="icon txt"><cite>TXT</cite></span>
                 <span class="icon image"><cite id="transFM3">Image</cite></span>
+                <hr/>
+                <span class="icon docx"><cite>DOCX</cite></span>
+                <span class="icon xlsx"><cite>XLSX</cite></span>
+                <span class="icon pptx"><cite>PPTX</cite></span>
+                <span class="icon hangul"><cite>HWPX</cite></span>
+                <span class=""><cite>See <a href="#note">note</a></cite></span>
             </td>
             <td>
                 <span class="icon pdf"><cite>PDF</cite></span>
@@ -189,8 +231,8 @@
 
         <tr>
             <td><cite id="transFM4">Implementation</cite></td>
-            <td><cite>C</cite> <span id="transFM5">and</span> <cite>Python</cite></td>
-            <td><cite>C++</cite> <span id="transFM6">and</span> <cite>Python</cite></td>
+            <td><cite>Python</cite> <span id="transFM5">and</span> <cite>C</cite></td>
+            <td><cite>Python</cite> <span id="transFM6">and</span> <cite>C++</cite></td>
             <td><cite>Python</cite></td>
             <td><cite>Python</cite></td>
             <td><cite>Python</cite></td>
@@ -224,6 +266,15 @@
         </tr>
 
         <tr>
+            <td><cite id="transFMSupportsCJK">Supports CJK characters</cite></td>
+            <td class="yes"></td>
+            <td class="no"></td>
+            <td class="yes"></td>
+            <td class="no"></td>
+            <td class="yes"></td>
+        </tr>
+
+        <tr>
             <td><cite id="transFM12">Extract Text</cite></td>
             <td class="yes" id="transFM13">All document types</td>
             <td class="no"></td>
@@ -233,12 +284,21 @@
         </tr>
 
         <tr>
+            <td><cite id="transFMSupportsMarkdown">Extract Text as Markdown (.md)</cite></td>
+            <td class="yes" id="transFM13x">All document types</td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+            <td class="no"></td>
+        </tr>
+
+        <tr>
             <td style="padding:20px 0;"><cite id="transFMExtractTables">Extract Tables</cite></td>
-            <td class="yes"></td>
+            <td class="yes" id="transFM13xx">All document types</td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
-            <td class="yes"></td>
+            <td class="yes"><cite>PDF</cite> <span id="transFM14xx">only</span></td>
         </tr>
 
         <tr>
@@ -430,7 +490,7 @@
                     return "レンダリングなし";
                 } else if (str=="Extract Text") {
                     return "テキストを抽出する";
-                } else if (str = "Write Text to PDF Page") {
+                } else if (str=="Write Text to PDF Page") {
                     return "PDF ページにテキストを書き込む";
                 } else if (str=="only") {
                     return "のみ";
@@ -479,8 +539,14 @@
                 } else if (str=="Support Font Sub-Setting") {
                     return "フォントのサブセット化をサポートする";
                 } else if (str=="Extract Tables") {
-                    return "抽出テーブル";
+                    return "ページからのテーブルの抽出";
+                } else if (str=="Supports CJK characters") {
+                    return "CJK 文字をサポートしています";
+                } else if (str == "Extract Text as Markdown (.md)") {
+                    return "テキストを Markdown (.md) として抽出";
                 }
+
+
 
 
             }
@@ -503,8 +569,11 @@
         document.getElementById("transFM11x").innerHTML = getTranslation("No rendering");
         document.getElementById("transFM12").innerHTML = getTranslation("Extract Text");
         document.getElementById("transFM13").innerHTML = getTranslation("All document types");
+        document.getElementById("transFM13x").innerHTML = getTranslation("All document types");
+        document.getElementById("transFM13xx").innerHTML = getTranslation("All document types");
         document.getElementById("transFM14").innerHTML = getTranslation("only");
         document.getElementById("transFM14x").innerHTML = getTranslation("only");
+        document.getElementById("transFM14xx").innerHTML = getTranslation("only");
         document.getElementById("transFM15").innerHTML = getTranslation("Extract Vector Graphics");
         document.getElementById("transFM16").innerHTML = getTranslation("All document types");
         document.getElementById("transFM16x").innerHTML = getTranslation("Limited");
@@ -534,13 +603,17 @@
         document.getElementById("transFM37").innerHTML = getTranslation("PDF Annotations");
         document.getElementById("transFM38").innerHTML = getTranslation("Full");
         document.getElementById("transFM39").innerHTML = getTranslation("Limited");
-        document.getElementById("transFM39x").innerHTML = getTranslation("Limited");
+
         document.getElementById("transFM40").innerHTML = getTranslation("PDF Form Fields");
         document.getElementById("transFM41").innerHTML = getTranslation("Create, read, update");
         document.getElementById("transFM42").innerHTML = getTranslation("Limited, no creation");
-        document.getElementById("transFM42x").innerHTML = getTranslation("Limited, no creation");
+
         document.getElementById("transFM43").innerHTML = getTranslation("PDF Page Labels");
         document.getElementById("transFM44").innerHTML = getTranslation("Support Font Sub-Setting");
+
+
+        document.getElementById("transFMSupportsCJK").innerHTML = getTranslation("Supports CJK characters");
+        document.getElementById("transFMSupportsMarkdown").innerHTML = getTranslation("Extract Text as Markdown (.md)");
         document.getElementById("transFMExtractTables").innerHTML = getTranslation("Extract Tables");
 
 
@@ -548,3 +621,5 @@
 
 
     <br/>
+
+    <div id="note"></div>

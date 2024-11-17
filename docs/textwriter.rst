@@ -6,6 +6,8 @@
 TextWriter
 ================
 
+|pdf_only_class|
+
 * New in v1.16.18
 
 This class represents a MuPDF *text* object. The basic idea is to **decouple (1) text preparation, and (2) text output** to PDF pages.
@@ -70,17 +72,17 @@ Using this object entails three steps:
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string of arbitrary length. It will be written starting at position "pos".
-      :arg font: a :ref:`Font`. If omitted, `fitz.Font("helv")` will be used.
+      :arg font: a :ref:`Font`. If omitted, `pymupdf.Font("helv")` will be used.
       :arg float fontsize: the :data:`fontsize`, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
       :arg bool small_caps: *(New in v1.18.15)* look for the character's Small Capital version in the font. If present, take that value instead. Otherwise the original character (this font or the fallback font) will be taken. The fallback font will never return small caps. For example, this snippet::
 
-         >>> doc = fitz.open()
+         >>> doc = pymupdf.open()
          >>> page = doc.new_page()
          >>> text = "PyMuPDF: the Python bindings for MuPDF"
-         >>> font = fitz.Font("figo")  # choose a font with small caps
-         >>> tw = fitz.TextWriter(page.rect)
+         >>> font = pymupdf.Font("figo")  # choose a font with small caps
+         >>> tw = pymupdf.TextWriter(page.rect)
          >>> tw.append((50,100), text, font=font, small_caps=True)
          >>> tw.write_text(page)
          >>> doc.ez_save("x.pdf")
@@ -101,7 +103,7 @@ Using this object entails three steps:
 
       :arg point_like pos: start position of the text, the bottom left point of the first character.
       :arg str text: a string. It will be written starting at position "pos".
-      :arg font: a :ref:`Font`. If omitted, `fitz.Font("helv")` will be used.
+      :arg font: a :ref:`Font`. If omitted, `pymupdf.Font("helv")` will be used.
       :arg float fontsize: the :data:`fontsize`, a positive float, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
       :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
@@ -119,7 +121,7 @@ Using this object entails three steps:
       :arg rect_like rect: the area to fill. No part of the text will appear outside of this.
       :arg str,sequ text: the text. Can be specified as a (UTF-8) string or a list / tuple of strings. A string will first be converted to a list using *splitlines()*. Every list item will begin on a new line (forced line breaks).
       :arg point_like pos: *(new in v1.17.3)* start storing at this point. Default is a point near rectangle top-left.
-      :arg font: the :ref:`Font`, default `fitz.Font("helv")`.
+      :arg font: the :ref:`Font`, default `pymupdf.Font("helv")`.
       :arg float fontsize: the :data:`fontsize`.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.

@@ -1,4 +1,4 @@
-import fitz
+import pymupdf
 import os
 import textwrap
 
@@ -15,14 +15,14 @@ def test_story():
     <p style="font-family: test;color: blue">We shall meet again at a place where there is no darkness.</p>
     """
 
-    MEDIABOX = fitz.paper_rect("letter")
+    MEDIABOX = pymupdf.paper_rect("letter")
     WHERE = MEDIABOX + (36, 36, -36, -36)
     # the font files are located in /home/chinese
-    arch = fitz.Archive(".")
-    # if not specfied user_css, the output pdf has content
-    story = fitz.Story(HTML, user_css=CSS, archive=arch)  
+    arch = pymupdf.Archive(".")
+    # if not specified user_css, the output pdf has content
+    story = pymupdf.Story(HTML, user_css=CSS, archive=arch)  
 
-    writer = fitz.DocumentWriter("output.pdf")
+    writer = pymupdf.DocumentWriter("output.pdf")
 
     more = 1
 
@@ -38,12 +38,12 @@ def test_story():
 def test_2753():
     
     def rectfn(rect_num, filled):
-        return fitz.Rect(0, 0, 200, 200), fitz.Rect(50, 50, 100, 100), None
+        return pymupdf.Rect(0, 0, 200, 200), pymupdf.Rect(50, 50, 100, 100), None
     
     def make_pdf(html, path_out):
-        story = fitz.Story(html=html)
+        story = pymupdf.Story(html=html)
         document = story.write_with_links(rectfn)
-        print(f'Writing to: {path_out=}.')
+        print(f'test_2753(): Writing to: {path_out=}.')
         document.save(path_out)
         return document
     
@@ -66,13 +66,7 @@ def test_2753():
             )
     
     assert len(doc_before) == 2
-    
-    if fitz.mupdf_version_tuple >= (1, 23, 7) or fitz.pymupdf_version_tuple >= (1, 23, 7):
-        # Bug is fixed.
-        assert len(doc_after) == 2
-    else:
-        # page-break-after not handled correctly.
-        assert len(doc_after) == 1
+    assert len(doc_after) == 2
 
 
 springer_html = '''
@@ -106,11 +100,12 @@ springer_html = '''
 '''
 def test_fit_springer():
     
-    if not hasattr(fitz, 'mupdf'):
+    if not hasattr(pymupdf, 'mupdf'):
         print(f'test_fit_springer(): not running on classic.')
         return
     
-    story = fitz.Story(springer_html)
+    verbose = 0
+    story = pymupdf.Story(springer_html)
     
     def check(call, expected):
         '''
@@ -129,28 +124,28 @@ def test_fit_springer():
             print(f'Have saved document to {path}.')
             assert abs(fit_result.parameter-expected) < 0.001, f'{expected=} {fit_result.parameter=}'
     
-    check('story.fit_scale(fitz.Rect(0, 0, 200, 200), scale_min=1, verbose=1)', 3.685728073120117)
-    check('story.fit_scale(fitz.Rect(0, 0, 595, 842), scale_min=1, verbose=1)', 1.0174560546875)
-    check('story.fit_scale(fitz.Rect(0, 0, 300, 421), scale_min=1, verbose=1)', 2.02752685546875)
-    check('story.fit_scale(fitz.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=1)', 1)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 200, 200), scale_min=1, verbose={verbose})', 3.685728073120117)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 595, 842), scale_min=1, verbose={verbose})', 1.0174560546875)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 300, 421), scale_min=1, verbose={verbose})', 2.02752685546875)
+    check(f'story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose={verbose})', 1)
     
-    check('story.fit_height(20, verbose=1)', 10782.3291015625)
-    check('story.fit_height(200, verbose=1)', 2437.4990234375)
-    check('story.fit_height(2000, verbose=1)', 450.2998046875)
-    check('story.fit_height(5000, verbose=1)', 378.2998046875)
-    check('story.fit_height(5500, verbose=1)', 378.2998046875)
+    check(f'story.fit_height(20, verbose={verbose})', 10782.3291015625)
+    check(f'story.fit_height(200, verbose={verbose})', 2437.4990234375)
+    check(f'story.fit_height(2000, verbose={verbose})', 450.2998046875)
+    check(f'story.fit_height(5000, verbose={verbose})', 378.2998046875)
+    check(f'story.fit_height(5500, verbose={verbose})', 378.2998046875)
     
-    check('story.fit_width(3000, verbose=1)', 167.30859375)
-    check('story.fit_width(2000, verbose=1)', 239.595703125)
-    check('story.fit_width(1000, verbose=1)', 510.85546875)
-    check('story.fit_width(500, verbose=1)', 1622.1272945404053)
-    check('story.fit_width(400, verbose=1)', 2837.507724761963)
-    check('story.fit_width(300, width_max=200000, verbose=1)', None)
-    check('story.fit_width(200, width_max=200000, verbose=1)', None)
+    check(f'story.fit_width(3000, verbose={verbose})', 167.30859375)
+    check(f'story.fit_width(2000, verbose={verbose})', 239.595703125)
+    check(f'story.fit_width(1000, verbose={verbose})', 510.85546875)
+    check(f'story.fit_width(500, verbose={verbose})', 1622.1272945404053)
+    check(f'story.fit_width(400, verbose={verbose})', 2837.507724761963)
+    check(f'story.fit_width(300, width_max=200000, verbose={verbose})', None)
+    check(f'story.fit_width(200, width_max=200000, verbose={verbose})', None)
 
     # Run without verbose to check no calls to log() - checked by assert.
-    check('story.fit_scale(fitz.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=0)', 1)
-    check('story.fit_scale(fitz.Rect(0, 0, 300, 421), scale_min=1, verbose=0)', 2.02752685546875)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 600, 900), scale_min=1, scale_max=1, verbose=0)', 1)
+    check('story.fit_scale(pymupdf.Rect(0, 0, 300, 421), scale_min=1, verbose=0)', 2.02752685546875)
 
 
 def test_write_stabilized_with_links():
@@ -159,8 +154,8 @@ def test_write_stabilized_with_links():
         '''
         We return one rect per page.
         '''
-        rect = fitz.Rect(10, 20, 290, 380)
-        mediabox = fitz.Rect(0, 0, 300, 400)
+        rect = pymupdf.Rect(10, 20, 290, 380)
+        mediabox = pymupdf.Rect(0, 0, 300, 400)
         #print(f'rectfn(): rect_num={rect_num} filled={filled}')
         return mediabox, rect, None
 
@@ -205,7 +200,7 @@ def test_write_stabilized_with_links():
                 ''')
         return ret.strip()
     
-    document = fitz.Story.write_stabilized_with_links(contentfn, rectfn)
+    document = pymupdf.Story.write_stabilized_with_links(contentfn, rectfn)
     
     # Check links.
     links = list()
@@ -215,17 +210,85 @@ def test_write_stabilized_with_links():
     external_links = dict()
     for i, link in enumerate(links):
         print(f'    {i}: {link=}')
-        if link.get('kind') == fitz.LINK_URI:
+        if link.get('kind') == pymupdf.LINK_URI:
             uri = link['uri']
             external_links.setdefault(uri, 0)
             external_links[uri] += 1
 
     # Check there is one external link.
     print(f'{external_links=}')
-    if hasattr(fitz, 'mupdf'):
+    if hasattr(pymupdf, 'mupdf'):
         assert len(external_links) == 1
         assert 'https://artifex.com/' in external_links
     
     out_path = __file__.replace('.py', '.pdf')
     document.save(out_path)
     
+def test_archive_creation():
+    s = pymupdf.Story(archive=pymupdf.Archive('.'))
+    s = pymupdf.Story(archive='.')
+
+
+def test_3813():
+    import pymupdf
+
+    HTML = """
+    <p>Count is fine:</p>
+    <ol>
+        <li>Lorem
+            <ol>
+                <li>Sub Lorem</li>
+                <li>Sub Lorem</li>
+            </ol>
+        </li>
+        <li>Lorem</li>
+        <li>Lorem</li>
+    </ol>
+
+    <p>Broken count:</p>
+    <ol>
+        <li>Lorem
+            <ul>
+                <li>Sub Lorem</li>
+                <li>Sub Lorem</li>
+            </ul>
+        </li>
+        <li>Lorem</li>
+        <li>Lorem</li>
+    </ol>
+    """
+    MEDIABOX = pymupdf.paper_rect("A4")
+    WHERE = MEDIABOX + (36, 36, -36, -36)
+
+    story = pymupdf.Story(html=HTML)
+    path = os.path.normpath(f'{__file__}/../../tests/test_3813_out.pdf')
+    writer = pymupdf.DocumentWriter(path)
+
+    more = 1
+
+    while more:
+        device = writer.begin_page(MEDIABOX)
+        more, _ = story.place(WHERE)
+        story.draw(device)
+        writer.end_page()
+
+    writer.close()
+    
+    with pymupdf.open(path) as document:
+        page = document[0]
+        text = page.get_text()
+    text_utf8 = text.encode()
+    
+    if pymupdf.mupdf_version_tuple < (1, 25):
+        # MuPDF gets things wrong.
+        text_expected_utf8 = b'Count is \xef\xac\x81ne:\n1. Lorem\n1. Sub Lorem\n2. Sub Lorem\n2. Lorem\n3. Lorem\nBroken count:\n1. Lorem\n\xe2\x80\xa2  Sub Lorem\n\xe2\x80\xa2  Sub Lorem\n4. Lorem\n5. Lorem\n'
+    else:
+        text_expected_utf8 = b'Count is \xef\xac\x81ne:\n1. Lorem\n1. Sub Lorem\n2. Sub Lorem\n2. Lorem\n3. Lorem\nBroken count:\n1. Lorem\n\xe2\x80\xa2  Sub Lorem\n\xe2\x80\xa2  Sub Lorem\n2. Lorem\n3. Lorem\n'
+    text_expected = text_expected_utf8.decode()
+    
+    print(f'text_utf8:\n    {text_utf8!r}')
+    print(f'text_expected_utf8:\n    {text_expected_utf8!r}')
+    print(f'text:\n    {textwrap.indent(text, "    ")}')
+    print(f'text_expected:\n    {textwrap.indent(text_expected, "   ")}')
+    
+    assert text == text_expected

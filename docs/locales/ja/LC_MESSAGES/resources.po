@@ -1,0 +1,82 @@
+# PyMuPDF Japanese documentation
+# Copyright (C) 2015-2024, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# Jamie Lemon <jamie.lemon@artifex.com>, 2024.
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.24.2\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-11 21:42+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
+"Language: ja\n"
+"Language-Team: ja <suzan.sanver@dijipiji.com>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 9544d8d6fd354e96a2b6942874d531b3
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 46b70d836947438a9e243d3ea8ecee71
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr "PyMuPDFは、PDF（およびその他）ドキュメントのデータ抽出、分析、変換、および操作のための高性能なPythonライブラリです。"
+
+#: ../../header.rst:-1 d736446b9f82486d8ba6766c38c1d8e1
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr "PDFのテキスト抽出、PDFの画像抽出、PDFの変換、PDFのテーブル、PDFの分割、PDFの作成、Pyodide、PyScript"
+
+#: ../../resources.rst:6 297d66dfbef041b2b92e4b65c2201d7e
+msgid "Resources"
+msgstr "リソース"
+
+#: ../../resources.rst:9 12c4020b906f4e0792cb7fa300dab6ce
+msgid "**PyMuPDF Pro**"
+msgstr ""
+
+#: ../../resources.rst:12 30aafebcd103497d8ac17b5940562f75
+msgid "For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`."
+msgstr "**Office** ファイルのサポートには、`PyMuPDF Pro <pymupdf-pro>` をお試しください。"
+
+#: ../../resources.rst:20 d855400d95774115930e506c935e5822
+msgid "Find out about **PyMuPDF Utilities**"
+msgstr "**PyMuPDFユーティリティ** について調べる"
+
+#: ../../resources.rst:22 02d6dad48c5840d297384a6f12a15768
+msgid ""
+"The :title:`GitHub` repository `PyMuPDF-Utilities "
+"<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
+" examples, demonstrations and use cases."
+msgstr ""
+":title:`GitHub` リポジトリ `PyMuPDF-Utilities <https://github.com/pymupdf"
+"/PyMuPDF-Utilities>`_ には、豊富な例、デモ、およびユースケースが含まれています。"
+
+#: ../../resources.rst:31 a988ec2fa8394fa0b393ad0e6da6b227
+msgid "Do you need **PDF** to **DOCX** conversion?"
+msgstr "**PDF** を **DOCX** に変換する必要がありますか？"
+
+#: ../../resources.rst:33 7401720778844c0cb5feb42073d3acd1
+msgid ""
+"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"**python-docx** library to provide simple document conversion from "
+"**PDF** to **DOCX** format."
+msgstr ""
+"pdf2docx_ ライブラリをお勧めします。これは、**PDF** から **DOCX** 形式への簡単なドキュメント変換を提供するために "
+"**PyMuPDF** と **python-docx** ライブラリを使用しています。"
+
+#: ../../footer.rst:60 fdbaf044197a47369288f1a5a0bc21fc
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは、|version| までのすべてのバージョンをカバーしています"
+
+#: ../../footer.rst:-1 d3477d763e534da1b09a79933be08403
+msgid "Discord logo"
+msgstr ""
+

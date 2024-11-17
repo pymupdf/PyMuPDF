@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-21 13:53+0000\n"
+"POT-Creation-Date: 2024-09-11 21:42+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,132 +19,191 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 ac195f5f9c614a2795aff4321079c833
+#: ../../header.rst:-1 fbce46a08b3942268c5a88496a569b7d
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 f1dfe185ae1f465b875afdb93c7e8d55
+#: ../../header.rst:-1 e70d4b2976654a16bee5417ccbf2a6f0
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 b78ff8fbc34f4aee8c0c2c241f821ff9
+#: ../../header.rst:-1 dcf5c4bd9f534825847cfa69076d3868
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../how-to-open-a-file.rst:7 63f75766f7a14d1facf187361187068a
+#: ../../how-to-open-a-file.rst:7 b56aef1cb94941268ffcaf474302c628
 msgid "Opening Files"
 msgstr "ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:15 c5bb9c2c0ae44d74946a1c98456567e6
+#: ../../how-to-open-a-file.rst:15 558a099e442a4dc98d8bce5206b46aff
 msgid "Supported File Types"
 msgstr "サポートされているファイルタイプ"
 
-#: ../../how-to-open-a-file.rst:18 a68e1bea8dfb416599d6d76b63986aa0
-msgid ":title:`PyMuPDF` supports the following file types:"
-msgstr ":title:`PyMuPDF` は以下のファイルタイプをサポートしています："
+#: ../../how-to-open-a-file.rst:17 a0feccd35f4844af94fc03974d746b36
+msgid "|PyMuPDF| can open files other than just |PDF|."
+msgstr "|PyMuPDF| は |PDF| 以外のファイルも開くことができます。"
 
-#: ../../how-to-open-a-file.rst:25 145c60db141c4890b5f3a479696686a1
+#: ../../how-to-open-a-file.rst:19 a93f5ede769d467ea2eea80bac592492
+msgid "The following file types are supported:"
+msgstr "|PyMuPDF| は以下のファイルタイプをサポートしています："
+
+#: ../../how-to-open-a-file.rst:26 aa587344bb504cb3b2bff50ad143091d
 msgid "How to Open a File"
 msgstr "ファイルを開く方法"
 
-#: ../../how-to-open-a-file.rst:27 d5c08b3f89f74355a2c0fdd264480b6c
+#: ../../how-to-open-a-file.rst:28 abedd5d5fe494b67bf7e404490f3bd67
 msgid "To open a file, do the following:"
 msgstr "ファイルを開くには、次の手順を実行します。"
 
-#: ../../how-to-open-a-file.rst:36 90fff1bd1d434c4881c8dd82a359cb9f
+#: ../../how-to-open-a-file.rst:35 1e9319f3d234491abe36ee148ed0e392
+msgid ""
+"The above creates a :ref:`Document`. The instruction `doc = "
+"pymupdf.Document(\"a.pdf\")` does exactly the same. So, `open` is just a "
+"convenient alias  and you can find its full API documented in that "
+"chapter."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:39 e3a9d80ac30b4da2914cbd51a25d43bc
 msgid "Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`"
 msgstr "拡張子の異なるファイルを開く"
 
-#: ../../how-to-open-a-file.rst:38 95e42a36cf6b43df9fa6b622cb89c215
+#: ../../how-to-open-a-file.rst:41 9a51769cdc044639b6f2cf8134aaa943
 msgid ""
 "If you have a document with a wrong file extension for its type, you can "
 "still correctly open it."
 msgstr "拡張子がファイルタイプと異なっていても、正しく開くことができます。"
 
-#: ../../how-to-open-a-file.rst:40 7b237598c33445bfa287be10b34f8025
+#: ../../how-to-open-a-file.rst:43 de37ef08eed44cac81a6fe6a6e1f148c
 msgid "Assume that *\"some.file\"* is actually an **XPS**. Open it like so:"
 msgstr "例えば *\"some.file\"* が実際には **XPS** ファイルの場合は、以下のようにして開きます："
 
-
-#: ../../how-to-open-a-file.rst:50 5362ac22dd334364a6bb19eac0634525
+#: ../../how-to-open-a-file.rst:53 945beb3967e14907ac758fc6bebee7a6
 msgid ""
-":title:`PyMuPDF` itself does not try to determine the file type from the "
-"file contents. **You** are responsible for supplying the file type "
-"information in some way -- either implicitly, via the file extension, or "
-"explicitly as shown with the `filetype` parameter. There are pure "
-":title:`Python` packages like `filetype "
-"<https://pypi.org/project/filetype/>`_ that help you doing this. Also "
-"consult the :ref:`Document` chapter for a full description."
-msgstr ":title:`PyMuPDF` 自体は、ファイルの内容からファイルタイプを判断しようとはしません。このため、ユーザーがファイルの拡張子などを通じて暗黙的に、または `filetype <https://pypi.org/project/filetype/>`_ パラメーターを通じて明示的にファイルタイプの情報を提供する責任があります。また、詳細な説明については :ref:`Document` の章を参照してください。"
+"|PyMuPDF| itself does not try to determine the file type from the file "
+"contents. **You** are responsible for supplying the file type information"
+" in some way -- either implicitly, via the file extension, or explicitly "
+"as shown with the `filetype` parameter. There are pure :title:`Python` "
+"packages like `filetype <https://pypi.org/project/filetype/>`_ that help "
+"you doing this. Also consult the :ref:`Document` chapter for a full "
+"description."
+msgstr ""
+"|PyMuPDF| "
+"自体は、ファイルの内容からファイルタイプを判断しようとはしません。このため、ユーザーがファイルの拡張子などを通じて暗黙的に、または "
+"`filetype <https://pypi.org/project/filetype/>`_ "
+"パラメーターを通じて明示的にファイルタイプの情報を提供する責任があります。また、詳細な説明については :ref:`Document` "
+"の章を参照してください。"
 
-#: ../../how-to-open-a-file.rst:52 a7b28ccde0b8427dae67dbd9d26839d2
+#: ../../how-to-open-a-file.rst:55 ade379abea354b938901a31a9170b81d
 msgid ""
-"If :title:`PyMuPDF` encounters a file with an unknown / missing "
-"extension, it will try to open it as a :title:`PDF`. So in these cases "
-"there is no need for additional precautions. Similarly, for memory "
-"documents, you can just specify `doc=fitz.open(stream=mem_area)` to open "
-"it as a :title:`PDF` document."
-msgstr ":title:`PyMuPDF` は不明なファイルや拡張子のないファイルはPDFとして開きます。このため、これらの場合は追加の情報は必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=fitz.open(stream=mem_area)` と指定するだけでPDFドキュメントとして開くことができます。"
+"If |PyMuPDF| encounters a file with an unknown / missing extension, it "
+"will try to open it as a |PDF|. So in these cases there is no need for "
+"additional precautions. Similarly, for memory documents, you can just "
+"specify `doc=pymupdf.open(stream=mem_area)` to open it as a |PDF| "
+"document."
+msgstr ""
+"|PyMuPDF| "
+"は不明なファイルや拡張子のないファイルはPDFとして開きます。このため、これらの場合は追加の情報は必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=pymupdf.open(stream=mem_area)`"
+" と指定するだけでPDFドキュメントとして開くことができます。"
 
-#: ../../how-to-open-a-file.rst:54 a81e4d89de054bf4a97fab97a5b7cd04
+#: ../../how-to-open-a-file.rst:57 0e6a53672ddc413192ab00e03d7e1f02
 msgid ""
-"If you attempt to open an unsupported file then :title:`PyMuPDF` will "
-"throw a file data error."
+"If you attempt to open an unsupported file then |PyMuPDF| will throw a "
+"file data error."
 msgstr "サポートされていないファイルを開こうとした場合、PyMuPDFはファイルデータエラーをスローします。"
 
-#: ../../how-to-open-a-file.rst:61 729507e336d247ac833ea0837ef34f9e
+#: ../../how-to-open-a-file.rst:66 3d7344330a17461786c429099908ae4f
+#, fuzzy
+msgid "Opening Remote Files"
+msgstr "ファイルを開く"
+
+#: ../../how-to-open-a-file.rst:69 c00fbde0eead4bbc8c695aef57ff6222
+msgid ""
+"For remote files on a server (i.e. non-local files), you will need to "
+"*stream* the file data to |PyMuPDF|."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:71 f989297813a24c91a1f62a6cec117fd7
+msgid ""
+"For example use the `requests "
+"<https://requests.readthedocs.io/en/latest/>`_ library as follows:"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:84 f6a2ad2300144fe7a4ac46ad06b385ec
+msgid "Opening Files from Cloud Services"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:86 e4a309b083dd41079127a98f13164f13
+msgid ""
+"For further examples which deal with files held on typical cloud services"
+" please see these `Cloud Interactions code snippets "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/cloud-"
+"interactions>`_."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:95 579329a84c3e44609f34b54ee6f05d94
 msgid "Opening Files as Text"
 msgstr "ファイルをテキストとして開く"
 
-#: ../../how-to-open-a-file.rst:64 395f47c551f24459bb9e81b3dfc8c566
+#: ../../how-to-open-a-file.rst:98 ad7c9c7973e4460197d2a893ce69a874
 msgid ""
-":title:`PyMuPDF` has the capability to open any plain text file as a "
-"document. In order to do this you should provide the `filetype` parameter"
-" for the `fitz.open` function as `\"txt\"`."
-msgstr ":title:`PyMuPDF` には、プレーン テキスト ファイルをドキュメントとして開く機能があります。 これを行うには、`fitz.open` 関数の `filetype` パラメータを「txt」として指定する必要があります。"
+"|PyMuPDF| has the capability to open any plain text file as a document. "
+"In order to do this you should provide the `filetype` parameter for the "
+"`pymupdf.open` function as `\"txt\"`."
+msgstr ""
+"|PyMuPDF| には、プレーン テキスト ファイルをドキュメントとして開く機能があります。 これを行うには、`pymupdf.open` "
+"関数の `filetype` パラメータを「txt」として指定する必要があります。"
 
-#: ../../how-to-open-a-file.rst:71 fc8a8a23575945b9bb2db0a8fb2e0282
+#: ../../how-to-open-a-file.rst:105 7795059e827d49ceb6635695796163f1
 msgid ""
 "In this way you are able to open a variety of file types and perform the "
 "typical **non-PDF** specific features like text searching, text "
 "extracting and page rendering. Obviously, once you have rendered your "
-"`txt` content, then saving as :title:`PDF` or merging with other "
-":title:`PDF` files is no problem."
-msgstr "このようにして、さまざまな種類のファイルを開いて、テキスト検索、テキスト抽出、ページ レンダリングなどの :title:`PDF` に固有ではない一般的な機能を実行できます。 明らかに、txt コンテンツをレンダリングしたら、 :title:`PDF` として保存したり、他の :title:`PDF` ファイルと結合したりすることは問題ありません。"
+"`txt` content, then saving as |PDF| or merging with other |PDF| files is "
+"no problem."
+msgstr ""
+"このようにして、さまざまな種類のファイルを開いて、テキスト検索、テキスト抽出、ページ レンダリングなどの |PDF| "
+"に固有ではない一般的な機能を実行できます。 明らかに、txt コンテンツをレンダリングしたら、 |PDF| として保存したり、他の |PDF| "
+"ファイルと結合したりすることは問題ありません。"
 
-#: ../../how-to-open-a-file.rst:75 0af079f3534345dcb45581da2f51fb15
+#: ../../how-to-open-a-file.rst:109 02063bce85b54d24912efd14aa588c2a
 msgid "Examples"
 msgstr "例"
 
-#: ../../how-to-open-a-file.rst:79 087f4db47ed74252b62eb7cf47c32a48
+#: ../../how-to-open-a-file.rst:113 ec04324cadf04ba6a66048352054a372
 msgid "Opening a `C#` file"
 msgstr "C# ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:88 5683eefd00204c31b3b041ca2d79b669
+#: ../../how-to-open-a-file.rst:122 8c74bd78aa9c4b8bac6165130e1745e5
 msgid "Opening an ``XML`` file"
 msgstr "XML ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:96 25cde825bf1d44ecb613f9c4492ac723
+#: ../../how-to-open-a-file.rst:130 280150242f3c4a128892d557a0dfa804
 msgid "Opening a `JSON` file"
 msgstr "JSON ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:103 425f94df50d94a839c85e053412ea00e
+#: ../../how-to-open-a-file.rst:137 d417e97402044280b518fd9fb2c07337
 msgid "And so on!"
 msgstr "等々！"
 
-#: ../../how-to-open-a-file.rst:105 536cadfb5ee94b5d8e85bf698d8126d9
+#: ../../how-to-open-a-file.rst:139 541ec11b9a0e4adca731889451252b94
 msgid ""
 "As you can imagine many text based file formats can be *very simply "
-"opened* and *interpreted* by :title:`PyMuPDF`. This can make data "
-"analysis and extraction for a wide range of previously unavailable files "
-"suddenly possible."
-msgstr "ご想像のとおり、多くのテキスト ベースのファイル形式は、:title:`PyMuPDF` によって非常に簡単に開いて解釈できます。 これにより、これまで利用できなかった広範囲のファイルのデータ分析と抽出が突然可能になります。"
+"opened* and *interpreted* by |PyMuPDF|. This can make data analysis and "
+"extraction for a wide range of previously unavailable files suddenly "
+"possible."
+msgstr ""
+"ご想像のとおり、多くのテキスト ベースのファイル形式は、|PyMuPDF| によって非常に簡単に開いて解釈できます。 "
+"これにより、これまで利用できなかった広範囲のファイルのデータ分析と抽出が突然可能になります。"
 
-#: ../../footer.rst:-1 18dd47521d2b4718bfcaee2d7f28fbd3
+#: ../../footer.rst:60 c1b2b8f11f1d45709966853696300e96
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 63045bd2522645b08af805f3b9b46b6e
 msgid "Discord logo"
 msgstr ""
 

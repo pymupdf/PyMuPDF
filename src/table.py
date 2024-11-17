@@ -71,9 +71,11 @@ This is implemented as new class TableHeader with the properties:
 * external: A bool indicating whether the header is outside the table cells.
 
 """
+
 import inspect
 import itertools
 import string
+import html
 from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
@@ -89,10 +91,13 @@ from . import (
     EMPTY_RECT,
     sRGB_to_pdf,
     Point,
+    message,
 )
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
+TEXTPAGE = None
+white_spaces = set(string.whitespace)  # for checking white space only cells
 # -------------------------------------------------------------------
 # End of PyMuPDF interface code
 # -------------------------------------------------------------------
@@ -361,7 +366,7 @@ class WordExtractor:
         keep_blank_chars: bool = False,
         use_text_flow=False,
         horizontal_ltr=True,  # Should words be read left-to-right?
-        vertical_ttb=True,  # Should vertical words be read top-to-bottom?
+        vertical_ttb=False,  # Should vertical words be read top-to-bottom?
         extra_attrs=None,
         split_at_punctuation=False,
         expand_ligatures=True,
@@ -387,8 +392,19 @@ class WordExtractor:
         x0, top, x1, bottom = objects_to_bbox(ordered_chars)
         doctop_adj = ordered_chars[0]["doctop"] - ordered_chars[0]["top"]
         upright = ordered_chars[0]["upright"]
-
         direction = 1 if (self.horizontal_ltr if upright else self.vertical_ttb) else -1
+
+        matrix = ordered_chars[0]["matrix"]
+
+        rotation = 0
+        if not upright and matrix[1] < 0:
+            ordered_chars = reversed(ordered_chars)
+            rotation = 270
+
+        if matrix[0] < 0 and matrix[3] < 0:
+            rotation = 180
+        elif matrix[1] > 0:
+            rotation = 90
 
         word = {
             "text": "".join(
@@ -401,6 +417,7 @@ class WordExtractor:
             "bottom": bottom,
             "upright": upright,
             "direction": direction,
+            "rotation": rotation,
         }
 
         for key in self.extra_attrs:
@@ -552,7 +569,8 @@ class WordExtractor:
         return WordMap(list(self.iter_extract_tuples(chars)))
 
     def extract_words(self, chars: list) -> list:
-        return list(word for word, word_chars in self.iter_extract_tuples(chars))
+        words = list(word for word, word_chars in self.iter_extract_tuples(chars))
+        return words
 
 
 def extract_words(chars: list, **kwargs) -> list:
@@ -590,8 +608,24 @@ def extract_text(chars: list, **kwargs) -> str:
             **{k: kwargs[k] for k in WORD_EXTRACTOR_KWARGS if k in kwargs}
         )
         words = extractor.extract_words(chars)
-        lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
-        return "\n".join(" ".join(word["text"] for word in line) for line in lines)
+        if words:
+            rotation = words[0]["rotation"]  # rotation cannot change within a cell
+        else:
+            rotation = 0
+
+        if rotation == 90:
+            words.sort(key=lambda w: (w["x1"], -w["top"]))
+            lines = " ".join([w["text"] for w in words])
+        elif rotation == 270:
+            words.sort(key=lambda w: (-w["x1"], w["top"]))
+            lines = " ".join([w["text"] for w in words])
+        else:
+            lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
+            lines = "\n".join(" ".join(word["text"] for word in line) for line in lines)
+            if rotation == 180:  # needs extra treatment
+                lines = "".join([(c if c != "\n" else " ") for c in reversed(lines)])
+
+        return lines
 
 
 def collate_line(
@@ -1153,7 +1187,7 @@ def intersections_to_cells(intersections):
     return list(filter(None, cell_gen))
 
 
-def cells_to_tables(cells) -> list:
+def cells_to_tables(page, cells) -> list:
     """
     Given a list of bounding boxes (`cells`), return a list of tables that
     hold those cells most simply (and contiguously).
@@ -1207,14 +1241,35 @@ def cells_to_tables(cells) -> list:
         # ... store it.
         tables.append(list(current_cells))
 
+    # PyMuPDF modification:
+    # Remove tables without text or having only 1 column
+    for i in range(len(tables) - 1, -1, -1):
+        r = EMPTY_RECT()
+        x1_vals = set()
+        x0_vals = set()
+        for c in tables[i]:
+            r |= c
+            x1_vals.add(c[2])
+            x0_vals.add(c[0])
+        if (
+            len(x1_vals) < 2
+            or len(x0_vals) < 2
+            or white_spaces.issuperset(
+                page.get_textbox(
+                    r,
+                    textpage=TEXTPAGE,
+                )
+            )
+        ):
+            del tables[i]
+
     # Sort the tables top-to-bottom-left-to-right based on the value of the
     # topmost-and-then-leftmost coordinate of a table.
     _sorted = sorted(tables, key=lambda t: min((c[1], c[0]) for c in t))
-    filtered = [t for t in _sorted if len(t) > 1]
-    return filtered
+    return _sorted
 
 
-class CellGroup(object):
+class CellGroup:
     def __init__(self, cells):
         self.cells = cells
         self.bbox = (
@@ -1229,7 +1284,7 @@ class TableRow(CellGroup):
     pass
 
 
-class TableHeader(object):
+class TableHeader:
     """PyMuPDF extension containing the identified table header."""
 
     def __init__(self, bbox, cells, names, above):
@@ -1239,7 +1294,7 @@ class TableHeader(object):
         self.external = above
 
 
-class Table(object):
+class Table:
     def __init__(self, page, cells):
         self.page = page
         self.cells = cells
@@ -1312,12 +1367,46 @@ class Table(object):
 
         return table_arr
 
+    def to_markdown(self, clean=True):
+        """Output table content as a string in Github-markdown format.
+
+        If clean is true, markdown syntax is removed from cell content."""
+        output = "|"
+
+        # generate header string and MD underline
+        for i, name in enumerate(self.header.names):
+            if name is None or name == "":  # generate a name if empty
+                name = f"Col{i+1}"
+            name = name.replace("\n", " ")  # remove any line breaks
+            if clean:  # remove sensitive syntax
+                name = html.escape(name.replace("-", "&#45;"))
+            output += name + "|"
+
+        output += "\n"
+        output += "|" + "|".join("---" for i in range(self.col_count)) + "|\n"
+
+        # skip first row in details if header is part of the table
+        j = 0 if self.header.external else 1
+
+        # iterate over detail rows
+        for row in self.extract()[j:]:
+            line = "|"
+            for i, cell in enumerate(row):
+                # output None cells with empty string
+                cell = "" if cell is None else cell.replace("\n", " ")
+                if clean:  # remove sensitive syntax
+                    cell = html.escape(cell.replace("-", "&#45;"))
+                line += cell + "|"
+            line += "\n"
+            output += line
+        return output + "\n"
+
     def to_pandas(self, **kwargs):
         """Return a pandas DataFrame version of the table."""
         try:
             import pandas as pd
         except ModuleNotFoundError:
-            print("Package 'pandas' is not installed")
+            message("Package 'pandas' is not installed")
             raise
 
         pd_dict = {}
@@ -1390,50 +1479,12 @@ class Table(object):
                             return True
             return False
 
-        def recover_top_row_cells(table):
-            """Recreates top row cells if 'None' columns are present.
-
-            We need all column x-coordinates even when the top table row
-            contains None cells.
-            """
-            bbox = Rect(table.rows[0].bbox)  # top row bbox
-            tbbox = Rect(table.bbox)  # table bbox
-            y0, y1 = bbox.y0, bbox.y1  # top row upper / lower coordinates
-
-            # make sure row0 bbox has the full table width
-            bbox.x0 = tbbox.x0
-            bbox.x1 = tbbox.x1
-
-            l_r = set()  # (x0, x1) pairs for all table cells
-            for cell in table.cells:
-                if cell is None:  # skip non-existing cells
-                    continue
-                cellbb = Rect(cell)
-
-                # only accept cells wider than a character
-                if 10 < cellbb.width < tbbox.width:
-                    l_r.add((cell[0], cell[2]))
-
-            # sort (x0, x1) pairs by x0-values
-            l_r = sorted(list(l_r), key=lambda c: c[0])
-
-            # recovered row 0 cells
-            cells = [(l_r[0][0], y0, l_r[0][1], y1)]
-
-            for x0, x1 in l_r[1:]:
-                if x0 >= cells[-1][2]:
-                    cells.append((x0, y0, x1, y1))
-            return cells, bbox
-
         try:
             row = self.rows[0]
             cells = row.cells
             bbox = Rect(row.bbox)
         except IndexError:  # this table has no rows
             return None
-
-        if None in cells:  # if row 0 has empty cells, repair it
-            cells, bbox = recover_top_row_cells(self)
 
         # return this if we determine that the top row is the header
         header_top_row = TableHeader(bbox, cells, self.extract()[0], False)
@@ -1446,7 +1497,9 @@ class Table(object):
         if len(cells) < 2:
             return header_top_row
 
-        col_x = [c[2] for c in cells[:-1]]  # column (x) coordinates
+        col_x = [
+            c[2] if c is not None else None for c in cells[:-1]
+        ]  # column (x) coordinates
 
         # Special check: is top row bold?
         # If first line above table is not bold, but top-left table cell is bold,
@@ -1545,6 +1598,7 @@ class Table(object):
             intersecting = [
                 (x, r)
                 for x in col_x
+                if x is not None
                 for r in word_rects
                 if r[1] == top and r[0] < x and r[2] > x
             ]
@@ -1558,15 +1612,22 @@ class Table(object):
 
         hdr_bbox = +clip  # compute the header cells
         hdr_bbox.y0 = select[-1]  # hdr_bbox top is smallest top coord of words
-        hdr_cells = [(c[0], hdr_bbox.y0, c[2], hdr_bbox.y1) for c in cells]
+        hdr_cells = [
+            (c[0], hdr_bbox.y0, c[2], hdr_bbox.y1) if c is not None else None
+            for c in cells
+        ]
 
         # adjust left/right of header bbox
-        hdr_bbox.x0 = hdr_cells[0][0]
-        hdr_bbox.x1 = hdr_cells[-1][2]
+        hdr_bbox.x0 = self.bbox[0]
+        hdr_bbox.x1 = self.bbox[2]
 
         # column names: no line breaks, no excess spaces
         hdr_names = [
-            page.get_textbox(c).replace("\n", " ").replace("  ", " ").strip()
+            (
+                page.get_textbox(c).replace("\n", " ").replace("  ", " ").strip()
+                if c is not None
+                else ""
+            )
             for c in hdr_cells
         ]
         return TableHeader(tuple(hdr_bbox), hdr_cells, hdr_names, True)
@@ -1665,7 +1726,7 @@ class TableSettings:
             raise ValueError(f"Cannot resolve settings: {settings}")
 
 
-class TableFinder(object):
+class TableFinder:
     """
     Given a PDF page, find plausible table structures.
 
@@ -1687,7 +1748,8 @@ class TableFinder(object):
         )
         self.cells = intersections_to_cells(self.intersections)
         self.tables = [
-            Table(self.page, cell_group) for cell_group in cells_to_tables(self.cells)
+            Table(self.page, cell_group)
+            for cell_group in cells_to_tables(self.page, self.cells)
         ]
 
     def get_edges(self) -> list:
@@ -1710,6 +1772,8 @@ class TableFinder(object):
 
         if v_strat == "text" or h_strat == "text":
             words = extract_words(CHARS, **(settings.text_settings or {}))
+        else:
+            words = []
 
         v_explicit = []
         for desc in settings.explicit_vertical_lines or []:
@@ -1736,6 +1800,8 @@ class TableFinder(object):
         elif v_strat == "text":
             v_base = words_to_edges_v(words, word_threshold=settings.min_words_vertical)
         elif v_strat == "explicit":
+            v_base = []
+        else:
             v_base = []
 
         v = v_base + v_explicit
@@ -1767,6 +1833,8 @@ class TableFinder(object):
                 words, word_threshold=settings.min_words_horizontal
             )
         elif h_strat == "explicit":
+            h_base = []
+        else:
             h_base = []
 
         h = h_base + h_explicit
@@ -1815,15 +1883,17 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global CHARS
+    global CHARS, TEXTPAGE
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    blocks = page.get_text("rawdict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]
+    TEXTPAGE = page.get_textpage(clip=clip, flags=TEXTFLAGS_TEXT)
+    blocks = page.get_text("rawdict", textpage=TEXTPAGE)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
         for line in block["lines"]:
             ldir = line["dir"]  # = (cosine, sine) of angle
+            ldir = (round(ldir[0], 4), round(ldir[1], 4))
             matrix = Matrix(ldir[0], -ldir[1], ldir[1], ldir[0], 0, 0)
             if ldir[1] == 0:
                 upright = True
@@ -1867,71 +1937,23 @@ def make_chars(page, clip=None):
                     CHARS.append(char_dict)
 
 
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 # Extract all page vector graphics to fill the EDGES list.
 # We are ignoring Bézier curves completely and are converting everything
 # else to lines.
-# -----------------------------------------------------------------------------
+# ------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None, add_lines=None):
-    def clean_graphics():
-        """Detect and join rectangles of connected vector graphics."""
-        lines_strict = (
-            tset.vertical_strategy == "lines_strict"
-            or tset.horizontal_strategy == "lines_strict"
-        )
-        # exclude irrelevant graphics
-        paths = []
-        for p in page.get_drawings():
-            if (
-                p["type"] == "f"
-                and lines_strict
-                and p["rect"].width > tset.snap_x_tolerance
-                and p["rect"].height > tset.snap_y_tolerance
-            ):  # ignore fill-only graphics if they are no lines
-                continue
-            paths.append(p)
-
-        prects = sorted([p["rect"] for p in paths], key=lambda r: (r.y1, r.x0))
-        new_rects = []  # the final list of joined rectangles
-
-        # -------------------------------------------------------------------------
-        # Strategy: join rects that have at least one point in common.
-        # -------------------------------------------------------------------------
-        while prects:  # the algorithm will empty this list
-            r = prects[0]  # first rectangle
-            repeat = True
-            while repeat:
-                repeat = False
-                for i in range(len(prects) - 1, -1, -1):  # run backwards
-                    if i == 0:  # don't touch first rectangle
-                        continue
-                    ri = prects[i]
-                    if (
-                        r.x0 <= ri.x0 <= r.x1
-                        or r.x0 <= ri.x1 <= r.x1
-                        or r.y0 <= ri.y0 <= r.y1
-                        or r.y0 <= ri.y1 <= r.y1
-                    ):
-                        r |= ri  # join in to first rect
-                        prects[0] = r  # update first
-                        del prects[i]  # delete this rect
-                        repeat = True
-
-            # move first item over to result list
-            new_rects.append(prects.pop(0))
-            prects = sorted(list(set(prects)), key=lambda r: (r.y1, r.x0))
-
-        new_rects = sorted(list(set(new_rects)), key=lambda r: (r.y1, r.x0))
-        return [r for r in new_rects if r.width > 5 and r.height > 5], paths
-
     global EDGES
-    bboxes, paths = clean_graphics()
-
+    snap_x = tset.snap_x_tolerance
+    snap_y = tset.snap_y_tolerance
+    min_length = tset.edge_min_length
+    lines_strict = (
+        tset.vertical_strategy == "lines_strict"
+        or tset.horizontal_strategy == "lines_strict"
+    )
     page_height = page.rect.height
     doctop_basis = page.number * page_height
     page_number = page.number + 1
-    x_tolerance = tset.snap_x_tolerance
-    y_tolerance = tset.snap_y_tolerance
     prect = page.rect
     if page.rotation in (90, 270):
         w, h = prect.br
@@ -1941,9 +1963,87 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
     else:
         clip = prect
 
+    def are_neighbors(r1, r2):
+        """Detect whether r1, r2 are neighbors.
+
+        Defined as:
+        The minimum distance between points of r1 and points of r2 is not
+        larger than some delta.
+
+        This check supports empty rect-likes and thus also lines.
+
+        Note:
+        This type of check is MUCH faster than native Rect containment checks.
+        """
+        if (  # check if x-coordinates of r1 are within those of r2
+            r2.x0 - snap_x <= r1.x0 <= r2.x1 + snap_x
+            or r2.x0 - snap_x <= r1.x1 <= r2.x1 + snap_x
+        ) and (  # ... same for y-coordinates
+            r2.y0 - snap_y <= r1.y0 <= r2.y1 + snap_y
+            or r2.y0 - snap_y <= r1.y1 <= r2.y1 + snap_y
+        ):
+            return True
+
+        # same check with r1 / r2 exchanging their roles (this is necessary!)
+        if (
+            r1.x0 - snap_x <= r2.x0 <= r1.x1 + snap_x
+            or r1.x0 - snap_x <= r2.x1 <= r1.x1 + snap_x
+        ) and (
+            r1.y0 - snap_y <= r2.y0 <= r1.y1 + snap_y
+            or r1.y0 - snap_y <= r2.y1 <= r1.y1 + snap_y
+        ):
+            return True
+        return False
+
+    def clean_graphics():
+        """Detect and join rectangles of "connected" vector graphics."""
+
+        paths = []  # paths relevant for table detection
+        for p in page.get_drawings():
+            # ignore fill-only graphics if they do not simulate lines,
+            # which means one of width or height are small.
+            if (
+                p["type"] == "f"
+                and lines_strict
+                and p["rect"].width > snap_x
+                and p["rect"].height > snap_y
+            ):
+                continue
+            paths.append(p)
+
+        # start with all vector graphics rectangles
+        prects = sorted(set([p["rect"] for p in paths]), key=lambda r: (r.y1, r.x0))
+        new_rects = []  # the final list of joined rectangles
+        # ----------------------------------------------------------------
+        # Strategy: Join rectangles that "almost touch" each other.
+        # Extend first rectangle with any other that is a "neighbor".
+        # Then move it to the final list and continue with the rest.
+        # ----------------------------------------------------------------
+        while prects:  # the algorithm will empty this list
+            prect0 = prects[0]  # copy of first rectangle (performance reasons!)
+            repeat = True
+            while repeat:  # this loop extends first rect in list
+                repeat = False  # set to true again if some other rect touches
+                for i in range(len(prects) - 1, 0, -1):  # run backwards
+                    if are_neighbors(prect0, prects[i]):  # close enough to rect 0?
+                        prect0 |= prects[i].tl  # extend rect 0
+                        prect0 |= prects[i].br  # extend rect 0
+                        del prects[i]  # delete this rect
+                        repeat = True  # keep checking the rest
+
+            # move rect 0 over to result list if there is some text in it
+            if not white_spaces.issuperset(page.get_textbox(prect0, textpage=TEXTPAGE)):
+                # contains text, so accept it as a table bbox candidate
+                new_rects.append(prect0)
+            del prects[0]  # remove from rect list
+
+        return new_rects, paths
+
+    bboxes, paths = clean_graphics()
+
     def is_parallel(p1, p2):
         """Check if line is roughly axis-parallel."""
-        if abs(p1.x - p2.x) <= x_tolerance or abs(p1.y - p2.y) <= y_tolerance:
+        if abs(p1.x - p2.x) <= snap_x or abs(p1.y - p2.y) <= snap_y:
             return True
         return False
 
@@ -2018,13 +2118,14 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                 if line_dict:
                     EDGES.append(line_to_edge(line_dict))
 
-            elif i[0] == "re":  # a rectangle: decompose into 4 lines
-                rect = i[1].normalize()  # rectangle itself
-                # ignore minute rectangles
-                if rect.height <= y_tolerance and rect.width <= x_tolerance:
-                    continue
+            elif i[0] == "re":
+                # A rectangle: decompose into 4 lines, but filter out
+                # the ones that simulate a line
+                rect = i[1].normalize()  # normalize the rectangle
 
-                if rect.width <= x_tolerance:  # simulates a vertical line
+                if (
+                    rect.width <= min_length and rect.width < rect.height
+                ):  # simulates a vertical line
                     x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
                     p1 = Point(x, rect.y0)
                     p2 = Point(x, rect.y1)
@@ -2033,7 +2134,9 @@ def make_edges(page, clip=None, tset=None, add_lines=None):
                         EDGES.append(line_to_edge(line_dict))
                     continue
 
-                if rect.height <= y_tolerance:  # simulates a horizontal line
+                if (
+                    rect.height <= min_length and rect.height < rect.width
+                ):  # simulates a horizontal line
                     y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
                     p1 = Point(rect.x0, y)
                     p2 = Point(rect.x1, y)

@@ -16,23 +16,23 @@ Then delete some pages and verify:
 
 import os
 
-import fitz
+import pymupdf
 
 scriptdir = os.path.dirname(__file__)
 page_count = 100  # initial document length
 r = range(5, 35, 5)  # contains page numbers we will delete
 # insert this link on pages after first deleted one
 link = {
-    "from": fitz.Rect(100, 100, 120, 120),
-    "kind": fitz.LINK_GOTO,
+    "from": pymupdf.Rect(100, 100, 120, 120),
+    "kind": pymupdf.LINK_GOTO,
     "page": r[0],
-    "to": fitz.Point(100, 100),
+    "to": pymupdf.Point(100, 100),
 }
 
 
 def test_deletion():
     # First prepare the document.
-    doc = fitz.open()
+    doc = pymupdf.open()
     toc = []
     for i in range(page_count):
         page = doc.new_page()  # make a page
@@ -75,7 +75,7 @@ def test_deletion():
 
 def test_3094():
     path = os.path.abspath(f"{__file__}/../../tests/resources/test_2871.pdf")
-    document = fitz.open(path)
+    document = pymupdf.open(path)
     pnos = [i for i in range(0, document.page_count, 2)]
     document.delete_pages(pnos)
 
@@ -83,11 +83,11 @@ def test_3094():
 def test_3150():
     """Assert correct functioning for problem file.
 
-    Implicitely also check use of new MuPDF function
+    Implicitly also check use of new MuPDF function
     pdf_rearrange_pages() since version 1.23.9.
     """
     filename = os.path.join(scriptdir, "resources", "test-3150.pdf")
     pages = [3, 3, 3, 2, 3, 1, 0, 0]
-    doc = fitz.open(filename)
+    doc = pymupdf.open(filename)
     doc.select(pages)
     assert doc.page_count == len(pages)

@@ -15,7 +15,7 @@ Dependencies
 -------------
 PyMuPDF v1.22.0 or later
 """
-import fitz
+import pymupdf
 
 table_text = (  # the content of each table row
     (
@@ -96,7 +96,7 @@ body {
 }
 """
 
-story = fitz.Story(HTML, user_css=CSS)  # define the Story
+story = pymupdf.Story(HTML, user_css=CSS)  # define the Story
 body = story.body  # access the HTML <body> of it
 template = body.find(None, "id", "row")  # find the template with name "row"
 parent = template.parent  # access its parent i.e., the <table>
@@ -111,8 +111,8 @@ for col0, col1, col2 in table_text:
 template.remove()  # remove the template
 
 # Story is ready - output it via a writer
-writer = fitz.DocumentWriter(__file__.replace(".py", ".pdf"), "compress")
-mediabox = fitz.paper_rect("letter")  # size of one output page
+writer = pymupdf.DocumentWriter(__file__.replace(".py", ".pdf"), "compress")
+mediabox = pymupdf.paper_rect("letter")  # size of one output page
 where = mediabox + (36, 36, -36, -36)  # use this sub-area for the content
 
 more = True  # detects end of output

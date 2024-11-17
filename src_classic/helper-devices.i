@@ -26,6 +26,8 @@ static fz_matrix trace_device_ptm;  // page transformation matrix
 static fz_matrix trace_device_ctm;  // trace device matrix
 static fz_matrix trace_device_rot;
 static fz_point dev_lastpoint = {0, 0};
+static fz_point dev_firstpoint = {0, 0};
+static int dev_havemove = 0;
 static fz_rect dev_pathrect;
 static float dev_pathfactor = 0;
 static int dev_linecount = 0;
@@ -47,6 +49,8 @@ static void trace_device_reset()
     trace_device_rot = fz_identity;
     dev_lastpoint.x = 0;
     dev_lastpoint.y = 0;
+    dev_firstpoint.x = 0;
+    dev_firstpoint.y = 0;
     dev_pathrect.x0 = 0;
     dev_pathrect.y0 = 0;
     dev_pathrect.x1 = 0;
@@ -218,6 +222,8 @@ trace_moveto(fz_context *ctx, void *dev_, float x, float y)
 		dev_pathrect = fz_make_rect(dev_lastpoint.x, dev_lastpoint.y,
 		                            dev_lastpoint.x, dev_lastpoint.y);
 	}
+	dev_firstpoint = dev_lastpoint;
+	dev_havemove = 1;
 	dev_linecount = 0;  // reset # of consec. lines
 }
 
@@ -272,8 +278,22 @@ trace_close(fz_context *ctx, void *dev_)
 			return;
 		}
 	}
-	DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(1));
 	dev_linecount = 0;  // reset # of consec. lines
+	if (dev_havemove) {
+		if (dev_firstpoint.x != dev_lastpoint.x || dev_firstpoint.y != dev_lastpoint.y) {
+			PyObject *list = PyTuple_New(3);
+			PyTuple_SET_ITEM(list, 0, PyUnicode_FromString("l"));
+			PyTuple_SET_ITEM(list, 1, JM_py_from_point(dev_lastpoint));
+			PyTuple_SET_ITEM(list, 2, JM_py_from_point(dev_firstpoint));
+			dev_lastpoint = dev_firstpoint;
+			PyObject *items = PyDict_GetItem(dev_pathdict, dictkey_items);
+			LIST_APPEND_DROP(items, list);
+		}
+		dev_havemove = 0;
+		DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(0));
+	} else {
+		DICT_SETITEMSTR_DROP(dev_pathdict, "closePath", JM_BOOL(1));
+	}
 }
 
 static const fz_path_walker trace_path_walker =

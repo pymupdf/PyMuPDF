@@ -63,6 +63,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.annots`                return a generator over the annots on the page
 :meth:`Page.apply_redactions`      PDF only: process the redactions of the page
 :meth:`Page.bound`                 rectangle of the page
+:meth:`Page.cluster_drawings`      PDF only: bounding boxes of vector graphics
 :meth:`Page.delete_annot`          PDF only: delete an annotation
 :meth:`Page.delete_image`          PDF only: delete an image
 :meth:`Page.delete_link`           PDF only: delete a link
@@ -105,6 +106,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.remove_rotation`       PDF only: set page rotation to 0
 :meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
 :meth:`Page.set_artbox`            PDF only: modify `/ArtBox`
@@ -272,9 +274,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. It is drawn with line (stroke) color red = (1, 0, 0), line width 1, fill color is supported.
 
+   ---------
+
+   Redactions
+   ~~~~~~~~~~~
+
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
       
-      PDF only: Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
+      **PDF only**: Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the enveloping rectangle is taken.
 
@@ -315,6 +322,52 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.16.11
 
       |history_end|
+
+
+      .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_IF_TOUCHED|2, text=PDF_REDACT_TEXT_REMOVE|0)
+
+      **PDF only**: Remove all **content** contained in any redaction rectangle on the page.
+
+      **This method applies and then deletes all redactions from the page.**
+
+      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. `PDF_REDACT_IMAGE_NONE | 0` ignores, and `PDF_REDACT_IMAGE_REMOVE | 1` completely removes images overlapping any redaction annotation. Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE | 3` only removes images that are actually visible.
+
+      :arg int graphics: How to redact overlapping vector graphics (also called "line-art" or "drawings"). The default (2) removes any overlapping vector graphics. `PDF_REDACT_LINE_ART_NONE | 0` ignores, and `PDF_REDACT_LINE_ART_IF_COVERED | 1` removes graphics fully contained in a redaction annotation. When removing line-art, please be aware that **stroked** vector graphics (i.e. type "s" or "sf") have a **larger wrapping rectangle** than one might expect: first of all, at least 50% of the path's line width have to be added in each direction to truly include all of the drawing. If a so-called "miter limit" is provided (see page 121 of the PDF specification), the enlarging value is `miter * width / 2`. So, when letting everything default (width = 1, miter = 10), the redaction rectangle should be at least 5 points larger in every direction.
+
+      :arg int text: Whether to redact overlapping text. The default `PDF_REDACT_TEXT_REMOVE | 0` removes all characters whose boundary box overlaps any redaction rectangle. This complies with the original legal / data protection intentions of redaction annotations. Other use cases however may require to **keep text** while redacting vector graphics or images. This can be achieved by setting `text=True|PDF_REDACT_TEXT_NONE | 1`. This does **not comply** with the data protection intentions of redaction annotations. **Do so at your own risk.**
+
+      :returns: `True` if at least one redaction annotation has been processed, `False` otherwise.
+
+      .. note::
+         * Text contained in a redaction rectangle will be **physically** removed from the page (assuming :meth:`Document.save` with a suitable garbage option) and will no longer appear in e.g. text extractions or anywhere else. All redaction annotations will also be removed. Other annotations are unaffected.
+
+         * All overlapping links will be removed. If the rectangle of the link was covering text, then only the overlapping part of the text is being removed. Similar applies to images covered by link rectangles.
+
+         * The overlapping parts of **images** will be blanked-out for default option `PDF_REDACT_IMAGE_PIXELS` (changed in v1.18.0). Option 0 does not touch any images and 1 will remove any image with an overlap.
+
+         * For option `images=PDF_REDACT_IMAGE_REMOVE` only this page's **references to the images** are removed - not necessarily the images themselves. Images are completely removed from the file only, if no longer referenced at all (assuming suitable garbage collection options).
+
+         * For option `images=PDF_REDACT_IMAGE_PIXELS` a new image of format PNG is created, which the page will use in place of the original one. The original image is not deleted or replaced as part of this process, so other pages may still show the original. In addition, the new, modified PNG image currently is **stored uncompressed**. Do keep these aspects in mind when choosing the right garbage collection method and compression options during save.
+
+         * **Text removal** is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle (changed in MuPDF v1.17). Depending on the font properties and / or the chosen line height, deletion may occur for undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
+
+         * Redactions are a simple way to replace single words in a PDF, or to just physically remove them. Locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
+
+           - Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
+
+           - For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
+
+      |history_begin|
+
+      * New in v1.16.11
+      * Changed in v1.16.12: The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insert_textbox` is invoked to insert it, using parameters provided with the redaction.
+      * Changed in v1.18.0: added option for handling images that overlap redaction areas.
+      * Changed in v1.23.27: added option for removing graphics as well.
+      * Changed in v1.24.2: added option `keep_text` to leave text untouched.
+
+      |history_end|
+
+      ---------
 
    .. method:: add_polyline_annot(points)
 
@@ -379,6 +432,16 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-markers.*
          :scale: 100
 
+   .. method:: cluster_drawings(clip=None, drawings=None, x_tolerance=3, y_tolerance=3)
+
+      Cluster vector graphics (synonyms are line-art or drawings) based on their geometrical vicinity. The method walks through the output of :meth:`Page.get_drawings` and joins paths whose `path["rect"]` are closer to each other than some tolerance values (given in the arguments). The result is a list of rectangles that each wrap things like tables (with gridlines), pie charts, bar charts, etc.
+
+      :arg rect_like clip: only consider paths inside this area. The default is the full page.
+
+      :arg list drawings: (optional) provide a previously generated output of :meth:`Page.get_drawings`. If `None` the method will execute the method.
+
+      :arg float x_tolerance: 
+
    .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None, add_lines=None)
 
       Find tables on the page and return an object with related information. Typically, the default values of the many parameters will be sufficient. Adjustments should ever only be needed in corner case situations.
@@ -419,29 +482,46 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :returns: a `TableFinder` object that has the following significant attributes:
 
-         * **cells:** a list of **all bboxes** on the page, that have been identified as table cells (across all tables). Each cell is a tuple `(x0, y0, x1, y1)` of coordinates or `None`.
-         * **tables:** a list of `Table` objects. This is `[]` if the page has no tables. Single tables can be found as items of this list. But the `TableFinder` object itself is also a sequence of its tables. This means that if `tabs` is a `TableFinder` object, then table "n" is delivered by `tabs.tables[n]` as well as by the shorter `tabs[n]`.
+         * `cells`: a list of **all bboxes** on the page, that have been identified as table cells (across all tables). Each cell is a :data:`rect_like` tuple `(x0, y0, x1, y1)` of coordinates or `None`.
+         * `tables`: a list of `Table` objects. This is `[]` if the page has no tables. Single tables can be found as items of this list. But the `TableFinder` object itself is also a sequence of its tables. This means that if `tabs` is a `TableFinder` object, then table "n" is delivered by `tabs.tables[n]` as well as by the shorter `tabs[n]`.
 
 
          * The `Table` object has the following attributes:
 
-           * **bbox:** the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
-           * **cells:** bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
-           * **extract():** this method returns the text content of each table cell as a list of list of strings.
-           * **to_pandas():** this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_.
-           * **header:** a `TableHeader` object containing header information of the table.
-           * **col_count:** an integer containing the number of table columns.
-           * **row_count:** an integer containing the number of table rows. 
-           * **rows:** a list of `TableRow` objects containing two attributes: *bbox* is the boundary box of the row, and *cells* is a list of table cells contained in this row.
+           * ``bbox``: the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
+           * ``cells``: bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
+           * ``extract()``: this method returns the text content of each table cell as a list of list of strings.
+           * ``to_markdown()``: this method returns the table as a **string in markdown format** (compatible to Github). Supporting viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye.
+           * `to_pandas()`: this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. DataFrames are very versatile objects allowing a plethora of table manipulation methods and outputs to almost 20 well-known formats, among them Excel files, CSV, JSON, markdown-formatted tables and more. `DataFrame.to_markdown()` generates a Github-compatible markdown format optimized for human readability. This method however requires the package `tabulate <https://pypi.org/project/tabulate/>`_ to be installed in addition to pandas itself.
+           * ``header``: a `TableHeader` object containing header information of the table.
+           * ``col_count``: an integer containing the number of table columns.
+           * ``row_count``: an integer containing the number of table rows.
+           * ``rows``: a list of `TableRow` objects containing two attributes, ``bbox`` is the boundary box of the row, and `cells` is a list of table cells contained in this row.
 
          * The `TableHeader` object has the following attributes:
 
-           * **bbox:** the bounding box of the header.
-           * **cells:** a list of bounding boxes containing the name of the respective column.
-           * **names:** a list of strings containing the text of each of the cell bboxes. They represent the column names -- which can be used when exporting the table to pandas DataFrames or CSV, etc.
-           * **external:** a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if *external* is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
+           * ``bbox``: the bounding box of the header.
+           * `cells`: a list of bounding boxes containing the name of the respective column.
+           * `names`: a list of strings containing the text of each of the cell bboxes. They represent the column names -- which are used when exporting the table to pandas DataFrames, markdown, etc.
+           * `external`: a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if `external` is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
 
          Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
+
+         .. caution:: The lifetime of the `TableFinder` object, as well as that of all its tables **equals the lifetime of the page**. If the page object is deleted or reassigned, all tables are no longer valid.
+         
+            The only way to keep table content beyond the page's availability is to **extract it** via methods `Table.to_markdown()`, `Table.to_pandas()` or a copy of `Table.extract()` (e.g. `Table.extract()[:]`).
+
+         .. note::
+
+            Once a table has been extracted to a **Pandas DataFrame** with `to_pandas()` it is easy to convert to other file types with the **Pandas API**:
+
+            - table to Markdown, use `to_markdown <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_markdown.html#pandas.DataFrame.to_markdown>`_
+            - table to JSON, use: `to_json <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_json.html>`_
+            - table to Excel, use: `to_excel <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_excel.html>`_
+            - table to CSV, use: `to_csv <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_csv.html>`_
+            - table to HTML, use: `to_html <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_html.html>`_
+            - table to SQL, use: `to_sql <https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html>`_
+
 
       |history_begin|
 
@@ -511,43 +591,6 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
-   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS)
-
-      PDF only: Remove all **text content** contained in any redaction rectangle.
-
-      **This method applies and then deletes all redactions from the page.**
-
-      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. *PDF_REDACT_IMAGE_NONE* (0) ignores, and *PDF_REDACT_IMAGE_REMOVE* (1) completely removes all overlapping images.
-
-
-      :returns: *True* if at least one redaction annotation has been processed, *False* otherwise.
-
-      .. note::
-         * Text contained in a redaction rectangle will be **physically** removed from the page (assuming :meth:`Document.save` with a suitable garbage option) and will no longer appear in e.g. text extractions or anywhere else. All redaction annotations will also be removed. Other annotations are unaffected.
-
-         * All overlapping links will be removed. If the rectangle of the link was covering text, then only the overlapping part of the text is being removed. Similar applies to images covered by link rectangles.
-
-         * The overlapping parts of **images** will be blanked-out for default option `PDF_REDACT_IMAGE_PIXELS` (changed in v1.18.0). Option 0 does not touch any images and 1 will remove any image with an overlap. Please be aware that there is a bug for option *PDF_REDACT_IMAGE_PIXELS = 2*: transparent images will be incorrectly handled!
-
-         * For option `images=PDF_REDACT_IMAGE_REMOVE` only this page's **references to the images** are removed - not necessarily the images themselves. Images are completely removed from the file only, if no longer referenced at all (assuming suitable garbage collection options).
-
-         * For option `images=PDF_REDACT_IMAGE_PIXELS` a new image of format PNG is created, which the page will use in place of the original one. The original image is not deleted or replaced as part of this process, so other pages may still show the original. In addition, the new, modified PNG image currently is **stored uncompressed**. Do keep these aspects in mind when choosing the right garbage collection method and compression options during save.
-
-         * **Text removal** is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle (changed in MuPDF v1.17). Depending on the font properties and / or the chosen line height, deletion may occur for undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
-
-         * Redactions are a simple way to replace single words in a PDF, or to just physically remove them. Locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
-
-           - Be wary if the replacement is longer than the original -- this may lead to an awkward appearance, line breaks or no new text at all.
-
-           - For a number of reasons, the new text may not exactly be positioned on the same line like the old one -- especially true if the replacement font was not one of CJK or :ref:`Base-14-Fonts`.
-
-      |history_begin|
-
-      * New in v1.16.11
-      * Changed in v1.16.12: The previous *mark* parameter is gone. Instead, the respective rectangles are filled with the individual *fill* color of each redaction annotation. If a *text* was given in the annotation, then :meth:`insert_textbox` is invoked to insert it, using parameters provided with the redaction.
-      * Changed in v1.18.0: added option for handling images that overlap redaction areas.
-
-      |history_end|
 
    .. method:: delete_link(linkdict)
 
@@ -595,7 +638,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's links. The results equal the entries of :meth:`Page.get_links`.
 
-      :arg sequence kinds: a sequence of integers to down-select to one or more link kinds. Default is all links. Example: *kinds=(fitz.LINK_GOTO,)* will only return internal links.
+      :arg sequence kinds: a sequence of integers to down-select to one or more link kinds. Default is all links. Example: *kinds=(pymupdf.LINK_GOTO,)* will only return internal links.
 
       :rtype: generator
       :returns: an entry of :meth:`Page.get_links()` for each iteration.
@@ -610,7 +653,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's annotations.
 
-      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: `types=(fitz.PDF_ANNOT_FREETEXT, fitz.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations.
+      :arg sequence types: a sequence of integers to down-select to one or more annotation types. Default is all annotations. Example: `types=(pymupdf.PDF_ANNOT_FREETEXT, pymupdf.PDF_ANNOT_TEXT)` will only return 'FreeText' and 'Text' annotations.
 
       :rtype: generator
       :returns: an :ref:`Annot` for each iteration.
@@ -635,7 +678,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Return a generator over the page's form fields.
 
-      :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: `types=(fitz.PDF_WIDGET_TYPE_TEXT,)` will only return 'Text' fields.
+      :arg sequence types: a sequence of integers to down-select to one or more widget types. Default is all form fields. Example: `types=(pymupdf.PDF_WIDGET_TYPE_TEXT,)` will only return 'Text' fields.
 
       :rtype: generator
       :returns: a :ref:`Widget` for each iteration.
@@ -739,9 +782,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       **PDF only:** Insert text into the specified rectangle. The method has similarities with methods :meth:`Page.insert_textbox` and :meth:`TextWriter.fill_textbox`, but is **much more powerful**. This is achieved by letting a :ref:`Story` object do all the required processing.
 
-      * Parameter `text` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
+      * Parameter ``text`` may be a string as in the other methods. But it will be **interpreted as HTML source** and may therefore also contain HTML language elements -- including styling. The `css` parameter may be used to pass in additional styling instructions.
 
-      * Automatic line breaks are generated at word boundaries. The "soft hyphen" character `"&#173;"` (or `&shy;`) can be used to cause hyphenation and thus may also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag `<br>` - `"\\n"` is ignored and will be treated like a space.
+      * Automatic line breaks are generated at word boundaries. The "soft hyphen" character `"&#173;"` (or `&shy;`) can be used to cause hyphenation and thus may also cause line breaks. **Forced** line breaks however are only achievable via the HTML tag ``<br>`` - ``\n`` is ignored and will be treated like a space.
 
       * With this method the following can be achieved:
 
@@ -759,9 +802,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like rect: rectangle on page to receive the text.
       :arg str,Story text: the text to be written. Can contain a mixture of plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
-      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if `text` is a Story.
+      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if ``text`` is a Story.
       :arg float scale_low: if necessary, scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling permitted. A value of e.g. 0.2 means maximum down-scaling by 80%.
-      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If `text` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if `text` is a Story.
+      :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If ``text`` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if ``text`` is a Story.
       :arg int rotate: one of the values 0, 90, 180, 270. Depending on this, text will be filled:
       
           - 0: top-left to bottom-right.
@@ -790,6 +833,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
       
 
+   **Drawing Methods**
+
    .. index::
       pair: closePath; draw_line
       pair: color; draw_line
@@ -805,7 +850,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_line
       pair: oc; draw_line
 
-   .. method:: draw_line(p1, p2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_line(p1, p2, color=(0,), width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.draw_line`.
 
@@ -830,7 +875,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_zigzag
       pair: oc; draw_zigzag
 
-   .. method:: draw_zigzag(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_zigzag(p1, p2, breadth=2, color=(0,), width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a zigzag line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.draw_zigzag`.
 
@@ -855,7 +900,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_squiggle
       pair: oc; draw_squiggle
 
-   .. method:: draw_squiggle(p1, p2, breadth=2, color=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_squiggle(p1, p2, breadth=2, color=(0,), width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a squiggly (wavy, undulated) line from *p1* to *p2* (:data:`point_like` \s). See :meth:`Shape.draw_squiggle`.
 
@@ -879,7 +924,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_circle
       pair: oc; draw_circle
 
-   .. method:: draw_circle(center, radius, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_circle(center, radius, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a circle around *center* (:data:`point_like`) with a radius of *radius*. See :meth:`Shape.draw_circle`.
 
@@ -903,7 +948,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_oval
       pair: oc; draw_oval
 
-   .. method:: draw_oval(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_oval(quad, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw an oval (ellipse) within the given :data:`rect_like` or :data:`quad_like`. See :meth:`Shape.draw_oval`.
 
@@ -928,7 +973,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_sector
       pair: oc; draw_sector
 
-   .. method:: draw_sector(center, point, angle, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_sector(center, point, angle, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, fullSector=True, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a circular sector, optionally connecting the arc to the circle's center (like a piece of pie). See :meth:`Shape.draw_sector`.
 
@@ -952,7 +997,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_polyline
       pair: oc; draw_polyline
 
-   .. method:: draw_polyline(points, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_polyline(points, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw several connected lines defined by a sequence of :data:`point_like` \s. See :meth:`Shape.draw_polyline`.
 
@@ -977,7 +1022,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_bezier
       pair: oc; draw_bezier
 
-   .. method:: draw_bezier(p1, p2, p3, p4, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_bezier(p1, p2, p3, p4, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a cubic Bézier curve from *p1* to *p4* with the control points *p2* and *p3* (all are :data:`point_like` \s). See :meth:`Shape.draw_bezier`.
 
@@ -1001,7 +1046,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_curve
       pair: oc; draw_curve
 
-   .. method:: draw_curve(p1, p2, p3, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_curve(p1, p2, p3, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, closePath=False, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: This is a special case of *draw_bezier()*. See :meth:`Shape.draw_curve`.
 
@@ -1026,7 +1071,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: radius; draw_rect
       pair: oc; draw_rect
 
-   .. method:: draw_rect(rect, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, radius=None, oc=0)
+   .. method:: draw_rect(rect, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, radius=None, oc=0)
 
       PDF only: Draw a rectangle. See :meth:`Shape.draw_rect`.
 
@@ -1051,7 +1096,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; draw_quad
       pair: oc; draw_quad
 
-   .. method:: draw_quad(quad, color=None, fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: draw_quad(quad, color=(0,), fill=None, width=1, dashes=None, lineCap=0, lineJoin=0, overlay=True, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Draw a quadrilateral. See :meth:`Shape.draw_quad`.
 
@@ -1188,8 +1233,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       This example puts the same image on every page of a document::
 
-         >>> doc = fitz.open(...)
-         >>> rect = fitz.Rect(0, 0, 50, 50)       # put thumbnail in upper left corner
+         >>> doc = pymupdf.open(...)
+         >>> rect = pymupdf.Rect(0, 0, 50, 50)       # put thumbnail in upper left corner
          >>> img = open("some.jpg", "rb").read()  # an image file
          >>> img_xref = 0                         # first execution embeds the image
          >>> for page in doc:
@@ -1346,17 +1391,15 @@ In a nutshell, this is what you can do with PyMuPDF:
       * "rawdict" -- :meth:`TextPage.extractRAWDICT`
       * "rawjson" -- :meth:`TextPage.extractRAWJSON`
 
-      :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported.
+      :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported. If misspelled, option "text" is silently assumed.
 
-        Values "words" and "blocks" are also accepted (changed in v1.16.3).
-
-      :arg rect-like clip: restrict extracted text to this rectangle. If None, the full page is taken. Has **no effect** for options "html", "xhtml" and "xml". (New in v1.17.7)
+      :arg rect-like clip: restrict extracted text to this rectangle. If None, the full page is taken. Has **no effect** for options "html", "xhtml" and "xml".
 
       :arg int flags: indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings. (New in v1.16.2)
 
-      :arg textpage: use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage-only properties. If omitted, a new, temporary textpage will be created. (New in v1.19.0)
+      :arg textpage: use a previously created :ref:`TextPage`. This reduces execution time **very significantly:** by more than 50% and up to 95%, depending on the extraction option. If specified, the 'flags' and 'clip' arguments are ignored, because they are textpage-only properties. If omitted, a new, temporary textpage will be created.
 
-      :arg bool sort: sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. Output option **"words"** sorts by `(y1, x0)` of the words' bboxes. Similar is true for "blocks", "dict", "json", "rawdict", "rawjson": they all are sorted by `(y1, x0)` of the resp. block bbox. If specified for "text", then internally "blocks" is used. (New in v1.19.1)
+      :arg bool sort: sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order. Has no effect on (X)HTML and XML. For options "blocks", "dict", "json", "rawdict", "rawjson", sorting happens by coordinates `(y1, x0)` of the respective block bbox. For options "words" and "text", the text lines are completely re-synthesized to follow the reading sequence and appearance in the document -- which even establishes the original layout to some extent.
 
       :arg str delimiters: use these characters as *additional* word separators with the "words" output option (ignored otherwise). By default, all white spaces (including non-breaking space `0xA0`) indicate start and end of a word. Now you can specify more characters causing this. For instance, the default will return `"john.doe@outlook.com"` as **one** word. If you specify `delimiters="@."` then the **four** words `"john"`, `"doe"`, `"outlook"`, `"com"` will be returned. Other possible uses include ignoring punctuation characters `delimiters=string.punctuation`. The "word" strings will not contain any delimiting character. (New in v1.23.5)
 
@@ -1366,7 +1409,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
         1. You can use this method as a **document conversion tool** from :ref:`any supported document type<Supported_File_Types>` to one of TEXT, HTML, XHTML or XML documents.
-        2. The inclusion of text via the *clip* parameter is decided on a by-character level: a character becomes part of the output, if its bbox is contained in *clip* (changed in v1.18.2). This **deviates** from the algorithm used in redaction annotations: a character will be **removed if its bbox intersects** any redaction annotation.
+        2. The inclusion of text via the *clip* parameter is decided on a by-character level: a character becomes part of the output, if its bbox is contained in `clip`. This **deviates** from the algorithm used in redaction annotations: a character will be **removed if its bbox intersects** any redaction annotation.
 
       |history_begin|
 
@@ -1374,6 +1417,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.19.1: added `sort` parameter
       * Changed in v1.19.6: added new constants for defining default flags per method.
       * Changed in v1.23.5: added `delimiters` parameter
+      * Changed in v1.24.11: changed the effect of `sort_True` for "text" and "words" to closely follow natural reading sequence.
 
       |history_end|
 
@@ -1388,7 +1432,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect-like rect: rect-like.
       :arg textpage: a :ref:`TextPage` to use. If omitted, a new, temporary textpage will be created.
 
-      :returns: a string with interspersed linebreaks where necessary. It is based on dedicated code (changed in v1.19.0). A tyical use is checking the result of :meth:`Page.search_for`:
+      :returns: a string with interspersed linebreaks where necessary. It is based on dedicated code (changed in v1.19.0). A typical use is checking the result of :meth:`Page.search_for`:
 
         >>> rl = page.search_for("currency:")
         >>> page.get_textbox(rl[0])
@@ -1434,7 +1478,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False, tessdata=None)
 
-      Create a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
+      **Optical Character Recognition** (**OCR**) technology can be used to extract text data for documents where text is in a raster image format throughout the page. Use this method to **OCR** a page for text extraction.
+
+      This method returns a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
 
       :arg int flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
@@ -1454,7 +1500,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          
             **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
 
-            `This <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ Jupyter notebook walks through an example for using OCR textpages.
+            `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
 
       |history_begin|
 
@@ -1511,11 +1557,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       .. note::, quads and rectangles are more reliably recognized as such. (Starting with v1.19.2)
 
-      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in section "Extractings Drawings" of chapter :ref:`FAQ`.
+      Using class :ref:`Shape`, you should be able to recreate the original drawings on a separate (PDF) page with high fidelity under normal, not too sophisticated circumstances. Please see the following comments on restrictions. A coding draft can be found in :ref:`How to Extract Drawings <RecipesDrawingAndGraphics_Extract_Drawings>`.
 
       Specifying `extended=True` significantly alters the output. Most importantly, new dictionary types are present: "clip" and "group". All paths will now be organized in a hierarchic structure which is encoded by the new integer key "level", the hierarchy level. Each group or clip establishes a new hierarchy, which applies to all subsequent paths having a *larger* level value. (New in v1.22.0)
 
-      Any path with a smaller level value than its predecessor will end the scope of (at least) the preceeding hierarchy level. A "clip" path with the same level as the preceding clip will end the scope of that clip. Same is true for groups. This is best explained by an example::
+      Any path with a smaller level value than its predecessor will end the scope of (at least) the preceding hierarchy level. A "clip" path with the same level as the preceding clip will end the scope of that clip. Same is true for groups. This is best explained by an example::
 
          +------+------+--------+------+--------+
          | line | lvl0 | lvl1   | lvl2 |  lvl3  |
@@ -1709,7 +1755,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note::
 
          1. Be aware that :meth:`Page.get_images` may contain "dead" entries i.e. images, which the page **does not display**. This is no error, but intended by the PDF creator. No exception will be raised in this case, but an infinite rectangle is returned. You can avoid this from happening by executing :meth:`Page.clean_contents` before this method.
-         2. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == fitz.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
+         2. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
 
       |history_begin|
 
@@ -1720,7 +1766,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. index::
       pair: matrix; get_svg_image
 
-   .. method:: get_svg_image(matrix=fitz.Identity, text_as_path=True)
+   .. method:: get_svg_image(matrix=pymupdf.Identity, text_as_path=True)
 
      Create an SVG image from the page. Only full page images are currently supported.
 
@@ -1739,7 +1785,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: matrix; get_pixmap
       pair: dpi; get_pixmap
 
-   .. method:: get_pixmap(*, matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, clip=None, alpha=False, annots=True)
+   .. method:: get_pixmap(*, matrix=pymupdf.Identity, dpi=None, colorspace=pymupdf.csRGB, clip=None, alpha=False, annots=True)
 
      Create a pixmap from the page. This is probably the most often used method to create a :ref:`Pixmap`.
 
@@ -1779,8 +1825,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * The method will respect any page rotation and will not exceed the intersection of `clip` and :attr:`Page.cropbox`. If you need the page's mediabox (and if this is a different rectangle), you can use a snippet like the following to achieve this::
 
-            In [1]: import fitz
-            In [2]: doc=fitz.open("demo1.pdf")
+            In [1]: import pymupdf
+            In [2]: doc=pymupdf.open("demo1.pdf")
             In [3]: page=doc[0]
             In [4]: rotation = page.rotation
             In [5]: cropbox = page.cropbox
@@ -1816,7 +1862,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: annot_xrefs()
 
-      PDF only: return a list of the :data`xref` numbers of annotations, widgets and links -- technically of all entries found in the page's */Annots*  array.
+      PDF only: return a list of the :data:`xref` numbers of annotations, widgets and links -- technically of all entries found in the page's */Annots*  array.
 
       :rtype: list
       :returns: a list of items *(xref, type)* where type is the annotation type. Use the type to tell apart links, fields and annotations, see :ref:`AnnotationTypes`.
@@ -1878,6 +1924,14 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
 
+   .. method:: remove_rotation()
+
+      PDF only: Set page rotation to 0 while maintaining appearance and page content.
+
+      :returns: The inverted matrix used to achieve this change. If the page was not rotated (rotation 0), :ref:`Identity` is returned. The method automatically recomputes the rectangles of any annotations, links and widgets present on the page.
+
+         This method may come in handy when e.g. used with :meth:`Page.show_pdf_page`.
+
    .. index::
       pair: clip; show_pdf_page
       pair: keep_proportion; show_pdf_page
@@ -1886,7 +1940,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: show_pdf_page(rect, docsrc, pno=0, keep_proportion=True, overlay=True, oc=0, rotate=0, clip=None)
 
-      PDF only: Display a page of another PDF as a **vector image** (otherwise similar to :meth:`Page.insert_image`). This is a multi-purpose method. For example, you can use it to
+      PDF only: Display a page of another PDF as a **vector image** (otherwise similar to :meth:`Page.insert_image`). This is a multi-purpose method. For example, you can use it to:
 
       * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `combine.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/combine-pages/combine.py>`_),
       * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/posterize-document/posterize.py>`_),
@@ -1911,16 +1965,16 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       Example: Show the same source page, rotated by 90 and by -90 degrees:
 
-      >>> doc = fitz.open()  # new empty PDF
+      >>> doc = pymupdf.open()  # new empty PDF
       >>> page=doc.new_page()  # new page in A4 format
       >>>
       >>> # upper half page
-      >>> r1 = fitz.Rect(0, 0, page.rect.width, page.rect.height/2)
+      >>> r1 = pymupdf.Rect(0, 0, page.rect.width, page.rect.height/2)
       >>>
       >>> # lower half page
       >>> r2 = r1 + (0, page.rect.height/2, 0, page.rect.height/2)
       >>>
-      >>> src = fitz.open("PyMuPDF.pdf")  # show page 0 of this
+      >>> src = pymupdf.open("PyMuPDF.pdf")  # show page 0 of this
       >>>
       >>> page.show_pdf_page(r1, src, 0, rotate=90)
       >>> page.show_pdf_page(r2, src, 0, rotate=-90)
@@ -2026,20 +2080,20 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       >>> page = doc.new_page()
       >>> page.rect
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> page.cropbox  # cropbox and mediabox still equal
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> # now set cropbox to a part of the page
-      >>> page.set_cropbox(fitz.Rect(100, 100, 400, 400))
+      >>> page.set_cropbox(pymupdf.Rect(100, 100, 400, 400))
       >>> # this will also change the "rect" property:
       >>> page.rect
-      fitz.Rect(0.0, 0.0, 300.0, 300.0)
+      pymupdf.Rect(0.0, 0.0, 300.0, 300.0)
       >>>
       >>> # but mediabox remains unaffected
       >>> page.mediabox
-      fitz.Rect(0.0, 0.0, 595.0, 842.0)
+      pymupdf.Rect(0.0, 0.0, 595.0, 842.0)
       >>>
       >>> # revert CropBox change
       >>> # either set it to MediaBox
@@ -2124,7 +2178,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          >>> page.set_rotation(90)  # rotate an ISO A4 page
          >>> page.rect
          Rect(0.0, 0.0, 842.0, 595.0)
-         >>> p = fitz.Point(0, 0)  # where did top-left point land?
+         >>> p = pymupdf.Point(0, 0)  # where did top-left point land?
          >>> p * page.rotation_matrix
          Point(842.0, 0.0)
          >>>
@@ -2188,7 +2242,7 @@ Each entry of the :meth:`Page.get_links` list is a dictionary with the following
 
 * *page*:  a 0-based integer indicating the destination page. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored.
 
-* *to*:   either a *fitz.Point*, specifying the destination location on the provided page, default is *fitz.Point(0, 0)*, or a symbolic (indirect) name. If an indirect name is specified, *page = -1* is required and the name must be defined in the PDF in order for this to work. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored.
+* *to*:   either a *pymupdf.Point*, specifying the destination location on the provided page, default is *pymupdf.Point(0, 0)*, or a symbolic (indirect) name. If an indirect name is specified, *page = -1* is required and the name must be defined in the PDF in order for this to work. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored.
 
 * *file*: a string specifying the destination file. Required for *LINK_GOTOR* and *LINK_LAUNCH*, else ignored.
 
@@ -2226,7 +2280,7 @@ Indirect *LINK_GOTOR* destinations can in general of course not be checked for v
 
 2. Determine the target page number ("pno", 0-based) and a :ref:`Point` on it, where the link should be directed to.
 
-3. Create a dictionary `d = {"kind": fitz.LINK_GOTO, "page": pno, "from": bbox, "to": point}`.
+3. Create a dictionary `d = {"kind": pymupdf.LINK_GOTO, "page": pno, "from": bbox, "to": point}`.
 
 4. Execute `page.insert_link(d)`.
 
@@ -2265,7 +2319,7 @@ The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 
 .. [#f5] The previous algorithm caused images to be **shrunk** to this intersection. Now the image can be anywhere on :attr:`Page.mediabox`, potentially being invisible or only partially visible if the cropbox (representing the visible page part) is smaller.
 
-.. [#f6] If you need to also see annotations or fields in the target page, you can try and convert the source PDF to another PDF using :meth:`Document.convert_to_pdf`. The underlying MuPDF function of that method will convert these objects to normal page content. Then use :meth:`Page.show_pdf_page` with the converted PDF page.
+.. [#f6] If you need to also see annotations or fields in the target page, you can convert the source PDF using :meth:`Document.bake`. The underlying MuPDF function of that method will convert these objects to normal page content. Then use :meth:`Page.show_pdf_page` with the converted PDF page.
 
 .. [#f7] In PDF, an area enclosed by some lines or curves can have a property called "orientation". This is significant for switching on or off the fill color of that area when there exist multiple area overlaps - see discussion in method :meth:`Shape.finish` using the "non-zero winding number" rule. While orientation of curves, quads, triangles and other shapes enclosed by lines always was detectable, this has been impossible for "re" (rectangle) items in the past. Adding the orientation parameter now delivers the missing information.
 

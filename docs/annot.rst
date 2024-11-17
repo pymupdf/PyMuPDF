@@ -5,7 +5,8 @@
 ================
 Annot
 ================
-**This class is supported for PDF documents only.**
+
+|pdf_only_class|
 
 Quote from the :ref:`AdobeManual`: "An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard."
 
@@ -14,7 +15,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 ================================== ==============================================================
 **Attribute**                      **Short Description**
 ================================== ==============================================================
-:meth:`Annot.delete_responses`     delete all responding annotions
+:meth:`Annot.delete_responses`     delete all responding annotations
 :meth:`Annot.get_file`             get attached file content
 :meth:`Annot.get_oc`               get :data:`xref` of an :data:`OCG` / :data:`OCMD`
 :meth:`Annot.get_pixmap`           image of the annotation as a pixmap
@@ -66,7 +67,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: alpha; Annot.get_pixmap
       pair: dpi; Annot.get_pixmap
 
-   .. method:: get_pixmap(matrix=fitz.Identity, dpi=None, colorspace=fitz.csRGB, alpha=False)
+   .. method:: get_pixmap(matrix=pymupdf.Identity, dpi=None, colorspace=pymupdf.csRGB, alpha=False)
 
       * Changed in v1.19.2: added support of dpi parameter.
 
@@ -76,7 +77,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg int dpi: (new in v1.19.2) desired resolution in dots per inch. If not `None`, the matrix parameter is ignored.
 
-      :arg colorspace: a colorspace to be used for image creation. Default is *fitz.csRGB*.
+      :arg colorspace: a colorspace to be used for image creation. Default is *pymupdf.csRGB*.
       :type colorspace: :ref:`Colorspace`
 
       :arg bool alpha: whether to include transparency information. Default is *False*.
@@ -240,7 +241,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg str name: the new name.
 
-      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after `"STAMP_"`), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using :data:`fontsize` 20 must not exceed 190 points. So please make sure that the following inequality is true: `fitz.get_text_length(text, fontname="tibo", fontsize=20) <= 190`.
+      .. caution:: If you set the name of a 'Stamp' annotation, then this will **not change** the rectangle, nor will the text be layouted in any way. If you choose a standard text from :ref:`StampIcons` (the **exact** name piece after `"STAMP_"`), you should receive the original layout. An **arbitrary text** will not be changed to upper case, but be written in font "Times-Bold" as is, horizontally centered in **one line** and be shortened to fit. To get your text fully displayed, its length using :data:`fontsize` 20 must not exceed 190 points. So please make sure that the following inequality is true: `pymupdf.get_text_length(text, fontname="tibo", fontsize=20) <= 190`.
 
    .. method:: set_rect(rect)
 
@@ -536,7 +537,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       * *style* -- 1-byte border style: **"S"** (Solid) = solid line surrounding the annotation, **"D"** (Dashed) = dashed line surrounding the annotation, the dash pattern is specified by the *dashes* entry, **"B"** (Beveled) = a simulated embossed rectangle that appears to be raised above the surface of the page, **"I"** (Inset) = a simulated engraved rectangle that appears to be recessed below the surface of the page, **"U"** (Underline) = a single line along the bottom of the annotation rectangle.
 
-      * *clouds* -- an integer indicating a "cloudy" border, where `n` is an integer `-1 <= n <= 2`. A value `n = 0` indicates a straight line (no clouds), 1 means small and 2 means large semi-circles, mimicking the cloudy appearance. If -1, then no specification is present.
+      * *clouds* -- an integer indicating a "cloudy" border, where ``n`` is an integer `-1 <= n <= 2`. A value `n = 0` indicates a straight line (no clouds), 1 means small and 2 means large semi-circles, mimicking the cloudy appearance. If -1, then no specification is present.
 
       :rtype: dict
 
@@ -554,7 +555,7 @@ Example
 --------
 Change the graphical image of an annotation. Also update the "author" and the text to be shown in the popup window::
 
- doc = fitz.open("circle-in.pdf")
+ doc = pymupdf.open("circle-in.pdf")
  page = doc[0]                          # page 0
  annot = page.first_annot                # get the annotation
  annot.set_border(dashes=[3])           # set dashes to "3 on, 3 off ..."

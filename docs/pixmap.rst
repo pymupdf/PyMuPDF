@@ -71,7 +71,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
 .. class:: Pixmap
 
-   .. method:: __init__(self, colorspace, irect, alpha)
+   .. method:: __init__(self, colorspace, irect, alpha=False)
 
       **New empty pixmap:** Create an empty pixmap of size and origin given by the rectangle. So, *irect.top_left* designates the top left corner of the pixmap, and its width and height are *irect.width* resp. *irect.height*. Note that the image area is **not initialized** and will contain crap data -- use eg. :meth:`clear_with` or :meth:`set_rect` to be sure.
 
@@ -131,8 +131,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       .. note:: A typical use includes separation of color and transparency bytes in separate pixmaps. Some applications require this like e.g. *wx.Bitmap.FromBufferAndAlpha()* of *wxPython*:
 
          >>> # 'pix' is an RGBA pixmap
-         >>> pixcolors = fitz.Pixmap(pix, 0)    # extract the RGB part (drop alpha)
-         >>> pixalpha = fitz.Pixmap(None, pix)  # extract the alpha part
+         >>> pixcolors = pymupdf.Pixmap(pix, 0)    # extract the RGB part (drop alpha)
+         >>> pixalpha = pymupdf.Pixmap(None, pix)  # extract the alpha part
          >>> bm = wx.Bitmap.FromBufferAndAlpha(pix.width, pix.height, pixcolors.samples, pixalpha.samples)
 
 
@@ -372,16 +372,16 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.pdfocr_save`.
 
-      :returns: A 1-page PDF file in memory. Could be opened like `doc=fitz.open("pdf", pix.pdfocr_tobytes())`, and text extractions could be performed on its `page=doc[0]`.
+      :returns: A 1-page PDF file in memory. Could be opened like `doc=pymupdf.open("pdf", pix.pdfocr_tobytes())`, and text extractions could be performed on its `page=doc[0]`.
       
          .. note::
          
             Another possible use is insertion into some pdf. The following snippet reads the images of a folder and stores them as pages in a new PDF that contain an OCR text layer::
 
-               doc = fitz.open()
+               doc = pymupdf.open()
                for imgfile in os.listdir(folder):
-                  pix = fitz.Pixmap(imgfile)
-                  imgpdf = fitz.open("pdf", pix.pdfocr_tobytes())
+                  pix = pymupdf.Pixmap(imgfile)
+                  imgpdf = pymupdf.open("pdf", pix.pdfocr_tobytes())
                   doc.insert_pdf(imgpdf)
                   pix = None
                   imgpdf.close()
@@ -628,7 +628,7 @@ The following file types are supported as **input** to construct pixmaps: **BMP,
 
 1. Directly create a pixmap with *Pixmap(filename)* or *Pixmap(byterray)*. The pixmap will then have properties as determined by the image.
 
-2. Open such files with *fitz.open(...)*. The result will then appear as a document containing one single page. Creating a pixmap of this page offers all the options available in this context: apply a matrix, choose colorspace and alpha, confine the pixmap to a clip area, etc.
+2. Open such files with *pymupdf.open(...)*. The result will then appear as a document containing one single page. Creating a pixmap of this page offers all the options available in this context: apply a matrix, choose colorspace and alpha, confine the pixmap to a clip area, etc.
 
 **SVG images** are only supported via method 2 above, not directly as pixmaps. But remember: the result of this is a **raster image** as is always the case with pixmaps [#f1]_.
 
@@ -654,7 +654,7 @@ psd        gray, rgb, cmyk yes       .psd           Adobe Photoshop Document
 
 .. note::
     * Not all image file types are supported (or at least common) on all OS platforms. E.g. PAM and the Portable Anymap formats are rare or even unknown on Windows.
-    * Especially pertaining to CMYK colorspaces, you can always convert a CMYK pixmap to an RGB pixmap with *rgb_pix = fitz.Pixmap(fitz.csRGB, cmyk_pix)* and then save that in the desired format.
+    * Especially pertaining to CMYK colorspaces, you can always convert a CMYK pixmap to an RGB pixmap with *rgb_pix = pymupdf.Pixmap(pymupdf.csRGB, cmyk_pix)* and then save that in the desired format.
     * As can be seen, MuPDF's image support range is different for input and output. Among those supported both ways, PNG and JPEG are probably the most popular.
     * We also recommend using "ppm" formats as input to tkinter's *PhotoImage* method like this: *tkimg = tkinter.PhotoImage(data=pix.tobytes("ppm"))* (also see the tutorial). This is **very** fast (**60 times** faster than PNG).
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-28 14:54+0100\n"
+"POT-Creation-Date: 2024-03-05 14:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,39 +19,43 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1
+#: ../../header.rst:-1 6bf4a00703fa43b6b66051625852c252
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1
-msgid "PyMuPDF is a high-performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents."
+#: ../../header.rst:-1 dfd590df5c93401ca16e8c5de3251219
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1
-msgid "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, PDF Splitting, PDF Creation, Pyodide, PyScript"
+#: ../../header.rst:-1 071e5970c82b4290b21ca8ebfa419508
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../colorspace.rst:7 a7f13a26c05d44638bd04c0d470e7a14
+#: ../../colorspace.rst:7 d4e2db1236594db6a139c15571ae0f84
 msgid "Colorspace"
 msgstr "Colorspace (カラースペース)"
 
-#: ../../colorspace.rst:9 dd6a676271084aefab3c0ca5a3b3b472
+#: ../../colorspace.rst:9 0851a516bea5415da17d47f3989d5ffd
 msgid "Represents the color space of a :ref:`Pixmap`."
 msgstr ":ref:`Pixmap` のカラースペースを表します。"
 
-#: ../../colorspace.rst:12 4054c9cd4531459eac7c821f1bcd2954
+#: ../../colorspace.rst:12 d40055ffed0c4ac5b0a36f7e9e4a5f80
 msgid "**Class API**"
 msgstr "**クラス API** "
 
-#: ../../colorspace.rst:18 e51883b5b9cc4bb096d97a6f2cff1b34
+#: ../../colorspace.rst:18 81989e1130934dc3977b648fc201c8e1
 msgid "Constructor"
 msgstr "コンストラクタ"
 
-#: ../../colorspace.rst 3381edc13df242c8aea31b4eabd856ab
+#: ../../colorspace.rst c15938eb144b4df28c85b4b01c294094
 msgid "Parameters"
 msgstr "パラメータ:"
 
-#: ../../colorspace.rst:20 b9e26cf9e3c34050bb166fc53a3e364b
+#: ../../colorspace.rst:20 7261646e29e94013b8c391592e47a4a5
 msgid ""
 "A number identifying the colorspace. Possible values are :data:`CS_RGB`, "
 ":data:`CS_GRAY` and :data:`CS_CMYK`."
@@ -59,54 +63,58 @@ msgstr ""
 "カラースペースを識別する番号。可能な値は :data:`CS_RGB` 、:data:`CS_GRAY` 、および :data:`CS_CMYK`"
 " です。"
 
-#: ../../colorspace.rst:24 c013a7d3b9e74853a98975294c2fe629
+#: ../../colorspace.rst:24 0efd4e21a8454614bc95d7d0a6b56de9
 msgid ""
-"The name identifying the colorspace. Example: *fitz.csCMYK.name = "
+"The name identifying the colorspace. Example: *pymupdf.csCMYK.name = "
 "'DeviceCMYK'*."
-msgstr "カラースペースを識別する名前です。例:  *fitz.csCMYK.name = 'DeviceCMYK'* 。"
+msgstr "カラースペースを識別する名前です。例:  *pymupdf.csCMYK.name = 'DeviceCMYK'* 。"
 
-#: ../../colorspace.rst 1d93175f770d47f7bcb01d91eb2c3b33
-#: 5289563df2d9448a965ef85b43645551
+#: ../../colorspace.rst 0a6b8f0cac194572ac4d4ab6386a4e59
+#: 810a7ea03fc64c1cb9b3ba9e95f4dc18
 msgid "type"
 msgstr "型:"
 
-#: ../../colorspace.rst:26 f9874728d0e24706a0d4b8a7ce75f644
+#: ../../colorspace.rst:26 c390d03f196941bb849489c7a1db7065
 msgid "str"
 msgstr ""
 
-#: ../../colorspace.rst:30 cb55420887584390b1ea7014823ccd96
+#: ../../colorspace.rst:30 cb63570c110a492b878525c422a40f25
 msgid ""
 "The number of bytes required to define the color of one pixel. Example: "
-"*fitz.csCMYK.n == 4*."
-msgstr "1ピクセルの色を定義するのに必要なバイト数です。例: *fitz.csCMYK.n == 4* 。"
+"*pymupdf.csCMYK.n == 4*."
+msgstr "1ピクセルの色を定義するのに必要なバイト数です。例: *pymupdf.csCMYK.n == 4* 。"
 
-#: ../../colorspace.rst:32 aec79339583b4314be6357bc25ae0fc6
+#: ../../colorspace.rst:32 8ca7bac3bbad4687b2f22e2fe7a41b4e
 msgid "int"
 msgstr ""
 
-#: ../../colorspace.rst:35 e300b95d1e8f4c91b9cbb67bc6ad5a09
+#: ../../colorspace.rst:35 2df85c9fd0874b7784d94294655ae482
 msgid "**Predefined Colorspaces**"
 msgstr "**事前定義済みのカラースペース** "
 
-#: ../../colorspace.rst:37 81ba7281df954cb0a73d6e518828a378
+#: ../../colorspace.rst:37 f4d1ac3874af4b64bf8578c7b667f6d0
 msgid ""
 "For saving some typing effort, there exist predefined colorspace objects "
 "for the three available cases."
 msgstr "入力を簡略化するために、三つの利用可能なケースのための事前定義されたカラースペースオブジェクトが存在します。"
 
-#: ../../colorspace.rst:39 67fda88a0eb84c619c671ea8b0c26060
-msgid ":data:`csRGB`  = *fitz.Colorspace(fitz.CS_RGB)*"
+#: ../../colorspace.rst:39 85849d931ad640c3a3ba1148485edcc6
+msgid ":data:`csRGB`  = *pymupdf.Colorspace(pymupdf.CS_RGB)*"
 msgstr ""
 
-#: ../../colorspace.rst:40 2d8a46c88b3441329e71af70ecfb4e23
-msgid ":data:`csGRAY` = *fitz.Colorspace(fitz.CS_GRAY)*"
+#: ../../colorspace.rst:40 690779c80da24f15aaac19325a782c63
+msgid ":data:`csGRAY` = *pymupdf.Colorspace(pymupdf.CS_GRAY)*"
 msgstr ""
 
-#: ../../colorspace.rst:41 93ff1f1f4b704be69834d02575f8b5c9
-msgid ":data:`csCMYK` = *fitz.Colorspace(fitz.CS_CMYK)*"
+#: ../../colorspace.rst:41 3c0dd4d40df84d6591e785a9a4bc0cdc
+msgid ":data:`csCMYK` = *pymupdf.Colorspace(pymupdf.CS_CMYK)*"
 msgstr ""
 
-#: ../../footer.rst:-1 0a6b704d42d1478d83384299f4718748
+#: ../../footer.rst:71 9adc881254754272972b355fca42fd63
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+
+#: ../../footer.rst:-1 d9184d5dd74c4d1ab380b4bb26aeea3b
 msgid "Discord logo"
 msgstr ""
 

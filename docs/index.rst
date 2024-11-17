@@ -2,13 +2,27 @@
 
 .. This is the TOC in the sidebar!
 
+.. raw:: html
 
-Welcome to :title:`PyMuPDF`
+   <style>
+
+      .toc-drawer {
+         display: none;
+      }
+
+      .main .content {
+         width:  100% !important;
+      }
+
+   </style>
+
+Welcome to |PyMuPDF|
 ================================
 
-:title:`PyMuPDF` is a high-performance **Python** library for data extraction, analysis, conversion & manipulation of **PDF** (and other) documents.
+|PyMuPDF| is a high-performance **Python** library for data extraction, analysis, conversion & manipulation of **PDF** (and other) documents.
 
-:title:`PyMuPDF` is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
+|PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
+
 
 ----
 
@@ -21,6 +35,8 @@ This documentation covers all versions up to |version|.
    :maxdepth: 1
 
    about.rst
+   pymupdf4llm/index.rst
+   pymupdf-pro.rst
 
 
 .. toctree::
@@ -30,6 +46,8 @@ This documentation covers all versions up to |version|.
    installation.rst
    the-basics.rst
    tutorial.rst
+   rag.rst
+   resources.rst
 
 
 
@@ -67,19 +85,6 @@ This documentation covers all versions up to |version|.
 |
 ----
 
-
-Find out about **PyMuPDF Utilities**
--------------------------------------------------
-
-The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
-
-|
-----
-
-Do you need **PDF** to **DOCX** conversion?
---------------------------------------------------
-
-We recommend the pdf2docx_ library which uses **PyMuPDF** and the **python-docx** library to provide simple document conversion from **PDF** to **DOCX** format.
 
 
 .. include:: footer.rst

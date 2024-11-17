@@ -2,6 +2,17 @@ name: Build Pyodide wheel
 
 on:
   workflow_dispatch:
+  
+    inputs:
+      PYMUPDF_SETUP_MUPDF_BUILD:
+          description: 'Value for PYMUPDF_SETUP_MUPDF_BUILD, e.g.: git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
+          type: string
+          #default: 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
+          default: '-'
+      PYMUPDF_SETUP_PY_LIMITED_API:
+        type: string
+        default: '1'
+  
   schedule:
     - cron: '13 5 * * *'
 
@@ -23,25 +34,25 @@ jobs:
     
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: build_pyodide_wheel
         env:
             inputs_sdist: 0
-            inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git"
+            inputs_PYMUPDF_SETUP_MUPDF_BUILD: ${{inputs.PYMUPDF_SETUP_MUPDF_BUILD}}
+            PYMUPDF_SETUP_PY_LIMITED_API: ${{inputs.PYMUPDF_SETUP_PY_LIMITED_API}}
             inputs_wheels_default: 0
             inputs_wheels_linux_pyodide: 1
-            inputs_wheels_implementations: b
         run:
           python scripts/gh_release.py build
 
 
       # Upload generated wheels, to be accessible from github Actions page.
       #
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ./wheelhouse/*.whl
