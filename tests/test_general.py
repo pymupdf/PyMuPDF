@@ -1529,6 +1529,9 @@ def test_3450():
     #
     # On a mac-mini, PyMuPDF-1.24.8 takes 60s, PyMuPDF-1.24.9 takes 4s.
     #
+    if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
+        print(f'test_3450(): not running on valgrind because very slow.', flush=1)
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3450.pdf')
     pdf = pymupdf.open(path)
     page = pdf[0]

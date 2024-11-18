@@ -367,6 +367,10 @@ def test_3493():
 
 
 def test_3848():
+    if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
+        # Takes 40m on Github.
+        print(f'test_3848(): not running on valgrind because very slow.', flush=1)
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3848.pdf')
     with pymupdf.open(path) as document:
         for i in range(len(document)):
