@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.24.14 (?)**
+**Changes in version 1.24.14 (2024-11-19)**
 
 * Use MuPDF-1.24.11.
 
