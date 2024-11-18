@@ -71,7 +71,7 @@ Options:
         Pytest test names, comma-separated. Should be relative to PyMuPDF
         directory. For example:
             -t tests/test_general.py
-            -t tests/test_general.py::test_subset_fonts.
+            -t tests/test_general.py::test_subset_fonts
         To specify multiple tests, use comma-separated list and/or multiple `-t
         <names>` args.
     -v 0|1|2
@@ -92,12 +92,13 @@ Options:
     --build-mupdf 0|1
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
-        Run tests under gdb.
+        Run tests under gdb. Requires user interaction.
     --pybind 0|1
-        Run tests inside C++ pybind.Requires `sudo apt install pybind11-dev` or
-        similar.
+        Experimental, for investigating
+        https://github.com/pymupdf/PyMuPDF/issues/3869. Runs run basic code
+        inside C++ pybind. Requires `sudo apt install pybind11-dev` or similar.
     --system-site-packages 0|1
-        If 1, use `--system-site-packages` when creating venv.
+        If 1, use `--system-site-packages` when creating venv. Defaults is 0.
     --timeout <seconds>
         Sets timeout when running tests.
     --valgrind 0|1
