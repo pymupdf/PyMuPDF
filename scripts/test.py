@@ -62,6 +62,9 @@ Options:
         specified PyMuPDF will download its default mupdf .tgz.]
     -p <pytest-options>
         Set pytest options; default is ''.
+    -P 0|1
+        If 1, automatically install required packages such as Valgrind. Default
+        is 0.
     -s 0 | 1
         If 1 (the default), build with Python Limited API/Stable ABI.
     -t <names>
@@ -174,6 +177,7 @@ def main(argv):
     pytest_k = None
     system_site_packages = False
     pyodide_build_version = None
+    packages = False
     
     options = os.environ.get('PYMUDF_SCRIPTS_TEST_options', '')
     options = shlex.split(options)
@@ -210,7 +214,9 @@ def main(argv):
         elif arg == '-k':
             pytest_k = next(args)
         elif arg == '-p':
-            pytest_options  = next(args)
+            pytest_options = next(args)
+        elif arg == '-P':
+            packages = int(next(args))
         elif arg == '-s':
             value = next(args)
             assert value in ('0', '1'), f'`-s` must be followed by `0` or `1`, not {value=}.'
@@ -289,6 +295,7 @@ def main(argv):
                 test_fitz=test_fitz,
                 pytest_k=pytest_k,
                 pybind=pybind,
+                packages=packages,
                 )
     
     for command in commands:
@@ -630,6 +637,7 @@ def test(
         test_fitz=True,
         pytest_k=None,
         pybind=False,
+        packages=False,
         ):
     '''
     Args:
@@ -737,9 +745,10 @@ def test(
             run_compound_args += f' -t {timeout}'
         env_extra = None
         if valgrind:
-            log('Installing valgrind.')
-            run(f'sudo apt update')
-            run(f'sudo apt install --upgrade valgrind')
+            if packages:
+                log('Installing valgrind.')
+                run(f'sudo apt update')
+                run(f'sudo apt install --upgrade valgrind')
             run(f'valgrind --version')
         
             log('Running PyMuPDF tests under valgrind.')
