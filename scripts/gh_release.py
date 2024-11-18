@@ -231,7 +231,7 @@ def build( platform_=None, valgrind=False):
     if platform.system() == 'Linux' and inputs_wheels_linux_pyodide:
         # Pyodide wheels are built by running scripts/test.py, not
         # cibuildwheel.
-        command = f'{sys.executable} scripts/test.py'
+        command = f'{sys.executable} scripts/test.py -P 1'
         if inputs_PYMUPDF_SETUP_MUPDF_BUILD:
             command += f' -m {shlex.quote(inputs_PYMUPDF_SETUP_MUPDF_BUILD)}'
         command += ' pyodide_wheel'
