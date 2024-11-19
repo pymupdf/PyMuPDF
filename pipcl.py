@@ -690,7 +690,7 @@ class Package:
             else:
                 items = self.fn_sdist()
 
-        prefix = f'{self.name}-{self.version}'
+        prefix = f'{_normalise(self.name)}-{self.version}'
         os.makedirs(sdist_directory, exist_ok=True)
         tarpath = f'{sdist_directory}/{prefix}.tar.gz'
         log2(f'Creating sdist: {tarpath}')
@@ -823,7 +823,7 @@ class Package:
         return ret
 
     def wheel_name(self):
-        return f'{self.name}-{self.version}-{self.tag_python()}-{self.tag_abi()}-{self.tag_platform()}.whl'
+        return f'{_normalise(self.name)}-{self.version}-{self.tag_python()}-{self.tag_abi()}-{self.tag_platform()}.whl'
 
     def wheel_name_match(self, wheel):
         '''
@@ -852,7 +852,7 @@ class Package:
                 log2(f'py_limited_api; {tag_python=} compatible with {self.tag_python()=}.')
                 py_limited_api_compatible = True
             
-        log2(f'{self.name == name=}')
+        log2(f'{_normalise(self.name) == name=}')
         log2(f'{self.version == version=}')
         log2(f'{self.tag_python() == tag_python=} {self.tag_python()=} {tag_python=}')
         log2(f'{py_limited_api_compatible=}')
@@ -861,7 +861,7 @@ class Package:
         log2(f'{self.tag_platform()=}')
         log2(f'{tag_platform.split(".")=}')
         ret = (1
-                and self.name == name
+                and _normalise(self.name) == name
                 and self.version == version
                 and (self.tag_python() == tag_python or py_limited_api_compatible)
                 and self.tag_abi() == tag_abi
@@ -2371,6 +2371,11 @@ def _fs_mtime( filename, default=0):
         return os.path.getmtime( filename)
     except OSError:
         return default
+
+
+def _normalise(name):
+    # https://packaging.python.org/en/latest/specifications/name-normalization/#name-normalization
+    return re.sub(r"[-_.]+", "-", name).lower()
 
 
 def _assert_version_pep_440(version):
