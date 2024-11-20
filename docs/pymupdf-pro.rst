@@ -9,12 +9,31 @@ PyMuPDF Pro
 =============
 
 
-Enhance |PyMuPDF| capability with **Office** document support.
+|PyMuPDF Pro| is a set of *commercial extensions* for |PyMuPDF|.
 
-|PyMuPDF Pro| offers all the features of |PyMuPDF|, plus enhanced functionality to support **Office** documents.
+Enhance |PyMuPDF| capability with **Office** document support & **RAG/LLM** integrations.
 
-- Load, parse and extract text data from **Office** files
-- Ablility to render **Office** files
+- Enables Office document handling, including ``doc``, ``docx``, ``hwp``, ``hwpx``, ``ppt``, ``pptx``, ``xls``, ``xlsx``, and others.
+- Supports text and table extraction, document conversion and more.
+- Includes the commercial version of |PyMuPDF4LLM|.
+
+To enquire about obtaining a commercial license, then `use this contact page <https://artifex.com/contact/>`_.
+
+
+.. note::
+
+    A licensed version of |PyMuPDF Pro| also gives you a licensed version of |PyMuPDF4LLM|. If you are interested in using the |PyMuPDF4LLM| package you should install it separately.
+
+
+Platform support
+--------------------
+
+Available for these platforms only:
+
+- Windows x86_64.
+- Linux x86_64 (glibc).
+- MacOS x86_64.
+- MacOS arm64.
 
 
 Office file support
