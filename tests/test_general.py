@@ -1476,9 +1476,10 @@ def test_3654():
             content += page.get_text() + '\n\n'
     content = content.strip()
     
-    # As of 2024-07-04 we get a warning for this input file.
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'dropping unclosed output'
+    if pymupdf.mupdf_version_tuple < (1, 25):
+        # As of 2024-07-04 we get a warning for this input file.
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'dropping unclosed output'
 
 def test_3727():
     if pymupdf.mupdf_version_tuple < (1, 24, 9):
