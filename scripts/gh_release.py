@@ -292,11 +292,11 @@ def build( platform_=None, valgrind=False):
                     ret.append(item)
             return ' '.join(ret)
     
-        cps = inputs_wheels_cps if inputs_wheels_cps else 'cp39* cp310* cp311* cp312* cp313'
+        cps = inputs_wheels_cps if inputs_wheels_cps else 'cp39* cp310* cp311* cp312* cp313*'
         set_if_unset( 'CIBW_BUILD', cps)
         for cp in cps.split():
             m = re.match('cp([0-9]+)[*]', cp)
-            assert m
+            assert m, f'{cps=} {cp=}'
             v = int(m.group(1))
             if v == 314:
                 # Need to set CIBW_PRERELEASE_PYTHONS, otherwise cibuildwheel
