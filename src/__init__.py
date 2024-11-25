@@ -16548,17 +16548,18 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 ):
             continue
 
-        flags = JM_char_font_flags(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)), line, ch)
+        fz_font = mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font))
+        flags = JM_char_font_flags(fz_font, line, ch)
         origin = mupdf.FzPoint(ch.m_internal.origin)
         style.size = ch.m_internal.size
         style.flags = flags
-        style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
+        style.font = fz_font
         if mupdf_version_tuple >= (1, 26):
             style.color = ch.m_internal.argb
         else:
             style.color = ch.m_internal.color
-        style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
-        style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
+        style.asc = JM_font_ascender(fz_font)
+        style.desc = JM_font_descender(fz_font)
 
         if (style.size != old_style.size
                 or style.flags != old_style.flags
@@ -18736,7 +18737,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     span = mupdf.FzTextSpan( span)
     assert isinstance( ctm, mupdf.fz_matrix)
     ctm = mupdf.FzMatrix( ctm)
-    fontname = JM_font_name( span.font())
+    fontname = span.font()
     #float rgb[3];
     #PyObject *chars = PyTuple_New(span->len);
     
