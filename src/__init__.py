@@ -16702,7 +16702,7 @@ def JM_make_textpage_dict(tp, page_dict, raw):
     block_list = []
     tp_rect = mupdf.FzRect(tp.m_internal.mediabox)
     block_n = -1
-    #log( 'JM_make_textpage_dict {=tp}')
+    #  log( 'JM_make_textpage_dict {=tp}')
     for block in tp:
         block_n += 1
         if (not mupdf.fz_contains_rect(tp_rect, mupdf.FzRect(block.m_internal.bbox))
