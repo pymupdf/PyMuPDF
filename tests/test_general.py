@@ -1596,3 +1596,21 @@ def test_4018():
     document = pymupdf.open()
     for page in document.pages(-1, -1):
         pass
+
+def test_4034():
+    # tests/resources/test_4034.pdf is first two pages of input file in
+    # https://github.com/pymupdf/PyMuPDF/issues/4034.
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4034.pdf')
+    path_clean = os.path.normpath(f'{__file__}/../../tests/test_4034_out.pdf')
+    with pymupdf.open(path) as document:
+        pixmap1 = document[0].get_pixmap()
+        document.save(path_clean, clean=1)
+    with pymupdf.open(path_clean) as document:
+        page = document[0]
+        pixmap2 = document[0].get_pixmap()
+    rms = gentle_compare.pixmaps_rms(pixmap1, pixmap2)
+    print(f'Comparison of original/cleaned page 0 pixmaps: {rms=}.')
+    # 2024-11-27: we expect large difference as
+    # https://bugs.ghostscript.com/show_bug.cgi?id=708128 not yet fixed.
+    #
+    assert 30 < rms < 50
