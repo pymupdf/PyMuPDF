@@ -359,6 +359,8 @@ def build( platform_=None, valgrind=False):
             if pass_:
                 env_pass(name)
 
+        env_pass('PYMUPDF_SETUP_PY_LIMITED_API')
+        
         if os.environ.get('PYMUPDF_SETUP_LIBCLANG'):
             env_pass('PYMUPDF_SETUP_LIBCLANG')
     
