@@ -25,7 +25,6 @@ _format_g = pymupdf.format_g
 
 g_exceptions_verbose = pymupdf.g_exceptions_verbose
 
-TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
@@ -748,8 +747,7 @@ def get_textpage_ocr(
         full: (bool) whether to OCR the full page image, or only its images (default)
     """
     pymupdf.CheckParent(page)
-    if not TESSDATA_PREFIX and not tessdata:
-        raise RuntimeError("No OCR support: TESSDATA_PREFIX not set")
+    tessdata = pymupdf.get_tessdata(tessdata)
 
     def full_ocr(page, dpi, language, flags):
         zoom = dpi / 72

@@ -430,7 +430,6 @@ OptStr = typing.Optional[str]
 Page = 'Page_forward_decl'
 Point = 'Point_forward_decl'
 
-TESSDATA_PREFIX = os.environ.get("TESSDATA_PREFIX")
 matrix_like = 'matrix_like'
 point_like = 'point_like'
 quad_like = 'quad_like'
@@ -10305,8 +10304,7 @@ class Pixmap:
         '''
         Save pixmap as an OCR-ed PDF page.
         '''
-        if not TESSDATA_PREFIX and not tessdata:
-            raise RuntimeError('No OCR support: TESSDATA_PREFIX not set')
+        tessdata = get_tessdata(tessdata)
         opts = mupdf.FzPdfocrOptions()
         opts.compress = compress
         if language:
@@ -10328,15 +10326,15 @@ class Pixmap:
             compress: (bool) compress, default 1 (True).
             language: (str) language(s) occurring on page, default "eng" (English),
                     multiples like "eng+ger" for English and German.
-            tessdata: (str) folder name of Tesseract's language support. Must be
-                    given if environment variable TESSDATA_PREFIX is not set.
+            tessdata: (str) folder name of Tesseract's language support. If None
+                    we use environment variable TESSDATA_PREFIX or search for
+                    Tesseract installation.
         Notes:
-            On failure, make sure Tesseract is installed and you have set the
-            environment variable "TESSDATA_PREFIX" to the folder containing your
-            Tesseract's language support data.
+            On failure, make sure Tesseract is installed and you have set
+            <tessdata> or environment variable "TESSDATA_PREFIX" to the folder
+            containing your Tesseract's language support data.
         """
-        if not TESSDATA_PREFIX and not tessdata:
-            raise RuntimeError('No OCR support: TESSDATA_PREFIX not set')
+        tessdata = get_tessdata(tessdata)
         from io import BytesIO
         bio = BytesIO()
         self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
@@ -18309,55 +18307,59 @@ def get_pdf_str(s: str) -> str:
     return "(" + r + ")"
 
 
-def get_tessdata():
-    """Detect Tesseract-OCR and return its language support folder.
+def get_tessdata(tessdata=None):
+    """Detect Tesseract language support folder.
 
-    This function can be used to enable OCR via Tesseract even if the
-    environment variable TESSDATA_PREFIX has not been set.
-    If the value of TESSDATA_PREFIX is None, the function tries to locate
-    Tesseract-OCR and fills the required variable.
+    This function is used to enable OCR via Tesseract even if the language
+    support folder is not specified directly or in environment variable
+    TESSDATA_PREFIX.
 
-    Returns:
-        Folder name of tessdata if Tesseract-OCR is available, otherwise False.
-    """
-    TESSDATA_PREFIX = os.getenv("TESSDATA_PREFIX")
-    if TESSDATA_PREFIX:  # use environment variable if set
-        return TESSDATA_PREFIX
+    * If <tessdata> is set we return it directly.
+    
+    * Otherwise we return `os.environ['TESSDATA_PREFIX']` if set.
+    
+    * Otherwise we search for a Tesseract installation and return its language
+      support folder.
 
+    * Otherwise we raise an exception.
     """
-    Try to locate the tesseract-ocr installation.
-    """
+    if tessdata:
+        return tessdata
+    tessdata = os.getenv("TESSDATA_PREFIX")
+    if tessdata:  # use environment variable if set
+        return tessdata
+
+    # Try to locate the tesseract-ocr installation.
+    
     import subprocess
     # Windows systems:
     if sys.platform == "win32":
         cp = subprocess.run("where tesseract", shell=1, capture_output=1, check=0, text=True)
         response = cp.stdout.strip()
         if cp.returncode or not response:
-            message("Tesseract-OCR is not installed")
-            return False
+            raise RuntimeError("No tessdata specified and Tesseract is not installed")
         dirname = os.path.dirname(response)  # path of tesseract.exe
         tessdata = os.path.join(dirname, "tessdata")  # language support
         if os.path.exists(tessdata):  # all ok?
             return tessdata
         else:  # should not happen!
-            message("unexpected: Tesseract-OCR has no 'tessdata' folder")
-            return False
+            raise RuntimeError("No tessdata specified and Tesseract installation has no {tessdata} folder")
 
     # Unix-like systems:
     cp = subprocess.run("whereis tesseract-ocr", shell=1, capture_output=1, check=0, text=True)
     response = cp.stdout.strip().split()
     if cp.returncode or len(response) != 2:  # if not 2 tokens: no tesseract-ocr
-        message("tesseract-ocr is not installed")
-        return False
+        raise RuntimeError("No tessdata specified and Tesseract is not installed")
 
     # search tessdata in folder structure
     dirname = response[1]  # contains tesseract-ocr installation folder
-    tessdatas = glob.glob(f"{dirname}/*/tessdata")
+    pattern = f"{dirname}/*/tessdata"
+    tessdatas = glob.glob(pattern)
     tessdatas.sort()
-    if len(tessdatas) == 0:
-        message("unexpected: tesseract-ocr has no 'tessdata' folder")
-        return False
-    return tessdatas[-1]
+    if tessdatas:
+        return tessdatas[-1]
+    else:
+        raise RuntimeError("No tessdata specified and Tesseract installation has no {pattern} folder.")
 
 
 def css_for_pymupdf_font(

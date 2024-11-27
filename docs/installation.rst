@@ -159,7 +159,12 @@ Notes
   * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
   * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
   * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-  * `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical character recognition in images and document pages. Tesseract is separate software, not a Python package. To enable OCR functions in PyMuPDF, the software must be installed and the system environment variable `"TESSDATA_PREFIX"` must be defined and contain the `tessdata` folder name of the Tesseract installation location. See below.
+  * 
+    `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical
+    character recognition in images and document pages. Tesseract is separate
+    software, not a Python package. To enable OCR functions in PyMuPDF,
+    Tesseract must be installed and the `tessdata` folder name specified; see
+    below.
 
   .. note:: You can install these additional components at any time -- before or after installing PyMuPDF. PyMuPDF will detect their presence during import or when the respective functions are being used.
 
@@ -271,18 +276,27 @@ If you do not intend to use this feature, skip this step. Otherwise, it is requi
 
 PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract’s language support data <https://github.com/tesseract-ocr/tessdata>`_.
 
-The language support folder location must be communicated either via storing it in the environment variable `"TESSDATA_PREFIX"`, or as a parameter in the applicable functions.
+If not specified explicitly, PyMuPDF will attempt to find the installed
+Tesseract's tessdata, but this should probably not be relied upon.
+
+Otherwise PyMuPDF requires that Tesseract's language support folder is
+specified explicitly either in PyMuPDF OCR functions' `tessdata` arguments or
+`os.environ["TESSDATA_PREFIX"]`.
 
 So for a working OCR functionality, make sure to complete this checklist:
 
 1. Locate Tesseract's language support folder. Typically you will find it here:
-    - Windows: `C:/Program Files/Tesseract-OCR/tessdata`
-    - Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
-2. Set the environment variable `TESSDATA_PREFIX`
-    - Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
-    - Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
+   * Windows: `C:/Program Files/Tesseract-OCR/tessdata`
+   * Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
-.. note:: On Windows systems, this must happen outside Python -- before starting your script. Just manipulating `os.environ` will not work!
+2. Specify the language support folder when calling PyMuPDF OCR functions:
+   
+   * Set the `tessdata` argument.
+   * Or set `os.environ["TESSDATA_PREFIX"]` from within Python.
+   * Or set environment variable `TESSDATA_PREFIX` before running Python, for example:
+   
+     * Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
+     * Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
 .. include:: footer.rst
