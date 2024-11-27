@@ -472,3 +472,32 @@ def test_4047():
                 rect, " ", fontname=fontname, align=pymupdf.TEXT_ALIGN_CENTER, fontsize=10
             )  # Segmentation Fault...
         page.apply_redactions()
+
+def test_4079():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
+    path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
+    with pymupdf.open(path_after) as document_after:
+        page = document_after[0]
+        pixmap_after_expected = page.get_pixmap()
+    with pymupdf.open(path) as document:
+        page = document[0]
+        rects = [
+                [164,213,282,227],
+                [282,213,397,233],
+                [434,209,525,243],
+                [169,228,231,243],
+                [377,592,440,607],
+                [373,611,444,626],
+                ]
+        for rect in rects:
+            page.add_redact_annot(rect, fill=(1,0,0))
+            page.draw_rect(rect, color=(0, 1, 0))
+        document.save(f'{path_out}_before.pdf')
+        page.apply_redactions(images=0)
+        pixmap_after = page.get_pixmap()
+        document.save(f'{path_out}_after.pdf')
+        rms = gentle_compare.pixmaps_rms(pixmap_after_expected, pixmap_after)
+        print(f'{rms=}')
+        # 2024-11-27 Expect current broken behaviour.
+        assert rms == 0
