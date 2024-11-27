@@ -68,7 +68,6 @@ Yet others are handy, general-purpose utilities.
 :meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 :attr:`PYMUPDF_MESSAGE`              destination of |PyMuPDF| messages.
-:attr:`TESSDATA_PREFIX`              a copy of `os.environ["TESSDATA_PREFIX"]`
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
 ==================================== ==============================================================
 
@@ -378,18 +377,6 @@ Yet others are handy, general-purpose utilities.
       
       Also see `set_messages()`.
 
-
------
-
-   .. attribute:: TESSDATA_PREFIX
-
-      * New in v1.19.4
-
-      Copy of `os.environ["TESSDATA_PREFIX"]` for convenient checking whether there is integrated Tesseract OCR support.
-
-      If this attribute is `None`, Tesseract-OCR is either not installed, or the environment variable is not set to point to Tesseract's language support folder.
-
-      .. note:: This variable is now checked before OCR functions are tried. This prevents verbose messages from MuPDF.
 
 -----
 
@@ -850,13 +837,22 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: get_tessdata()
+   .. method:: get_tessdata(tessdata=None)
+    
+    Detect Tesseract language support folder.
 
-      Return the name of Tesseract's language support folder. Use this function if the environment variable `TESSDATA_PREFIX` has not been set.
+    This function is used to enable OCR via Tesseract even if the language
+    support folder is not specified directly or in environment variable
+    TESSDATA_PREFIX.
 
-      :returns: `os.getenv("TESSDATA_PREFIX")` if not `None`. Otherwise, if Tesseract-OCR is installed, locate the name of `tessdata`. If no installation is found, return `False`.
+    * If <tessdata> is set we return it directly.
+    
+    * Otherwise we return `os.environ['TESSDATA_PREFIX']` if set.
+    
+    * Otherwise we search for a Tesseract installation and return its language
+      support folder.
 
-         The folder name can be used as parameter `tessdata` in methods :meth:`Page.get_textpage_ocr`, :meth:`Pixmap.pdfocr_save` and :meth:`Pixmap.pdfocr_tobytes`.
+    * Otherwise we raise an exception.
 
 -----
 
