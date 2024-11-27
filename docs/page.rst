@@ -106,6 +106,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.recolor`               PDF only: change the colorspace of objects
 :meth:`Page.remove_rotation`       PDF only: set page rotation to 0
 :meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
@@ -1923,6 +1924,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Set the rotation of the page.
 
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
+
+   .. method:: recolor(components=1)
+
+      PDF only: Change the colorspace components of all objects on page.
+
+      :arg int components: The desired count of color components. Must be one of 1, 3 or 4, which results in color space DeviceGray, DeviceRGB and DeviceCMYK respectively. The method affects text, images and vector graphics. For instance, with the default value 1, a page will be converted to gray-scale.
+
+      The changes made are **permanent** and cannot be reverted.
 
    .. method:: remove_rotation()
 

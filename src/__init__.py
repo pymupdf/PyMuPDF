@@ -8629,6 +8629,19 @@ class Page:
             annot._yielded=True
             yield annot
 
+    def recolor(self, components=1):
+        """Convert colorspaces of objects on the page.
+        
+        Valid values are 1, 3 and 4.
+        """
+        if components not in (1, 3, 4):
+            raise ValueError("components must be one of 1, 3, 4")
+        pdfdoc = _as_pdf_document(self.parent)
+        ropt = mupdf.pdf_recolor_options()
+        ropt.num_comp = components
+        ropts = mupdf.PdfRecolorOptions(ropt)
+        mupdf.pdf_recolor_page(pdfdoc, self.number, ropts)
+
     @property
     def artbox(self):
         """The ArtBox"""
