@@ -27,7 +27,7 @@ jobs:
 
       - name: test_mupdf-release-branch
         env:
-            inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch 1.24.x https://github.com/ArtifexSoftware/mupdf.git"
+            inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch 1.25.x https://github.com/ArtifexSoftware/mupdf.git"
             inputs_flavours: "0"
             inputs_sdist: "0"
             inputs_wheels_cps: "cp312*"
