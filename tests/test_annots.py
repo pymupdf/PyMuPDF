@@ -4,6 +4,7 @@ Test PDF annotation insertions.
 """
 
 import os
+import platform
 
 import pymupdf
 import gentle_compare
@@ -451,8 +452,11 @@ def test_parent():
         print(a)  # should raise
     except Exception as e:
         if pymupdf.mupdf_version_tuple >= (1, 25):
-            assert isinstance(e, pymupdf.mupdf.FzErrorArgument)
-            assert str(e) == 'code=4: annotation not bound to any page'
+            if platform.system() == 'OpenBSD':
+                assert isinstance(e, pymupdf.mupdf.FzErrorBase), f'Incorrect {type(e)=}.'
+            else:
+                assert isinstance(e, pymupdf.mupdf.FzErrorArgument), f'Incorrect {type(e)=}.'
+            assert str(e) == 'code=4: annotation not bound to any page', f'Incorrect error text {str(e)=}.'
         else:
             assert isinstance(e, ReferenceError)
             assert str(e) == 'weakly-referenced object no longer exists'
