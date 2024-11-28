@@ -3064,7 +3064,7 @@ mupdf::FzRect JM_make_spanlist(
         style.size = ch.m_internal->size;
         style.flags = flags;
         style.font = JM_font_name(ch.m_internal->font);
-        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 26))
+        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 25))
             style.color = ch.m_internal->argb;
         #else
             style.color = ch.m_internal->color;
