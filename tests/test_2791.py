@@ -85,3 +85,30 @@ def test_2791():
         assert ratio >= 0.990 and ratio < 1.027, f'{ratio=}'
     else:
         pass
+
+
+def test_4090():
+    print(f'test_4090(): {os.environ.get("PYTHONMALLOC")=}.')
+    import psutil
+    process = psutil.Process()
+    rsss = list()
+    def rss():
+        ret = process.memory_info().rss
+        rsss.append(ret)
+        return ret
+        
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4090.pdf')
+    for i in range(100):
+        d = dict()
+        d[i] = dict()
+        with pymupdf.open(path) as document:
+            for j, page in enumerate(document):
+                d[i][j] = page.get_text('rawdict')
+        print(f'test_4090(): {i}: {rss()=}')
+    print(f'test_4090(): {rss()=}')
+    gc.collect()
+    print(f'test_4090(): {rss()=}')
+    r1 = rsss[2]
+    r2 = rsss[-1]
+    r = r2 / r1
+    assert 0.95 <= r < 1.05, f'{r1=} {r2=} {r=}.'
