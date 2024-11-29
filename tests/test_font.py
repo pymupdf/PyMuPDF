@@ -184,3 +184,28 @@ def test_3933():
                     assert len(supported_symbols) == 0
                 else:
                     assert len(supported_symbols) == expected.get(name)
+
+
+def test_3780():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3780.pdf')
+    with pymupdf.open(path) as document:
+        for page_i, page in enumerate(document):
+            for itm in page.get_fonts():
+                buff=document.extract_font(itm[0])[-1]
+                font=pymupdf.Font(fontbuffer=buff)
+                print(f'{page_i=}: xref {itm[0]} {font.name=} {font.ascender=} {font.descender=}.')
+            if page_i == 0:
+                d = page.get_text('dict')
+                #for n, v in d.items():
+                #    print(f'    {n}: {v!r}')
+                for i, block in enumerate(d['blocks']):
+                    print(f'block {i}:')
+                    for j, line in enumerate(block['lines']):
+                        print(f'    line {j}:')
+                        for k, span in enumerate(line['spans']):
+                            print(f'        span {k}:')
+                            for n, v in span.items():
+                                print(f'            {n}: {v!r}')
+            
+
+            
