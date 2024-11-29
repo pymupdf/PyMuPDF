@@ -308,3 +308,46 @@ def test_dotted_grid():
     assert t0.row_count, t0.col_count == (11, 12)
     assert t1.row_count, t1.col_count == (25, 11)
     assert t2.row_count, t2.col_count == (1, 10)
+
+
+def test_4017():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4017.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        
+        tables = page.find_tables(add_lines=None)
+        print(f"{len(tables.tables)=}.")
+        tables_text = list()
+        for i, table in enumerate(tables):
+            print(f'## {i=}.')
+            t = table.extract()
+            for tt in t:
+                print(f'    {tt}')
+        
+        # 2024-11-29: expect current incorrect output for last two tables.
+        
+        expected_a = [
+                ['Class A/B Overcollateralization', '131.44%', '>=', '122.60%', '', 'PASS'],
+                [None, None, None, None, None, 'PASS'],
+                ['Class D Overcollateralization', '112.24%', '>=', '106.40%', '', 'PASS'],
+                [None, None, None, None, None, 'PASS'],
+                ['Event of Default', '156.08%', '>=', '102.50%', '', 'PASS'],
+                [None, None, None, None, None, 'PASS'],
+                ['Class A/B Interest Coverage', 'N/A', '>=', '120.00%', '', 'N/A'],
+                [None, None, None, None, None, 'N/A'],
+                ['Class D Interest Coverage', 'N/A', '>=', '105.00%', '', 'N/A'],
+                ]
+        assert tables[-2].extract() == expected_a
+                
+        expected_b = [
+                ["Moody's Maximum Rating Factor Test", '2,577', '<=', '3,250', '', 'PASS', '2,581'],
+                [None, None, None, None, None, 'PASS', None],
+                ['Minimum Floating Spread', '3.5006%', '>=', '2.0000%', '', 'PASS', '3.4871%'],
+                [None, None, None, None, None, 'PASS', None],
+                ['Minimum Weighted Average S&P Recovery\nRate Test', '40.50%', '>=', '40.00%', '', 'PASS', '40.40%'],
+                [None, None, None, None, None, 'PASS', None],
+                ['Weighted Average Life', '4.83', '<=', '9.00', '', 'PASS', '4.92'],
+                ]
+        assert tables[-1].extract() == expected_b
+                
+        
