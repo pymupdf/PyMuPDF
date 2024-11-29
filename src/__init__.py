@@ -16551,7 +16551,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
         style.size = ch.m_internal.size
         style.flags = flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
-        if mupdf_version_tuple >= (1, 26):
+        if mupdf_version_tuple >= (1, 25):
             style.color = ch.m_internal.argb
         else:
             style.color = ch.m_internal.color
