@@ -411,3 +411,19 @@ def test_3448():
         assert 30 <= diff < 45
     else:
         assert 0 <= diff < 0.5
+
+
+def test_3854():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3854.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap()
+    pixmap.save(os.path.normpath(f'{__file__}/../../tests/test_3854_out.png'))
+    
+    # 2024-11-29: this is the incorrect expected output.
+    path_expected_png = os.path.normpath(f'{__file__}/../../tests/resources/test_3854_expected.png')
+    pixmap_expected = pymupdf.Pixmap(path_expected_png)
+    
+    rms = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
+    print(f'{rms=}.')
+    assert rms == 0
