@@ -536,24 +536,33 @@ In a nutshell, this is what you can do with PyMuPDF:
          There is also the `pdf2docx extract tables method`_ which is capable of table extraction if you prefer.
 
 
-   .. method:: add_stamp_annot(rect, stamp=0)
+   .. method:: add_stamp_annot(rect, stamp=0, *, image=None)
 
-      PDF only: Add a "rubber stamp" like annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.).
+      PDF only: Add a "rubber stamp"-like annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.). Instead of text, an image may also be shown.
 
       :arg rect_like rect: rectangle where to place the annotation.
-
       :arg int stamp: id number of the stamp text. For available stamps see :ref:`StampIcons`.
+      :arg multiple image: if not ``None``, an image specification is assumed and the ``stamp`` parameter will be ignored. Valid argument types are
+      
+         * a string specifying an image file path,
+         * a ``bytes``, ``bytearray`` or ``io.BytesIO`` object for an image in memory, and
+         * a :ref:`Pixmap`.
+         
+      1. **Text-based stamps**
 
-      .. note::
-
-         * The stamp's text and its border line will automatically be sized and be put horizontally and vertically centered in the given rectangle. :attr:`Annot.rect` is automatically calculated to fit the given **width** and will usually be smaller than this parameter.
+         * :attr:`Annot.rect` is automatically calculated as the largest rectangle with an aspect ratio of ``width/height = 3.8`` that fits in the provided ``rect``. Its position is vertically and horizontally centered.
          * The font chosen is "Times Bold" and the text will be upper case.
-         * The appearance can be changed using :meth:`Annot.set_opacity` and by setting the "stroke" color (no "fill" color supported).
-         * This can be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insert_image` for your target PDF.
+         * The appearance can be modified using :meth:`Annot.set_opacity` and by setting the "stroke" color. By PDF specification, stamp annotations have no "fill" color.
 
+         .. image:: images/img-stampannot.*
 
-      .. image:: images/img-stampannot.*
-         :scale: 80
+      2. **Image-based stamps**
+
+         * At first, a rectangle is computed like for text stamps: vertically and horizontally centered, aspect ratio ``width/height = 3.8``.
+         * Into that rectangle, the image will be inserted aligned left and vertically centered. The resulting image boundary box becomes :attr:`Annot.rect`.
+         * The annotation can be modified via :meth:`Annot.set_opacity`. This is a way to display images without alpha channel with transparency. Setting colors has no effect on image stamps.
+         
+         .. image:: images/img-imagestamp.*
 
    .. method:: add_widget(widget)
 
@@ -1929,7 +1938,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       PDF only: Change the colorspace components of all objects on page.
 
-      :arg int components: The desired count of color components. Must be one of 1, 3 or 4, which results in color space DeviceGray, DeviceRGB and DeviceCMYK respectively. The method affects text, images and vector graphics. For instance, with the default value 1, a page will be converted to gray-scale.
+      :arg int components: The desired count of color components. Must be one of 1, 3 or 4, which results in color spaces DeviceGray, DeviceRGB or DeviceCMYK respectively. The method affects text, images and vector graphics. For instance, with the default value 1, a page will be converted to gray-scale.
 
       The changes made are **permanent** and cannot be reverted.
 

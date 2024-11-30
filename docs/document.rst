@@ -96,6 +96,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.pdf_catalog`            PDF only: :data:`xref` of catalog (root)
 :meth:`Document.pdf_trailer`            PDF only: trailer source
 :meth:`Document.prev_location`          return (chapter, pno) of preceding page
+:meth:`Document.recolor`                PDF only: execute :meth:`Page.recolor` for all pages
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.resolve_names`          PDF only: Convert destination names into a Python dict
 :meth:`Document.save`                   PDF only: save the document
@@ -593,6 +594,16 @@ For details on **embedded files** refer to Appendix 3.
      You can also use index notation with the new chapter-based page identification: use *page = doc[(5, 2)]* to load the third page of the sixth chapter.
 
      To maintain a consistent API, for document types not supporting a chapter structure (like PDFs), :attr:`Document.chapter_count` is 1, and pages can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
+
+
+  .. method:: recolor(components=1)
+
+    PDF only: Change the color component counts for all object types text, image and vector graphics for all pages.
+
+    :arg int components: desired color space indicated by the number of color components: 1 = DeviceGRAY, 3 = DeviceRGB, 4 = DeviceCMYK.
+
+    The typical use case is 1 (DeviceGRAY) which converts the PDF to grayscale.
+
 
   .. method:: reload_page(page)
 
