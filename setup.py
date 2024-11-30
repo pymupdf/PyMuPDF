@@ -647,7 +647,7 @@ def build():
             # Add Windows .lib files.
             mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
             add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
-            if mupdf_version_tuple >= (1, 25):
+            if mupdf_version_tuple >= (1, 26):
                 # MuPDF-1.25+ language bindings build also builds libmuthreads.
                 add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
         elif darwin:
