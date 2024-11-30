@@ -5444,6 +5444,19 @@ class Document:
         pno = mupdf.fz_page_number_from_location(self.this, loc)
         return pno, xp, yp
 
+    def recolor(self, components=1):
+        """Change the color component count on all pages.
+
+        Args:
+            components: (int) desired color component count, one of 1, 3, 4.
+
+        Invokes the same-named method for all pages.
+        """
+        if not self.is_pdf:
+            raise ValueError("is no PDF")
+        for i in range(self.page_count):
+            self.load_page(i).recolor(components)
+
     def resolve_names(self):
         """Convert the PDF's destination names into a Python dict.
 
@@ -8604,11 +8617,30 @@ class Page:
             q = CheckMarkerArg(quads)
         return self._add_text_marker(q, mupdf.PDF_ANNOT_SQUIGGLY)
 
-    def add_stamp_annot(self, rect: rect_like, stamp: int =0) -> Annot:
+    def add_stamp_annot(self, rect: rect_like, stamp: int =0, *, image=None) -> Annot:
         """Add a ('rubber') 'Stamp' annotation."""
+        if isinstance(image, Pixmap):
+            buf = image.tobytes()
+        elif isinstance(image, str):
+            buf = pathlib.Path(image).read_bytes()
+        elif isinstance(image, (bytes, bytearray)):
+            buf = image
+        elif isinstance(image, io.BytesIO):
+            buf = image.getvalue()
+        else:
+            buf = None
         old_rotation = annot_preprocess(self)
         try:
             annot = self._add_stamp_annot(rect, stamp)
+            if buf:
+                fzbuff = mupdf.fz_new_buffer_from_copied_data(buf)
+                img = mupdf.fz_new_image_from_buffer(fzbuff)
+                mupdf.pdf_set_annot_stamp_image(annot, img)
+                self.parent.xref_set_key(annot.xref, "Name", "null")
+                self.parent.xref_set_key(
+                    annot.xref, "Contents", "(Image Stamp)")
+                buf = None
+                fzbuff = None
         finally:
             if old_rotation != 0:
                 self.set_rotation(old_rotation)
