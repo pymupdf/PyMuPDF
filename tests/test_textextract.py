@@ -4,6 +4,7 @@ No checks performed - just contribute to code coverage.
 """
 import os
 import sys
+import textwrap
 
 import pymupdf
 
@@ -400,3 +401,11 @@ def test_4026():
         else:
             assert len(blocks) == 5
 
+def test_3725():
+    # This currently just shows the extracted text. We don't check it is as expected.
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3725.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        text = page.get_text()
+        if 0:
+            print(textwrap.indent(text, '    '))
