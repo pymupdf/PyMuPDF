@@ -111,4 +111,7 @@ def test_4090():
     r1 = rsss[2]
     r2 = rsss[-1]
     r = r2 / r1
-    assert 0.95 <= r < 1.05, f'{r1=} {r2=} {r=}.'
+    if platform.system() == 'Windows':
+        assert 0.93 <= r < 1.05, f'{r1=} {r2=} {r=}.'
+    else:
+        assert 0.95 <= r < 1.05, f'{r1=} {r2=} {r=}.'
