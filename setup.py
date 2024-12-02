@@ -425,7 +425,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
     assert out in ('dir', 'tgz')
     if location is None:
-        location = f'https://mupdf.com/downloads/archive/mupdf-{version_b}-source.tar.gz'
+        location = f'https://mupdf.com/downloads/archive/mupdf-{version_mupdf}-source.tar.gz'
         #location = 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git'
     
     if location == '':
@@ -1159,6 +1159,7 @@ classifier = [
 
 version_p = '1.24.14'
 version_b = '1.24.11'
+version_mupdf = '1.25.1'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     
