@@ -6,9 +6,9 @@ Change Log
 
 * Use MuPDF-1.25.1.
 
-  * **Fixed** `4026 <https://github.com/pymupdf/PyMuPDF/issues/4026>`_: page.get_text('blocks') output two piece of very simi
-  lar text with different bbox
+  * **Fixed** `4026 <https://github.com/pymupdf/PyMuPDF/issues/4026>`_: page.get_text('blocks') output two piece of very similar text with different bbox
   * **Fixed** `4004 <https://github.com/pymupdf/PyMuPDF/issues/4004>`_: Segmentation Fault When Updating PDF Form Field Value
+  * **Fixed** `3751 <https://github.com/pymupdf/PyMuPDF/issues/3751>`_: apply_redactions causes part of the page content to be hidden / transparent
 
 
 **Changes in version 1.24.14 (2024-11-19)**
