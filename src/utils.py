@@ -806,7 +806,10 @@ def get_textpage_ocr(
             imgpage.extend_textpage(tpage, flags=0, matrix=mat)
             imgdoc.close()
         except exception_types:
-            if g_exceptions_verbose:    pymupdf.exception_info()
+            if 0 and g_exceptions_verbose:
+                # Don't show exception info here because it can happen in
+                # normal operation (see test_3842b).
+                pymupdf.exception_info()
             tpage = None
             pymupdf.message("Falling back to full page OCR")
             return full_ocr(page, dpi, language, flags)
