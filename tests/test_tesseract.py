@@ -20,8 +20,12 @@ def test_tesseract():
     page = doc[5]
     if hasattr(pymupdf, 'mupdf'):
         # rebased.
+        if pymupdf.mupdf_version_tuple < (1, 26):
+            tail = 'OCR initialisation failed'
+        else:
+            tail = 'Tesseract language initialisation failed'
         if pymupdf.mupdf_version_tuple >= (1, 24):
-            e_expected = 'code=3: OCR initialisation failed'
+            e_expected = f'code=3: {tail}'
             if platform.system() == 'OpenBSD':
                 # 2023-12-12: For some reason the SWIG catch code only catches
                 # the exception as FzErrorBase.
@@ -30,7 +34,7 @@ def test_tesseract():
             else:
                 e_expected_type = pymupdf.mupdf.FzErrorLibrary
         else:
-            e_expected = 'code=2: OCR initialisation failed'
+            e_expected = f'code=2: {tail}'
             e_expected_type = None
     else:
         # classic.
@@ -57,15 +61,38 @@ def test_tesseract():
         rebased = hasattr(pymupdf, 'mupdf')
         if rebased:
             wt = pymupdf.TOOLS.mupdf_warnings()
-            if pymupdf.mupdf_version_tuple < (1, 25):
-                assert wt
-            else:
+            if pymupdf.mupdf_version_tuple < (1, 26):
                 assert wt == (
                         'UNHANDLED EXCEPTION!\n'
-                        'library error: Tesseract initialisation failed\n'
-                        'dropping unclosed output'
+                        'library error: Tesseract initialisation failed'
                         )
+            else:
+                assert not wt
         
+
+def test_3842b():
+    # Check Tesseract failure when given a bogus languages.
+    #
+    # Note that Tesseract seems to output its own diagnostics.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3842.pdf')
+    with pymupdf.open(path) as document:
+        page = document[6]
+        try:
+            partial_tp = page.get_textpage_ocr(flags=0, full=False, language='qwerty')
+        except Exception as e:
+            print(f'test_3842b(): received exception: {e}')
+            if 'No tessdata specified and Tesseract is not installed' in str(e):
+                pass
+            else:
+                if pymupdf.mupdf_version_tuple < (1, 26):
+                    assert 'OCR initialisation failed' in str(e)
+                    wt = pymupdf.TOOLS.mupdf_warnings()
+                    assert wt == 'UNHANDLED EXCEPTION!\nlibrary error: Tesseract initialisation failed\nUNHANDLED EXCEPTION!\nlibrary error: Tesseract initialisation failed', \
+                            f'Unexpected {wt=}'
+                else:
+                    assert 'Tesseract language initialisation failed' in str(e)
+
 
 def test_3842():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3842.pdf')
@@ -74,6 +101,7 @@ def test_3842():
         try:
             partial_tp = page.get_textpage_ocr(flags=0, full=False)
         except Exception as e:
+            print(f'test_3842(): received exception: {e}', flush=1)
             assert 'No tessdata specified and Tesseract is not installed' in str(e)
         else:
             text = page.get_text(textpage=partial_tp)
@@ -81,7 +109,9 @@ def test_3842():
             print(text)
             print(f'text:\n{text!r}')
             
-            # 2024-11-29: This is the current incorrect output.
+            # 2024-11-29: This is the current incorrect output. We use
+            # underscores for lines containing entirely whitespace (which
+            # textwrap.dedent() unfortunately replaces with empty lines).
             text_expected = textwrap.dedent('''
                     NIST SP 800-223  
                     _
