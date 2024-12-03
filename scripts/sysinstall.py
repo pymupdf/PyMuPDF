@@ -190,8 +190,8 @@ def main():
     sudo = ''
     if root == '/':
         sudo = f'sudo PATH={os.environ["PATH"]} '
-    def run(command):
-        return run_command(command, doit=mupdf_do)
+    def run(command, env_extra=None):
+        return run_command(command, doit=mupdf_do, env_extra=env_extra)
     # Get MuPDF from git if specified.
     #
     if mupdf_git:
@@ -334,8 +334,8 @@ def main():
     # Run pytest tests.
     #
     log('## Run PyMuPDF pytest tests.')
-    def run(command):
-        return run_command(command, doit=pytest_do)
+    def run(command, env_extra=None):
+        return run_command(command, doit=pytest_do, env_extra=env_extra)
     import gh_release
     if pip == 'venv':
         # Create venv.
@@ -387,12 +387,12 @@ def main():
         command += f' -p {shlex.quote(pytest_args)}'
     if pytest_do:
         command += ' test'
-    run(command)
+    run(command, env_extra=dict(PYMUPDF_SYSINSTALL_TEST='1'))
 
 
-def run_command(command, capture=False, check=True, doit=True):
+def run_command(command, capture=False, check=True, doit=True, env_extra=None):
     if doit:
-        return pipcl.run(command, capture=capture, check=check, caller=2)
+        return pipcl.run(command, capture=capture, check=check, caller=2, env_extra=env_extra)
     else:
         log(f'## Would have run: {command}', caller=2)
 

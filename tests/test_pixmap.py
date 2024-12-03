@@ -426,4 +426,9 @@ def test_3854():
     
     rms = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
     print(f'{rms=}.')
-    assert rms == 0
+    if os.environ.get('PYMUPDF_SYSINSTALL_TEST') == '1':
+        # MuPDF using external third-party libs gives slightly different
+        # behaviour.
+        assert rms < 1
+    else:
+        assert rms == 0

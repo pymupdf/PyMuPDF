@@ -36,6 +36,7 @@ def test_pylint():
             W0622: Redefining built-in 'open' (redefined-builtin)
             W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
             R1734: Consider using [] instead of list() (use-list-literal)
+            R1727: Boolean condition '0 and g_exceptions_verbose' will always evaluate to '0' (condition-evals-to-constant)
             '''
             )
     
