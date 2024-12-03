@@ -1245,7 +1245,7 @@ class Package:
             )
 
     def _dist_info_dir( self):
-        return f'{self.name}-{self.version}.dist-info'
+        return f'{_normalise(self.name)}-{self.version}.dist-info'
 
     def _metainfo(self):
         '''
