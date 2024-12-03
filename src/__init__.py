@@ -10316,8 +10316,10 @@ class Pixmap:
             mupdf.fz_save_pixmap_as_pdfocr( pix, filename, 0, opts)
         else:
             out = JM_new_output_fileptr( filename)
-            mupdf.fz_write_pixmap_as_pdfocr( out, pix, opts)
-            out.fz_close_output()
+            try:
+                mupdf.fz_write_pixmap_as_pdfocr( out, pix, opts)
+            finally:
+                out.fz_close_output()   # Avoid MuPDF warning.
 
     def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None):
         """Save pixmap as an OCR-ed PDF page.
