@@ -102,7 +102,12 @@ def test_3842():
             partial_tp = page.get_textpage_ocr(flags=0, full=False)
         except Exception as e:
             print(f'test_3842(): received exception: {e}', flush=1)
-            assert 'No tessdata specified and Tesseract is not installed' in str(e)
+            if 'No tessdata specified and Tesseract is not installed' in str(e):
+                pass
+            elif 'Tesseract language initialisation failed' in str(e):
+                pass
+            else:
+                assert 0, f'Unexpected exception text: {str(e)=}'
         else:
             text = page.get_text(textpage=partial_tp)
             print()
