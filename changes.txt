@@ -2,9 +2,11 @@ Change Log
 ==========
 
 
-**Changes in version 1.25.0 ()**
+**Changes in version 1.25.0 (2024-12-05)**
 
 * Use MuPDF-1.25.1.
+
+* Fixed issues:
 
   * **Fixed** `4026 <https://github.com/pymupdf/PyMuPDF/issues/4026>`_: page.get_text('blocks') output two piece of very similar text with different bbox
   * **Fixed** `4004 <https://github.com/pymupdf/PyMuPDF/issues/4004>`_: Segmentation Fault When Updating PDF Form Field Value
