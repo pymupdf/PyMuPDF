@@ -47,6 +47,7 @@ body:
       label: PyMuPDF version
       options:
         - 
+        - 1.25.0
         - 1.24.14
         - 1.24.13
         - 1.24.12
