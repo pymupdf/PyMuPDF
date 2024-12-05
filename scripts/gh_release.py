@@ -245,14 +245,14 @@ def build( platform_=None, valgrind=False):
             os.chdir( pymupdf_dir)
         # Create PyMuPDF sdist.
         run(f'{sys.executable} setup.py sdist')
-        assert glob.glob('dist/PyMuPDF-*.tar.gz')
+        assert glob.glob('dist/pymupdf-*.tar.gz')
         if inputs_flavours:
             # Create PyMuPDFb sdist.
             run(
                     f'{sys.executable} setup.py sdist',
                     env_extra=dict(PYMUPDF_SETUP_FLAVOUR='b'),
                     )
-            assert glob.glob('dist/PyMuPDFb-*.tar.gz')
+            assert glob.glob('dist/pymupdfb-*.tar.gz')
     
     # Build wheels.
     #
@@ -475,7 +475,7 @@ def build( platform_=None, valgrind=False):
             # careful to avoid incompatible wheels, e.g. 32 vs 64-bit wheels
             # coexist during Windows builds.
             #
-            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install wheelhouse/PyMuPDFb')
+            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install wheelhouse/pymupdfb')
         
             set_cibuild_test()
         
