@@ -2444,6 +2444,50 @@ def relpath(path, start=None):
     else:
         return os.path.relpath(path, start)
 
+
+def number_sep( s):
+    '''
+    Simple number formatter, adds commas in-between thousands. `s` can be a
+    number or a string. Returns a string.
+
+    >>> number_sep(1)
+    '1'
+    >>> number_sep(12)
+    '12'
+    >>> number_sep(123)
+    '123'
+    >>> number_sep(1234)
+    '1,234'
+    >>> number_sep(12345)
+    '12,345'
+    >>> number_sep(123456)
+    '123,456'
+    >>> number_sep(1234567)
+    '1,234,567'
+    >>> number_sep(-131072)
+    '-131,072'
+    '''
+    if not isinstance( s, str):
+        s = str( s)
+    ret = ''
+    if s.startswith('-'):
+        ret += '-'
+        s = s[1:]
+    c = s.find( '.')
+    if c==-1:   c = len(s)
+    end = s.find('e')
+    if end == -1:   end = s.find('E')
+    if end == -1:   end = len(s)
+    for i in range( end):
+        ret += s[i]
+        if i<c-1 and (c-i-1)%3==0:
+            ret += ','
+        elif i>c and i<end-1 and (i-c)%3==0:
+            ret += ','
+    ret += s[end:]
+    return ret
+
+
 def _so_suffix(use_so_versioning=True):
     '''
     Filename suffix for shared libraries is defined in pep-3149.  The
