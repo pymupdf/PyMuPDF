@@ -1,8 +1,11 @@
 import pymupdf
 
+import os
+
 
 def test_rtl():
-    doc = pymupdf.open("resources/test-E+A.pdf")
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test-E+A.pdf')
+    doc = pymupdf.open(path)
     page = doc[0]
     # set of all RTL characters
     rtl_chars = set([chr(i) for i in range(0x590, 0x901)])
