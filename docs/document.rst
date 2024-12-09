@@ -904,16 +904,17 @@ For details on **embedded files** refer to Appendix 3.
 
     :returns: a list of images **referenced** by this page. Each item looks like
 
-        `(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, filter, referencer)`
+        `(xref, smask, width, height, bpc, colorspace, alt_colorspace, name, filter, referencer)`
 
         Where
 
           * **xref** (*int*) is the image object number
           * **smask** (*int*) is the object number of its soft-mask image
-          * **width** and **height** (*ints*) are the image dimensions
+          * **width** (*int*) is the image width
+          * **height** (*int*) is the image height
           * **bpc** (*int*) denotes the number of bits per component (normally 8)
           * **colorspace** (*str*) a string naming the colorspace (like **DeviceRGB**)
-          * **alt. colorspace** (*str*) is any alternate colorspace depending on the value of **colorspace**
+          * **alt_colorspace** (*str*) is any alternate colorspace depending on the value of **colorspace**
           * **name** (*str*) is the symbolic name by which the image is referenced
           * **filter** (*str*) is the decode filter of the image (:ref:`AdobeManual`, pp. 22).
           * **referencer** (*int*) the :data:`xref` of the referencer. Zero if directly referenced by the page. Only present if *full=True*.
