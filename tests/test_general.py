@@ -1609,8 +1609,8 @@ def test_4034():
         page = document[0]
         pixmap2 = document[0].get_pixmap()
     rms = gentle_compare.pixmaps_rms(pixmap1, pixmap2)
-    print(f'Comparison of original/cleaned page 0 pixmaps: {rms=}.')
-    # 2024-11-27: we expect large difference as
-    # https://bugs.ghostscript.com/show_bug.cgi?id=708128 not yet fixed.
-    #
-    assert 30 < rms < 50
+    print(f'test_4034(): Comparison of original/cleaned page 0 pixmaps: {rms=}.')
+    if pymupdf.mupdf_version_tuple < (1, 25, 2):
+        assert 30 < rms < 50
+    else:
+        assert rms == 0
