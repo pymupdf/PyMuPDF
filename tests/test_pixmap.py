@@ -215,10 +215,6 @@ def test_3058():
     assert 1800000 < s < 2600000, f'Unexpected size of {path}: {s}'
 
 def test_3072():
-    if pymupdf.mupdf_version_tuple < (1, 23, 10):
-        print(f'test_3072(): Not running because known to hang on MuPDF < 1.23.10.')
-        return
-    
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_3072.pdf')
     out = os.path.abspath(f'{__file__}/../../tests')
     

@@ -54,9 +54,6 @@ def test_fontname():
     assert detected
 
 def test_2608():
-    if pymupdf.mupdf_version_tuple <= (1, 23, 4):
-        print( f'Not running test_2608 because mupdf too old: {pymupdf.mupdf_version_tuple=}')
-        return
     flags = (pymupdf.TEXT_DEHYPHENATE | pymupdf.TEXT_MEDIABOX_CLIP)
     with pymupdf.open(os.path.abspath(f'{__file__}/../../tests/resources/2201.00069.pdf')) as doc:
         page = doc[0]

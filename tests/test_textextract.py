@@ -102,33 +102,32 @@ def test_extract4():
     pymupdf.mupdf.fz_close_document_writer(writer)
     print(f'Have written to: {out}')
     
-    if pymupdf.mupdf_version_tuple >= (1, 23, 4):
-        def get_text(page, space_guess):
-            buffer_ = pymupdf.mupdf.FzBuffer( 10)
-            out = pymupdf.mupdf.FzOutput( buffer_)
-            writer = pymupdf.mupdf.FzDocumentWriter(
-                    out,
-                    'text,space-guess={space_guess}',
-                    pymupdf.mupdf.FzDocumentWriter.OutputType_DOCX,
-                    )
-            device = pymupdf.mupdf.fz_begin_page(writer, pymupdf.mupdf.fz_bound_page(page))
-            pymupdf.mupdf.fz_run_page(page, device, pymupdf.mupdf.FzMatrix(), pymupdf.mupdf.FzCookie())
-            pymupdf.mupdf.fz_end_page(writer)
-            pymupdf.mupdf.fz_close_document_writer(writer)
-            text = buffer_.fz_buffer_extract()
-            text = text.decode('utf8')
-            n = text.count(' ')
-            print(f'{space_guess=}: {n=}')
-            return text, n
-        page = document[4]
-        text0, n0 = get_text(page, 0)
-        text1, n1 = get_text(page, 0.5)
-        text2, n2 = get_text(page, 0.001)
-        text2, n2 = get_text(page, 0.1)
-        text2, n2 = get_text(page, 0.3)
-        text2, n2 = get_text(page, 0.9)
-        text2, n2 = get_text(page, 5.9)
-        assert text1 == text0
+    def get_text(page, space_guess):
+        buffer_ = pymupdf.mupdf.FzBuffer( 10)
+        out = pymupdf.mupdf.FzOutput( buffer_)
+        writer = pymupdf.mupdf.FzDocumentWriter(
+                out,
+                'text,space-guess={space_guess}',
+                pymupdf.mupdf.FzDocumentWriter.OutputType_DOCX,
+                )
+        device = pymupdf.mupdf.fz_begin_page(writer, pymupdf.mupdf.fz_bound_page(page))
+        pymupdf.mupdf.fz_run_page(page, device, pymupdf.mupdf.FzMatrix(), pymupdf.mupdf.FzCookie())
+        pymupdf.mupdf.fz_end_page(writer)
+        pymupdf.mupdf.fz_close_document_writer(writer)
+        text = buffer_.fz_buffer_extract()
+        text = text.decode('utf8')
+        n = text.count(' ')
+        print(f'{space_guess=}: {n=}')
+        return text, n
+    page = document[4]
+    text0, n0 = get_text(page, 0)
+    text1, n1 = get_text(page, 0.5)
+    text2, n2 = get_text(page, 0.001)
+    text2, n2 = get_text(page, 0.1)
+    text2, n2 = get_text(page, 0.3)
+    text2, n2 = get_text(page, 0.9)
+    text2, n2 = get_text(page, 5.9)
+    assert text1 == text0
 
 def test_2954():
     '''
@@ -194,22 +193,15 @@ def test_2954():
     text_none, n_fffd_none = get()
     text_0, n_fffd_0 = get(flags0)
     
-    if pymupdf.mupdf_version_tuple >= (1, 23, 9):
-        text_1, n_fffd_1 = get(flags0 | pymupdf.TEXT_CID_FOR_UNKNOWN_UNICODE)
-        
-        assert n_fffd_none == n_fffd_good
-        assert n_fffd_0 == n_fffd_bad
-        assert n_fffd_1 == n_fffd_good
-        
-        assert check_good(text_none)
-        assert not check_good(text_0)
-        assert check_good(text_1)
-    else:
-        assert n_fffd_none == n_fffd_bad
-        assert n_fffd_0 == n_fffd_bad
-        
-        assert not check_good(text_none)
-        assert not check_good(text_0)
+    text_1, n_fffd_1 = get(flags0 | pymupdf.TEXT_CID_FOR_UNKNOWN_UNICODE)
+
+    assert n_fffd_none == n_fffd_good
+    assert n_fffd_0 == n_fffd_bad
+    assert n_fffd_1 == n_fffd_good
+
+    assert check_good(text_none)
+    assert not check_good(text_0)
+    assert check_good(text_1)
 
 
 def test_3027():
