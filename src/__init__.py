@@ -3010,38 +3010,30 @@ class Document:
                                 #log( f'{handler.open=}')
                                 #log( f'{dir(handler.open)=}')
                                 try:
-                                    if mupdf_version_tuple >= (1, 24):
-                                        stream = mupdf.FzStream(filename)
-                                        accel = mupdf.FzStream()
-                                        archive = mupdf.FzArchive(None)
-                                        if mupdf_version_tuple >= (1, 24, 8):
-                                            doc = mupdf.ll_fz_document_handler_open(
-                                                    handler,
-                                                    stream.m_internal,
-                                                    accel.m_internal,
-                                                    archive.m_internal,
-                                                    None,   # recognize_state
-                                                    )
-                                        else:
-                                            doc = mupdf.ll_fz_document_open_fn_call(
-                                                    handler.open,
-                                                    stream.m_internal,
-                                                    accel.m_internal,
-                                                    archive.m_internal,
-                                                    )
+                                    stream = mupdf.FzStream(filename)
+                                    accel = mupdf.FzStream()
+                                    archive = mupdf.FzArchive(None)
+                                    if mupdf_version_tuple >= (1, 24, 8):
+                                        doc = mupdf.ll_fz_document_handler_open(
+                                                handler,
+                                                stream.m_internal,
+                                                accel.m_internal,
+                                                archive.m_internal,
+                                                None,   # recognize_state
+                                                )
                                     else:
-                                        doc = mupdf.ll_fz_document_open_fn_call( handler.open, filename)
+                                        doc = mupdf.ll_fz_document_open_fn_call(
+                                                handler.open,
+                                                stream.m_internal,
+                                                accel.m_internal,
+                                                archive.m_internal,
+                                                )
                                 except Exception as e:
                                     if g_exceptions_verbose > 1:    exception_info()
                                     raise FileDataError(f'Failed to open file {filename!r} as type {filetype!r}.') from e
                                 doc = mupdf.FzDocument( doc)
                             else:
-                                if mupdf_version_tuple < (1, 24):
-                                    if handler.open_with_stream:
-                                        data = mupdf.fz_open_file( filename)
-                                        doc = mupdf.fz_document_open_with_stream_fn_call( handler.open_with_stream, data)
-                                else:
-                                    assert 0
+                                assert 0
                         else:
                             raise ValueError( MSG_BAD_FILETYPE)
                 else:
@@ -5701,11 +5693,7 @@ class Document:
         pdf = _as_pdf_document(self)
         # create page sub-pdf via pdf_rearrange_pages2().
         #
-        if mupdf_version_tuple >= (1, 24):
-            mupdf.pdf_rearrange_pages2(pdf, pyliste)
-        else:
-            # mupdf.pdf_rearrange_pages2() not available.
-            extra.rearrange_pages2(pdf, tuple(pyliste))
+        mupdf.pdf_rearrange_pages2(pdf, pyliste)
 
         # remove any existing pages with their kids
         self._reset_page_refs()
@@ -8103,84 +8091,33 @@ class Page:
                     do_have_imask = 0
 
         if do_have_imask:
-            if mupdf_version_tuple >= (1, 24):
-                # `fz_compressed_buffer` is reference counted and
-                # `mupdf.fz_new_image_from_compressed_buffer2()`
-                # is povided as a Swig-friendly wrapper for
-                # `fz_new_image_from_compressed_buffer()`, so we can do things
-                # straightfowardly.
-                #
-                cbuf1 = mupdf.fz_compressed_image_buffer( image)
-                if not cbuf1.m_internal:
-                    raise ValueError( "uncompressed image cannot have mask")
-                bpc = image.bpc()
-                colorspace = image.colorspace()
-                xres, yres = mupdf.fz_image_resolution(image)
-                mask = mupdf.fz_new_image_from_buffer(maskbuf)
-                image = mupdf.fz_new_image_from_compressed_buffer2(
-                        w,
-                        h,
-                        bpc,
-                        colorspace,
-                        xres,
-                        yres,
-                        1,  # interpolate
-                        0,  # imagemask,
-                        list(), # decode
-                        list(), # colorkey
-                        cbuf1,
-                        mask,
-                        )
-            else:
-                #log( 'do_have_imask')
-                # mupdf.FzCompressedBuffer is not copyable, so
-                # mupdf.fz_compressed_image_buffer() does not work - it cannot
-                # return by value. And sharing a fz_compressed_buffer between two
-                # `fz_image`'s doesn't work, so we use a raw fz_compressed_buffer
-                # here, not a mupdf.FzCompressedBuffer.
-                #
-                cbuf1 = mupdf.ll_fz_compressed_image_buffer( image.m_internal)
-                if not cbuf1:
-                    raise ValueError( "uncompressed image cannot have mask")
-                bpc = image.bpc()
-                colorspace = image.colorspace()
-                xres, yres = mupdf.fz_image_resolution(image)
-                mask = mupdf.fz_new_image_from_buffer(maskbuf)
-                
-                # mupdf.ll_fz_new_image_from_compressed_buffer() is not usable.
-                zimg = extra.fz_new_image_from_compressed_buffer(
-                        w,
-                        h,
-                        bpc,
-                        colorspace.m_internal,
-                        xres,
-                        yres,
-                        1,  # interpolate
-                        0,  # imagemask,
-                        cbuf1,
-                        mask.m_internal,
-                        )
-
-                zimg = mupdf.FzImage(zimg)
-
-                # `image` and `zimage` both have pointers to the same
-                # `fz_compressed_buffer`, which is not reference counted, and they
-                # both think that they own it.
-                #
-                # So we do what the classic implementation does, and simply
-                # ensure that `fz_drop_image(image)` is never called. This will
-                # leak some of `image`'s allocations (for example the main
-                # `fz_image` allocation), but it's not trivial to avoid this.
-                #
-                # Perhaps we could manually set `fz_image`'s
-                # `fz_compressed_buffer*` to null? Trouble is we'd have to
-                # cast the `fz_image*` to a `fz_compressed_image*` to see the
-                # `fz_compressed_buffer*`, which is probably not possible from
-                # Python?
-                #
-                image.m_internal = None
-            
-                image = zimg
+            # `fz_compressed_buffer` is reference counted and
+            # `mupdf.fz_new_image_from_compressed_buffer2()`
+            # is povided as a Swig-friendly wrapper for
+            # `fz_new_image_from_compressed_buffer()`, so we can do things
+            # straightfowardly.
+            #
+            cbuf1 = mupdf.fz_compressed_image_buffer( image)
+            if not cbuf1.m_internal:
+                raise ValueError( "uncompressed image cannot have mask")
+            bpc = image.bpc()
+            colorspace = image.colorspace()
+            xres, yres = mupdf.fz_image_resolution(image)
+            mask = mupdf.fz_new_image_from_buffer(maskbuf)
+            image = mupdf.fz_new_image_from_compressed_buffer2(
+                    w,
+                    h,
+                    bpc,
+                    colorspace,
+                    xres,
+                    yres,
+                    1,  # interpolate
+                    0,  # imagemask,
+                    list(), # decode
+                    list(), # colorkey
+                    cbuf1,
+                    mask,
+                    )
             
         if do_have_image:
             #log( 'do_have_image')
@@ -10147,10 +10084,7 @@ class Pixmap:
         elif format_ == 5:  mupdf.fz_write_pixmap_as_psd(out, pm)
         elif format_ == 6:  mupdf.fz_write_pixmap_as_ps(out, pm)
         elif format_ == 7:
-            if mupdf_version_tuple < (1, 24):
-                mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality)
-            else:
-                mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
+            mupdf.fz_write_pixmap_as_jpeg(out, pm, jpg_quality, 0)
         else:
             mupdf.fz_write_pixmap_as_png(out, pm)
         out.fz_close_output()
@@ -12680,15 +12614,10 @@ class TextPage:
                 continue
             img = block.i_image()
             img_size = 0
-            if mupdf_version_tuple >= (1, 24):
-                compr_buff = mupdf.fz_compressed_image_buffer(img)
-                if compr_buff.m_internal:
-                    img_size = compr_buff.fz_compressed_buffer_size()
-                    compr_buff = None
-            else:
-                compr_buff = mupdf.ll_fz_compressed_image_buffer(img.m_internal)
-                if compr_buff:
-                    img_size = mupdf.ll_fz_compressed_buffer_size(compr_buff)
+            compr_buff = mupdf.fz_compressed_image_buffer(img)
+            if compr_buff.m_internal:
+                img_size = compr_buff.fz_compressed_buffer_size()
+                compr_buff = None
             if hashes:
                 r = mupdf.FzIrect(FZ_MIN_INF_RECT, FZ_MIN_INF_RECT, FZ_MAX_INF_RECT, FZ_MAX_INF_RECT)
                 assert mupdf.fz_is_infinite_irect(r)
@@ -14824,35 +14753,7 @@ def JM_choice_options(annot):
     '''
     annot_obj = mupdf.pdf_annot_obj( annot.this)
     
-    if mupdf_version_tuple >= (1, 24):
-        opts = mupdf.pdf_choice_widget_options2( annot, 0)
-    else:
-        # pdf_choice_widget_options() is not usable from python, so we
-        # implement it ourselves here.
-        #
-        def pdf_choice_widget_options( annot, exportval):
-            #log( '{=type(annot)}')
-            optarr = mupdf.pdf_dict_get_inheritable( mupdf.pdf_annot_obj(annot.this), PDF_NAME('Opt'))
-            #log( '{optarr=}')
-            n = mupdf.pdf_array_len(optarr)
-            opts = []
-            if not n:
-                return opts
-            optarr = mupdf.pdf_dict_get(annot_obj, PDF_NAME('Opt'))
-            for i in range(n):
-                m = mupdf.pdf_array_len(mupdf.pdf_array_get(optarr, i))
-                if m == 2:
-                    val = (
-                            mupdf.pdf_to_text_string(mupdf.pdf_array_get(mupdf.pdf_array_get(optarr, i), 0)),
-                            mupdf.pdf_to_text_string(mupdf.pdf_array_get(mupdf.pdf_array_get(optarr, i), 1)),
-                            )
-                    opts.append(val)
-                else:
-                    val = JM_UnicodeFromStr(mupdf.pdf_to_text_string(mupdf.pdf_array_get(optarr, i)))
-                    opts.append(val)
-            return opts
-
-        opts = pdf_choice_widget_options( annot, 0)
+    opts = mupdf.pdf_choice_widget_options2( annot, 0)
     n = len( opts)
     if n == 0:
         return  # wrong widget type

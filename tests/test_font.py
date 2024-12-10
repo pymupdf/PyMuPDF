@@ -93,9 +93,6 @@ def test_load_system_font():
     if not hasattr(pymupdf, 'mupdf'):
         print(f'test_load_system_font(): Not running on classic.')
         return
-    if pymupdf.mupdf_version_tuple < (1, 24):
-        print(f'test_load_system_font(): Not running because mupdf version < 1.24.')
-        return
     trace = list()
     def font_f(name, bold, italic, needs_exact_metrics):
         trace.append((name, bold, italic, needs_exact_metrics))
@@ -120,9 +117,6 @@ def test_load_system_font():
 def test_mupdf_subset_fonts2():
     if not hasattr(pymupdf, 'mupdf'):
         print('Not running on rebased.')
-        return
-    if pymupdf.mupdf_version_tuple < (1, 24):
-        print('Not running with mupdf < 1.24.')
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     with pymupdf.open(path) as doc:

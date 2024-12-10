@@ -1306,10 +1306,6 @@ def test_open():
         print('test_open(): not running on classic.')
         return
     
-    if pymupdf.mupdf_version_tuple < (1, 24):
-        print('test_open(): not running on mupdf < 1.24.')
-        return
-    
     import re
     import textwrap
     import traceback

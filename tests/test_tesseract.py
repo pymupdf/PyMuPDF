@@ -24,18 +24,14 @@ def test_tesseract():
             tail = 'OCR initialisation failed'
         else:
             tail = 'Tesseract language initialisation failed'
-        if pymupdf.mupdf_version_tuple >= (1, 24):
-            e_expected = f'code=3: {tail}'
-            if platform.system() == 'OpenBSD':
-                # 2023-12-12: For some reason the SWIG catch code only catches
-                # the exception as FzErrorBase.
-                e_expected_type = pymupdf.mupdf.FzErrorBase
-                print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
-            else:
-                e_expected_type = pymupdf.mupdf.FzErrorLibrary
+        e_expected = f'code=3: {tail}'
+        if platform.system() == 'OpenBSD':
+            # 2023-12-12: For some reason the SWIG catch code only catches
+            # the exception as FzErrorBase.
+            e_expected_type = pymupdf.mupdf.FzErrorBase
+            print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
         else:
-            e_expected = f'code=2: {tail}'
-            e_expected_type = None
+            e_expected_type = pymupdf.mupdf.FzErrorLibrary
     else:
         # classic.
         e_expected = 'OCR initialisation failed'

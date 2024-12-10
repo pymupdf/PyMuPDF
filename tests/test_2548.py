@@ -34,10 +34,8 @@ def test_2548():
     rebased = hasattr(pymupdf, 'mupdf')
     if pymupdf.mupdf_version_tuple >= (1, 25):
         expected = 'format error: cycle in structure tree\nstructure tree broken, assume tree is missing'
-    elif pymupdf.mupdf_version_tuple >= (1, 24):
-        expected = 'Loop found in structure tree. Ignoring structure.'
     else:
-        expected = 'structure tree broken, assume tree is missing: cycle in structure tree'
+        expected = 'Loop found in structure tree. Ignoring structure.'
     if rebased:
         assert wt == expected, f'expected:\n    {expected!r}\nwt:\n    {wt!r}\n'
     assert not e

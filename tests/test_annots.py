@@ -232,10 +232,8 @@ def test_1645():
         path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.25.pdf')
     elif pymupdf.mupdf_version_tuple >= (1, 24, 2):
         path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.2.pdf')
-    elif pymupdf.mupdf_version_tuple >= (1, 24):
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.pdf')
     else:
-        path_expected = os.path.abspath( f'{__file__}/../resources/test_1645_expected_1.22.pdf')
+        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.pdf')
     path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
     doc = pymupdf.open(path_in)
     page = doc[0]
