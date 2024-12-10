@@ -784,9 +784,6 @@ def get_textpage_ocr(
         bbox = pymupdf.Rect(block["bbox"])
         if bbox.width <= 3 or bbox.height <= 3:  # ignore tiny stuff
             continue
-        exception_types = (RuntimeError, mupdf.FzErrorBase)
-        if pymupdf.mupdf_version_tuple < (1, 24):
-            exception_types = RuntimeError
         try:
             pix = pymupdf.Pixmap(block["image"])  # get image pixmap
             if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
@@ -805,7 +802,7 @@ def get_textpage_ocr(
             mat = shrink * block["transform"]
             imgpage.extend_textpage(tpage, flags=0, matrix=mat)
             imgdoc.close()
-        except exception_types:
+        except (RuntimeError, mupdf.FzErrorBase):
             if 0 and g_exceptions_verbose:
                 # Don't show exception info here because it can happen in
                 # normal operation (see test_3842b).
@@ -4418,14 +4415,11 @@ def apply_redactions(
         Returns:
             A rectangle to use instead of the annot rectangle.
         """
-        exception_types = (ValueError, mupdf.FzErrorBase)
-        if pymupdf.mupdf_version_tuple < (1, 24):
-            exception_types = ValueError
         if not new_text or annot_rect.width <= pymupdf.EPSILON:
             return annot_rect
         try:
             text_width = pymupdf.get_text_length(new_text, font, fsize)
-        except exception_types:  # unsupported font
+        except (ValueError, mupdf.FzErrorBase):  # unsupported font
             if g_exceptions_verbose:
                 pymupdf.exception_info()
             return annot_rect

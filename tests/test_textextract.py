@@ -239,9 +239,6 @@ def test_3197():
     '''
     MuPDF's ActualText support fixes handling of test_3197.pdf.
     '''
-    if pymupdf.mupdf_version_tuple < (1, 24):
-        print(f'Not running on {pymupdf.mupdf_version_tuple=}.')
-        return
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_3197.pdf')
     
     text_utf8_expected = [
@@ -256,10 +253,7 @@ def test_3197():
             text_utf8 = text.encode('utf8')
             #print(f'                {text_utf8=}')
             #print(f'    {text_utf8_expected[i]=}')
-            if pymupdf.mupdf_version_tuple >= (1, 24):
-                assert text_utf8 == text_utf8_expected[i]
-            else:
-                assert text_utf8 != text_utf8_expected[i]
+            assert text_utf8 == text_utf8_expected[i]
 
 
 def test_document_text():

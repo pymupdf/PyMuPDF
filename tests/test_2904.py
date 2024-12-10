@@ -29,10 +29,7 @@ def test_2904():
                 assert e
                 if hasattr(pymupdf, 'mupdf'):
                     # rebased.
-                    if pymupdf.mupdf_version_tuple >= (1, 24):
-                        assert str(e) == 'code=8: Failed to read JPX header'
-                    else:
-                        assert str(e) == 'code=4: Failed to read JPX header'
+                    assert str(e) == 'code=8: Failed to read JPX header'
                 else:
                     # classic
                     assert str(e) == 'Failed to read JPX header'
