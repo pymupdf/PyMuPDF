@@ -2,6 +2,16 @@ Change Log
 ==========
 
 
+**Changes in version 1.25.1 ()**
+
+* Use MuPDF-1.25.2.
+
+* Fixed issues:
+
+  * **Fixed** `4125 <https://github.com/pymupdf/PyMuPDF/issues/4125>`_: memory leak while convert Pixmap's colorspace
+  * **Fixed** `4034 <https://github.com/pymupdf/PyMuPDF/issues/4034>`_: Possible regression in pdf cleaning during save.
+
+
 **Changes in version 1.25.0 (2024-12-05)**
 
 * Use MuPDF-1.25.1.
