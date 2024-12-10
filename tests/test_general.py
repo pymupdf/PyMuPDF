@@ -646,12 +646,8 @@ def test_2553():
     # With mupdf later than 1.23.4, this special page contains no invalid
     # Unicodes.
     #
-    if pymupdf.mupdf_version_tuple > (1, 23, 4):
-        print(f'Checking no occurrence of 0xFFFD, {pymupdf.mupdf_version_tuple=}.')
-        assert chr(0xFFFD) not in set1
-    else:
-        print(f'Checking occurrence of 0xFFFD, {pymupdf.mupdf_version_tuple=}.')
-        assert chr(0xFFFD) in set1
+    print(f'Checking no occurrence of 0xFFFD, {pymupdf.mupdf_version_tuple=}.')
+    assert chr(0xFFFD) not in set1
 
 def test_2553_2():
     doc = pymupdf.open(f"{scriptdir}/resources/test_2553-2.pdf")
@@ -659,11 +655,7 @@ def test_2553_2():
 
     # extract plain text, ensure that there are no 0xFFFD characters
     text = page.get_text()
-    if pymupdf.mupdf_version_tuple >= (1, 23, 7):
-        assert chr(0xfffd) not in text
-    else:
-        # Bug not fixed in MuPDF.
-        assert chr(0xfffd) in text
+    assert chr(0xfffd) not in text
 
 def test_2635():
     """Rendering a page before and after cleaning it should yield the same pixmap."""
@@ -723,15 +715,8 @@ def test_2710():
     assert_rects_approx_eq(page.cropbox, pymupdf.Rect(30.0, 30.0, 565.3200073242188, 811.9199829101562))
     assert_rects_approx_eq(page.mediabox, pymupdf.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
     print(f'test_2710(): {pymupdf.mupdf_version_tuple=}')
-    if pymupdf.mupdf_version_tuple < (1, 23, 5):
-        print(f'test_2710(): Not Checking page.rect and rect.')
-    elif pymupdf.mupdf_version_tuple < (1, 24.0):
-        print(f'test_2710(): Checking page.rect and rect.')
-        assert_rects_approx_eq(page.rect, pymupdf.Rect(0.0, 0.0, 535.3200073242188, 781.9199829101562))
-        assert_rects_approx_eq(rect, pymupdf.Rect(0.7872352600097656, 64.7560043334961, 124.85531616210938, 78.1622543334961))
-    else:
-        # 2023-11-05: Currently broken in mupdf master.
-        print(f'test_2710(): Not Checking page.rect and rect.')
+    # 2023-11-05: Currently broken in mupdf master.
+    print(f'test_2710(): Not Checking page.rect and rect.')
     rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
         wt = pymupdf.TOOLS.mupdf_warnings()
