@@ -8313,6 +8313,8 @@ class Page:
         # 1. insert Xobject in Resources
         #-------------------------------------------------------------
         resources = mupdf.pdf_dict_get_inheritable(tpageref, PDF_NAME('Resources'))
+        if not resources.m_internal:
+            resources = mupdf.pdf_dict_put_dict(tpageref,PDF_NAME('Resources'),5) 
         subres = mupdf.pdf_dict_get(resources, PDF_NAME('XObject'))
         if not subres.m_internal:
             subres = mupdf.pdf_dict_put_dict(resources, PDF_NAME('XObject'), 5)
@@ -16820,6 +16822,8 @@ def JM_merge_resources( page, temp_res):
     '''
     # page objects /Resources, /Resources/ExtGState, /Resources/Font
     resources = mupdf.pdf_dict_get(page.obj(), PDF_NAME('Resources'))
+    if not resources.m_internal:
+        resources = mupdf.pdf_dict_put_dict(page.obj(), PDF_NAME('Resources'),5)
     main_extg = mupdf.pdf_dict_get(resources, PDF_NAME('ExtGState'))
     main_fonts = mupdf.pdf_dict_get(resources, PDF_NAME('Font'))
 
