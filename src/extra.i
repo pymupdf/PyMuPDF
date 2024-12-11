@@ -3014,9 +3014,16 @@ mupdf::FzRect JM_make_spanlist(
         mupdf::FzStextLine& line,
         int raw,
         mupdf::FzBuffer& buff,
-        mupdf::FzRect& tp_rect
+        mupdf::FzRect& tp_rect,
+        int dev_flags
         )
 {
+    // relevant MuPDF versions as integers
+    #define MUPDF1250 (1 << 16) + (25 << 8) + 0   // 1.25.0
+    #define MUPDF1251 MUPDF1250 + 1               // 1.25.1
+    // current MuPDF version as an integer
+    #define THIS_MUPDF (FZ_VERSION_MAJOR << 16) + (FZ_VERSION_MINOR << 8) + (FZ_VERSION_PATCH) 
+
     PyObject *span = NULL, *char_list = NULL, *char_dict;
     PyObject *span_list = PyList_New(0);
     mupdf::fz_clear_buffer(buff);
@@ -3026,11 +3033,14 @@ mupdf::FzRect JM_make_spanlist(
     struct char_style
     {
         float size = -1;
-        int flags = -1;
+        int font_flags = 0;
+        uint16_t flags = 0;
         const char *font = "";
-        unsigned int color = -1;
+        uint32_t color = 0;
+        float opacity = 1;
         float asc = 0;
         float desc = 0;
+        uint16_t bidi = 0;
     };
     char_style old_style;
     char_style style;
@@ -3042,27 +3052,36 @@ mupdf::FzRect JM_make_spanlist(
         {
             continue;
         }
-        int flags = JM_char_font_flags( ch.m_internal->font, line.m_internal, ch.m_internal);
+        int font_flags = JM_char_font_flags(ch.m_internal->font, line.m_internal, ch.m_internal);
         fz_point origin = ch.m_internal->origin;
         style.size = ch.m_internal->size;
-        style.flags = flags;
+        style.font_flags = font_flags;
+        style.flags = ch.m_internal->flags;
         style.font = JM_font_name(ch.m_internal->font);
-        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 25))
-            style.color = ch.m_internal->argb;
+        style.bidi = ch.m_internal->bidi;
+        #if (THIS_MUPDF >= MUPDF1250)
+            style.opacity = ((float) (ch.m_internal->argb >> 24)) / 255;
+            style.color = (ch.m_internal->argb << 8) >> 8;
         #else
-            style.color = ch.m_internal->color;
+            style.color = (uint32_t) ch.m_internal->color;
         #endif
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
 
+        // any change in character style causes a span break
+        // except: synthetic spaces
         if (0
-                || style.size != old_style.size
-                || style.flags != old_style.flags
-                || style.color != old_style.color
-                || strcmp(style.font, old_style.font) != 0
-                )
+            || style.bidi != old_style.bidi
+            || style.size != old_style.size
+            || style.font_flags != old_style.font_flags
+            // compare flags w/o synthetic property
+            || (style.flags & ~4) != (old_style.flags & ~4)
+            || style.color != old_style.color
+            || style.opacity != old_style.opacity
+            || strcmp(style.font, old_style.font) != 0
+            )
         {
-            if (old_style.size >= 0)
+            if (old_style.size > 0)
             {
                 // not first one, output previous
                 if (raw)
@@ -3093,13 +3112,45 @@ mupdf::FzRect JM_make_spanlist(
                 desc = -0.1f;
             }
 
+            DICT_SETITEMSTR_DROP(span, "bidi", Py_BuildValue("i", style.bidi));
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
-            DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
+            DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.font_flags));
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
-            DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
+            DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("k", style.color));
             DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", asc));
             DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", desc));
 
+            // depending on MuPDF version, add supported keys
+            #if (THIS_MUPDF >= MUPDF1250)  // separate #if because not flags-dependent
+                DICT_SETITEMSTR_DROP(span, "opacity", Py_BuildValue("f", style.opacity));
+            #endif
+
+            // rest of keys only make sense if FZ_STEXT_COLLECT_FLAGS was set
+            #if (THIS_MUPDF >= MUPDF1250)
+                if (dev_flags & 32768)
+                {
+                    DICT_SETITEMSTR_DROP(span, "underline", JM_BOOL(style.flags & FZ_STEXT_UNDERLINE));
+                    DICT_SETITEMSTR_DROP(span, "strikeout", JM_BOOL(style.flags & FZ_STEXT_STRIKEOUT));
+                }
+                else
+                {
+                    DICT_SETITEMSTR_DROP(span, "underline", Py_BuildValue("s", NULL));
+                    DICT_SETITEMSTR_DROP(span, "strikeout", Py_BuildValue("s", NULL));
+                }
+            #endif
+            #if (THIS_MUPDF > MUPDF1251)
+                if (dev_flags & FZ_STEXT_COLLECT_FLAGS)
+                {
+                    DICT_SETITEMSTR_DROP(span, "bold", JM_BOOL(style.flags & FZ_STEXT_BOLD));
+                }
+                else
+                {
+                    DICT_SETITEMSTR_DROP(span, "bold", Py_BuildValue("s", NULL));
+                }
+                DICT_SETITEMSTR_DROP(span, "filled", JM_BOOL(style.flags & FZ_STEXT_FILLED));
+                DICT_SETITEMSTR_DROP(span, "stroked", JM_BOOL(style.flags & FZ_STEXT_STROKED));
+                DICT_SETITEMSTR_DROP(span, "clipped", JM_BOOL(style.flags & FZ_STEXT_CLIPPED));
+            #endif
             old_style = style;
             span_rect = r;
             span_origin = origin;
@@ -3114,7 +3165,9 @@ mupdf::FzRect JM_make_spanlist(
             DICT_SETITEM_DROP(char_dict, dictkey_origin, JM_py_from_point(ch.m_internal->origin));
 
             DICT_SETITEM_DROP(char_dict, dictkey_bbox, JM_py_from_rect(r));
-
+            #if (THIS_MUPDF >= MUPDF1250)
+                DICT_SETITEMSTR_DROP(char_dict, "synthetic", JM_BOOL(ch.m_internal->flags & FZ_STEXT_SYNTHETIC));
+            #endif
             DICT_SETITEM_DROP(char_dict, dictkey_c, Py_BuildValue("C", ch.m_internal->c));
 
             if (!char_list)
@@ -3514,7 +3567,7 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
     return;
 }
 
-static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff, fz_rect tp_rect)
+static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff, fz_rect tp_rect, int dev_flags)
 {
     fz_stext_line *line;
     PyObject *line_list = PyList_New(0), *line_dict;
@@ -3533,7 +3586,8 @@ static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int 
                 line2,
                 raw,
                 buff2,
-                tp_rect2
+                tp_rect2,
+                dev_flags
                 );
         fz_rect& line_rect = *line_rect2.internal();
         block_rect = fz_union_rect(block_rect, line_rect);
@@ -3549,7 +3603,7 @@ static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int 
     return;
 }
 
-void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw)
+void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw, int dev_flags)
 {
     fz_context* ctx = mupdf::internal_context_get();
     fz_stext_block *block;
@@ -3576,7 +3630,7 @@ void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw)
             DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
             JM_make_image_block(block, block_dict);
         } else {
-            JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect);
+            JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect, dev_flags);
         }
 
         LIST_APPEND_DROP(block_list, block_dict);
@@ -4056,7 +4110,8 @@ mupdf::FzRect JM_make_spanlist(
         mupdf::FzStextLine& line,
         int raw,
         mupdf::FzBuffer& buff,
-        mupdf::FzRect& tp_rect
+        mupdf::FzRect& tp_rect,
+        int dev_flags
         );
 
 PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters);
@@ -4071,7 +4126,7 @@ fz_stext_page* page_get_textpage(
         PyObject* matrix
         );
 
-void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw);
+void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw, int dev_flags);
 PyObject *pixmap_pixel(fz_pixmap* pm, int x, int y);
 int pixmap_n(mupdf::FzPixmap& pixmap);
 

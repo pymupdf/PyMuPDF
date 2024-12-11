@@ -1031,6 +1031,7 @@ class Annot:
             ret.parent = p
         else:
             ret.parent = weakref.proxy(p)
+        ret._dev_flags = flags
         return ret
 
     @property
@@ -2782,6 +2783,7 @@ class DisplayList:
         stext_options.flags = flags
         val = mupdf.FzStextPage(self.this, stext_options)
         val.thisown = True
+        val._dev_flags = flags
         return val
 
     @property
@@ -7970,6 +7972,7 @@ class Page:
         if g_use_extra:
             ll_tpage = extra.page_get_textpage(self.this, clip, flags, matrix)
             tpage = mupdf.FzStextPage(ll_tpage)
+            tpage._dev_flags = flags
             return tpage
         page = self.this
         options = mupdf.FzStextOptions(flags)
@@ -7989,6 +7992,7 @@ class Page:
             assert 0, f'Unrecognised {type(page)=}'
         mupdf.fz_run_page(page, dev, ctm, mupdf.FzCookie())
         mupdf.fz_close_device(dev)
+        tpage._dev_flags = flags
         return tpage
 
     def _insert_image(self,
@@ -9142,6 +9146,12 @@ class Page:
         if rot == 0:
             return  Identity # nothing to do
 
+        # save annotation rectangle information before we do anything
+        rot_matrix = self.rotation_matrix  # original rotation matrix
+        annots=[(a.xref,a.rect * rot_matrix) for a in self.annots()]
+        get_links = self.get_links()
+        widgets = [(w.xref,w.rect * rot_matrix) for w in self.widgets()]
+
         # need to derotate the page's content
         mb = self.mediabox  # current mediabox
 
@@ -9172,20 +9182,22 @@ class Page:
         self.set_rotation(0)
         rot = ~mat  # inverse of the derotation matrix
 
-        for annot in self.annots():  # modify rectangles of annotations
-            r = annot.rect * rot
-            # TODO: only try to set rectangle for applicable annot types
-            annot.set_rect(r)
-        for link in self.get_links():  # modify 'from' rectangles of links
-            r = link["from"] * rot
+        for xref, rect in annots:  # modify rectangles of annotations
+            annot = self.load_annot(xref)
+            # TODO: only do this for applicable annot types
+            annot.set_rect(rect)
+            
+        for link in get_links:  # modify 'from' rectangles of links
+            r = link["from"] * rot_matrix
             self.delete_link(link)
             link["from"] = r
             try:  # invalid links remain deleted
                 self.insert_link(link)
             except Exception:
                 pass
-        for widget in self.widgets():  # modify field rectangles
-            r = widget.rect * rot
+            
+        for xref, rect in widgets:  # modify field rectangles
+            widget = page.load_widget(xref)
             widget.rect = r
             widget.update()
         return rot  # the inverse of the generated derotation matrix
@@ -9432,6 +9444,7 @@ class Page:
                 self.set_rotation(old_rotation)
         textpage = TextPage(textpage)
         textpage.parent = weakref.proxy(self)
+        textpage._dev_flags = flags
         return textpage
 
     def get_texttrace(self):
@@ -16440,9 +16453,13 @@ def JM_make_annot_DA(annot, ncol, col, fontname, fontsize):
     mupdf.pdf_dict_put_text_string(mupdf.pdf_annot_obj(annot), mupdf.PDF_ENUM_NAME_DA, buf)
 
 
-def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
+def JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags):
     if g_use_extra:
-        return extra.JM_make_spanlist(line_dict, line, raw, buff, tp_rect)
+        return extra.JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags)
+    # relevant MuPDF versions
+    MUPDF1250 = (1, 25, 0)
+    MUPDF1251 = (1, 25, 1)
+    THIS_MUPDF = mupdf_version_tuple
     char_list = None
     span_list = []
     mupdf.fz_clear_buffer(buff)
@@ -16453,18 +16470,24 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
         def __init__(self, rhs=None):
             if rhs:
                 self.size = rhs.size
+                self.font_flags = rhs.font_flags
                 self.flags = rhs.flags
                 self.font = rhs.font
                 self.color = rhs.color
                 self.asc = rhs.asc
                 self.desc = rhs.desc
+                self.bidi = rhs.bidi
+                self.opacity = rhs.opacity
             else:
                 self.size = -1
-                self.flags = -1
-                self.font = ''
-                self.color = -1
+                self.font_flags = 0
+                self.flags = 0
+                self.font = ""
+                self.color = 0
                 self.asc = 0
                 self.desc = 0
+                self.bidi = 0
+                self.opacity = 1
         def __str__(self):
             return f'{self.size} {self.flags} {self.font} {self.color} {self.asc} {self.desc}'
 
@@ -16481,24 +16504,30 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 ):
             continue
 
-        flags = JM_char_font_flags(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)), line, ch)
+        font_flags = JM_char_font_flags(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)), line, ch)
         origin = mupdf.FzPoint(ch.m_internal.origin)
         style.size = ch.m_internal.size
-        style.flags = flags
+        style.flags = ch.m_internal.flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
-        if mupdf_version_tuple >= (1, 25):
-            style.color = ch.m_internal.argb
+        if THIS_MUPDF >= MUPDF1250:
+            style.opacity = (ch.m_internal.argb >> 24) / 255
+            style.color = ch.m_internal.argb & ~0xff000000
         else:
             style.color = ch.m_internal.color
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
 
-        if (style.size != old_style.size
-                or style.flags != old_style.flags
-                or style.color != old_style.color
-                or style.font != old_style.font
-                ):
-            if old_style.size >= 0:
+        if (0
+            or style.size != old_style.size
+            or style.bidi != old_style.bidi
+            or style.font_flags != old_style.font_flags
+            # compare flags w/o synthetic property
+            or (style.flags & ~4) != (old_style.flags & ~4)
+            or style.color != old_style.color
+            or style.opacity != old_style.opacity
+            or style.font != old_style.font
+            ):
+            if old_style.size > 0:
                 # not first one, output previous
                 if raw:
                     # put character list in the span
@@ -16506,13 +16535,13 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                     char_list = None
                 else:
                     # put text string in the span
-                    span[dictkey_text] = JM_EscapeStrFromBuffer( buff)
+                    span[dictkey_text] = JM_EscapeStrFromBuffer(buff)
                     mupdf.fz_clear_buffer(buff)
 
                 span[dictkey_origin] = JM_py_from_point(span_origin)
                 span[dictkey_bbox] = JM_py_from_rect(span_rect)
                 line_rect = mupdf.fz_union_rect(line_rect, span_rect)
-                span_list.append( span)
+                span_list.append(span)
                 span = None
 
             span = dict()
@@ -16522,12 +16551,33 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 asc = 0.9
                 desc = -0.1
 
+            span["bidi"] = style.bidi
             span[dictkey_size] = style.size
-            span[dictkey_flags] = style.flags
+            span[dictkey_flags] = style.font_flags
             span[dictkey_font] = JM_EscapeStrFromStr(style.font)
             span[dictkey_color] = style.color
             span["ascender"] = asc
             span["descender"] = desc
+            span["opacity"] = style.opacity
+            # add more keys depending on MuPDF version
+            if THIS_MUPDF >= MUPDF1250:  #separate if because not flags-dependent
+                span["opacity"] = style.opacity
+                # rest of keys only make sense for FZ_STEXT_COLLECT_FLAGS
+                if dev_flags & mupdf.FZ_STEXT_COLLECT_FLAGS:
+                    span["underline"] = bool(style.flags & mupdf.FZ_STEXT_UNDERLINE)
+                    span["strikeout"] = bool(style.flags & mupdf.FZ_STEXT_STRIKEOUT)
+                else:
+                    span["underline"] = None
+                    span["strikeout"] = None
+
+            if THIS_MUPDF > MUPDF1251:
+                if dev_flags & mupdf.FZ_STEXT_COLLECT_FLAGS:
+                    span["bold"] = bool(style.flags & mupdf.FZ_STEXT_BOLD)
+                else:
+                    span["bold"] = None
+                span["filled"] = bool(style.flags & mupdf.FZ_STEXT_FILLED)
+                span["stroked"] = bool(style.flags & mupdf.FZ_STEXT_STROKED)
+                span["clipped"] = bool(style.flags & mupdf.FZ_STEXT_CLIPPED)
 
             # Need to be careful here - doing 'old_style=style' does a shallow
             # copy, but we need to keep old_style as a distinct instance.
@@ -16541,6 +16591,8 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             char_dict = dict()
             char_dict[dictkey_origin] = JM_py_from_point( ch.m_internal.origin)
             char_dict[dictkey_bbox] = JM_py_from_rect(r)
+            if THIS_MUPDF >= MUPDF1250:
+                char_dict["synthetic"] = bool(ch.m_internal.flags & mupdf.FZ_STEXT_SYNTHETIC)
             char_dict[dictkey_c] = chr(ch.m_internal.c)
 
             if char_list is None:
@@ -16604,9 +16656,9 @@ def JM_make_image_block(block, block_dict):
     block_dict[ dictkey_image] = bytes_
 
 
-def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
+def JM_make_text_block(block, block_dict, raw, buff, tp_rect, dev_flags):
     if g_use_extra:
-        return extra.JM_make_text_block(block.m_internal, block_dict, raw, buff.m_internal, tp_rect.m_internal)
+        return extra.JM_make_text_block(block.m_internal, block_dict, raw, buff.m_internal, tp_rect.m_internal, dev_flags)
     line_list = []
     block_rect = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)
     #log(f'{block=}')
@@ -16617,7 +16669,7 @@ def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
                 ):
             continue
         line_dict = dict()
-        line_rect = JM_make_spanlist(line_dict, line, raw, buff, tp_rect)
+        line_rect = JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags)
         block_rect = mupdf.fz_union_rect(block_rect, line_rect)
         line_dict[dictkey_wmode] = line.m_internal.wmode
         line_dict[dictkey_dir] = JM_py_from_point(line.m_internal.dir)
@@ -16629,7 +16681,7 @@ def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
 
 def JM_make_textpage_dict(tp, page_dict, raw):
     if g_use_extra:
-        return extra.JM_make_textpage_dict(tp.m_internal, page_dict, raw)
+        return extra.JM_make_textpage_dict(tp.m_internal, page_dict, raw, tp._dev_flags)
     text_buffer = mupdf.fz_new_buffer(128)
     block_list = []
     tp_rect = mupdf.FzRect(tp.m_internal.mediabox)
@@ -16654,7 +16706,7 @@ def JM_make_textpage_dict(tp, page_dict, raw):
             block_dict[dictkey_bbox] = JM_py_from_rect(block.m_internal.bbox)
             JM_make_image_block(block, block_dict)
         else:
-            JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect)
+            JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect, tp._dev_flags)
 
         block_list.append(block_dict)
     page_dict[dictkey_blocks] = block_list
@@ -21164,14 +21216,12 @@ def get_text(
         pages=None,
         method='single',
         concurrency=None,
-        
         option='text',
         clip=None,
         flags=None,
         textpage=None,
         sort=False,
         delimiters=None,
-        
         _stats=False,
         ):
     '''
