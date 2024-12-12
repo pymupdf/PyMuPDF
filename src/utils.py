@@ -494,7 +494,7 @@ def get_text_blocks(
     blocks = tp.extractBLOCKS()
     if textpage is None:
         del tp
-    if sort is True:
+    if sort:
         blocks.sort(key=lambda b: (b[3], b[0]))
     return blocks
 
@@ -571,7 +571,7 @@ def get_text_words(
 
     if textpage is None:
         del tp
-    if words and sort is True:
+    if words and sort:
         # advanced sort if any words found
         words = sort_words(words)
 
@@ -771,7 +771,7 @@ def get_textpage_ocr(
         return tpage
 
     # if OCR for the full page, OCR its pixmap @ desired dpi
-    if full is True:
+    if full:
         return full_ocr(page, dpi, language, flags)
 
     # For partial OCR, make a normal textpage, then extend it with text that
@@ -948,7 +948,7 @@ def get_text(
             page, clip=clip, flags=flags, textpage=textpage, sort=sort
         )
 
-    if option == "text" and sort is True:
+    if option == "text" and sort:
         return get_sorted_text(
             page,
             clip=clip,
@@ -1227,7 +1227,7 @@ def get_toc(
     lvl = 1
     liste = []
     toc = recurse(olItem, liste, lvl)
-    if doc.is_pdf and simple is False:
+    if doc.is_pdf and not simple:
         doc._extend_toc_items(toc)
     return toc
 
@@ -4561,7 +4561,7 @@ def scrub(
     if doc.is_encrypted or doc.is_closed:
         raise ValueError("closed or encrypted doc")
 
-    if clean_pages is False:
+    if not clean_pages:
         hidden_text = False
         redactions = False
 
@@ -4848,9 +4848,11 @@ def fill_textbox(
     nlines = len(new_lines)
     if nlines > max_lines:
         msg = "Only fitting %i of %i lines." % (max_lines, nlines)
-        if warn is True:
+        if warn is None:
+            pass
+        elif warn:
             pymupdf.message("Warning: " + msg)
-        elif warn is False:
+        else:
             raise ValueError(msg)
 
     start = pymupdf.Point()
@@ -5561,7 +5563,7 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
     # Once the sets of used unicodes and glyphs are known, we compute a
     # smaller version of the buffer user package fontTools.
 
-    if fallback is False:  # by default use MuPDF function
+    if not fallback:  # by default use MuPDF function
         pdf = mupdf.pdf_document_from_fz_document(doc)
         mupdf.pdf_subset_fonts2(pdf, list(range(doc.page_count)))
         return
