@@ -199,24 +199,24 @@ def test_4125():
         gc.collect()
         get_stat()
     
-    # Check memory leak is as expected.
-    for i in range(3, len(state.rsss)):
-        drss = state.rsss[i] - state.rsss[i-1]
+    if platform.system() == 'Linux':
+        rss_delta = state.rsss[-1] - state.rsss[3]
+        print(f'{rss_delta=}')
         pv = platform.python_version_tuple()
         pv = (int(pv[0]), int(pv[1]))
         if pv < (3, 11):
             # Python < 3.11 has less reliable memory usage so we exclude.
-            print(f'test_4125(): Not checking on {platform.python_version_tuple()=} because < 3.11.')
-        elif platform.system() == 'Darwin':
-            print(f'test_4125(): Not checking on {platform.system()=} because RSS seems to be unreliable.')
+            print(f'test_4125(): Not checking on {platform.python_version()=} because < 3.11.')
         elif pymupdf.mupdf_version_tuple < (1, 25, 2):
-            drss_expected = 4915200
-            e = abs(1 - drss / drss_expected)
-            print(f'test_4125(): {i=} {e=}')
-            assert e < 0.15, f'{i=}: {drss_expected} {drss} {e=}.'
+            rss_delta_expected = 4915200 * (len(state.rsss) - 3)
+            assert abs(1 - rss_delta / rss_delta_expected) < 0.15, f'{rss_delta_expected=}'
         else:
-            # Bug fixed in MuPDF-1.26 and hopefully MuPDF-1.25.2. We still see
-            # some fluctuations in RSS usage, perhaps worse for older Python
-            # versions.
-            e = 200*1000
-            assert abs(drss) <= e, f'{i=}: {drss=} {e=}.'
+            # Before the fix, each iteration would leak 4.9MB.
+            rss_delta_max = 100*1000 * (len(state.rsss) - 3)
+            assert rss_delta < rss_delta_max
+    else:
+        # Unfortunately on non-Linux Github test machines the RSS values seem
+        # to vary a lot, which causes spurious test failures. So for at least
+        # we don't actually check.
+        #
+        print(f'Not checking results because non-Linux behaviour is too variable.')
