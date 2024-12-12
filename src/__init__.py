@@ -4513,7 +4513,7 @@ class Document:
                 exception_info()
                 raise ValueError("need a Page or page number")
         val = self._getPageInfo(pno, 1)
-        if full is False:
+        if not full:
             return [v[:-1] for v in val]
         return val
 
@@ -4525,7 +4525,7 @@ class Document:
         if not self.is_pdf:
             return ()
         val = self._getPageInfo(pno, 2)
-        if full is False:
+        if not full:
             return [v[:-1] for v in val]
         return val
 
@@ -6720,7 +6720,7 @@ class Matrix:
     def __eq__(self, mat):
         if not hasattr(mat, "__len__"):
             return False
-        return len(mat) == 6 and bool(self - mat) is False
+        return len(mat) == 6 and not (self - mat)
 
     def __getitem__(self, i):
         return (self.a, self.b, self.c, self.d, self.e, self.f)[i]
@@ -9277,7 +9277,7 @@ class Page:
             else:
                 raise ValueError("found multiple images named '%s'." % name)
         xref = item[-1]
-        if xref != 0 or transform is True:
+        if xref != 0 or transform:
             try:
                 return self.get_image_rects(item, transform=transform)[0]
             except Exception:
@@ -10646,7 +10646,7 @@ class Point:
     def __eq__(self, p):
         if not hasattr(p, "__len__"):
             return False
-        return len(p) == 2 and bool(self - p) is False
+        return len(p) == 2 and not (self - p)
 
     def __getitem__(self, i):
         return (self.x, self.y)[i]
@@ -10677,7 +10677,7 @@ class Point:
                 self.x = l.x
                 self.y = l.y
             else:
-                if hasattr(l, "__getitem__") is False:
+                if not hasattr(l, "__getitem__"):
                     raise ValueError("Point: bad args")
                 if len(l) != 2:
                     raise ValueError("Point: bad seq len")
@@ -10891,7 +10891,7 @@ class Quad:
             if isinstance(l, mupdf.FzQuad):
                 self.this = l
                 self.ul, self.ur, self.ll, self.lr = Point(l.ul), Point(l.ur), Point(l.ll), Point(l.lr)
-            elif hasattr(l, "__getitem__") is False:
+            elif not hasattr(l, "__getitem__"):
                 raise ValueError("Quad: bad args")
             elif len(l) != 4:
                 raise ValueError("Quad: bad seq len")
@@ -11092,7 +11092,7 @@ class Rect:
     def __eq__(self, rect):
         if not hasattr(rect, "__len__"):
             return False
-        return len(rect) == 4 and bool(self - rect) is False
+        return len(rect) == 4 and not (self - rect)
 
     def __getitem__(self, i):
         return (self.x0, self.y0, self.x1, self.y1)[i]
@@ -12593,7 +12593,7 @@ class TextPage:
         if cb is not None:
             val["width"] = cb.width
             val["height"] = cb.height
-        if sort is True:
+        if sort:
             blocks = val["blocks"]
             blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
             val["blocks"] = blocks
@@ -12659,7 +12659,7 @@ class TextPage:
         if cb is not None:
             val["width"] = cb.width
             val["height"] = cb.height
-        if sort is True:
+        if sort:
             blocks = val["blocks"]
             blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
             val["blocks"] = blocks
@@ -12673,7 +12673,7 @@ class TextPage:
         if cb is not None:
             val["width"] = cb.width
             val["height"] = cb.height
-        if sort is True:
+        if sort:
             blocks = val["blocks"]
             blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
             val["blocks"] = blocks
@@ -12693,7 +12693,7 @@ class TextPage:
         if cb is not None:
             val["width"] = cb.width
             val["height"] = cb.height
-        if sort is True:
+        if sort:
             blocks = val["blocks"]
             blocks.sort(key=lambda b: (b["bbox"][3], b["bbox"][0]))
             val["blocks"] = blocks
@@ -12708,7 +12708,7 @@ class TextPage:
 
     def extractText(self, sort=False) -> str:
         """Return simple, bare text on the page."""
-        if sort is False:
+        if not sort:
             return self._extractText(0)
         blocks = self.extractBLOCKS()[:]
         blocks.sort(key=lambda b: (b[3], b[0]))
