@@ -8314,7 +8314,7 @@ class Page:
         #-------------------------------------------------------------
         resources = mupdf.pdf_dict_get_inheritable(tpageref, PDF_NAME('Resources'))
         if not resources.m_internal:
-            resources = mupdf.pdf_dict_put_dict(tpageref,PDF_NAME('Resources'),5) 
+            resources = mupdf.pdf_dict_put_dict(tpageref,PDF_NAME('Resources'),5)
         subres = mupdf.pdf_dict_get(resources, PDF_NAME('XObject'))
         if not subres.m_internal:
             subres = mupdf.pdf_dict_put_dict(resources, PDF_NAME('XObject'), 5)
@@ -9199,7 +9199,7 @@ class Page:
                 pass
             
         for xref, rect in widgets:  # modify field rectangles
-            widget = page.load_widget(xref)
+            widget = self.load_widget(xref)
             widget.rect = r
             widget.update()
         return rot  # the inverse of the generated derotation matrix
@@ -13487,6 +13487,13 @@ TEXT_OUTPUT_JSON = 2
 TEXT_OUTPUT_XML = 3
 TEXT_OUTPUT_XHTML = 4
 
+TEXT_STRIKEOUT = 1
+TEXT_UNDERLINE = 2
+TEXT_SYNTHETIC = 4
+TEXT_BOLD = 8
+TEXT_FILLED = 16
+TEXT_STROKED = 32
+
 TEXT_PRESERVE_LIGATURES = mupdf.FZ_STEXT_PRESERVE_LIGATURES
 TEXT_PRESERVE_WHITESPACE = mupdf.FZ_STEXT_PRESERVE_WHITESPACE
 TEXT_PRESERVE_IMAGES = mupdf.FZ_STEXT_PRESERVE_IMAGES
@@ -13507,6 +13514,7 @@ else:
     TEXT_COLLECT_VECTORS = 1024
     TEXT_IGNORE_ACTUALTEXT = 2048
     TEXT_STEXT_SEGMENT = 4096
+TEXT_COLLECT_FLAGS = 32768  # mupdf.FZ_STEXT_COLLECT_FLAGS
 
 TEXTFLAGS_WORDS = (0
         | TEXT_PRESERVE_LIGATURES
@@ -16509,6 +16517,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags):
         font_flags = JM_char_font_flags(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)), line, ch)
         origin = mupdf.FzPoint(ch.m_internal.origin)
         style.size = ch.m_internal.size
+        style.font_flags = font_flags
         style.flags = ch.m_internal.flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         if THIS_MUPDF >= MUPDF1250:
@@ -16519,7 +16528,8 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags):
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
 
-        if (0
+        if (
+            0
             or style.size != old_style.size
             or style.bidi != old_style.bidi
             or style.font_flags != old_style.font_flags
@@ -16528,7 +16538,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags):
             or style.color != old_style.color
             or style.opacity != old_style.opacity
             or style.font != old_style.font
-            ):
+        ):
             if old_style.size > 0:
                 # not first one, output previous
                 if raw:
@@ -16562,24 +16572,24 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags):
             span["descender"] = desc
             span["opacity"] = style.opacity
             # add more keys depending on MuPDF version
-            if THIS_MUPDF >= MUPDF1250:  #separate if because not flags-dependent
+            if THIS_MUPDF >= MUPDF1250:  # separate if because not flags-dependent
                 span["opacity"] = style.opacity
                 # rest of keys only make sense for FZ_STEXT_COLLECT_FLAGS
-                if dev_flags & mupdf.FZ_STEXT_COLLECT_FLAGS:
-                    span["underline"] = bool(style.flags & mupdf.FZ_STEXT_UNDERLINE)
-                    span["strikeout"] = bool(style.flags & mupdf.FZ_STEXT_STRIKEOUT)
+                if dev_flags & TEXT_COLLECT_FLAGS:
+                    span["underline"] = bool(style.flags & TEXT_UNDERLINE)
+                    span["strikeout"] = bool(style.flags & TEXT_STRIKEOUT)
                 else:
                     span["underline"] = None
                     span["strikeout"] = None
 
             if THIS_MUPDF > MUPDF1251:
-                if dev_flags & mupdf.FZ_STEXT_COLLECT_FLAGS:
-                    span["bold"] = bool(style.flags & mupdf.FZ_STEXT_BOLD)
+                if dev_flags & TEXT_COLLECT_FLAGS:
+                    span["bold"] = bool(style.flags & TEXT_BOLD)
                 else:
                     span["bold"] = None
-                span["filled"] = bool(style.flags & mupdf.FZ_STEXT_FILLED)
-                span["stroked"] = bool(style.flags & mupdf.FZ_STEXT_STROKED)
-                span["clipped"] = bool(style.flags & mupdf.FZ_STEXT_CLIPPED)
+                span["filled"] = bool(style.flags & TEXT_FILLED)
+                span["stroked"] = bool(style.flags & TEXT_STROKED)
+                span["clipped"] = bool(style.flags & TEXT_CLIPPED)
 
             # Need to be careful here - doing 'old_style=style' does a shallow
             # copy, but we need to keep old_style as a distinct instance.
@@ -16594,7 +16604,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect, dev_flags):
             char_dict[dictkey_origin] = JM_py_from_point( ch.m_internal.origin)
             char_dict[dictkey_bbox] = JM_py_from_rect(r)
             if THIS_MUPDF >= MUPDF1250:
-                char_dict["synthetic"] = bool(ch.m_internal.flags & mupdf.FZ_STEXT_SYNTHETIC)
+                char_dict["synthetic"] = bool(ch.m_internal.flags & TEXT_SYNTHETIC)
             char_dict[dictkey_c] = chr(ch.m_internal.c)
 
             if char_list is None:

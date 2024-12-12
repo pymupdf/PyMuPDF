@@ -3125,7 +3125,7 @@ mupdf::FzRect JM_make_spanlist(
                 DICT_SETITEMSTR_DROP(span, "opacity", Py_BuildValue("f", style.opacity));
             #endif
 
-            // rest of keys only make sense if FZ_STEXT_COLLECT_FLAGS was set
+            // rest of keys only make sense if FZ_STEXT_COLLECT_FLAGS (32768) was set
             #if (THIS_MUPDF >= MUPDF1250)
                 if (dev_flags & 32768)
                 {
@@ -3139,9 +3139,9 @@ mupdf::FzRect JM_make_spanlist(
                 }
             #endif
             #if (THIS_MUPDF > MUPDF1251)
-                if (dev_flags & FZ_STEXT_COLLECT_FLAGS)
+                if (dev_flags & 32768) // FZ_STEXT_COLLECT_FLAGS = 32768
                 {
-                    DICT_SETITEMSTR_DROP(span, "bold", JM_BOOL(style.flags & FZ_STEXT_BOLD));
+                    DICT_SETITEMSTR_DROP(span, "bold", JM_BOOL(style.flags & 8)); // FZ_STEXT_BOLD = 8
                 }
                 else
                 {
