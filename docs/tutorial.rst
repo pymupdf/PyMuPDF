@@ -251,7 +251,7 @@ Use one of the following strings for *opt* to obtain different formats [#f2]_:
 
 * **"xml"**: contains no images, but full position and font information down to each single text character. Use an XML module to interpret.
 
-To give you an idea about the output of these alternatives, we did text example extracts. See :ref:`Appendix2`.
+To give you an idea about the output of these alternatives, we did text example extracts. See :ref:`Appendix1`.
 
 Searching for Text
 -------------------
