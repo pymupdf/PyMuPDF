@@ -13619,6 +13619,7 @@ dictkey_ext = "ext"
 dictkey_filename = "filename"
 dictkey_fill = "fill"
 dictkey_flags = "flags"
+dictkey_char_flags = "char_flags"
 dictkey_font = "font"
 dictkey_glyph = "glyph"
 dictkey_height = "height"
@@ -14669,7 +14670,9 @@ def JM_char_bbox(line, ch):
 
 
 def JM_char_font_flags(font, line, ch):
-    flags = detect_super_script(line, ch)
+    flags = 0
+    if line and ch:
+        flags += detect_super_script(line, ch)
     flags += mupdf.fz_font_is_italic(font) * TEXT_FONT_ITALIC
     flags += mupdf.fz_font_is_serif(font) * TEXT_FONT_SERIFED
     flags += mupdf.fz_font_is_monospaced(font) * TEXT_FONT_MONOSPACED
@@ -16391,6 +16394,8 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             if rhs:
                 self.size = rhs.size
                 self.flags = rhs.flags
+                if mupdf_version_tuple >= (1, 25, 2):
+                    self.char_flags = rhs.char_flags
                 self.font = rhs.font
                 self.color = rhs.color
                 self.asc = rhs.asc
@@ -16398,12 +16403,18 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             else:
                 self.size = -1
                 self.flags = -1
+                if mupdf_version_tuple >= (1, 25, 2):
+                    self.char_flags = -1
                 self.font = ''
                 self.color = -1
                 self.asc = 0
                 self.desc = 0
         def __str__(self):
-            return f'{self.size} {self.flags} {self.font} {self.color} {self.asc} {self.desc}'
+            ret = f'{self.size} {self.flags}'
+            if mupdf_version_tuple >= (1, 25, 2):
+                ret += f' {self.char_flags}'
+            ret += f' {self.font} {self.color} {self.asc} {self.desc}'
+            return ret
 
     old_style = char_style()
     style = char_style()
@@ -16418,10 +16429,19 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 ):
             continue
 
+        # Info from:
+        # detect_super_script()
+        # fz_font_is_italic()
+        # fz_font_is_serif()
+        # fz_font_is_monospaced()
+        # fz_font_is_bold()
+        
         flags = JM_char_font_flags(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)), line, ch)
         origin = mupdf.FzPoint(ch.m_internal.origin)
         style.size = ch.m_internal.size
         style.flags = flags
+        if mupdf_version_tuple >= (1, 25, 2):
+            style.char_flags = ch.m_internal.flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         if mupdf_version_tuple >= (1, 25):
             style.color = ch.m_internal.argb
@@ -16432,6 +16452,10 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
 
         if (style.size != old_style.size
                 or style.flags != old_style.flags
+                or (mupdf_version_tuple >= (1, 25, 2)
+                    and (style.char_flags & ~mupdf.FZ_STEXT_SYNTHETIC)
+                        != (old_style.char_flags & ~mupdf.FZ_STEXT_SYNTHETIC)
+                    )
                 or style.color != old_style.color
                 or style.font != old_style.font
                 ):
@@ -16461,6 +16485,8 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
 
             span[dictkey_size] = style.size
             span[dictkey_flags] = style.flags
+            if mupdf_version_tuple >= (1, 25, 2):
+                span[dictkey_char_flags] = style.char_flags
             span[dictkey_font] = JM_EscapeStrFromStr(style.font)
             span[dictkey_color] = style.color
             span["ascender"] = asc
@@ -18696,7 +18722,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     chars = tuple(chars)
     
     if not space_adv:
-        if not mono:
+        if not (fflags & TEXT_FONT_MONOSPACED):
             c, out_font = mupdf.fz_encode_character_with_fallback( span.font(), 32, 0, 0)
             space_adv = mupdf.fz_advance_glyph(
                     span.font(),

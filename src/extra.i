@@ -43,6 +43,7 @@ otherwise compilation can fail because free() and malloc() are not declared. */
     dictkey_filename = PyUnicode_InternFromString("filename");
     dictkey_fill = PyUnicode_InternFromString("fill");
     dictkey_flags = PyUnicode_InternFromString("flags");
+    dictkey_char_flags = PyUnicode_InternFromString("char_flags");  /* Only used with mupdf >= 1.25.2. */
     dictkey_font = PyUnicode_InternFromString("font");
     dictkey_glyph = PyUnicode_InternFromString("glyph");
     dictkey_height = PyUnicode_InternFromString("height");
@@ -101,6 +102,14 @@ catch(...) {
 
 #include <algorithm>
 #include <float.h>
+
+
+#define MAKE_MUPDF_VERSION_INT(major, minor, patch) ((major << 16) + (minor << 8) + (patch << 0))
+
+#define MUPDF_VERSION_INT MAKE_MUPDF_VERSION_INT(FZ_VERSION_MAJOR, FZ_VERSION_MINOR, FZ_VERSION_PATCH)
+
+#define MUPDF_VERSION_GE(major, minor, patch) \
+        MUPDF_VERSION_INT >= MAKE_MUPDF_VERSION_INT(major, minor, patch)
 
 
 /* Returns equivalent of `repr(x)`. */
@@ -837,6 +846,7 @@ PyObject* dictkey_ext = NULL;
 PyObject* dictkey_filename = NULL;
 PyObject* dictkey_fill = NULL;
 PyObject* dictkey_flags = NULL;
+PyObject* dictkey_char_flags = NULL;
 PyObject* dictkey_font = NULL;
 PyObject* dictkey_glyph = NULL;
 PyObject* dictkey_height = NULL;
@@ -1712,6 +1722,29 @@ static const char* JM_font_name(fz_font* font)
     return s + 1;
 }
 
+static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
+{
+    if (line->wmode == 0 && line->dir.x == 1 && line->dir.y == 0)
+    {
+        return ch->origin.y < line->first_char->origin.y - ch->size * 0.1f;
+    }
+    return 0;
+}
+
+static int JM_char_font_flags(fz_font *font, fz_stext_line *line, fz_stext_char *ch)
+{
+    int flags = 0;
+    if (line && ch)
+    {
+        flags += detect_super_script(line, ch) * TEXT_FONT_SUPERSCRIPT;
+    }
+    flags += mupdf::ll_fz_font_is_italic(font) * TEXT_FONT_ITALIC;
+    flags += mupdf::ll_fz_font_is_serif(font) * TEXT_FONT_SERIFED;
+    flags += mupdf::ll_fz_font_is_monospaced(font) * TEXT_FONT_MONOSPACED;
+    flags += mupdf::ll_fz_font_is_bold(font) * TEXT_FONT_BOLD;
+    return flags;
+}
+
 static void jm_trace_text_span(
         jm_tracedraw_device* dev,
         fz_text_span* span,
@@ -1827,7 +1860,7 @@ static void jm_trace_text_span(
     }
     if (!space_adv)
     {
-        if (!mono)
+        if (!(fflags & TEXT_FONT_MONOSPACED))
         {
             fz_font* out_font = nullptr;
             space_adv = mupdf::ll_fz_advance_glyph(
@@ -2957,25 +2990,6 @@ PyObject* get_cdrawings(mupdf::FzPage& page, PyObject *extended=NULL, PyObject *
 }
 
 
-static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
-{
-    if (line->wmode == 0 && line->dir.x == 1 && line->dir.y == 0)
-    {
-        return ch->origin.y < line->first_char->origin.y - ch->size * 0.1f;
-    }
-    return 0;
-}
-
-static int JM_char_font_flags(fz_font *font, fz_stext_line *line, fz_stext_char *ch)
-{
-    int flags = detect_super_script(line, ch);
-    flags += mupdf::ll_fz_font_is_italic(font) * TEXT_FONT_ITALIC;
-    flags += mupdf::ll_fz_font_is_serif(font) * TEXT_FONT_SERIFED;
-    flags += mupdf::ll_fz_font_is_monospaced(font) * TEXT_FONT_MONOSPACED;
-    flags += mupdf::ll_fz_font_is_bold(font) * TEXT_FONT_BOLD;
-    return flags;
-}
-
 //---------------------------------------------------------------------------
 // APPEND non-ascii runes in unicode escape format to fz_buffer
 //---------------------------------------------------------------------------
@@ -3027,6 +3041,20 @@ mupdf::FzRect JM_make_spanlist(
     {
         float size = -1;
         int flags = -1;
+        
+        #if MUPDF_VERSION_GE(1, 25, 2)
+        /* From mupdf:include/mupdf/fitz/structured-text.h:fz_stext_char::flags, which
+        uses anonymous enum values:
+        FZ_STEXT_STRIKEOUT = 1,
+        FZ_STEXT_UNDERLINE = 2,
+        FZ_STEXT_SYNTHETIC = 4,
+        FZ_STEXT_FILLED = 16,
+        FZ_STEXT_STROKED = 32,
+        FZ_STEXT_CLIPPED = 64
+        */
+        int char_flags;
+        #endif
+        
         const char *font = "";
         unsigned int color = -1;
         float asc = 0;
@@ -3042,12 +3070,22 @@ mupdf::FzRect JM_make_spanlist(
         {
             continue;
         }
+        /* Info from:
+        detect_super_script()
+        fz_font_is_italic()
+        fz_font_is_serif()
+        fz_font_is_monospaced()
+        fz_font_is_bold()
+        */
         int flags = JM_char_font_flags( ch.m_internal->font, line.m_internal, ch.m_internal);
         fz_point origin = ch.m_internal->origin;
         style.size = ch.m_internal->size;
         style.flags = flags;
+        #if MUPDF_VERSION_GE(1, 25, 2)
+        style.char_flags = ch.m_internal->flags;
+        #endif
         style.font = JM_font_name(ch.m_internal->font);
-        #if (FZ_VERSION_MAJOR > 1 || (FZ_VERSION_MAJOR == 1 && FZ_VERSION_MINOR >= 25))
+        #if MUPDF_VERSION_GE(1, 25, 0)
             style.color = ch.m_internal->argb;
         #else
             style.color = ch.m_internal->color;
@@ -3058,6 +3096,9 @@ mupdf::FzRect JM_make_spanlist(
         if (0
                 || style.size != old_style.size
                 || style.flags != old_style.flags
+                #if MUPDF_VERSION_GE(1, 25, 2)
+                || (style.char_flags & ~FZ_STEXT_SYNTHETIC) != (old_style.char_flags & ~FZ_STEXT_SYNTHETIC)
+                #endif
                 || style.color != old_style.color
                 || strcmp(style.font, old_style.font) != 0
                 )
@@ -3095,6 +3136,9 @@ mupdf::FzRect JM_make_spanlist(
 
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
+            #if MUPDF_VERSION_GE(1, 25, 2)
+            DICT_SETITEM_DROP(span, dictkey_char_flags, Py_BuildValue("i", style.char_flags));
+            #endif
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
             DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
             DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", asc));

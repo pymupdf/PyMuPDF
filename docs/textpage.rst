@@ -288,6 +288,7 @@ ascender        ascender of the font *(float)*
 descender       descender of the font *(float)*
 size            font size *(float)*
 flags           font characteristics *(int)*
+char_flags      char characteristics *(int)*
 color           text color in sRGB format *(int)*
 text            (only for :meth:`extractDICT`) text *(str)*
 chars           (only for :meth:`extractRAWDICT`) *list* of character dictionaries
@@ -334,6 +335,21 @@ Test these characteristics like so:
 >>> # etc.
 
 Bits 1 thru 4 are font properties, i.e. encoded in the font program. Please note, that this information is not necessarily correct or complete: fonts quite often contain wrong data here.
+
+*"char_flags"* is an integer, which represents extra character properties:
+
+* bit 0: strikeout.
+* bit 1: underline.
+* bit 2: synthetic.
+* bit 3: filled.
+* bit 4: stroked.
+* bit 5: clipped.
+
+For example if not filled and not stroked (`if not (char_flags & 2**3 & 2**4):
+...`) then the text will be invisible.
+
+(`char_flags` is new in v1.25.2.)
+
 
 Character Dictionary for :meth:`extractRAWDICT`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
