@@ -288,7 +288,7 @@ def test_markdown():
     text = (
         "|Header1|Header2|Header3|\n"
         "|---|---|---|\n"
-        "|Col11 Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
+        "|Col11<br>Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
         "|Col13|Col23|Col34<br>Col35|\n"
         "|Col14|Col24|Col36|\n"
         "|Col15|Col25<br>Col26||\n\n"
