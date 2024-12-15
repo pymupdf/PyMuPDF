@@ -114,7 +114,7 @@ def test_config():
 
 
 def test_glyphnames():
-    name = "infinity"
+    name = "INFINITY"
     infinity = pymupdf.glyph_name_to_unicode(name)
     assert pymupdf.unicode_to_glyph_name(infinity) == name
 
