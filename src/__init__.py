@@ -9793,6 +9793,16 @@ class Pixmap:
         Pixmap(colorspace, width, height, samples, alpha) - from samples data.
         Pixmap(PDFdoc, xref) - from an image at xref in a PDF document.
         """
+        # Cache for property `self.samples_mv`. Set here so __del_() sees it if
+        # we raise.
+        #
+        self._samples_mv = None
+
+        # 2024-01-16: Experimental support for a memory-view of the underlying
+        # data.  Doesn't seem to make much difference to Pixmap.set_pixel() so
+        # not currently used.
+        self._memory_view = None
+        
         if 0:
             pass
 
@@ -10054,14 +10064,6 @@ class Pixmap:
             for arg in args:
                 text += f'    {type(arg)}: {arg}\n'
             raise Exception( text)
-
-        # 2024-01-16: Experimental support for a memory-view of the underlying
-        # data.  Doesn't seem to make much difference to Pixmap.set_pixel() so
-        # not currently used.
-        self._memory_view = None
-        
-        # Cache for property `self.samples_mv`.
-        self._samples_mv = None
 
     def __len__(self):
         return self.size
@@ -10351,6 +10353,10 @@ class Pixmap:
         if self._samples_mv is None:
             self._samples_mv = mupdf.fz_pixmap_samples_memoryview(self.this)
         return self._samples_mv
+    
+    def _samples_mv_release(self):
+        if self._samples_mv:
+            self._samples_mv.release()
 
     @property
     def samples_ptr(self):
@@ -10583,6 +10589,7 @@ class Pixmap:
         mupdf.fz_subsample_pixmap( self.this, factor)
         # Pixmap has changed so clear our memory view.
         self._memory_view = None
+        self._samples_mv_release()
 
     @property
     def size(self):
