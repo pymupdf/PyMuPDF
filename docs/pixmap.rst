@@ -546,6 +546,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          367 ns ± 1.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
          In [4]: %timeit len(pix.samples)
          3.52 ms ± 57.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+      
+      After the Pixmap has been destroyed, any attempt to use the memoryview
+      will fail with ValueError.
 
       :type: memoryview
 
@@ -559,6 +562,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          img = QtGui.QImage(pix.samples_ptr, pix.width, pix.height, format) # (2)
 
       Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because it avoids an additional copy of the pixel area.
+      
+      Warning: after the Pixmap has been destroyed, the Python pointer will be
+      invalid and attempting to use it may crash the Python interpreter.
 
       :type: int
 
