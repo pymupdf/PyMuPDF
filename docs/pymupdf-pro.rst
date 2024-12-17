@@ -132,6 +132,20 @@ Initialize |PyMuPDF Pro| with a key as follows:
 This will allow you to evaluate the product for a limited time. If you want to use |PyMuPDF Pro| after this time you should then `enquire about obtaining a commercial license <https://artifex.com/products/pymupdf-pro/>`_.
 
 
+Fonts
+-----------------------
+
+By default `pymupdf.pro.unlock()` searches for all installed font directories.
+
+This can be controlled with keyword-only args:
+
+* `fontpath`: specific font directories, either as a list/tuple or `os.sep`-separated string.
+  If None (the default), we use `os.environ['PYMUPDFPRO_FONT_PATH']` if set.
+* `fontpath_auto`: Whether to append system font directories.
+  If None (the default) we use true if `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` is '1'.
+  If true we append all system font directories.
+
+Function `pymupdf.pro.get_fontpath()` returns a tuple of all font directories used by `unlock()`.
 
 
 .. raw:: html
