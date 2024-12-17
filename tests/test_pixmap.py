@@ -428,3 +428,21 @@ def test_3854():
         assert rms < 1
     else:
         assert rms == 0
+
+
+def test_4155():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3854.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap()
+        mv = pixmap.samples_mv
+        mvb1 = mv.tobytes()
+    del page
+    del pixmap
+    try:
+        mvb2 = mv.tobytes()
+    except ValueError as e:
+        print(f'Received exception: {e}')
+        assert 'operation forbidden on released memoryview object' in str(e)
+    else:
+        assert 0, f'Did not receive expected exception when using defunct memoryview.'

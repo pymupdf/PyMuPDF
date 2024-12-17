@@ -10059,6 +10059,9 @@ class Pixmap:
         # data.  Doesn't seem to make much difference to Pixmap.set_pixel() so
         # not currently used.
         self._memory_view = None
+        
+        # Cache for property `self.samples_mv`.
+        self._samples_mv = None
 
     def __len__(self):
         return self.size
@@ -10339,7 +10342,13 @@ class Pixmap:
         '''
         Pixmap samples memoryview.
         '''
-        return mupdf.fz_pixmap_samples_memoryview(self.this)
+        # We remember the returned memoryview so that our `__del__()` can
+        # release it; otherwise accessing it after we have been destructed will
+        # fail, possibly crashing Python; this is #4155.
+        #
+        if self._samples_mv is None:
+            self._samples_mv = mupdf.fz_pixmap_samples_memoryview(self.this)
+        return self._samples_mv
 
     @property
     def samples_ptr(self):
@@ -10625,6 +10634,10 @@ class Pixmap:
 
     width  = w
     height = h
+    
+    def __del__(self):
+        if self._samples_mv:
+            self._samples_mv.release()
 
 
 del Point
