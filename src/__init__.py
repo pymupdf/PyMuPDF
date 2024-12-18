@@ -15003,7 +15003,7 @@ def JM_create_widget(doc, page, type, fieldname):
             sigflags = old_sigflags | (SigFlag_SignaturesExist | SigFlag_AppendOnly)
             mupdf.pdf_dict_putl(
                     mupdf.pdf_trailer(doc),
-                    mupdf.pdf_new_nt(sigflags),
+                    mupdf.pdf_new_int(sigflags),
                     PDF_NAME('Root'),
                     PDF_NAME('AcroForm'),
                     PDF_NAME('SigFlags'),
