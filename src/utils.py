@@ -5660,7 +5660,7 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
                 oldfont_path,
                 "--retain-gids",
                 f"--output-file={newfont_path}",
-                "--layout-features='*'",
+                "--layout-features=*",
                 "--passthrough-tables",
                 "--ignore-missing-glyphs",
                 "--ignore-missing-unicodes",
