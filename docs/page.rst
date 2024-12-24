@@ -106,6 +106,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.recolor`               PDF only: change the colorspace of objects
 :meth:`Page.remove_rotation`       PDF only: set page rotation to 0
 :meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
@@ -491,7 +492,7 @@ In a nutshell, this is what you can do with PyMuPDF:
            * ``bbox``: the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
            * ``cells``: bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
            * ``extract()``: this method returns the text content of each table cell as a list of list of strings.
-           * ``to_markdown()``: this method returns the table as a **string in markdown format** (compatible to Github). Supporting viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye.
+           * ``to_markdown()``: this method returns the table as a **string in markdown format** compatible to Github. Supporting viewers can render the string as a table. This output is optimized for **small token sizes**, which is especially beneficial for LLM/RAG feeds. Pandas DataFrame (see method `to_pandas()` below) also offers a markdown output. While better readable for the human eye, it generally is a larger string than produced by the native method.
            * `to_pandas()`: this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. DataFrames are very versatile objects allowing a plethora of table manipulation methods and outputs to almost 20 well-known formats, among them Excel files, CSV, JSON, markdown-formatted tables and more. `DataFrame.to_markdown()` generates a Github-compatible markdown format optimized for human readability. This method however requires the package `tabulate <https://pypi.org/project/tabulate/>`_ to be installed in addition to pandas itself.
            * ``header``: a `TableHeader` object containing header information of the table.
            * ``col_count``: an integer containing the number of table columns.
@@ -503,11 +504,11 @@ In a nutshell, this is what you can do with PyMuPDF:
            * ``bbox``: the bounding box of the header.
            * `cells`: a list of bounding boxes containing the name of the respective column.
            * `names`: a list of strings containing the text of each of the cell bboxes. They represent the column names -- which are used when exporting the table to pandas DataFrames, markdown, etc.
-           * `external`: a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if `external` is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first table row is the header.
+           * `external`: a bool indicating whether the header bbox is outside the table body (`True`) or not. Table headers are never identified by the `TableFinder` logic. Therefore, if `external` is true, then the header cells are not part of any cell identified by `TableFinder`. If `external == False`, then the first original table row is the header.
 
          Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
 
-         .. caution:: The lifetime of the `TableFinder` object, as well as that of all its tables **equals the lifetime of the page**. If the page object is deleted or reassigned, all tables are no longer valid.
+         .. caution:: The lifetime of the `TableFinder` object, as well as that of all its tables **equals the lifetime of the page**. If the page object is deleted or reassigned, all **table objects are no longer valid.**
          
             The only way to keep table content beyond the page's availability is to **extract it** via methods `Table.to_markdown()`, `Table.to_pandas()` or a copy of `Table.extract()` (e.g. `Table.extract()[:]`).
 
@@ -535,24 +536,33 @@ In a nutshell, this is what you can do with PyMuPDF:
          There is also the `pdf2docx extract tables method`_ which is capable of table extraction if you prefer.
 
 
-   .. method:: add_stamp_annot(rect, stamp=0)
+   .. method:: add_stamp_annot(rect, stamp=0, *, image=None)
 
-      PDF only: Add a "rubber stamp" like annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.).
+      PDF only: Add a "rubber stamp"-like annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.). Instead of text, an image may also be shown.
 
       :arg rect_like rect: rectangle where to place the annotation.
-
       :arg int stamp: id number of the stamp text. For available stamps see :ref:`StampIcons`.
+      :arg multiple image: if not ``None``, an image specification is assumed and the ``stamp`` parameter will be ignored. Valid argument types are
+      
+         * a string specifying an image file path,
+         * a ``bytes``, ``bytearray`` or ``io.BytesIO`` object for an image in memory, and
+         * a :ref:`Pixmap`.
+         
+      1. **Text-based stamps**
 
-      .. note::
-
-         * The stamp's text and its border line will automatically be sized and be put horizontally and vertically centered in the given rectangle. :attr:`Annot.rect` is automatically calculated to fit the given **width** and will usually be smaller than this parameter.
+         * :attr:`Annot.rect` is automatically calculated as the largest rectangle with an aspect ratio of ``width/height = 3.8`` that fits in the provided ``rect``. Its position is vertically and horizontally centered.
          * The font chosen is "Times Bold" and the text will be upper case.
-         * The appearance can be changed using :meth:`Annot.set_opacity` and by setting the "stroke" color (no "fill" color supported).
-         * This can be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insert_image` for your target PDF.
+         * The appearance can be modified using :meth:`Annot.set_opacity` and by setting the "stroke" color. By PDF specification, stamp annotations have no "fill" color.
 
+         .. image:: images/img-stampannot.*
 
-      .. image:: images/img-stampannot.*
-         :scale: 80
+      2. **Image-based stamps**
+
+         * At first, a rectangle is computed like for text stamps: vertically and horizontally centered, aspect ratio ``width/height = 3.8``.
+         * Into that rectangle, the image will be inserted aligned left and vertically centered. The resulting image boundary box becomes :attr:`Annot.rect`.
+         * The annotation can be modified via :meth:`Annot.set_opacity`. This is a way to display images without alpha channel with transparency. Setting colors has no effect on image stamps.
+         
+         .. image:: images/img-imagestamp.*
 
    .. method:: add_widget(widget)
 
@@ -1923,6 +1933,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Set the rotation of the page.
 
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
+
+   .. method:: recolor(components=1)
+
+      PDF only: Change the colorspace components of all objects on page.
+
+      :arg int components: The desired count of color components. Must be one of 1, 3 or 4, which results in color spaces DeviceGray, DeviceRGB or DeviceCMYK respectively. The method affects text, images and vector graphics. For instance, with the default value 1, a page will be converted to gray-scale.
+
+      The changes made are **permanent** and cannot be reverted.
 
    .. method:: remove_rotation()
 

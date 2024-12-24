@@ -16,13 +16,15 @@ The |PyMuPDF4LLM| API
 
     Prints the version of the library.
 
-.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, hdr_info: Any = None, write_images: bool = False, embed_images: bool = False, dpi: int = 150, image_path="", image_format="png", image_size_limit=0.05, force_text=True, margins=(0, 50, 0, 50), page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None, ignore_code: bool = False, extract_words: bool = False, show_progress: bool = True) -> str | list[dict]
+.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, filename=None, hdr_info: Any = None, write_images: bool = False, embed_images: bool = False, dpi: int = 150, image_path="", image_format="png", image_size_limit=0.05, force_text=True, margins=(0, 50, 0, 50), page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None, ignore_code: bool = False, extract_words: bool = False, show_progress: bool = True) -> str | list[dict]
 
     Read the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that there exists **support for building page chunks** from the |Markdown|  text.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| Document (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| Document.
 
     :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted all pages are processed.
+
+    :arg filename: optional. Use this if you want to provide or override the file name. This may especially be useful when the document is opened from memory streams (which have no name and where thus ``doc.name`` is the empty string). This parameter will be used in all places where normally ``doc.name`` would have been used.
 
     :arg hdr_info: optional. Use this if you want to provide your own header detection logic. This may be a callable or an object having a method named `get_header_id`. It must accept a text span (a span dictionary as contained in :meth:`~.extractDICT`) and a keyword parameter "page" (which is the owning :ref:`Page <page>` object). It must return a string "" or up to 6 "#" characters followed by 1 space. If omitted, a full document scan will be performed to find the most popular font sizes and derive header levels based on them. To completely avoid this behavior specify `hdr_info=lambda s, page=None: ""` or `hdr_info=False`.
 

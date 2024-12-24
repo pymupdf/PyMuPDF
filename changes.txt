@@ -22,6 +22,13 @@ Change Log
   * **Fixed** `4004 <https://github.com/pymupdf/PyMuPDF/issues/4004>`_: Segmentation Fault When Updating PDF Form Field Value
   * **Fixed** `3751 <https://github.com/pymupdf/PyMuPDF/issues/3751>`_: apply_redactions causes part of the page content to be hidden / transparent
 
+* Other:
+
+  * New Page method "recolor" which changes the color component count of text, image and vector graphic objects.
+  * New Document method "recolor" invokes the same-named "Page" method for all pages in the PDF.
+  * Image support for "Stamp" annotations.
+  * Accessing the object definition for an (orphaned) cross reference number no longer raises an exception.
+
 
 **Changes in version 1.24.14 (2024-11-19)**
 
