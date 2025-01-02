@@ -3483,6 +3483,9 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
             buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, fz_default_color_params);
             ext = "png";
         }
+        if (n == 4 && strcmp(ext, "jpeg") == 0)  { // JPEG CMYK needs another step
+            buf = freebuf = fz_new_buffer_from_image_as_jpeg(ctx, image, fz_default_color_params, 95, 1);        
+        }
         bytes = JM_BinFromBuffer(buf);
     }
     fz_always(ctx) {

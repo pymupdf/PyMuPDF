@@ -4208,6 +4208,7 @@ class Document:
             raise ValueError( "not an image")
 
         o = mupdf.pdf_dict_geta(obj, PDF_NAME('SMask'), PDF_NAME('Mask'))
+        cs_string = mupdf.pdf_dict_geta(obj, PDF_NAME('ColorSpace'), PDF_NAME('CS')).pdf_to_name()
         if o.m_internal:
             smask = mupdf.pdf_to_num(o)
 
@@ -4248,6 +4249,12 @@ class Document:
                         mupdf.FzColorParams(mupdf.fz_default_color_params),
                         )
                 ext = "png"
+        elif ext == "jpeg" and cs_string == "DeviceCMYK":
+            # avoid incorrect JPG by inverting pixel color
+            img = mupdf.pdf_load_image(pdf, obj)
+            res = mupdf.fz_new_buffer_from_image_as_jpeg(
+                        img, mupdf.FzColorParams(mupdf.fz_default_color_params),95,1)
+            ext = "jpeg"
         else:
             img = mupdf.fz_new_image_from_buffer(res)
 
@@ -16555,6 +16562,10 @@ def JM_make_image_block(block, block_dict):
     else:
         buf = mupdf.fz_new_buffer_from_image_as_png(image, mupdf.FzColorParams())
         ext = "png"
+    if ext == "jpeg" and n == 4:  # JPEG and DeviceCMYK
+        buf = mupdf.fz_new_buffer_from_image_as_jpeg(
+                  image,mupdf.FzColorParams(mupdf.fz_default_color_params),
+                  95, 1)
     bytes_ = JM_BinFromBuffer(buf)
     block_dict[ dictkey_width] = w
     block_dict[ dictkey_height] = h
