@@ -4209,6 +4209,7 @@ class Document:
 
         o = mupdf.pdf_dict_geta(obj, PDF_NAME('SMask'), PDF_NAME('Mask'))
         cs_string = mupdf.pdf_dict_geta(obj, PDF_NAME('ColorSpace'), PDF_NAME('CS')).pdf_to_name()
+
         if o.m_internal:
             smask = mupdf.pdf_to_num(o)
 
@@ -4216,17 +4217,21 @@ class Document:
             img_type = mupdf.FZ_IMAGE_JPX
             res = mupdf.pdf_load_stream(obj)
             ext = "jpx"
+
         if JM_is_jbig2_image(obj):
             img_type = mupdf.FZ_IMAGE_JBIG2
             res = mupdf.pdf_load_stream(obj)
             ext = "jb2"
-        res = mupdf.pdf_load_raw_stream(obj)
+
+        # if not already determined here, load the raw stream for recognition
         if img_type == mupdf.FZ_IMAGE_UNKNOWN:
             res = mupdf.pdf_load_raw_stream(obj)
             _, c = mupdf.fz_buffer_storage(res)
             #log( '{=_ c}')
             img_type = mupdf.fz_recognize_image_format(c)
             ext = JM_image_extension(img_type)
+
+        # the image type may still be unknown here:
         if img_type == mupdf.FZ_IMAGE_UNKNOWN:
             res = None
             img = mupdf.pdf_load_image(pdf, obj)
