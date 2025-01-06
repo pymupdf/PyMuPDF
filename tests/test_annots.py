@@ -228,7 +228,9 @@ def test_1645():
     '''
     path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
 
-    if pymupdf.mupdf_version_tuple >= (1, 25):
+    if pymupdf.mupdf_version_tuple >= (1, 26):
+        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.26.pdf')
+    elif pymupdf.mupdf_version_tuple >= (1, 25):
         path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.25.pdf')
     elif pymupdf.mupdf_version_tuple >= (1, 24, 2):
         path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.2.pdf')
