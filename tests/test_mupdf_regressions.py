@@ -1,6 +1,6 @@
 import pymupdf
 import os
-from gentle_compare import gentle_compare
+import gentle_compare
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 
@@ -13,7 +13,7 @@ def test_707448():
     words0 = page.get_text("words")
     page.clean_contents(sanitize=True)
     words1 = page.get_text("words")
-    assert gentle_compare(words0, words1)
+    assert gentle_compare.gentle_compare(words0, words1)
 
 
 def test_707673():
@@ -30,7 +30,7 @@ def test_707673():
     words0 = page.get_text("words")
     page.clean_contents(sanitize=True)
     words1 = page.get_text("words")
-    ok = gentle_compare(words0, words1)
+    ok = gentle_compare.gentle_compare(words0, words1)
     if pymupdf.mupdf_version_tuple >= (1, 24, 1):
         assert ok
     else:
@@ -49,11 +49,17 @@ def test_707727():
     page.clean_contents(sanitize=True)
     page = doc.reload_page(page)  # required to prevent re-use
     pix1 = page.get_pixmap()
-    ok = pix0.samples == pix1.samples
-    if pymupdf.mupdf_version_tuple > (1, 24, 1):
-        assert ok
+    rms = gentle_compare.pixmaps_rms(pix0, pix1)
+    print(f'{rms=}', flush=1)
+    pix0.save(os.path.normpath(f'{__file__}/../../tests/test_707727_pix0.png'))
+    pix1.save(os.path.normpath(f'{__file__}/../../tests/test_707727_pix1.png'))
+    if pymupdf.mupdf_version_tuple >= (1, 25, 2):
+        # New sanitising gives small fp rounding errors.
+        assert rms < 0.05
+    elif pymupdf.mupdf_version_tuple > (1, 24, 1):
+        assert rms == 0
     else:
-        assert not ok
+        assert rms != 0
     if pymupdf.mupdf_version_tuple <= (1, 24, 1):
         # We expect warnings.
         wt = pymupdf.TOOLS.mupdf_warnings()
@@ -103,7 +109,7 @@ def test_3376():
 
     words1 = page.get_text("words", sort=True)
 
-    ok = gentle_compare(words0_e, words1)
+    ok = gentle_compare.gentle_compare(words0_e, words1)
     if pymupdf.mupdf_version_tuple >= (1, 24, 2):
         assert ok
     else:
