@@ -1378,22 +1378,22 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: get_text(option,*, clip=None, flags=None, textpage=None, sort=False, delimiters=None)
 
-      Retrieves the content of a page in a variety of formats. This is a wrapper for multiple :ref:`TextPage` methods by choosing the output option `opt` as follows:
+      Retrieves the content of a page in a variety of formats. Depending on the ``flags`` value, this may include text, images and several other object types. The method is a wrapper for multiple :ref:`TextPage` methods by choosing the output option `opt` as follows:
 
-      * "text" -- :meth:`TextPage.extractTEXT`, default
-      * "blocks" -- :meth:`TextPage.extractBLOCKS`
-      * "words" -- :meth:`TextPage.extractWORDS`
-      * "html" -- :meth:`TextPage.extractHTML`
-      * "xhtml" -- :meth:`TextPage.extractXHTML`
-      * "xml" -- :meth:`TextPage.extractXML`
-      * "dict" -- :meth:`TextPage.extractDICT`
-      * "json" -- :meth:`TextPage.extractJSON`
-      * "rawdict" -- :meth:`TextPage.extractRAWDICT`
-      * "rawjson" -- :meth:`TextPage.extractRAWJSON`
+      * "text" -- :meth:`TextPage.extractTEXT`, default. Always includes **text only.**
+      * "blocks" -- :meth:`TextPage.extractBLOCKS`. Includes text and **may** include image meta information.
+      * "words" -- :meth:`TextPage.extractWORDS`. Always includes **text only.**
+      * "html" -- :meth:`TextPage.extractHTML`. May include text and images.
+      * "xhtml" -- :meth:`TextPage.extractXHTML`. May include text and images.
+      * "xml" -- :meth:`TextPage.extractXML`. Always includes **text only.**
+      * "dict" -- :meth:`TextPage.extractDICT`. May include text and images.
+      * "json" -- :meth:`TextPage.extractJSON`. May include text and images.
+      * "rawdict" -- :meth:`TextPage.extractRAWDICT`. May include text and images.
+      * "rawjson" -- :meth:`TextPage.extractRAWJSON`. May include text and images.
 
       :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported. If misspelled, option "text" is silently assumed.
 
-      :arg rect-like clip: restrict extracted text to this rectangle. If None, the full page is taken. Has **no effect** for options "html", "xhtml" and "xml".
+      :arg rect-like clip: restrict the extraction to this rectangle. If ``None`` (default), the visible part of the page is taken. Any content (text, images) that is **not fully contained** in ``clip`` will be completely omitted. To avoid clipping altogether use ``clip=pymupdf.INFINITE_RECT()``. Only then the extraction will contain all items. This parameter has **no effect** on options "html", "xhtml" and "xml".
 
       :arg int flags: indicator bits to control whether to include images or how text should be handled with respect to white spaces and :data:`ligatures`. See :ref:`TextPreserve` for available indicators and :ref:`text_extraction_flags` for default settings. (New in v1.16.2)
 
@@ -1663,11 +1663,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: get_image_info(hashes=False, xrefs=False)
 
-      Return a list of meta information dictionaries for all images shown on the page. This works for all document types. Technically, this is a subset of the dictionary output of :meth:`Page.get_text`: the image binary content and any text on the page are ignored.
+      Return a list of meta information dictionaries for all images displayed by the page. This works for all document types.
 
       :arg bool hashes: Compute the MD5 hashcode for each encountered image, which allows identifying image duplicates. This adds the key `"digest"` to the output, whose value is a 16 byte `bytes` object. (New in v1.18.13)
 
-      :arg bool xrefs: **PDF only.** Try to find the :data:`xref` for each image. Implies `hashes=True`. Adds the `"xref"` key to the dictionary. If not found, the value is 0, which means, the image is either "inline" or otherwise undetectable. Please note that this option has an extended response time, because the MD5 hashcode will be computed at least two times for each image with an xref. (New in v1.18.13)
+      :arg bool xrefs: **PDF only.** Try to find the :data:`xref` for each image. Implies `hashes=True`. Adds the `"xref"` key to the dictionary. If not found, the value is 0, which means, the image is either "inline" or its xref is undetectable for some reason. Please note that this option has an extended response time, because the MD5 hashcode will be computed at least two times for each image with an xref. (New in v1.18.13)
 
       :rtype: list[dict]
       :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. In contrast to images included in :meth:`Page.get_text`, image **binary content** is not loaded, which drastically reduces memory usage. The dictionary layout is similar to that of image blocks in `page.get_text("dict")`.
