@@ -4196,8 +4196,7 @@ class Document:
             raise ValueError("document closed or encrypted")
 
         pdf = _as_pdf_document(self)
-        img_type = 0
-        smask = 0
+
         if not _INRANGE(xref, 1, mupdf.pdf_xref_len(pdf)-1):
             raise ValueError( MSG_BAD_XREF)
 
@@ -4210,65 +4209,15 @@ class Document:
         o = mupdf.pdf_dict_geta(obj, PDF_NAME('SMask'), PDF_NAME('Mask'))
         if o.m_internal:
             smask = mupdf.pdf_to_num(o)
-
-        if mupdf.pdf_is_jpx_image(obj):
-            img_type = mupdf.FZ_IMAGE_JPX
-            res = mupdf.pdf_load_stream(obj)
-            ext = "jpx"
-        if JM_is_jbig2_image(obj):
-            img_type = mupdf.FZ_IMAGE_JBIG2
-            res = mupdf.pdf_load_stream(obj)
-            ext = "jb2"
-        res = mupdf.pdf_load_raw_stream(obj)
-        if img_type == mupdf.FZ_IMAGE_UNKNOWN:
-            res = mupdf.pdf_load_raw_stream(obj)
-            _, c = mupdf.fz_buffer_storage(res)
-            #log( '{=_ c}')
-            img_type = mupdf.fz_recognize_image_format(c)
-            ext = JM_image_extension(img_type)
-        if img_type == mupdf.FZ_IMAGE_UNKNOWN:
-            res = None
-            img = mupdf.pdf_load_image(pdf, obj)
-            ll_cbuf = mupdf.ll_fz_compressed_image_buffer(img.m_internal)
-            if (ll_cbuf
-                    and ll_cbuf.params.type not in (
-                        mupdf.FZ_IMAGE_RAW,
-                        mupdf.FZ_IMAGE_FAX,
-                        mupdf.FZ_IMAGE_FLATE,
-                        mupdf.FZ_IMAGE_LZW,
-                        mupdf.FZ_IMAGE_RLD,
-                        )
-                    ):
-                img_type = ll_cbuf.params.type
-                ext = JM_image_extension(img_type)
-                res = mupdf.FzBuffer(mupdf.ll_fz_keep_buffer(ll_cbuf.buffer))
-            else:
-                res = mupdf.fz_new_buffer_from_image_as_png(
-                        img,
-                        mupdf.FzColorParams(mupdf.fz_default_color_params),
-                        )
-                ext = "png"
         else:
-            img = mupdf.fz_new_image_from_buffer(res)
+            smask = 0
 
-        xres, yres = mupdf.fz_image_resolution(img)
-        width = img.w()
-        height = img.h()
-        colorspace = img.n()
-        bpc = img.bpc()
-        cs_name = mupdf.fz_colorspace_name(img.colorspace())
-
+        # load the image
+        img = mupdf.pdf_load_image(pdf, obj)
         rc = dict()
-        rc[ dictkey_ext] = ext
-        rc[ dictkey_smask] = smask
-        rc[ dictkey_width] = width
-        rc[ dictkey_height] = height
-        rc[ dictkey_colorspace] = colorspace
-        rc[ dictkey_bpc] = bpc
-        rc[ dictkey_xres] = xres
-        rc[ dictkey_yres] = yres
-        rc[ dictkey_cs_name] = cs_name
-        rc[ dictkey_image] = JM_BinFromBuffer(res)
+        _make_image_dict(img, rc)
+        rc[dictkey_smask] = smask
+        rc[dictkey_cs_name] = mupdf.fz_colorspace_name(img.colorspace())
         return rc
 
     def ez_save(
@@ -16323,19 +16272,6 @@ def JM_irect_from_py(r):
             f[i] = FZ_MAX_INF_RECT
     return mupdf.fz_make_irect(f[0], f[1], f[2], f[3])
 
-
-def JM_is_jbig2_image(dict_):
-    # fixme: should we remove this function?
-    return 0
-    #filter_ = pdf_dict_get(ctx, dict_, PDF_NAME(Filter));
-    #if (pdf_name_eq(ctx, filter_, PDF_NAME(JBIG2Decode)))
-    #    return 1;
-    #n = pdf_array_len(ctx, filter_);
-    #for (i = 0; i < n; i++)
-    #    if (pdf_name_eq(ctx, pdf_array_get(ctx, filter_, i), PDF_NAME(JBIG2Decode)))
-    #        return 1;
-    #return 0;
-
 def JM_listbox_value( annot):
     '''
     ListBox retrieve value
@@ -16533,38 +16469,52 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
         line_dict[dictkey_spans] = span_list
     return line_rect
 
+def _make_image_dict(img, img_dict):
+    """Populate a dictionary with information extracted from a given image.
+
+    Used by 'Document.extract_image' and by 'JM_make_image_block'.
+    Both of these functions will add some more specific information.
+    """
+    img_type = img.fz_compressed_image_type()
+    ext = JM_image_extension(img_type)
+
+    # compressed image buffer if present, else None
+    ll_cbuf = mupdf.ll_fz_compressed_image_buffer(img.m_internal)
+
+    if (0
+        or not ll_cbuf
+        or img_type in (mupdf.FZ_IMAGE_JBIG2, mupdf.FZ_IMAGE_UNKNOWN)
+        or img_type < mupdf.FZ_IMAGE_BMP
+    ):
+        # not an image with a compressed buffer: convert to PNG
+        res = mupdf.fz_new_buffer_from_image_as_png(
+                    img,
+                    mupdf.FzColorParams(mupdf.fz_default_color_params),
+              )
+        ext = "png"
+    elif ext == "jpeg" and img.n() == 4:
+        # JPEG with CMYK: invert colors
+        res = mupdf.fz_new_buffer_from_image_as_jpeg(
+                    img, mupdf.FzColorParams(mupdf.fz_default_color_params), 95, 1)
+    else:
+        # copy the compressed buffer
+        res = mupdf.FzBuffer(mupdf.ll_fz_keep_buffer(ll_cbuf.buffer))
+
+    bytes_ = JM_BinFromBuffer(res)
+    img_dict[dictkey_width] = img.w()
+    img_dict[dictkey_height] = img.h()
+    img_dict[dictkey_ext] = ext
+    img_dict[dictkey_colorspace] = img.n()
+    img_dict[dictkey_xres] = img.xres()
+    img_dict[dictkey_yres] = img.yres()
+    img_dict[dictkey_bpc] = img.bpc()
+    img_dict[dictkey_size] = len(bytes_)
+    img_dict[dictkey_image] = bytes_
 
 def JM_make_image_block(block, block_dict):
-    image = block.i_image()
-    n = mupdf.fz_colorspace_n(image.colorspace())
-    w = image.w()
-    h = image.h()
-    type_ = mupdf.FZ_IMAGE_UNKNOWN
-    # fz_compressed_image_buffer() is not available because
-    # `fz_compressed_buffer` is not copyable.
-    ll_fz_compressed_buffer = mupdf.ll_fz_compressed_image_buffer(image.m_internal)
-    if ll_fz_compressed_buffer:
-        type_ = ll_fz_compressed_buffer.params.type
-    if type_ < mupdf.FZ_IMAGE_BMP or type_ == mupdf.FZ_IMAGE_JBIG2:
-        type_ = mupdf.FZ_IMAGE_UNKNOWN
-    bytes_ = None
-    if ll_fz_compressed_buffer and type_ != mupdf.FZ_IMAGE_UNKNOWN:
-        buf = mupdf.FzBuffer( mupdf.ll_fz_keep_buffer( ll_fz_compressed_buffer.buffer))
-        ext = JM_image_extension(type_)
-    else:
-        buf = mupdf.fz_new_buffer_from_image_as_png(image, mupdf.FzColorParams())
-        ext = "png"
-    bytes_ = JM_BinFromBuffer(buf)
-    block_dict[ dictkey_width] = w
-    block_dict[ dictkey_height] = h
-    block_dict[ dictkey_ext] = ext
-    block_dict[ dictkey_colorspace] = n
-    block_dict[ dictkey_xres] = image.xres()
-    block_dict[ dictkey_yres] = image.yres()
-    block_dict[ dictkey_bpc] = image.bpc()
-    block_dict[ dictkey_matrix] = JM_py_from_matrix(block.i_transform())
-    block_dict[ dictkey_size] = len(bytes_)
-    block_dict[ dictkey_image] = bytes_
+    img = block.i_image()
+    _make_image_dict(img, block_dict)
+    block_dict[dictkey_matrix] = JM_py_from_matrix(block.i_transform())
 
 
 def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
