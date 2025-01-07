@@ -3511,22 +3511,30 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
-    const char *ext = NULL;
+    const char *ext = "";
     int type = FZ_IMAGE_UNKNOWN;
-    if (buffer)
+    if (buffer) {
         type = buffer->params.type;
+        ext = JM_image_extension(type);
+    }
     if (type < FZ_IMAGE_BMP || type == FZ_IMAGE_JBIG2)
         type = FZ_IMAGE_UNKNOWN;
     PyObject *bytes = NULL;
     fz_var(bytes);
     fz_try(ctx) {
-        if (buffer && type != FZ_IMAGE_UNKNOWN) {
-            buf = buffer->buffer;
-            ext = JM_image_extension(type);
-        } else {
+        if (!buffer || type == FZ_IMAGE_UNKNOWN)
+        {
             buf = freebuf = fz_new_buffer_from_image_as_png(ctx, image, fz_default_color_params);
             ext = "png";
         }
+        else if (n == 4 && strcmp(ext, "jpeg") == 0) // JPEG CMYK needs another step
+        {
+            buf = freebuf = fz_new_buffer_from_image_as_jpeg(ctx, image, fz_default_color_params, 95, 1);        
+        }
+        else
+        {
+            buf = buffer->buffer;
+        } 
         bytes = JM_BinFromBuffer(buf);
     }
     fz_always(ctx) {
