@@ -4209,10 +4209,7 @@ class Document:
 
         o = mupdf.pdf_dict_geta(obj, PDF_NAME('SMask'), PDF_NAME('Mask'))
         cs_string = mupdf.pdf_dict_geta(obj, PDF_NAME('ColorSpace'), PDF_NAME('CS')).pdf_to_name()
-<<<<<<< HEAD
 
-=======
->>>>>>> 4be00558 (Address 4186)
         if o.m_internal:
             smask = mupdf.pdf_to_num(o)
 
