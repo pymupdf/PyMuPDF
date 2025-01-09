@@ -44,7 +44,7 @@ Options:
         environment variable `PYMUPDF_SETUP_MUPDF_BUILD_TYPE`, which is used by
         PyMuPDF's `setup.py`.]
     -d
-        Equivalent to `--build-type debug`.
+        Equivalent to `-b debug`.
     -f 0|1
         If 1 we also test alias `fitz` as well as `pymupdf`. Default is '0'.
     -i <implementations>
@@ -54,7 +54,8 @@ Options:
              'R' - rebased without optimisations.
             Default is 'r'. Also see `PyMuPDF:tests/run_compound.py`.
     -k <expression>
-        Select which test(s) to run; passed straight through to pytest's `-k`.
+        Specify which test(s) to run; passed straight through to pytest's `-k`.
+        For example `-k test_3354`.
     -m <location> | --mupdf <location>
         Location of local mupdf/ directory or 'git:...' to be used
         when building PyMuPDF. [This sets environment variable
