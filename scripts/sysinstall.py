@@ -227,7 +227,7 @@ def main():
     #
     if pip == 'sudo':
         log('## Installing Python packages required for building MuPDF and PyMuPDF.')
-        run(f'sudo pip install --upgrade pip')
+        #run(f'sudo pip install --upgrade pip') # Breaks on Github see: https://github.com/pypa/get-pip/issues/226.
         names = test_py.wrap_get_requires_for_build_wheel(f'{__file__}/../..')
         run(f'sudo pip install {names}')
     
@@ -275,7 +275,7 @@ def main():
             run(f'. {venv_name}/bin/activate && pip install --upgrade installer')
             run(f'{env} {venv_name}/bin/python -m pip wheel -vv -w dist {os.path.abspath(pymupdf_dir)}')
         elif pip == 'sudo':
-            run(f'sudo pip install --upgrade pip')
+            #run(f'sudo pip install --upgrade pip') # Breaks on Github see: https://github.com/pypa/get-pip/issues/226.
             run(f'sudo pip install installer')
             run(f'{env} pip wheel -vv -w dist {os.path.abspath(pymupdf_dir)}')
         else:
