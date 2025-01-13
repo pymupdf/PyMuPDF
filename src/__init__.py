@@ -12585,6 +12585,11 @@ class TextPage:
                 continue
             img = block.i_image()
             img_size = 0
+            mask = img.mask()
+            if mask.m_internal:
+                has_mask = True
+            else:
+                has_mask = False
             compr_buff = mupdf.fz_compressed_image_buffer(img)
             if compr_buff.m_internal:
                 img_size = compr_buff.fz_compressed_buffer_size()
@@ -12600,19 +12605,20 @@ class TextPage:
                     img_size = img.w() * img.h() * img.n()
             cs = mupdf.FzColorspace(mupdf.ll_fz_keep_colorspace(img.m_internal.colorspace))
             block_dict = dict()
-            block_dict[ dictkey_number] = block_n
-            block_dict[ dictkey_bbox] = JM_py_from_rect(block.m_internal.bbox)
-            block_dict[ dictkey_matrix] = JM_py_from_matrix(block.i_transform())
-            block_dict[ dictkey_width] = img.w()
-            block_dict[ dictkey_height] = img.h()
-            block_dict[ dictkey_colorspace] = mupdf.fz_colorspace_n(cs)
-            block_dict[ dictkey_cs_name] = mupdf.fz_colorspace_name(cs)
-            block_dict[ dictkey_xres] = img.xres()
-            block_dict[ dictkey_yres] = img.yres()
-            block_dict[ dictkey_bpc] = img.bpc()
-            block_dict[ dictkey_size] = img_size
+            block_dict[dictkey_number] = block_n
+            block_dict[dictkey_bbox] = JM_py_from_rect(block.m_internal.bbox)
+            block_dict[dictkey_matrix] = JM_py_from_matrix(block.i_transform())
+            block_dict[dictkey_width] = img.w()
+            block_dict[dictkey_height] = img.h()
+            block_dict[dictkey_colorspace] = mupdf.fz_colorspace_n(cs)
+            block_dict[dictkey_cs_name] = mupdf.fz_colorspace_name(cs)
+            block_dict[dictkey_xres] = img.xres()
+            block_dict[dictkey_yres] = img.yres()
+            block_dict[dictkey_bpc] = img.bpc()
+            block_dict[dictkey_size] = img_size
             if hashes:
-                block_dict[ "digest"] = digest
+                block_dict["digest"] = digest
+            block_dict["has-mask"] = has_mask
             rc.append(block_dict)
         return rc
 
@@ -16514,6 +16520,13 @@ def _make_image_dict(img, img_dict):
 def JM_make_image_block(block, block_dict):
     img = block.i_image()
     _make_image_dict(img, block_dict)
+    # if the image has a mask, store it as a PNG buffer
+    mask = img.mask()
+    if mask.m_internal:
+        buff = mask.fz_new_buffer_from_image_as_png(mupdf.FzColorParams(mupdf.fz_default_color_params))
+        block_dict["mask"] = buff.fz_buffer_extract()
+    else:
+        block_dict["mask"] = None
     block_dict[dictkey_matrix] = JM_py_from_matrix(block.i_transform())
 
 
