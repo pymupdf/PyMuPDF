@@ -3504,10 +3504,11 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
 {
     fz_context* ctx = mupdf::internal_context_get();
     fz_image *image = block->u.i.image;
-    fz_buffer *buf = NULL, *freebuf = NULL;
+    fz_buffer *buf = NULL, *freebuf = NULL, *mask_buf = NULL;
     fz_compressed_buffer *buffer = fz_compressed_image_buffer(ctx, image);
     fz_var(buf);
     fz_var(freebuf);
+    fz_var(mask_buf);
     int n = fz_colorspace_n(ctx, image->colorspace);
     int w = image->w;
     int h = image->h;
@@ -3521,6 +3522,8 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
         type = FZ_IMAGE_UNKNOWN;
     PyObject *bytes = NULL;
     fz_var(bytes);
+    PyObject *mask_bytes = NULL;
+    fz_var(mask_bytes);
     fz_try(ctx) {
         if (!buffer || type == FZ_IMAGE_UNKNOWN)
         {
@@ -3536,6 +3539,12 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
             buf = buffer->buffer;
         } 
         bytes = JM_BinFromBuffer(buf);
+        if (image->mask) {
+            mask_buf = fz_new_buffer_from_image_as_png(ctx, image->mask, fz_default_color_params);
+            mask_bytes = JM_BinFromBuffer(mask_buf);
+        } else {
+            mask_bytes = Py_BuildValue("s", NULL);
+        }
     }
     fz_always(ctx) {
         if (!bytes)
@@ -3559,7 +3568,8 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
         DICT_SETITEM_DROP(block_dict, dictkey_size,
                         Py_BuildValue("n", PyBytes_Size(bytes)));
         DICT_SETITEM_DROP(block_dict, dictkey_image, bytes);
-
+        DICT_SETITEMSTR_DROP(block_dict, "mask", mask_bytes);
+        fz_drop_buffer(ctx, mask_buf);
         fz_drop_buffer(ctx, freebuf);
     }
     fz_catch(ctx) {;}
