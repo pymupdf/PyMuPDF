@@ -306,7 +306,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg int align: the horizontal alignment for the replacing text. See :meth:`insert_textbox` for available values. The vertical alignment is (approximately) centered if a PDF built-in font is used (CJK or :ref:`Base-14-Fonts`). (New in v1.16.12)
 
-      :arg sequence fill: the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if *None* is specified. To suppress a fill color altogether, specify *False*. In this cases the rectangle remains transparent. (New in v1.16.12)
+      :arg sequence fill: the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if ``None`` is specified. To suppress a fill color altogether, specify ``False``. In this cases the rectangle remains transparent. (New in v1.16.12)
 
       :arg sequence text_color: the color of the replacing text. Default is *black = (0, 0, 0)*. (New in v1.16.12)
 
@@ -349,7 +349,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
          * For option `images=PDF_REDACT_IMAGE_PIXELS` a new image of format PNG is created, which the page will use in place of the original one. The original image is not deleted or replaced as part of this process, so other pages may still show the original. In addition, the new, modified PNG image currently is **stored uncompressed**. Do keep these aspects in mind when choosing the right garbage collection method and compression options during save.
 
-         * **Text removal** is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle (changed in MuPDF v1.17). Depending on the font properties and / or the chosen line height, deletion may occur for undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a *True* argument before text search may help to prevent this.
+         * **Text removal** is done by character: A character is removed if its bbox has a **non-empty overlap** with a redaction rectangle (changed in MuPDF v1.17). Depending on the font properties and / or the chosen line height, deletion may occur for undesired text parts. Using :meth:`Tools.set_small_glyph_heights` with a ``True`` argument before text search may help to prevent this.
 
          * Redactions are a simple way to replace single words in a PDF, or to just physically remove them. Locate the word "secret" using some text extraction or search method and insert a redaction using "xxxxxx" as replacement text for each occurrence.
 
@@ -414,14 +414,14 @@ In a nutshell, this is what you can do with PyMuPDF:
         the location(s) -- rectangle(s) or quad(s) -- to be marked. (Changed in v1.14.20)
         A list or tuple must consist of :data:`rect_like` or :data:`quad_like` items (or even a mixture of either).
         Every item must be finite, convex and not empty (as applicable).
-        **Set this parameter to** *None* if you want to use the following arguments (Changed in v1.16.14).
-        And vice versa: if not *None*, the remaining parameters must be *None*.
+        **Set this parameter to** ``None`` if you want to use the following arguments (Changed in v1.16.14).
+        And vice versa: if not ``None``, the remaining parameters must be ``None``.
         
-      :arg point_like start: start text marking at this point. Defaults to the top-left point of *clip*. Must be provided if `quads` is *None*. (New in v1.16.14)
-      :arg point_like stop: stop text marking at this point. Defaults to the bottom-right point of *clip*. Must be used if `quads` is *None*. (New in v1.16.14)
+      :arg point_like start: start text marking at this point. Defaults to the top-left point of *clip*. Must be provided if `quads` is ``None``. (New in v1.16.14)
+      :arg point_like stop: stop text marking at this point. Defaults to the bottom-right point of *clip*. Must be used if `quads` is ``None``. (New in v1.16.14)
       :arg rect_like clip: only consider text lines intersecting this area. Defaults to the page rectangle. Only use if `start` and `stop` are provided. (New in v1.16.14)
 
-      :rtype: :ref:`Annot` or *None* (changed in v1.16.14).
+      :rtype: :ref:`Annot` or ``None`` (changed in v1.16.14).
       :returns: the created annotation. If *quads* is an empty list, **no annotation** is created (changed in v1.16.14).
 
       .. note::
@@ -1544,8 +1544,8 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       For paths other than groups or clips, key `"type"` takes one of the following values:
 
-      * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, not applicable ones are present with a value of *None*: `"color"`, `"lineCap"`, `"lineJoin"`, `"width"`, `"closePath"`, `"dashes"` and should be ignored.
-      * **"s"** -- this is a *stroke-only* path. Similar to previous, key `"fill"` is present with value *None*.
+      * **"f"** -- this is a *fill-only* path. Only key-values relevant for this operation have a meaning, not applicable ones are present with a value of ``None``: `"color"`, `"lineCap"`, `"lineJoin"`, `"width"`, `"closePath"`, `"dashes"` and should be ignored.
+      * **"s"** -- this is a *stroke-only* path. Similar to previous, key `"fill"` is present with value ``None``.
       * **"fs"** -- this is a path performing combined *fill* and *stroke* operations.
 
       Each item in `path["items"]` is one of the following:
@@ -1670,24 +1670,27 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg bool xrefs: **PDF only.** Try to find the :data:`xref` for each image. Implies `hashes=True`. Adds the `"xref"` key to the dictionary. If not found, the value is 0, which means, the image is either "inline" or its xref is undetectable for some reason. Please note that this option has an extended response time, because the MD5 hashcode will be computed at least two times for each image with an xref. (New in v1.18.13)
 
       :rtype: list[dict]
-      :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. In contrast to images included in :meth:`Page.get_text`, image **binary content** is not loaded, which drastically reduces memory usage. The dictionary layout is similar to that of image blocks in `page.get_text("dict")`.
+      :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. The dictionary layout is similar to that of image blocks in `page.get_text("dict")`.
+      
+         In contrast to images included in :meth:`Page.get_text`, image **binary content** is not loaded by this method, which drastically reduces memory usage. Another difference is that image detection is not restricted to the visible part of the page or any ``clip`` parameter: method :meth:`Page.get_text` will only extract images **fully contained** in the provided ``clip``.
 
          =============== ===============================================================
          **Key**             **Value**
          =============== ===============================================================
-         number          block number *(int)*
+         number          block number (``int``)
          bbox            image bbox on page, :data:`rect_like`
-         width           original image width *(int)*
-         height          original image height *(int)*
-         cs-name         colorspace name *(str)*
-         colorspace      colorspace.n *(int)*
-         xres            resolution in x-direction *(int)*
-         yres            resolution in y-direction *(int)*
-         bpc             bits per component *(int)*
-         size            storage occupied by image *(int)*
-         digest          MD5 hashcode *(bytes)*, if *hashes* is true
+         width           original image width (``int``)
+         height          original image height (``int``)
+         cs-name         colorspace name (``str``)
+         colorspace      colorspace.n (``int``)
+         xres            resolution in x-direction (``int``)
+         yres            resolution in y-direction (``int``)
+         bpc             bits per component (``int``)
+         size            storage occupied by image (``int``)
+         digest          MD5 hashcode (``bytes``), if ``hashes`` is true
          xref            image :data:`xref` or 0, if *xrefs* is true
          transform       matrix transforming image rect to bbox, :data:`matrix_like`
+         has-mask        whether the image is transparent and has a mask (``bool``)
          =============== ===============================================================
 
          Multiple occurrences of the same image are always reported. You can detect duplicates by comparing their `digest` values.
@@ -1771,7 +1774,7 @@ In a nutshell, this is what you can do with PyMuPDF:
      Create an SVG image from the page. Only full page images are currently supported.
 
      :arg matrix_like matrix: a matrix, default is :ref:`Identity`.
-     :arg bool text_as_path: -- controls how text is represented. *True* outputs each character as a series of elementary draw commands, which leads to a more precise text display in browsers, but a **very much larger** output for text-oriented pages. Display quality for *False* relies on the presence of the referenced fonts on the current system. For missing fonts, the internet browser will fall back to some default -- leading to unpleasant appearances. Choose *False* if you want to parse the text of the SVG. (New in v1.17.5)
+     :arg bool text_as_path: -- controls how text is represented. ``True`` outputs each character as a series of elementary draw commands, which leads to a more precise text display in browsers, but a **very much larger** output for text-oriented pages. Display quality for ``False`` relies on the presence of the referenced fonts on the current system. For missing fonts, the internet browser will fall back to some default -- leading to unpleasant appearances. Choose ``False`` if you want to parse the text of the SVG. (New in v1.17.5)
 
      :returns: a UTF-8 encoded string that contains the image. Because SVG has XML syntax it can be saved in a text file, the standard extension is `.svg`.
 
@@ -1796,12 +1799,12 @@ In a nutshell, this is what you can do with PyMuPDF:
      :arg colorspace: The desired colorspace, one of "GRAY", "RGB" or "CMYK" (case insensitive). Or specify a :ref:`Colorspace`, ie. one of the predefined ones: :data:`csGRAY`, :data:`csRGB` or :data:`csCMYK`.
      :type colorspace: str or :ref:`Colorspace`
      :arg irect_like clip: restrict rendering to the intersection of this area with the page's rectangle.
-     :arg bool alpha: whether to add an alpha channel. Always accept the default *False* if you do not really need transparency. This will save a lot of memory (25% in case of RGB ... and pixmaps are typically **large**!), and also processing time. Also note an **important difference** in how the image will be rendered: with *True* the pixmap's samples area will be pre-cleared with *0x00*. This results in **transparent** areas where the page is empty. With *False* the pixmap's samples will be pre-cleared with *0xff*. This results in **white** where the page has nothing to show.
+     :arg bool alpha: whether to add an alpha channel. Always accept the default ``False`` if you do not really need transparency. This will save a lot of memory (25% in case of RGB ... and pixmaps are typically **large**!), and also processing time. Also note an **important difference** in how the image will be rendered: with ``True`` the pixmap's samples area will be pre-cleared with *0x00*. This results in **transparent** areas where the page is empty. With ``False`` the pixmap's samples will be pre-cleared with *0xff*. This results in **white** where the page has nothing to show.
 
        |history_begin|
       
        Changed in v1.14.17
-         The default alpha value is now *False*.
+         The default alpha value is now ``False``.
 
          * Generated with *alpha=True*
 
@@ -1881,7 +1884,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg str,int ident: the annotation name or xref.
 
       :rtype: :ref:`Annot`
-      :returns: the annotation or *None*.
+      :returns: the annotation or ``None``.
 
       .. note:: Methods :meth:`Page.annot_names`, :meth:`Page.annot_xrefs` provide lists of names or xrefs, respectively, from where an item may be picked and loaded via this method.
 
@@ -1898,7 +1901,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int xref: the field's xref.
 
       :rtype: :ref:`Widget`
-      :returns: the field or *None*.
+      :returns: the field or ``None``.
 
       .. note:: This is similar to the analogous method :meth:`Page.load_annot` -- except that here only the xref is supported as identifier.
 
@@ -1913,7 +1916,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       Return the first link on a page. Synonym of property :attr:`first_link`.
 
       :rtype: :ref:`Link`
-      :returns: first link on the page (or *None*).
+      :returns: first link on the page (or ``None``).
 
    .. index::
       pair: rotate; set_rotation
@@ -2187,19 +2190,19 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. attribute:: first_link
 
-      Contains the first :ref:`Link` of a page (or *None*).
+      Contains the first :ref:`Link` of a page (or ``None``).
 
       :type: :ref:`Link`
 
    .. attribute:: first_annot
 
-      Contains the first :ref:`Annot` of a page (or *None*).
+      Contains the first :ref:`Annot` of a page (or ``None``).
 
       :type: :ref:`Annot`
 
    .. attribute:: first_widget
 
-      Contains the first :ref:`Widget` of a page (or *None*).
+      Contains the first :ref:`Widget` of a page (or ``None``).
 
       :type: :ref:`Widget`
 

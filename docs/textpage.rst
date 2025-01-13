@@ -202,28 +202,25 @@ Block Dictionaries
 ~~~~~~~~~~~~~~~~~~
 Block dictionaries come in two different formats for **image blocks** and for **text blocks**.
 
-* *(Changed in v1.18.0)* -- new dict key *number*, the block number.
-* *(Changed in v1.18.11)* -- new dict key *transform*, the image transformation matrix for image blocks.
-* *(Changed in v1.18.11)* -- new dict key *size*, the size of the image in bytes for image blocks.
-
 **Image block:**
 
 =============== ===============================================================
 **Key**             **Value**
 =============== ===============================================================
-type            1 = image *(int)*
+type            1 = image (``int``)
 bbox            image bbox on page (:data:`rect_like`)
-number          block count *(int)*
-ext             image type *(str)*, as file extension, see below
-width           original image width *(int)*
-height          original image height *(int)*
-colorspace      colorspace component count *(int)*
-xres            resolution in x-direction *(int)*
-yres            resolution in y-direction *(int)*
-bpc             bits per component *(int)*
+number          block count (``int``)
+ext             image type (``str``), as file extension, see below
+width           original image width (``int``)
+height          original image height (``int``)
+colorspace      colorspace component count (``int``)
+xres            resolution in x-direction (``int``)
+yres            resolution in y-direction (``int``)
+bpc             bits per component (``int``)
 transform       matrix transforming image rect to bbox (:data:`matrix_like`)
-size            size of the image in bytes *(int)*
-image           image content *(bytes)*
+size            size of the image in bytes (``int``)
+image           image content (``bytes``)
+mask            image mask content (``bytes``) for transparent images
 =============== ===============================================================
 
 Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "jxr" (JPEG XR), "png", "pnm", and "tiff".
@@ -240,6 +237,12 @@ Possible values of the "ext" key are "bmp", "gif", "jpeg", "jpx" (JPEG 2000), "j
        - Images mentioned in the page's :data:`object` definition will **always** appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there is no "display" command in the page's :data:`contents` (erroneously or on purpose). In this case the image will **not appear** in the textpage.
 
    3. The image's "transformation matrix" is defined as the matrix, for which the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, lookup details here: :ref:`ImageTransformation`.
+
+   4. A transparent image may be accompanied by a mask image. This is stored under key `"mask"` and has the format of a `DeviceGray` PNG image. Otherwise the value of this key is ``None``. If present, you may be able to recover (an equivalent of) the original image -- i.e. with transparency -- by creating :ref:`Pixmap` objects from the "image", respectively "mask" values and overlay them. This is not guaranteed to always work because mask images come in multiple formats, of which not all qualify for the conditions under which overlaying Pixmaps are supported. Here is a code snippet:
+
+   >>> base = pymupdf.Pixmap(block["image"])
+   >>> mask = pymupdf.Pixmap(block["mask"])
+   >>> result = pymupdf.Pixmap(base, mask)
 
 
 **Text block:**
