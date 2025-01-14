@@ -269,6 +269,8 @@ Using with Pyodide
 See :doc:`pyodide`.
 
 
+.. _installation_ocr:
+
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
