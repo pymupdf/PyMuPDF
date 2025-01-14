@@ -18,7 +18,7 @@ OCR - Optical Character Recognition
 
 |PyMuPDF| has integrated support for OCR (Optical Character Recognition). It is possible to use OCR for both, images (via the :ref:`Pixmap` class) and for document pages.
 
-The feature is currently based on Tesseract-OCR which must be installed as a separate application -- see the installation chapter.
+The feature is currently based on Tesseract-OCR which must be installed as a separate application -- see the :ref:`installation_ocr`.
 
 How to OCR an Image 
 --------------------
