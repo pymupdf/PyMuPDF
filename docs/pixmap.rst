@@ -33,8 +33,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
 :meth:`Pixmap.pdfocr_save`       save the pixmap as an OCRed 1-page PDF
 :meth:`Pixmap.pdfocr_tobytes`    save the pixmap as an OCRed 1-page PDF
-:meth:`Pixmap.pil_save`          save as image using pillow
-:meth:`Pixmap.pil_tobytes`       write to `bytes` object using pillow
+:meth:`Pixmap.pil_image`         create a Pillow Image
+:meth:`Pixmap.pil_save`          save as a Pillow Image
+:meth:`Pixmap.pil_tobytes`       write to `bytes` as a Pillow Image
 :meth:`Pixmap.pixel`             return the value of a pixel
 :meth:`Pixmap.save`              save the pixmap in a variety of formats
 :meth:`Pixmap.set_alpha`         set alpha values
@@ -388,9 +389,14 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
                doc.save("ocr-images.pdf")
 
 
-   ..  method:: pil_save(*args, unmultiply=False, **kwargs)
+   ..  method:: pil_image()
 
-      * New in v1.17.3
+      Create a Pillow Image from the pixmap. PIL / Pillow must be installed.
+
+      :raises ImportError: if Pillow is not installed.
+      :returns: a ˇˇPIL.Imageˇˇ object
+
+   ..  method:: pil_save(*args, unmultiply=False, **kwargs)
 
       Write the pixmap as an image file using Pillow. Use this method for output unsupported by MuPDF. Examples are
 
