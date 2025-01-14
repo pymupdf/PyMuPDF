@@ -10097,7 +10097,10 @@ class Pixmap:
     @property
     def colorspace(self):
         """Pixmap Colorspace."""
-        return Colorspace(mupdf.fz_pixmap_colorspace(self.this))
+        cs = Colorspace(mupdf.fz_pixmap_colorspace(self.this))
+        if cs.name == "None":
+            return None
+        return cs
 
     def copy(self, src, bbox):
         """Copy bbox from another Pixmap."""
@@ -10227,12 +10230,8 @@ class Pixmap:
         self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
         return bio.getvalue()
 
-    def pil_save(self, *args, **kwargs):
-        """Write to image file using Pillow.
-
-        Args are passed to Pillow's Image.save method, see their documentation.
-        Use instead of save when other output formats are desired.
-        """
+    def pil_image(self):
+        """Create a Pillow Image from the Pixmap."""
         try:
             from PIL import Image
         except ImportError:
@@ -10240,16 +10239,27 @@ class Pixmap:
             raise
 
         cspace = self.colorspace
-        if cspace is None:
+        if not cspace:
             mode = "L"
         elif cspace.n == 1:
-            mode = "L" if self.alpha == 0 else "LA"
+            mode = "L" if not self.alpha else "LA"
         elif cspace.n == 3:
-            mode = "RGB" if self.alpha == 0 else "RGBA"
+            mode = "RGB" if not self.alpha else "RGBA"
         else:
             mode = "CMYK"
 
         img = Image.frombytes(mode, (self.width, self.height), self.samples)
+        return img
+
+    def pil_save(self, *args, **kwargs):
+        """Write to image file using Pillow.
+
+        An intermediate PIL Image is created, and its "save" method is used
+        to store the image. See Pillow documentation to learn about the
+        meaning of possible positional and keyword parameters.
+        Use this when other output formats are desired.
+        """
+        img = self.pil_image()
 
         if "dpi" not in kwargs.keys():
             kwargs["dpi"] = (self.xres, self.yres)
@@ -10257,14 +10267,20 @@ class Pixmap:
         img.save(*args, **kwargs)
 
     def pil_tobytes(self, *args, **kwargs):
-        """Convert to binary image stream using pillow.
+        """Convert to an image in memory using Pillow.
 
-        Args are passed to Pillow's Image.save method, see their documentation.
-        Use instead of 'tobytes' when other output formats are needed.
+        An intermediate PIL Image is created, and its "save" method is used
+        to store the image. See Pillow documentation to learn about the
+        meaning of possible positional or keyword parameters.
+        Use this when other output formats are desired.
         """
-        from io import BytesIO
-        bytes_out = BytesIO()
-        self.pil_save(bytes_out, *args, **kwargs)
+        bytes_out = io.BytesIO()
+        img = self.pil_image()
+
+        if "dpi" not in kwargs.keys():
+            kwargs["dpi"] = (self.xres, self.yres)
+
+        img.save(bytes_out, *args, **kwargs)
         return bytes_out.getvalue()
 
     def pixel(self, x, y):
