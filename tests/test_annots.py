@@ -10,8 +10,6 @@ import pymupdf
 import gentle_compare
 
 
-pymupdf.TOOLS.set_annot_stem("jorj")
-
 red = (1, 0, 0)
 blue = (0, 0, 1)
 gold = (1, 1, 0)
@@ -226,38 +224,46 @@ def test_1645():
     '''
     Test fix for #1645.
     '''
-    path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
+    # The expected output files assume annot_stem is 'jorj'. We need to always
+    # restore this before returning (this is checked by conftest.py).
+    annot_stem = pymupdf.JM_annot_id_stem
+    pymupdf.TOOLS.set_annot_stem('jorj')
+    try:
+        path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
 
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.26.pdf')
-    elif pymupdf.mupdf_version_tuple >= (1, 25):
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.25.pdf')
-    elif pymupdf.mupdf_version_tuple >= (1, 24, 2):
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.2.pdf')
-    else:
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.pdf')
-    path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
-    doc = pymupdf.open(path_in)
-    page = doc[0]
-    page_bounds = page.bound()
-    annot_loc = pymupdf.Rect(page_bounds.x0, page_bounds.y0, page_bounds.x0 + 75, page_bounds.y0 + 15)
-    # Check type of page.derotation_matrix - this is #2911.
-    assert isinstance(page.derotation_matrix, pymupdf.Matrix), \
-            f'Bad type for page.derotation_matrix: {type(page.derotation_matrix)=} {page.derotation_matrix=}.'
-    page.add_freetext_annot(
-            annot_loc * page.derotation_matrix,
-            "TEST",
-            fontsize=18,
-            fill_color=pymupdf.utils.getColor("FIREBRICK1"),
-            rotate=page.rotation,
-            )
-    doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
-    print(f'Have created {path_out}. comparing with {path_expected}.')
-    with open( path_out, 'rb') as f:
-        out = f.read()
-    with open( path_expected, 'rb') as f:
-        expected = f.read()
-    assert out == expected, f'Files differ: {path_out} {path_expected}'
+        if pymupdf.mupdf_version_tuple >= (1, 26):
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.26.pdf')
+        elif pymupdf.mupdf_version_tuple >= (1, 25):
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.25.pdf')
+        elif pymupdf.mupdf_version_tuple >= (1, 24, 2):
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.2.pdf')
+        else:
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected_1.24.pdf')
+        path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
+        doc = pymupdf.open(path_in)
+        page = doc[0]
+        page_bounds = page.bound()
+        annot_loc = pymupdf.Rect(page_bounds.x0, page_bounds.y0, page_bounds.x0 + 75, page_bounds.y0 + 15)
+        # Check type of page.derotation_matrix - this is #2911.
+        assert isinstance(page.derotation_matrix, pymupdf.Matrix), \
+                f'Bad type for page.derotation_matrix: {type(page.derotation_matrix)=} {page.derotation_matrix=}.'
+        page.add_freetext_annot(
+                annot_loc * page.derotation_matrix,
+                "TEST",
+                fontsize=18,
+                fill_color=pymupdf.utils.getColor("FIREBRICK1"),
+                rotate=page.rotation,
+                )
+        doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
+        print(f'Have created {path_out}. comparing with {path_expected}.')
+        with open( path_out, 'rb') as f:
+            out = f.read()
+        with open( path_expected, 'rb') as f:
+            expected = f.read()
+        assert out == expected, f'Files differ: {path_out} {path_expected}'
+    finally:
+        # Restore annot_stem.
+        pymupdf.TOOLS.set_annot_stem(annot_stem)
 
 def test_1824():
     '''
