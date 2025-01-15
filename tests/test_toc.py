@@ -187,10 +187,10 @@ def test_3347():
         })
 
     links_expected = [
-            (0, {'kind': 1, 'xref': 11, 'from': pymupdf.Rect(10.0, 20.0, 50.0, 40.0), 'page': 0, 'to': pymupdf.Point(300.0, 350.0), 'zoom': 0.0, 'id': 'jorj-L0'}),
-            (0, {'kind': 1, 'xref': 12, 'from': pymupdf.Rect(300.0, 350.0, 400.0, 450.0), 'page': 1, 'to': pymupdf.Point(20.0, 30.0), 'zoom': 0.0, 'id': 'jorj-L1'}),
-            (1, {'kind': 1, 'xref': 13, 'from': pymupdf.Rect(20.0, 30.0, 40.0, 50.0), 'page': 1, 'to': pymupdf.Point(350.0, 300.0), 'zoom': 0.0, 'id': 'jorj-L0'}),
-            (1, {'kind': 1, 'xref': 14, 'from': pymupdf.Rect(350.0, 300.0, 450.0, 400.0), 'page': 0, 'to': pymupdf.Point(10.0, 20.0), 'zoom': 0.0, 'id': 'jorj-L1'}),
+            (0, {'kind': 1, 'xref': 11, 'from': pymupdf.Rect(10.0, 20.0, 50.0, 40.0), 'page': 0, 'to': pymupdf.Point(300.0, 350.0), 'zoom': 0.0, 'id': 'fitz-L0'}),
+            (0, {'kind': 1, 'xref': 12, 'from': pymupdf.Rect(300.0, 350.0, 400.0, 450.0), 'page': 1, 'to': pymupdf.Point(20.0, 30.0), 'zoom': 0.0, 'id': 'fitz-L1'}),
+            (1, {'kind': 1, 'xref': 13, 'from': pymupdf.Rect(20.0, 30.0, 40.0, 50.0), 'page': 1, 'to': pymupdf.Point(350.0, 300.0), 'zoom': 0.0, 'id': 'fitz-L0'}),
+            (1, {'kind': 1, 'xref': 14, 'from': pymupdf.Rect(350.0, 300.0, 450.0, 400.0), 'page': 0, 'to': pymupdf.Point(10.0, 20.0), 'zoom': 0.0, 'id': 'fitz-L1'}),
             ]
 
     path = os.path.normpath(f'{__file__}/../../tests/test_3347_out.pdf')
@@ -264,7 +264,7 @@ def test_3400():
         print(f'Saved to {path=}.')
         
         links_expected = [
-                (1, {'kind': 1, 'xref': 1120, 'from': pymupdf.Rect(10.0, 10.0, 100.0, 50.0), 'page': 0, 'to': pymupdf.Point(187.5, 472.5), 'zoom': 0.0, 'id': 'jorj-L0'})
+                (1, {'kind': 1, 'xref': 1120, 'from': pymupdf.Rect(10.0, 10.0, 100.0, 50.0), 'page': 0, 'to': pymupdf.Point(187.5, 472.5), 'zoom': 0.0, 'id': 'fitz-L0'})
                 ]
 
         links_actual = list()

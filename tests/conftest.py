@@ -42,6 +42,8 @@ def wrap(*args, **kwargs):
     pymupdf._log_items_clear()
     pymupdf._log_items_active(True)
     
+    JM_annot_id_stem = pymupdf.JM_annot_id_stem
+    
     # Run the test.
     rep = yield
     
@@ -56,6 +58,9 @@ def wrap(*args, **kwargs):
     
     log_items = pymupdf._log_items()
     assert not log_items, f'log() was called; {len(log_items)=}.'
+    
+    assert pymupdf.JM_annot_id_stem == JM_annot_id_stem, \
+            f'pymupdf.JM_annot_id_stem has changed from {JM_annot_id_stem!r} to {pymupdf.JM_annot_id_stem!r}'
     
     if platform.system() == 'Linux':
         # Show detailed information about leaked fds.
