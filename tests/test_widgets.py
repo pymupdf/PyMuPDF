@@ -8,6 +8,7 @@ import os
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "widgettest.pdf")
 file_2333 = os.path.join(scriptdir, "resources", "test-2333.pdf")
+file_4055 = os.path.join(scriptdir, "resources", "test-4055.pdf")
 
 
 doc = pymupdf.open()
@@ -379,3 +380,57 @@ def test_4004():
         assert str(e) == 'Annot is not bound to a page'
 
     doc.close()
+
+
+def test_4055():
+    """Check correct setting of CheckBox "Yes" values.
+
+    Test scope:
+    * setting on with any of 'True' / 'Yes' / built-in values works
+    * setting off with any of 'False' or 'Off' works
+    """
+
+    # this PDF has digits as "Yes" values.
+    doc = pymupdf.open(file_4055)
+    page = doc[0]
+
+    # Round 1: confirm all check boxes are off
+    for w in page.widgets(types=[2]):
+        # check that this file doesn't use the "Yes" standard
+        assert w.on_state() != "Yes"
+        assert w.field_value == "Off"  # all check boxes are off
+        w.field_value = w.on_state()
+        w.update()
+
+    page = doc.reload_page(page)  # reload page to make sure we start fresh
+
+    # Round 2: confirm that fields contain the PDF's own on values
+    for w in page.widgets(types=[2]):
+        # confirm each value coincides with the "Yes" value
+        assert w.field_value == w.on_state()
+        w.field_value = False  # switch to "Off" using False
+        w.update()
+
+    page = doc.reload_page(page)
+
+    # Round 3: confirm that 'False' achieved "Off" values
+    for w in page.widgets(types=[2]):
+        assert w.field_value == "Off"
+        w.field_value = True  # use True for the next round
+        w.update()
+
+    page = doc.reload_page(page)
+
+    # Round 4: confirm that setting to True also worked
+    for w in page.widgets(types=[2]):
+        assert w.field_value == w.on_state()
+        w.field_value = "Off"  # set off again
+        w.update()
+        w.field_value = "Yes"
+        w.update()
+
+    page = doc.reload_page(page)
+
+    # Round 5: final check: setting to "Yes" also does work
+    for w in page.widgets(types=[2]):
+        assert w.field_value == w.on_state()
