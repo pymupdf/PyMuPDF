@@ -7269,8 +7269,6 @@ class Widget:
         """
         if self.field_type not in (2, 5):
             return None  # no checkbox or radio button
-        if self.field_type == 2:
-            return "Yes"
         bstate = self.button_states()
         if bstate is None:
             bstate = dict()
@@ -17681,13 +17679,13 @@ def JM_set_widget_properties(annot, Widget):
                 mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), on)
             elif text:
                 mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), text)
-    elif field_type == mupdf.PDF_WIDGET_TYPE_CHECKBOX:    # will always be "Yes" or "Off"
-        if value is True or text == 'Yes':
-            onstate = mupdf.pdf_button_field_on_state(annot_obj)
-            on = mupdf.pdf_to_name(onstate)
+    elif field_type == mupdf.PDF_WIDGET_TYPE_CHECKBOX:
+        onstate = mupdf.pdf_button_field_on_state(annot_obj)
+        on = onstate.pdf_to_name()
+        if value in (True, on) or text == 'Yes':
             mupdf.pdf_set_field_value(pdf, annot_obj, on, 1)
-            mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), 'Yes')
-            mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('V'), 'Yes')
+            mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('AS'), on)
+            mupdf.pdf_dict_put_name(annot_obj, PDF_NAME('V'), on)
         else:
             mupdf.pdf_dict_put_name( annot_obj, PDF_NAME('AS'), 'Off')
             mupdf.pdf_dict_put_name( annot_obj, PDF_NAME('V'), 'Off')
