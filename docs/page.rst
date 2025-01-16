@@ -728,9 +728,9 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; insert_text
       pair: oc; insert_text
 
-   .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, overlay=True, oc=0)
+   .. method:: insert_text(point, text, *, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, overlay=True, oc=0)
 
-      PDF only: Insert text starting at :data:`point_like` *point*. See :meth:`Shape.insert_text`.
+      PDF only: Insert text lines starting at :data:`point_like` ``point``. See :meth:`Shape.insert_text`.
 
       |history_begin|
 
@@ -756,7 +756,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; insert_textbox
       pair: oc; insert_textbox
 
-   .. method:: insert_textbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0, overlay=True)
+   .. method:: insert_textbox(rect, buffer, *, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0, overlay=True)
 
       PDF only: Insert text into the specified :data:`rect_like` *rect*. See :meth:`Shape.insert_textbox`.
 

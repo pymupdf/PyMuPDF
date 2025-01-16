@@ -291,9 +291,9 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: fill_opacity; insert_text
       pair: oc; insert_text
 
-   .. method:: insert_text(point, text, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_text(point, text, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
-      Insert text lines start at *point*.
+      Insert text lines starting at ``point``.
 
       :arg point_like point: the bottom-left position of the first character of *text* in pixels. It is important to understand, how this works in conjunction with the *rotate* parameter. Please have a look at the following picture. The small red dots indicate the positions of *point* in each of the four possible cases.
 
@@ -331,7 +331,7 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: rotate; insert_textbox
       pair: oc; insert_textbox
 
-   .. method:: insert_textbox(rect, buffer, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, lineheight=None, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_textbox(rect, buffer, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, lineheight=None, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Insert text into the specified rectangle. The text will be split into lines and words and then filled into the available space, starting from one of the four rectangle corners, which depends on `rotate`. Line feeds and multiple space will be respected.
 
