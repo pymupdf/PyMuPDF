@@ -286,12 +286,13 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: lineheight; insert_text
       pair: morph; insert_text
       pair: render_mode; insert_text
+      pair: miter_limit; insert_text
       pair: rotate; insert_text
       pair: stroke_opacity; insert_text
       pair: fill_opacity; insert_text
       pair: oc; insert_text
 
-   .. method:: insert_text(point, text, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_text(point, text, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, miter_limit=1, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       Insert text lines starting at ``point``.
 
@@ -328,10 +329,11 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: lineheight; insert_textbox
       pair: morph; insert_textbox
       pair: render_mode; insert_textbox
+      pair: miter_limit; insert_textbox
       pair: rotate; insert_textbox
       pair: oc; insert_textbox
 
-   .. method:: insert_textbox(rect, buffer, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, lineheight=None, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_textbox(rect, buffer, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, fill=None, render_mode=0, miter_limit=1, border_width=1, expandtabs=8, align=TEXT_ALIGN_LEFT, rotate=0, lineheight=None, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       PDF only: Insert text into the specified rectangle. The text will be split into lines and words and then filled into the available space, starting from one of the four rectangle corners, which depends on `rotate`. Line feeds and multiple space will be respected.
 
@@ -591,7 +593,7 @@ Common Parameters
 
   Both values are floats in range [0, 1]. Negative values or values > 1 will ignored (in most cases). Both set the transparency such that a value 0.5 corresponds to 50% transparency, 0 means invisible and 1 means intransparent. For e.g. a rectangle the stroke opacity applies to its border and fill opacity to its interior.
 
-  For text insertions (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`), use *fill_opacity* for the text. At first sight this seems surprising, but it becomes obvious when you look further down to *render_mode*: *fill_opacity* applies to the yellow and *stroke_opacity* applies to the blue color.
+  For text insertions (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`), use *fill_opacity* for the text. At first sight this seems surprising, but it becomes obvious when you look further down to `render_mode`: `fill_opacity` applies to the yellow and `stroke_opacity` applies to the blue color.
 
 ----
 
@@ -613,6 +615,28 @@ Common Parameters
   The following examples use border_width=0.3, together with a fontsize of 15. Stroke color is blue and fill color is some yellow.
 
   .. image:: images/img-rendermode.*
+
+----
+
+**miter_limit** (*float*)
+
+  A float specifying the maximum acceptable value of the quotient `miter-length / line-width` ("miter quotient"). Used in text output methods. This is only relevant for non-zero render mode values -- then, characters are written with border lines (i.e. "stroked").
+  
+  If two lines stroking some character meet at a sharp (<= 90°) angle and the line width is large enough, then "spikes" may become visible -- causing an ugly appearance as shown below. For more background, see page 126 of the :ref:`AdobeManual`.
+    
+  For instance, when joins meet at 90°, then the miter length is ``sqrt(2) * line-width``, so the miter quotient is ``sqrt(2)``.
+  
+  If ``miter_limit`` is exceeded, then all joins with a larger qotient will appear as beveled ("butt" appearance).
+    
+  The default value 1 (and any smaller value) will ensure that all joins are rendered as a butt. A value of ``None`` will use the PDF default value.
+  
+  Example text showing spikes (``miter_limit=None``):
+
+  .. image:: images/spikes-yes.*
+
+  Example text suppressing spikes (``miter_limit=1``):
+
+  .. image:: images/spikes-no.*
 
 ----
 

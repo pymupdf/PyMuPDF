@@ -1932,6 +1932,7 @@ def insert_textbox(
     align: int = 0,
     rotate: int = 0,
     render_mode: int = 0,
+    miter_limit: float = 1,
     border_width: float = 0.05,
     morph: OptSeq = None,
     overlay: bool = True,
@@ -1973,6 +1974,7 @@ def insert_textbox(
         fill=fill,
         expandtabs=expandtabs,
         render_mode=render_mode,
+        miter_limit=miter_limit,
         border_width=border_width,
         align=align,
         rotate=rotate,
@@ -2000,6 +2002,7 @@ def insert_text(
     color: OptSeq = None,
     fill: OptSeq = None,
     border_width: float = 0.05,
+    miter_limit: float = 1,
     render_mode: int = 0,
     rotate: int = 0,
     morph: OptSeq = None,
@@ -2023,6 +2026,7 @@ def insert_text(
         fill=fill,
         border_width=border_width,
         render_mode=render_mode,
+        miter_limit=miter_limit,
         rotate=rotate,
         morph=morph,
         stroke_opacity=stroke_opacity,
@@ -3774,6 +3778,7 @@ class Shape:
         fill: OptSeq = None,
         render_mode: int = 0,
         border_width: float = 0.05,
+        miter_limit: float = 1,
         rotate: int = 0,
         morph: OptSeq = None,
         stroke_opacity: float = 1,
@@ -3910,7 +3915,8 @@ class Shape:
         if render_mode > 0:
             nres += "%i Tr " % render_mode
             nres += _format_g(border_width * fontsize) + " w "
-
+            if miter_limit is not None:
+                nres += _format_g(miter_limit) + " M "
         if color is not None:
             nres += color_str
         if fill is not None:
@@ -3961,6 +3967,7 @@ class Shape:
         fill: OptSeq = None,
         expandtabs: int = 1,
         border_width: float = 0.05,
+        miter_limit: float = 1,
         align: int = 0,
         render_mode: int = 0,
         rotate: int = 0,
@@ -4251,6 +4258,8 @@ class Shape:
             if render_mode > 0:
                 nres += "%i Tr " % render_mode
                 nres += _format_g(border_width * fontsize) + " w "
+                if miter_limit is not None:
+                    nres += _format_g(miter_limit) + " M "
 
             if align == 3:
                 nres += _format_g(spacing) + " Tw "
