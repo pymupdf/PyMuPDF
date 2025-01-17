@@ -1157,7 +1157,7 @@ classifier = [
 # We generate different wheels depending on PYMUPDF_SETUP_FLAVOUR.
 #
 
-version_p = '1.25.1'
+version_p = '1.25.2'
 version_b = '1.25.1'
 version_mupdf = '1.25.2'
 

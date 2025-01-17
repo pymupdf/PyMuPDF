@@ -2,6 +2,25 @@ Change Log
 ==========
 
 
+**Changes in version 1.25.2 (2025-01-17)**
+
+* Fixed issues:
+
+  * **Fixed** `4055 <https://github.com/pymupdf/PyMuPDF/issues/4055>`_: "Yes" for all checkboxes does not work for all PDF rendering engines.
+  * **Fixed** `4155 <https://github.com/pymupdf/PyMuPDF/issues/4155>`_: samples_mv is unsafe
+  * **Fixed** `4186 <https://github.com/pymupdf/PyMuPDF/issues/4186>`_: Incorrect handling of JPEG with color space CMYK image extraction
+  * **Fixed** `4225 <https://github.com/pymupdf/PyMuPDF/issues/4225>`_: pixmap.pil_save() fails due to colorspace definition
+  * **Fixed** `4232 <https://github.com/pymupdf/PyMuPDF/issues/4232>`_: Incorrect Font style and Size
+
+* Other:
+
+  * Use Python's built-in glyphname <> unicode conversion.
+  * Improve speed of pixmap color inversion.
+  * Add new `char_flags` member to span dictionary, for example allows detection of invisible text.
+  * Detect image masks in TextPage output.
+  * Added `Pixmap.pil_image()`.
+
+
 **Changes in version 1.25.1 (2024-12-11)**
 
 * Use MuPDF-1.25.2.
