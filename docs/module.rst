@@ -21,9 +21,9 @@ The command-line interface can be invoked in two ways.
 
     pymupdf <command and parameters>
 
-* Or use Python's `-m` switch with PyMuPDF's `fitz` module::
+* Or use Python's `-m` switch with PyMuPDF's `pymupdf` module::
 
-    python -m fitz <command and parameters>
+    python -m pymupdf <command and parameters>
 
 
 .. highlight:: python
@@ -63,7 +63,7 @@ Cleaning and Copying
 This command will optimize the PDF and store the result in a new file. You can use it also for encryption, decryption and creating sub documents. It is mostly similar to the MuPDF command line utility *"mutool clean"*::
 
     pymupdf clean -h
-    usage: fitz clean [-h] [-password PASSWORD]
+    usage: pymupdf clean [-h] [-password PASSWORD]
                     [-encryption {keep,none,rc4-40,rc4-128,aes-128,aes-256}]
                     [-owner OWNER] [-user USER] [-garbage {0,1,2,3,4}]
                     [-compress] [-ascii] [-linear] [-permission PERMISSION]
@@ -103,7 +103,7 @@ Extracting Fonts and Images
 Extract fonts or images from selected PDF pages to a desired directory::
 
     pymupdf extract -h
-    usage: fitz extract [-h] [-images] [-fonts] [-output OUTPUT] [-password PASSWORD]
+    usage: pymupdf extract [-h] [-images] [-fonts] [-output OUTPUT] [-password PASSWORD]
                         [-pages PAGES]
                         input
 
@@ -134,7 +134,7 @@ Joining PDF Documents
 To join several PDF files specify::
 
     pymupdf join -h
-    usage: fitz join [-h] -output OUTPUT [input [input ...]]
+    usage: pymupdf join [-h] -output OUTPUT [input [input ...]]
 
     ---------------------------- join PDF documents ---------------------------
 
@@ -173,7 +173,7 @@ Low Level Information
 Display PDF internal information. Again, there are similarities to *"mutool show"*::
 
     pymupdf show -h
-    usage: fitz show [-h] [-password PASSWORD] [-catalog] [-trailer] [-metadata]
+    usage: pymupdf show [-h] [-password PASSWORD] [-catalog] [-trailer] [-metadata]
                     [-xrefs XREFS] [-pages PAGES]
                     input
 
@@ -250,7 +250,7 @@ Information
 Show the embedded file names (long or short format)::
 
     pymupdf embed-info -h
-    usage: fitz embed-info [-h] [-name NAME] [-detail] [-password PASSWORD] input
+    usage: pymupdf embed-info [-h] [-name NAME] [-detail] [-password PASSWORD] input
 
     --------------------------- list embedded files ---------------------------
 
@@ -299,7 +299,7 @@ Extraction
 Extract an embedded file like this::
 
     pymupdf embed-extract -h
-    usage: fitz embed-extract [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
+    usage: pymupdf embed-extract [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
                             input
 
     ---------------------- extract embedded file to disk ----------------------
@@ -323,7 +323,7 @@ Deletion
 Delete an embedded file like this::
 
     pymupdf embed-del -h
-    usage: fitz embed-del [-h] [-password PASSWORD] [-output OUTPUT] -name NAME input
+    usage: pymupdf embed-del [-h] [-password PASSWORD] [-output OUTPUT] -name NAME input
 
     --------------------------- delete embedded file --------------------------
 
@@ -343,7 +343,7 @@ Insertion
 Add a new embedded file using this command::
 
     pymupdf embed-add -h
-    usage: fitz embed-add [-h] [-password PASSWORD] [-output OUTPUT] -name NAME -path
+    usage: pymupdf embed-add [-h] [-password PASSWORD] [-output OUTPUT] -name NAME -path
                         PATH [-desc DESC]
                         input
 
@@ -367,7 +367,7 @@ Updates
 Update an existing embedded file using this command::
 
     pymupdf embed-upd -h
-    usage: fitz embed-upd [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
+    usage: pymupdf embed-upd [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
                         [-path PATH] [-filename FILENAME] [-ufilename UFILENAME]
                         [-desc DESC]
                         input
@@ -397,7 +397,7 @@ Copying
 Copy embedded files between PDFs::
 
     pymupdf embed-copy -h
-    usage: fitz embed-copy [-h] [-password PASSWORD] [-output OUTPUT] -source
+    usage: pymupdf embed-copy [-h] [-password PASSWORD] [-output OUTPUT] -source
                         SOURCE [-pwdsource PWDSOURCE]
                         [-name [NAME [NAME ...]]]
                         input
@@ -443,7 +443,7 @@ After each page of the output file, a formfeed character, `hex(12)` is written -
 Command::
 
     pymupdf gettext -h
-    usage: fitz gettext [-h] [-password PASSWORD] [-mode {simple,blocks,layout}] [-pages PAGES] [-noligatures]
+    usage: pymupdf gettext [-h] [-password PASSWORD] [-mode {simple,blocks,layout}] [-pages PAGES] [-noligatures]
                         [-convert-white] [-extra-spaces] [-noformfeed] [-skip-empty] [-output OUTPUT] [-grid GRID]
                         [-fontsize FONTSIZE]
                         input
