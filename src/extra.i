@@ -1920,7 +1920,6 @@ static void jm_trace_text_span(
             << " fsize=" << fsize
             << " linewidth=" << linewidth
             << "\n";
-    
     dict_setitem_drop(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
     dict_setitem_drop(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
     dict_setitemstr_drop(span_dict, "opacity", PyFloat_FromDouble((double) alpha));
@@ -3040,7 +3039,7 @@ mupdf::FzRect JM_make_spanlist(
     struct char_style
     {
         float size = -1;
-        int flags = -1;
+        unsigned flags = 0;
         
         #if MUPDF_VERSION_GE(1, 25, 2)
         /* From mupdf:include/mupdf/fitz/structured-text.h:fz_stext_char::flags, which
@@ -3052,11 +3051,11 @@ mupdf::FzRect JM_make_spanlist(
         FZ_STEXT_STROKED = 32,
         FZ_STEXT_CLIPPED = 64
         */
-        int char_flags;
+        unsigned char_flags = 0;
         #endif
         
         const char *font = "";
-        unsigned int color = -1;
+        unsigned argb = 0;
         float asc = 0;
         float desc = 0;
     };
@@ -3086,9 +3085,9 @@ mupdf::FzRect JM_make_spanlist(
         #endif
         style.font = JM_font_name(ch.m_internal->font);
         #if MUPDF_VERSION_GE(1, 25, 0)
-            style.color = ch.m_internal->argb;
+            style.argb = ch.m_internal->argb;
         #else
-            style.color = ch.m_internal->color;
+            style.argb = ch.m_internal->color;
         #endif
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
@@ -3099,7 +3098,7 @@ mupdf::FzRect JM_make_spanlist(
                 #if MUPDF_VERSION_GE(1, 25, 2)
                 || (style.char_flags & ~FZ_STEXT_SYNTHETIC) != (old_style.char_flags & ~FZ_STEXT_SYNTHETIC)
                 #endif
-                || style.color != old_style.color
+                || style.argb != old_style.argb
                 || strcmp(style.font, old_style.font) != 0
                 )
         {
@@ -3135,12 +3134,15 @@ mupdf::FzRect JM_make_spanlist(
             }
 
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
-            DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("i", style.flags));
+            DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("I", style.flags));
             #if MUPDF_VERSION_GE(1, 25, 2)
-            DICT_SETITEM_DROP(span, dictkey_char_flags, Py_BuildValue("i", style.char_flags));
+            DICT_SETITEM_DROP(span, dictkey_char_flags, Py_BuildValue("I", style.char_flags));
             #endif
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
-            DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("i", style.color));
+            DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("I", style.argb & 0xffffff));
+            #if MUPDF_VERSION_GE(1, 25, 0)
+            DICT_SETITEMSTR_DROP(span, "alpha", Py_BuildValue("I", style.argb >> 24));
+            #endif
             DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", asc));
             DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", desc));
 
