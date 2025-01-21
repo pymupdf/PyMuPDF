@@ -8,7 +8,9 @@ Change Log
 
   * **Fixed** `4055 <https://github.com/pymupdf/PyMuPDF/issues/4055>`_: "Yes" for all checkboxes does not work for all PDF rendering engines.
   * **Fixed** `4155 <https://github.com/pymupdf/PyMuPDF/issues/4155>`_: samples_mv is unsafe
+  * **Fixed** `4162 <https://github.com/pymupdf/PyMuPDF/issues/4162>`_: Got AttributeError, when tried to add Signature field
   * **Fixed** `4186 <https://github.com/pymupdf/PyMuPDF/issues/4186>`_: Incorrect handling of JPEG with color space CMYK image extraction
+  * **Fixed** `4195 <https://github.com/pymupdf/PyMuPDF/issues/4195>`_: Pixmaps that are inverted and have an alpha channel are not rendered properly
   * **Fixed** `4225 <https://github.com/pymupdf/PyMuPDF/issues/4225>`_: pixmap.pil_save() fails due to colorspace definition
   * **Fixed** `4232 <https://github.com/pymupdf/PyMuPDF/issues/4232>`_: Incorrect Font style and Size
 

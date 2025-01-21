@@ -16355,7 +16355,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 if mupdf_version_tuple >= (1, 25, 2):
                     self.char_flags = rhs.char_flags
                 self.font = rhs.font
-                self.color = rhs.color
+                self.argb = rhs.argb
                 self.asc = rhs.asc
                 self.desc = rhs.desc
             else:
@@ -16364,7 +16364,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 if mupdf_version_tuple >= (1, 25, 2):
                     self.char_flags = -1
                 self.font = ''
-                self.color = -1
+                self.argb = -1
                 self.asc = 0
                 self.desc = 0
         def __str__(self):
@@ -16402,9 +16402,9 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             style.char_flags = ch.m_internal.flags
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         if mupdf_version_tuple >= (1, 25):
-            style.color = ch.m_internal.argb
+            style.argb = ch.m_internal.argb
         else:
-            style.color = ch.m_internal.color
+            style.argb = ch.m_internal.color
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
 
@@ -16414,7 +16414,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                     and (style.char_flags & ~mupdf.FZ_STEXT_SYNTHETIC)
                         != (old_style.char_flags & ~mupdf.FZ_STEXT_SYNTHETIC)
                     )
-                or style.color != old_style.color
+                or style.argb != old_style.argb
                 or style.font != old_style.font
                 ):
             if old_style.size >= 0:
@@ -16446,7 +16446,9 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             if mupdf_version_tuple >= (1, 25, 2):
                 span[dictkey_char_flags] = style.char_flags
             span[dictkey_font] = JM_EscapeStrFromStr(style.font)
-            span[dictkey_color] = style.color
+            span[dictkey_color] = style.argb & 0xffffff
+            if mupdf_version_tuple >= (1, 25, 0):
+                span['alpha'] = style.argb >> 24
             span["ascender"] = asc
             span["descender"] = desc
 

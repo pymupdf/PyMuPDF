@@ -292,14 +292,21 @@ descender       descender of the font *(float)*
 size            font size *(float)*
 flags           font characteristics *(int)*
 char_flags      char characteristics *(int)*
-color           text color in sRGB format *(int)*
+color           text color in sRGB format 0xRRGGBB *(int)*.
+alpha           text opacity 0..255 *(int)*.
 text            (only for :meth:`extractDICT`) text *(str)*
 chars           (only for :meth:`extractRAWDICT`) *list* of character dictionaries
 =============== =====================================================================
 
+|history_begin|
+
+*(New in version 1.25.3.0):* Added *"alpha"* item.
+
 *(New in version 1.16.0):* *"color"* is the text color encoded in sRGB (int) format, e.g. 0xFF0000 for red. There are functions for converting this integer back to formats (r, g, b) (PDF with float values from 0 to 1) :meth:`sRGB_to_pdf`, or (R, G, B), :meth:`sRGB_to_rgb` (with integer values from 0 to 255).
 
 *(New in v1.18.5):* *"ascender"* and *"descender"* are font properties, provided relative to :data:`fontsize` 1. Note that descender is a negative value. The following picture shows the relationship to other values and properties.
+
+|history_end|
 
 .. image:: images/img-asc-desc.*
    :scale: 60

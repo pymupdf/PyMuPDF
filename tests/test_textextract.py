@@ -422,3 +422,28 @@ def test_4147():
                             else:
                                 print(f'            span: {span["flags"]=:#x}')
                                 assert 'char_flags' not in span
+
+
+def test_4139():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4139.pdf')
+    flags = (0
+            | pymupdf.TEXT_PRESERVE_IMAGES
+            | pymupdf.TEXT_PRESERVE_WHITESPACE
+            | pymupdf.TEXT_CID_FOR_UNKNOWN_UNICODE
+            )
+    with pymupdf.open(path) as document:
+        page = document[0]
+        dicts = page.get_text('dict', flags=flags, sort=True)
+        seen = set()
+        for b_ctr, b in enumerate(dicts['blocks']):
+             for l_ctr, l in enumerate(b.get('lines', [])):
+                for s_ctr, s in enumerate(l['spans']):
+                    color = s.get('color')
+                    if color is not None and color not in seen:
+                        seen.add(color)
+                        print(f"B{b_ctr}.L{l_ctr}.S{s_ctr}: {color=} {hex(color)=} {s=}")
+                        assert color == 0, f'{s=}'
+                        if pymupdf.mupdf_version_tuple >= (1, 25):
+                            assert s['alpha'] == 255
+                        else:
+                            assert not 'alpha' in s
