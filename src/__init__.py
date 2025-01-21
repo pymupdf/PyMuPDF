@@ -9828,9 +9828,7 @@ class Pixmap:
                 spix, w, h, clip = args
                 bbox = JM_irect_from_py(clip)
         
-            spix, w, h, clip = args
             src_pix = spix.this if isinstance(spix, Pixmap) else spix
-            bbox = JM_irect_from_py(clip)
             if not mupdf.fz_is_infinite_irect(bbox):
                 pm = mupdf.fz_scale_pixmap(src_pix, src_pix.x(), src_pix.y(), w, h, bbox)
             else:
