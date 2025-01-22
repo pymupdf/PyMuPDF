@@ -47,7 +47,7 @@ def test_codespell():
     command = textwrap.dedent(f'''
             cd {root} && codespell
                 --skip {shlex.quote(skips)}
-                --ignore-words-list re-use,flate,thirdparty
+                --ignore-words-list re-use,flate,thirdparty,re-using
             ''')
     
     sys.path.append(root)
