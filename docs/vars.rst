@@ -259,6 +259,25 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     2048 -- Ignore built-in differences between text appearing in e.g. PDF viewers versus text stored in the PDF. See :ref:`AdobeManual`, page 615 for background. If set, the **stored** ("replacement" text) is ignored in favor of the displayed text.
 
+.. py:data:: TEXT_COLLECT_STRUCTURE
+
+    256 -- Not supported.
+
+.. py:data:: TEXT_ACCURATE_BBOXES
+
+    512 -- Calculates exact bboxes for each glyph, instead of relying on the information in the font or PDF document.
+
+.. py:data:: TEXT_COLLECT_VECTORS
+
+    1024 -- Not supported.
+
+.. py:data:: TEXT_IGNORE_ACTUALTEXT
+
+    2048 -- Do not use ActualText replacement if present.
+
+.. py:data:: TEXT_STEXT_SEGMENT
+
+    4096 -- Attempt to segment page into different regions.
 
 The following constants represent the default combinations of the above for text extraction and searching:
 
