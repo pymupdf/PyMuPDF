@@ -5642,7 +5642,12 @@ class Document:
         pdf = _as_pdf_document(self)
         # create page sub-pdf via pdf_rearrange_pages2().
         #
-        mupdf.pdf_rearrange_pages2(pdf, pyliste)
+        if mupdf_version_tuple >= (1, 25, 3):
+            # We use PDF_CLEAN_STRUCTURE_KEEP otherwise we lose structure tree
+            # which, for example, breaks test_3705.
+            mupdf.pdf_rearrange_pages2(pdf, pyliste, mupdf.PDF_CLEAN_STRUCTURE_KEEP)
+        else:
+            mupdf.pdf_rearrange_pages2(pdf, pyliste)
 
         # remove any existing pages with their kids
         self._reset_page_refs()
