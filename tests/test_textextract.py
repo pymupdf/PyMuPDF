@@ -3,10 +3,14 @@ Extract page text in various formats.
 No checks performed - just contribute to code coverage.
 """
 import os
+import platform
 import sys
 import textwrap
 
 import pymupdf
+
+import gentle_compare
+
 
 pymupdfdir = os.path.abspath(f'{__file__}/../..')
 scriptdir = f'{pymupdfdir}/tests'
@@ -447,3 +451,66 @@ def test_4139():
                             assert s['alpha'] == 255
                         else:
                             assert not 'alpha' in s
+
+
+def test_4245():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4245.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        regions = page.search_for('Bart Simpson')
+        for region in regions:
+            highlight = page.add_highlight_annot(region)
+            highlight.update()
+        pixmap = page.get_pixmap()
+    path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4245_out.png')
+    pixmap.save(path_out)
+    
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4245_expected.png')
+    rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+    print(f'{rms=}')
+    assert rms < 0.01
+
+
+def test_4180():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4180.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        regions = page.search_for('Reference is made')
+        for region in regions:
+            page.add_redact_annot(region, fill=(0, 0, 0))
+        page.apply_redactions()
+        pixmap = page.get_pixmap()
+    path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_out.png')
+    pixmap.save(path_out)
+    
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_expected.png')
+    rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+    print(f'{rms=}')
+    assert rms < 0.01
+
+
+def test_4182():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4182.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        dict_ = page.get_text('dict')
+        linelist = []
+        for block in dict_['blocks']:
+            if block['type'] == 0:
+                paranum = block['number']
+                if 'lines' in block:
+                    for line in block.get('lines', ()):
+                        for span in line['spans']:
+                            if span['text'].strip():
+                                page.draw_rect(span['bbox'], color=(1, 0, 0))
+                                linelist.append([paranum, span['bbox'], repr(span['text'])])
+        pixmap = page.get_pixmap()
+    path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4182_out.png')
+    pixmap.save(path_out)
+    if platform.system() != 'Windows':  # Output on Windows can fail due to non-utf8 stdout.
+        for l in linelist:
+            print(l)
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4182_expected.png')
+    rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+    print(f'{rms=}')
+    assert rms < 0.01
