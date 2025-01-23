@@ -514,3 +514,30 @@ def test_4182():
     rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
     print(f'{rms=}')
     assert rms < 0.01
+
+
+def test_4179():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4179.pdf')
+    with pymupdf.open(path) as document:
+        page = document[3]
+        dict_ = page.get_text('dict')
+        linelist = []
+        for block in dict_['blocks']:
+            if block['type'] == 0:
+                paranum = block['number']
+                if 'lines' in block:
+                    for line in block.get('lines', ()):
+                        for span in line['spans']:
+                            if span['text'].strip():
+                                page.draw_rect(span['bbox'], color=(1, 0, 0))
+                                linelist.append([paranum, span['bbox'], repr(span['text'])])
+        pixmap = page.get_pixmap()
+    path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4179_out.png')
+    pixmap.save(path_out)
+    if platform.system() != 'Windows':  # Output on Windows can fail due to non-utf8 stdout.
+        for l in linelist:
+            print(l)
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4179_expected.png')
+    rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+    print(f'{rms=}')
+    assert rms < 0.01
