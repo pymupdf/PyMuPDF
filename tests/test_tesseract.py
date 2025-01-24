@@ -20,7 +20,7 @@ def test_tesseract():
     page = doc[5]
     if hasattr(pymupdf, 'mupdf'):
         # rebased.
-        if pymupdf.mupdf_version_tuple < (1, 26):
+        if pymupdf.mupdf_version_tuple < (1, 25, 4):
             tail = 'OCR initialisation failed'
         else:
             tail = 'Tesseract language initialisation failed'
@@ -57,7 +57,7 @@ def test_tesseract():
         rebased = hasattr(pymupdf, 'mupdf')
         if rebased:
             wt = pymupdf.TOOLS.mupdf_warnings()
-            if pymupdf.mupdf_version_tuple < (1, 26):
+            if pymupdf.mupdf_version_tuple < (1, 25, 4):
                 assert wt == (
                         'UNHANDLED EXCEPTION!\n'
                         'library error: Tesseract initialisation failed'
@@ -81,7 +81,7 @@ def test_3842b():
             if 'No tessdata specified and Tesseract is not installed' in str(e):
                 pass
             else:
-                if pymupdf.mupdf_version_tuple < (1, 26):
+                if pymupdf.mupdf_version_tuple < (1, 25, 4):
                     assert 'OCR initialisation failed' in str(e)
                     wt = pymupdf.TOOLS.mupdf_warnings()
                     assert wt == 'UNHANDLED EXCEPTION!\nlibrary error: Tesseract initialisation failed\nUNHANDLED EXCEPTION!\nlibrary error: Tesseract initialisation failed', \
