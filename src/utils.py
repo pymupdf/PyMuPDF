@@ -1675,6 +1675,131 @@ def set_toc(
     return toclen
 
 
+def do_widgets(
+    tar: pymupdf.Document,
+    src: pymupdf.Document,
+    graftmap,
+    from_page: int = -1,
+    to_page: int = -1,
+    start_at: int = -1,
+) -> None:
+    """Insert widgets contained in copied page range into destination PDF.
+
+    Parameter values **must** equal those of method insert_pdf(). Method
+    insert_pdf() which must have been previously executed.
+    """
+    if not src.is_form_pdf:  # nothing to do: source PDF has no fields
+        return
+
+    def get_acroform(doc):
+        """Retrieve the AcroForm dictionary form a PDF."""
+        pdf = mupdf.pdf_document_from_fz_document(doc)
+        # AcroForm (= central form field info)
+        return mupdf.pdf_dict_getp(mupdf.pdf_trailer(pdf), "Root/AcroForm")
+
+    tarpdf = mupdf.pdf_document_from_fz_document(tar)
+    srcpdf = mupdf.pdf_document_from_fz_document(src)
+
+    if tar.is_form_pdf:
+        # target is a Form PDF, so use its AcroForm to include source fields
+        acro = get_acroform(tar)
+        # Important arrays of indirect objects
+        tar_fields = mupdf.pdf_dict_get(acro, pymupdf.PDF_NAME("Fields"))
+        tar_co = mupdf.pdf_dict_get(acro, pymupdf.PDF_NAME("CO"))
+        if not mupdf.pdf_is_array(tar_co):
+            tar_co = mupdf.pdf_dict_put_array(acro, pymupdf.PDF_NAME("CO"), 5)
+    else:
+        # target is no Form PDF, so copy over source AcroForm
+        acro = mupdf.pdf_deep_copy_obj(get_acroform(src))  # make a copy
+
+        # Clear "Fields" and "CO" arrays: will be populated by page fields.
+        # This is required to avoid copying unneeded objects.
+        mupdf.pdf_dict_del(acro, pymupdf.PDF_NAME("Fields"))
+        mupdf.pdf_dict_put_array(acro, pymupdf.PDF_NAME("Fields"), 5)
+        mupdf.pdf_dict_del(acro, pymupdf.PDF_NAME("CO"))
+        mupdf.pdf_dict_put_array(acro, pymupdf.PDF_NAME("CO"), 5)
+
+        # Enrich AcroForm for copying to target
+        acro_graft = mupdf.pdf_graft_mapped_object(graftmap, acro)
+
+        # Insert AcroForm into target PDF
+        acro_tar = mupdf.pdf_add_object(tarpdf, acro_graft)
+        tar_fields = mupdf.pdf_dict_get(acro_tar, pymupdf.PDF_NAME("Fields"))
+        tar_co = mupdf.pdf_dict_get(acro_tar, pymupdf.PDF_NAME("CO"))
+
+        # get its xref and insert it into target catalog
+        tar_xref = mupdf.pdf_to_num(acro_tar)
+        acro_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+        root = mupdf.pdf_dict_get(mupdf.pdf_trailer(tarpdf), pymupdf.PDF_NAME("Root"))
+        mupdf.pdf_dict_put(root, pymupdf.PDF_NAME("AcroForm"), acro_tar_ind)
+
+    if from_page <= to_page:
+        src_range = range(from_page, to_page + 1)
+    else:
+        src_range = range(from_page, to_page - 1, -1)
+
+    for i in range(len(src_range)):
+        # read first page that was copied over
+        tar_page = tar[start_at + i]
+
+        # convert it to a formal PDF page
+        tar_page_pdf = mupdf.pdf_page_from_fz_page(tar_page)
+
+        # extract its annotations array
+        tar_annots = mupdf.pdf_dict_get(tar_page_pdf.obj(), pymupdf.PDF_NAME("Annots"))
+        if not mupdf.pdf_is_array(tar_annots):
+            tar_annots = mupdf.pdf_dict_put_array(
+                tar_page_pdf.obj(), pymupdf.PDF_NAME("Annots"), 5
+            )
+
+        # read the original page in the source PDF
+        src_page = src[src_range[i]]
+
+        # now walk through source page widgets and copy over
+        w_xrefs = [  # widget xrefs of the source page
+            xref
+            for xref, wtype, _ in src_page.annot_xrefs()
+            if wtype == pymupdf.PDF_ANNOT_WIDGET  # pylint: disable=no-member
+        ]
+
+        # Remove page references from widgets to prevent duplicate copies
+        # of the page in the target.
+        for xref in w_xrefs:
+            w_obj = mupdf.pdf_load_object(srcpdf, xref)
+            mupdf.pdf_dict_del(w_obj, pymupdf.PDF_NAME("P"))
+
+        for xref in w_xrefs:
+            w_obj = mupdf.pdf_load_object(srcpdf, xref)
+
+            # check if field is a member of inter-field validations
+            temp = mupdf.pdf_dict_getp(w_obj, "AA/C")
+            if mupdf.pdf_is_dict(temp):
+                is_aac = True
+            else:
+                is_aac = False
+
+            # recursively complete the widget object with all referenced objects
+            w_obj_graft = mupdf.pdf_graft_mapped_object(graftmap, w_obj)
+
+            # add the completed widget object to the target PDF
+            w_obj_tar = mupdf.pdf_add_object(tarpdf, w_obj_graft)
+
+            # extract its generated target xref number
+            tar_xref = mupdf.pdf_to_num(w_obj_tar)
+
+            # create an indirect object from it
+            w_obj_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+
+            # insert this xref reference into the page,
+            mupdf.pdf_array_push(tar_annots, w_obj_tar_ind)
+
+            # and also into "AcroForm/Fields",
+            mupdf.pdf_array_push(tar_fields, w_obj_tar_ind)
+            # and also into "AcroForm/CO" if a computation field.
+            if is_aac:
+                mupdf.pdf_array_push(tar_co, w_obj_tar_ind)
+
+
 def do_links(
     doc1: pymupdf.Document,
     doc2: pymupdf.Document,
@@ -5354,7 +5479,7 @@ def has_annots(doc: pymupdf.Document) -> bool:
     for i in range(doc.page_count):
         for item in doc.page_annot_xrefs(i):
             # pylint: disable=no-member
-            if not (item[1] == pymupdf.PDF_ANNOT_LINK or item[1] == pymupdf.PDF_ANNOT_WIDGET):
+            if not (item[1] == pymupdf.PDF_ANNOT_LINK or item[1] == pymupdf.PDF_ANNOT_WIDGET):  # pylint: disable=no-member
                 return True
     return False
 

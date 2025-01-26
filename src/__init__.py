@@ -4589,12 +4589,14 @@ class Document:
     def insert_pdf(
             self,
             docsrc,
+            *,
             from_page=-1,
             to_page=-1,
             start_at=-1,
             rotate=-1,
             links=1,
             annots=1,
+            widgets=1,
             show_progress=0,
             final=1,
             _gmap=None,
@@ -4609,6 +4611,7 @@ class Document:
             rotate: (int) rotate copied pages, default -1 is no change.
             links: (int/bool) whether to also copy links.
             annots: (int/bool) whether to also copy annotations.
+            widgets: (int/bool) whether to also copy form fields.
             show_progress: (int) progress message interval, 0 is no messages.
             final: (bool) indicates last insertion from this source PDF.
             _gmap: internal use only
@@ -4626,6 +4629,26 @@ class Document:
         sa = start_at
         if sa < 0:
             sa = self.page_count
+        outCount = self.page_count
+        srcCount = docsrc.page_count
+
+        # local copies of page numbers
+        fp = from_page
+        tp = to_page
+        sa = start_at
+
+        # normalize page numbers
+        fp = max(fp, 0) # -1 = first page
+        fp = min(fp, srcCount - 1)  # but do not exceed last page
+
+        if tp < 0:
+            tp = srcCount - 1   # -1 = last page
+        tp = min(tp, srcCount - 1)  # but do not exceed last page
+
+        if sa < 0:
+            sa = outCount   # -1 = behind last page
+        sa = min(sa, outCount)  # but that is also the limit
+
         if len(docsrc) > show_progress > 0:
             inname = os.path.basename(docsrc.name)
             if not inname:
@@ -4663,25 +4686,6 @@ class Document:
         else:
             pdfout = _as_pdf_document(self)
             pdfsrc = _as_pdf_document(docsrc)
-            outCount = mupdf.fz_count_pages(self)
-            srcCount = mupdf.fz_count_pages(docsrc.this)
-
-            # local copies of page numbers
-            fp = from_page
-            tp = to_page
-            sa = start_at
-
-            # normalize page numbers
-            fp = max(fp, 0) # -1 = first page
-            fp = min(fp, srcCount - 1)  # but do not exceed last page
-
-            if tp < 0:
-                tp = srcCount - 1   # -1 = last page
-            tp = min(tp, srcCount - 1)  # but do not exceed last page
-
-            if sa < 0:
-                sa = outCount   # -1 = behind last page
-            sa = min(sa, outCount)  # but that is also the limit
 
             if not pdfout.m_internal or not pdfsrc.m_internal:
                 raise TypeError( "source or target not a PDF")
@@ -4692,7 +4696,9 @@ class Document:
         self._reset_page_refs()
         if links:
             #log( 'insert_pdf(): calling self._do_links()')
-            self._do_links(docsrc, from_page = from_page, to_page = to_page, start_at = sa)
+            self._do_links(docsrc, from_page=fp, to_page=tp, start_at=sa)
+        if widgets:
+            self._do_widgets(docsrc, _gmap, from_page=fp, to_page=tp, start_at=sa)
         if final == 1:
             self.Graftmaps[isrt] = None
         #log( 'insert_pdf(): returning')
@@ -20150,9 +20156,6 @@ def page_merge(doc_des, doc_src, page_from, page_to, rotate, links, copy_annots,
                     continue
                 if mupdf.pdf_name_eq( subtype, PDF_NAME('Popup')):
                     continue
-                if mupdf.pdf_name_eq( subtype, PDF_NAME('Widget')):
-                    mupdf.fz_warn( "skipping widget annotation")
-                    continue
                 if mupdf.pdf_name_eq(subtype, PDF_NAME('Widget')):
                     continue
                 mupdf.pdf_dict_del( o, PDF_NAME('Popup'))
@@ -21295,6 +21298,7 @@ Annot.get_text              = utils.get_text
 Annot.get_textbox           = utils.get_textbox
 
 Document._do_links          = utils.do_links
+Document._do_widgets        = utils.do_widgets
 Document.del_toc_item       = utils.del_toc_item
 Document.get_char_widths    = utils.get_char_widths
 Document.get_oc             = utils.get_oc
