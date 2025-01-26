@@ -1155,7 +1155,7 @@ For details on **embedded files** refer to Appendix 3.
 
     Please consider that annotations are complex objects and may consist of more data "underneath" their visual appearance. Examples are "Text" and "FileAttachment" annotations. When "baking in" annotations / widgets with this method, all this underlying information (attached files, comments, associated PopUp annotations, etc.) will be lost and be removed on next garbage collection.
 
-    Use this feature for instance for methods :meth:`Document.insert_pdf` (which supports no copying of widgets) or :meth:`Page.show_pdf_page` (which supports neither annotations nor widgets) when the source pages should look exactly the same in the target.
+    Use this feature for instance for :meth:`Page.show_pdf_page` (which supports neither annotations nor widgets) when the source pages should look exactly the same in the target.
 
 
     :arg bool annots: convert annotations.
@@ -1293,13 +1293,12 @@ For details on **embedded files** refer to Appendix 3.
      pair: rotate; Document.insert_pdf
      pair: links; Document.insert_pdf
      pair: annots; Document.insert_pdf
+     pair: widgets; Document.insert_pdf
      pair: show_progress; Document.insert_pdf
 
-  .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, show_progress=0, final=1)
+  .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, widgets=True, show_progress=0, final=1)
 
-    * Changed in v1.19.3 - as a fix to issue `#537 <https://github.com/pymupdf/PyMuPDF/issues/537>`_, form fields are always excluded.
-
-    PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Value -1 indicates default values. All pages thus copied will be rotated as specified. Links and annotations can be excluded in the target, see below. All page numbers are 0-based.
+    PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Value -1 indicates default values. All pages thus copied will be rotated as specified. Links, annotations and widgets can be excluded in the target, see below. All page numbers are 0-based.
 
     :arg docsrc: An opened PDF *Document* which must not be the current document. However, it may refer to the same underlying file.
     :type docsrc: *Document*
@@ -1313,13 +1312,14 @@ For details on **embedded files** refer to Appendix 3.
     :arg int rotate: All copied pages will be rotated by the provided value (degrees, integer multiple of 90).
 
     :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal links to outside the copied page range are **always excluded**. 
-    :arg bool annots: *(new in v1.16.1)* choose whether annotations should be included in the copy. Form **fields can never be copied** -- see below.
+    :arg bool annots: choose whether annotations should be included in the copy.
+    :arg bool widgets: choose whether annotations should be included in the copy. If `True` and at least one of the source pages contains form fields, the target PDF will be turned into a Form PDF (if not already being one).
     :arg int show_progress: *(new in v1.17.7)* specify an interval size greater zero to see progress messages on `sys.stdout`. After each interval, a message like `Inserted 30 of 47 pages.` will be printed.
     :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default *True*. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
 
   .. note::
 
-     1. This is a page-based method. Document-level information of source documents is therefore ignored. Examples include Optional Content, Embedded Files, `StructureElem`, `AcroForm`, table of contents, page labels, metadata, named destinations (and other named entries) and some more. As a consequence, specifically, **Form Fields (widgets) can never be copied** -- although they seem to appear on pages only. Look at :meth:`Document.bake` for converting a source document if you need to retain at least widget **appearances.**
+     1. This is a page-based method. Document-level information of source documents is therefore mostly ignored. Examples include Optional Content, Embedded Files, `StructureElem`, table of contents, page labels, metadata, named destinations (and other named entries) and some more.
 
      2. If `from_page > to_page`, pages will be **copied in reverse order**. If `0 <= from_page == to_page`, then one page will be copied.
 

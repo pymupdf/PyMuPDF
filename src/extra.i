@@ -346,11 +346,6 @@ static void page_merge(
                 mupdf::PdfObj subtype = mupdf::pdf_dict_get(o, PDF_NAME(Subtype));
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME(Link))) continue;
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME(Popup))) continue;
-                if (mupdf::pdf_name_eq(subtype, PDF_NAME(Widget)))
-                {
-                    mupdf::fz_warn("skipping widget annotation");
-                    continue;
-                }
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME(Widget))) continue;
                 mupdf::pdf_dict_del(o, PDF_NAME(Popup));
                 mupdf::pdf_dict_del(o, PDF_NAME(P));

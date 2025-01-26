@@ -186,3 +186,38 @@ def test_3789():
         # If this is the last split file, exit the loop
         if to_page == -1:
             break
+
+
+def test_widget_insert():
+    """Confirm copy of form fields / widgets."""
+    from pymupdf import mupdf
+    tar = pymupdf.open(os.path.join(resources, "cms-etc-filled.pdf"))
+    pc0 = tar.page_count  # for later assertion
+    src = pymupdf.open(os.path.join(resources, "interfield-calculation.pdf"))
+    pc1 = src.page_count  # for later assertion
+
+    tarpdf = pymupdf._as_pdf_document(tar)
+    tar_field_count = mupdf.pdf_array_len(
+        mupdf.pdf_dict_getp(mupdf.pdf_trailer(tarpdf), "Root/AcroForm/Fields")
+    )
+    tar_co_count = mupdf.pdf_array_len(
+        mupdf.pdf_dict_getp(mupdf.pdf_trailer(tarpdf), "Root/AcroForm/CO")
+    )
+    srcpdf = pymupdf._as_pdf_document(src)
+    src_field_count = mupdf.pdf_array_len(
+        mupdf.pdf_dict_getp(mupdf.pdf_trailer(srcpdf), "Root/AcroForm/Fields")
+    )
+    src_co_count = mupdf.pdf_array_len(
+        mupdf.pdf_dict_getp(mupdf.pdf_trailer(srcpdf), "Root/AcroForm/CO")
+    )
+
+    tar.insert_pdf(src)
+    new_field_count = mupdf.pdf_array_len(
+        mupdf.pdf_dict_getp(mupdf.pdf_trailer(tarpdf), "Root/AcroForm/Fields")
+    )
+    new_co_count = mupdf.pdf_array_len(
+        mupdf.pdf_dict_getp(mupdf.pdf_trailer(tarpdf), "Root/AcroForm/CO")
+    )
+    assert tar.page_count == pc0 + pc1
+    assert new_field_count == tar_field_count + src_field_count
+    assert new_co_count == tar_co_count + src_co_count

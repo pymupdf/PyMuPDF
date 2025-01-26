@@ -1,0 +1,669 @@
+%PDF-1.7
+%µ¶
+
+1 0 obj
+<<
+  /Type /Catalog
+  /Pages 2 0 R
+  /AcroForm <<
+    /Fields [ 5 0 R 8 0 R 10 0 R 16 0 R 18 0 R 20 0 R 26 0 R 28 0 R
+        30 0 R ]
+    /CO [ 10 0 R 20 0 R 30 0 R ]
+  >>
+>>
+endobj
+
+2 0 obj
+<<
+  /Type /Pages
+  /Count 3
+  /Kids [ 4 0 R 15 0 R 25 0 R ]
+>>
+endobj
+
+3 0 obj
+<<
+>>
+endobj
+
+4 0 obj
+<<
+  /Type /Page
+  /MediaBox [ 0 0 595 842 ]
+  /Rotate 0
+  /Resources 3 0 R
+  /Parent 2 0 R
+  /Annots [ 5 0 R 8 0 R 10 0 R ]
+>>
+endobj
+
+5 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (NUM10)
+  /NM (fitz-W0)
+  /Rect [ 100 722 300 742 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 2
+  /V (1)
+  /AP <<
+    /N 7 0 R
+  >>
+>>
+endobj
+
+6 0 obj
+<<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+  /Encoding /WinAnsiEncoding
+>>
+endobj
+
+7 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 79
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(1) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+8 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (NUM20)
+  /NM (fitz-W1)
+  /Rect [ 100 692 300 712 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 2
+  /V (200)
+  /AP <<
+    /N 9 0 R
+  >>
+>>
+endobj
+
+9 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 81
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(200) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+10 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (RESULT0)
+  /NM (fitz-W2)
+  /Rect [ 100 642 300 662 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 0
+  /AA <<
+    /C 12 0 R
+  >>
+  /V (Resultat?)
+  /AP <<
+    /N 13 0 R
+  >>
+>>
+endobj
+
+11 0 obj
+<<
+  /Length 55
+>>
+stream
+AFSimple_Calculate("SUM", new Array("NUM10", "NUM20"));
+endstream
+endobj
+
+12 0 obj
+<<
+  /S /JavaScript
+  /JS 11 0 R
+>>
+endobj
+
+13 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 87
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(Resultat?) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+14 0 obj
+<<
+>>
+endobj
+
+15 0 obj
+<<
+  /Type /Page
+  /MediaBox [ 0 0 595 842 ]
+  /Rotate 0
+  /Resources 14 0 R
+  /Parent 2 0 R
+  /Annots [ 16 0 R 18 0 R 20 0 R ]
+>>
+endobj
+
+16 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (NUM11)
+  /NM (fitz-W0)
+  /Rect [ 100 722 300 742 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 2
+  /V (101)
+  /AP <<
+    /N 17 0 R
+  >>
+>>
+endobj
+
+17 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 81
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(101) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+18 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (NUM21)
+  /NM (fitz-W1)
+  /Rect [ 100 692 300 712 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 2
+  /V (200)
+  /AP <<
+    /N 19 0 R
+  >>
+>>
+endobj
+
+19 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 81
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(200) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+20 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (RESULT1)
+  /NM (fitz-W2)
+  /Rect [ 100 642 300 662 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 0
+  /AA <<
+    /C 22 0 R
+  >>
+  /V (Resultat?)
+  /AP <<
+    /N 23 0 R
+  >>
+>>
+endobj
+
+21 0 obj
+<<
+  /Length 55
+>>
+stream
+AFSimple_Calculate("SUM", new Array("NUM11", "NUM21"));
+endstream
+endobj
+
+22 0 obj
+<<
+  /S /JavaScript
+  /JS 21 0 R
+>>
+endobj
+
+23 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 87
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(Resultat?) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+24 0 obj
+<<
+>>
+endobj
+
+25 0 obj
+<<
+  /Type /Page
+  /MediaBox [ 0 0 595 842 ]
+  /Rotate 0
+  /Resources 24 0 R
+  /Parent 2 0 R
+  /Annots [ 26 0 R 28 0 R 30 0 R ]
+>>
+endobj
+
+26 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (NUM12)
+  /NM (fitz-W0)
+  /Rect [ 100 722 300 742 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 2
+  /V (201)
+  /AP <<
+    /N 27 0 R
+  >>
+>>
+endobj
+
+27 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 81
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(201) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+28 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (NUM22)
+  /NM (fitz-W1)
+  /Rect [ 100 692 300 712 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 2
+  /V (200)
+  /AP <<
+    /N 29 0 R
+  >>
+>>
+endobj
+
+29 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 81
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(200) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+30 0 obj
+<<
+  /Type /Annot
+  /Subtype /Widget
+  /FT /Tx
+  /T (RESULT2)
+  /NM (fitz-W2)
+  /Rect [ 100 642 300 662 ]
+  /F 4
+  /BS <<
+    /S /S
+    /W 0
+  >>
+  /DA (0 0 0 rg /Helv 0 Tf)
+  /Ff 0
+  /AA <<
+    /C 32 0 R
+  >>
+  /V (Resultat?)
+  /AP <<
+    /N 33 0 R
+  >>
+>>
+endobj
+
+31 0 obj
+<<
+  /Length 55
+>>
+stream
+AFSimple_Calculate("SUM", new Array("NUM12", "NUM22"));
+endstream
+endobj
+
+32 0 obj
+<<
+  /S /JavaScript
+  /JS 31 0 R
+>>
+endobj
+
+33 0 obj
+<<
+  /Type /XObject
+  /Subtype /Form
+  /BBox [ 0 0 200 20 ]
+  /Matrix [ 1 0 0 1 0 0 ]
+  /Resources <<
+    /Font <<
+      /Helv 6 0 R
+    >>
+  >>
+  /Length 87
+>>
+stream
+/Tx BMC
+q
+0 w
+0 0 200 20 re
+W
+n
+BT
+0 0 0 rg
+0 4 Td
+/Helv 20 Tf
+(Resultat?) Tj
+ET
+Q
+EMC
+
+endstream
+endobj
+
+xref
+0 34
+0000000000 00001 f 
+0000000016 00000 n 
+0000000208 00000 n 
+0000000288 00000 n 
+0000000310 00000 n 
+0000000454 00000 n 
+0000000689 00000 n 
+0000000795 00000 n 
+0000001069 00000 n 
+0000001306 00000 n 
+0000001582 00000 n 
+0000001857 00000 n 
+0000001966 00000 n 
+0000002019 00000 n 
+0000002302 00000 n 
+0000002325 00000 n 
+0000002473 00000 n 
+0000002712 00000 n 
+0000002989 00000 n 
+0000003228 00000 n 
+0000003505 00000 n 
+0000003780 00000 n 
+0000003889 00000 n 
+0000003942 00000 n 
+0000004225 00000 n 
+0000004248 00000 n 
+0000004396 00000 n 
+0000004635 00000 n 
+0000004912 00000 n 
+0000005151 00000 n 
+0000005428 00000 n 
+0000005703 00000 n 
+0000005812 00000 n 
+0000005865 00000 n 
+
+trailer
+<<
+  /Size 34
+  /Root 1 0 R
+  /ID [ <41C38EC38A1A5C58C2A1507EC3B17775> <37EE68FEBD7F417FDE1B6A6EBE1F12D0> ]
+>>
+startxref
+6148
+%%EOF
