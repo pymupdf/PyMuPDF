@@ -333,16 +333,17 @@ The following shows the original span rectangle in red and the rectangle with re
 
 *"flags"* is an integer, which represents font properties except for the first bit 0. They are to be interpreted like this:
 
-* bit 0: superscripted (2\ :sup:`0`) -- not a font property, detected by MuPDF code.
-* bit 1: italic (2\ :sup:`1`)
-* bit 2: serifed (2\ :sup:`2`)
-* bit 3: monospaced (2\ :sup:`3`)
-* bit 4: bold (2\ :sup:`4`)
+* bit 0: superscripted (:data:`TEXT_FONT_SUPERSCRIPT`) -- not a font property, detected by MuPDF code.
+* bit 1: italic (:data:`TEXT_FONT_ITALIC`)
+* bit 2: serifed (:data:`TEXT_FONT_SERIFED`)
+* bit 3: monospaced (:data:`TEXT_FONT_MONOSPACED`)
+* bit 4: bold (:data:`TEXT_FONT_BOLD`)
 
 Test these characteristics like so:
 
->>> if flags & 2**1: print("italic")
->>> # etc.
+>>> if flags & pymupdf.TEXT_FONT_BOLD & pymupdf.TEXT_FONT_ITALIC:
+        print(f"{span['text']=} is bold and italic")
+
 
 Bits 1 thru 4 are font properties, i.e. encoded in the font program. Please note, that this information is not necessarily correct or complete: fonts quite often contain wrong data here.
 

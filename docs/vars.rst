@@ -3,7 +3,7 @@
 ===============================
 Constants and Enumerations
 ===============================
-Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|. Each of the following variables is accessible as *pymupdf.variable*.
+Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|. Each of the following values is accessible as `pymupdf.value`.
 
 
 Constants
@@ -187,9 +187,35 @@ Text Alignment
 
 .. _TextPreserve:
 
+.. _FontProperties:
+
+Font Properties
+-----------------------
+Please note that the following bits are derived from what a font has to say about its properties. It may not be (and quite often is not) correct.
+
+.. py:data:: TEXT_FONT_SUPERSCRIPT
+
+    1 -- the character or span is a superscript. This property is computed by MuPDF and not part of any font information.
+
+.. py:data:: TEXT_FONT_ITALIC
+
+    2 -- the font is italic.
+
+.. py:data:: TEXT_FONT_SERIFED
+
+    4 -- the font is serifed.
+
+.. py:data:: TEXT_FONT_MONOSPACED
+
+    8 -- the font is mono-spaced.
+
+.. py:data:: TEXT_FONT_BOLD
+
+    16 -- the font is bold.
+
 Text Extraction Flags
 ---------------------
-Option bits controlling the amount of data, that are parsed into a :ref:`TextPage` -- this class is mainly used only internally in PyMuPDF.
+Option bits controlling the amount of data, that are parsed into a :ref:`TextPage`.
 
 For the PyMuPDF programmer, some combination (using Python's `|` operator, or simply use `+`) of these values are aggregated in the ``flags`` integer, a parameter of all text search and text extraction methods. Depending on the individual method, different default combinations of the values are used. Please use a value that meets your situation. Especially make sure to switch off image extraction unless you really need them. The impact on performance and memory is significant!
 
@@ -219,11 +245,19 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
 .. py:data:: TEXT_MEDIABOX_CLIP
 
-    64 -- If set, characters entirely outside a page's **mediabox** will be ignored. This is default in PyMuPDF.
+    64 -- Characters entirely outside a page's **mediabox** or contained in other "clipped" areas will be ignored. This is default in PyMuPDF.
 
 .. py:data:: TEXT_CID_FOR_UNKNOWN_UNICODE
 
-    128 -- If set, use raw character codes instead of U+FFFD. This is the default for **text extraction** in PyMuPDF. If you **want to detect** when encoding information is missing or uncertain, toggle this flag and scan for the presence of U+FFFD (= `chr(0xfffd)`) code points in the resulting text.
+    128 -- Use raw character codes instead of U+FFFD. This is the default for **text extraction** in PyMuPDF. If you **want to detect** when encoding information is missing or uncertain, toggle this flag and scan for the presence of U+FFFD (= `chr(0xfffd)`) code points in the resulting text.
+
+.. py:data:: TEXT_ACCURATE_BBOXES
+
+    512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute its rectangle hull. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of height 0** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with getting meaningful boundary boxes even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
+
+.. py:data:: TEXT_IGNORE_ACTUALTEXT
+
+    2048 -- Ignore built-in differences between text appearing in e.g. PDF viewers versus text stored in the PDF. See :ref:`AdobeManual`, page 615 for background. If set, the **stored** ("replacement" text) is ignored in favor of the displayed text.
 
 
 The following constants represent the default combinations of the above for text extraction and searching:
