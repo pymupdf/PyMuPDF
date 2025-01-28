@@ -514,3 +514,96 @@ def test_4182():
     rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
     print(f'{rms=}')
     assert rms < 0.01
+
+
+def test_4179():
+    if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
+        # Looks like Python code doesn't behave same as C++, probably because
+        # of the code not being correct for Python's native unicode strings.
+        #
+        print(f'test_4179(): Not running with PYMUPDF_USE_EXTRA=0 because known to fail.')
+        return
+    # We check that using TEXT_ACCURATE_BBOXES gives the correct boxes. But
+    # this also requires that we disable PyMuPDF quad corrections.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4179.pdf')
+    
+    # Disable anti-aliasing to avoid our drawing of multiple identical bboxes
+    # (from normal/accurate bboxes) giving slightly different results.
+    aa = pymupdf.mupdf.fz_aa_level()
+    uqc = pymupdf._globals.skip_quad_corrections
+    pymupdf.TOOLS.set_aa_level(0)
+    pymupdf.TOOLS.unset_quad_corrections(True)
+    assert pymupdf._globals.skip_quad_corrections
+    try:
+        with pymupdf.open(path) as document:
+            page = document[0]
+
+            char_sqrt = b'\xe2\x88\x9a'.decode()
+            
+            # Search with defaults.
+            bboxes_search = page.search_for(char_sqrt)
+            assert len(bboxes_search) == 1
+            print(f'bboxes_search[0]:\n    {bboxes_search[0]!r}')
+            page.draw_rect(bboxes_search[0], color=(1, 0, 0))
+            rms = gentle_compare.rms(bboxes_search[0], (250.0489959716797, 91.93604278564453, 258.34783935546875, 101.34073638916016))
+            assert rms < 0.01
+
+            # Search with TEXT_ACCURATE_BBOXES.
+            bboxes_search_accurate = page.search_for(
+                    char_sqrt,
+                    flags = (0
+                            | pymupdf.TEXT_DEHYPHENATE
+                            | pymupdf.TEXT_PRESERVE_WHITESPACE
+                            | pymupdf.TEXT_PRESERVE_LIGATURES
+                            | pymupdf.TEXT_MEDIABOX_CLIP
+                            | pymupdf.TEXT_ACCURATE_BBOXES
+                            ),
+                    )
+            assert len(bboxes_search_accurate) == 1
+            print(f'bboxes_search_accurate[0]\n    {bboxes_search_accurate[0]!r}')
+            page.draw_rect(bboxes_search_accurate[0], color=(0, 1, 0))
+            rms = gentle_compare.rms(bboxes_search_accurate[0], (250.0489959716797, 99.00948333740234, 258.34783935546875, 108.97208404541016))
+            assert rms < 0.01
+
+            # Iterate with TEXT_ACCURATE_BBOXES.
+            bboxes_iterate_accurate = list()
+            dict_ = page.get_text(
+                    'rawdict',
+                    flags = pymupdf.TEXT_ACCURATE_BBOXES,
+                    )
+            linelist = []
+            for block in dict_['blocks']:
+                if block['type'] == 0:
+                    if 'lines' in block:
+                        for line in block.get('lines', ()):
+                            for span in line['spans']:
+                                for ch in span['chars']:
+                                    if ch['c'] == char_sqrt:
+                                        bbox_iterate_accurate = ch['bbox']
+                                        bboxes_iterate_accurate.append(bbox_iterate_accurate)
+                                        print(f'bbox_iterate_accurate:\n    {bbox_iterate_accurate!r}')
+                                        page.draw_rect(bbox_iterate_accurate, color=(0, 0, 1))
+            
+            assert bboxes_search_accurate != bboxes_search
+            assert bboxes_iterate_accurate == bboxes_search_accurate
+            pixmap = page.get_pixmap()
+        
+        path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4179_out.png')
+        pixmap.save(path_out)
+        path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4179_expected.png')
+        rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+        pixmap_diff = gentle_compare.pixmaps_diff(path_expected, pixmap)
+        path_out_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4179_diff.png')
+        pixmap_diff.save(path_out_diff)
+        print(f'Have saved to: {path_out_diff=}')
+        print(f'{rms=}')
+        if pymupdf.mupdf_version_tuple < (1, 26):
+            # Prior to fix for mupdf bug 708274, our rects are rendered slightly incorrectly.
+            assert 3.5 < rms < 4.5
+        else:
+            assert rms < 0.01
+    
+    finally:
+        pymupdf.TOOLS.set_aa_level(aa)
+        pymupdf.TOOLS.unset_quad_corrections(uqc)
