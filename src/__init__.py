@@ -13579,6 +13579,7 @@ csCMYK = Colorspace(CS_CMYK)
 #
 dictkey_align = "align"
 dictkey_asc = "ascender"
+dictkey_bidi = "bidi"
 dictkey_bbox = "bbox"
 dictkey_blocks = "blocks"
 dictkey_bpc = "bpc"
@@ -16367,6 +16368,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 self.argb = rhs.argb
                 self.asc = rhs.asc
                 self.desc = rhs.desc
+                self.bidi = rhs.bidi
             else:
                 self.size = -1
                 self.flags = -1
@@ -16376,6 +16378,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
                 self.argb = -1
                 self.asc = 0
                 self.desc = 0
+                self.bidi = 0
         def __str__(self):
             ret = f'{self.size} {self.flags}'
             if mupdf_version_tuple >= (1, 25, 2):
@@ -16408,7 +16411,8 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
         style.size = ch.m_internal.size
         style.flags = flags
         if mupdf_version_tuple >= (1, 25, 2):
-            style.char_flags = ch.m_internal.flags
+            # FZ_STEXT_SYNTHETIC is per-char, not per-span.
+            style.char_flags = ch.m_internal.flags & ~mupdf.FZ_STEXT_SYNTHETIC
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         if mupdf_version_tuple >= (1, 25):
             style.argb = ch.m_internal.argb
@@ -16416,15 +16420,16 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             style.argb = ch.m_internal.color
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
+        style.bidi = ch.m_internal.bidi
 
         if (style.size != old_style.size
                 or style.flags != old_style.flags
                 or (mupdf_version_tuple >= (1, 25, 2)
-                    and (style.char_flags & ~mupdf.FZ_STEXT_SYNTHETIC)
-                        != (old_style.char_flags & ~mupdf.FZ_STEXT_SYNTHETIC)
+                    and (style.char_flags != old_style.char_flags)
                     )
                 or style.argb != old_style.argb
                 or style.font != old_style.font
+                or style.bidi != old_style.bidi
                 ):
             if old_style.size >= 0:
                 # not first one, output previous
@@ -16452,6 +16457,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
 
             span[dictkey_size] = style.size
             span[dictkey_flags] = style.flags
+            span[dictkey_bidi] = style.bidi
             if mupdf_version_tuple >= (1, 25, 2):
                 span[dictkey_char_flags] = style.char_flags
             span[dictkey_font] = JM_EscapeStrFromStr(style.font)
@@ -16474,6 +16480,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             char_dict[dictkey_origin] = JM_py_from_point( ch.m_internal.origin)
             char_dict[dictkey_bbox] = JM_py_from_rect(r)
             char_dict[dictkey_c] = chr(ch.m_internal.c)
+            char_dict['synthetic'] = bool(ch.m_internal.flags & mupdf.FZ_STEXT_SYNTHETIC)
 
             if char_list is None:
                 char_list = []

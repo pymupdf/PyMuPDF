@@ -23,6 +23,7 @@ otherwise compilation can fail because free() and malloc() are not declared. */
     
     dictkey_align = PyUnicode_InternFromString("align");
     dictkey_ascender = PyUnicode_InternFromString("ascender");
+    dictkey_bidi = PyUnicode_InternFromString("bidi");
     dictkey_bbox = PyUnicode_InternFromString("bbox");
     dictkey_blocks = PyUnicode_InternFromString("blocks");
     dictkey_bpc = PyUnicode_InternFromString("bpc");
@@ -821,6 +822,7 @@ static PyObject* JM_outline_xrefs(mupdf::PdfObj obj, PyObject* xrefs)
 
 PyObject* dictkey_align = NULL;
 PyObject* dictkey_ascender = NULL;
+PyObject* dictkey_bidi = NULL;
 PyObject* dictkey_bbox = NULL;
 PyObject* dictkey_blocks = NULL;
 PyObject* dictkey_bpc = NULL;
@@ -841,6 +843,7 @@ PyObject* dictkey_ext = NULL;
 PyObject* dictkey_filename = NULL;
 PyObject* dictkey_fill = NULL;
 PyObject* dictkey_flags = NULL;
+PyObject* dictkey_char_bidi = NULL;
 PyObject* dictkey_char_flags = NULL;
 PyObject* dictkey_font = NULL;
 PyObject* dictkey_glyph = NULL;
@@ -3053,6 +3056,7 @@ mupdf::FzRect JM_make_spanlist(
         unsigned argb = 0;
         float asc = 0;
         float desc = 0;
+        uint16_t bidi = 0;
     };
     char_style old_style;
     char_style style;
@@ -3076,7 +3080,8 @@ mupdf::FzRect JM_make_spanlist(
         style.size = ch.m_internal->size;
         style.flags = flags;
         #if MUPDF_VERSION_GE(1, 25, 2)
-        style.char_flags = ch.m_internal->flags;
+        /* FZ_STEXT_SYNTHETIC is per-char, not per-span. */
+        style.char_flags = ch.m_internal->flags & ~FZ_STEXT_SYNTHETIC;
         #endif
         style.font = JM_font_name(ch.m_internal->font);
         #if MUPDF_VERSION_GE(1, 25, 0)
@@ -3091,10 +3096,11 @@ mupdf::FzRect JM_make_spanlist(
                 || style.size != old_style.size
                 || style.flags != old_style.flags
                 #if MUPDF_VERSION_GE(1, 25, 2)
-                || (style.char_flags & ~FZ_STEXT_SYNTHETIC) != (old_style.char_flags & ~FZ_STEXT_SYNTHETIC)
+                || style.char_flags != old_style.char_flags
                 #endif
                 || style.argb != old_style.argb
                 || strcmp(style.font, old_style.font) != 0
+                || style.bidi != old_style.bidi
                 )
         {
             if (old_style.size >= 0)
@@ -3130,6 +3136,7 @@ mupdf::FzRect JM_make_spanlist(
 
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("I", style.flags));
+            DICT_SETITEM_DROP(span, dictkey_bidi, Py_BuildValue("I", style.bidi));
             #if MUPDF_VERSION_GE(1, 25, 2)
             DICT_SETITEM_DROP(span, dictkey_char_flags, Py_BuildValue("I", style.char_flags));
             #endif
@@ -3157,7 +3164,7 @@ mupdf::FzRect JM_make_spanlist(
             DICT_SETITEM_DROP(char_dict, dictkey_bbox, JM_py_from_rect(r));
 
             DICT_SETITEM_DROP(char_dict, dictkey_c, Py_BuildValue("C", ch.m_internal->c));
-
+            DICT_SETITEMSTR_DROP(char_dict, "synthetic", Py_BuildValue("O", (ch.m_internal->flags & FZ_STEXT_SYNTHETIC) ? Py_True : Py_False));
             if (!char_list)
             {
                 char_list = PyList_New(0);

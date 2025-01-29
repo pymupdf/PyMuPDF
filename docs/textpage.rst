@@ -351,7 +351,7 @@ Bits 1 thru 4 are font properties, i.e. encoded in the font program. Please note
 
 * bit 0: strikeout.
 * bit 1: underline.
-* bit 2: synthetic.
+* bit 2: synthetic (always 0, see char dictionary).
 * bit 3: filled.
 * bit 4: stroked.
 * bit 5: clipped.
@@ -370,15 +370,17 @@ Character Dictionary for :meth:`extractRAWDICT`
 =============== ===========================================================
 origin          character's left baseline point, :data:`point_like`
 bbox            character rectangle, :data:`rect_like`
+synthetic       bool.
 c               the character (unicode)
 =============== ===========================================================
+
+(`synthetic` is new in v1.25.3.)
 
 This image shows the relationship between a character's bbox and its quad: |textpagechar|
 
 .. |textpagechar| image:: images/img-textpage-char.*
    :align: top
    :scale: 66
-
 
 .. rubric:: Footnotes
 
