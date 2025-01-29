@@ -407,25 +407,31 @@ def test_4147():
             (False, os.path.normpath(f'{__file__}/../../tests/resources/test_4147.pdf')),
             (True, os.path.normpath(f'{__file__}/../../tests/resources/symbol-list.pdf')),
             ):
-        print(f'{expect_visible} {path=}')
+        print(f'{expect_visible=} {path=}')
         with pymupdf.open(path) as document:
             page = document[0]
             text = page.get_text('rawdict')
             for block in text['blocks']:
                 if block['type'] == 0:
+                    #print(f'     block')
                     for line in block['lines']:
+                        #print(f'        line')
                         for span in line['spans']:
-                            #print(f'            {span=}')
+                            #print(f'            span')
                             if pymupdf.mupdf_version_tuple >= (1, 25, 2):
-                                print(f'            span: {span["flags"]=:#x} {span["char_flags"]=:#x}')
+                                #print(f'            span: {span["flags"]=:#x} {span["char_flags"]=:#x}')
                                 if expect_visible:
                                     assert span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED
                                 else:
                                     assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED)
                                     assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_STROKED)
                             else:
-                                print(f'            span: {span["flags"]=:#x}')
+                                #print(f'            span: {span["flags"]=:#x}')
                                 assert 'char_flags' not in span
+                            # Check commit `add 'bidi' to span dict, add 'synthetic' to char dict.`
+                            assert span['bidi'] == 0
+                            for ch in span['chars']:
+                                assert isinstance(ch['synthetic'], bool)
 
 
 def test_4139():
