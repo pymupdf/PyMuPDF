@@ -498,8 +498,15 @@ def test_4180():
     
     path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_expected.png')
     rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+    pixmap_diff = gentle_compare.pixmaps_diff(path_expected, pixmap)
+    path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_diff.png')
+    pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    assert rms < 0.01
+    if pymupdf.mupdf_version_tuple < (1, 26):
+        # Prior to fix for mupdf bug 708274.
+        assert rms < 0.3
+    else:
+        assert rms < 0.01
 
 
 def test_4182():
