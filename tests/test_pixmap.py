@@ -164,13 +164,16 @@ def test_3050():
     This is known to fail if MuPDF is built without it's default third-party
     libraries, e.g. in Linux system installs.
     '''
-    pdf_file = pymupdf.open(pdf)
-    for page_no, page in enumerate(pdf_file):
+    path = os.path.normpath(f'{__file__}/../../tests/resources/001003ED.pdf')
+    with pymupdf.open(path) as pdf_file:
+        page_no = 0
+        page = pdf_file[page_no]
         zoom_x = 4.0
         zoom_y = 4.0
         matrix = pymupdf.Matrix(zoom_x, zoom_y)
         pix = page.get_pixmap(matrix=matrix)
-        digest0 = pix.digest
+        path_out = os.path.normpath(f'{__file__}/../../tests/test_3050_out.png')
+        pix.save(path_out)
         print(f'{pix.width=} {pix.height=}')
         def product(x, y):
             for yy in y:
@@ -183,16 +186,18 @@ def test_3050():
             if sum(pix.pixel(pos[0], pos[1])) >= 600:
                 n += 1
                 pix.set_pixel(pos[0], pos[1], (255, 255, 255))
-        digest1 = pix.digest
-        print(f'{page_no=} {n=} {digest0=} {digest1=}')
-        digest_expected = b'\xd7x\x94_\x98\xa1<-/\xf3\xf9\x04\xec#\xaa\xee'
-        pix.save(os.path.abspath(f'{__file__}/../../tests/test_3050_out.png'))
-        assert digest1 != digest0
-        assert digest1 == digest_expected
-        rebased = hasattr(pymupdf, 'mupdf')
-        if rebased:
-            wt = pymupdf.TOOLS.mupdf_warnings()
-            assert wt == 'PDF stream Length incorrect'
+        path_out2 = os.path.normpath(f'{__file__}/../../tests/test_3050_out2.png')
+        pix.save(path_out2)
+        path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3050_expected.png')
+        rms = gentle_compare.pixmaps_rms(path_expected, path_out2)
+        print(f'{rms=}')
+        if pymupdf.mupdf_version_tuple < (1, 26):
+            # Slight differences in rendering from fix for mupdf bug 708274.
+            assert rms < 0.2
+        else:
+            assert rms == 0
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'PDF stream Length incorrect'
 
 def test_3058():
     doc = pymupdf.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
