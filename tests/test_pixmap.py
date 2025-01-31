@@ -406,12 +406,18 @@ def test_3448():
         print(f'Have written to: {path_out}')
     path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3448.pdf-expected.png')
     pixmap_expected = pymupdf.Pixmap(path_expected)
-    diff = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
-    print(f'{diff=}')
+    rms = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
+    diff = gentle_compare.pixmaps_diff(pixmap_expected, pixmap)
+    path_diff = os.path.normpath(f'{__file__}/../../tests/test_3448-diff.png')
+    diff.save(path_diff)
+    print(f'{rms=}')
     if pymupdf.mupdf_version_tuple < (1, 24, 11):
-        assert 30 <= diff < 45
+        assert 30 <= rms < 45
+    elif pymupdf.mupdf_version_tuple < (1, 26):
+        # Prior to fix for mupdf bug 708274.
+        assert 1 < rms < 2
     else:
-        assert 0 <= diff < 0.5
+        assert rms == 0
 
 
 def test_3854():
