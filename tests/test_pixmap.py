@@ -430,13 +430,18 @@ def test_3854():
     # 2024-11-29: this is the incorrect expected output.
     path_expected_png = os.path.normpath(f'{__file__}/../../tests/resources/test_3854_expected.png')
     pixmap_expected = pymupdf.Pixmap(path_expected_png)
-    
+    pixmap_diff = gentle_compare.pixmaps_diff(pixmap_expected, pixmap)
+    path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_3854_diff.png')
+    pixmap_diff.save(path_diff)
     rms = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
     print(f'{rms=}.')
     if os.environ.get('PYMUPDF_SYSINSTALL_TEST') == '1':
         # MuPDF using external third-party libs gives slightly different
         # behaviour.
-        assert rms < 1
+        assert rms < 2
+    elif pymupdf.mupdf_version_tuple < (1, 26):
+        # # Prior to fix for mupdf bug 708274.
+        assert 0.5 < rms < 2
     else:
         assert rms == 0
 
