@@ -607,3 +607,157 @@ def test_4179():
     finally:
         pymupdf.TOOLS.set_aa_level(aa)
         pymupdf.TOOLS.unset_quad_corrections(uqc)
+
+
+def test_extendable_textpage():
+    
+    # 2025-01-28:
+    #
+    # We can create a pdf with two pages whose text is adjacent when stitched
+    # together vertically.
+    #
+    # We can append page to stext_page ok.
+    #
+    # Extracted spans are adjacent vertically as hoped.
+    #
+    # But... We always get a separate block for each page, even though the y
+    # coordinates are adjacent and so we would expect stext_page to return a
+    # single block. This is all with `sort=True`.
+    #
+    # Maybe sort=true doesn't ever join adjacent blocks??
+    #
+    print()
+    
+    path = os.path.normpath(f'{__file__}/../../tests/test_extendable_textpage.pdf')
+    with pymupdf.open(filetype='pdf') as document:
+        document.new_page()
+        document.new_page()
+        document.save(path)
+
+    # Create document with two pages and text where a paragraph spans the two
+    # pages.
+    #
+    with pymupdf.open(path) as document:
+        page0 = document[0]
+        page1 = document[1]
+        y = 100
+        for i in range(4):
+            page0.insert_text((100, y+9.6), 'abcd'[i] * 16)
+            page1.insert_text((100, y+9.6), 'efgh'[i] * 16)
+            y += 9.6
+            if i%2 == 0:
+                y += 9.6*1
+        rect = (100, 100, 200, y)
+        rect2 = pymupdf.mupdf.FzRect(*rect)
+        document[0].draw_rect((100, 100, 200, y), (1, 0, 0))
+        document[1].draw_rect((100, 100, 200, y), (1, 0, 0))
+        path2 = os.path.normpath(f'{__file__}/../../tests/test_extendable_textpage2.pdf')
+        document.save(path2)
+    
+    # Create a stext page for both pages of our document, using direct calls to
+    # MuPDF for now.
+    
+    with pymupdf.Document(path2) as document:
+    
+        # Notes:
+        #
+        # We need to reuse the stext device for second page. Otherwise if we
+        # create a new device, the first text in second page will always be in
+        # a new block, because pen position for new device is (0, 0) and this
+        # will usually be treated as a paragraph gap to the first text.
+        #
+        # At the moment we use infinite mediabox when using
+        # fz_new_stext_page()'s to create the stext device. I don't know what a
+        # non-infinite mediabox would be useful for.
+        #
+        # FZ_STEXT_CLIP_RECT isn't useful at the moment, because we would need
+        # to modify it to be in stext pagae coordinates (i.e. adding ctm.f
+        # to y0 and y1) when we append the second page. But it's internal
+        # data and there's no api to modify it. So for now we don't specify
+        # FZ_STEXT_CLIP_RECT when creating the stext device, so we always
+        # include each page's entire contents.
+        #
+        
+        ctm = pymupdf.mupdf.FzMatrix()
+        cookie = pymupdf.mupdf.FzCookie()
+        
+        stext_page = pymupdf.mupdf.FzStextPage(
+                pymupdf.mupdf.FzRect(pymupdf.mupdf.FzRect.Fixed_INFINITE),  # mediabox
+                )
+        stext_options = pymupdf.mupdf.FzStextOptions()
+        #stext_options.flags |= pymupdf.mupdf.FZ_STEXT_CLIP_RECT
+        #stext_options.clip = rect2.internal()
+        device = pymupdf.mupdf.fz_new_stext_device(stext_page, stext_options)
+        
+        # Append second page to stext_page and prepare ctm for any later page.
+        page = document[0]
+        pymupdf.mupdf.fz_run_page(page.this, device, ctm, cookie)
+        ctm.f += rect2.y1 - rect2.y0
+        
+        # Append second page to stext_page and prepare for any later page.
+        page = document[1]
+        pymupdf.mupdf.fz_run_page(page.this, device, ctm, cookie)
+        ctm.f += rect2.y1 - rect2.y0
+        
+        # We've finished adding text to stext_page.
+        pymupdf.mupdf.fz_close_device(device)
+        
+        # Read text from stext_page.
+        text_page = pymupdf.TextPage(stext_page)
+        
+        # Read text from stext_page using text_page.extractDICT().
+        print(f'Using text_page.extractDICT().')
+        print(f'{text_page.this.m_internal.mediabox=}')
+        d = text_page.extractDICT(sort=True)
+        y0_prev = None
+        pno = 0
+        ydelta = 0
+        for block in d['blocks']:
+            print(f'block')
+            for line in block['lines']:
+                print(f'    line')
+                for span in line['spans']:
+                    print(f'        span')
+                    bbox = span['bbox']
+                    x0, y0, x1, y1 = bbox
+                    dy = y0 - y0_prev if y0_prev else 0
+                    y0_prev = y0
+                    print(f'                {dy=: 5.2f} height={y1-y0:.02f} {x0:.02f} {y0:.02f} {x1:.02f} {y1:.02f} {span["text"]=}')
+                    if 'eee' in span['text']:
+                        pno = 1
+                        ydelta = rect2.y1 - rect2.y0
+                    y0 -= ydelta
+                    y1 -= ydelta
+                    document[pno].draw_rect((x0, y0, x1, y1), (0, 1, 0))
+        
+        print('\n\n\n\n')
+        
+        print(f'Using text_page.extractText()')
+        text = text_page.extractText(True)
+        print(f'{text}')
+        
+        print('\n\n\n\n')
+        print(f'Using extractBLOCKS')
+        text = list()
+        for x0, y0, x1, y1, line, no, type_ in text_page.extractBLOCKS():
+            print(f'block:')
+            print(f'    bbox={x0, y0, x1, y1} {no=}')
+            print(f'    {line=}')
+            text.append(line)
+        
+        print("\n\n\n")
+        print(f'extractBLOCKS joined by newlines:')
+        print('\n'.join(text))
+        
+        # This checks that lines before/after pages break are treated as a
+        # single paragraph.
+        assert text == [
+                'aaaaaaaaaaaaaaaa\n',
+                'bbbbbbbbbbbbbbbb\ncccccccccccccccc\n',
+                'dddddddddddddddd\neeeeeeeeeeeeeeee\n',
+                'ffffffffffffffff\ngggggggggggggggg\n',
+                'hhhhhhhhhhhhhhhh\n',
+                ]
+        
+        path3 = os.path.normpath(f'{__file__}/../../tests/test_extendable_textpage3.pdf')
+        document.save(path3)
