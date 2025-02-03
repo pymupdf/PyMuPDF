@@ -34,15 +34,24 @@ This script should lead to the following output:
 
 How to Use FreeText
 ~~~~~~~~~~~~~~~~~~~~~
-This script shows a couple of ways to deal with 'FreeText' annotations:
+This script shows a couple of basic ways to deal with 'FreeText' annotations:
 
-.. literalinclude:: samples/annotations-freetext.py
-
+.. literalinclude:: samples/annotations-freetext1.py
 
 The result looks like this:
 
-.. image:: images/img-freetext.*
+.. image:: images/img-freetext1.*
    :scale: 80
+
+Here is an example for using rich text and call-out lines:
+
+.. literalinclude:: samples/annotations-freetext2.py
+
+The result looks like this:
+
+.. image:: images/img-freetext2.*
+   :scale: 80
+
 
 ------------------------------
 

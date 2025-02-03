@@ -2,19 +2,19 @@
 import pymupdf
 
 # some colors
-blue  = (0,0,1)
-green = (0,1,0)
-red   = (1,0,0)
-gold  = (1,1,0)
+blue = (0, 0, 1)
+green = (0, 1, 0)
+red = (1, 0, 0)
+gold = (1, 1, 0)
 
 # a new PDF with 1 page
 doc = pymupdf.open()
 page = doc.new_page()
 
 # 3 rectangles, same size, above each other
-r1 = pymupdf.Rect(100,100,200,150)
-r2 = r1 + (0,75,0,75)
-r3 = r2 + (0,75,0,75)
+r1 = pymupdf.Rect(100, 100, 200, 150)
+r2 = r1 + (0, 75, 0, 75)
+r3 = r2 + (0, 75, 0, 75)
 
 # the text, Latin alphabet
 t = "¡Un pequeño texto para practicar!"

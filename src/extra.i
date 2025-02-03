@@ -548,6 +548,7 @@ static std::vector< std::string> JM_get_annot_id_list(mupdf::PdfPage& page)
     return names;
 }
 
+
 //------------------------------------------------------------------------
 // Add a unique /NM key to an annotation or widget.
 // Append a number to 'stem' such that the result is a unique name.
@@ -775,6 +776,22 @@ jm_init_item(PyObject* obj, Py_ssize_t idx, int* result)
         return 1;
     }
     return 0;
+}
+
+// TODO: ------------------------------------------------------------------
+// This is a temporary solution and should be replaced by a C++ extension:
+// There is no way in Python specify an array of fz_point - as is required
+// for function pdf_set_annot_callout_line().
+static void JM_set_annot_callout_line(mupdf::PdfAnnot& annot, PyObject *callout, int count)
+{
+    fz_point points[3];
+    mupdf::FzPoint p;
+    for (int i = 0; i < count; i++)
+    {
+        p = JM_point_from_py(PyTuple_GetItem(callout, (Py_ssize_t) i));
+        points[i] = fz_make_point(p.x, p.y);
+    }
+    mupdf::pdf_set_annot_callout_line(annot, points, count);
 }
 
 
@@ -4068,6 +4085,7 @@ int page_xref(mupdf::FzDocument& this_doc, int pno);
 void _newPage(mupdf::FzDocument& self, int pno=-1, float width=595, float height=842);
 void _newPage(mupdf::PdfDocument& self, int pno=-1, float width=595, float height=842);
 void JM_add_annot_id(mupdf::PdfAnnot& annot, const char* stem);
+void JM_set_annot_callout_line(mupdf::PdfAnnot& annot, PyObject *callout, int count);
 std::vector< std::string> JM_get_annot_id_list(mupdf::PdfPage& page);
 mupdf::PdfAnnot _add_caret_annot(mupdf::PdfPage& self, mupdf::FzPoint& point);
 mupdf::PdfAnnot _add_caret_annot(mupdf::FzPage& self, mupdf::FzPoint& point);
