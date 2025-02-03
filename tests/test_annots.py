@@ -511,3 +511,85 @@ def test_4079():
         print(f'{rms=}')
         # 2024-11-27 Expect current broken behaviour.
         assert rms == 0
+
+def test_4254():
+    """Ensure that both annotations are fully created
+
+    We do this by asserting equal top-used colors in respective pixmaps.
+    """
+    doc = pymupdf.open()
+    page = doc.new_page()
+
+    rect = pymupdf.Rect(100, 100, 200, 150)
+    annot = page.add_freetext_annot(rect, "Test Annotation from minimal example")
+    annot.set_border(width=1, dashes=(3, 3))
+    annot.set_opacity(0.5)
+    annot.set_colors(stroke=(1, 0, 0))
+    annot.update()
+
+    rect = pymupdf.Rect(200, 200, 400, 400)
+    annot2 = page.add_freetext_annot(rect, "Test Annotation from minimal example pt 2")
+    annot2.set_border(width=1, dashes=(3, 3))
+    annot2.set_opacity(0.5)
+    annot2.set_colors(stroke=(1, 0, 0))
+    annot2.update()
+
+    # stores top color for each pixmap
+    top_colors = set()
+    for annot in page.annots():
+        pix = annot.get_pixmap()
+        top_colors.add(pix.color_topusage()[1])
+
+    # only one color must exist
+    assert len(top_colors) == 1
+
+def test_richtext():
+    """Test creation of rich text FreeText annotations.
+
+    We create the same annotation on different pages in different ways,
+    with and without using Annotation.update(), and then assert equality
+    of the respective images.
+    """
+    ds = """font-size: 11pt; font-family: sans-serif;"""
+    bullet = chr(0x2610) + chr(0x2611) + chr(0x2612)
+    text = f"""<p style="text-align:justify;margin-top:-25px;">
+    PyMuPDF <span style="color: red;">འདི་ ཡིག་ཆ་བཀྲམ་སྤེལ་གྱི་དོན་ལུ་ པའི་ཐོན་ཐུམ་སྒྲིལ་དྲག་ཤོས་དང་མགྱོགས་ཤོས་ཅིག་ཨིན།</span>
+    <span style="color:blue;">Here is some <b>bold</b> and <i>italic</i> text, followed by <b><i>bold-italic</i></b>. Text-based check boxes: {bullet}.</span>
+    </p>"""
+    gold = (1, 1, 0)
+    doc = pymupdf.open()
+
+    # First page.
+    page = doc.new_page()
+    rect = pymupdf.Rect(100, 100, 350, 200)
+    p2 = rect.tr + (50, 30)
+    p3 = p2 + (0, 30)
+    annot = page.add_freetext_annot(
+        rect,
+        text,
+        fill_color=gold,
+        opacity=0.5,
+        rotate=90,
+        border_width=1,
+        dashes=None,
+        richtext=True,
+        callout=(p3, p2, rect.tr),
+    )
+
+    pix1 = page.get_pixmap()
+
+    # Second page.
+    # the annotation is created with minimal parameters, which are supplied
+    # in a separate call to the .update() method.
+    page = doc.new_page()
+    annot = page.add_freetext_annot(
+        rect,
+        text,
+        border_width=1,
+        dashes=None,
+        richtext=True,
+        callout=(p3, p2, rect.tr),
+    )
+    annot.update(fill_color=gold, opacity=0.5, rotate=90)
+    pix2 = page.get_pixmap()
+    assert pix1.samples == pix2.samples

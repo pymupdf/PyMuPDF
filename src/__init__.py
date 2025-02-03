@@ -669,22 +669,23 @@ class Annot:
                 insert_rot = 0
 
             if insert_rot:
-                mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Rotate'), rotate)
+                mupdf.pdf_dict_put_int(annot_obj, PDF_NAME('Rotate'), rotate)
 
-            mupdf.pdf_dirty_annot( annot)
-            mupdf.pdf_update_annot( annot) # let MuPDF update
-            pdf.resynth_required = 0
             # insert fill color
             if type_ == mupdf.PDF_ANNOT_FREE_TEXT:
                 if nfcol > 0:
-                    mupdf.pdf_set_annot_color( annot, fcol[:nfcol])
+                    mupdf.pdf_set_annot_color(annot, fcol[:nfcol])
             elif nfcol > 0:
-                col = mupdf.pdf_new_array( page.doc(), nfcol)
+                col = mupdf.pdf_new_array(page.doc(), nfcol)
                 for i in range( nfcol):
-                    mupdf.pdf_array_push_real( col, fcol[i])
-                mupdf.pdf_dict_put( annot_obj, PDF_NAME('IC'), col)
+                    mupdf.pdf_array_push_real(col, fcol[i])
+                mupdf.pdf_dict_put(annot_obj, PDF_NAME('IC'), col)
+            mupdf.pdf_dirty_annot(annot)
+            mupdf.pdf_update_annot(annot) # let MuPDF update
+            pdf.resynth_required = 0
         except Exception as e:
-            if g_exceptions_verbose:    exception_info()
+            if g_exceptions_verbose:
+                exception_info()
             message( f'cannot update annot: {e}')
             raise
         
@@ -1587,42 +1588,27 @@ class Annot:
         if not hasattr(opacity, "__float__"):
             opacity = self.opacity
 
-        if 0 <= opacity < 1 or blend_mode is not None:
+        if 0 <= opacity < 1 or blend_mode:
             opa_code = "/H gs\n"  # then we must reference this 'gs'
         else:
             opa_code = ""
 
         if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
-            CheckColor(border_color)
             CheckColor(text_color)
             CheckColor(fill_color)
             tcol, fname, fsize = TOOLS._parse_da(self)
 
             # read and update default appearance as necessary
-            update_default_appearance = False
             if fsize <= 0:
                 fsize = 12
-                update_default_appearance = True
-            if text_color is not None:
+            if text_color:
                 tcol = text_color
-                update_default_appearance = True
-            if fontname is not None:
+            if fontname:
                 fname = fontname
-                update_default_appearance = True
             if fontsize > 0:
                 fsize = fontsize
-                update_default_appearance = True
-
-            if update_default_appearance:
-                da_str = ""
-                if len(tcol) == 3:
-                    fmt = "{:g} {:g} {:g} rg /{f:s} {s:g} Tf"
-                elif len(tcol) == 1:
-                    fmt = "{:g} g /{f:s} {s:g} Tf"
-                elif len(tcol) == 4:
-                    fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf"
-                da_str = fmt.format(*tcol, f=fname, s=fsize)
-                TOOLS._update_da(self, da_str)
+            JM_make_annot_DA(self, len(tcol), tcol, fname, fsize)
+            blend_mode = None  # not supported for free text annotations!
 
         #------------------------------------------------------------------
         # now invoke MuPDF to update the annot appearance
@@ -1635,6 +1621,13 @@ class Annot:
         )
         if val is False:
             raise RuntimeError("Error updating annotation.")
+
+        if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
+            # in absence of previous opacity, we may need to modify the AP
+            ap = self._getAP()
+            if 0 <= opacity < 1 and not ap.startswith(b"/H gs"):
+                self._setAP(b"/H gs\n" + ap)
+            return
 
         bfill = color_string(fill, "f")
         bstroke = color_string(stroke, "c")
@@ -1682,36 +1675,6 @@ class Annot:
                 ap_tab = ntab
 
             ap = b"\n".join(ap_tab)
-
-        if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
-            BT = ap.find(b"BT")
-            ET = ap.rfind(b"ET") + 2
-            ap = ap[BT:ET]
-            w, h = self.rect.width, self.rect.height
-            if rotate in (90, 270) or not (apnmat.b == apnmat.c == 0):
-                w, h = h, w
-            re = b"0 0 " + _format_g((w, h)).encode() + b" re"
-            ap = re + b"\nW\nn\n" + ap
-            ope = None
-            fill_string = color_string(fill, "f")
-            if fill_string:
-                ope = b"f"
-            stroke_string = color_string(border_color, "c")
-            if stroke_string and bwidth > 0:
-                ope = b"S"
-                bwidth = _format_g(bwidth).encode() + b" w\n"
-            else:
-                bwidth = stroke_string = b""
-            if fill_string and stroke_string:
-                ope = b"B"
-            if ope is not None:
-                ap = bwidth + fill_string + stroke_string + re + b"\n" + ope + b"\n" + ap
-
-            if dashes is not None:  # handle dashes
-                ap = dashes + b"\n" + ap
-                dashes = None
-
-            ap_updated = True
 
         if annot_type in (mupdf.PDF_ANNOT_POLYGON, mupdf.PDF_ANNOT_POLY_LINE):
             ap = b"\n".join(ap_tab[:-1]) + b"\n"
@@ -7567,58 +7530,74 @@ class Page:
             text_color=None,
             fill_color=None,
             border_color=None,
+            border_width=0,
+            dashes=None,
+            callout=None,
+            line_end=mupdf.PDF_ANNOT_LE_OPEN_ARROW,
+            opacity=1,
             align=0,
             rotate=0,
+            richtext=False,
+            style=None,
             ):
+        rc = f"""<?xml version="1.0"?>
+            <body xmlns="http://www.w3.org/1999/xtml"
+            xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/"
+            xfa:contentType="text/html" xfa:APIVersion="Acrobat:8.0.0" xfa:spec="2.4">
+            {text}"""
         page = self._pdf_page()
+        if border_color and not text_color:
+            text_color = border_color
         nfcol, fcol = JM_color_FromSequence(fill_color)
         ntcol, tcol = JM_color_FromSequence(text_color)
         r = JM_rect_from_py(rect)
         if mupdf.fz_is_infinite_rect(r) or mupdf.fz_is_empty_rect(r):
             raise ValueError( MSG_BAD_RECT)
-        annot = mupdf.pdf_create_annot( page, mupdf.PDF_ANNOT_FREE_TEXT)
-        annot_obj = mupdf.pdf_annot_obj( annot)
-        mupdf.pdf_set_annot_contents( annot, text)
-        mupdf.pdf_set_annot_rect( annot, r)
-        mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Rotate'), rotate)
-        mupdf.pdf_dict_put_int( annot_obj, PDF_NAME('Q'), align)
+        annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_FREE_TEXT)
+        annot_obj = mupdf.pdf_annot_obj(annot)
+
+        #insert text as 'contents' or 'RC' depending on 'richtext'
+        if not richtext:
+            mupdf.pdf_set_annot_contents(annot, text)
+        else:
+            mupdf.pdf_dict_put_text_string(annot_obj,PDF_NAME("RC"), rc)
+            if style:
+                mupdf.pdf_dict_put_text_string(annot_obj,PDF_NAME("DS"), style)
+
+        mupdf.pdf_set_annot_rect(annot, r)
+
+        while rotate < 0:
+            rotate += 360
+        while rotate >= 360:
+            rotate -= 360
+        if rotate != 0:
+            mupdf.pdf_dict_put_int(annot_obj, PDF_NAME('Rotate'), rotate)
+
+        mupdf.pdf_set_annot_quadding(annot, align)
 
         if nfcol > 0:
-            mupdf.pdf_set_annot_color( annot, fcol[:nfcol])
+            mupdf.pdf_set_annot_color(annot, fcol[:nfcol])
+
+        mupdf.pdf_set_annot_border_width(annot, border_width)
+        mupdf.pdf_set_annot_opacity(annot, opacity)
+        if dashes:
+            for d in dashes:
+                mupdf.pdf_add_annot_border_dash_item(annot, float(d))
+
+        # Insert callout information
+        if callout:
+            mupdf.pdf_dict_put(annot_obj, PDF_NAME("IT"), PDF_NAME("FreeTextCallout"))
+            mupdf.pdf_set_annot_callout_style(annot, line_end)
+            point_count = len(callout)
+            extra.JM_set_annot_callout_line(annot, tuple(callout), point_count)
 
         # insert the default appearance string
-        JM_make_annot_DA(annot, ntcol, tcol, fontname, fontsize)
-        mupdf.pdf_update_annot( annot)
+        if not richtext:
+            JM_make_annot_DA(annot, ntcol, tcol, fontname, fontsize)
+
+        mupdf.pdf_update_annot(annot)
         JM_add_annot_id(annot, "A")
         val = Annot(annot)
-
-        #%pythonappend _add_freetext_annot
-        ap = val._getAP()
-        BT = ap.find(b"BT")
-        ET = ap.rfind(b"ET") + 2
-        ap = ap[BT:ET]
-        w = rect[2]-rect[0]
-        h = rect[3]-rect[1]
-        if rotate in (90, -90, 270):
-            w, h = h, w
-        re = f"0 0 {_format_g((w, h))} re".encode()
-        ap = re + b"\nW\nn\n" + ap
-        ope = None
-        bwidth = b""
-        fill_string = ColorCode(fill_color, "f").encode()
-        if fill_string:
-            fill_string += b"\n"
-            ope = b"f"
-        stroke_string = ColorCode(border_color, "c").encode()
-        if stroke_string:
-            stroke_string += b"\n"
-            bwidth = b"1 w\n"
-            ope = b"S"
-        if fill_string and stroke_string:
-            ope = b"B"
-        if ope is not None:
-            ap = bwidth + fill_string + stroke_string + re + b"\n" + ope + b"\n" + ap
-        val._setAP(ap)
         return val
 
     def _add_ink_annot(self, list):
@@ -8325,13 +8304,21 @@ class Page:
             self,
             rect: rect_like,
             text: str,
+            *,
             fontsize: float =11,
             fontname: OptStr =None,
-            border_color: OptSeq =None,
             text_color: OptSeq =None,
             fill_color: OptSeq =None,
+            border_color: OptSeq =None,
+            border_width: float =0,
+            dashes: OptSeq =None,
+            callout: OptSeq =None,
+            line_end: int=mupdf.PDF_ANNOT_LE_OPEN_ARROW,
+            opacity: float =1,
             align: int =0,
-            rotate: int =0
+            rotate: int =0,
+            richtext=False,
+            style=None,
             ) -> Annot:
         """Add a 'FreeText' annotation."""
 
@@ -8342,11 +8329,18 @@ class Page:
                     text,
                     fontsize=fontsize,
                     fontname=fontname,
-                    border_color=border_color,
                     text_color=text_color,
                     fill_color=fill_color,
+                    border_color=border_color,
+                    border_width=border_width,
+                    dashes=dashes,
+                    callout=callout,
+                    line_end=line_end,
+                    opacity=opacity,
                     align=align,
                     rotate=rotate,
+                    richtext=richtext,
+                    style=style,
                     )
         finally:
             if old_rotation != 0:
@@ -14836,7 +14830,7 @@ def JM_clear_pixmap_rect_with_value(dest, value, b):
 def JM_color_FromSequence(color):
     
     if isinstance(color, (int, float)):    # maybe just a single float
-        color = color[0]
+        color = [color]
     
     if not isinstance( color, (list, tuple)):
         return -1, []

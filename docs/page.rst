@@ -180,44 +180,63 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: the created annotation. Stroke color yellow = (1, 1, 0), no fill color support.
 
    .. index::
-      pair: color; add_freetext_annot
-      pair: fontname; add_freetext_annot
-      pair: fontsize; add_freetext_annot
       pair: rect; add_freetext_annot
-      pair: rotate; add_freetext_annot
-      pair: align; add_freetext_annot
+      pair: fontsize; add_freetext_annot
+      pair: fontname; add_freetext_annot
       pair: text_color; add_freetext_annot
-      pair: border_color; add_freetext_annot
       pair: fill_color; add_freetext_annot
+      pair: border_width; add_freetext_annot
+      pair: dashes; add_freetext_annot
+      pair: callout; add_freetext_annot
+      pair: line_end; add_freetext_annot
+      pair: opacity; add_freetext_annot
+      pair: align; add_freetext_annot
+      pair: rotate; add_freetext_annot
+      pair: richtext; add_freetext_annot
+      pair: style; add_freetext_annot
 
-   .. method:: add_freetext_annot(rect, text, fontsize=12, fontname="helv", border_color=None, text_color=0, fill_color=1, rotate=0, align=TEXT_ALIGN_LEFT)
+   .. method:: add_freetext_annot(rect, text, *, fontsize=11, fontname="helv", text_color=0, fill_color=None, border_width=0, dashes=None, callout=None, line_end=PDF_ANNOT_LE_OPEN_ARROW, opacity=1, align=TEXT_ALIGN_LEFT, rotate=0, richtext=False, style=None)
 
-      PDF only: Add text in a given rectangle.
+      PDF only: Add text in a given rectangle. Optionally, the appearance of a "callout" shape can be requested by specifying two or three point-like objects -- see below.
 
-      :arg rect_like rect: the rectangle into which the text should be inserted. Text is automatically wrapped to a new line at box width. Lines not fitting into the box will be invisible.
+      :arg rect_like rect: the rectangle into which the text should be inserted. Text is automatically wrapped to a new line at box width. Text portions not fitting into the rectangle will be invisible without warning.
 
-      :arg str text: the text. May contain any mixture of Latin, Greek, Cyrillic, Chinese, Japanese and Korean characters. The respective required font is automatically determined. (New in v1.17.0)
-      :arg float fontsize: the :data:`fontsize`. Default is 12.
-      :arg str fontname: the font name. Default is "Helv".
-        Accepted alternatives are "Cour", "TiRo", "ZaDb" and "Symb".
-        The name may be abbreviated to the first two characters, like "Co" for "Cour".
-        Lower case is also accepted.
-        Bold or italic variants of the fonts are **not accepted** (changed in v1.16.0).
-        A user-contributed script provides a circumvention for this restriction -- see section *Using Buttons and JavaScript* in chapter :ref:`FAQ`.
-        The actual font to use is now determined on a by-character level, and all required fonts (or sub-fonts) are automatically included.
-        Therefore, you should rarely ever need to care about this parameter and let it default (except you insist on a serifed font for your non-CJK text parts). (New in v1.17.0)
+      :arg str text: the text. May contain any mixture of Latin, Greek, Cyrillic, Chinese, Japanese and Korean characters. If `richtext=True` (see below), the string is interpreted as HTML syntax. This adds a plethora of ways for attractive effects.
+
+      :arg float fontsize: the :data:`fontsize`. Default is 11. Ignored if `richtext=True`.
+
+      :arg str fontname: The font name. Default is "Helv". Ignored if `richtext=True`, otherwise the following **restritions apply:**
         
-      :arg sequence,float text_color: the text color. Default is black. (New in v1.16.0)
+        * Accepted alternatives are "Helv" (Helvetica), "Cour" (Courier), "TiRo" (Timnes-Roman), "ZaDb" (ZapfDingBats) and "Symb" (Symbol). The name may be abbreviated to the first two characters, like "Co" for "Cour", lower case accepted.
 
-      :arg sequence,float fill_color: the fill color. Default is white. (New in v1.16.0)
-      :arg sequence,float text_color: the text color. Default is black.
-      :arg sequence,float border_color: the border color. Default is `None`. (New in v1.19.6)
-      :arg int align: text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is **not supported**. (New in v1.17.0)
+        * Bold or italic variants of the fonts are **not supported.**
+        
+      :arg list,tuple,float text_color: the text color. Default is black. Ignored if `richtext=True`.
 
-      :arg int rotate: the text orientation. Accepted values are 0, 90, 270, invalid entries are set to zero.
+      :arg list,tuple,float fill_color: the fill color. This is used for ``rect`` and the end point of the callout lines when applicable. Default is ``None``.
+
+      :arg list,tuple,float border_color:  This parameter only has an effect if `richtext=True`. Otherwise, ``text_color`` is used.
+      
+      :arg float border_width: the width of border and ``callout`` lines. Default is 0 (no border), in which case callout lines may still appear with some hairline width, depending on the PDF viewer used.
+      
+      :arg list,tuple dashes: a list of floats specifying how border and callout lines should be dashed. Default is ``None``.
+      
+      :arg list,tuple callout: a list / tuple of two or three :data:`point_like` objects, which will be interpreted as end point [, knee point] and start point (in this sequence) of up to two line segments, converting this annotation into a call-out shape.
+      
+      :arg int line_end: the line end symbol of the call-out line. It is drawn at the first point specified in the `callout` list. Default is an open arrow. For possible values see :ref:`AnnotationLineEnds`.
+      
+      :arg float opacity: a float `0 <= opacity < 1` turning the annotation transparent. Default is no transparency.
+      
+      :arg int align: text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is **not supported**. Ignored if `richtext=True`.
+      
+      :arg int rotate: the text orientation. Accepted values are integer multiples of 90°. Invalid entries receive a rotation of 0.
+      
+      :arg bool richtext: treat ``text`` as HTML syntax. This allows to achieve **bold**, *italic*, arbitrary text colors, font sizes, text alignment including justify and more - as far as HTML and styling instructions support this. This is similar to what happens in :meth:`Page.insert_htmlbox`. The base library will for example pull in required fonts if it encounters characters not contained in the standard ones. Some parameters are ignored if this option is set, as mentioned above. Default is ``False``.
+      
+      :arg str style: supply optional HTML styling information in CSS syntax. Ignored if `richtext=False`.
 
       :rtype: :ref:`Annot`
-      :returns: the created annotation. Color properties **can only be changed** using special parameters of :meth:`Annot.update`. There, you can also set a border color different from the text color.
+      :returns: the created annotation.
 
       |history_begin|
 
