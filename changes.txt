@@ -2,6 +2,30 @@ Change Log
 ==========
 
 
+**Changes in version 1.25.3 ()**
+
+* Use MuPDF-1.25.4.
+
+* Fixed issues:
+
+  * **Fixed** `4139 <https://github.com/pymupdf/PyMuPDF/issues/4139>`_: Text color numbers change between 1.24.14 and 1.25.0
+  * **Fixed** `4141 <https://github.com/pymupdf/PyMuPDF/issues/4141>`_: Some insertion methods fails for pages without a /Resouces object
+  * **Fixed** `4180 <https://github.com/pymupdf/PyMuPDF/issues/4180>`_: Search problems
+  * **Fixed** `4182 <https://github.com/pymupdf/PyMuPDF/issues/4182>`_: Text coordinate extraction error
+  * **Fixed** `4245 <https://github.com/pymupdf/PyMuPDF/issues/4245>`_: Highlighting issue distorted on recent versions
+  * **Fixed** `4254 <https://github.com/pymupdf/PyMuPDF/issues/4254>`_: add_freetext_annot is drawing text outside the annotation box
+
+* Other:
+
+  * In annotations:
+    * Added support for subtype FreeTextCallout.
+    * Added support for rich text.
+  * Added miter_limit arg to insert_text*() to allow supression of spikes caused by long miters.
+  * Add Widget Support to `Document.insert_pdf()`.
+  * Add `bibi` to span dicts.
+  * Add `synthetic' to char dict.
+
+
 **Changes in version 1.25.2 (2025-01-17)**
 
 * Fixed issues:
