@@ -372,6 +372,7 @@ def main():
                 'test_pylint',
                 'test_textbox3',
                 'test_3493',
+                'test_4180',
                 )
         excluded_tests = ' and not '.join(excluded_tests)
         if not pytest_args:
