@@ -72,8 +72,9 @@ jobs:
       run:
         python scripts/gh_release.py
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
+        name: sdist-${{ matrix.os }}
         path: dist/*.tar.gz    
 
 
@@ -155,6 +156,7 @@ jobs:
 
       # Upload generated wheels, to be accessible from github Actions page.
       #
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
+          name: wheels-${{ matrix.os }}
           path: ./wheelhouse/*.whl
