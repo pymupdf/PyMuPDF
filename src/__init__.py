@@ -373,9 +373,9 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.25.2"
+pymupdf_version = "1.25.3"
 mupdf_version = mupdf.FZ_VERSION
-pymupdf_date = "2025-01-17 00:00:01"
+pymupdf_date = "2025-02-06 00:00:01"
 
 # Versions as tuples; useful when comparing versions.
 #
