@@ -2891,7 +2891,7 @@ class Document:
                 raise TypeError(f"bad filename: {type(filename)=} {filename=}.")
         
             if stream is not None:
-                if type(stream) is bytes:
+                if type(stream) in (bytes, memoryview):
                     self.stream = stream
                 elif type(stream) is bytearray:
                     self.stream = bytes(stream)
@@ -2922,7 +2922,7 @@ class Document:
                     
             if from_file and os.path.getsize(filename) == 0:
                 raise EmptyFileError(f'Cannot open empty file: {filename=}.')
-            if type(self.stream) is bytes and len(self.stream) == 0:
+            if type(stream) in (bytes, memoryview) and len(self.stream) == 0:
                 raise EmptyFileError(f'Cannot open empty stream.')
             w = width
             h = height
@@ -2932,7 +2932,7 @@ class Document:
                 h = r.y1 - r.y0
 
             if stream:  # stream given, **MUST** be bytes!
-                assert isinstance(stream, bytes)
+                assert isinstance(stream, (bytes, memoryview))
                 c = stream
                 #len = (size_t) PyBytes_Size(stream);
 
