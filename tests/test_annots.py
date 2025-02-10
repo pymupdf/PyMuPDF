@@ -477,7 +477,10 @@ def test_4047():
 
 def test_4079():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
-    path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
+    if pymupdf.mupdf_version_tuple >= (1, 26):
+        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
+    else:path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after_1.25.pdf')
+        
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
     with pymupdf.open(path_after) as document_after:
         page = document_after[0]
@@ -500,6 +503,9 @@ def test_4079():
         pixmap_after = page.get_pixmap()
         document.save(f'{path_out}_after.pdf')
         rms = gentle_compare.pixmaps_rms(pixmap_after_expected, pixmap_after)
+        diff = gentle_compare.pixmaps_diff(pixmap_after_expected, pixmap_after)
+        path = os.path.normpath(f'{__file__}/../../tests/test_4079_diff.png')
+        diff.save(path)
         print(f'{rms=}')
         # 2024-11-27 Expect current broken behaviour.
         assert rms == 0
