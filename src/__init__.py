@@ -2889,13 +2889,13 @@ class Document:
                 filename = filename.name
             else:
                 raise TypeError(f"bad filename: {type(filename)=} {filename=}.")
-        
+
             if stream is not None:
-                if type(stream) in (bytes, memoryview):
+                if isinstance(stream, (bytes, memoryview)):
                     self.stream = stream
-                elif type(stream) is bytearray:
+                elif isinstance(stream, bytearray):
                     self.stream = bytes(stream)
-                elif type(stream) is io.BytesIO:
+                elif isinstance(stream, io.BytesIO):
                     self.stream = stream.getvalue()
                 else:
                     raise TypeError(f"bad stream: {type(stream)=}.")
@@ -2919,11 +2919,9 @@ class Document:
                 elif not os.path.isfile(filename):
                     msg = f"'{filename}' is no file"
                     raise FileDataError(msg)
-                    
-            if from_file and os.path.getsize(filename) == 0:
-                raise EmptyFileError(f'Cannot open empty file: {filename=}.')
-            if type(stream) in (bytes, memoryview) and len(self.stream) == 0:
-                raise EmptyFileError(f'Cannot open empty stream.')
+                elif os.path.getsize(filename) == 0:
+                    raise EmptyFileError(f'Cannot open empty file: {filename=}.')
+
             w = width
             h = height
             r = JM_rect_from_py(rect)
@@ -2933,12 +2931,14 @@ class Document:
 
             if stream:  # stream given, **MUST** be bytes!
                 assert isinstance(stream, (bytes, memoryview))
+                if len(stream) == 0:
+                    raise EmptyFileError('Cannot open empty stream.')
                 c = stream
                 #len = (size_t) PyBytes_Size(stream);
 
                 if mupdf_cppyy:
-                    buffer_ = mupdf.fz_new_buffer_from_copied_data( c)
-                    data = mupdf.fz_open_buffer( buffer_)
+                    buffer_ = mupdf.fz_new_buffer_from_copied_data(c)
+                    data = mupdf.fz_open_buffer(buffer_)
                 else:
                     # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
                     # that the bytes string will not be modified; i think the
