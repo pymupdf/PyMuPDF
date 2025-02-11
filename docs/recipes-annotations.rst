@@ -57,19 +57,6 @@ The result looks like this:
 
 
 
-
-Using Buttons and JavaScript
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Since MuPDF v1.16, 'FreeText' annotations no longer support bold or italic versions of the Times-Roman, Helvetica or Courier fonts.
-
-A big **thank you** to our user `@kurokawaikki <https://github.com/kurokawaikki>`_, who contributed the following script to **circumvent this restriction**.
-
-.. literalinclude:: samples/make-bold.py
-   :language: python
-
---------------------------
-
-
 .. _RecipesAnnotations_C:
 
 How to Use Ink Annotations
