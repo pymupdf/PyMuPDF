@@ -474,7 +474,7 @@ def build_pyodide_wheel(pyodide_build_version=None):
     #
     env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
     setup = pyodide_setup(pymupdf_dir, pyodide_build_version=pyodide_build_version)
-    command = f'{setup} && pyodide build --exports pyinit'
+    command = f'{setup} && pyodide build --exports whole_archive'
     run(command, env_extra=env_extra)
     
     # Copy wheel into `wheelhouse/` so it is picked up as a workflow
@@ -536,12 +536,12 @@ def pyodide_setup(
         a, b = sys.version_info[:2]
         venv_pyodide = f'venv_pyodide_{a}.{b}'
     else:
-        pyodide_build_version = '0.23.4'
-        venv_pyodide = 'venv_pyodide_3.11'
+        pyodide_build_version = '0.29.3'
+        venv_pyodide = 'venv_pyodide_3.12'
         python = sys.executable
-        if sys.version_info[:2] != (3, 11):
-            log(f'Forcing use of python-3.11 because {sys.version=} is not 3.11.')
-            python = 'python3.11'
+        if sys.version_info[:2] != (3, 12):
+            log(f'Forcing use of python-3.12 because {sys.version=} is not 3.12.')
+            python = 'python3.12'
     if not os.path.exists( f'{directory}/{venv_pyodide}'):
         command += f' && echo "### creating venv {venv_pyodide}"'
         command += f' && {python} -m venv {venv_pyodide}'
