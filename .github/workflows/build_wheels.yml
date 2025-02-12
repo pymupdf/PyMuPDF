@@ -126,6 +126,11 @@ jobs:
         uses: docker/setup-qemu-action@v1
         with:
           platforms: all
+          # This should be temporary
+          # see: https://github.com/pypa/cibuildwheel/discussions/2256
+          # xref https://github.com/docker/setup-qemu-action/issues/188
+          # xref https://github.com/tonistiigi/binfmt/issues/215
+          image: tonistiigi/binfmt:qemu-v8.1.5
 
       - name: gh_release
         # Doesn't seem to be a way to passing inputs.* on command
