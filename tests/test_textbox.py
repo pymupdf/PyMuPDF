@@ -7,6 +7,7 @@ Check text is indeed contained in given rectangle.
 """
 import pymupdf
 
+# codespell:ignore-begin
 text = """Der Kleine Schwertwal (Pseudorca crassidens), auch bekannt als Unechter oder Schwarzer Schwertwal, ist eine Art der Delfine (Delphinidae) und der einzige rezente Vertreter der Gattung Pseudorca.
 
 Er ähnelt dem Orca in Form und Proportionen, ist aber einfarbig schwarz und mit einer Maximallänge von etwa sechs Metern deutlich kleiner.
@@ -14,7 +15,7 @@ Er ähnelt dem Orca in Form und Proportionen, ist aber einfarbig schwarz und mit
 Kleine Schwertwale bilden Schulen von durchschnittlich zehn bis fünfzig Tieren, wobei sie sich auch mit anderen Delfinen vergesellschaften und sich meistens abseits der Küsten aufhalten.
 
 Sie sind in allen Ozeanen gemäßigter, subtropischer und tropischer Breiten beheimatet, sind jedoch vor allem in wärmeren Jahreszeiten auch bis in die gemäßigte bis subpolare Zone südlich der Südspitze Südamerikas, vor Nordeuropa und bis vor Kanada anzutreffen."""
-
+# codespell:ignore-end
 
 def test_textbox1():
     """Use TextWriter for text insertion."""

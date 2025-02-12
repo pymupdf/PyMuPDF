@@ -198,6 +198,9 @@ This script uses `Page.get_text("words")` to look for a string, handed in via cl
 
 How to Mark Searched Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. codespell:ignore-begin
+
 This script searches for text and marks it::
 
     # -*- coding: utf-8 -*-
@@ -221,6 +224,8 @@ This script searches for text and marks it::
 
     # save to a new PDF
     doc.save("a-squiggly.pdf")
+
+.. codespell:ignore-end
 
 The result looks like this:
 
