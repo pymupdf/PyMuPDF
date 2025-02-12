@@ -27,20 +27,12 @@ def test_codespell():
     # is difficult to exclude some text sections.
     skips = textwrap.dedent('''
             *.pdf
-            changes.txt
             docs/_static/prism/prism.js
             docs/_static/prism/prism.js
             docs/locales/ja/LC_MESSAGES/changes.po
             docs/locales/ja/LC_MESSAGES/recipes-common-issues-and-their-solutions.po
-            docs/recipes-common-issues-and-their-solutions.rst
-            docs/recipes-text.rst
-            docs/samples/national-capitals.py
-            locales
+            docs/locales/
             src_classic/*
-            tests
-            tests/test_story.py
-            tests/test_textbox.py
-            tests/test_textextract.py
             ''')
     skips = skips.strip().replace('\n', ',')
     
@@ -48,6 +40,8 @@ def test_codespell():
             cd {root} && codespell
                 --skip {shlex.quote(skips)}
                 --ignore-words-list re-use,flate,thirdparty,re-using
+                --ignore-regex 'https?://[a-z0-9/_.]+'
+                --ignore-multiline-regex 'codespell:ignore-begin.*codespell:ignore-end'
             ''')
     
     sys.path.append(root)

@@ -20,6 +20,7 @@ import pymupdf
 Table data. Used to populate a temporary SQL database, which will be processed by the script.
 Its only purpose is to avoid carrying around a separate database file.
 """
+# codespell:ignore-begin
 table_data = """China;Beijing;21542000;1.5%;2018
 Japan;Tokyo;13921000;11.2%;2019
 DR Congo;Kinshasa;12691000;13.2%;2017
@@ -260,6 +261,7 @@ Palau;Ngerulmud;271;1.5%;2010
 Cocos (Keeling) Islands (Australia);West Island;134;24.6%;2011
 Pitcairn Islands (UK);Adamstown;40;100.0%;2021
 South Georgia and the South Sandwich Islands (UK);King Edward Point;22;73.3%;2018"""
+# codespell:ignore-end
 
 # -------------------------------------------------------------------
 # HTML template for the report. We define no table header <th> items
