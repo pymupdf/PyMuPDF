@@ -4039,6 +4039,58 @@ no_more_matches:;
     return quads;
 }
 
+void pixmap_copy( fz_pixmap* pm, const fz_pixmap* src, int n)
+{
+    assert(pm->w == src->w);
+    assert(pm->h == src->h);
+    assert(n <= pm->n);
+    assert(n <= src->n);
+
+    if (pm->n == src->n)
+    {
+        // identical samples
+        assert(pm->stride == src->stride);
+        memcpy(pm->samples, src->samples, pm->w * pm->h * pm->n);
+    }
+    else
+    {
+        int nn;
+        int do_alpha;
+        if (pm->n > src->n)
+        {
+            assert(pm->n == src->n + 1);
+            nn = src->n;
+            assert(!src->alpha);
+            assert(pm->alpha);
+            do_alpha = 1;
+        }
+        else
+        {
+            assert(src->n == pm->n + 1);
+            nn = pm->n;
+            assert(src->alpha);
+            assert(!pm->alpha);
+            do_alpha = 0;
+        }
+        for (int y=0; y<pm->h; ++y)
+        {
+            for (int x=0; x<pm->w; ++x)
+            {
+                memcpy(
+                        pm->samples + pm->stride * y + pm->n * x,
+                        src->samples + src->stride * y + src->n * x,
+                        nn
+                        );
+                if (do_alpha)
+                {
+                    pm->samples[pm->stride * y + pm->n * x + pm->n-1] = 255;
+                }
+            }
+        }
+    }
+}
+
+
 %}
 
 /* Declarations for functions defined above. */
@@ -4162,3 +4214,9 @@ int pixmap_n(mupdf::FzPixmap& pixmap);
 PyObject* JM_search_stext_page(fz_stext_page *page, const char *needle);
 
 PyObject *set_pixel(fz_pixmap* pm, int x, int y, PyObject *color);
+
+/* Copies from <src> to <pm>, which must have same width and height. pm->n -
+src->n must be -1, 0 or +1. If -1, <src> must have alpha and <pm> must not have
+alpha, and we copy the non-alpha bytes. If +1 <src> must not have alpha and
+<pm> must have alpha and we set <pm>'s alpha bytes all to 255.*/
+void pixmap_copy(fz_pixmap* pm, const fz_pixmap* src, int n);

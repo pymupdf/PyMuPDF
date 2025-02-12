@@ -373,9 +373,9 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.25.2"
+pymupdf_version = "1.25.3"
 mupdf_version = mupdf.FZ_VERSION
-pymupdf_date = "2025-01-17 00:00:01"
+pymupdf_date = "2025-02-06 00:00:01"
 
 # Versions as tuples; useful when comparing versions.
 #
@@ -9870,10 +9870,9 @@ class Pixmap:
 
             # copy samples data ------------------------------------------
             if 1:
-                # We use specially-provided (by MuPDF Python bindings)
-                # ll_fz_pixmap_copy() to get best performance.
+                # We use our pixmap_copy() to get best performance.
                 # test_pixmap.py:test_setalpha(): 3.9s t=0.0062
-                mupdf.ll_fz_pixmap_copy( pm.m_internal, src_pix.m_internal, n)
+                extra.pixmap_copy( pm.m_internal, src_pix.m_internal, n)
             elif 1:
                 # Use memoryview.
                 # test_pixmap.py:test_setalpha(): 4.6 t=0.51
