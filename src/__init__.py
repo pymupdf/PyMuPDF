@@ -2929,7 +2929,7 @@ class Document:
                 w = r.x1 - r.x0
                 h = r.y1 - r.y0
 
-            if stream:  # stream given, **MUST** be bytes!
+            if stream is not None:
                 assert isinstance(stream, (bytes, memoryview))
                 if len(stream) == 0:
                     raise EmptyFileError('Cannot open empty stream.')
@@ -2957,7 +2957,7 @@ class Document:
                     doc = mupdf.fz_open_document_with_stream(magic, data)
                 except Exception as e:
                     if g_exceptions_verbose > 1:    exception_info()
-                    raise FileDataError(f'Failed to open stream') from e
+                    raise FileDataError('Failed to open stream') from e
             else:
                 if filename:
                     if not filetype:
