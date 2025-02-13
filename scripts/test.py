@@ -474,7 +474,10 @@ def build_pyodide_wheel(pyodide_build_version=None):
     #
     env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
     setup = pyodide_setup(pymupdf_dir, pyodide_build_version=pyodide_build_version)
-    command = f'{setup} && pyodide build --exports whole_archive'
+    command = f'{setup} && echo "### Running pyodide build" && pyodide build --exports whole_archive'
+    
+    command = command.replace(' && ', '\n && ')
+    
     run(command, env_extra=env_extra)
     
     # Copy wheel into `wheelhouse/` so it is picked up as a workflow
@@ -499,23 +502,32 @@ def pyodide_setup(
         clean:
             If true we create an entirely new environment. Otherwise
             we reuse any existing emsdk repository and venv.
+        pyodide_build_version:
+            Version of Python package pyodide-build; if None we use latest
+            available version.
+            2025-02-13: pyodide_build_version='0.29.3' works.
     
-    * Clone emsdk repository to `pipcl_emsdk` if not already present.
-    * Create and activate a venv `pipcl_venv_pyodide` if not already present.
+    The returned command does the following:
+    
+    * Checkout latest emsdk from https://github.com/emscripten-core/emsdk.git:
+      * Clone emsdk repository to `emsdk` if not already present.
+      * Run `git pull -r` inside emsdk checkout.
+    * Create venv `venv_pyodide_<python_version>` if not already present.
+    * Activate venv `venv_pyodide_<python_version>`.
     * Install/upgrade package `pyodide-build`.
     * Run emsdk install scripts and enter emsdk environment.
-    * Replace emsdk/upstream/bin/wasm-opt
-      (https://github.com/pyodide/pyodide/issues/4048).
     
     Example usage in a build function:
     
-        command = pipcl_wasm.pyodide_setup()
+        command = pyodide_setup()
         command += ' && pyodide build --exports pyinit'
         subprocess.run(command, shell=1, check=1)
     '''
     command = f'cd {directory}'
     
-    # Clone emsdk.
+    # Clone/update emsdk. We always use the latest emsdk with `git pull`.
+    #
+    # 2025-02-13: this works: 2514ec738de72cebbba7f4fdba0cf2fabcb779a5
     #
     dir_emsdk = 'emsdk'
     if clean:
@@ -524,106 +536,40 @@ def pyodide_setup(
         # important to remove it here.
         shutil.rmtree('.pyodide-xbuildenv', ignore_errors=1)
     if not os.path.exists(f'{directory}/{dir_emsdk}'):
-        command += f' && echo "### cloning emsdk.git"'
+        command += f' && echo "### Cloning emsdk.git"'
         command += f' && git clone https://github.com/emscripten-core/emsdk.git {dir_emsdk}'
+    command += f' && echo "### Updating checkout {dir_emsdk}"'
+    command += f' && (cd {dir_emsdk} && git pull -r)'
+    command += f' && echo "### Checkout {dir_emsdk} is:"'
+    command += f' && (cd {dir_emsdk} && git show -s --oneline)'
     
     # Create and enter Python venv.
     #
-    # 2024-10-11: we only work with python-3.11; later versions fail with
-    # pyodide-build==0.23.4 because `distutils` not available.
-    if pyodide_build_version:
-        python = sys.executable
-        a, b = sys.version_info[:2]
-        venv_pyodide = f'venv_pyodide_{a}.{b}'
-    else:
-        pyodide_build_version = '0.29.3'
-        venv_pyodide = 'venv_pyodide_3.12'
-        python = sys.executable
-        if sys.version_info[:2] != (3, 12):
-            log(f'Forcing use of python-3.12 because {sys.version=} is not 3.12.')
-            python = 'python3.12'
+    python = sys.executable
+    venv_pyodide = f'venv_pyodide_{sys.version_info[0]}.{sys.version_info[1]}'
+    
     if not os.path.exists( f'{directory}/{venv_pyodide}'):
-        command += f' && echo "### creating venv {venv_pyodide}"'
+        command += f' && echo "### Creating venv {venv_pyodide}"'
         command += f' && {python} -m venv {venv_pyodide}'
     command += f' && . {venv_pyodide}/bin/activate'
-    command += f' && echo "### running pip install ..."'
-    command += f' && python -m pip install --upgrade pip wheel pyodide-build=={pyodide_build_version}'
-    #command += f' && python -m pip install --upgrade pip wheel pyodide-build'
+    command += f' && echo "### Installing Python packages."'
+    command += f' && python -m pip install --upgrade pip wheel pyodide-build'
+    if pyodide_build_version:
+        command += f'=={pyodide_build_version}'
     
     # Run emsdk install scripts and enter emsdk environment.
     #
     command += f' && cd {dir_emsdk}'
     command += ' && PYODIDE_EMSCRIPTEN_VERSION=$(pyodide config get emscripten_version)'
-    command += ' && echo "### running ./emsdk install"'
+    command += ' && echo "### PYODIDE_EMSCRIPTEN_VERSION is: $PYODIDE_EMSCRIPTEN_VERSION"'
+    command += ' && echo "### Running ./emsdk install"'
     command += ' && ./emsdk install ${PYODIDE_EMSCRIPTEN_VERSION}'
-    command += ' && echo "### running ./emsdk activate"'
+    command += ' && echo "### Running ./emsdk activate"'
     command += ' && ./emsdk activate ${PYODIDE_EMSCRIPTEN_VERSION}'
-    command += ' && echo "### running ./emsdk_env.sh"'
+    command += ' && echo "### Running ./emsdk_env.sh"'
     command += ' && . ./emsdk_env.sh'   # Need leading `./` otherwise weird 'Not found' error.
     
-    if pyodide_build_version:
-        command += ' && echo "### Not patching emsdk"'
-    else:
-        # Make our returned command replace emsdk/upstream/bin/wasm-opt
-        # with a script that does nothing, otherwise the linker
-        # command fails after it has created the output file. See:
-        # https://github.com/pyodide/pyodide/issues/4048
-        #
-        
-        def write( text, path):
-            with open( path, 'w') as f:
-                f.write( text)
-            os.chmod( path, 0o755)
-        
-        # Create a script that our command runs, that overwrites
-        # `emsdk/upstream/bin/wasm-opt`, hopefully in a way that is
-        # idempotent.
-        #
-        # The script moves the original wasm-opt to wasm-opt-0.
-        #
-        write(
-                textwrap.dedent('''
-                    #! /usr/bin/env python3
-                    import os
-                    p = 'upstream/bin/wasm-opt'
-                    p0 = 'upstream/bin/wasm-opt-0'
-                    p1 = '../wasm-opt-1'
-                    if os.path.exists( p0):
-                        print(f'### {__file__}: {p0!r} already exists so not overwriting from {p!r}.')
-                    else:
-                        s = os.stat( p)
-                        assert s.st_size > 15000000, f'File smaller ({s.st_size}) than expected: {p!r}'
-                        print(f'### {__file__}: Moving {p!r} -> {p0!r}.')
-                        os.rename( p, p0)
-                    print(f'### {__file__}: Moving {p1!r} -> {p!r}.')
-                    os.rename( p1, p)
-                    '''
-                    ).strip(),
-                f'{directory}/wasm-opt-replace.py',
-                )
-        
-        # Create a wasm-opt script that basically does nothing, except
-        # defers to the original script when run with `--version`.
-        #
-        write(
-                textwrap.dedent('''
-                    #!/usr/bin/env python3
-                    import os
-                    import sys
-                    import subprocess
-                    if sys.argv[1:] == ['--version']:
-                        root = os.path.dirname(__file__)
-                        subprocess.run(f'{root}/wasm-opt-0 --version', shell=1, check=1)
-                    else:
-                        print(f'{__file__}: Doing nothing. {sys.argv=}')
-                    '''
-                    ).strip(),
-                f'{directory}/wasm-opt-1',
-                )
-        command += ' && ../wasm-opt-replace.py'
-    
     command += ' && cd ..'
-    
     return command
 
 
