@@ -25,9 +25,8 @@ jobs:
     
     strategy:
       matrix:
-        # 2023-12-22: Python-3.12 is known to fail, due to setuptools trying to
-        # import distutils.
-        python-version: ["3.11"]
+        # Python version needs to match emsdk.
+        python-version: ["3.12"]
 
       # Avoid cancelling of all runs after a single failure.
       fail-fast: false
@@ -53,6 +52,6 @@ jobs:
 
       # Upload generated wheels, to be accessible from github Actions page.
       #
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           path: ./wheelhouse/*.whl
