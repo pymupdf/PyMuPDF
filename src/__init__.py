@@ -18004,7 +18004,16 @@ def Page__add_text_marker(self, quads, annot_type):
 
 def PDF_NAME(x):
     assert isinstance(x, str)
-    return getattr(mupdf, f'PDF_ENUM_NAME_{x}')
+    ret = getattr(mupdf, f'PDF_ENUM_NAME_{x}')
+    # Note that we return a (swig proxy for) pdf_obj*, not a mupdf.PdfObj. In
+    # the C++ API, the constructor PdfObj::PdfObj(pdf_obj*) is marked as
+    # explicit, but this seems to be ignored by SWIG. If SWIG started to
+    # generate code that respected `explicit`, we would need to do `return
+    # mupdf.PdfObj(ret)`.
+    #
+    # [Compare with extra.i, where we define our own PDF_NAME2() macro that
+    # returns a mupdf::PdfObj.]
+    return ret
 
 
 def UpdateFontInfo(doc: Document, info: typing.Sequence):

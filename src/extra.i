@@ -112,6 +112,10 @@ catch(...) {
 #define MUPDF_VERSION_GE(major, minor, patch) \
         MUPDF_VERSION_INT >= MAKE_MUPDF_VERSION_INT(major, minor, patch)
 
+/* Define a wrapper for PDF_NAME that returns a mupdf::PdfObj instead of a
+pdf_obj*. This avoids implicit construction of a mupdf::PdfObj, which is
+deliberately prohibited (with `explicit` on constructors) by recent MuPDF. */
+#define PDF_NAME2(X) mupdf::PdfObj(PDF_NAME(X))
 
 /* Returns equivalent of `repr(x)`. */
 static std::string repr(PyObject* x)
@@ -311,7 +315,7 @@ static void page_merge(
 
     // make new page dict in dest doc
     mupdf::PdfObj   page_dict = mupdf::pdf_new_dict(doc_des, 4);
-    mupdf::pdf_dict_put(page_dict, PDF_NAME(Type), PDF_NAME(Page));
+    mupdf::pdf_dict_put(page_dict, PDF_NAME2(Type), PDF_NAME2(Page));
 
     for (int i = 0; i < known_page_objs_num; ++i)
     {
@@ -331,11 +335,11 @@ static void page_merge(
     // If selected, remove dict keys P (parent) and Popup
     if (copy_annots)
     {
-        mupdf::PdfObj old_annots = mupdf::pdf_dict_get(page_ref, PDF_NAME(Annots));
+        mupdf::PdfObj old_annots = mupdf::pdf_dict_get(page_ref, PDF_NAME2(Annots));
         int n = mupdf::pdf_array_len(old_annots);
         if (n > 0)
         {
-            mupdf::PdfObj new_annots = mupdf::pdf_dict_put_array(page_dict, PDF_NAME(Annots), n);
+            mupdf::PdfObj new_annots = mupdf::pdf_dict_put_array(page_dict, PDF_NAME2(Annots), n);
             for (int i = 0; i < n; i++)
             {
                 mupdf::PdfObj o = mupdf::pdf_array_get(old_annots, i);
@@ -343,13 +347,13 @@ static void page_merge(
                 {
                     continue;   // skip invalid/null/non-dict items
                 }
-                if (mupdf::pdf_dict_get(o, PDF_NAME(IRT)).m_internal) continue;
-                mupdf::PdfObj subtype = mupdf::pdf_dict_get(o, PDF_NAME(Subtype));
-                if (mupdf::pdf_name_eq(subtype, PDF_NAME(Link))) continue;
-                if (mupdf::pdf_name_eq(subtype, PDF_NAME(Popup))) continue;
-                if (mupdf::pdf_name_eq(subtype, PDF_NAME(Widget))) continue;
-                mupdf::pdf_dict_del(o, PDF_NAME(Popup));
-                mupdf::pdf_dict_del(o, PDF_NAME(P));
+                if (mupdf::pdf_dict_get(o, PDF_NAME2(IRT)).m_internal) continue;
+                mupdf::PdfObj subtype = mupdf::pdf_dict_get(o, PDF_NAME2(Subtype));
+                if (mupdf::pdf_name_eq(subtype, PDF_NAME2(Link))) continue;
+                if (mupdf::pdf_name_eq(subtype, PDF_NAME2(Popup))) continue;
+                if (mupdf::pdf_name_eq(subtype, PDF_NAME2(Widget))) continue;
+                mupdf::pdf_dict_del(o, PDF_NAME2(Popup));
+                mupdf::pdf_dict_del(o, PDF_NAME2(P));
                 mupdf::PdfObj copy_o = mupdf::pdf_graft_mapped_object(graft_map, o);
                 mupdf::PdfObj annot = mupdf::pdf_new_indirect(
                         doc_des,
@@ -363,7 +367,7 @@ static void page_merge(
     // rotate the page
     if (rotate != -1)
     {
-        mupdf::pdf_dict_put_int(page_dict, PDF_NAME(Rotate), rotate);
+        mupdf::pdf_dict_put_int(page_dict, PDF_NAME2(Rotate), rotate);
     }
     // Now add the page dictionary to dest PDF
     mupdf::PdfObj ref = mupdf::pdf_add_object(doc_des, page_dict);
@@ -533,7 +537,7 @@ static void _newPage(mupdf::FzDocument& self, int pno=-1, float width=595, float
 static std::vector< std::string> JM_get_annot_id_list(mupdf::PdfPage& page)
 {
     std::vector< std::string> names;
-    mupdf::PdfObj annots = mupdf::pdf_dict_get(page.obj(), PDF_NAME(Annots));
+    mupdf::PdfObj annots = mupdf::pdf_dict_get(page.obj(), PDF_NAME2(Annots));
     if (!annots.m_internal) return names;
     int n = mupdf::pdf_array_len(annots);
     for (int i = 0; i < n; i++)
@@ -602,7 +606,7 @@ static const char* Tools_parse_da(mupdf::PdfAnnot& this_annot)
     mupdf::PdfDocument pdf = mupdf::pdf_get_bound_document(this_annot_obj);
     try
     {
-        mupdf::PdfObj da = mupdf::pdf_dict_get_inheritable(this_annot_obj, PDF_NAME(DA));
+        mupdf::PdfObj da = mupdf::pdf_dict_get_inheritable(this_annot_obj, PDF_NAME2(DA));
         if (!da.m_internal)
         {
             mupdf::PdfObj trailer = mupdf::pdf_trailer(pdf);
@@ -661,9 +665,9 @@ static PyObject* Annot_getAP(mupdf::PdfAnnot& annot)
 void Tools_update_da(mupdf::PdfAnnot& this_annot, const char* da_str)
 {
     mupdf::PdfObj this_annot_obj = mupdf::pdf_annot_obj(this_annot);
-    mupdf::pdf_dict_put_text_string(this_annot_obj, PDF_NAME(DA), da_str);
-    mupdf::pdf_dict_del(this_annot_obj, PDF_NAME(DS)); /* not supported */
-    mupdf::pdf_dict_del(this_annot_obj, PDF_NAME(RC)); /* not supported */
+    mupdf::pdf_dict_put_text_string(this_annot_obj, PDF_NAME2(DA), da_str);
+    mupdf::pdf_dict_del(this_annot_obj, PDF_NAME2(DS)); /* not supported */
+    mupdf::pdf_dict_del(this_annot_obj, PDF_NAME2(RC)); /* not supported */
 }
 
 static int
@@ -813,7 +817,7 @@ static PyObject* JM_outline_xrefs(mupdf::PdfObj obj, PyObject* xrefs)
         int nxr = mupdf::pdf_to_num(thisobj);
         newxref = PyLong_FromLong((long) nxr);
         if (PySequence_Contains(xrefs, newxref)
-                or mupdf::pdf_dict_get(thisobj, PDF_NAME(Type)).m_internal
+                or mupdf::pdf_dict_get(thisobj, PDF_NAME2(Type)).m_internal
                 )
         {
             // circular ref or top of chain: terminate
@@ -821,13 +825,13 @@ static PyObject* JM_outline_xrefs(mupdf::PdfObj obj, PyObject* xrefs)
             break;
         }
         s_list_append_drop(xrefs, newxref);
-        mupdf::PdfObj first = mupdf::pdf_dict_get(thisobj, PDF_NAME(First));  // try go down
+        mupdf::PdfObj first = mupdf::pdf_dict_get(thisobj, PDF_NAME2(First));  // try go down
         if (mupdf::pdf_is_dict(first))
         {
             xrefs = JM_outline_xrefs(first, xrefs);
         }
-        thisobj = mupdf::pdf_dict_get(thisobj, PDF_NAME(Next));  // try go next
-        mupdf::PdfObj parent = mupdf::pdf_dict_get(thisobj, PDF_NAME(Parent));  // get parent
+        thisobj = mupdf::pdf_dict_get(thisobj, PDF_NAME2(Next));  // try go next
+        mupdf::PdfObj parent = mupdf::pdf_dict_get(thisobj, PDF_NAME2(Parent));  // get parent
         if (!mupdf::pdf_is_dict(thisobj))
         {
             thisobj = parent;
@@ -938,13 +942,13 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
         Py_ssize_t  n;
         Py_ssize_t  m;
         
-        root = mupdf::pdf_dict_get(mupdf::pdf_trailer(pdf), PDF_NAME(Root));
+        root = mupdf::pdf_dict_get(mupdf::pdf_trailer(pdf), PDF_NAME2(Root));
         if (!root.m_internal) goto end;
         
-        olroot = mupdf::pdf_dict_get(root, PDF_NAME(Outlines));
+        olroot = mupdf::pdf_dict_get(root, PDF_NAME2(Outlines));
         if (!olroot.m_internal) goto end;
         
-        first = mupdf::pdf_dict_get(olroot, PDF_NAME(First));
+        first = mupdf::pdf_dict_get(olroot, PDF_NAME2(First));
         if (!first.m_internal) goto end;
         
         xrefs = PyList_New(0);  // pre-allocate an empty list
@@ -970,7 +974,7 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
             }
             PyDict_SetItem(itemdict, dictkey_xref, PySequence_ITEM(xrefs, i));
             mupdf::PdfObj bm = mupdf::pdf_load_object(pdf, xref);
-            int flags = mupdf::pdf_to_int(mupdf::pdf_dict_get(bm, PDF_NAME(F)));
+            int flags = mupdf::pdf_to_int(mupdf::pdf_dict_get(bm, PDF_NAME2(F)));
             if (flags == 1)
             {
                 PyDict_SetItem(itemdict, italic, Py_True);
@@ -984,7 +988,7 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
                 PyDict_SetItem(itemdict, italic, Py_True);
                 PyDict_SetItem(itemdict, bold, Py_True);
             }
-            int count = mupdf::pdf_to_int(mupdf::pdf_dict_get(bm, PDF_NAME(Count)));
+            int count = mupdf::pdf_to_int(mupdf::pdf_dict_get(bm, PDF_NAME2(Count)));
             if (count < 0)
             {
                 PyDict_SetItem(itemdict, collapse, Py_True);
@@ -993,7 +997,7 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
             {
                 PyDict_SetItem(itemdict, collapse, Py_False);
             }
-            mupdf::PdfObj col = mupdf::pdf_dict_get(bm, PDF_NAME(C));
+            mupdf::PdfObj col = mupdf::pdf_dict_get(bm, PDF_NAME2(C));
             if (mupdf::pdf_is_array(col) && mupdf::pdf_array_len(col) == 3)
             {
                 PyObject* color = PyTuple_New(3);
@@ -1003,7 +1007,7 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
                 dict_setitem_drop(itemdict, dictkey_color, color);
             }
             float z=0;
-            mupdf::PdfObj obj = mupdf::pdf_dict_get(bm, PDF_NAME(Dest));
+            mupdf::PdfObj obj = mupdf::pdf_dict_get(bm, PDF_NAME2(Dest));
             if (!obj.m_internal || !mupdf::pdf_is_array(obj))
             {
                 obj = mupdf::pdf_dict_getl(&bm, PDF_NAME(A), PDF_NAME(D), nullptr);
@@ -1164,7 +1168,7 @@ static int JM_page_rotation(mupdf::PdfPage& page)
 {
     int rotate = 0;
     rotate = mupdf::pdf_to_int(
-            mupdf::pdf_dict_get_inheritable(page.obj(), PDF_NAME(Rotate))
+            mupdf::pdf_dict_get_inheritable(page.obj(), PDF_NAME2(Rotate))
             );
     rotate = JM_norm_rotation(rotate);
     return rotate;
@@ -1177,7 +1181,7 @@ static int JM_page_rotation(mupdf::PdfPage& page)
 static mupdf::FzRect JM_mediabox(mupdf::PdfObj& page_obj)
 {
     mupdf::FzRect mediabox = mupdf::pdf_to_rect(
-            mupdf::pdf_dict_get_inheritable(page_obj, PDF_NAME(MediaBox))
+            mupdf::pdf_dict_get_inheritable(page_obj, PDF_NAME2(MediaBox))
             );
     if (mupdf::fz_is_empty_rect(mediabox) || mupdf::fz_is_infinite_rect(mediabox))
     {
@@ -1209,7 +1213,7 @@ mupdf::FzRect JM_cropbox(mupdf::PdfObj& page_obj)
 {
     mupdf::FzRect mediabox = JM_mediabox(page_obj);
     mupdf::FzRect cropbox = mupdf::pdf_to_rect(
-                mupdf::pdf_dict_get_inheritable(page_obj, PDF_NAME(CropBox))
+                mupdf::pdf_dict_get_inheritable(page_obj, PDF_NAME2(CropBox))
                 );
     if (mupdf::fz_is_infinite_rect(cropbox) || mupdf::fz_is_empty_rect(cropbox))
     {
@@ -1463,11 +1467,11 @@ PyObject* Page_addAnnot_FromString(mupdf::PdfPage& page, PyObject* linklist)
         {
             throw std::runtime_error(MSG_IS_NO_PDF);
         }
-        if (!mupdf::pdf_dict_get(page.obj(), PDF_NAME(Annots)).m_internal)
+        if (!mupdf::pdf_dict_get(page.obj(), PDF_NAME2(Annots)).m_internal)
         {
-            mupdf::pdf_dict_put_array(page.obj(), PDF_NAME(Annots), lcount);
+            mupdf::pdf_dict_put_array(page.obj(), PDF_NAME2(Annots), lcount);
         }
-        mupdf::PdfObj annots = mupdf::pdf_dict_get(page.obj(), PDF_NAME(Annots));
+        mupdf::PdfObj annots = mupdf::pdf_dict_get(page.obj(), PDF_NAME2(Annots));
         mupdf::PdfDocument doc = page.doc();
         //printf("lcount=%i\n", lcount);
         fz_context* ctx = mupdf::internal_context_get();

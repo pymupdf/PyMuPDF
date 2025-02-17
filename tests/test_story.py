@@ -68,7 +68,7 @@ def test_2753():
     assert len(doc_before) == 2
     assert len(doc_after) == 2
 
-
+# codespell:ignore-begin
 springer_html = '''
 <article>
 <aside>
@@ -98,6 +98,8 @@ springer_html = '''
 <p>Vermutlich ist eine derart mit sich selbst be&#173;schäf&#173;tigte Sig&#173;nal&#173;ver&#173;ar&#173;beitung die Vor&#173;be&#173;ding&#173;ung für ge&#173;stei&#173;gerte Hirn&#173;leis&#173;tungen. Um einen Ver&#173;gleich mit verhältnismäßig pri&#173;mi&#173;ti&#173;ver Tech&#173;nik zu wagen: Bei küns&#173;tli&#173;chen neu&#173;ro&#173;na&#173;len Netzen – Algorithmen nach dem Vor&#173;bild verknüpfter Nervenzellen – ge&#173;nü&#173;gen schon ein, zwei so genannte ver&#173;bor&#173;ge&#173;ne Schich&#173;ten von selbst&#173;be&#173;züg&#173;li&#173;chen Schaltstellen zwischen Input und Output-Ebene, um die ver&#173;blüf&#173;fen&#173;den Erfolge der künstlichen Intel&#173;ligenz her&#173;vor&#173;zu&#173;bringen.</p>
 </article>
 '''
+#codespell:ignore-end
+
 def test_fit_springer():
     
     if not hasattr(pymupdf, 'mupdf'):
