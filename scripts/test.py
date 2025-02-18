@@ -123,6 +123,11 @@ Commands:
         `pyodide build`. This runs our setup.py with CC etc set up
         to create Pyodide binaries in a wheel called, for example,
         `PyMuPDF-1.23.2-cp311-none-emscripten_3_1_32_wasm32.whl`.
+        
+        It seems that sys.version must match the Python version inside emsdk;
+        as of 2025-02-14 this is 3.12. Otherwise we get build errors such as:
+            [wasm-validator error in function 723] unexpected false: all used features should be allowed, on ...
+            
 
 Environment:
     PYMUDF_SCRIPTS_TEST_options
@@ -159,6 +164,9 @@ def main(argv):
     if len(argv) == 1:
         show_help()
         return
+    
+    log(f'{sys.executable=}')
+    log(f'{sys.version=}')
 
     build_isolation = None
     valgrind = False
