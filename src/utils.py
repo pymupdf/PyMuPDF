@@ -250,6 +250,7 @@ def replace_image(page: pymupdf.Page, xref: int, *, filename=None, pixmap=None, 
     # new image insertion has created a new /Contents source,
     # which we will set to spaces now
     doc.update_stream(last_contents_xref, b" ")
+    page._image_info = None  # clear cache of extracted image information
 
 
 def delete_image(page: pymupdf.Page, xref: int):
