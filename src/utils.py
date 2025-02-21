@@ -1683,14 +1683,184 @@ def do_widgets(
     from_page: int = -1,
     to_page: int = -1,
     start_at: int = -1,
+    join_duplicates=0,
 ) -> None:
-    """Insert widgets contained in copied page range into destination PDF.
+    """Insert widgets of copied page range into target PDF.
 
-    Parameter values **must** equal those of method insert_pdf(). Method
-    insert_pdf() which must have been previously executed.
+    Parameter values **must** equal those of method insert_pdf() which
+    must have been previously executed.
     """
     if not src.is_form_pdf:  # nothing to do: source PDF has no fields
         return
+
+    def clean_kid_parents(acro_fields):
+        """ Make sure all kids have correct "Parent" pointers."""
+        for i in range(acro_fields.pdf_array_len()):
+            parent = acro_fields.pdf_array_get(i)
+            kids = parent.pdf_dict_get(pymupdf.PDF_NAME("Kids"))
+            for j in range(kids.pdf_array_len()):
+                kid = kids.pdf_array_get(j)
+                kid.pdf_dict_put(pymupdf.PDF_NAME("Parent"), parent)
+
+    def join_widgets(pdf, acro_fields, xref1, xref2, name):
+        """Called for each pair of widgets having the same name.
+
+        Args:
+            pdf: target MuPDF document
+            acro_fields: object Root/AcroForm/Fields
+            xref1, xref2: widget xrefs having same names
+            name: (str) the name
+
+        Result:
+            Defined or updated widget parent that points to both widgets.
+        """
+
+        def re_target(pdf, acro_fields, xref1, kids1, xref2, kids2):
+            """Merge widget in xref2 into "Kids" list of widget xref1.
+
+            Args:
+                xref1, kids1: target widget and its "Kids" array.
+                xref2, kids2: source wwidget and its "Kids" array (may be empty).
+            """
+            # make indirect objects from widgets
+            w1_ind = mupdf.pdf_new_indirect(pdf, xref1, 0)
+            w2_ind = mupdf.pdf_new_indirect(pdf, xref2, 0)
+            # find source widget in "Fields" array
+            idx = acro_fields.pdf_array_find(w2_ind)
+            acro_fields.pdf_array_delete(idx)
+
+            if not kids2.pdf_is_array():  # source widget has no kids
+                widget = mupdf.pdf_load_object(pdf, xref2)
+
+                # delete name from widget and insert target as parent
+                widget.pdf_dict_del(pymupdf.PDF_NAME("T"))
+                widget.pdf_dict_put(pymupdf.PDF_NAME("Parent"), w1_ind)
+
+                # put in target Kids
+                kids1.pdf_array_push(w2_ind)
+            else:  # copy source kids to target kids
+                for i in range(kids2.pdf_array_len()):
+                    kid = kids2.pdf_array_get(i)
+                    kid.pdf_dict_put(pymupdf.PDF_NAME("Parent"), w1_ind)
+                    kid_ind = mupdf.pdf_new_indirect(pdf, kid.pdf_to_num(), 0)
+                    kids1.pdf_array_push(kid_ind)
+
+        def new_target(pdf, acro_fields, xref1, w1, xref2, w2, name):
+            """Make new "Parent" for two widgets with same name.
+
+            Args:
+                xref1, w1: first widget
+                xref2, w2: second widget
+                name: field name
+
+            Result:
+                Both widgets have no "Kids". We create a new object with the
+                name and a "Kids" array containing the widgets.
+                Original widgets must be removed from AcroForm/Fields.
+            """
+            # make new "Parent" object
+            new = mupdf.pdf_new_dict(pdf, 5)
+            new.pdf_dict_put_text_string(pymupdf.PDF_NAME("T"), name)
+            kids = new.pdf_dict_put_array(pymupdf.PDF_NAME("Kids"), 2)
+            new_obj = mupdf.pdf_add_object(pdf, new)
+            new_obj_xref = new_obj.pdf_to_num()
+            new_ind = mupdf.pdf_new_indirect(pdf, new_obj_xref, 0)
+
+            # copy over some required source widget properties
+            ft = w1.pdf_dict_get(pymupdf.PDF_NAME("FT"))
+            w1.pdf_dict_del(pymupdf.PDF_NAME("FT"))
+            new_obj.pdf_dict_put(pymupdf.PDF_NAME("FT"), ft)
+
+            aa = w1.pdf_dict_get(pymupdf.PDF_NAME("AA"))
+            w1.pdf_dict_del(pymupdf.PDF_NAME("AA"))
+            new_obj.pdf_dict_put(pymupdf.PDF_NAME("AA"), aa)
+
+            # remove name field, insert "Parent" field in source widgets
+            w1.pdf_dict_del(pymupdf.PDF_NAME("T"))
+            w1.pdf_dict_put(pymupdf.PDF_NAME("Parent"), new_ind)
+            w2.pdf_dict_del(pymupdf.PDF_NAME("T"))
+            w2.pdf_dict_put(pymupdf.PDF_NAME("Parent"), new_ind)
+
+            # put source widgets in "kids" array
+            ind1 = mupdf.pdf_new_indirect(pdf, xref1, 0)
+            ind2 = mupdf.pdf_new_indirect(pdf, xref2, 0)
+            kids.pdf_array_push(ind1)
+            kids.pdf_array_push(ind2)
+
+            # remove source widgets from "AcroForm/Fields"
+            idx = acro_fields.pdf_array_find(ind1)
+            acro_fields.pdf_array_delete(idx)
+            idx = acro_fields.pdf_array_find(ind2)
+            acro_fields.pdf_array_delete(idx)
+
+            acro_fields.pdf_array_push(new_ind)
+
+        w1 = mupdf.pdf_load_object(pdf, xref1)
+        w2 = mupdf.pdf_load_object(pdf, xref2)
+        kids1 = w1.pdf_dict_get(pymupdf.PDF_NAME("Kids"))
+        kids2 = w2.pdf_dict_get(pymupdf.PDF_NAME("Kids"))
+
+        # check which widget has a suitable "Kids" array
+        if kids1.pdf_is_array():
+            re_target(pdf, acro_fields, xref1, kids1, xref2, kids2)  # pylint: disable=arguments-out-of-order
+        elif kids2.pdf_is_array():
+            re_target(pdf, acro_fields, xref2, kids2, xref1, kids1)  # pylint: disable=arguments-out-of-order
+        else:
+            new_target(pdf, acro_fields, xref1, w1, xref2, w2, name)  # pylint: disable=arguments-out-of-order
+
+    def get_kids(parent, kids_list):
+        """Return xref list of leaf kids for a parent.
+
+        Call with an empty list.
+        """
+        kids = mupdf.pdf_dict_get(parent, pymupdf.PDF_NAME("Kids"))
+        if not kids.pdf_is_array():
+            return kids_list
+        for i in range(kids.pdf_array_len()):
+            kid = kids.pdf_array_get(i)
+            if mupdf.pdf_is_dict(mupdf.pdf_dict_get(kid, pymupdf.PDF_NAME("Kids"))):
+                kids_list = get_kids(kid, kids_list)
+            else:
+                kids_list.append(kid.pdf_to_num())
+        return kids_list
+
+    def kids_xrefs(widget):
+        """Get the xref of top "Parent" and the list of leaf widgets."""
+        kids_list = []
+        parent = mupdf.pdf_dict_get(widget, pymupdf.PDF_NAME("Parent"))
+        parent_xref = parent.pdf_to_num()
+        if parent_xref == 0:
+            return parent_xref, kids_list
+        kids_list = get_kids(parent, kids_list)
+        return parent_xref, kids_list
+
+    def deduplicate_names(pdf, acro_fields, join_duplicates=False):
+        """Handle any widget name duplicates caused by the merge."""
+        names = {}  # key is a widget name, value a list of widgets having it.
+
+        # extract all names and widgets in "AcroForm/Fields"
+        for i in range(mupdf.pdf_array_len(acro_fields)):
+            wobject = mupdf.pdf_array_get(acro_fields, i)
+            xref = wobject.pdf_to_num()
+
+            # extract widget name and collect widget(s) using it
+            T = mupdf.pdf_dict_get_text_string(wobject, pymupdf.PDF_NAME("T"))
+            xrefs = names.get(T, [])
+            xrefs.append(xref)
+            names[T] = xrefs
+
+        for name, xrefs in names.items():
+            if len(xrefs) < 2:
+                continue
+            xref0, xref1 = xrefs[:2]  # only exactly 2 should occur!
+            if join_duplicates:  # combine fields with equal names
+                join_widgets(pdf, acro_fields, xref0, xref1, name)
+            else:  # make field names unique
+                newname = name + f" [{xref1}]"  # append this to the name
+                wobject = mupdf.pdf_load_object(pdf, xref1)
+                wobject.pdf_dict_put_text_string(pymupdf.PDF_NAME("T"), newname)
+
+        clean_kid_parents(acro_fields)
 
     def get_acroform(doc):
         """Retrieve the AcroForm dictionary form a PDF."""
@@ -1702,56 +1872,79 @@ def do_widgets(
     srcpdf = mupdf.pdf_document_from_fz_document(src)
 
     if tar.is_form_pdf:
-        # target is a Form PDF, so use its AcroForm to include source fields
+        # target is a Form PDF, so use it to include source fields
         acro = get_acroform(tar)
-        # Important arrays of indirect objects
-        tar_fields = mupdf.pdf_dict_get(acro, pymupdf.PDF_NAME("Fields"))
-        tar_co = mupdf.pdf_dict_get(acro, pymupdf.PDF_NAME("CO"))
-        if not mupdf.pdf_is_array(tar_co):
-            tar_co = mupdf.pdf_dict_put_array(acro, pymupdf.PDF_NAME("CO"), 5)
+        # Important arrays in AcroForm
+        acro_fields = acro.pdf_dict_get(pymupdf.PDF_NAME("Fields"))
+        tar_co = acro.pdf_dict_get(pymupdf.PDF_NAME("CO"))
+        if not tar_co.pdf_is_array():
+            tar_co = acro.pdf_dict_put_array(pymupdf.PDF_NAME("CO"), 5)
     else:
         # target is no Form PDF, so copy over source AcroForm
         acro = mupdf.pdf_deep_copy_obj(get_acroform(src))  # make a copy
 
         # Clear "Fields" and "CO" arrays: will be populated by page fields.
         # This is required to avoid copying unneeded objects.
-        mupdf.pdf_dict_del(acro, pymupdf.PDF_NAME("Fields"))
-        mupdf.pdf_dict_put_array(acro, pymupdf.PDF_NAME("Fields"), 5)
-        mupdf.pdf_dict_del(acro, pymupdf.PDF_NAME("CO"))
-        mupdf.pdf_dict_put_array(acro, pymupdf.PDF_NAME("CO"), 5)
+        acro.pdf_dict_del(pymupdf.PDF_NAME("Fields"))
+        acro.pdf_dict_put_array(pymupdf.PDF_NAME("Fields"), 5)
+        acro.pdf_dict_del(pymupdf.PDF_NAME("CO"))
+        acro.pdf_dict_put_array(pymupdf.PDF_NAME("CO"), 5)
 
         # Enrich AcroForm for copying to target
         acro_graft = mupdf.pdf_graft_mapped_object(graftmap, acro)
 
         # Insert AcroForm into target PDF
         acro_tar = mupdf.pdf_add_object(tarpdf, acro_graft)
-        tar_fields = mupdf.pdf_dict_get(acro_tar, pymupdf.PDF_NAME("Fields"))
-        tar_co = mupdf.pdf_dict_get(acro_tar, pymupdf.PDF_NAME("CO"))
+        acro_fields = acro_tar.pdf_dict_get(pymupdf.PDF_NAME("Fields"))
+        tar_co = acro_tar.pdf_dict_get(pymupdf.PDF_NAME("CO"))
 
         # get its xref and insert it into target catalog
-        tar_xref = mupdf.pdf_to_num(acro_tar)
+        tar_xref = acro_tar.pdf_to_num()
         acro_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
         root = mupdf.pdf_dict_get(mupdf.pdf_trailer(tarpdf), pymupdf.PDF_NAME("Root"))
-        mupdf.pdf_dict_put(root, pymupdf.PDF_NAME("AcroForm"), acro_tar_ind)
+        root.pdf_dict_put(pymupdf.PDF_NAME("AcroForm"), acro_tar_ind)
 
     if from_page <= to_page:
         src_range = range(from_page, to_page + 1)
     else:
         src_range = range(from_page, to_page - 1, -1)
 
-    for i in range(len(src_range)):
-        # read first page that was copied over
+    parents = {}  # information about widget parents
+
+    # remove "P" owning page reference from all widgets of all source pages
+    for i in src_range:
+        src_page = src[src_range[i]]
+        for xref in [
+            xref
+            for xref, wtype, _ in src_page.annot_xrefs()
+            if wtype == pymupdf.PDF_ANNOT_WIDGET  # pylint: disable=no-member
+        ]:
+            w_obj = mupdf.pdf_load_object(srcpdf, xref)
+            w_obj.pdf_dict_del(pymupdf.PDF_NAME("P"))
+
+            # get the widget's parent structure
+            parent_xref, old_kids = kids_xrefs(w_obj)
+            if parent_xref:
+                parents[parent_xref] = {
+                    "new_xref": 0,
+                    "old_kids": old_kids,
+                    "new_kids": [],
+                }
+    # Copy over Parent widgets first - they are not page-dependent
+    for xref in parents.keys():  # pylint: disable=consider-using-dict-items
+        parent = mupdf.pdf_load_object(srcpdf, xref)
+        parent_graft = mupdf.pdf_graft_mapped_object(graftmap, parent)
+        parent_tar = mupdf.pdf_add_object(tarpdf, parent_graft)
+        kids_xrefs_new = get_kids(parent_tar, [])
+        parent_xref_new = parent_tar.pdf_to_num()
+        parent_ind = mupdf.pdf_new_indirect(tarpdf, parent_xref_new, 0)
+        acro_fields.pdf_array_push(parent_ind)
+        parents[xref]["new_xref"] = parent_xref_new
+        parents[xref]["new_kids"] = kids_xrefs_new
+
+    for i in src_range:
+        # read first copied over page in target
         tar_page = tar[start_at + i]
-
-        # convert it to a formal PDF page
-        tar_page_pdf = mupdf.pdf_page_from_fz_page(tar_page)
-
-        # extract its annotations array
-        tar_annots = mupdf.pdf_dict_get(tar_page_pdf.obj(), pymupdf.PDF_NAME("Annots"))
-        if not mupdf.pdf_is_array(tar_annots):
-            tar_annots = mupdf.pdf_dict_put_array(
-                tar_page_pdf.obj(), pymupdf.PDF_NAME("Annots"), 5
-            )
 
         # read the original page in the source PDF
         src_page = src[src_range[i]]
@@ -1762,44 +1955,48 @@ def do_widgets(
             for xref, wtype, _ in src_page.annot_xrefs()
             if wtype == pymupdf.PDF_ANNOT_WIDGET  # pylint: disable=no-member
         ]
+        if not w_xrefs:  # no widgets on this source page
+            continue
 
-        # Remove page references from widgets to prevent duplicate copies
-        # of the page in the target.
+        # convert to formal PDF page
+        tar_page_pdf = mupdf.pdf_page_from_fz_page(tar_page)
+
+        # extract annotations array
+        tar_annots = mupdf.pdf_dict_get(tar_page_pdf.obj(), pymupdf.PDF_NAME("Annots"))
+        if not mupdf.pdf_is_array(tar_annots):
+            tar_annots = mupdf.pdf_dict_put_array(
+                tar_page_pdf.obj(), pymupdf.PDF_NAME("Annots"), 5
+            )
+
         for xref in w_xrefs:
             w_obj = mupdf.pdf_load_object(srcpdf, xref)
-            mupdf.pdf_dict_del(w_obj, pymupdf.PDF_NAME("P"))
 
-        for xref in w_xrefs:
-            w_obj = mupdf.pdf_load_object(srcpdf, xref)
+            # check if field takes part in inter-field validations
+            is_aac = mupdf.pdf_is_dict(mupdf.pdf_dict_getp(w_obj, "AA/C"))
 
-            # check if field is a member of inter-field validations
-            temp = mupdf.pdf_dict_getp(w_obj, "AA/C")
-            if mupdf.pdf_is_dict(temp):
-                is_aac = True
+            # check if parent of widget already in target
+            parent_xref = mupdf.pdf_to_num(
+                w_obj.pdf_dict_get(pymupdf.PDF_NAME("Parent"))
+            )
+            if parent_xref == 0:  # parent not in target yet
+                w_obj_graft = mupdf.pdf_graft_mapped_object(graftmap, w_obj)
+                w_obj_tar = mupdf.pdf_add_object(tarpdf, w_obj_graft)
+                tar_xref = w_obj_tar.pdf_to_num()
+                w_obj_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+                mupdf.pdf_array_push(tar_annots, w_obj_tar_ind)
+                mupdf.pdf_array_push(acro_fields, w_obj_tar_ind)
             else:
-                is_aac = False
+                parent = parents[parent_xref]
+                idx = parent["old_kids"].index(xref)  # search for xref in parent
+                tar_xref = parent["new_kids"][idx]
+                w_obj_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+                mupdf.pdf_array_push(tar_annots, w_obj_tar_ind)
 
-            # recursively complete the widget object with all referenced objects
-            w_obj_graft = mupdf.pdf_graft_mapped_object(graftmap, w_obj)
-
-            # add the completed widget object to the target PDF
-            w_obj_tar = mupdf.pdf_add_object(tarpdf, w_obj_graft)
-
-            # extract its generated target xref number
-            tar_xref = mupdf.pdf_to_num(w_obj_tar)
-
-            # create an indirect object from it
-            w_obj_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
-
-            # insert this xref reference into the page,
-            mupdf.pdf_array_push(tar_annots, w_obj_tar_ind)
-
-            # and also into "AcroForm/Fields",
-            mupdf.pdf_array_push(tar_fields, w_obj_tar_ind)
-            # and also into "AcroForm/CO" if a computation field.
+            # Into "AcroForm/CO" if a computation field.
             if is_aac:
                 mupdf.pdf_array_push(tar_co, w_obj_tar_ind)
 
+    deduplicate_names(tarpdf, acro_fields, join_duplicates=join_duplicates)
 
 def do_links(
     doc1: pymupdf.Document,
