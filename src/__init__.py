@@ -4562,6 +4562,7 @@ class Document:
             links=1,
             annots=1,
             widgets=1,
+            join_duplicates=0,
             show_progress=0,
             final=1,
             _gmap=None,
@@ -4577,6 +4578,7 @@ class Document:
             links: (int/bool) whether to also copy links.
             annots: (int/bool) whether to also copy annotations.
             widgets: (int/bool) whether to also copy form fields.
+            join_duplicates: (int/bool) join or rename duplicate widget names.
             show_progress: (int) progress message interval, 0 is no messages.
             final: (bool) indicates last insertion from this source PDF.
             _gmap: internal use only
@@ -4663,7 +4665,7 @@ class Document:
             #log( 'insert_pdf(): calling self._do_links()')
             self._do_links(docsrc, from_page=fp, to_page=tp, start_at=sa)
         if widgets:
-            self._do_widgets(docsrc, _gmap, from_page=fp, to_page=tp, start_at=sa)
+            self._do_widgets(docsrc, _gmap, from_page=fp, to_page=tp, start_at=sa, join_duplicates=join_duplicates)
         if final == 1:
             self.Graftmaps[isrt] = None
         #log( 'insert_pdf(): returning')
