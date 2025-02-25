@@ -208,6 +208,11 @@ def log( text):
     sys.stdout.flush()
 
 
+def run(command, check=1):
+    log(f'Running: {command}')
+    return subprocess.run( command, shell=1, check=check)
+
+
 if 1:
     # For debugging.
     log(f'### Starting.')
@@ -218,6 +223,7 @@ if 1:
     log(f'CPU bits: {32 if sys.maxsize == 2**31 - 1 else 64} {sys.maxsize=}')
     log(f'__file__: {__file__!r}')
     log(f'os.getcwd(): {os.getcwd()!r}')
+    log(f'getconf ARG_MAX: {pipcl.run("getconf ARG_MAX", capture=1, check=0, verbose=0)!r}')
     log(f'sys.argv ({len(sys.argv)}):')
     for i, arg in enumerate(sys.argv):
         log(f'    {i}: {arg!r}')
@@ -269,11 +275,6 @@ def _fs_remove(path):
         shutil.rmtree( path, onerror=error_fn)
     
     assert not os.path.exists( path)
-
-
-def run(command, check=1):
-    log(f'Running: {command}')
-    return subprocess.run( command, shell=1, check=check)
 
 
 def _git_get_branch( directory):
@@ -364,7 +365,7 @@ def tar_extract(path, mode='r:gz', prefix=None, exists='raise'):
     return prefix_actual
 
 
-def get_git_id( directory):
+def git_info( directory):
     '''
     Returns `(sha, comment, diff, branch)`, all items are str or None if not
     available.
@@ -390,8 +391,40 @@ def get_git_id( directory):
             )
     if cp.returncode == 0:
         branch = cp.stdout.strip()
-    log(f'get_git_id(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
+    log(f'git_info(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
     return sha, comment, diff, branch
+
+
+def git_patch(directory, patch, hard=False):
+    '''
+    Applies string <patch> with `git patch` in <directory>.
+    
+    If <hard> is true we clean the tree with `git checkout .` and then apply
+    the patch.
+
+    Otherwise we apply patch only if it is not already applied; this might fail
+    if there are conflicting changes in the tree.
+    '''
+    log(f'Applying patch in {directory}:\n{textwrap.indent(patch, "    ")}')
+    if not patch:
+        return
+    # Carriage returns break `git apply` so we use `newline='\n'` in open().
+    path = os.path.abspath(f'{directory}/pymupdf_patch.txt')
+    with open(path, 'w', newline='\n') as f:
+        f.write(patch)
+    log(f'Using patch file: {path}')
+    if hard:
+        run(f'cd {directory} && git checkout .')
+        run(f'cd {directory} && git apply {path}')
+        log(f'Have applied patch in {directory}.')
+    else:
+        e = run( f'cd {directory} && git apply --check --reverse {path}', check=0)
+        if e == 0:
+            log(f'Not patching {directory} because already patched.')
+        else:
+            run(f'cd {directory} && git apply {path}')
+            log(f'Have applied patch in {directory}.')
+    run(f'cd {directory} && git diff')
 
 
 mupdf_tgz = os.path.abspath( f'{__file__}/../mupdf.tgz')
@@ -444,7 +477,8 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         if e:
             # No existing git checkout, so do a fresh clone.
             _fs_remove(local_dir)
-            run(f'git clone --recursive --depth 1 --shallow-submodules {location[4:]} {local_dir}')
+            gitargs = location[4:]
+            run(f'git clone --recursive --depth 1 --shallow-submodules {gitargs} {local_dir}')
 
         # Show sha of checkout.
         run( f'cd {local_dir} && git show --pretty=oneline|head -n 1', check=False)
@@ -856,6 +890,34 @@ def build_mupdf_unix(
 
     if openbsd or freebsd:
         env_add(env, 'CXX', 'c++', ' ')
+    
+    if darwin and os.environ.get('GITHUB_ACTIONS') == 'true':
+        if os.environ.get('ImageOS') == 'macos13':
+            # On Github macos13 we need to use Clang/LLVM (Homebrew) 15.0.7,
+            # otherwise mupdf:thirdparty/tesseract/src/api/baseapi.cpp fails to
+            # compile with:
+            #
+            #   thirdparty/tesseract/src/api/baseapi.cpp:150:25: error: 'recursive_directory_iterator' is unavailable: introduced in macOS 10.15
+            #
+            # See:
+            #   https://github.com/actions/runner-images/blob/main/images/macos/macos-13-Readme.md
+            #
+            log(f'Using llvm@15 clang and clang++')
+            cl15 = pipcl.run(f'brew --prefix llvm@15', capture=1)
+            log(f'{cl15=}')
+            cl15 = cl15.strip()
+            pipcl.run(f'ls -lL {cl15}')
+            pipcl.run(f'ls -lL {cl15}/bin')
+            cc = f'{cl15}/bin/clang'
+            cxx = f'{cl15}/bin/clang++'
+            env['CC'] = cc
+            env['CXX'] = cxx
+    
+    # Show compiler versions.
+    cc = env.get('CC', 'cc')
+    cxx = env.get('CXX', 'c++')
+    pipcl.run(f'{cc} --version')
+    pipcl.run(f'{cxx} --version')
 
     # Add extra flags for MacOS cross-compilation, where ARCHFLAGS can be
     # '-arch arm64'.
@@ -865,6 +927,8 @@ def build_mupdf_unix(
         env_add(env, 'XCFLAGS', archflags)
         env_add(env, 'XLIBS', archflags)
 
+    mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    
     # We specify a build directory path containing 'pymupdf' so that we
     # coexist with non-PyMuPDF builds (because PyMuPDF builds have a
     # different config.h).
@@ -877,7 +941,16 @@ def build_mupdf_unix(
     # $_PYTHON_HOST_PLATFORM allows cross-compiled cibuildwheel builds
     # to coexist, e.g. on github.
     #
+    # Have experimented with looking at getconf_ARG_MAX to decide whether to
+    # omit `PyMuPDF-` from the build directory, to avoid command-too-long
+    # errors with mupdf-1.26. But it seems that `getconf ARG_MAX` returns
+    # a system limit, not the actual limit of the current shell, and there
+    # doesn't seem to be a way to find the current shell's limit.
+    #
     build_prefix = f'PyMuPDF-'
+    if mupdf_version_tuple >= (1, 26):
+        # Avoid link command length problems seen on musllinux.
+        build_prefix = ''
     if pyodide:
         build_prefix += 'pyodide-'
     else:
@@ -894,7 +967,6 @@ def build_mupdf_unix(
         log(f'PYMUPDF_SETUP_MUPDF_TESSERACT=0 so building mupdf without tesseract.')
     else:
         build_prefix += 'tesseract-'
-    mupdf_version_tuple = get_mupdf_version(mupdf_local)
     if (
             linux
             and os.environ.get('PYMUPDF_SETUP_MUPDF_BSYMBOLIC', '1') == '1'
