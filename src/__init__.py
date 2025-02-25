@@ -848,7 +848,7 @@ class Annot:
         page = _pdf_annot_page(annot)
         while 1:
             irt_annot = JM_find_annot_irt(annot)
-            if not irt_annot.m_internal:
+            if not irt_annot:
                 break
             mupdf.pdf_delete_annot(page, irt_annot)
         mupdf.pdf_dict_del(annot_obj, PDF_NAME('Popup'))
