@@ -24,6 +24,7 @@ Change Log
   * Add Widget Support to `Document.insert_pdf()`.
   * Add `bibi` to span dicts.
   * Add `synthetic' to char dict.
+  * Fixed Pyodide builds.
 
 
 **Changes in version 1.25.2 (2025-01-17)**
