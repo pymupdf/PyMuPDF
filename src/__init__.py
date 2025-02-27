@@ -3417,8 +3417,10 @@ class Document:
         n = mupdf.pdf_array_len(kids)
         for i in range(n):
             nums = mupdf.pdf_resolve_indirect(
-                    mupdf.pdf_dict_get( mupdf.pdf_array_get(kids, i)),
-                    PDF_NAME('Nums'),
+                    mupdf.pdf_dict_get(
+                        mupdf.pdf_array_get(kids, i),
+                        PDF_NAME('Nums'),
+                        )
                     )
             JM_get_page_labels(rc, nums)
         return rc
