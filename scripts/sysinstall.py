@@ -240,6 +240,9 @@ def main():
     command += f' HAVE_LEPTONICA=yes'
     command += f' HAVE_TESSERACT=yes'
     command += f' USE_SYSTEM_LIBS=yes'
+    # We need latest zxingcpp so system version not ok.
+    command += f' USE_SYSTEM_ZXINGCPP=no'
+    command += f' barcode=yes'
     command += f' VENV_FLAG={"--venv" if pip == "venv" else ""}'
     if mupdf_so_mode:
         command += f' SO_INSTALL_MODE={mupdf_so_mode}'
@@ -291,7 +294,7 @@ def main():
         run(f'{sudo}rm -r {p}/site-packages/pymupdf.py || true')
         run(f'{sudo}rm -r {p}/site-packages/fitz || true')
         run(f'{sudo}rm -r {p}/site-packages/fitz.py || true')
-        run(f'{sudo}rm -r {p}/site-packages/PyMuPDF-*.dist-info || true')
+        run(f'{sudo}rm -r {p}/site-packages/pymupdf-*.dist-info || true')
         run(f'{sudo}rm -r {root_prefix}/bin/pymupdf || true')
         if pip == 'venv':
             run(f'{sudo}{venv_name}/bin/python -m installer --destdir {root} --prefix {prefix} {wheel}')
