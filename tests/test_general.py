@@ -137,21 +137,29 @@ def test_open_exceptions():
         doc = pymupdf.open(filename, filetype="xps")
     except RuntimeError as e:
         assert repr(e).startswith("FileDataError")
+    else:
+        assert 0
 
     try:
         doc = pymupdf.open(filename, filetype="xxx")
     except Exception as e:
         assert repr(e).startswith("ValueError")
+    else:
+        assert 0
 
     try:
         doc = pymupdf.open("x.y")
     except Exception as e:
         assert repr(e).startswith("FileNotFoundError")
+    else:
+        assert 0
 
     try:
         doc = pymupdf.open("pdf", b"")
     except RuntimeError as e:
         assert repr(e).startswith("EmptyFileError")
+    else:
+        assert 0
 
 
 def test_bug1945():
