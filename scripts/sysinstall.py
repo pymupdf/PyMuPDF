@@ -118,6 +118,8 @@ def main():
         log(f'{sys.executable=}')
         log(f'{platform.python_version()=}')
         log(f'{__file__=}')
+        log(f'{os.environ.get("PYMUDF_SCRIPTS_SYSINSTALL_ARGS_PRE")=}')
+        log(f'{os.environ.get("PYMUDF_SCRIPTS_SYSINSTALL_ARGS_POST")=}')
         log(f'{sys.argv=}')
         log(f'{sysconfig.get_path("platlib")=}')
         run_command(f'python -V', check=0)
@@ -152,7 +154,9 @@ def main():
     
     # Parse command-line.
     #
-    args = iter(sys.argv[1:])
+    env_args_pre = shlex.split(os.environ.get('PYMUDF_SCRIPTS_SYSINSTALL_ARGS_PRE', ''))
+    env_args_post = shlex.split(os.environ.get('PYMUDF_SCRIPTS_SYSINSTALL_ARGS_POST', ''))
+    args = iter(env_args_pre + sys.argv[1:] + env_args_post)
     while 1:
         try:
             arg = next(args)
