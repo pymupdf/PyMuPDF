@@ -10,10 +10,13 @@ import gentle_compare
 
 import os
 import platform
+import subprocess
 import sys
 import tempfile
 import pytest
 import textwrap
+import time
+
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 epub = os.path.join(scriptdir, "resources", "Bezier.epub")
@@ -462,3 +465,50 @@ def test_4155():
         assert 'operation forbidden on released memoryview object' in str(e)
     else:
         assert 0, f'Did not receive expected exception when using defunct memoryview.'
+
+
+def test_4336():
+    if 0:
+        # Compare with last classic release.
+        import pickle
+        path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4336_cc')
+        code = textwrap.dedent(f'''
+                import fitz
+                import os
+                import time
+                import pickle
+                
+                path = os.path.normpath(f'{__file__}/../../tests/resources/nur-ruhig.jpg')
+                pixmap = fitz.Pixmap(path)
+                t = time.time()
+                for i in range(10):
+                    cc = pixmap.color_count()
+                t = time.time() - t
+                print(f'test_4336(): {{t=}}')
+                with open({path_out!r}, 'wb') as f:
+                    pickle.dump(cc, f)
+                ''')
+        path_code = os.path.normpath(f'{__file__}/../../tests/resources/test_4336.py')
+        with open(path_code, 'w') as f:
+            f.write(code)
+        venv = os.path.normpath(f'{__file__}/../../tests/resources/test_4336_venv')
+        command = f'{sys.executable} -m venv {venv}'
+        command += f' && . {venv}/bin/activate'
+        command += f' && pip install --force-reinstall pymupdf==1.23.8'
+        command += f' && python {path_code}'
+        print(f'Running: {command}', flush=1)
+        subprocess.run(command, shell=1, check=1)
+        with open(path_out, 'rb') as f:
+            cc_old = pickle.load(f)
+    else:
+        cc_old = None
+    path = os.path.normpath(f'{__file__}/../../tests/resources/nur-ruhig.jpg')
+    pixmap = pymupdf.Pixmap(path)
+    t = time.time()
+    for i in range(10):
+        cc = pixmap.color_count()
+    t = time.time() - t
+    print(f'test_4336(): {t=}')
+    
+    if cc_old:
+        assert cc == cc_old
