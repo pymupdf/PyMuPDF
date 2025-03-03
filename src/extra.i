@@ -4095,6 +4095,63 @@ void pixmap_copy( fz_pixmap* pm, const fz_pixmap* src, int n)
 }
 
 
+PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip)
+{
+    fz_context* ctx = mupdf::internal_context_get();
+    PyObject* rc = PyDict_New();
+    fz_irect irect = fz_pixmap_bbox(ctx, pm);
+    irect = fz_intersect_irect(irect, fz_round_rect(JM_rect_from_py(clip)));
+    if (fz_is_empty_irect(irect))
+    {
+        return rc;
+    }
+    size_t stride = pm->stride;
+    size_t width = irect.x1 - irect.x0;
+    size_t height = irect.y1 - irect.y0;
+    size_t n = (size_t) pm->n;
+    size_t substride = width * n;
+    unsigned char* s = pm->samples + stride * (irect.y0 - pm->y) + n * (irect.x0 - pm->x);
+    // Cache previous pixel.
+    char oldpix[10];
+    assert(n < = size(oldpix));
+    memcpy(oldpix, s, n);
+    long cnt = 0;
+    for (size_t i = 0; i < height; i++)
+    {
+        for (size_t j = 0; j < substride; j += n)
+        {
+            const char* newpix = (const char*) s + j;
+            if (memcmp(oldpix, newpix, n))
+            {
+                /* Pixel differs from previous pixel, so update results with
+                last run of pixels. We get a PyObject representation of pixel
+                so we can look up in Python dict <rc>. */
+                PyObject* pixel = PyBytes_FromStringAndSize(&oldpix[0], n);
+                PyObject* c = PyDict_GetItem(rc, pixel);
+                if (c) cnt += PyLong_AsLong(c);
+                DICT_SETITEM_DROP(rc, pixel, PyLong_FromLong(cnt));
+                Py_DECREF(pixel);
+                /* Start next run of identical pixels. */
+                cnt = 1;
+                memcpy(oldpix, newpix, n);
+            }
+            else
+            {
+                cnt += 1;
+            }
+        }
+        s += stride;
+    }
+    /* Update results with last pixel. */
+    PyObject* pixel = PyBytes_FromStringAndSize(&oldpix[0], n);
+    PyObject* c = PyDict_GetItem(rc, pixel);
+    if (c) cnt += PyLong_AsLong(c);
+    DICT_SETITEM_DROP(rc, pixel, PyLong_FromLong(cnt));
+    Py_DECREF(pixel);
+    PyErr_Clear();
+    return rc;
+}
+
 %}
 
 /* Declarations for functions defined above. */
@@ -4224,3 +4281,5 @@ src->n must be -1, 0 or +1. If -1, <src> must have alpha and <pm> must not have
 alpha, and we copy the non-alpha bytes. If +1 <src> must not have alpha and
 <pm> must have alpha and we set <pm>'s alpha bytes all to 255.*/
 void pixmap_copy(fz_pixmap* pm, const fz_pixmap* src, int n);
+
+PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip);

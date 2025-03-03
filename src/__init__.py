@@ -14847,6 +14847,9 @@ def JM_color_FromSequence(color):
 
 
 def JM_color_count( pm, clip):
+    if g_use_extra:
+        return extra.ll_JM_color_count(pm.m_internal, clip)
+    
     rc = dict()
     cnt = 0
     irect = mupdf.fz_pixmap_bbox( pm)
