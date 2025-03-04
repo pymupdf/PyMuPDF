@@ -1608,3 +1608,27 @@ def test_4309():
     document = pymupdf.open()
     page = document.new_page()
     document.delete_page()
+
+def test_4263():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4263.pdf')
+    path_out = f'{path}.linerarized.pdf'
+    command = f'pymupdf clean -linear {path} {path_out}'
+    print(f'Running: {command}')
+    cp = subprocess.run(command, shell=1, check=0)
+    if pymupdf.mupdf_version_tuple < (1, 26):
+        assert cp.returncode == 0
+    else:
+        # Support for linerarisation dropped in MuPDF-1.26.
+        assert cp.returncode
+
+def test_4224():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4224.pdf')
+    with pymupdf.open(path) as document:
+        for page in document.pages():
+            pixmap = page.get_pixmap(dpi=150)
+            path_pixmap = f'{path}.{page.number}.png'
+            pixmap.save(path_pixmap)
+            print(f'Have created: {path_pixmap}')
+    if pymupdf.mupdf_version_tuple < (1, 25, 5):
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'format error: negative code in 1d faxd\npadding truncated image'
