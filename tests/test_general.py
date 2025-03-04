@@ -1603,3 +1603,8 @@ def test_4034():
         assert 30 < rms < 50
     else:
         assert rms == 0
+
+def test_4309():
+    document = pymupdf.open()
+    page = document.new_page()
+    document.delete_page()
