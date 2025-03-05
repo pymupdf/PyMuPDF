@@ -479,7 +479,9 @@ def test_4079():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
     if pymupdf.mupdf_version_tuple >= (1, 26):
         path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
-    else:path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after_1.25.pdf')
+    else:
+        # 2024-11-27 Expect incorrect behaviour.
+        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after_1.25.pdf')
         
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
     with pymupdf.open(path_after) as document_after:
@@ -507,7 +509,6 @@ def test_4079():
         path = os.path.normpath(f'{__file__}/../../tests/test_4079_diff.png')
         diff.save(path)
         print(f'{rms=}')
-        # 2024-11-27 Expect current broken behaviour.
         assert rms == 0
 
 def test_4254():
