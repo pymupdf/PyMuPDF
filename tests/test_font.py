@@ -197,6 +197,27 @@ def test_3780():
                             print(f'        span {k}:')
                             for n, v in span.items():
                                 print(f'            {n}: {v!r}')
-            
 
-            
+
+def test_3887():
+    print(f'{pymupdf.version=}')
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3887.pdf')
+    
+    path2 = os.path.normpath(f'{__file__}/../../tests/resources/test_3887.pdf.ez.pdf')
+    with pymupdf.open(path) as document:
+        document.subset_fonts(fallback=False)
+        document.ez_save(path2)
+    
+    with pymupdf.open(path2) as document:
+        text = f"\u0391\u3001\u0392\u3001\u0393\u3001\u0394\u3001\u0395\u3001\u0396\u3001\u0397\u3001\u0398\u3001\u0399\u3001\u039a\u3001\u039b\u3001\u039c\u3001\u039d\u3001\u039e\u3001\u039f\u3001\u03a0\u3001\u03a1\u3001\u03a3\u3001\u03a4\u3001\u03a5\u3001\u03a6\u3001\u03a7\u3001\u03a8\u3001\u03a9\u3002\u03b1\u3001\u03b2\u3001\u03b3\u3001\u03b4\u3001\u03b5\u3001\u03b6\u3001\u03b7\u3001\u03b8\u3001\u03b9\u3001\u03ba\u3001\u03bb\u3001\u03bc\u3001\u03bd\u3001\u03be\u3001\u03bf\u3001\u03c0\u3001\u03c1\u3001\u03c2\u3001\u03c4\u3001\u03c5\u3001\u03c6\u3001\u03c7\u3001\u03c8\u3001\u03c9\u3002"
+        page = document[0]
+        chars = [c for b in page.get_text("rawdict",flags=0)["blocks"] for l in b["lines"] for s in l["spans"] for c in s["chars"]]
+        output = [c["c"] for c in chars]
+        print(f'text:\n    {text}')
+        print(f'output:\n    {output}')
+        pixmap = page.get_pixmap()
+        path_pixmap = f'{path}.0.png'
+        pixmap.save(path_pixmap)
+        print(f'Have saved to: {path_pixmap=}')
+        assert set(output)==set(text)
+
