@@ -258,6 +258,9 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 .. py:data:: TEXT_ACCURATE_BBOXES
 
     512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute its rectangle hull. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of height 0** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with getting meaningful boundary boxes even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
+    
+    Note that this has no effect by default - one must also disable the global
+    quad corrections setting with `pymupdf.TOOLS.unset_quad_corrections(True)`.
 
 .. py:data:: TEXT_COLLECT_VECTORS
 
