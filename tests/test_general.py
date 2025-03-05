@@ -1632,3 +1632,18 @@ def test_4224():
     if pymupdf.mupdf_version_tuple < (1, 25, 5):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'format error: negative code in 1d faxd\npadding truncated image'
+
+def test_4319():
+    # Have not seen this test reproduce issue #4319, but keeping it anyway.
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4319.pdf')
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((10, 100), "some text")
+    doc.save(path)
+    doc.close()
+    doc = pymupdf.open(path)
+    page = doc[0]
+    pc = doc.page_count
+    doc.close()
+    os.remove(path)
+    print(f"removed {doc.name=}")
