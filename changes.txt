@@ -2,6 +2,23 @@ Change Log
 ==========
 
 
+**Changes in version 1.25.4 ()**
+
+* Fixed issues:
+
+  * **Fixed** `4224 <https://github.com/pymupdf/PyMuPDF/issues/4224>`_: MuPDF error: format error: negative code in 1d faxd
+  * **Fixed** `4303 <https://github.com/pymupdf/PyMuPDF/issues/4303>`_: page.get_image_info() returns outdated cached results after replacing image
+  * **Fixed** `4309 <https://github.com/pymupdf/PyMuPDF/issues/4309>`_: FzErrorFormat Error When Deleting First Page
+  * **Fixed** `4336 <https://github.com/pymupdf/PyMuPDF/issues/4336>`_: Major Performance Regression: pix.color_count is 150x slower in version 1.25.3 compared to 1.23.8
+  * **Fixed** `4341 <https://github.com/pymupdf/PyMuPDF/issues/4341>`_: Invalid label retrieval when /Kids is an array of multiple /Nums
+
+* Other:
+
+  * Fixed handling of duplicate widget names when joining PDFs (PR #4347).
+  * Improved Pyodide build.
+  * Avoid SWIG-related build errors with Python-3.13 by disabling PY_LIMITED_API.
+
+
 **Changes in version 1.25.3 (2025-02-06)**
 
 * Use MuPDF-1.25.4.
@@ -66,6 +83,8 @@ Change Log
 
   * **Fixed** `4026 <https://github.com/pymupdf/PyMuPDF/issues/4026>`_: page.get_text('blocks') output two piece of very similar text with different bbox
   * **Fixed** `4004 <https://github.com/pymupdf/PyMuPDF/issues/4004>`_: Segmentation Fault When Updating PDF Form Field Value
+  * **Fixed** `3887 <https://github.com/pymupdf/PyMuPDF/issues/3887>`_: Subset Fonts problem using Fallback Font
+  * **Fixed** `3886 <https://github.com/pymupdf/PyMuPDF/issues/3886>`_: Another issue with destroying PDF when inserting html
   * **Fixed** `3751 <https://github.com/pymupdf/PyMuPDF/issues/3751>`_: apply_redactions causes part of the page content to be hidden / transparent
 
 
