@@ -251,21 +251,13 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     128 -- Use raw character codes instead of U+FFFD. This is the default for **text extraction** in PyMuPDF. If you **want to detect** when encoding information is missing or uncertain, toggle this flag and scan for the presence of U+FFFD (= `chr(0xfffd)`) code points in the resulting text.
 
-.. py:data:: TEXT_ACCURATE_BBOXES
-
-    512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute its rectangle hull. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of height 0** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with getting meaningful boundary boxes even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
-
-.. py:data:: TEXT_IGNORE_ACTUALTEXT
-
-    2048 -- Ignore built-in differences between text appearing in e.g. PDF viewers versus text stored in the PDF. See :ref:`AdobeManual`, page 615 for background. If set, the **stored** ("replacement" text) is ignored in favor of the displayed text.
-
 .. py:data:: TEXT_COLLECT_STRUCTURE
 
     256 -- Not supported.
 
 .. py:data:: TEXT_ACCURATE_BBOXES
 
-    512 -- Calculates exact bboxes for each glyph, instead of relying on the information in the font or PDF document.
+    512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute its rectangle hull. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of height 0** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with getting meaningful boundary boxes even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
 
 .. py:data:: TEXT_COLLECT_VECTORS
 
@@ -273,7 +265,7 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
 .. py:data:: TEXT_IGNORE_ACTUALTEXT
 
-    2048 -- Do not use ActualText replacement if present.
+    2048 -- Ignore built-in differences between text appearing in e.g. PDF viewers versus text stored in the PDF. See :ref:`AdobeManual`, page 615 for background. If set, the **stored** ("replacement" text) is ignored in favor of the displayed text.
 
 .. py:data:: TEXT_STEXT_SEGMENT
 
