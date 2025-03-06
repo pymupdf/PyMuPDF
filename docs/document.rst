@@ -1294,9 +1294,10 @@ For details on **embedded files** refer to Appendix 3.
      pair: links; Document.insert_pdf
      pair: annots; Document.insert_pdf
      pair: widgets; Document.insert_pdf
+     pair: join_duplicates; Document.insert_pdf
      pair: show_progress; Document.insert_pdf
 
-  .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, widgets=True, show_progress=0, final=1)
+  .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, widgets=True, join_duplicates=False, show_progress=0, final=1)
 
     PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Value -1 indicates default values. All pages thus copied will be rotated as specified. Links, annotations and widgets can be excluded in the target, see below. All page numbers are 0-based.
 
@@ -1312,9 +1313,19 @@ For details on **embedded files** refer to Appendix 3.
     :arg int rotate: All copied pages will be rotated by the provided value (degrees, integer multiple of 90).
 
     :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal links to outside the copied page range are **always excluded**. 
+    
     :arg bool annots: choose whether annotations should be included in the copy.
+    
     :arg bool widgets: choose whether annotations should be included in the copy. If `True` and at least one of the source pages contains form fields, the target PDF will be turned into a Form PDF (if not already being one).
+    
+    :arg bool join_duplicates: *(New in version 1.25.5)* Choose how to handle duplicate root field names in the source pages. This parameter is ignored if `widgets=False`.
+    
+      Default is ``False`` which will add unifying strings to the name of those source root fields which have a duplicate in the target. For instance, if "name" already occurs in the target, the source widget's name will be changed to "name [text]" with a suitably chosen string "text".
+
+      If ``True``, root fields with duplicate names in source and target will be converted to so-called "Kids" of a "Parent" object (which lists all kid widgets in a PDF array). This will effectively turn those kids into instances of the "same" widget: if e.g. one of the kids is changed, then all its instances will automatically inherit this change -- no matter on which page they happen to be displayed.
+    
     :arg int show_progress: *(new in v1.17.7)* specify an interval size greater zero to see progress messages on `sys.stdout`. After each interval, a message like `Inserted 30 of 47 pages.` will be printed.
+    
     :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default *True*. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
 
   .. note::
