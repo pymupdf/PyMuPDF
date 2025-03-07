@@ -479,7 +479,7 @@ def test_4245():
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4245_diff.png')
     pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 26):
+    if pymupdf.mupdf_version_tuple < (1, 25, 5):
         # Prior to fix for mupdf bug 708274.
         assert 0.1 < rms < 0.2
     else:
@@ -504,7 +504,7 @@ def test_4180():
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_diff.png')
     pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 26):
+    if pymupdf.mupdf_version_tuple < (1, 25, 5):
         # Prior to fix for mupdf bug 708274.
         assert 0.2 < rms < 0.3
     else:
@@ -538,7 +538,7 @@ def test_4182():
     pixmap_diff.save(path_diff)
     rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 26):
+    if pymupdf.mupdf_version_tuple < (1, 25, 5):
         # Prior to fix for mupdf bug 708274.
         assert 3 < rms < 3.5
     else:
@@ -627,7 +627,7 @@ def test_4179():
         pixmap_diff.save(path_out_diff)
         print(f'Have saved to: {path_out_diff=}')
         print(f'{rms=}')
-        if pymupdf.mupdf_version_tuple < (1, 26):
+        if pymupdf.mupdf_version_tuple < (1, 25, 5):
             # Prior to fix for mupdf bug 708274, our rects are rendered slightly incorrectly.
             assert 3.5 < rms < 4.5
         else:

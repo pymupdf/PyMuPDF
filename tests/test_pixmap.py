@@ -416,7 +416,7 @@ def test_3448():
     print(f'{rms=}')
     if pymupdf.mupdf_version_tuple < (1, 24, 11):
         assert 30 <= rms < 45
-    elif pymupdf.mupdf_version_tuple < (1, 26):
+    elif pymupdf.mupdf_version_tuple < (1, 25, 5):
         # Prior to fix for mupdf bug 708274.
         assert 1 < rms < 2
     else:
@@ -442,7 +442,7 @@ def test_3854():
         # MuPDF using external third-party libs gives slightly different
         # behaviour.
         assert rms < 2
-    elif pymupdf.mupdf_version_tuple < (1, 26):
+    elif pymupdf.mupdf_version_tuple < (1, 25, 5):
         # # Prior to fix for mupdf bug 708274.
         assert 0.5 < rms < 2
     else:
