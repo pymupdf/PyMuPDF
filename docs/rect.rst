@@ -104,11 +104,11 @@ The following remarks are also valid for :ref:`IRect` objects:
 
       If "rect" is specified, the constructor creates a **new copy** of it.
 
-      Without parameters, the empty rectangle *Rect(0.0, 0.0, 0.0, 0.0)* is created.
+      Without parameters, the empty rectangle ``Rect(0.0, 0.0, 0.0, 0.0)`` is created.
 
    .. method:: round()
 
-      Creates the smallest containing :ref:`IRect`. This is **not** the same as simply rounding the rectangle's edges: The top left corner is rounded upwards and to the left while the bottom right corner is rounded downwards and to the right.
+      Creates the smallest containing :ref:`IRect`. This is **not the same** as simply rounding the rectangle's edges: The top left corner is rounded upwards and to the left while the bottom right corner is rounded downwards and to the right.
 
       >>> pymupdf.Rect(0.5, -0.01, 123.88, 455.123456).round()
       IRect(0, -1, 124, 456)
@@ -131,7 +131,7 @@ The following remarks are also valid for :ref:`IRect` objects:
       Transforms the rectangle with a matrix and **replaces the original**. If the rectangle is empty or infinite, this is a no-operation.
 
       :arg m: The matrix for the transformation.
-      :type m: :ref:`Matrix`
+      :type m: :data:`matrix_like`
 
       :rtype: *Rect*
       :returns: the smallest rectangle that contains the transformed original.
@@ -141,21 +141,21 @@ The following remarks are also valid for :ref:`IRect` objects:
       The intersection (common rectangular area, largest rectangle contained in both) of the current rectangle and *r* is calculated and **replaces the current** rectangle. If either rectangle is empty, the result is also empty. If *r* is infinite, this is a no-operation. If the rectangles are (mathematically) disjoint sets, then the result is invalid. If the result is valid but empty, then the rectangles touch each other in a corner or (part of) a side.
 
       :arg r: Second rectangle
-      :type r: :ref:`Rect`
+      :type r: :data:`rect_like`
 
    .. method:: include_rect(r)
 
-      The smallest rectangle containing the current one and *r* is calculated and **replaces the current** one. If either rectangle is infinite, the result is also infinite. If one is empty, the other one will be taken as the result.
+      The smallest rectangle containing the current one and ``r`` is calculated and **replaces the current** one. If either rectangle is infinite, the result is also infinite. If ``r`` is empty, the current rectangle remains unchanged. Else if the current rectangle is empty, it is replaced by ``r``.
 
       :arg r: Second rectangle
-      :type r: :ref:`Rect`
+      :type r: :data:`rect_like`
 
    .. method:: include_point(p)
 
-      The smallest rectangle containing the current one and point *p* is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create a rectangle containing a series of points, start with (the empty) *pymupdf.Rect(p1, p1)* and successively include the remaining points.
+      The smallest rectangle containing the current one and :data:`point_like` ``p`` is calculated and **replaces the current** one. **The infinite rectangle remains unchanged.** To create the rectangle that wraps a sequence of points, start with :meth:`EMPTY_RECT` and successively include the members of the sequence.
 
       :arg p: Point to include.
-      :type p: :ref:`Point`
+      :type p: :data:`point_like`
 
 
    .. method:: get_area([unit])
