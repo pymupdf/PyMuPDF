@@ -477,7 +477,7 @@ def test_4047():
 
 def test_4079():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
-    if pymupdf.mupdf_version_tuple >= (1, 26):
+    if pymupdf.mupdf_version_tuple >= (1, 25, 5):
         path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
     else:
         # 2024-11-27 Expect incorrect behaviour.
