@@ -98,6 +98,10 @@ Options:
         Experimental, for investigating
         https://github.com/pymupdf/PyMuPDF/issues/3869. Runs run basic code
         inside C++ pybind. Requires `sudo apt install pybind11-dev` or similar.
+    --pymupdf-pypi <name>
+        Do not build PyMuPDF, instead install with `pip install <name>`. For
+        example allows testing of a specific version with `--pymupdf-pypi
+        pymupdf==1.25.0`.
     --system-site-packages 0|1
         If 1, use `--system-site-packages` when creating venv. Defaults is 0.
     --timeout <seconds>
@@ -123,6 +127,11 @@ Commands:
         `pyodide build`. This runs our setup.py with CC etc set up
         to create Pyodide binaries in a wheel called, for example,
         `PyMuPDF-1.23.2-cp311-none-emscripten_3_1_32_wasm32.whl`.
+        
+        It seems that sys.version must match the Python version inside emsdk;
+        as of 2025-02-14 this is 3.12. Otherwise we get build errors such as:
+            [wasm-validator error in function 723] unexpected false: all used features should be allowed, on ...
+            
 
 Environment:
     PYMUDF_SCRIPTS_TEST_options
@@ -159,6 +168,9 @@ def main(argv):
     if len(argv) == 1:
         show_help()
         return
+    
+    log(f'{sys.executable=}')
+    log(f'{sys.version=}')
 
     build_isolation = None
     valgrind = False
@@ -180,6 +192,7 @@ def main(argv):
     system_site_packages = False
     pyodide_build_version = None
     packages = False
+    pymupdf_pypi = None
     
     options = os.environ.get('PYMUDF_SCRIPTS_TEST_options', '')
     options = shlex.split(options)
@@ -245,6 +258,8 @@ def main(argv):
             valgrind_args = next(args)
         elif arg == '--pyodide-build-version':
             pyodide_build_version = next(args)
+        elif arg == '--pymupdf-pypi':
+            pymupdf_pypi = next(args)
         else:
             assert 0, f'Unrecognised option: {arg=}.'
     
@@ -276,14 +291,17 @@ def main(argv):
         return
 
     def do_build(wheel=False):
-        build(
-                build_type=build_type,
-                build_isolation=build_isolation,
-                venv_quick=venv_quick,
-                build_mupdf=build_mupdf,
-                build_flavour=build_flavour,
-                wheel=wheel,
-                )
+        if pymupdf_pypi:
+            run(f'pip install --force-reinstall {pymupdf_pypi}')
+        else:
+            build(
+                    build_type=build_type,
+                    build_isolation=build_isolation,
+                    venv_quick=venv_quick,
+                    build_mupdf=build_mupdf,
+                    build_flavour=build_flavour,
+                    wheel=wheel,
+                    )
     def do_test():
         test(
                 implementations=implementations,

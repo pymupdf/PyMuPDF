@@ -36,7 +36,7 @@ def _worker_init(
 
 def _stats_write(t, label):
     t = time.time() - t
-    if t >= 0.1:
+    if t >= 10:
         pymupdf.log(f'{os.getpid()=}: {t:2f}s: {label}.')
 
 

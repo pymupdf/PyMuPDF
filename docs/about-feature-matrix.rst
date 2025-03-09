@@ -448,7 +448,7 @@
         <tr>
             <td><cite id="transFM43">PDF Page Labels</cite></td>
             <td class="yes"></td>
-            <td class="no"></td>
+            <td class="limited">Read-only</td>
             <td class="no"></td>
             <td class="no"></td>
             <td class="no"></td>
