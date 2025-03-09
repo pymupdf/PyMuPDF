@@ -3235,6 +3235,21 @@ def getColorInfoList() -> list:
         ("GRAY97", 247, 247, 247),
         ("GRAY98", 250, 250, 250),
         ("GRAY99", 252, 252, 252),
+        ("AQUA", 0, 255, 255),
+        ("CRIMSON", 220, 20, 60),
+        ("DARKGREY", 169, 169, 169),
+        ("DARKSLATEGREY", 47, 79, 79),
+        ("DIMGREY", 105, 105, 105),
+        ("FUCHSIA", 255, 0, 255),
+        ("GREY", 128, 128, 128),
+        ("INDIGO", 75, 0, 130),
+        ("LIGHTGREY", 211, 211, 211),
+        ("LIGHTSLATEGREY", 119, 136, 153),
+        ("LIME", 0, 255, 0),
+        ("OLIVE", 128, 128, 0),
+        ("SILVER", 192, 192, 192),
+        ("SLATEGREY", 112, 128, 144),
+        ("TEAL", 0, 128, 128),
         ("HONEYDEW", 240, 255, 240),
         ("HONEYDEW1", 240, 255, 240),
         ("HONEYDEW2", 224, 238, 224),
@@ -3543,12 +3558,9 @@ def getColor(name: str) -> tuple:
     Returns:
         a triple of floats in range 0 to 1. In case of name-not-found, "white" is returned.
     """
-    try:
-        c = getColorInfoList()[getColorList().index(name.upper())]
-        return (c[1] / 255.0, c[2] / 255.0, c[3] / 255.0)
-    except Exception:
-        pymupdf.exception_info()
-        return (1, 1, 1)
+    color_dict = getColorInfoDict()
+    c = color_dict.get(name, (255, 255, 255))
+    return (c[0] / 255.0, c[1] / 255.0, c[2] / 255.0)
 
 
 def getColorHSV(name: str) -> tuple:
