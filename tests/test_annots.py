@@ -243,7 +243,7 @@ def test_1645():
                 annot_loc * page.derotation_matrix,
                 "TEST",
                 fontsize=18,
-                fill_color=pymupdf.utils.getColor("FIREBRICK1"),
+                fill_color=pymupdf.pdfcolor["firebrick1"],
                 rotate=page.rotation,
                 )
         doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
@@ -372,17 +372,17 @@ def test_3863():
     if pymupdf.mupdf_version_tuple < (1, 24, 10):
         print(f'test_3863(): not running because {pymupdf.mupdf_version_tuple=} < 1.24.10.')
         return
-    
+
     path_in = os.path.normpath(f'{__file__}/../../tests/resources/test_3863.pdf')
     path_out = os.path.normpath(f'{__file__}/../../tests/test_3863.pdf.pdf')
-    
+
     # Create redacted PDF.
     print(f'Loading {path_in=}.')
     with pymupdf.open(path_in) as document:
-    
+
         for num, page in enumerate(document):
             print(f"Page {num + 1} - {page.rect}:")
-    
+
             for image in page.get_images(full=True):
                 print(f"  - Image: {image}")
 
@@ -396,10 +396,10 @@ def test_3863():
 
         print(f'Writing to {path_out=}.')
         document.save(path_out)
-    
+
     with pymupdf.open(path_out) as document:
         assert len(document) == 8
-        
+
         # Create PNG for each page of redacted PDF.
         for num, page in enumerate(document):
             path_png = f'{path_out}.{num}.png'
@@ -407,7 +407,7 @@ def test_3863():
             print(f'Writing to {path_png=}.')
             pixmap.save(path_png)
             # Compare with expected png.
-    
+
         print(f'Comparing page PNGs with expected PNGs.')
         for num, _ in enumerate(document):
             path_png = f'{path_out}.{num}.png'
@@ -480,7 +480,7 @@ def test_4079():
     if pymupdf.mupdf_version_tuple >= (1, 26):
         path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
     else:path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after_1.25.pdf')
-        
+
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
     with pymupdf.open(path_after) as document_after:
         page = document_after[0]
