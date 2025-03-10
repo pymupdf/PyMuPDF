@@ -115,6 +115,7 @@ def test_pylint():
             '__init__.py',
             '__main__.py',
             '_apply_pages.py',
+            '_wxcolors.py',
             'fitz___init__.py',
             'fitz_table.py',
             'fitz_utils.py',

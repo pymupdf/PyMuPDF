@@ -21256,20 +21256,6 @@ class TOOLS:
     fitz_config = JM_fitz_config()
 
 
-# We cannot import utils earlier because it imports this .py file itself and
-# uses some pymupdf.* types in function typing.
-#
-from . import utils
-
-
-pdfcolor = dict(
-        [
-            (k, (r / 255, g / 255, b / 255))
-            for k, (r, g, b) in utils.getColorInfoDict().items()
-        ]
-        )
-
-
 # Callbacks not yet supported with cppyy.
 if not mupdf_cppyy:
     mupdf.fz_set_warning_callback(JM_mupdf_warning)
@@ -21300,6 +21286,47 @@ def _atexit():
     mupdf.fz_set_error_callback(None)
     #log( '_atexit() returning')
 atexit.register( _atexit)
+
+
+# List of (name, red, green, blue) where:
+#   name: upper-case name.
+#   red, green, blue: integer in range 0..255.
+#
+from . import _wxcolors
+_wxcolors = _wxcolors._wxcolors
+
+
+# Dict mapping from name to (red, green, blue).
+#   name: lower-case name.
+#   red, green, blue: float in range 0..1.
+#
+pdfcolor = dict()
+for name, r, g, b in _wxcolors:
+    pdfcolor[name.lower()] = (r/255, g/255, b/255)
+
+
+def colors_pdf_dict():
+    '''
+    Returns dict mapping from name to (red, green, blue).
+        name: lower-case name.
+        red, green, blue: float in range 0..1.
+    '''
+    return pdfcolor
+
+
+def colors_wx_list():
+    '''
+    Returns list of (name, red, green, blue) tuples:
+        name: upper-case name.
+        red, green, blue: integers in range 0..255.
+    '''
+    return _wxcolors
+
+
+# We cannot import utils earlier because it imports this .py file itself and
+# uses some pymupdf.* types in function typing.
+#
+from . import utils
 
 
 # Use utils.*() fns for some class methods.

@@ -1632,3 +1632,41 @@ def test_4224():
     if pymupdf.mupdf_version_tuple < (1, 25, 5):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'format error: negative code in 1d faxd\npadding truncated image'
+
+def test_4319():
+    # Have not seen this test reproduce issue #4319, but keeping it anyway.
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4319.pdf')
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((10, 100), "some text")
+    doc.save(path)
+    doc.close()
+    doc = pymupdf.open(path)
+    page = doc[0]
+    pc = doc.page_count
+    doc.close()
+    os.remove(path)
+    print(f"removed {doc.name=}")
+
+def test_3886():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3886.pdf')
+    path_clean0 = os.path.normpath(f'{__file__}/../../tests/resources/test_3886_clean0.pdf')
+    path_clean1 = os.path.normpath(f'{__file__}/../../tests/resources/test_3886_clean1.pdf')
+    
+    with pymupdf.open(path) as document:
+        pixmap = document[0].get_pixmap()
+        document.save(path_clean0, clean=0)
+    
+    with pymupdf.open(path) as document:
+        document.save(path_clean1, clean=1)
+    
+    with pymupdf.open(path_clean0) as document:
+        pixmap_clean0 = document[0].get_pixmap()
+    
+    with pymupdf.open(path_clean1) as document:
+        pixmap_clean1 = document[0].get_pixmap()
+    
+    rms_0 = gentle_compare.pixmaps_rms(pixmap, pixmap_clean0)
+    rms_1 = gentle_compare.pixmaps_rms(pixmap, pixmap_clean1)
+    print(f'test_3886(): {rms_0=} {rms_1=}')
+        
