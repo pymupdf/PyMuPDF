@@ -669,6 +669,7 @@ def build():
     add('p', f'{g_root}/src/pymupdf.py', to_dir)
     add('p', f'{g_root}/src/table.py', to_dir)
     add('p', f'{g_root}/src/utils.py', to_dir)
+    add('p', f'{g_root}/src/_wxcolors.py', to_dir)
     add('p', f'{g_root}/src/_apply_pages.py', to_dir)
     add('p', f'{g_root}/src/build/extra.py', to_dir)
     if path_so_leaf:
