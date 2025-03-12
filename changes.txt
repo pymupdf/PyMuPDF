@@ -2,10 +2,11 @@ Change Log
 ==========
 
 
-**Changes in version 1.25.4 ()**
+**Changes in version 1.25.4 (2025-03-14)**
 
 * Fixed issues:
 
+  * **Fixed** `4079 <https://github.com/pymupdf/PyMuPDF/issues/4079>`_: Unexpected result for apply_redactions()
   * **Fixed** `4224 <https://github.com/pymupdf/PyMuPDF/issues/4224>`_: MuPDF error: format error: negative code in 1d faxd
   * **Fixed** `4303 <https://github.com/pymupdf/PyMuPDF/issues/4303>`_: page.get_image_info() returns outdated cached results after replacing image
   * **Fixed** `4309 <https://github.com/pymupdf/PyMuPDF/issues/4309>`_: FzErrorFormat Error When Deleting First Page
