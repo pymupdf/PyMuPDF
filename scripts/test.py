@@ -101,7 +101,7 @@ Options:
     --pymupdf-pypi <name>
         Do not build PyMuPDF, instead install with `pip install <name>`. For
         example allows testing of a specific version with `--pymupdf-pypi
-        pymupdf==1.25.0`.
+        pymupdf==x.y.z`.
     --system-site-packages 0|1
         If 1, use `--system-site-packages` when creating venv. Defaults is 0.
     --timeout <seconds>
