@@ -541,6 +541,9 @@ def pyodide_setup(
         command += ' && pyodide build --exports pyinit'
         subprocess.run(command, shell=1, check=1)
     '''
+    
+    pv = platform.python_version_tuple()[:2]
+    assert pv == ('3', '12'), f'Pyodide builds need to be run with Python-3.12 but current Python is {platform.python_version()}.'
     command = f'cd {directory}'
     
     # Clone/update emsdk. We always use the latest emsdk with `git pull`.
