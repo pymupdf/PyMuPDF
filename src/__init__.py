@@ -419,8 +419,15 @@ def _format_g(value, *, fmt='%g'):
         
 format_g = _format_g
 
+# ByteString is gone from typing in 3.14.
+# collections.abc.Buffer available from 3.12 only
+try:
+    ByteString = typing.ByteString
+except AttributeError:
+    ByteString = bytes | bytearray | memoryview
+
 # Names required by class method typing annotations.
-OptBytes = typing.Optional[typing.ByteString]
+OptBytes = typing.Optional[ByteString]
 OptDict = typing.Optional[dict]
 OptFloat = typing.Optional[float]
 OptInt = typing.Union[int, None]
@@ -3979,7 +3986,7 @@ class Document:
 
     def embfile_add(self,
             name: str,
-            buffer_: typing.ByteString,
+            buffer_: ByteString,
             filename: OptStr =None,
             ufilename: OptStr =None,
             desc: OptStr =None,
@@ -8282,7 +8289,7 @@ class Page:
     def add_file_annot(
             self,
             point: point_like,
-            buffer_: typing.ByteString,
+            buffer_: ByteString,
             filename: str,
             ufilename: OptStr =None,
             desc: OptStr =None,
@@ -18379,7 +18386,7 @@ def get_text_length(text: str, fontname: str ="helv", fontsize: float =11, encod
     raise ValueError("Font '%s' is unsupported" % fontname)
 
 
-def image_profile(img: typing.ByteString) -> dict:
+def image_profile(img: ByteString) -> dict:
     """ Return basic properties of an image.
 
     Args:

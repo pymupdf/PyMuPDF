@@ -321,12 +321,20 @@ point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
 quad_like = "quad_like"
+
+# ByteString is gone from typing in 3.14.
+# collections.abc.Buffer available from 3.12 only
+try:
+    ByteString = typing.ByteString
+except AttributeError:
+    ByteString = bytes | bytearray | memoryview
+
 AnyType = typing.Any
 OptInt = typing.Union[int, None]
 OptFloat = typing.Optional[float]
 OptStr = typing.Optional[str]
 OptDict = typing.Optional[dict]
-OptBytes = typing.Optional[typing.ByteString]
+OptBytes = typing.Optional[ByteString]
 OptSeq = typing.Optional[typing.Sequence]
 
 try:
@@ -1342,7 +1350,7 @@ struct Document
             self.xref_set_key(xref, "Params/ModDate", get_pdf_str(date))
             return xref
 
-        def embfile_add(self, name: str, buffer: typing.ByteString,
+        def embfile_add(self, name: str, buffer: ByteString,
                                   filename: OptStr =None,
                                   ufilename: OptStr =None,
                                   desc: OptStr =None,) -> None:
@@ -5964,7 +5972,7 @@ struct Page {
 
 
         def add_file_annot(self, point: point_like,
-            buffer: typing.ByteString,
+            buffer: ByteString,
             filename: str,
             ufilename: OptStr =None,
             desc: OptStr =None,
