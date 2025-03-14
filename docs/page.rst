@@ -300,30 +300,17 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
       
-      **PDF only**: Add a redaction annotation. A redaction annotation identifies content to be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
+      **PDF only**: Add a redaction annotation. A redaction annotation identifies an area whose content should be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the enveloping rectangle is taken.
 
       :arg str text: text to be placed in the rectangle after applying the redaction (and thus removing old content). (New in v1.16.12)
 
-      :arg str fontname: the font to use when *text* is given, otherwise ignored. The same rules apply as for :meth:`Page.insert_textbox` -- which is the method :meth:`Page.apply_redactions` internally invokes. The replacement text will be **vertically centered**, if this is one of the CJK or :ref:`Base-14-Fonts`. (New in v1.16.12)
-
-         .. note::
-
-            * For an **existing** font of the page, use its reference name as *fontname* (this is *item[4]* of its entry in :meth:`Page.get_fonts`).
-            * For a **new, non-builtin** font, proceed as follows::
-
-               page.insert_text(point,  # anywhere, but outside all redaction rectangles
-                   "something",  # some non-empty string
-                   fontname="newname",  # new, unused reference name
-                   fontfile="...",  # desired font file
-                   render_mode=3,  # makes the text invisible
-               )
-               page.add_redact_annot(..., fontname="newname")
+      :arg str fontname: the font to use when ``text`` is given, otherwise ignored. Only CJK and the :ref:`Base-14-Fonts` are supported. Apart from this, the same rules apply as for :meth:`Page.insert_textbox` -- which is what the method :meth:`Page.apply_redactions` internally invokes. 
 
       :arg float fontsize: the :data:`fontsize` to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing the :data:`fontsize` to no less than 4. If then the text will still not fit, no text insertion will take place at all. (New in v1.16.12)
 
-      :arg int align: the horizontal alignment for the replacing text. See :meth:`insert_textbox` for available values. The vertical alignment is (approximately) centered if a PDF built-in font is used (CJK or :ref:`Base-14-Fonts`). (New in v1.16.12)
+      :arg int align: the horizontal alignment for the replacing text. See :meth:`insert_textbox` for available values. The vertical alignment is (approximately) centered.
 
       :arg sequence fill: the fill color of the rectangle **after applying** the redaction. The default is *white = (1, 1, 1)*, which is also taken if ``None`` is specified. To suppress a fill color altogether, specify ``False``. In this cases the rectangle remains transparent. (New in v1.16.12)
 
