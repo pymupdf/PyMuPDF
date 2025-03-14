@@ -66,6 +66,8 @@ Yet others are handy, general-purpose utilities.
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
 :meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
+:meth:`colors_pdf_dict`              return dict of color names.
+:meth:`colors_wx_list`               return list of color names.
 :attr:`fitz_fontdescriptors`         dictionary of available supplement fonts
 :attr:`PYMUPDF_MESSAGE`              destination of |PyMuPDF| messages.
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
@@ -873,5 +875,18 @@ Yet others are handy, general-purpose utilities.
    .. method:: EMPTY_IRECT()
 
       Return the "standard" empty and invalid rectangle `Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)` resp. quad. Its top-left and bottom-right point values are reversed compared to the infinite rectangle. It will e.g. be used to indicate empty bboxes in `page.get_text("dict")` dictionaries. There are however infinitely many empty or invalid rectangles.
+
+-----
+
+   .. method:: colors_pdf_dict()
+   
+      Returns a dict mapping lower-case color name to `(red, green, blue)`
+      tuple, and `red`, `green`, `blue` are floats in range 0..1.
+
+   .. method:: colors_wx_list()
+   
+      Returns a list of `(colorname, red, green, blue)` tuples, where
+      `colorname` is upper case and `red`, `green`, `blue` are integers in
+      range 0..255.
 
 .. include:: footer.rst
