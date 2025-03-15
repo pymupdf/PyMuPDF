@@ -8096,7 +8096,9 @@ class Page:
 
         value = JM_insert_font(pdf, bfname, fontfile,fontbuffer, set_simple, idx, wmode, serif, encoding, ordering)
         # get the objects /Resources, /Resources/Font
-        resources = mupdf.pdf_dict_get_inheritable( page.obj(), PDF_NAME('Resources'))
+        resources = mupdf.pdf_dict_get_inheritable(page.obj(), PDF_NAME('Resources'))
+        if not resources.pdf_is_dict():
+            resources = mupdf.pdf_dict_put_dict(page.obj(), PDF_NAME("Resources"), 5)
         fonts = mupdf.pdf_dict_get(resources, PDF_NAME('Font'))
         if not fonts.m_internal:    # page has no fonts yet
             fonts = mupdf.pdf_new_dict(pdf, 5)
