@@ -23,12 +23,20 @@ point_like = "point_like"
 rect_like = "rect_like"
 matrix_like = "matrix_like"
 quad_like = "quad_like"
+
+# ByteString is gone from typing in 3.14.
+# collections.abc.Buffer available from 3.12 only
+try:
+    ByteString = typing.ByteString
+except AttributeError:
+    ByteString = bytes | bytearray | memoryview
+
 AnyType = typing.Any
 OptInt = typing.Union[int, None]
 OptFloat = typing.Optional[float]
 OptStr = typing.Optional[str]
 OptDict = typing.Optional[dict]
-OptBytes = typing.Optional[typing.ByteString]
+OptBytes = typing.Optional[ByteString]
 OptSeq = typing.Optional[typing.Sequence]
 
 """
