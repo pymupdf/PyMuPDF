@@ -90,6 +90,34 @@ For further examples which deal with files held on typical cloud services please
 ----------
 
 
+Opening Django Files
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Django implements a `File Storage API <https://docs.djangoproject.com/en/5.1/ref/files/storage/>`_ to store files. The default is the `FileSystemStorage <https://docs.djangoproject.com/en/5.1/ref/files/storage/#the-filesystemstorage-class>`_, but the `django-storages <https://django-storages.readthedocs.io/en/latest/index.html>`_ library provides a number of other storage backends.
+
+You can open the file, move the contents into memory, then pass the contents to |PyMuPDF| as a stream.
+
+.. code-block:: python
+
+    import pymupdf
+    from django.core.files.storage import default_storage
+
+    from .models import MyModel
+
+    obj = MyModel.objects.get(id=1)
+    with default_storage.open(obj.file.name) as f:
+        data = f.read()
+
+    doc = pymupdf.Document(stream=data)
+
+Please note that if the file you open is large, you may run out of memory.
+
+The File Storage API works well if you're using different storage backends in different environments. If you're only using the `FileSystemStorage`, you can simply use the `obj.file.name` to open the file directly with |PyMuPDF| as shown in an earlier example.
+
+
+----------
+
+
 
 Opening Files as Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
