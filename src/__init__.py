@@ -1022,8 +1022,11 @@ class Annot:
     def get_textpage(self, clip=None, flags=0):
         """Make annotation TextPage."""
         CheckParent(self)
-        options = mupdf.FzStextOptions()
-        options.flags = flags
+        options = mupdf.FzStextOptions(flags)
+        if clip:
+            clip2 = JM_rect_from_py(clip)
+            options.clip = clip2.internal()
+            options.flags |= mupdf.FZ_STEXT_CLIP_RECT
         annot = self.this
         stextpage = mupdf.FzStextPage(annot, options)
         ret = TextPage(stextpage)

@@ -22,6 +22,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.get_sound`            get the sound of an audio annotation
 :meth:`Annot.get_text`             extract annotation text
 :meth:`Annot.get_textbox`          extract annotation text
+:meth:`Annot.get_textpage`         create a TextPage for the annotation
 :meth:`Annot.set_border`           set annotation's border properties
 :meth:`Annot.set_blendmode`        set annotation's blend mode
 :meth:`Annot.set_colors`           set annotation's colors
@@ -133,6 +134,22 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg rect-like rect: the area to consider, defaults to :attr:`Annot.rect`.
 
+
+   .. method:: get_textpage(clip=None, flags=3)
+
+      Create a :ref:`TextPage` for the annotation.
+
+      :arg int flags: indicator bits controlling the content available for subsequent text extractions and searches -- see the parameter of :meth:`Annot.get_text`.
+
+      :arg rect-like clip: restrict extracted text to this area.
+
+      :returns: :ref:`TextPage`
+
+      |history_begin|
+
+      * v1.25.5: fixed `clip` arg.
+
+      |history_end|
 
    .. method:: set_info(info=None, content=None, title=None, creationDate=None, modDate=None, subject=None)
 
