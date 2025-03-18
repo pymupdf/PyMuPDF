@@ -276,6 +276,7 @@ def test_2270():
         for page_number, page in enumerate(document):
             for textBox in page.annots(types=(pymupdf.PDF_ANNOT_FREE_TEXT,pymupdf.PDF_ANNOT_TEXT)):
                 print("textBox.type :", textBox.type)
+                print(f"{textBox.rect=}")
                 print("textBox.get_text('words') : ", textBox.get_text('words'))
                 print("textBox.get_text('text') : ", textBox.get_text('text'))
                 print("textBox.get_textbox(textBox.rect) : ", textBox.get_textbox(textBox.rect))
@@ -296,6 +297,15 @@ def test_2270():
                     text = page.get_text(textpage=textpage)
                     print(f'{text=}')
                     print(f'{getattr(textpage, "parent")=}')
+                    
+                    # Check Annotation.get_textpage()'s <clip> arg.
+                    clip = textBox.rect
+                    clip.x1 = clip.x0 + (clip.x1 - clip.x0) / 3
+                    textpage2 = textBox.get_textpage(clip=clip)
+                    text = textpage2.extractText()
+                    print(f'With {clip=}: {text=}')
+                    assert text == 'ab\n'
+                    
 
 def test_2934_add_redact_annot():
     '''
