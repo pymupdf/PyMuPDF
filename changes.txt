@@ -4,6 +4,8 @@ Change Log
 
 **Changes in version 1.25.4 (2025-03-14)**
 
+* Use MuPDF-1.25.5.
+
 * Fixed issues:
 
   * **Fixed** `4079 <https://github.com/pymupdf/PyMuPDF/issues/4079>`_: Unexpected result for apply_redactions()
