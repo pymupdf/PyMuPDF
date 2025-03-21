@@ -287,17 +287,17 @@ def test_2270():
                 assert textBox.get_textbox(textBox.rect) == 'abc123'
                 assert textBox.info['content'] == 'abc123'
 
-                if hasattr(pymupdf, 'mupdf'):
-                    # Additional check that Annot.get_textpage() returns a
-                    # TextPage that works with page.get_text() - prior to
-                    # 2024-01-30 the TextPage had no `.parent` member.
-                    textpage = textBox.get_textpage()
-                    text = page.get_text()
-                    print(f'{text=}')
-                    text = page.get_text(textpage=textpage)
-                    print(f'{text=}')
-                    print(f'{getattr(textpage, "parent")=}')
-                    
+                # Additional check that Annot.get_textpage() returns a
+                # TextPage that works with page.get_text() - prior to
+                # 2024-01-30 the TextPage had no `.parent` member.
+                textpage = textBox.get_textpage()
+                text = page.get_text()
+                print(f'{text=}')
+                text = page.get_text(textpage=textpage)
+                print(f'{text=}')
+                print(f'{getattr(textpage, "parent")=}')
+
+                if pymupdf.mupdf_version_tuple >= (1, 26):
                     # Check Annotation.get_textpage()'s <clip> arg.
                     clip = textBox.rect
                     clip.x1 = clip.x0 + (clip.x1 - clip.x0) / 3
@@ -305,6 +305,8 @@ def test_2270():
                     text = textpage2.extractText()
                     print(f'With {clip=}: {text=}')
                     assert text == 'ab\n'
+                else:
+                    assert not hasattr(pymupdf.mupdf, 'FZ_STEXT_CLIP_RECT')
                     
 
 def test_2934_add_redact_annot():
