@@ -222,7 +222,7 @@ def main(argv):
             implementations = next(args)
         elif arg in ('--mupdf', '-m'):
             mupdf = next(args)
-            if not mupdf.startswith('git:') and mupdf != '-':
+            if not mupdf.startswith('git:') and '://' not in mupdf and mupdf != '-':
                 assert os.path.isdir(mupdf), f'Not a directory: {mupdf=}.'
                 mupdf = os.path.abspath(mupdf)
             os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = mupdf
