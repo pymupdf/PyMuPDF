@@ -280,3 +280,12 @@ def test_3916():
     page = doc.new_page()
     spare_height, scale = page.insert_htmlbox(rect, "Hello, World!", scale_low=0.5)
     assert spare_height == -1
+
+
+def test_4400():
+    with pymupdf.open() as document:
+        page = document.new_page()
+        writer = pymupdf.TextWriter(page.rect)
+        text = '111111111'
+        print(f'Calling writer.fill_textbox().', flush=1)
+        writer.fill_textbox(rect=pymupdf.Rect(0, 0, 100, 20), pos=(80, 0), text=text, fontsize=8)
