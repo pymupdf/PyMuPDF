@@ -4610,12 +4610,12 @@ def fill_textbox(
         words = line.split(" ")  # the words in the line
 
         # cut in parts any words that are longer than rect width
-        words, word_lengths = norm_words(std_width, words)
+        words, word_lengths = norm_words(width, words)
 
         n = len(words)
         while True:
             line0 = " ".join(words[:n])
-            wl = sum(word_lengths[:n]) + space_len * (len(word_lengths[:n]) - 1)
+            wl = sum(word_lengths[:n]) + space_len * (n - 1)
             if wl <= width:
                 new_lines.append((line0, wl))
                 words = words[n:]
@@ -4627,6 +4627,7 @@ def fill_textbox(
 
             if len(words) == 0:
                 break
+            assert n
 
     # -------------------------------------------------------------------------
     # List of lines created. Each item is (text, tl), where 'tl' is the PDF

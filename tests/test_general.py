@@ -1669,4 +1669,4 @@ def test_3886():
     rms_0 = gentle_compare.pixmaps_rms(pixmap, pixmap_clean0)
     rms_1 = gentle_compare.pixmaps_rms(pixmap, pixmap_clean1)
     print(f'test_3886(): {rms_0=} {rms_1=}')
-        
+
