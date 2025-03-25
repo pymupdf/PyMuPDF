@@ -35,6 +35,7 @@ quad_like = "quad_like"
 try:
     ByteString = typing.ByteString
 except AttributeError:
+    # pylint: disable=unsupported-binary-operation
     ByteString = bytes | bytearray | memoryview
 
 AnyType = typing.Any
