@@ -94,6 +94,8 @@ Options:
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     --gdb 0|1
         Run tests under gdb. Requires user interaction.
+    --pytest-prefix <command>
+        Use specified prefix when running pytest. E.g. `gdb --args`.
     --pybind 0|1
         Experimental, for investigating
         https://github.com/pymupdf/PyMuPDF/issues/3869. Runs run basic code
@@ -185,6 +187,7 @@ def main(argv):
     implementations = 'r'
     test_names = list()
     venv = 2
+    pytest_prefix = None
     pybind = False
     pytest_options = None
     timeout = None
@@ -236,6 +239,8 @@ def main(argv):
             value = next(args)
             assert value in ('0', '1'), f'`-s` must be followed by `0` or `1`, not {value=}.'
             os.environ['PYMUPDF_SETUP_PY_LIMITED_API'] = value
+        elif arg == '--pytest-prefix':
+            pytest_prefix = next(args)
         elif arg == '--pybind':
             pybind = int(next(args))
         elif arg == '--system-site-packages':
@@ -312,6 +317,7 @@ def main(argv):
                 pytest_options=pytest_options,
                 timeout=timeout,
                 gdb=gdb,
+                pytest_prefix=pytest_prefix,
                 test_fitz=test_fitz,
                 pytest_k=pytest_k,
                 pybind=pybind,
@@ -603,6 +609,7 @@ def test(
         pytest_options=None,
         timeout=None,
         gdb=False,
+        pytest_prefix=None,
         test_fitz=True,
         pytest_k=None,
         pybind=False,
@@ -624,6 +631,8 @@ def test(
             See top-level option `-p`.
         gdb:
             See top-level option `--gdb`.
+        pytest_prefix:
+            See top-level option `--pytest-prefix`.
         test_fitz:
             See top-level option `-f`.
     '''
@@ -732,6 +741,8 @@ def test(
                     )
         elif gdb:
             command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} gdb --args {python} -m pytest {pytest_options} {pytest_arg}'
+        elif pytest_prefix:
+            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} {pytest_prefix} {python} -m pytest {pytest_options} {pytest_arg}'
         elif platform.system() == 'Windows':
             # `python -m pytest` doesn't seem to work.
            command = f'{python} {pymupdf_dir_rel}/tests/run_compound.py{run_compound_args} pytest {pytest_options} {pytest_arg}'
