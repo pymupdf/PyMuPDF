@@ -4113,7 +4113,7 @@ PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip)
     unsigned char* s = pm->samples + stride * (irect.y0 - pm->y) + n * (irect.x0 - pm->x);
     // Cache previous pixel.
     char oldpix[10];
-    assert(n < = size(oldpix));
+    assert(n <= sizeof(oldpix));
     memcpy(oldpix, s, n);
     long cnt = 0;
     for (size_t i = 0; i < height; i++)
