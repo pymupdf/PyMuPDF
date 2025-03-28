@@ -2,6 +2,23 @@ Change Log
 ==========
 
 
+**Changes in version 1.25.5 ()**
+
+* Use MuPDF-1.25.6.
+
+* Fixed issues:
+
+  * **Fixed** `4372 <https://github.com/pymupdf/PyMuPDF/issues/4372>`_: Text insertion fails due to missing /Resources object
+  * **Fixed** `4400 <https://github.com/pymupdf/PyMuPDF/issues/4400>`_: Infinite loop in fill_textbox
+  * **Fixed** `4403 <https://github.com/pymupdf/PyMuPDF/issues/4403>`_: Unable to get_text() - layer/clip nesting too deep
+
+* Other:
+
+  * Fixed MuPDF SEGV on MacOS with particular fonts.
+  * Fixed `Annot.get_textpage()`'s `clip` arg.
+  * Fixed Python-3.14 (pre-release) build error.
+
+
 **Changes in version 1.25.4 (2025-03-14)**
 
 * Use MuPDF-1.25.5.
