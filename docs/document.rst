@@ -1366,13 +1366,13 @@ For details on **embedded files** refer to Appendix 3.
 
     PDF only: Insert an empty page.
 
-    :arg int pno: page number in front of which the new page should be inserted. Must be in *1 < pno <= page_count*. Special values -1 and *doc.page_count* insert **after** the last page.
+    :arg int pno: page number in front of which the new page should be inserted. Must be in `1 < pno <= page_count`. Special values -1 and *doc.page_count* insert **after** the last page.
 
     :arg float width: page width.
     :arg float height: page height.
 
     :rtype: :ref:`Page`
-    :returns: the created page object.
+    :returns: the created page object. Be aware that the page numbers of pages after the inserted one will have changed after method execution. For the same reason, **all existing page objects will be invalidated.** Using them will lead to exceptions.
 
   .. index::
      pair: fontsize; Document.insert_page

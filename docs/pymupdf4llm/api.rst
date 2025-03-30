@@ -16,7 +16,7 @@ The |PyMuPDF4LLM| API
 
     Prints the version of the library.
 
-.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, hdr_info: Any = None, write_images: bool = False, embed_images: bool = False, dpi: int = 150, image_path="", image_format="png", image_size_limit=0.05, force_text=True, margins=(0, 50, 0, 50), page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None, ignore_code: bool = False, extract_words: bool = False, show_progress: bool = True) -> str | list[dict]
+.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, hdr_info: Any = None, write_images: bool = False, embed_images: bool = False, dpi: int = 150, filename=None, image_path="", image_format="png", image_size_limit=0.05, force_text=True, margins=0, page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None, ignore_code: bool = False, extract_words: bool = False, show_progress: bool = False, use_glyphs=False) -> str | list[dict]
 
     Read the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that there exists **support for building page chunks** from the |Markdown|  text.
 
@@ -44,7 +44,7 @@ The |PyMuPDF4LLM| API
 
         * `margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`.
         * `(top, bottom)` yields  `(0, top, 0, bottom)`.
-        * To always read full pages, use `margins=0`.
+        * To always read full pages **(default)**, use `margins=0`.
 
     :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
 
@@ -62,23 +62,27 @@ The |PyMuPDF4LLM| API
 
         - **"words"** - if `extract_words=True` was used. This is a list of tuples `(x0, y0, x1, y1, "wordstring", bno, lno, wno)` as delivered by `page.get_text("words")`. The **sequence** of these tuples however is the same as produced in the markdown text string and thus honors multi-column text. This is also true for text in tables: words are extracted in the sequence of table row cells.
 
+    :arg str filename: (New in v.0.0.19) Overwrites or sets the desired image file name of written images. Useful when the document is provided as a memory object (which has no inherent name).
+    
     :arg float page_width: specify a desired page width. This is ignored for documents with a fixed page width like PDF, XPS etc. **Reflowable** documents however, like e-books, office or text files have no fixed page dimensions and by default are assumed to have Letter format width (612) and an **"infinite"** page height. This means that the full document is treated as one large page.
 
     :arg float page_height: specify a desired page height. For relevance see the `page_width` parameter. If using the default `None`, the document will appear as one large page with a width of `page_width`. Consequently in this case, no markdown page separators will occur (except the final one), respectively only one page chunk will be returned.
 
     :arg str table_strategy: table detection strategy. Default is `"lines_strict"` which ignores background colors. In some occasions, other strategies may be more successful, for example `"lines"` which uses all vector graphics objects for detection.
 
-    :arg int graphics_limit: use this to limit dealing with excess amounts of vector graphics elements. Typically, scientific documents or pages simulating text using graphics commands may contain tens of thousands of these objects. As vector graphics are used for table detection mainly, analyzing pages of this kind may result in excessive runtimes. You can exclude problematic pages via for instance `graphics_limit=5000` or even a smaller value if desired. The respective pages will then be ignored and be represented by one message line in the output text.
+    :arg int graphics_limit: use this to limit dealing with excess amounts of vector graphics elements. Scientific documents, or pages simulating text via graphics commands may contain tens of thousands of these objects. As vector graphics are analyzed for multiple purposes, runtime may quickly become intolerable. With this parameter, all vector graphics will be ignored if their count exceeds the threshold. **Changed in v0.0.19:** The page will still be processed, and text, tables and images should be extracted.
 
-    :arg bool ignore_code: if `True` then mono-spaced text does not receive special formatting treatment. Code blocks will no longer be generated. This value is set to `True` if `extract_words=True` is used.
+    :arg bool ignore_code: if `True` then mono-spaced text does not receive special formatting. Code blocks will no longer be generated. This value is set to `True` if `extract_words=True` is used.
 
     :arg bool extract_words: a value of `True` enforces `page_chunks=True` and adds key "words" to each page dictionary. Its value is a list of words as delivered by PyMuPDF's `Page` method `get_text("words")`. The sequence of the words in this list is the same as the extracted text.
 
-    :arg bool show_progress: a value of `True` (the default) displays a text-based progress bar as pages are being converted to Markdown. It will look similar to the following::
+    :arg bool show_progress: Default is `False`. A value of `True` displays a text-based progress bar as pages are being converted to Markdown. It will look similar to the following::
 
         Processing input.pdf...
         [====================                    ] (148/291)
 
+    :arg bool use_glyphs: (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself.
+    
     :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries.
 
 .. method:: LlamaMarkdownReader(*args, **kwargs)
@@ -103,6 +107,9 @@ The |PyMuPDF4LLM| API
 
         :returns: a list of `LlamaIndexDocument` documents - one for each page.
 
+-----
+
+For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/RAG/blob/main/CHANGES.md>`_.
 
 .. rubric:: Footnotes
 
