@@ -1883,7 +1883,7 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global CHARS, TEXTPAGE
+    global TEXTPAGE
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
@@ -1943,7 +1943,6 @@ def make_chars(page, clip=None):
 # else to lines.
 # ------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None, add_lines=None):
-    global EDGES
     snap_x = tset.snap_x_tolerance
     snap_y = tset.snap_y_tolerance
     min_length = tset.edge_min_length
