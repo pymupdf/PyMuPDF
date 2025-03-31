@@ -1670,3 +1670,18 @@ def test_3886():
     rms_1 = gentle_compare.pixmaps_rms(pixmap, pixmap_clean1)
     print(f'test_3886(): {rms_0=} {rms_1=}')
 
+def test_4415():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4415.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4415_out.png')
+    path_out_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4415_out_expected.png')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        rot = page.rotation
+        orig = pymupdf.Point(100, 100)  # apparent insertion point
+        text = 'Text at Top-Left'
+        mrot = page.derotation_matrix  # matrix annihilating page rotation
+        page.insert_text(orig * mrot, text, fontsize=60, rotate=rot)
+        pixmap = page.get_pixmap()
+        pixmap.save(path_out)
+        rms = gentle_compare.pixmaps_rms(path_out_expected, path_out)
+        assert rms == 0, f'{rms=}'
