@@ -5425,26 +5425,28 @@ class Document:
                 templ_dict["dest"] = array  # return the orig. string
                 return templ_dict
 
-            subval = array[:idx]  # stuff before "/"
+            subval = array[:idx].strip()  # stuff before "/"
             array = array[idx:]  # stuff from "/" onwards
             templ_dict["dest"] = array
-
             # if we start with /XYZ: extract x, y, zoom
             # 1, 2 or 3 of these values may actually be supplied
             if array.startswith("/XYZ"):
                 del templ_dict["dest"]  # don't return orig string in this case
 
-                t = [0, 0, 0]  # the resulting x, y, z values
+                # make a list of the 3 tokens following "/XYZ"
+                array_list = array.split()[1:4]  # omit "/XYZ"
 
-                # need to replace any "null" item by "0", then split at
-                # white spaces, omitting "/XYZ" from the result
-                for i, v in enumerate(array.replace("null", "0").split()[1:]):
-                    t[i] = float(v)
+                # fill up missing tokens with "0" strings
+                while len(array_list) < 3:  # fill up if too short
+                    array_list.append("0")  # add missing values
+
+                # make list of 3 floats: x, y and zoom
+                t = list(map(float, array_list))  # the resulting x, y, z values
                 templ_dict["to"] = (t[0], t[1])
                 templ_dict["zoom"] = t[2]
 
             # extract page number
-            if "0 R" in subval:  # page xref given?
+            if subval.endswith("0 R"):  # page xref given?
                 templ_dict["page"] = page_xrefs.get(int(subval.split()[0]),-1)
             else:  # naked page number given
                 templ_dict["page"] = int(subval)
