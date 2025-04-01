@@ -9170,7 +9170,8 @@ class Page:
         return rot  # the inverse of the generated derotation matrix
 
     def cluster_drawings(
-        self, clip=None, drawings=None, x_tolerance: float = 3, y_tolerance: float = 3
+        self, clip=None, drawings=None, x_tolerance: float = 3, y_tolerance: float = 3,
+        final_filter: bool = True,
     ) -> list:
         """Join rectangles of neighboring vector graphic items.
 
@@ -9263,6 +9264,8 @@ class Page:
             prects = sorted(set(prects), key=lambda r: (r.y1, r.x0))
 
         new_rects = sorted(set(new_rects), key=lambda r: (r.y1, r.x0))
+        if not final_filter:
+            return new_rects
         return [r for r in new_rects if r.width > delta_x and r.height > delta_y]
 
     def get_fonts(self, full=False):
