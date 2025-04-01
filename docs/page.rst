@@ -439,7 +439,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. image:: images/img-markers.*
          :scale: 100
 
-   .. method:: cluster_drawings(clip=None, drawings=None, x_tolerance=3, y_tolerance=3)
+   .. method:: cluster_drawings(clip=None, drawings=None, x_tolerance=3, y_tolerance=3, final_filter=True)
 
       Cluster vector graphics (synonyms are line-art or drawings) based on their geometrical vicinity. The method walks through the output of :meth:`Page.get_drawings` and joins paths whose `path["rect"]` are closer to each other than some tolerance values (given in the arguments). The result is a list of rectangles that each wrap things like tables (with gridlines), pie charts, bar charts, etc.
 
@@ -447,7 +447,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg list drawings: (optional) provide a previously generated output of :meth:`Page.get_drawings`. If `None` the method will execute the method.
 
-      :arg float x_tolerance: 
+      :arg float x_tolerance / y_tolerance: Assume vector graphics to be close enough neighbors for belonging to the same rectangle. Default is 3 points.
+
+      :arg bool final_filter: If `True` (default), the method will to remove rectangles having width or height smaller than the respective tolerance value. If `False` no such filtering is done.
 
    .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None, add_lines=None)
 
