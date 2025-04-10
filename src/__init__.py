@@ -2066,12 +2066,12 @@ class Xml:
     def __exit__(self, *args):
         pass
 
-    def __init__( self, rhs):
-        if isinstance( rhs, mupdf.FzXml):
+    def __init__(self, rhs):
+        if isinstance(rhs, mupdf.FzXml):
             self.this = rhs
-        elif isinstance( str):
-            buff = mupdf.fz_new_buffer_from_copied_data( rhs)
-            self.this = mupdf.fz_parse_xml_from_html5( buff)
+        elif isinstance(rhs, str):
+            buff = mupdf.fz_new_buffer_from_copied_data(rhs)
+            self.this = mupdf.fz_parse_xml_from_html5(buff)
         else:
             assert 0, f'Unsupported type for rhs: {type(rhs)}'
     
@@ -18664,7 +18664,7 @@ def jm_trace_text_span(dev, span, type_, ctm, colorspace, color, alpha, seqno):
     
     mat = mupdf.fz_concat(span.trm(), ctm)  # text transformation matrix
     dir = mupdf.fz_transform_vector(mupdf.fz_make_point(1, 0), mat) # writing direction
-    fsize = math.sqrt(dir.x * dir.x + dir.y * dir.y) # font size
+    fsize = math.sqrt(dir.x * dir.x + dir.y * dir.y)  # font size
 
     dir = mupdf.fz_normalize_vector(dir)
 
