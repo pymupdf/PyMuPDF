@@ -13,6 +13,8 @@ This tutorial will show you the use of |PyMuPDF|, :title:`MuPDF` in :title:`Pyth
 
 Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitly.
 
+In addition to this introduction, please do visit PyMuPDF's `Youtube Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the following in the form of Youtube "Shorts" and longer videos.
+
 Importing the Bindings
 ==========================
 The Python bindings to MuPDF are made available by this import statement. We also show here how your version can be checked::
