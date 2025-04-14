@@ -144,13 +144,22 @@ def test_fileattachment():
 def test_stamp():
     doc = pymupdf.open()
     page = doc.new_page()
-    annot = page.add_stamp_annot(r, stamp=10)
+    annot = page.add_stamp_annot(r, stamp=0)
     assert annot.type == (13, "Stamp")
+    assert annot.info["content"] == "Approved"
     annot_id = annot.info["id"]
     annot_xref = annot.xref
     page.load_annot(annot_id)
     page.load_annot(annot_xref)
     page = doc.reload_page(page)
+
+
+def test_image_stamp():
+    doc = pymupdf.open()
+    page = doc.new_page()
+    filename = os.path.join(scriptdir, "resources", "nur-ruhig.jpg")
+    annot = page.add_stamp_annot(r, stamp=filename)
+    assert annot.info["content"] == "Image Stamp"
 
 
 def test_redact1():
