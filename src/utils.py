@@ -1922,7 +1922,7 @@ def do_widgets(
 
     # remove "P" owning page reference from all widgets of all source pages
     for i in src_range:
-        src_page = src[src_range[i]]
+        src_page = src[i]
         for xref in [
             xref
             for xref, wtype, _ in src_page.annot_xrefs()
