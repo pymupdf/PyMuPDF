@@ -96,6 +96,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.pdf_catalog`            PDF only: :data:`xref` of catalog (root)
 :meth:`Document.pdf_trailer`            PDF only: trailer source
 :meth:`Document.prev_location`          return (chapter, pno) of preceding page
+:meth:`Document.recolor`                PDF only: execute :meth:`Page.recolor` for all pages
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.resolve_names`          PDF only: Convert destination names into a Python dict
 :meth:`Document.save`                   PDF only: save the document
@@ -594,6 +595,16 @@ For details on **embedded files** refer to Appendix 3.
 
      To maintain a consistent API, for document types not supporting a chapter structure (like PDFs), :attr:`Document.chapter_count` is 1, and pages can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
 
+
+  .. method:: recolor(components=1)
+
+    PDF only: Change the color component counts for all object types text, image and vector graphics for all pages.
+
+    :arg int components: desired color space indicated by the number of color components: 1 = DeviceGRAY, 3 = DeviceRGB, 4 = DeviceCMYK.
+
+    The typical use case is 1 (DeviceGRAY) which converts the PDF to grayscale.
+
+
   .. method:: reload_page(page)
 
     * New in v1.16.10
@@ -924,14 +935,14 @@ For details on **embedded files** refer to Appendix 3.
 
   .. method:: get_page_fonts(pno, full=False)
 
-    PDF only: Return a list of all fonts (directly or indirectly) referenced by the page.
+    PDF only: Return a list of all fonts (directly or indirectly) referenced by the page object definition.
 
     :arg int pno: page number, 0-based, `-∞ < pno < page_count`.
     :arg bool full: whether to also include the referencer's :data:`xref`. If *True*, the returned items are one entry longer. Use this option if you need to know, whether the page directly references the font. In this case the last entry is 0. If the font is referenced by an `/XObject` of the page, you will find its :data:`xref` here.
 
     :rtype: list
 
-    :returns: a list of fonts referenced by this page. Each entry looks like
+    :returns: a list of fonts referenced by the object definition of the page. Each entry looks like
 
     **(xref, ext, type, basefont, name, encoding, referencer)**,
 
@@ -959,7 +970,12 @@ For details on **embedded files** refer to Appendix 3.
 
     .. note::
         * This list has no duplicate entries: the combination of :data:`xref`, *name* and *referencer* is unique.
-        * In general, this is a superset of the fonts actually in use by this page. The PDF creator may e.g. have specified some global list, of which each page only makes partial use.
+        * In general, this is a true superset of the fonts actually in use by this page. The PDF creator may e.g. have specified some global list, of which each page make only partial use.
+        * Be aware that font names returned by some variants of :meth:`Page.get_text` (respectively :ref:`TextPage` methods) need not (exactly) equal the base font name shown here. Reasons for any differences include:
+
+           - This method always shows any subset prefixes (the pattern ``ABCDEF+``), whereas text extractions do not do this by default.
+           - Text extractions use the base library to access the font name, which has a length cap of 31 bytes and generally interrogates the font file binary to access the name. Method ``get_page_fonts()`` however looks at the PDF definition source.
+           - Text extractions work for all supported document types in exactly the same way -- not just for PDFs. Consequently they do not contain PDF-specifics.
 
   .. method:: get_page_text(pno, output="text", flags=3, textpage=None, sort=False)
 

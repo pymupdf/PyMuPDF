@@ -5366,6 +5366,19 @@ class Document:
         pno = mupdf.fz_page_number_from_location(self.this, loc)
         return pno, xp, yp
 
+    def recolor(self, components=1):
+        """Change the color component count on all pages.
+
+        Args:
+            components: (int) desired color component count, one of 1, 3, 4.
+
+        Invokes the same-named method for all pages.
+        """
+        if not self.is_pdf:
+            raise ValueError("is no PDF")
+        for i in range(self.page_count):
+            self.load_page(i).recolor(components)
+
     def resolve_names(self):
         """Convert the PDF's destination names into a Python dict.
 
@@ -7717,42 +7730,69 @@ class Page:
         return Annot(annot)
 
     def _add_stamp_annot(self, rect, stamp=0):
-        page = self._pdf_page()
-        stamp_id = [
-                PDF_NAME('Approved'),
-                PDF_NAME('AsIs'),
-                PDF_NAME('Confidential'),
-                PDF_NAME('Departmental'),
-                PDF_NAME('Experimental'),
-                PDF_NAME('Expired'),
-                PDF_NAME('Final'),
-                PDF_NAME('ForComment'),
-                PDF_NAME('ForPublicRelease'),
-                PDF_NAME('NotApproved'),
-                PDF_NAME('NotForPublicRelease'),
-                PDF_NAME('Sold'),
-                PDF_NAME('TopSecret'),
-                PDF_NAME('Draft'),
-                ]
-        n = len(stamp_id)
-        name = stamp_id[0]
+        rect = Rect(rect)
         r = JM_rect_from_py(rect)
         if mupdf.fz_is_infinite_rect(r) or mupdf.fz_is_empty_rect(r):
-            raise ValueError( MSG_BAD_RECT)
-        if _INRANGE(stamp, 0, n-1):
+            raise ValueError(MSG_BAD_RECT)
+        page = self._pdf_page()
+        stamp_id = [
+                "Approved",
+                "AsIs",
+                "Confidential",
+                "Departmental",
+                "Experimental",
+                "Expired",
+                "Final",
+                "ForComment",
+                "ForPublicRelease",
+                "NotApproved",
+                "NotForPublicRelease",
+                "Sold",
+                "TopSecret",
+                "Draft",
+                ]
+        n = len(stamp_id)
+        buf = None
+        name = None
+        if stamp in range(n):
             name = stamp_id[stamp]
+        elif isinstance(stamp, Pixmap):
+            buf = stamp.tobytes()
+        elif isinstance(stamp, str):
+            buf = pathlib.Path(stamp).read_bytes()
+        elif isinstance(stamp, (bytes, bytearray)):
+            buf = stamp
+        elif isinstance(stamp, io.BytesIO):
+            buf = stamp.getvalue()
+        else:
+            name = stamp_id[0]
+
         annot = mupdf.pdf_create_annot(page, mupdf.PDF_ANNOT_STAMP)
-        mupdf.pdf_set_annot_rect(annot, r)
-        try:
-            n = PDF_NAME('Name')
-            mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME('Name'), name)
-        except Exception:
-            if g_exceptions_verbose:    exception_info()
-            raise
-        mupdf.pdf_set_annot_contents(
-                annot,
-                mupdf.pdf_dict_get_name(mupdf.pdf_annot_obj(annot), PDF_NAME('Name')),
-                )
+        if buf:  # image stamp
+            fzbuff = mupdf.fz_new_buffer_from_copied_data(buf)
+            img = mupdf.fz_new_image_from_buffer(fzbuff)
+
+            # compute image boundary box on page
+            w, h = img.w(), img.h()
+            scale = min(rect.width / w, rect.height / h)
+            width = w * scale  # bbox width
+            height = h * scale  # bbox height
+
+            # center of "rect"
+            center = (rect.tl + rect.br) / 2
+            x0 = center.x - width / 2
+            y0 = center.y - height / 2
+            x1 = x0 + width
+            y1 = y0 + height
+            r = mupdf.fz_make_rect(x0, y0, x1, y1)
+            mupdf.pdf_set_annot_rect(annot, r)
+            mupdf.pdf_set_annot_stamp_image(annot, img)
+            mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME("Name"), mupdf.pdf_new_name("ImageStamp"))
+            mupdf.pdf_set_annot_contents(annot, "Image Stamp")
+        else:  # text stamp
+            mupdf.pdf_set_annot_rect(annot, r)
+            mupdf.pdf_dict_put(mupdf.pdf_annot_obj(annot), PDF_NAME("Name"), PDF_NAME(name))
+            mupdf.pdf_set_annot_contents(annot, name)
         mupdf.pdf_update_annot(annot)
         JM_add_annot_id(annot, "A")
         return Annot(annot)
@@ -8510,7 +8550,7 @@ class Page:
             q = CheckMarkerArg(quads)
         return self._add_text_marker(q, mupdf.PDF_ANNOT_SQUIGGLY)
 
-    def add_stamp_annot(self, rect: rect_like, stamp: int =0) -> Annot:
+    def add_stamp_annot(self, rect: rect_like, stamp=0) -> Annot:
         """Add a ('rubber') 'Stamp' annotation."""
         old_rotation = annot_preprocess(self)
         try:
@@ -8600,6 +8640,19 @@ class Page:
             annot = self.load_annot(xref)
             annot._yielded=True
             yield annot
+
+    def recolor(self, components=1):
+        """Convert colorspaces of objects on the page.
+        
+        Valid values are 1, 3 and 4.
+        """
+        if components not in (1, 3, 4):
+            raise ValueError("components must be one of 1, 3, 4")
+        pdfdoc = _as_pdf_document(self.parent)
+        ropt = mupdf.pdf_recolor_options()
+        ropt.num_comp = components
+        ropts = mupdf.PdfRecolorOptions(ropt)
+        mupdf.pdf_recolor_page(pdfdoc, self.number, ropts)
 
     @property
     def artbox(self):

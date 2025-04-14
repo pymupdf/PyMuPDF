@@ -106,6 +106,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.load_widget`           PDF only: load a specific field
 :meth:`Page.load_links`            return the first link on a page
 :meth:`Page.new_shape`             PDF only: create a new :ref:`Shape`
+:meth:`Page.recolor`               PDF only: change the colorspace of objects
 :meth:`Page.remove_rotation`       PDF only: set page rotation to 0
 :meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
@@ -543,23 +544,34 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: add_stamp_annot(rect, stamp=0)
 
-      PDF only: Add a "rubber stamp" like annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.).
+      PDF only: Add a "rubber stamp" annotation to e.g. indicate the document's intended use ("DRAFT", "CONFIDENTIAL", etc.). The parameter may be either an integer to select text from a predefined array of standard texts or an image.
 
       :arg rect_like rect: rectangle where to place the annotation.
+      :arg multiple stamp: The following options are available:
+      
+         * The id number (int) of the stamp text. For available stamps see :ref:`StampIcons`.
+   
+         * A string specifying an image file path.
 
-      :arg int stamp: id number of the stamp text. For available stamps see :ref:`StampIcons`.
+         * A ``bytes``, ``bytearray`` or ``io.BytesIO`` object for an image in memory.
 
-      .. note::
+         * A :ref:`Pixmap`.
+         
+      1. **Text-based stamps**
 
-         * The stamp's text and its border line will automatically be sized and be put horizontally and vertically centered in the given rectangle. :attr:`Annot.rect` is automatically calculated to fit the given **width** and will usually be smaller than this parameter.
+         * :attr:`Annot.rect` is automatically calculated as the largest rectangle with an aspect ratio of ``width:height = 3.8`` that fits in the provided ``rect``. Its position is vertically and horizontally centered.
          * The font chosen is "Times Bold" and the text will be upper case.
-         * The appearance can be changed using :meth:`Annot.set_opacity` and by setting the "stroke" color (no "fill" color supported).
-         * This can be used to create watermark images: on a temporary PDF page create a stamp annotation with a low opacity value, make a pixmap from it with *alpha=True* (and potentially also rotate it), discard the temporary PDF page and use the pixmap with :meth:`insert_image` for your target PDF.
+         * The appearance can be modified using :meth:`Annot.set_opacity` and by setting the "stroke" color. By PDF specification, stamp annotations have no "fill" color.
 
+         .. image:: images/img-stampannot.*
 
-      .. image:: images/img-stampannot.*
-         :scale: 80
+      2. **Image-based stamps**
 
+         * The image is scaled to fit into the rectangle `rect` such that the image's center and the center of `rect` coincide. The aspect ratio of the image is preserved, so the image may not fill the entire rectangle. However, at least one of the given rectangle's width or height are fully covered.
+         * The annotation can be modified via :meth:`Annot.set_opacity`. This method therefore is a way to display images transparently even if no alpha channel is present.
+         * Setting colors has no effect on image stamps.
+         * Rotating image-based stamps **is not supported**. Setting the rotation may lead to unexpected results.
+         
    .. method:: add_widget(widget)
 
       PDF only: Add a PDF Form field ("widget") to a page. This also **turns the PDF into a Form PDF**. Because of the large amount of different options available for widgets, we have developed a new class :ref:`Widget`, which contains the possible PDF field attributes. It must be used for both, form field creation and updates.
@@ -1934,6 +1946,14 @@ In a nutshell, this is what you can do with PyMuPDF:
       PDF only: Set the rotation of the page.
 
       :arg int rotate: An integer specifying the required rotation in degrees. Must be an integer multiple of 90. Values will be converted to one of 0, 90, 180, 270.
+
+   .. method:: recolor(components=1)
+
+      PDF only: Change the colorspace components of all objects on page.
+
+      :arg int components: The desired count of color components. Must be one of 1, 3 or 4, which results in color spaces DeviceGray, DeviceRGB or DeviceCMYK respectively. The method affects text, images and vector graphics. For instance, with the default value 1, a page will be converted to grayscale. If a page is already grayscale, the method will not cause visible changes -- independent of the value of ``components``.
+
+      These changes are **permanent** and cannot be reverted.
 
    .. method:: remove_rotation()
 
