@@ -214,8 +214,8 @@ ext             image type (``str``), as file extension, see below
 width           original image width (``int``)
 height          original image height (``int``)
 colorspace      colorspace component count (``int``)
-xres            resolution in x-direction (``int``)
-yres            resolution in y-direction (``int``)
+xres            resolution in x-direction (``int``) [#f3]_
+yres            resolution in y-direction (``int``) [#f3]_
 bpc             bits per component (``int``)
 transform       matrix transforming image rect to bbox (:data:`matrix_like`)
 size            size of the image in bytes (``int``)
@@ -387,5 +387,7 @@ This image shows the relationship between a character's bbox and its quad: |text
 .. [#f1] Image specifications for a PDF page are done in a page's (sub-) :data:`dictionary`, called `/Resources`. Resource dictionaries can be **inherited** from any of the page's parent objects (usually the :data:`catalog` -- the top-level parent). The PDF creator may e.g. define one `/Resources` on file level, naming all images and / or all fonts ever used by any page. In these cases, :meth:`Page.get_images` and :meth:`Page.get_fonts` will consequently return the same lists for all pages. If desired, this situation can be reverted using :meth:`Page.clean_contents`. After execution, the page's object definition will show fonts and images that are actually used.
 
 .. [#f2] The coordinate systems of MuPDF and PDF are different in that MuPDF uses the page's top-left point as `(0, 0)`. In PDF, this is the bottom-left point. Therefore, the positive direction for MuPDF's y-axis is **from top to bottom**. This causes the sign change for the sine value here: a **negative** value indicates anti-clockwise rotation of the text.
+
+.. [#f3] This value is always 96, the default of the PDF interpreter. It **does not reflect** the resolution of the image itself. If you need the image's resolution, use the :meth:`Pixmap.xres` and :meth:`Pixmap.yres` attributes of the :ref:`Pixmap` created from the returned image binary.
 
 .. include:: footer.rst

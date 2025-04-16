@@ -1705,8 +1705,8 @@ In a nutshell, this is what you can do with PyMuPDF:
          height          original image height (``int``)
          cs-name         colorspace name (``str``)
          colorspace      colorspace.n (``int``)
-         xres            resolution in x-direction (``int``)
-         yres            resolution in y-direction (``int``)
+         xres            resolution in x-direction (``int``) [#f10]_
+         yres            resolution in y-direction (``int``) [#f10]_
          bpc             bits per component (``int``)
          size            storage occupied by image (``int``)
          digest          MD5 hashcode (``bytes``), if ``hashes`` is true
@@ -2359,5 +2359,7 @@ The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 .. [#f8] Hyphenation detection simply means that if the last character of a line is "-", it will be assumed to be a continuation character. That character will not be found by text searching with its default flag setting. Please take note, that a MuPDF *line* may not always be what you expect: words separated by overly large gaps (e.g. caused by text justification) may constitute separate MuPDF lines. If then any of these words ends with a hyphen, it will only be found by text searching if hyphenation is switched off.
 
 .. [#f9] Objects inside the source page, like images, text or drawings, are never aware of whether their owning page now is under OC control inside the target PDF. If source page objects are OC-controlled in the source PDF, then this will not be retained on the target: they will become unconditionally visible.
+
+.. [#f10] This value is always 96, the default of the PDF interpreter. It **does not reflect** the resolution of the image itself. If you need the image's resolution, use the :meth:`Pixmap.xres` and :meth:`Pixmap.yres` attributes of the :ref:`Pixmap` created from the image binary.
 
 .. include:: footer.rst
