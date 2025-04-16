@@ -67,7 +67,7 @@ Problems after installation
 
 * On Windows, Python error::
 
-      ImportError: DLL load failed while importing _fitz
+      ImportError: DLL load failed while importing _extra
 
   This has been occasionally seen if `MSVCP140.dll` is missing, and appears
   to be caused by a bug in some versions (2015-2017) of `Microsoft Visual C++
@@ -113,6 +113,14 @@ Problems after installation
 
   This appears to be a problem in Jupyter labs; see:
   https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
+
+* On Windows, Python error::
+    
+    ImportError: dynamic module does not define module export function (PyInit__extra)
+
+  This was reported 2025-03-26 in https://github.com/pymupdf/PyMuPDF/issues/4405.
+  
+  The fix appears to be to install the latest `VC_redist.x64.exe`.
 
 
 Notes
