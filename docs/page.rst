@@ -216,9 +216,9 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg list,tuple,float fill_color: the fill color. This is used for ``rect`` and the end point of the callout lines when applicable. Default is ``None``.
 
-      :arg list,tuple,float border_color:  This parameter only has an effect if `richtext=True`. Otherwise, ``text_color`` is used.
+      :arg list,tuple,float border_color:  This parameter **only has an effect** if `richtext=True`. Otherwise, ``text_color`` is used.
       
-      :arg float border_width: the width of border and ``callout`` lines. Default is 0 (no border), in which case callout lines may still appear with some hairline width, depending on the PDF viewer used.
+      :arg float border_width: the width of border and ``callout`` lines. Default is 0 (no border), in which case callout lines may still appear with some hairline width, depending on the PDF viewer used. In any case, this value must be positive to see a border line.
       
       :arg list,tuple dashes: a list of floats specifying how border and callout lines should be dashed. Default is ``None``.
       
@@ -232,7 +232,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       
       :arg int rotate: the text orientation. Accepted values are integer multiples of 90°. Invalid entries receive a rotation of 0.
       
-      :arg bool richtext: treat ``text`` as HTML syntax. This allows to achieve **bold**, *italic*, arbitrary text colors, font sizes, text alignment including justify and more - as far as HTML and styling instructions support this. This is similar to what happens in :meth:`Page.insert_htmlbox`. The base library will for example pull in required fonts if it encounters characters not contained in the standard ones. Some parameters are ignored if this option is set, as mentioned above. Default is ``False``.
+      :arg bool richtext: treat ``text`` as HTML syntax. This allows to achieve **bold**, *italic*, arbitrary text colors, font sizes, text alignment including justify and more - as far as the PDF subset of HTML and styling instructions supports this. This is similar to what happens in :meth:`Page.insert_htmlbox`. The base library will for example pull in required fonts if it encounters characters not contained in the standard ones. Some parameters are ignored if this option is set, as mentioned above. Default is ``False``.
       
       :arg str style: supply optional HTML styling information in CSS syntax. Ignored if `richtext=False`.
 

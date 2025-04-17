@@ -544,14 +544,12 @@ def test_4254():
     annot = page.add_freetext_annot(rect, "Test Annotation from minimal example")
     annot.set_border(width=1, dashes=(3, 3))
     annot.set_opacity(0.5)
-    annot.set_colors(stroke=(1, 0, 0))
     annot.update()
 
     rect = pymupdf.Rect(200, 200, 400, 400)
     annot2 = page.add_freetext_annot(rect, "Test Annotation from minimal example pt 2")
     annot2.set_border(width=1, dashes=(3, 3))
     annot2.set_opacity(0.5)
-    annot2.set_colors(stroke=(1, 0, 0))
     annot2.update()
 
     # stores top color for each pixmap
