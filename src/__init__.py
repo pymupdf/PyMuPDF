@@ -1326,14 +1326,19 @@ class Annot:
 
         Use either a dict or the direct arguments.
         """
+        if self.type[0] == mupdf.PDF_ANNOT_FREE_TEXT:
+            raise ValueError("cannot be used for FreeText annotations")
+
         CheckParent(self)
         doc = self.get_parent().parent
         if type(colors) is not dict:
             colors = {"fill": fill, "stroke": stroke}
         fill = colors.get("fill")
         stroke = colors.get("stroke")
+
         fill_annots = (mupdf.PDF_ANNOT_CIRCLE, mupdf.PDF_ANNOT_SQUARE, mupdf.PDF_ANNOT_LINE, mupdf.PDF_ANNOT_POLY_LINE, mupdf.PDF_ANNOT_POLYGON,
                        mupdf.PDF_ANNOT_REDACT,)
+
         if stroke in ([], ()):
             doc.xref_set_key(self.xref, "C", "[]")
         elif stroke is not None:
@@ -1573,6 +1578,7 @@ class Annot:
             return (cc + "\n").encode()
 
         annot_type = self.type[0]  # get the annot type
+
         dt = self.border.get("dashes", None)  # get the dashes spec
         bwidth = self.border.get("width", -1)  # get border line width
         stroke = self.colors["stroke"]  # get the stroke color
@@ -7575,6 +7581,8 @@ class Page:
             xfa:contentType="text/html" xfa:APIVersion="Acrobat:8.0.0" xfa:spec="2.4">
             {text}"""
         page = self._pdf_page()
+        if border_color and not richtext:
+            raise ValueError("cannot set border_color if rich_text is False")
         if border_color and not text_color:
             text_color = border_color
         nfcol, fcol = JM_color_FromSequence(fill_color)
