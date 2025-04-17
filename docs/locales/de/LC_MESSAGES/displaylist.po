@@ -1,0 +1,241 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 85ee81383b5446bab311d8f7b3c8fcac
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 2aadbeed28004bc5b1af3cafca54cd49
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 5f03ea6228c540d490e7e21dbe7a682e
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../displaylist.rst:7 ffd953b6fbc64a39866787a0edce72c2
+msgid "DisplayList"
+msgstr ""
+
+#: ../../displaylist.rst:9 a98bdb15facb45eca03a302e65321649
+msgid ""
+"DisplayList is a list containing drawing commands (text, images, etc.). "
+"The intent is two-fold:"
+msgstr ""
+
+#: ../../displaylist.rst:11 f34b2f44389140eca2d21b0d7c566835
+msgid "as a caching-mechanism to reduce parsing of a page"
+msgstr ""
+
+#: ../../displaylist.rst:12 11fd7eeaa74c41e38f44f93fe53f799d
+msgid ""
+"as a data structure in multi-threading setups, where one thread parses "
+"the page and another one renders pages. This aspect is currently not "
+"supported by PyMuPDF."
+msgstr ""
+
+#: ../../displaylist.rst:14 f47fc55997964be8872823d0d68a9434
+msgid ""
+"A display list is populated with objects from a page, usually by "
+"executing :meth:`Page.get_displaylist`. There also exists an independent "
+"constructor."
+msgstr ""
+
+#: ../../displaylist.rst:16 478941b4f0a74dd5ac00af8a2e5de8e0
+msgid ""
+"\"Replay\" the list (once or many times) by invoking one of its methods "
+":meth:`~DisplayList.run`, :meth:`~DisplayList.get_pixmap` or "
+":meth:`~DisplayList.get_textpage`."
+msgstr ""
+
+#: ../../displaylist.rst:20 b035d30ab932458c89921fc2091ca6ed
+msgid "**Method**"
+msgstr ""
+
+#: ../../displaylist.rst:20 9ec33062cfa84f33adb5ca985df1b62a
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../displaylist.rst:22 f063e9c7368a4d1bb4efbf9e02d9a7b0
+msgid ":meth:`~DisplayList.run`"
+msgstr ""
+
+#: ../../displaylist.rst:22 916c809bdfae4d9b912c30cda33c7d3b
+msgid "Run a display list through a device."
+msgstr ""
+
+#: ../../displaylist.rst:23 a412fe84e6a943109a82c9872dc2a953
+msgid ":meth:`~DisplayList.get_pixmap`"
+msgstr ""
+
+#: ../../displaylist.rst:23 b2523139914a4541a0c3f79442bf5c6f
+msgid "generate a pixmap"
+msgstr ""
+
+#: ../../displaylist.rst:24 5bfdb590999b469981c332ada5769bbf
+msgid ":meth:`~DisplayList.get_textpage`"
+msgstr ""
+
+#: ../../displaylist.rst:24 24b92e98327b4214865e137898c355c1
+msgid "generate a text page"
+msgstr ""
+
+#: ../../displaylist.rst:25 758211c051284705afa9e186fdea6e54
+msgid ":attr:`~DisplayList.rect`"
+msgstr ""
+
+#: ../../displaylist.rst:25 8247482dba784fabb5f89ce11f17a64c
+msgid "mediabox of the display list"
+msgstr ""
+
+#: ../../displaylist.rst:29 879da44f5b924a8299e2cdf2daa64852
+msgid "**Class API**"
+msgstr ""
+
+#: ../../displaylist.rst:35 7024f17715094e0bac4657dc96d778fe
+msgid "Create a new display list."
+msgstr ""
+
+#: ../../displaylist.rst 368347bd6e354c7286c6d761323614c6
+#: 5cffa7e1860f48d2b2b02af84396e8b7 a68f36c6fdbd4638841bd4b5d14e01c5
+#: fbf69acf127c475684179bebec45b555
+msgid "Parameters"
+msgstr ""
+
+#: ../../displaylist.rst:37 1a15f2e868934ebfbb706101234b942c
+msgid "The page's rectangle."
+msgstr ""
+
+#: ../../displaylist.rst 4aa7e95bfb304eb786873dc128080192
+#: 9628266c652c43e397ab17aff7b09d9a fdc8f4060e4044a4bba226ce56c05efe
+msgid "Return type"
+msgstr ""
+
+#: ../../displaylist.rst:40 136f549e2738445d8d830e101523615c
+msgid "*DisplayList*"
+msgstr ""
+
+#: ../../displaylist.rst:44 a708030e4a714162a183122ff845f300
+msgid ""
+"Run the display list through a device. The device will populate the "
+"display list with its \"commands\" (i.e. text extraction or image "
+"creation). The display list can later be used to \"read\" a page many "
+"times without having to re-interpret it from the document file."
+msgstr ""
+
+#: ../../displaylist.rst:46 4c8291909a844ff4a2f2ab416252270b
+msgid ""
+"You will most probably instead use one of the specialized run methods "
+"below -- :meth:`get_pixmap` or :meth:`get_textpage`."
+msgstr ""
+
+#: ../../displaylist.rst:48 4f7a4933e8924fe0b4bf3ba52b68b918
+msgid "Device"
+msgstr ""
+
+#: ../../displaylist.rst:51 c7fc73de742e46aaa1a3bfac323ffe52
+msgid "Transformation matrix to apply to the display list contents."
+msgstr ""
+
+#: ../../displaylist.rst:54 8d876f1c867a4ba9aab91aa8844f11ed
+msgid ""
+"Only the part visible within this area will be considered when the list "
+"is run through the device."
+msgstr ""
+
+#: ../../displaylist.rst:65 4cd71203402f42c084c05537b4069b8e
+msgid "Run the display list through a draw device and return a pixmap."
+msgstr ""
+
+#: ../../displaylist.rst:67 40ffabb8733d4c159fb9c1bf5f123b7a
+msgid "matrix to use. Default is the identity matrix."
+msgstr ""
+
+#: ../../displaylist.rst:70 9f80e04939df4e869a6aae307600f9b9
+msgid "the desired colorspace. Default is RGB."
+msgstr ""
+
+#: ../../displaylist.rst:73 004942119bb548268104bdbf345c6626
+msgid "determine whether or not (0, default) to include a transparency channel."
+msgstr ""
+
+#: ../../displaylist.rst:75 63499de6adb349218d9c228d37571c9b
+msgid ""
+"restrict rendering to the intersection of this area with "
+":attr:`DisplayList.rect`."
+msgstr ""
+
+#: ../../displaylist.rst:77 2b4519ceb62d4ff5aaf26469b6ad27e7
+msgid ":ref:`Pixmap`"
+msgstr ""
+
+#: ../../displaylist.rst 9e12b4a400bd4f28a64154727e1341e8
+#: dfd4f14a1c4c40b4b4593b30d2801610
+msgid "Returns"
+msgstr ""
+
+#: ../../displaylist.rst:78 4d9e816a554e498f8b4ced5ead7fae63
+msgid "pixmap of the display list."
+msgstr ""
+
+#: ../../displaylist.rst:82 d201e153d5a74b6286a3f24dd07771e4
+msgid "Run the display list through a text device and return a text page."
+msgstr ""
+
+#: ../../displaylist.rst:84 f7168bc2140948b1b23ee9a6555aa19c
+msgid ""
+"control which information is parsed into a text page. Default value in "
+"PyMuPDF is `3 = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE`, i.e."
+" :data:`ligatures` are **passed through**, white spaces are **passed "
+"through** (not translated to spaces), and images are **not included**. "
+"See :ref:`TextPreserve`."
+msgstr ""
+
+#: ../../displaylist.rst:86 331d9ffb9e2c41b2a7aa918985944d03
+msgid ":ref:`TextPage`"
+msgstr ""
+
+#: ../../displaylist.rst:87 9a3d633bb3b9470e9633979dc60e32db
+msgid "text page of the display list."
+msgstr ""
+
+#: ../../displaylist.rst:91 a0532ee2b43e4881966b65e83c28a1f5
+msgid ""
+"Contains the display list's mediabox. This will equal the page's "
+"rectangle if it was created via :meth:`Page.get_displaylist`."
+msgstr ""
+
+#: ../../displaylist.rst 027bab9cbfe6488eb3f5cf5818313a0e
+msgid "type"
+msgstr ""
+
+#: ../../displaylist.rst:93 3a0e088ac75d4a128417cd79855b6777
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../footer.rst:60 5f7c2ee2445b4bd69c561fa6fb3cf797
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

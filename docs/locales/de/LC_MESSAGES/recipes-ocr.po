@@ -1,0 +1,174 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 8c06718aa6d94a588549b1b5d04439ff
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 53d78f25612a42cea99758721dc13394
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 bffa3c55f0b648508f7e9ef104450bca
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-ocr.rst:17 c241da654a734566aa9837f159d775f0
+msgid "OCR - Optical Character Recognition"
+msgstr ""
+
+#: ../../recipes-ocr.rst:19 0aa275f26c85470caecaed5eecb9df0b
+msgid ""
+"|PyMuPDF| has integrated support for OCR (Optical Character Recognition)."
+" It is possible to use OCR for both, images (via the :ref:`Pixmap` class)"
+" and for document pages."
+msgstr ""
+
+#: ../../recipes-ocr.rst:21 51aed55192864e8e92dfdbae828d1b05
+msgid ""
+"The feature is currently based on Tesseract-OCR which must be installed "
+"as a separate application -- see the :ref:`installation_ocr`."
+msgstr ""
+
+#: ../../recipes-ocr.rst:24 b1216080a3f54b3c8f76397e1abb6bfb
+msgid "How to OCR an Image"
+msgstr ""
+
+#: ../../recipes-ocr.rst:25 3246894b688c4472b993c9cb737b849b
+msgid ""
+"A supported image must first be converted to a :ref:`Pixmap`. The Pixmap "
+"can then be saved to a 1-page PDF. This page will look like the original "
+"image with the same width and height. It will contain a layer of text as "
+"recognized by Tesseract."
+msgstr ""
+
+#: ../../recipes-ocr.rst:27 d4515bb735c54591a730fae2a142b782
+msgid ""
+"The PDF can be generated via one of the methods "
+":meth:`Pixmap.pdfocr_save` or :meth:`Pixmap.pdfocr_tobytes`, as a file on"
+" disk or as a PDF in memory."
+msgstr ""
+
+#: ../../recipes-ocr.rst:29 487a184cd0104d00b896c90725d548eb
+msgid ""
+"The text can be extracted and searched with the usual text extraction and"
+" search methods (:meth:`Page.get_text`, :meth:`Page.search_for`, etc.). "
+"Please also note the following important facts and prerequisites:"
+msgstr ""
+
+#: ../../recipes-ocr.rst:31 fea2a323626648cf8e2f358bf60c9790
+msgid ""
+"When converting the image to a Pixmap, please confirm that the color "
+"space is RGB and alpha is `False` (no transparency). Convert the original"
+" Pixmap if necessary."
+msgstr ""
+
+#: ../../recipes-ocr.rst:32 602c256e951449f1a5d1de19052b4e81
+msgid ""
+"All text is written as \"hidden\" with Tesseract's own `GlyphLessFont`, a"
+" mono-spaced font with metrics comparable to Courier."
+msgstr ""
+
+#: ../../recipes-ocr.rst:33 cec1c1656b124ccb8c05d4e5faabe5fe
+msgid ""
+"All text has the properties regular and black (i.e. no bold, no italic, "
+"no information about the original fonts)."
+msgstr ""
+
+#: ../../recipes-ocr.rst:34 40decd5ed0f641c5a1a1df6f0e46b543
+msgid ""
+"Tesseract does not recognize vector graphics (i.e. no drawings / line-"
+"art)."
+msgstr ""
+
+#: ../../recipes-ocr.rst:36 92a869d875f440a1823e69cb418dd13c
+msgid "This approach is also recommended to OCR a complete scanned PDF:"
+msgstr ""
+
+#: ../../recipes-ocr.rst:38 66094238af8143488b9393b6174ad73b
+msgid "Render each page to a :ref:`Pixmap` with desired resolution"
+msgstr ""
+
+#: ../../recipes-ocr.rst:39 117254e7b2ba43c181367c88db16205e
+msgid "Append the resulting 1-page PDF to the output PDF"
+msgstr ""
+
+#: ../../recipes-ocr.rst:42 d7dece4adeb4437b99e1820d71befa7c
+msgid "How to OCR a Document Page"
+msgstr ""
+
+#: ../../recipes-ocr.rst:43 7c3e4697da8f4603b29acd1ad05093d5
+msgid ""
+"Any supported document page can be OCR-ed -- either the complete page or "
+"only the image areas on it."
+msgstr ""
+
+#: ../../recipes-ocr.rst:45 ba6c9f5cda8043bf858b00e93aa23ded
+msgid ""
+"Because optical character recognition is about one thousand times slower "
+"than standard text extraction, we make sure to do OCR only once per page "
+"and store the result in a :ref:`TextPage`. Using this TextPage for all "
+"subsequent extractions and text searches will then happen with "
+"|PyMuPDF|'s usual top speed."
+msgstr ""
+
+#: ../../recipes-ocr.rst:47 30ced681346a45b69d752411d4546ef8
+msgid "To OCR a document page, follow this approach:"
+msgstr ""
+
+#: ../../recipes-ocr.rst:49 d100d50f78564e60a3c001137881dbe0
+msgid ""
+"Determine whether OCR is needed / beneficial at all. A number of criteria"
+" can be used for this decision, like:"
+msgstr ""
+
+#: ../../recipes-ocr.rst:51 d822f6b5f27e4ec8985dabafd5355ded
+msgid "page is completely covered by an image"
+msgstr ""
+
+#: ../../recipes-ocr.rst:52 e2b83dfda8654688ace9b92549d12d49
+msgid "no text exists on the page"
+msgstr ""
+
+#: ../../recipes-ocr.rst:53 92db54fd9afa4d38a9032f18d836b8cf
+msgid "thousands of small vector graphics (indicating *simulated* text)"
+msgstr ""
+
+#: ../../recipes-ocr.rst:55 83ba5b35db48464f8945a3dabc2e53f0
+msgid ""
+"OCR the page and store result in a :ref:`TextPage` object using an "
+"instruction like `tp = page.get_textpage_ocr(...)`."
+msgstr ""
+
+#: ../../recipes-ocr.rst:57 58b836a92fe443749da93c2ff3c9a23e
+msgid ""
+"Refer to the produced :ref:`TextPage` in all subsequent text extractions "
+"and searches via the `textpage=tp` parameter."
+msgstr ""
+
+#: ../../footer.rst:60 3baf39a2c3104ca786b8b27e9c52e1a8
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

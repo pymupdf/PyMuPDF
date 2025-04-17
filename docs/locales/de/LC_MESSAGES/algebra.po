@@ -1,0 +1,409 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 a244f13b9c764d21b6a4e35ef573b3fc
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 9bd00aa1c6e2464c98edbdfe23c4f225
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 0bb8ce2fa7b8439cb16f9ec725fae345
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../algebra.rst:6 a46fc8868909429d85fea1440fd28881
+msgid "Operator Algebra for Geometry Objects"
+msgstr ""
+
+#: ../../algebra.rst:10 f2868bfbb77d48739b417240e859be75
+msgid ""
+"Instances of classes :ref:`Point`, :ref:`IRect`, :ref:`Rect`, :ref:`Quad`"
+" and :ref:`Matrix` are collectively also called \"geometry\" objects."
+msgstr ""
+
+#: ../../algebra.rst:12 7c7e99aaa08449cc9a3e4a9c1891053e
+msgid ""
+"They all are special cases of Python sequences, see :ref:`SequenceTypes` "
+"for more background."
+msgstr ""
+
+#: ../../algebra.rst:14 b6a45b1271a0423d9097d983f99dac54
+msgid ""
+"We have defined operators for these classes that allow dealing with them "
+"(almost) like ordinary numbers in terms of addition, subtraction, "
+"multiplication, division, and some others."
+msgstr ""
+
+#: ../../algebra.rst:16 b84d121c948844b78d31027bcf1cc8bb
+msgid "This chapter is a synopsis of what is possible."
+msgstr ""
+
+#: ../../algebra.rst:19 8da4401664bf45689416d5a624615e21
+msgid "General Remarks"
+msgstr ""
+
+#: ../../algebra.rst:20 b27e0413604140b6a4e3d9dd5604397e
+msgid ""
+"Operators can be either **binary** (i.e. involving two objects) or "
+"**unary**."
+msgstr ""
+
+#: ../../algebra.rst:22 ff83ad4ef4924a928f7fe7c91f007de7
+msgid ""
+"The resulting type of **binary** operations is either a **new object of "
+"the left operand's class,** a bool or (for dot products) a float."
+msgstr ""
+
+#: ../../algebra.rst:24 b6935b28e0494757bdefacd86e1f3a36
+msgid ""
+"The result of **unary** operations is either a **new object** of the same"
+" class, a bool or a float."
+msgstr ""
+
+#: ../../algebra.rst:26 a1336f1afec74044ada260ccd870436a
+msgid ""
+"The binary operators `+, -, *, /` are defined for all classes. They "
+"*roughly* do what you would expect -- **except, that the second operand "
+"...**"
+msgstr ""
+
+#: ../../algebra.rst:28 e18cb846582247cb975a9ddc6340a73e
+msgid ""
+"may always be a number which then performs the operation on every "
+"component of the first one,"
+msgstr ""
+
+#: ../../algebra.rst:29 e60ed0a7fa554df0a16910687c2c88be
+msgid ""
+"may always be a numeric sequence of the same length (2, 4 or 6) -- we "
+"call such sequences :data:`point_like`, :data:`rect_like`, "
+":data:`quad_like` or :data:`matrix_like`, respectively."
+msgstr ""
+
+#: ../../algebra.rst:31 d93daa3887f04faead0f46a53b4c2a9a
+msgid ""
+"Rectangles support **additional binary** operations: **intersection** "
+"(operator `\"&\"`), **union** (operator `\"|\"`) and **containment** "
+"checking."
+msgstr ""
+
+#: ../../algebra.rst:33 03d276c145154e428f81b4e854a12723
+msgid ""
+"Binary operators fully support in-place operations. So if \"°\" is a "
+"binary operator then the expression `a °= b` is always valid and the same"
+" as `a = a ° b`. Therefore, be careful and do **not** do `p1 *= p2` for "
+"two points, because thereafter \"p1\" is a **float**."
+msgstr ""
+
+#: ../../algebra.rst:37 b197551ac91841fba96a5406efd0e076
+msgid "Unary Operations"
+msgstr ""
+
+#: ../../algebra.rst:40 ../../algebra.rst:59 299776843ce14340b3ffec69dbf18e83
+#: 9ef10cc27f674df49def7dbf4b132848
+msgid "Oper."
+msgstr ""
+
+#: ../../algebra.rst:40 ../../algebra.rst:59 0723d28bc56b478c85107cedb40b5793
+#: 7bff453d3e3548e4910efaf0d7e280d4
+msgid "Result"
+msgstr ""
+
+#: ../../algebra.rst:42 d7ac030d071642528ff3bf57fcc11bd3
+msgid "bool(OBJ)"
+msgstr ""
+
+#: ../../algebra.rst:42 0d27ce4c315a43758b0c7f988ac2baca
+msgid "is false exactly if all components of OBJ are zero"
+msgstr ""
+
+#: ../../algebra.rst:43 3a98a962f2cb4317ad6986bbdec24e65
+msgid "abs(OBJ)"
+msgstr ""
+
+#: ../../algebra.rst:43 6c1997e211ee4d939dd044c813508abb
+msgid "the rectangle area -- equal to norm(OBJ) for the other types"
+msgstr ""
+
+#: ../../algebra.rst:44 94bcec1a0e3d4e96be8a96074d02378d
+msgid "norm(OBJ)"
+msgstr ""
+
+#: ../../algebra.rst:44 e0b98f2206cf4032b715abe02f8be8cd
+msgid "square root of the component squares (Euclidean norm)"
+msgstr ""
+
+#: ../../algebra.rst:45 00744445072349b8b253bc092cc7bb87
+msgid "+OBJ"
+msgstr ""
+
+#: ../../algebra.rst:45 0b56037ce3e04d528042a1a6098bb2f9
+msgid "new copy of OBJ"
+msgstr ""
+
+#: ../../algebra.rst:46 0c1dfe4fe3344199b8b76d70f4f7d7f3
+msgid "-OBJ"
+msgstr ""
+
+#: ../../algebra.rst:46 ef82c60af2dc4d238eba6b421e3047d9
+msgid "new copy of OBJ with negated components"
+msgstr ""
+
+#: ../../algebra.rst:47 ee6061816bb3437fa7e09c6d431dc788
+msgid "~m"
+msgstr ""
+
+#: ../../algebra.rst:47 1e8a0c10344348238fc0f64c83edd642
+msgid "inverse of matrix \"m\", or the null matrix if not invertible"
+msgstr ""
+
+#: ../../algebra.rst:52 398158a768f84b89a520021ea6d0a25f
+msgid "Binary Operations"
+msgstr ""
+
+#: ../../algebra.rst:53 01209ef26eeb4f6284e42a5165ad12aa
+msgid ""
+"These are expressions like `a ° b` where \"°\" is any of the operators "
+"`+, -, *, /`. Also binary operations are expressions of the form `a == b`"
+" and `b in a`."
+msgstr ""
+
+#: ../../algebra.rst:55 347337c08b6e49ba8133b876c65de703
+msgid ""
+"If \"b\" is a number, then the respective operation is executed for each "
+"component of \"a\". Otherwise, if \"b\" is **not a number,** then the "
+"following happens:"
+msgstr ""
+
+#: ../../algebra.rst:61 882647f50a3548ada51850492e59336c
+msgid "a+b, a-b"
+msgstr ""
+
+#: ../../algebra.rst:61 529c2b3a1c8f440f8afd4fba9ce0396e
+msgid "component-wise execution, \"b\" must be \"a-like\"."
+msgstr ""
+
+#: ../../algebra.rst:62 2606cc3b045c4835abe58d011464d50a
+msgid "a*m, a/m"
+msgstr ""
+
+#: ../../algebra.rst:62 7d3849829e3b4508827663e012314f30
+msgid ""
+"\"a\" can be a point, rectangle or matrix and \"m\" is a "
+":data:`matrix_like`. *\"a/m\"* is treated as *\"a*~m\"* (see note below "
+"for non-invertible matrices). If \"a\" is a **point** or a **rectangle**,"
+" then *\"a.transform(m)\"* is executed. If \"a\" is a matrix, then matrix"
+" concatenation takes place."
+msgstr ""
+
+#: ../../algebra.rst:67 b98d2bd8c76145a093239f6b2583ff78
+msgid "a*b"
+msgstr ""
+
+#: ../../algebra.rst:67 55f9b0922451482484ef7fe2110fefb7
+msgid "returns the **vector dot product** for a point \"a\" and point-like \"b\"."
+msgstr ""
+
+#: ../../algebra.rst:68 2c02e64b04dd47a89a57341e5557c6f4
+msgid "a&b"
+msgstr ""
+
+#: ../../algebra.rst:68 b1ebf38a599942378b28ecc93be28dbc
+msgid ""
+"**intersection rectangle:** \"a\" must be a rectangle and \"b\" "
+":data:`rect_like`. Delivers the **largest rectangle** contained in both "
+"operands."
+msgstr ""
+
+#: ../../algebra.rst:71 6b94ffc704eb47269f5a3961a01cc914
+msgid "a|b"
+msgstr ""
+
+#: ../../algebra.rst:71 f10408473ce74344941deb9adedaea81
+msgid ""
+"**union rectangle:** \"a\" must be a rectangle, and \"b\" may be "
+":data:`point_like` or :data:`rect_like`. Delivers the **smallest "
+"rectangle** containing both operands."
+msgstr ""
+
+#: ../../algebra.rst:74 68ba14dfcb0944fb8f12d32ccd74acfc
+msgid "b in a"
+msgstr ""
+
+#: ../../algebra.rst:74 20c6156b787d407bba8ac0eb66d0003f
+msgid ""
+"if \"b\" is a number, then `b in tuple(a)` is returned. If \"b\" is "
+":data:`point_like`, :data:`rect_like` or :data:`quad_like`, then \"a\" "
+"must be a rectangle, and `a.contains(b)` is returned."
+msgstr ""
+
+#: ../../algebra.rst:77 14c642acfd6a4cc09dd70b7edfc9479d
+msgid "a == b"
+msgstr ""
+
+#: ../../algebra.rst:77 b5f52a2ccb364df6aafabfc00b804bfd
+msgid "*True* if *bool(a-b)* is *False* (\"b\" may be \"a-like\")."
+msgstr ""
+
+#: ../../algebra.rst:81 91cf0864d56a40f89a084004444ece8e
+msgid "Please note an important difference to usual arithmetic:"
+msgstr ""
+
+#: ../../algebra.rst:83 c2257dafe2e54f93bdf6e878a27abb1e
+msgid ""
+"Matrix multiplication is **not commutative**, i.e. in general we have "
+"`m*n != n*m` for two matrices. Also, there are non-zero matrices which "
+"have no inverse, for example `m = Matrix(1, 0, 1, 0, 1, 0)`. If you try "
+"to divide by any of these, you will receive a `ZeroDivisionError` "
+"exception using operator *\"/\"*, e.g. for the expression "
+"`pymupdf.Identity / m`. But if you formulate `pymupdf.Identity * ~m`, the"
+" result will be `pymupdf.Matrix()` (the null matrix)."
+msgstr ""
+
+#: ../../algebra.rst:85 0e187d91aa3543128b18a63bdf168871
+msgid ""
+"Admittedly, this represents an inconsistency, and we are considering to "
+"remove it. For the time being, you can choose to avoid an exception and "
+"check whether ~m is the null matrix, or accept a potential "
+"*ZeroDivisionError* by using `pymupdf.Identity / m`."
+msgstr ""
+
+#: ../../algebra.rst:89 de603159545946e8bdc68fe78cd85024
+msgid ""
+"With these conventions, all the usual algebra rules apply. For example, "
+"arbitrarily using brackets **(among objects of the same class!)** is "
+"possible: if r1, r2 are rectangles and m1, m2 are matrices, you can do "
+"this `(r1 + r2) * m1 * m2`."
+msgstr ""
+
+#: ../../algebra.rst:90 2e9035f1be214ad5993be5461f301e62
+msgid ""
+"For all objects of the same class, `a + b + c == (a + b) + c == a + (b + "
+"c)` is true."
+msgstr ""
+
+#: ../../algebra.rst:91 695f00e56afc43e8bbde8536925b9ffc
+msgid ""
+"For matrices in addition the following is true: `(m1 + m2) * m3 == m1 * "
+"m3 + m2 * m3` (distributivity property)."
+msgstr ""
+
+#: ../../algebra.rst:92 85174e316c684b489921150e95d1aed3
+msgid ""
+"**But the sequence of applying matrices is important:** If r is a "
+"rectangle and m1, m2 are matrices, then -- **caution!:**"
+msgstr ""
+
+#: ../../algebra.rst:93 8db6b272b39a4051b95fd6474751c244
+msgid "`r * m1 * m2 == (r * m1) * m2 != r * (m1 * m2)`"
+msgstr ""
+
+#: ../../algebra.rst:96 5a5c13a7f2b542b59628658c7a3217f1
+msgid "Some Examples"
+msgstr ""
+
+#: ../../algebra.rst:99 b685ff344b354dd6b03324c45389e661
+msgid "Manipulation with numbers"
+msgstr ""
+
+#: ../../algebra.rst:100 92463489f90f4556b3d5a7b306e1e7ac
+msgid ""
+"For the usual arithmetic operations, numbers are always allowed as second"
+" operand. In addition, you can formulate `\"x in OBJ\"`, where x is a "
+"number. It is implemented as `\"x in tuple(OBJ)\"`::"
+msgstr ""
+
+#: ../../algebra.rst:108 d3192c1a63bb460ba17fe04f2de5b3ff
+msgid ""
+"The following will create the upper left quarter of a document page "
+"rectangle::"
+msgstr ""
+
+#: ../../algebra.rst:116 9f9d44b5091a4a65844a451e8d7c92c4
+msgid ""
+"The following will deliver the **middle point of a line** that connects "
+"two points **p1** and **p2**::"
+msgstr ""
+
+#: ../../algebra.rst:125 2908e3f62351463a817217bed9ee7101
+msgid ""
+"Compute the **vector dot product** of two points. You can compute the "
+"**cosine of angles** and check orthogonality."
+msgstr ""
+
+#: ../../algebra.rst:149 05936628739f4f5392d49359e0f8860d
+msgid "Manipulation with \"like\" Objects"
+msgstr ""
+
+#: ../../algebra.rst:151 64ff208b10184910a7052e2d2fde5560
+msgid ""
+"The second operand of a binary operation can always be \"like\" the left "
+"operand. \"Like\" in this context means \"a sequence of numbers of the "
+"same length\". With the above examples::"
+msgstr ""
+
+#: ../../algebra.rst:162 7626451d4f89418ea6f21c0194766c1e
+msgid "To shift a rectangle for 5 pixels to the right, do this::"
+msgstr ""
+
+#: ../../algebra.rst:168 ffbacdbea5aa4828ab455e4e9da44bf2
+msgid ""
+"Points, rectangles and matrices can be *transformed* with matrices. In "
+"PyMuPDF, we treat this like a **\"multiplication\"** (or resp. "
+"**\"division\"**), where the second operand may be \"like\" a matrix. "
+"Division in this context means \"multiplication with the inverted "
+"matrix\"::"
+msgstr ""
+
+#: ../../algebra.rst:208 f6063ded1f794fdfa330d05aab12b59a
+msgid "As a specialty, rectangles support additional binary operations:"
+msgstr ""
+
+#: ../../algebra.rst:210 8ddb30b3a1e6414cb4ab801649852302
+msgid "**intersection** -- the common area of rectangle-likes, operator *\"&\"*"
+msgstr ""
+
+#: ../../algebra.rst:211 44b3d1c0634a46f1ae3506fe5d9c9046
+msgid ""
+"**inclusion** -- enlarge to include a point-like or rect-like, operator "
+"*\"|\"*"
+msgstr ""
+
+#: ../../algebra.rst:212 462847c9ff494bef9387ce0aff093bfd
+msgid "**containment** check -- whether a point-like or rect-like is inside"
+msgstr ""
+
+#: ../../algebra.rst:214 8733fac916f74438a2cecf7b54a9c218
+msgid ""
+"Here is an example for creating the smallest rectangle enclosing given "
+"points::"
+msgstr ""
+
+#: ../../footer.rst:60 1533c6c3a8344ce0b45e9762c0145328
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

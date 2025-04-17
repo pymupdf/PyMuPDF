@@ -1,0 +1,75 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 32a5d41df1df459eb1e9d04ab26ae6e9
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 f853d94bef1043f19d324049bb6fc247
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 ee9fba5239104891a698642d810eda59
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../resources.rst:6 50c78b642e87465bab2c3916355a95a0
+msgid "Resources"
+msgstr ""
+
+#: ../../resources.rst:9 4ff3e7104cb64db5af2a616677e85c6e
+msgid "**PyMuPDF Pro**"
+msgstr ""
+
+#: ../../resources.rst:12 08c45bb03e394054bea50f41ce8a06d0
+msgid "For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`."
+msgstr ""
+
+#: ../../resources.rst:20 5af5e4a006674fbf9c2bb32995565bc2
+msgid "Find out about **PyMuPDF Utilities**"
+msgstr ""
+
+#: ../../resources.rst:22 9107d5d9ff12463c8aaa340fe660b894
+msgid ""
+"The :title:`GitHub` repository `PyMuPDF-Utilities "
+"<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
+" examples, demonstrations and use cases."
+msgstr ""
+
+#: ../../resources.rst:31 661997d9b5904871afc832b5d106ec7e
+msgid "Do you need **PDF** to **DOCX** conversion?"
+msgstr ""
+
+#: ../../resources.rst:33 4d1c4a0b38be4825a6719886af0641bf
+msgid ""
+"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"**python-docx** library to provide simple document conversion from "
+"**PDF** to **DOCX** format."
+msgstr ""
+
+#: ../../footer.rst:60 bd4e8b3283ae4bb3b28a33df47889855
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

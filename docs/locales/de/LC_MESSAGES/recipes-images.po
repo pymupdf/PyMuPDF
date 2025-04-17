@@ -1,0 +1,966 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 e08ff8c04b304218ac81d35f41292ac6
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 a1f1910f4f4b427c872afb309d8717ae
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 067d19d0feee4d3ea790680243bcadde
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-images.rst:7 57931bcbe871420b8981b5294574c1f6
+msgid "Images"
+msgstr ""
+
+#: ../../recipes-images.rst:14 c30d7e40298f4ae28b6931514dcdda2d
+msgid "How to Make Images from Document Pages"
+msgstr ""
+
+#: ../../recipes-images.rst:16 a5b0953e89e6485ea0cc82a8785e31cf
+msgid ""
+"This little script will take a document filename and generate a PNG file "
+"from each of its pages."
+msgstr ""
+
+#: ../../recipes-images.rst:18 f1183a990e834decbf12969a97c76cf8
+msgid "The document can be any :ref:`supported type<Supported_File_Types>`."
+msgstr ""
+
+#: ../../recipes-images.rst:20 86fd95ad8dba47ed87f53ab293cc7058
+msgid ""
+"The script works as a command line tool which expects the filename being "
+"supplied as a parameter. The generated image files (1 per page) are "
+"stored in the directory of the script::"
+msgstr ""
+
+#: ../../recipes-images.rst:29 3e69a1bf5a8d49978cfc9c8dabfc3648
+msgid ""
+"The script directory will now contain PNG image files named *page-0.png*,"
+" *page-1.png*, etc. Pictures have the dimension of their pages with width"
+" and height rounded to integers, e.g. 595 x 842 pixels for an A4 portrait"
+" sized page. They will have a resolution of 96 dpi in x and y dimension "
+"and have no transparency. You can change all that -- for how to do this, "
+"read the next sections."
+msgstr ""
+
+#: ../../recipes-images.rst:37 338b2dd52c564f7d9850839bb2b6e0c9
+msgid "How to Increase :index:`Image Resolution <pair: image; resolution>`"
+msgstr ""
+
+#: ../../recipes-images.rst:39 4770c88fce1d4a0782d7b461b2a4c8b6
+msgid ""
+"The image of a document page is represented by a :ref:`Pixmap`, and the "
+"simplest way to create a pixmap is via method :meth:`Page.get_pixmap`."
+msgstr ""
+
+#: ../../recipes-images.rst:41 fe71e979e90a4e36ab7e012b4e4cfbaf
+msgid ""
+"This method has many options to influence the result. The most important "
+"among them is the :ref:`Matrix`, which lets you :index:`zoom`, rotate, "
+"distort or mirror the outcome."
+msgstr ""
+
+#: ../../recipes-images.rst:43 879c14c6b55746e184a6a3659ddb8624
+msgid ""
+":meth:`Page.get_pixmap` by default will use the :ref:`Identity` matrix, "
+"which does nothing."
+msgstr ""
+
+#: ../../recipes-images.rst:45 7ae61bca1b914ef58650814764c86556
+msgid ""
+"In the following, we apply a :index:`zoom factor <pair: resolution;zoom>`"
+" of 2 to each dimension, which will generate an image with a four times "
+"better resolution for us (and also about 4 times the size)::"
+msgstr ""
+
+#: ../../recipes-images.rst:53 a015d3083e624dd0bb52595296bcda69
+msgid ""
+"Since version 1.19.2 there is a more direct way to set the resolution: "
+"Parameter `\"dpi\"` (dots per inch) can be used in place of `\"matrix\"`."
+" To create a 300 dpi image of a page specify `pix = "
+"page.get_pixmap(dpi=300)`. Apart from notation brevity, this approach has"
+" the additional advantage that the **dpi value is saved with the image** "
+"file -- which does not happen automatically when using the Matrix "
+"notation."
+msgstr ""
+
+#: ../../recipes-images.rst:61 8e820a068673426d8b07c503b4b9b1eb
+msgid "How to Create :index:`Partial Pixmaps` (Clips)"
+msgstr ""
+
+#: ../../recipes-images.rst:62 3575f660d7f34fcf8740261d5cc13939
+msgid ""
+"You do not always need or want the full image of a page. This is the case"
+" e.g. when you display the image in a GUI and would like to fill the "
+"respective window with a zoomed part of the page."
+msgstr ""
+
+#: ../../recipes-images.rst:64 91a6b74e53dc47bba254ef54f6903677
+msgid ""
+"Let's assume your GUI window has room to display a full document page, "
+"but you now want to fill this room with the bottom right quarter of your "
+"page, thus using a four times better resolution."
+msgstr ""
+
+#: ../../recipes-images.rst:66 0c121baa24eb407eb7c91b5f481189c8
+msgid ""
+"To achieve this, define a rectangle equal to the area you want to appear "
+"in the GUI and call it \"clip\". One way of constructing rectangles in "
+"PyMuPDF is by providing two diagonally opposite corners, which is what we"
+" are doing here."
+msgstr ""
+
+#: ../../recipes-images.rst:79 355e4acbef614ba299f86cec24da6c88
+msgid ""
+"In the above we construct *clip* by specifying two diagonally opposite "
+"points: the middle point *mp* of the page rectangle, and its bottom "
+"right, *rect.br*."
+msgstr ""
+
+#: ../../recipes-images.rst:87 39c83e942ce74cb9baddcc259d24777e
+msgid "How to Zoom a Clip to a GUI Window"
+msgstr ""
+
+#: ../../recipes-images.rst:88 5ffea1d8340c4a08939f161390fd42ae
+msgid ""
+"Please also read the previous section. This time we want to **compute the"
+" zoom factor** for a clip, such that its image best fits a given GUI "
+"window. This means, that the image's width or height (or both) will equal"
+" the window dimension. For the following code snippet you need to provide"
+" the WIDTH and HEIGHT of your GUI's window that should receive the page's"
+" clip rectangle."
+msgstr ""
+
+#: ../../recipes-images.rst:105 61635a6d0bae4040986c0bd5b66441a2
+msgid ""
+"For the other way round, now assume you **have** the zoom factor and need"
+" to **compute the fitting clip**."
+msgstr ""
+
+#: ../../recipes-images.rst:107 2903b44af458484da6825578d79b1da4
+msgid ""
+"In this case we have `zoom = HEIGHT/clip.height = WIDTH/clip.width`, so "
+"we must set `clip.height = HEIGHT/zoom` and, `clip.width = WIDTH/zoom`. "
+"Choose the top-left point `tl` of the clip on the page to compute the "
+"right pixmap::"
+msgstr ""
+
+#: ../../recipes-images.rst:124 956b4a0c798e4b199a96b3f962fadf70
+msgid "How to Create or Suppress Annotation Images"
+msgstr ""
+
+#: ../../recipes-images.rst:125 88238495026f4e289613d5e50b81a474
+msgid ""
+"Normally, the pixmap of a page also shows the page's annotations. "
+"Occasionally, this may not be desirable."
+msgstr ""
+
+#: ../../recipes-images.rst:127 7cec58430afd46ed9e720d3b6fa029db
+msgid ""
+"To suppress the annotation images on a rendered page, just specify "
+"`annots=False` in :meth:`Page.get_pixmap`."
+msgstr ""
+
+#: ../../recipes-images.rst:129 f75aaef8eaa54984a2d2fe045e60d421
+msgid ""
+"You can also render annotations separately: they have their own "
+":meth:`Annot.get_pixmap` method. The resulting pixmap has the same "
+"dimensions as the annotation rectangle."
+msgstr ""
+
+#: ../../recipes-images.rst:141 9ff376603198474f97ccc539fa162925
+msgid "How to Extract Images: Non-PDF Documents"
+msgstr ""
+
+#: ../../recipes-images.rst:143 e1ee913277e849ab932b9b97874133c3
+msgid ""
+"In contrast to the previous sections, this section deals with "
+"**extracting** images **contained** in documents, so they can be "
+"displayed as part of one or more pages."
+msgstr ""
+
+#: ../../recipes-images.rst:145 a1a829c4fe444807b6db244124c9137d
+msgid ""
+"If you want to recreate the original image in file form or as a memory "
+"area, you have basically two options:"
+msgstr ""
+
+#: ../../recipes-images.rst:147 773185000e944e7daeaf940ca6fda472
+msgid ""
+"Convert your document to a PDF, and then use one of the PDF-only "
+"extraction methods. This snippet will convert a document to PDF::"
+msgstr ""
+
+#: ../../recipes-images.rst:153 6416afce3c7447f98cbcd8b2d98214dd
+msgid ""
+"Use :meth:`Page.get_text` with the \"dict\" parameter. This works for all"
+" document types. It will extract all text and images shown on the page, "
+"formatted as a Python dictionary. Every image will occur in an image "
+"block, containing meta information and **the binary image data**. For "
+"details of the dictionary's structure, see :ref:`TextPage`. The method "
+"works equally well for PDF files. This creates a list of all images shown"
+" on a page::"
+msgstr ""
+
+#: ../../recipes-images.rst:182 28308796e3ad4f7abf4d6c2b939aca48
+msgid "How to Extract Images: PDF Documents"
+msgstr ""
+
+#: ../../recipes-images.rst:184 0fc3745f79b8438d9b922c7957f09651
+msgid ""
+"Like any other \"object\" in a PDF, images are identified by a cross "
+"reference number (:data:`xref`, an integer). If you know this number, you"
+" have two ways to access the image's data:"
+msgstr ""
+
+#: ../../recipes-images.rst:186 f2a6f39609bb4bcb838f8d7a34a28da5
+msgid ""
+"**Create** a :ref:`Pixmap` of the image with instruction *pix = "
+"pymupdf.Pixmap(doc, xref)*. This method is **very** fast (single digit "
+"micro-seconds). The pixmap's properties (width, height, ...) will reflect"
+" the ones of the image. In this case there is no way to tell which image "
+"format the embedded original has."
+msgstr ""
+
+#: ../../recipes-images.rst:188 903b6e9628bb4a0ea1ad4d2ff2f35557
+msgid ""
+"**Extract** the image with *img = doc.extract_image(xref)*. This is a "
+"dictionary containing the binary image data as *img[\"image\"]*. A number"
+" of meta data are also provided -- mostly the same as you would find in "
+"the pixmap of the image. The major difference is string *img[\"ext\"]*, "
+"which specifies the image format: apart from \"png\", strings like "
+"\"jpeg\", \"bmp\", \"tiff\", etc. can also occur. Use this string as the "
+"file extension if you want to store to disk. The execution speed of this "
+"method should be compared to the combined speed of the statements *pix = "
+"pymupdf.Pixmap(doc, xref);pix.tobytes()*. If the embedded image is in PNG"
+" format, the speed of :meth:`Document.extract_image` is about the same "
+"(and the binary image data are identical). Otherwise, this method is "
+"**thousands of times faster**, and the **image data is much smaller**."
+msgstr ""
+
+#: ../../recipes-images.rst:190 110186a162f04f83955d7d59285d446b
+msgid ""
+"The question remains: **\"How do I know those 'xref' numbers of "
+"images?\"**. There are two answers to this:"
+msgstr ""
+
+#: ../../recipes-images.rst:192 ad8338028ef944a19307f2547e05528f
+msgid ""
+"**\"Inspect the page objects:\"** Loop through the items of "
+":meth:`Page.get_images`. It is a list of list, and its items look like "
+"*[xref, smask, ...]*, containing the :data:`xref` of an image. This "
+":data:`xref` can then be used with one of the above methods. Use this "
+"method for **valid (undamaged)** documents. Be wary however, that the "
+"same image may be referenced multiple times (by different pages), so you "
+"might want to provide a mechanism avoiding multiple extracts."
+msgstr ""
+
+#: ../../recipes-images.rst:193 afeb949615fb470d958fdfc35b1fe9dd
+msgid ""
+"**\"No need to know:\"** Loop through the list of **all xrefs** of the "
+"document and perform a :meth:`Document.extract_image` for each one. If "
+"the returned dictionary is empty, then continue -- this :data:`xref` is "
+"no image. Use this method if the PDF is **damaged (unusable pages)**. "
+"Note that a PDF often contains \"pseudo-images\" (\"stencil masks\") with"
+" the special purpose of defining the transparency of some other image. "
+"You may want to provide logic to exclude those from extraction. Also have"
+" a look at the next section."
+msgstr ""
+
+#: ../../recipes-images.rst:195 6d656f35aa69461f8e47b7f4bf499261
+msgid ""
+"For both extraction approaches, there exist ready-to-use general purpose "
+"scripts:"
+msgstr ""
+
+#: ../../recipes-images.rst:197 490e93536036437fab679b20daac6f6a
+msgid ""
+"`extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_ "
+"extracts images page by page:"
+msgstr ""
+
+#: ../../recipes-images.rst:202 87adba5350a8467e87dc3f0e80cae1e4
+msgid ""
+"and `extract-from-xref.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ "
+"extracts images by xref table:"
+msgstr ""
+
+#: ../../recipes-images.rst:213 b53c02001e2f4f7391e6e9e880b0631f
+msgid "How to Handle Image Masks"
+msgstr ""
+
+#: ../../recipes-images.rst:214 32034dc3accf4622b51ead4c06f67509
+msgid ""
+"Some images in PDFs are accompanied by **image masks**. In their simplest"
+" form, masks represent alpha (transparency) bytes stored as separate "
+"images. In order to reconstruct the original of an image, which has a "
+"mask, it must be \"enriched\" with transparency bytes taken from its "
+"mask."
+msgstr ""
+
+#: ../../recipes-images.rst:216 e0828025961548d4a2ed0f2e5b9cedf6
+msgid ""
+"Whether an image does have such a mask can be recognized in one of two "
+"ways in PyMuPDF:"
+msgstr ""
+
+#: ../../recipes-images.rst:218 4c26a844692448d6818018bc8e19f652
+msgid ""
+"An item of :meth:`Document.get_page_images` has the general format "
+"`(xref, smask, ...)`, where *xref* is the image's :data:`xref` and "
+"*smask*, if positive, then it is the :data:`xref` of a mask."
+msgstr ""
+
+#: ../../recipes-images.rst:219 8011ba0428cc4b87a64b8031ea34ea90
+msgid ""
+"The (dictionary) results of :meth:`Document.extract_image` have a key "
+"*\"smask\"*, which also contains any mask's :data:`xref` if positive."
+msgstr ""
+
+#: ../../recipes-images.rst:221 65aadf1969e44334a7c86d7524a50702
+msgid ""
+"If *smask == 0* then the image encountered via :data:`xref` can be "
+"processed as it is."
+msgstr ""
+
+#: ../../recipes-images.rst:223 302ce99937d44ca995fcedb51c11aaae
+msgid ""
+"To recover the original image using PyMuPDF, the procedure depicted as "
+"follows must be executed:"
+msgstr ""
+
+#: ../../recipes-images.rst:232 df80dda6fd5a4c4db985e0cfa929ee0a
+msgid ""
+"Step (1) creates a pixmap of the basic image. Step (2) does the same with"
+" the image mask. Step (3) adds an alpha channel and fills it with "
+"transparency information."
+msgstr ""
+
+#: ../../recipes-images.rst:234 4a160a9c64ac45caa88c66099e2af1b1
+msgid ""
+"The scripts `extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_, "
+"and `extract-from-xref.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ "
+"above also contain this logic."
+msgstr ""
+
+#: ../../recipes-images.rst:250 0f2b285905974f1b99efded1652e0905
+msgid "How to Make one PDF of all your Pictures (or Files)"
+msgstr ""
+
+#: ../../recipes-images.rst:251 8d8107e9ab0942c88a4abccc8f7092dc
+msgid ""
+"We show here **three scripts** that take a list of (image and other) "
+"files and put them all in one PDF."
+msgstr ""
+
+#: ../../recipes-images.rst:253 3df4d9f329c4453f9ca02d580bd2b3ba
+msgid "**Method 1: Inserting Images as Pages**"
+msgstr ""
+
+#: ../../recipes-images.rst:255 0bbd32458c89450b9f8adc7638530473
+msgid ""
+"The first one converts each image to a PDF page with the same dimensions."
+" The result will be a PDF with one page per image. It will only work for "
+":ref:`supported image<Supported_File_Types>` file formats::"
+msgstr ""
+
+#: ../../recipes-images.rst:278 959fd3ad51dc45daa6b1f1310ad95124
+msgid ""
+"This will generate a PDF only marginally larger than the combined "
+"pictures' size. Some numbers on performance:"
+msgstr ""
+
+#: ../../recipes-images.rst:280 4996fb148b334e01b2a6baaedf636b52
+msgid ""
+"The above script needed about 1 minute on my machine for 149 pictures "
+"with a total size of 514 MB (and about the same resulting PDF size)."
+msgstr ""
+
+#: ../../recipes-images.rst:285 b684aa875c574e47bc3fc5f6c15767d1
+msgid ""
+"Look `here <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/insert-images/insert.py>`_ for a more "
+"complete source code: it offers a directory selection dialog and skips "
+"unsupported files and non-file entries."
+msgstr ""
+
+#: ../../recipes-images.rst:287 03c855c845f74ac1bcf9ce3a7ee420c1
+msgid ""
+"We might have used :meth:`Page.insert_image` instead of "
+":meth:`Page.show_pdf_page`, and the result would have been a similar "
+"looking file. However, depending on the image type, it may store **images"
+" uncompressed**. Therefore, the save option *deflate = True* must be used"
+" to achieve a reasonable file size, which hugely increases the runtime "
+"for large numbers of images. So this alternative **cannot be "
+"recommended** here."
+msgstr ""
+
+#: ../../recipes-images.rst:289 41c532d33e8f42a39bb7560b25d00787
+msgid "**Method 2: Embedding Files**"
+msgstr ""
+
+#: ../../recipes-images.rst:291 490c3dd2b7d64db682e9ea9f27e723df
+msgid ""
+"The second script **embeds** arbitrary files -- not only images. The "
+"resulting PDF will have just one (empty) page, required for technical "
+"reasons. To later access the embedded files again, you would need a "
+"suitable PDF viewer that can display and / or extract embedded files::"
+msgstr ""
+
+#: ../../recipes-images.rst:316 aa85ab6a4d7f4c068e437bc62ecde2f7
+msgid ""
+"This is by far the fastest method, and it also produces the smallest "
+"possible output file size. The above pictures needed 20 seconds on my "
+"machine and yielded a PDF size of 510 MB. Look `here "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embed-"
+"images/embed.py>`_ for a more complete source code: it offers a directory"
+" selection dialog and skips non-file entries."
+msgstr ""
+
+#: ../../recipes-images.rst:318 a5e66a78eac4476db9b235257835f444
+msgid "**Method 3: Attaching Files**"
+msgstr ""
+
+#: ../../recipes-images.rst:320 25dd45dc2fc5483686500405d2daa76a
+msgid ""
+"A third way to achieve this task is **attaching files** via page "
+"annotations see `here <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/attach-images/attach.py>`_ for the "
+"complete source code."
+msgstr ""
+
+#: ../../recipes-images.rst:322 fde0ae6309414feb89541d4ee22f054a
+msgid ""
+"This has a similar performance as the previous script and it also "
+"produces a similar file size. It will produce PDF pages which show a "
+"'FileAttachment' icon for each attached file."
+msgstr ""
+
+#: ../../recipes-images.rst:326 807309e9b6e0443c892b7a6d9f92f145
+msgid ""
+"Both, the **embed** and the **attach** methods can be used for "
+"**arbitrary files** -- not just images."
+msgstr ""
+
+#: ../../recipes-images.rst:328 26ac29237c8d43398109384507fd51a8
+msgid ""
+"We strongly recommend using the awesome package `PySimpleGUI "
+"<https://pypi.org/project/PySimpleGUI/>`_ to display a progress meter for"
+" tasks that may run for an extended time span. It's pure Python, uses "
+"Tkinter (no additional GUI package) and requires just one more line of "
+"code!"
+msgstr ""
+
+#: ../../recipes-images.rst:342 ebad9685f21841c2b8ee9ac84740ecf2
+msgid "How to Create Vector Images"
+msgstr ""
+
+#: ../../recipes-images.rst:343 40ce7c0f9b0044e3939ba507d3f936fd
+msgid ""
+"The usual way to create an image from a document page is "
+":meth:`Page.get_pixmap`. A pixmap represents a raster image, so you must "
+"decide on its quality (i.e. resolution) at creation time. It cannot be "
+"changed later."
+msgstr ""
+
+#: ../../recipes-images.rst:345 35c05b06ad73440aa94313c3f527dc97
+msgid ""
+"PyMuPDF also offers a way to create a **vector image** of a page in SVG "
+"format (scalable vector graphics, defined in XML syntax). SVG images "
+"remain precise across zooming levels (of course with the exception of any"
+" raster graphic elements embedded therein)."
+msgstr ""
+
+#: ../../recipes-images.rst:347 3664556134d441ee8ca7d943fe0e97b5
+msgid ""
+"Instruction *svg = page.get_svg_image(matrix=pymupdf.Identity)* delivers "
+"a UTF-8 string *svg* which can be stored with extension \".svg\"."
+msgstr ""
+
+#: ../../recipes-images.rst:363 2e788e908541456db558a6d1e638447c
+msgid "How to Convert Images"
+msgstr ""
+
+#: ../../recipes-images.rst:364 eaecfbf3be504291831504c4b64f18ba
+msgid ""
+"Just as a feature among others, PyMuPDF's image conversion is easy. It "
+"may avoid using other graphics packages like PIL/Pillow in many cases."
+msgstr ""
+
+#: ../../recipes-images.rst:366 c3f0f2ee44ad425e8ec5c957c779fbd5
+msgid "Notwithstanding that interfacing with Pillow is almost trivial."
+msgstr ""
+
+#: ../../recipes-images.rst:369 6b90048732484c0bb7bfd07609cd24ce
+msgid "**Input Formats**"
+msgstr ""
+
+#: ../../recipes-images.rst:369 07a5c9395a4c45299d51e3bd83222984
+msgid "**Output Formats**"
+msgstr ""
+
+#: ../../recipes-images.rst:369 8350dc457b254b8291594699ce54839d
+msgid "**Description**"
+msgstr ""
+
+#: ../../recipes-images.rst:371 0979a1ef86ea4e20a05e557a7442a3b2
+msgid "BMP"
+msgstr ""
+
+#: ../../recipes-images.rst:371 ../../recipes-images.rst:373
+#: ../../recipes-images.rst:374 ../../recipes-images.rst:375
+#: ../../recipes-images.rst:376 ../../recipes-images.rst:383
+#: ../../recipes-images.rst:384 0bacf30757bb4f319e65010549478182
+#: 3ad593408aa445ce99d7f7d9479bca6d 55dc892386e3401f95cd320419c8edc9
+#: 7df71f3343174cfb84397536f4af3a84 84d138cd65ae497681d5c605ce8f2af7
+#: 95f327688bc1431c9523ec2101e353b0 c96232bb6e7340e2a5eb85364348a2a0
+msgid "."
+msgstr ""
+
+#: ../../recipes-images.rst:371 5897545255814fd5ba5a65241d15eced
+msgid "Windows Bitmap"
+msgstr ""
+
+#: ../../recipes-images.rst:372 41f6b3399986413abe65e2869c4053ea
+#: d00191a3adf74e71b0459460b1c2e159
+msgid "JPEG"
+msgstr ""
+
+#: ../../recipes-images.rst:372 d3b57018b2e3452080901854b19d1342
+msgid "Joint Photographic Experts Group"
+msgstr ""
+
+#: ../../recipes-images.rst:373 a3bdd964789b43cbad6247e119a6c54a
+msgid "JXR"
+msgstr ""
+
+#: ../../recipes-images.rst:373 bbea31de8177475b8158cf220a94abcb
+msgid "JPEG Extended Range"
+msgstr ""
+
+#: ../../recipes-images.rst:374 809526ac7ac74d2fb28e089e82a225d7
+msgid "JPX/JP2"
+msgstr ""
+
+#: ../../recipes-images.rst:374 9bf0ef68929647cd85f92ab8f862d849
+msgid "JPEG 2000"
+msgstr ""
+
+#: ../../recipes-images.rst:375 c791169bcfe4452e80b2573539c06ef1
+msgid "GIF"
+msgstr ""
+
+#: ../../recipes-images.rst:375 4a2960cefc3b47e496db085a39846137
+msgid "Graphics Interchange Format"
+msgstr ""
+
+#: ../../recipes-images.rst:376 4dcf6574e1574eaf922b9851c56ab035
+msgid "TIFF"
+msgstr ""
+
+#: ../../recipes-images.rst:376 df65730301314c1f95cb3c5315179281
+msgid "Tagged Image File Format"
+msgstr ""
+
+#: ../../recipes-images.rst:377 492608579f5a466e93c3441942845056
+#: 671fbf03f46c46f6a82cc000cfea3b33
+msgid "PNG"
+msgstr ""
+
+#: ../../recipes-images.rst:377 6800194509e449b699a2f117857a1789
+msgid "Portable Network Graphics"
+msgstr ""
+
+#: ../../recipes-images.rst:378 12727b15f7504523b43a9f77cc9a9923
+#: 221349ddd94740f18dc2a986e2f63e53
+msgid "PNM"
+msgstr ""
+
+#: ../../recipes-images.rst:378 7b091d14802241e4bba073bd5e0dc0d6
+msgid "Portable Anymap"
+msgstr ""
+
+#: ../../recipes-images.rst:379 bf3bacb00fbe43da9d560e7fbe4f78f4
+#: ed77816ad90043ff838934fe85431860
+msgid "PGM"
+msgstr ""
+
+#: ../../recipes-images.rst:379 37c68be55f8c46a3a92da90ed0894ded
+msgid "Portable Graymap"
+msgstr ""
+
+#: ../../recipes-images.rst:380 6f4d332905c643b9899a52fd96de577c
+#: 8530d6f66aaf4ed8b8e74e8de3aaf662
+msgid "PBM"
+msgstr ""
+
+#: ../../recipes-images.rst:380 78f4ada30b5940558d7575226b665930
+msgid "Portable Bitmap"
+msgstr ""
+
+#: ../../recipes-images.rst:381 18ad666221cb4e268aac5b2adcb051bc
+#: e4ac66013a6b40ef8f5f8dbcc44cbf3d
+msgid "PPM"
+msgstr ""
+
+#: ../../recipes-images.rst:381 46c1b8ed50c14c30b04706c0bcee355d
+msgid "Portable Pixmap"
+msgstr ""
+
+#: ../../recipes-images.rst:382 4eee3125b6b24045bf368e25ea1ccfe7
+#: 65190b879c2b49ce893b4dd5d72947a4
+msgid "PAM"
+msgstr ""
+
+#: ../../recipes-images.rst:382 9cb3d8054e01459bad986a5ff4b72d76
+msgid "Portable Arbitrary Map"
+msgstr ""
+
+#: ../../recipes-images.rst:383 172c0b24c3c74558b48cecb435b62a71
+msgid "PSD"
+msgstr ""
+
+#: ../../recipes-images.rst:383 d957051043af4e16a05d1bab3b7846e0
+msgid "Adobe Photoshop Document"
+msgstr ""
+
+#: ../../recipes-images.rst:384 61adad659533407383e3030a6a26682a
+msgid "PS"
+msgstr ""
+
+#: ../../recipes-images.rst:384 bd96837df2984e15953ba98f2ce8e7ca
+msgid "Adobe Postscript"
+msgstr ""
+
+#: ../../recipes-images.rst:387 2e9599f2f28e412f95d48fc8a90716c0
+msgid "The general scheme is just the following two lines::"
+msgstr ""
+
+#: ../../recipes-images.rst:392 6a1955099311437ea3d6c722779fe787
+msgid "**Remarks**"
+msgstr ""
+
+#: ../../recipes-images.rst:394 5e7c8ed9975341bb9b398e94977a1c35
+msgid ""
+"The **input** argument of *pymupdf.Pixmap(arg)* can be a file or a bytes "
+"/ io.BytesIO object containing an image."
+msgstr ""
+
+#: ../../recipes-images.rst:395 29c03f633e3c4f85905a883594780a1a
+msgid ""
+"Instead of an output **file**, you can also create a bytes object via "
+"*pix.tobytes(\"yyy\")* and pass this around."
+msgstr ""
+
+#: ../../recipes-images.rst:396 08d941cbdcde49e7894c7cd54dceeb12
+msgid ""
+"As a matter of course, input and output formats must be compatible in "
+"terms of colorspace and transparency. The *Pixmap* class has batteries "
+"included if adjustments are needed."
+msgstr ""
+
+#: ../../recipes-images.rst:399 3264d7f4236e472d9acb18b03a6c378f
+msgid "**Convert JPEG to Photoshop**::"
+msgstr ""
+
+#: ../../recipes-images.rst:405 03352131b8ff486f8481486724d51437
+msgid ""
+"Convert **JPEG to Tkinter PhotoImage**. Any **RGB / no-alpha** image "
+"works exactly the same. Conversion to one of the **Portable Anymap** "
+"formats (PPM, PGM, etc.) does the trick, because they are supported by "
+"all Tkinter versions::"
+msgstr ""
+
+#: ../../recipes-images.rst:412 1d8ba60c17ef4537a879f8880ddf842e
+msgid ""
+"Convert **PNG with alpha** to Tkinter PhotoImage. This requires "
+"**removing the alpha bytes**, before we can do the PPM conversion::"
+msgstr ""
+
+#: ../../recipes-images.rst:429 e998a366000347d1b54bed12c09423fd
+msgid "How to Use Pixmaps: Gluing Images"
+msgstr ""
+
+#: ../../recipes-images.rst:431 f97460e4da964505a4f7c1625d462e07
+msgid ""
+"This shows how pixmaps can be used for purely graphical, non-document "
+"purposes. The script reads an image file and creates a new image which "
+"consist of 3 * 4 tiles of the original::"
+msgstr ""
+
+#: ../../recipes-images.rst:451 4e2ddaf362f641b79cccb12467620742
+msgid "This is the input picture:"
+msgstr ""
+
+#: ../../recipes-images.rst:456 517480af4baf43568e79bdb13b6ab85c
+msgid "Here is the output:"
+msgstr ""
+
+#: ../../recipes-images.rst:473 172a0fbba4984e9cb6d93f6ed02742fa
+msgid "How to Use Pixmaps: Making a Fractal"
+msgstr ""
+
+#: ../../recipes-images.rst:475 18c71aef80304611bec96e98bcd38669
+msgid ""
+"Here is another Pixmap example that creates **Sierpinski's Carpet** -- a "
+"fractal generalizing the **Cantor Set** to two dimensions. Given a square"
+" carpet, mark its 9 sub-suqares (3 times 3) and cut out the one in the "
+"center. Treat each of the remaining eight sub-squares in the same way, "
+"and continue *ad infinitum*. The end result is a set with area zero and "
+"fractal dimension 1.8928..."
+msgstr ""
+
+#: ../../recipes-images.rst:477 53c09705945d4ed3bec2d17b7c9f1581
+msgid ""
+"This script creates an approximate image of it as a PNG, by going down to"
+" one-pixel granularity. To increase the image precision, change the value"
+" of n (precision)::"
+msgstr ""
+
+#: ../../recipes-images.rst:531 68789bca8b624ff491e93d5a400ff3ac
+msgid "The result should look something like this:"
+msgstr ""
+
+#: ../../recipes-images.rst:541 93a642a1f6fb4a578a82d7b7baf97ad3
+msgid "How to Interface with NumPy"
+msgstr ""
+
+#: ../../recipes-images.rst:543 8f95a3058d5348dfa20391d4596a676e
+msgid ""
+"This shows how to create a PNG file from a numpy array (several times "
+"faster than most other methods)::"
+msgstr ""
+
+#: ../../recipes-images.rst:570 fe1a53c3297d463785209cfc2a811f98
+msgid "How to Add Images to a PDF Page"
+msgstr ""
+
+#: ../../recipes-images.rst:572 c4977664b53940488eefb7c79db6760f
+msgid ""
+"There are two methods to add images to a PDF page: "
+":meth:`Page.insert_image` and :meth:`Page.show_pdf_page`. Both methods "
+"have things in common, but there are also differences."
+msgstr ""
+
+#: ../../recipes-images.rst:575 05867b3cbf1e4cfbb8b56cd82480ca49
+msgid "**Criterion**"
+msgstr ""
+
+#: ../../recipes-images.rst:575 1a4fb4ba40034ec697f3f519a1472c05
+msgid ":meth:`Page.insert_image`"
+msgstr ""
+
+#: ../../recipes-images.rst:575 c77d016df1554917b7a351e1213d6d30
+msgid ":meth:`Page.show_pdf_page`"
+msgstr ""
+
+#: ../../recipes-images.rst:577 adaf610a08404152879eecde101b3358
+msgid "displayable content"
+msgstr ""
+
+#: ../../recipes-images.rst:577 be7f0aa395a84ea0967b19ea32e118ad
+msgid "image file, image in memory, pixmap"
+msgstr ""
+
+#: ../../recipes-images.rst:577 5dcf084c5bf14f44b42f33e83b39ffb0
+msgid "PDF page"
+msgstr ""
+
+#: ../../recipes-images.rst:578 b21f95bfb2da4d1da8dc1a8de8fcd793
+msgid "display resolution"
+msgstr ""
+
+#: ../../recipes-images.rst:578 e5fb57d9b06e415496d5fdd4ad9d2860
+msgid "image resolution"
+msgstr ""
+
+#: ../../recipes-images.rst:578 f162cd0a2ec54a14bc65d19390efb3ab
+msgid "vectorized (except raster page content)"
+msgstr ""
+
+#: ../../recipes-images.rst:579 8f71139fa4184451a269095eaf3b024d
+msgid "rotation"
+msgstr ""
+
+#: ../../recipes-images.rst:579 e07ae649fe5a43b98128e34d2b7295f4
+msgid "0, 90, 180 or 270 degrees"
+msgstr ""
+
+#: ../../recipes-images.rst:579 6f5358e1760c4bfca5a3a418b8c268ff
+msgid "any angle"
+msgstr ""
+
+#: ../../recipes-images.rst:580 fd811b11808e4d7fa0b6e434c51cc9de
+msgid "clipping"
+msgstr ""
+
+#: ../../recipes-images.rst:580 c2558fbbf1774081b28e0116ee882210
+msgid "no (full image only)"
+msgstr ""
+
+#: ../../recipes-images.rst:580 ../../recipes-images.rst:585
+#: a907ff72bff14ccab44936c7756bc1a0 dc5568a67d5546399d10903c2198e7b1
+msgid "yes"
+msgstr ""
+
+#: ../../recipes-images.rst:581 9be3b939efd74eb9b064149922973fd7
+msgid "keep aspect ratio"
+msgstr ""
+
+#: ../../recipes-images.rst:581 90e967a63c944ad2a4d5d5e1a1e1f586
+#: ae736e0e2d874c22a9ff0e8ec0eafd07
+msgid "yes (default option)"
+msgstr ""
+
+#: ../../recipes-images.rst:582 149cd46d36314fd9983779124a4b00a5
+msgid "transparency (water marking)"
+msgstr ""
+
+#: ../../recipes-images.rst:582 f5ee92e1f762447294b068b3151cf8ba
+msgid "depends on the image"
+msgstr ""
+
+#: ../../recipes-images.rst:582 48bce5fbaea9451c8a0205e90189408b
+msgid "depends on the page"
+msgstr ""
+
+#: ../../recipes-images.rst:583 b0cc7970f86848258e39444054ac610b
+msgid "location / placement"
+msgstr ""
+
+#: ../../recipes-images.rst:583 3d965dc24e154178970ddf5ed7662f16
+#: 5a690d8091e446ac921b5a5e97de9884
+msgid "scaled to fit target rectangle"
+msgstr ""
+
+#: ../../recipes-images.rst:584 78fa2e33851d443584542c9de0f6ea73
+msgid "performance"
+msgstr ""
+
+#: ../../recipes-images.rst:584 07bc6beb376d4561bf3ed4427bfeada8
+#: 883bd897a4de4ed2a0f2af42a61dd792
+msgid "automatic prevention of duplicates;"
+msgstr ""
+
+#: ../../recipes-images.rst:585 7ef2987d846a48a9a38bb80ba9ee36be
+msgid "multi-page image support"
+msgstr ""
+
+#: ../../recipes-images.rst:585 02be9acec59f4fa3adf501ba7f63438f
+msgid "no"
+msgstr ""
+
+#: ../../recipes-images.rst:586 018cb20575654c4aa10c951f189464f3
+msgid "ease of use"
+msgstr ""
+
+#: ../../recipes-images.rst:586 c28d925902ab48b389c171a05aca19c6
+msgid "simple, intuitive;"
+msgstr ""
+
+#: ../../recipes-images.rst:586 afc67eb6d74a495c9dc4e53eb661ae08
+msgid ""
+"simple, intuitive; **usable for all document types** (including images!) "
+"after conversion to PDF via :meth:`Document.convert_to_pdf`"
+msgstr ""
+
+#: ../../recipes-images.rst:592 e4d67c78bd67458c84faeb0c8e6ea5f5
+msgid ""
+"Basic code pattern for :meth:`Page.insert_image`. **Exactly one** of the "
+"parameters **filename / stream / pixmap** must be given, if not re-"
+"inserting an existing image::"
+msgstr ""
+
+#: ../../recipes-images.rst:607 a7bbf44ff07e494bb6788af779c4f19f
+msgid ""
+"Basic code pattern for :meth:`Page.show_pdf_page`. Source and target PDF "
+"must be different :ref:`Document` objects (but may be opened from the "
+"same file)::"
+msgstr ""
+
+#: ../../recipes-images.rst:623 247c3cb945de42e3977137d8975573b2
+msgid "How to Use Pixmaps: Checking Text Visibility"
+msgstr ""
+
+#: ../../recipes-images.rst:625 265feb286a04491a9466ccd75f125d7a
+msgid ""
+"Whether or not a given piece of text is actually visible on a page "
+"depends on a number of factors:"
+msgstr ""
+
+#: ../../recipes-images.rst:627 cb95f70cf5474c549b283bb06a5b637d
+msgid ""
+"Text is not covered by another object but may have the same color as the "
+"background i.e., white-on-white etc."
+msgstr ""
+
+#: ../../recipes-images.rst:628 d8c9eec28274456bbae7dfd39049394b
+msgid ""
+"Text may be covered by an image or vector graphics. Detecting this is an "
+"important capability, for example to uncover badly anonymized legal "
+"documents."
+msgstr ""
+
+#: ../../recipes-images.rst:629 54573a8eea4e421ca5e82c476f55b0e9
+msgid ""
+"Text is created hidden. This technique is usually used by OCR tools to "
+"store the recognized text in an invisible layer on the page."
+msgstr ""
+
+#: ../../recipes-images.rst:631 421ec6799ba94504a184bb6003eeeac8
+msgid ""
+"The following shows how to detect situation 1. above, or situation 2. if "
+"the covering object is unicolor::"
+msgstr ""
+
+#: ../../recipes-images.rst:645 a958215274f14ffc9a1039c6445e57ec
+msgid ""
+"Method :meth:`Pixmap.color_topusage` returns a tuple `(ratio, pixel)` "
+"where 0 < ratio <= 1 and *pixel* is the pixel value of the color. Please "
+"note that we create a **pixmap only once**. This can save a lot of "
+"processing time if there are multiple hit rectangles."
+msgstr ""
+
+#: ../../recipes-images.rst:647 675626a41d9f4ee49cee5bb637261c3f
+msgid ""
+"The logic of the above code is: If the needle's rectangle is (\"almost\":"
+" > 95%) unicolor, then the text cannot be visible. A typical result for "
+"visible text returns the color of the background (mostly white) and a "
+"ratio around 0.7 to 0.8, for example `(0.685, b'\\xff\\xff\\xff')`."
+msgstr ""
+
+#: ../../footer.rst:60 20230f8c88394d47a41e985bb5942765
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

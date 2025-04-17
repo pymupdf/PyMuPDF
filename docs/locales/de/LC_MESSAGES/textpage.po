@@ -1,0 +1,1180 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 9ca6145cb97145af9cdf5ef76dc0de3c
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 0600b90839df40e9ac23cb738c57c29a
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 1f6d63ced97943c9b613b299ec031e9c
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../textpage.rst:7 9966d819027e453abbb1adeb4d1b2bfb
+msgid "TextPage"
+msgstr ""
+
+#: ../../textpage.rst:9 8297e05841c84513ba479147993e07bc
+msgid ""
+"This class represents text and images shown on a document page. All "
+":ref:`MuPDF document types<Supported_File_Types>` are supported."
+msgstr ""
+
+#: ../../textpage.rst:11 305a69e6d1cc4efe929bb3b1e01c338f
+msgid ""
+"The usual ways to create a textpage are :meth:`DisplayList.get_textpage` "
+"and :meth:`Page.get_textpage`. Because there is a limited set of methods "
+"in this class, there exist wrappers in :ref:`Page` which are handier to "
+"use. The last column of this table shows these corresponding :ref:`Page` "
+"methods."
+msgstr ""
+
+#: ../../textpage.rst:13 b28048eebfef4686a5b9cce8aa9a9242
+msgid "For a description of what this class is all about, see Appendix 2."
+msgstr ""
+
+#: ../../textpage.rst:16 69b717897dfc419ea428dbd7a0de9662
+msgid "**Method**"
+msgstr ""
+
+#: ../../textpage.rst:16 b015eb61d04f419e8b7fbb496471574b
+msgid "**Description**"
+msgstr ""
+
+#: ../../textpage.rst:16 a44519ebf5904319bc4a59d55cfd8e73
+msgid "page get_text or search method"
+msgstr ""
+
+#: ../../textpage.rst:18 8008e72f7f374921bfa7c04521f8e0c3
+msgid ":meth:`~.extractText`"
+msgstr ""
+
+#: ../../textpage.rst:18 77846738c3614d43b519d0e00d3d96a4
+msgid "extract plain text"
+msgstr ""
+
+#: ../../textpage.rst:18 ../../textpage.rst:19 3f6e2c97c46146adb7c925645b823ddd
+#: d689ad9d5aaa4bdb8029dd8b22b70b0f
+msgid "\"text\""
+msgstr ""
+
+#: ../../textpage.rst:19 b33cc2a2a3ef4e318acbfd19152b414b
+msgid ":meth:`~.extractTEXT`"
+msgstr ""
+
+#: ../../textpage.rst:19 c5c23844e38a4a5e8d5bde717d12f1f6
+msgid "synonym of previous"
+msgstr ""
+
+#: ../../textpage.rst:20 d0ed007250bf40e39cec0ea8758af8da
+msgid ":meth:`~.extractBLOCKS`"
+msgstr ""
+
+#: ../../textpage.rst:20 814dcd360d82450599f24cdfbdef17c5
+msgid "plain text grouped in blocks"
+msgstr ""
+
+#: ../../textpage.rst:20 629bdb6414654b9f9cb94ce40354164c
+msgid "\"blocks\""
+msgstr ""
+
+#: ../../textpage.rst:21 3ddf85d5fb49495cbea91a11e1607ae2
+msgid ":meth:`~.extractWORDS`"
+msgstr ""
+
+#: ../../textpage.rst:21 edfdc32c2fc74cd68e555cad8e96868b
+msgid "all words with their bbox"
+msgstr ""
+
+#: ../../textpage.rst:21 4bc95410c6ee4ff2bd0b600ecf44f4b9
+msgid "\"words\""
+msgstr ""
+
+#: ../../textpage.rst:22 07c485e7d0f7479faa4a87fd71b2f5e5
+msgid ":meth:`~.extractHTML`"
+msgstr ""
+
+#: ../../textpage.rst:22 6d2468734a6640d2bb0382734ebd79e1
+msgid "page content in HTML format"
+msgstr ""
+
+#: ../../textpage.rst:22 2adb8031ce96459cb3f20269010cca59
+msgid "\"html\""
+msgstr ""
+
+#: ../../textpage.rst:23 f5c7d3a6ff554e678c0b20e089c51a5b
+msgid ":meth:`~.extractXHTML`"
+msgstr ""
+
+#: ../../textpage.rst:23 2be43ebbad204613afa2dac47ec43dab
+msgid "page content in XHTML format"
+msgstr ""
+
+#: ../../textpage.rst:23 f622b44d00444653961d91b40c500a36
+msgid "\"xhtml\""
+msgstr ""
+
+#: ../../textpage.rst:24 73a3a84cb7044222b3e3d3f13e95e717
+msgid ":meth:`~.extractXML`"
+msgstr ""
+
+#: ../../textpage.rst:24 275a3c930f7d49e28dd68902c6f67f1b
+msgid "page text in XML format"
+msgstr ""
+
+#: ../../textpage.rst:24 683535736405464a8c545be3161fc1b3
+msgid "\"xml\""
+msgstr ""
+
+#: ../../textpage.rst:25 e682781270e94299b8ecc57e7673923a
+msgid ":meth:`~.extractDICT`"
+msgstr ""
+
+#: ../../textpage.rst:25 ../../textpage.rst:27 5f983ba8bbcd49e6a3f48d06600fbc5f
+#: 7cd7d12c082140efb13d14acb816f7fe
+msgid "page content in *dict* format"
+msgstr ""
+
+#: ../../textpage.rst:25 28f2f9408d05410e837a1fe3c511b4b2
+msgid "\"dict\""
+msgstr ""
+
+#: ../../textpage.rst:26 60dc6c6e5d1842348ed55e5d047da848
+msgid ":meth:`~.extractJSON`"
+msgstr ""
+
+#: ../../textpage.rst:26 ../../textpage.rst:28 6c6f2c4c234d4bc796aef69138586877
+#: 8bba15457a094d60b34ebe13bf920b39
+msgid "page content in JSON format"
+msgstr ""
+
+#: ../../textpage.rst:26 80dc933b5e3a4420bd0d3a08d3d10d9e
+msgid "\"json\""
+msgstr ""
+
+#: ../../textpage.rst:27 dcdb9d6944b54bcba9fa189b6c7f52cb
+msgid ":meth:`~.extractRAWDICT`"
+msgstr ""
+
+#: ../../textpage.rst:27 49c8d6da08d144e9a3442f06e332a627
+msgid "\"rawdict\""
+msgstr ""
+
+#: ../../textpage.rst:28 53dbbd0bbeab41d1920c1ffa81f80296
+msgid ":meth:`~.extractRAWJSON`"
+msgstr ""
+
+#: ../../textpage.rst:28 b0c2313e501d45a384644ecae53cbd1d
+msgid "\"rawjson\""
+msgstr ""
+
+#: ../../textpage.rst:29 4560d07e61fa48dfa46c970d50b0743e
+msgid ":meth:`~.search`"
+msgstr ""
+
+#: ../../textpage.rst:29 01146efdbcf54aaba30cc1173162f210
+msgid "Search for a string in the page"
+msgstr ""
+
+#: ../../textpage.rst:29 f35dabe2e99843cca4604961ee9dffde
+msgid ":meth:`Page.search_for`"
+msgstr ""
+
+#: ../../textpage.rst:32 8aee7016e26240e2bfa9d18be19a98d5
+msgid "**Class API**"
+msgstr ""
+
+#: ../../textpage.rst:40 cd8df8359f9f4524a39869a7107a4368
+msgid ""
+"Return a string of the page's complete text. The text is UTF-8 unicode "
+"and in the same sequence as specified at the time of document creation."
+msgstr ""
+
+#: ../../textpage.rst 57da01987a7843fca5d739690f83f82a
+#: 671578e8ecf845f083967ff38478d427 7e7dcf3e596f4f5ebc9039838dc9ebba
+#: 8a8b6b3ca4e0408dbd33f8640e4ac26e ad6e9346d9d44984b434be3a8cd0b0a2
+#: d50290b47cbc4fc3b7fbf02c24036796 dc4e99ebeaaf4e068ef7cf6bc5915ac6
+msgid "Parameters"
+msgstr ""
+
+#: ../../textpage.rst:42 ../../textpage.rst:85 ../../textpage.rst:93
+#: ../../textpage.rst:113 ../../textpage.rst:121
+#: 16fb4ac02785457b9710449f9df41f14 23ee8f97b7184497ad7bc905b9b13624
+#: 40321a9de1394c2199c23ff76e4ab458 89f2e9b0fea144eca048813faba0eeaa
+#: b003361c0ff648a7b8e6b841e0e05999
+msgid ""
+"(new in v1.19.1) sort the output by vertical, then horizontal "
+"coordinates. In many cases, this should suffice to generate a \"natural\""
+" reading order."
+msgstr ""
+
+#: ../../textpage.rst 0016111872404e169cbf1939b7c7d6a8
+#: 0998a86461f24855ab3f792dded2227c 49da96effe14424886d87bb9d6621b29
+#: 6a93913ee78c40f894b9df8f0547aa11 717ee5c982c24238844eda2ac1ee1a99
+#: 80a094079a8f42f38a882326261f71a6 8142ec710040424cb21597ecea1e53d9
+#: 96346247583745628dac24baa4a6639e a4150f10a5c0406a8df2d01a211754ad
+#: af5da724d13e4f48991e381d99a03fdf ea64c177370c41e5884e95cf392dde1d
+msgid "Return type"
+msgstr ""
+
+#: ../../textpage.rst:49 6b33d35e93314ecfa37fa95c710500db
+msgid ""
+"Textpage content as a list of text lines grouped by block. Each list "
+"items looks like this::"
+msgstr ""
+
+#: ../../textpage.rst:53 cfb5ee966a994a11a216e249dc6caadf
+msgid ""
+"The first four entries are the block's bbox coordinates, *block_type* is "
+"1 for an image block, 0 for text. *block_no* is the block sequence "
+"number. Multiple text lines are joined via line breaks."
+msgstr ""
+
+#: ../../textpage.rst:55 ca9405c070eb4a92877a2ab6f30a3e12
+msgid ""
+"For an image block, its bbox and a text line with some image meta "
+"information is included -- **not the image content**."
+msgstr ""
+
+#: ../../textpage.rst:57 7e94ebbeaa0e491787ab47eb385add63
+msgid ""
+"This is a high-speed method with just enough information to output plain "
+"text in desired reading sequence."
+msgstr ""
+
+#: ../../textpage.rst:63 dd5a25a964b24fd19590783019182acc
+msgid "Changed in v1.23.5: added `delimiters` parameter"
+msgstr ""
+
+#: ../../textpage.rst:65 7340df397af44343b4d15f029ae9bcfb
+msgid ""
+"Textpage content as a list of single words with bbox information. An item"
+" of this list looks like this::"
+msgstr ""
+
+#: ../../textpage.rst:69 c6d5a4cd67194e5199a675aa248f0bd3
+msgid ""
+"(new in v1.23.5) use these characters as *additional* word separators. By"
+" default, all white spaces (including the non-breaking space `0xA0`) "
+"indicate start and end of a word. Now you can specify more characters "
+"causing this. For instance, the default will return "
+"`\"john.doe@outlook.com\"` as **one** word. If you specify "
+"`delimiters=\"@.\"` then the **four** words `\"john\"`, `\"doe\"`, "
+"`\"outlook\"`, `\"com\"` will be returned. Other possible uses include "
+"ignoring punctuation characters `delimiters=string.punctuation`. The "
+"\"word\" strings will not contain any delimiting character."
+msgstr ""
+
+#: ../../textpage.rst:71 7af81f97fcc2435ab536aebd6b7f34ab
+msgid ""
+"This is a high-speed method which e.g. allows extracting text from within"
+" given areas or recovering the text reading sequence."
+msgstr ""
+
+#: ../../textpage.rst:77 1d2e06d47e9841048613550acba8bf61
+msgid ""
+"Textpage content as a string in HTML format. This version contains "
+"complete formatting and positioning information. Images are included "
+"(encoded as base64 strings). You need an HTML package to interpret the "
+"output in Python. Your internet browser should be able to adequately "
+"display this information, but see :ref:`HTMLQuality`."
+msgstr ""
+
+#: ../../textpage.rst:83 282b1d017a6e4a31ba6b7975680e0614
+msgid ""
+"Textpage content as a Python dictionary. Provides same information detail"
+" as HTML. See below for the structure."
+msgstr ""
+
+#: ../../textpage.rst:91 da83463d890f4b8fa66eafaf62eea27e
+msgid ""
+"Textpage content as a JSON string. Created by "
+"`json.dumps(TextPage.extractDICT())`. It is included for backlevel "
+"compatibility. You will probably use this method ever only for outputting"
+" the result to some file. The  method detects binary image data and "
+"converts them to base64 encoded strings."
+msgstr ""
+
+#: ../../textpage.rst:99 df3e01a91f7c4ae790499d50c3e85f29
+msgid ""
+"Textpage content as a string in XHTML format. Text information detail is "
+"comparable with :meth:`extractTEXT`, but also contains images (base64 "
+"encoded). This method makes no attempt to re-create the original visual "
+"appearance."
+msgstr ""
+
+#: ../../textpage.rst:105 435edffbc686457dba05b981881c25a0
+msgid ""
+"Textpage content as a string in XML format. This contains complete "
+"formatting information about every single character on the page: font, "
+"size, line, paragraph, location, color, etc. Contains no images. You need"
+" an XML package to interpret the output in Python."
+msgstr ""
+
+#: ../../textpage.rst:111 87bd5187b0f44f89ab4104b82f56e019
+msgid ""
+"Textpage content as a Python dictionary -- technically similar to "
+":meth:`extractDICT`, and it contains that information as a subset "
+"(including any images). It provides additional detail down to each "
+"character, which makes using XML obsolete in many cases. See below for "
+"the structure."
+msgstr ""
+
+#: ../../textpage.rst:119 895cfa706afc446084e720ac3f93fd03
+msgid ""
+"Textpage content as a JSON string. Created by "
+"`json.dumps(TextPage.extractRAWDICT())`. You will probably use this "
+"method ever only for outputting the result to some file. The  method "
+"detects binary image data and converts them to base64 encoded strings."
+msgstr ""
+
+#: ../../textpage.rst:127 ee07f7cf801a4f8d95d545ad5bfc0560
+msgid "Changed in v1.18.2"
+msgstr ""
+
+#: ../../textpage.rst:129 4cd763790da84021813e300e32cb9cf6
+msgid "Search for *string* and return a list of found locations."
+msgstr ""
+
+#: ../../textpage.rst:131 cdac1bdde5e244499332db6777276c69
+msgid ""
+"the string to search for. Upper and lower cases will all match if needle "
+"consists of ASCII letters only -- it does not yet work for \"Ä\" versus "
+"\"ä\", etc."
+msgstr ""
+
+#: ../../textpage.rst:132 4453db069b674068b294e21ec53118c5
+msgid "return quadrilaterals instead of rectangles."
+msgstr ""
+
+#: ../../textpage.rst ed3dabd5dd09480d9af2c202991f0797
+msgid "Returns"
+msgstr ""
+
+#: ../../textpage.rst:134 a9e6d6c3c1b244359142004ee7c7a2f6
+msgid ""
+"a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found "
+"*needle* occurrence. As the search string may contain spaces, its parts "
+"may be found on different lines. In this case, more than one rectangle "
+"(resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method "
+"**now supports dehyphenation**, so it will find e.g. \"method\", even if "
+"it was hyphenated in two parts \"meth-\" and \"od\" across two lines. The"
+" two returned rectangles will contain \"meth\" (no hyphen) and \"od\"."
+msgstr ""
+
+#: ../../textpage.rst:136 1406308a92e44433808a1f565e8f7e85
+msgid "**Overview of changes in v1.18.2:**"
+msgstr ""
+
+#: ../../textpage.rst:138 eb8f8e4f7f4c49249c64dce6f62f72f7
+msgid "The `hit_max` parameter has been removed: all hits are always returned."
+msgstr ""
+
+#: ../../textpage.rst:139 aff4eacc24194b39abe53618b30ac986
+msgid ""
+"The `rect` parameter of the :ref:`TextPage` is now respected: only text "
+"inside this area is examined. Only characters with fully contained bboxes"
+" are considered. The wrapper method :meth:`Page.search_for` "
+"correspondingly supports a *clip* parameter."
+msgstr ""
+
+#: ../../textpage.rst:140 3d50c7047c7644298736ada65850b843
+msgid "**Hyphenated words** are now found."
+msgstr ""
+
+#: ../../textpage.rst:141 6323511b08df43c8a157fa38e3e750e8
+msgid ""
+"**Overlapping rectangles** in the same line are now automatically joined."
+" We assume that such separations are an artifact created by multiple "
+"marked content groups, containing parts of the same search needle."
+msgstr ""
+
+#: ../../textpage.rst:143 14e7f89d3d5c4489a8cbd68df8e257ec
+msgid ""
+"Example Quad versus Rect: when searching for needle \"pymupdf\", then the"
+" corresponding entry will either be the blue rectangle, or, if *quads* "
+"was specified, the quad *Quad(ul, ur, ll, lr)*."
+msgstr ""
+
+#: ../../textpage.rst:149 3a79ec0fc7fe4ccebd68324e457093ac
+msgid ""
+"The rectangle associated with the text page. This either equals the "
+"rectangle of the creating page or the `clip` parameter of "
+":meth:`Page.get_textpage` and text extraction / searching methods."
+msgstr ""
+
+#: ../../textpage.rst:151 1bfbbebaedbb4052bb3fe3b6dd9c243a
+msgid ""
+"The output of text searching and most text extractions **is restricted to"
+" this rectangle**. (X)HTML and XML output will however always extract the"
+" full page."
+msgstr ""
+
+#: ../../textpage.rst:156 b141c7f9a7cb42d4a4fcdcd03e611923
+msgid "Structure of Dictionary Outputs"
+msgstr ""
+
+#: ../../textpage.rst:157 0ab389a241664dee85374659702e3186
+msgid ""
+"Methods :meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, "
+":meth:`TextPage.extractRAWDICT`, and :meth:`TextPage.extractRAWJSON` "
+"return dictionaries, containing the page's text and image content. The "
+"dictionary structures of all four methods are almost equal. They strive "
+"to map the text page's information hierarchy of blocks, lines, spans and "
+"characters as precisely as possible, by representing each of these by its"
+" own sub-dictionary:"
+msgstr ""
+
+#: ../../textpage.rst:159 ac8012d470e1498fbf322b84979d54fe
+msgid "A **page** consists of a list of **block dictionaries**."
+msgstr ""
+
+#: ../../textpage.rst:160 b669893b4d0d43018ce1ae7cf03c0cc4
+msgid "A (text) **block** consists of a list of **line dictionaries**."
+msgstr ""
+
+#: ../../textpage.rst:161 fadd7e5c79ff4ef7bb836f45bfa54d3e
+msgid "A **line** consists of a list of **span dictionaries**."
+msgstr ""
+
+#: ../../textpage.rst:162 36c8f65fcf1d4c619d438b8f01e187a7
+msgid ""
+"A **span** either consists of the text itself or, for the RAW variants, a"
+" list of **character dictionaries**."
+msgstr ""
+
+#: ../../textpage.rst:163 ed3f04f51bcd4c31b3e3dd7fd03320c0
+msgid ""
+"RAW variants: a **character** is a dictionary of its origin, bbox and "
+"unicode."
+msgstr ""
+
+#: ../../textpage.rst:165 495b9d336f004a809e9f71f332f21699
+msgid ""
+"All PyMuPDF geometry objects herein (points, rectangles, matrices) are "
+"represented by there **\"like\"** formats: a :data:`rect_like` *tuple* is"
+" used instead of a :ref:`Rect`, etc. The reasons for this are performance"
+" and memory considerations:"
+msgstr ""
+
+#: ../../textpage.rst:167 730e1437a5c243e0862e4cc1b85ddfae
+msgid ""
+"This code is written in C, where Python tuples can easily be generated. "
+"The geometry objects on the other hand are defined in Python source only."
+" A conversion of each Python tuple into its corresponding geometry object"
+" would add significant -- and largely unnecessary -- execution time."
+msgstr ""
+
+#: ../../textpage.rst:168 6160bc818c6641d59712647ba09d6f2f
+msgid ""
+"A 4-tuple needs about 168 bytes, the corresponding :ref:`Rect` 472 bytes "
+"- almost three times the size. A \"dict\" dictionary for a text-heavy "
+"page contains 300+ bbox objects -- which thus require about 50 KB storage"
+" as 4-tuples versus 140 KB as :ref:`Rect` objects. A \"rawdict\" output "
+"for such a page will however contain **4 to 5 thousand** bboxes, so in "
+"this case we talk about 750 KB versus 2 MB."
+msgstr ""
+
+#: ../../textpage.rst:170 553b7505dc654bce9acc63f7985e8ee7
+msgid ""
+"Please also note, that only **bboxes** (= :data:`rect_like` 4-tuples) are"
+" returned, whereas a :ref:`TextPage` actually has the **full position "
+"information** -- in :ref:`Quad` format. The reason for this decision is "
+"again a memory consideration: a :data:`quad_like` needs 488 bytes (3 "
+"times the size of a :data:`rect_like`). Given the mentioned amounts of "
+"generated bboxes, returning :data:`quad_like` information would have a "
+"significant impact."
+msgstr ""
+
+#: ../../textpage.rst:172 99cd9aa1d0454fccb81b7754e49fe731
+msgid ""
+"In the vast majority of cases, we are dealing with **horizontal text "
+"only**, where bboxes provide entirely sufficient information."
+msgstr ""
+
+#: ../../textpage.rst:174 887228756dd54500a2972ea8eaaae72b
+msgid ""
+"In addition, **the full quad information is not lost**: it can be "
+"recovered as needed for lines, spans, and characters by using the "
+"appropriate function from the following list:"
+msgstr ""
+
+#: ../../textpage.rst:176 8bf018658e234a00bc0de17969dae3bb
+msgid ":meth:`recover_quad` -- the quad of a complete span"
+msgstr ""
+
+#: ../../textpage.rst:177 6c3eebc9418f44c7831b2ffcb508609f
+msgid ":meth:`recover_span_quad` -- the quad of a character subset of a span"
+msgstr ""
+
+#: ../../textpage.rst:178 424c09f4c5c348309525195aab757ed0
+msgid ":meth:`recover_line_quad` -- the quad of a line"
+msgstr ""
+
+#: ../../textpage.rst:179 400df8764f0e431dac567a85e4bbd78f
+msgid ":meth:`recover_char_quad` -- the quad of a character"
+msgstr ""
+
+#: ../../textpage.rst:181 96e1e1fa7b2e47cda3509c378547e0c3
+msgid ""
+"As mentioned, using these functions is ever only needed, if the text is "
+"**not written horizontally** -- `line[\"dir\"] != (1, 0)` -- and you need"
+" the quad for text marker annotations (:meth:`Page.add_highlight_annot` "
+"and friends)."
+msgstr ""
+
+#: ../../textpage.rst:191 595f43998ba0436e97c27949a639e0cf
+msgid "Page Dictionary"
+msgstr ""
+
+#: ../../textpage.rst:194 ../../textpage.rst:208 ../../textpage.rst:251
+#: ../../textpage.rst:263 ../../textpage.rst:285 ../../textpage.rst:369
+#: 1028a325d80d4f058a4b0359d7d4598d 25712968c441436eba02cf3a671cc015
+#: b97697d8ddd34a02b36ff938c56fe5e3 cffcfc0ebdc14a359647c0a579bc33b5
+#: e1d612602b454ac8a1f8fc9f345c7780 f8641ab264d24089a5504d8795434eb1
+msgid "**Key**"
+msgstr ""
+
+#: ../../textpage.rst:194 ../../textpage.rst:208 ../../textpage.rst:251
+#: ../../textpage.rst:263 ../../textpage.rst:285 ../../textpage.rst:369
+#: 0bf110ecaacf4aa28287fd0e005ffddd 289abda4fd474dcdb960b408ef88468b
+#: 3bf64d336de0427991445adcd0168093 574109b9a38f400a914c84c0356caf88
+#: a983b778e0064d50b3eaea79e9f4f3b6 c1f614c73fff407b9086f838a02bdaa2
+msgid "**Value**"
+msgstr ""
+
+#: ../../textpage.rst:196 ../../textpage.rst:214
+#: eb90193de1ce4b5c9eb39d385278964b f5b723f222a64cc68a99030c73b60d8f
+msgid "width"
+msgstr ""
+
+#: ../../textpage.rst:196 14cc2215742c4da9bd200255c8f933c5
+msgid "width of the `clip` rectangle *(float)*"
+msgstr ""
+
+#: ../../textpage.rst:197 ../../textpage.rst:215
+#: 3aa7f8da25374d7296bbe5236ae369aa f91db5b834224a16ad9aeabc73e98e8e
+msgid "height"
+msgstr ""
+
+#: ../../textpage.rst:197 c231566c6b4c4cb3b4fe79f2f8253c3c
+msgid "height of the `clip` rectangle *(float)*"
+msgstr ""
+
+#: ../../textpage.rst:198 31ed4b8f4f5541c3b722a5bdd6a6c34d
+msgid "blocks"
+msgstr ""
+
+#: ../../textpage.rst:198 a1079925560f4211bc1fb868e6b872a1
+msgid "*list* of block dictionaries"
+msgstr ""
+
+#: ../../textpage.rst:202 08e070c1094e4ccca4fc04700d353970
+msgid "Block Dictionaries"
+msgstr ""
+
+#: ../../textpage.rst:203 7d0906215b32466288832e1b6896048a
+msgid ""
+"Block dictionaries come in two different formats for **image blocks** and"
+" for **text blocks**."
+msgstr ""
+
+#: ../../textpage.rst:205 7e62f09f297148beb698e62d3afc4c36
+msgid "**Image block:**"
+msgstr ""
+
+#: ../../textpage.rst:210 ../../textpage.rst:253
+#: 7b13ee4d579245ceb12b6f3cf76c1fab d85e1acb01be4077b861168ee129767f
+msgid "type"
+msgstr ""
+
+#: ../../textpage.rst:210 efd2b31cf58548bebfe784580e65e609
+msgid "1 = image (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:211 ../../textpage.rst:254 ../../textpage.rst:265
+#: ../../textpage.rst:287 ../../textpage.rst:372
+#: 03d37603b3344af6b5e7da54db015b1b 319eb162bb77446380ad084c386e7880
+#: 489ec9a675314683b3e30183ac86b467 d66375110a74421c99ad70cba6cc18ef
+#: f6aa14043a8a4b699002979f9b457101
+msgid "bbox"
+msgstr ""
+
+#: ../../textpage.rst:211 51701c8e494240cb8459ca8170dd7511
+msgid "image bbox on page (:data:`rect_like`)"
+msgstr ""
+
+#: ../../textpage.rst:212 ../../textpage.rst:255
+#: dad8f7481ff04520890bf9540defc8d1 ee650f2cc2af439ebc7dfe5fcf770410
+msgid "number"
+msgstr ""
+
+#: ../../textpage.rst:212 e77220a8a6de41c39d609dff474be846
+msgid "block count (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:213 58b4e56c8c424eed8d03bfeaeef4ea93
+msgid "ext"
+msgstr ""
+
+#: ../../textpage.rst:213 1583d8baf0cb4f9b88f96e64556d2f6c
+msgid "image type (``str``), as file extension, see below"
+msgstr ""
+
+#: ../../textpage.rst:214 3786a0ca184247ccbac8ce835f4b7dd6
+msgid "original image width (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:215 d62202c977f4427897519364fff16fa0
+msgid "original image height (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:216 e146c7ea5f6f460db3e8980b52c734cf
+msgid "colorspace"
+msgstr ""
+
+#: ../../textpage.rst:216 a2b2fbd44fc947adb67a432fe838d702
+msgid "colorspace component count (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:217 b011e27b5b7f4071accc210533eeb410
+msgid "xres"
+msgstr ""
+
+#: ../../textpage.rst:217 76876d5bff234745968c9b29c479abf0
+msgid "resolution in x-direction (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:218 ca47a153418e437983d2d8df4624aaec
+msgid "yres"
+msgstr ""
+
+#: ../../textpage.rst:218 45276559019b42ac85ff614a8b179484
+msgid "resolution in y-direction (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:219 5199ee0421fe41bb90ef866f83525686
+msgid "bpc"
+msgstr ""
+
+#: ../../textpage.rst:219 3af264e6c2f44b12ac9f208644fceacd
+msgid "bits per component (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:220 30a1799870544636840f2ca52f4213b6
+msgid "transform"
+msgstr ""
+
+#: ../../textpage.rst:220 bb9357da9bf547baacb8163e91b5b9ed
+msgid "matrix transforming image rect to bbox (:data:`matrix_like`)"
+msgstr ""
+
+#: ../../textpage.rst:221 ../../textpage.rst:292
+#: d46d130394b74529afbeafcf2648b049 fec7c57a41bd4be0ad7387af0fbdc847
+msgid "size"
+msgstr ""
+
+#: ../../textpage.rst:221 19a074e1bba545f0a6e1f4fa51b35bc8
+msgid "size of the image in bytes (``int``)"
+msgstr ""
+
+#: ../../textpage.rst:222 0ada30bc2c4c455ca8a2eccf8ec5645a
+msgid "image"
+msgstr ""
+
+#: ../../textpage.rst:222 299044835f19498b9364b83a4be51966
+msgid "image content (``bytes``)"
+msgstr ""
+
+#: ../../textpage.rst:223 0f80267e7b8a43e48e7438031afc13b7
+msgid "mask"
+msgstr ""
+
+#: ../../textpage.rst:223 63331458b66141edb5d0d8d16c641424
+msgid "image mask content (``bytes``) for transparent images"
+msgstr ""
+
+#: ../../textpage.rst:226 3c28b6119f1e4c05845e754c4e7762df
+msgid ""
+"Possible values of the \"ext\" key are \"bmp\", \"gif\", \"jpeg\", "
+"\"jpx\" (JPEG 2000), \"jxr\" (JPEG XR), \"png\", \"pnm\", and \"tiff\"."
+msgstr ""
+
+#: ../../textpage.rst:230 6cc71007ae5943aba16bc9df25bcbfc9
+msgid ""
+"An image block is generated for **all and every image occurrence** on the"
+" page. Hence there may be duplicates, if an image is shown at different "
+"locations."
+msgstr ""
+
+#: ../../textpage.rst:232 968df807caf345efb4f5145afb265729
+msgid ""
+":ref:`TextPage` and corresponding method :meth:`Page.get_text` are "
+"**available for all document types**. Only for PDF documents, methods "
+":meth:`Document.get_page_images` / :meth:`Page.get_images` offer some "
+"overlapping functionality as far as image lists are concerned. But both "
+"lists **may or may not** contain the same items. Any differences are most"
+" probably caused by one of the following:"
+msgstr ""
+
+#: ../../textpage.rst:234 58c9e4620f5c45b5a55b38b92a6fd494
+msgid ""
+"\"Inline\" images (see page 214 of the :ref:`AdobeManual`) of a PDF page "
+"are contained in a textpage, but **do not appear** in "
+":meth:`Page.get_images`."
+msgstr ""
+
+#: ../../textpage.rst:235 1976d291ba2043ed8edc7a38a5dab528
+msgid ""
+"Annotations may also contain images -- these will **not appear** in "
+":meth:`Page.get_images`."
+msgstr ""
+
+#: ../../textpage.rst:236 06ed842b388847b7a7113443675b76cb
+msgid ""
+"Image blocks in a textpage are generated for **every** image location -- "
+"whether or not there are any duplicates. This is in contrast to "
+":meth:`Page.get_images`, which will list each image only once (per "
+"reference name)."
+msgstr ""
+
+#: ../../textpage.rst:237 9f5942f2272b483590d6ed0a8a5f178e
+msgid ""
+"Images mentioned in the page's :data:`object` definition will **always** "
+"appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there "
+"is no \"display\" command in the page's :data:`contents` (erroneously or "
+"on purpose). In this case the image will **not appear** in the textpage."
+msgstr ""
+
+#: ../../textpage.rst:239 b59961eabc8f46f486afc6f2c788b491
+msgid ""
+"The image's \"transformation matrix\" is defined as the matrix, for which"
+" the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, "
+"lookup details here: :ref:`ImageTransformation`."
+msgstr ""
+
+#: ../../textpage.rst:241 43cad69a55ef4f20816d50cc8efbe1b6
+msgid ""
+"A transparent image may be accompanied by a mask image. This is stored "
+"under key `\"mask\"` and has the format of a `DeviceGray` PNG image. "
+"Otherwise the value of this key is ``None``. If present, you may be able "
+"to recover (an equivalent of) the original image -- i.e. with "
+"transparency -- by creating :ref:`Pixmap` objects from the \"image\", "
+"respectively \"mask\" values and overlay them. This is not guaranteed to "
+"always work because mask images come in multiple formats, of which not "
+"all qualify for the conditions under which overlaying Pixmaps are "
+"supported. Here is a code snippet:"
+msgstr ""
+
+#: ../../textpage.rst:248 a317df3004da43a6a184efa0266a463d
+msgid "**Text block:**"
+msgstr ""
+
+#: ../../textpage.rst:253 030797816aa549989b47bbb0e2632ff6
+msgid "0 = text *(int)*"
+msgstr ""
+
+#: ../../textpage.rst:254 5845dcf4d2ff4b8aa3b8696f11fd4a20
+msgid "block rectangle, :data:`rect_like`"
+msgstr ""
+
+#: ../../textpage.rst:255 392754de728c42fcae42b1f9b5a1145e
+msgid "block count *(int)*"
+msgstr ""
+
+#: ../../textpage.rst:256 3bbc359f17e345399daa6507bdeea828
+msgid "lines"
+msgstr ""
+
+#: ../../textpage.rst:256 4042757af1954925a1cf44f2a1335dce
+msgid "*list* of text line dictionaries"
+msgstr ""
+
+#: ../../textpage.rst:260 3d06aedad94149bc9fda2938390bc25f
+msgid "Line Dictionary"
+msgstr ""
+
+#: ../../textpage.rst:265 2aa6b4384d6a43ae8535097a2f4d7183
+msgid "line rectangle, :data:`rect_like`"
+msgstr ""
+
+#: ../../textpage.rst:266 057f881221e5432c812c73df38a30476
+msgid "wmode"
+msgstr ""
+
+#: ../../textpage.rst:266 9b8a69aaf19842ae8147069b78b00dd1
+msgid "writing mode *(int)*: 0 = horizontal, 1 = vertical"
+msgstr ""
+
+#: ../../textpage.rst:267 692c2dda2d01494db929c1c879dfbdba
+msgid "dir"
+msgstr ""
+
+#: ../../textpage.rst:267 9b0ca2dd38e24416955b894693d6ff52
+msgid "writing direction, :data:`point_like`"
+msgstr ""
+
+#: ../../textpage.rst:268 230317eadc6b4662a8970d6c2ba18495
+msgid "spans"
+msgstr ""
+
+#: ../../textpage.rst:268 bf9fdcd40df14bcda53145f233e3ef56
+msgid "*list* of span dictionaries"
+msgstr ""
+
+#: ../../textpage.rst:271 fa187d7adc9a47ecb61fbbdb00651da2
+msgid ""
+"The value of key *\"dir\"* is the **unit vector** `dir = (cosine, -sine)`"
+" of the angle, which the text has relative to the x-axis [#f2]_. See the "
+"following picture: The word in each quadrant (counter-clockwise from top-"
+"right to bottom-right) is rotated by 30, 120, 210 and 300 degrees "
+"respectively."
+msgstr ""
+
+#: ../../textpage.rst:277 9bb9215f24144aa98bdf2ba3bf53f511
+msgid "Span Dictionary"
+msgstr ""
+
+#: ../../textpage.rst:279 ede5941b8dfa4244a8c0216c6f7e2cad
+msgid ""
+"Spans contain the actual text. A line contains **more than one span "
+"only**, if it contains text with different font properties."
+msgstr ""
+
+#: ../../textpage.rst:281 6d53a255181a47a89ae1ffa5b80e2b1a
+msgid "Changed in version 1.14.17 Spans now also have a *bbox* key (again)."
+msgstr ""
+
+#: ../../textpage.rst:282 7181bf3c38f348e28414b10b1f15325a
+msgid "Changed in version 1.17.6 Spans now also have an *origin* key."
+msgstr ""
+
+#: ../../textpage.rst:287 7a0c3e49b06244d5a3f9b08938753c70
+msgid "span rectangle, :data:`rect_like`"
+msgstr ""
+
+#: ../../textpage.rst:288 ../../textpage.rst:371
+#: 941eff0bda7848b1aded9b21d87508d4 fc611070d2e14a749a6523327a435ab1
+msgid "origin"
+msgstr ""
+
+#: ../../textpage.rst:288 4e9cfcbb63dd4d3b96d02cac7a72d335
+msgid "the first character's origin, :data:`point_like`"
+msgstr ""
+
+#: ../../textpage.rst:289 ffe4ce11ff8e482d8125e561122e8a01
+msgid "font"
+msgstr ""
+
+#: ../../textpage.rst:289 c193bd6161a1476a895ff5d05e36e414
+msgid "font name *(str)*"
+msgstr ""
+
+#: ../../textpage.rst:290 0f4cf45ac40742c2bdbba91439182885
+msgid "ascender"
+msgstr ""
+
+#: ../../textpage.rst:290 9d18fc7dfd794af3863c8617f6cca80b
+msgid "ascender of the font *(float)*"
+msgstr ""
+
+#: ../../textpage.rst:291 c8355e31a600438d9aa2f5c09ad08a32
+msgid "descender"
+msgstr ""
+
+#: ../../textpage.rst:291 642a93c2137f4f22a445251b97134d53
+msgid "descender of the font *(float)*"
+msgstr ""
+
+#: ../../textpage.rst:292 0f948a6afd6c40c2af7e4682ea3f0c41
+msgid "font size *(float)*"
+msgstr ""
+
+#: ../../textpage.rst:293 3481c94bc1974e3e87ad16a48d7bee02
+msgid "flags"
+msgstr ""
+
+#: ../../textpage.rst:293 7ad9d44635b2454b8676ec29468e86d6
+msgid "font characteristics *(int)*"
+msgstr ""
+
+#: ../../textpage.rst:294 1bea765fcc0d440780a84e5ff7428ab5
+msgid "char_flags"
+msgstr ""
+
+#: ../../textpage.rst:294 6bbef3a00ae64fe080a4f63e69c11277
+msgid "char characteristics *(int)*"
+msgstr ""
+
+#: ../../textpage.rst:295 8eb70c16b7d646e48893ef568ff42402
+msgid "color"
+msgstr ""
+
+#: ../../textpage.rst:295 59eabfe4fab04ba2affa939c5fde49b7
+msgid "text color in sRGB format 0xRRGGBB *(int)*."
+msgstr ""
+
+#: ../../textpage.rst:296 fd9113d3e57447b5b4bdc780cde1dda4
+msgid "alpha"
+msgstr ""
+
+#: ../../textpage.rst:296 d40a9c36fe9f4f0586641e3cf2350ff2
+msgid "text opacity 0..255 *(int)*."
+msgstr ""
+
+#: ../../textpage.rst:297 94ac61d4a8494149a0be110b7b31fbb7
+msgid "text"
+msgstr ""
+
+#: ../../textpage.rst:297 71f33f09b5dc4d26a232e868d6a71835
+msgid "(only for :meth:`extractDICT`) text *(str)*"
+msgstr ""
+
+#: ../../textpage.rst:298 badb479f9a6c4f8cb637a1fc27887492
+msgid "chars"
+msgstr ""
+
+#: ../../textpage.rst:298 5f31662e0fd54663932aef0cf696bc81
+msgid "(only for :meth:`extractRAWDICT`) *list* of character dictionaries"
+msgstr ""
+
+#: ../../textpage.rst:301 2e5c684a3b98457dad2eeca01251bcbe
+msgid "|history_begin|"
+msgstr ""
+
+#: ../../textpage.rst:303 af2202bc94eb4986b35814e7062ea2af
+msgid "*(New in version 1.25.3.0):* Added *\"alpha\"* item."
+msgstr ""
+
+#: ../../textpage.rst:305 346a48e9dc164f95a383ca075ec44282
+msgid ""
+"*(New in version 1.16.0):* *\"color\"* is the text color encoded in sRGB "
+"(int) format, e.g. 0xFF0000 for red. There are functions for converting "
+"this integer back to formats (r, g, b) (PDF with float values from 0 to "
+"1) :meth:`sRGB_to_pdf`, or (R, G, B), :meth:`sRGB_to_rgb` (with integer "
+"values from 0 to 255)."
+msgstr ""
+
+#: ../../textpage.rst:307 01cb891c462347beb23cc803ba6f273d
+msgid ""
+"*(New in v1.18.5):* *\"ascender\"* and *\"descender\"* are font "
+"properties, provided relative to :data:`fontsize` 1. Note that descender "
+"is a negative value. The following picture shows the relationship to "
+"other values and properties."
+msgstr ""
+
+#: ../../textpage.rst:309 38509ecdb88249a89b1f87e100af2794
+msgid "|history_end|"
+msgstr ""
+
+#: ../../textpage.rst:314 2ba023fe0c7d4f3a84c985d6d42257e0
+msgid ""
+"These numbers may be used to compute the minimum height of a character "
+"(or span) -- as opposed to the standard height provided in the \"bbox\" "
+"values (which actually represents the **line height**). The following "
+"code recalculates the span bbox to have a height of **fontsize** exactly "
+"fitting the text inside:"
+msgstr ""
+
+#: ../../textpage.rst:324 23459ad4eef14d39af6467b841bb249d
+msgid ""
+"The above calculation may deliver a **larger** height! This may e.g. "
+"happen for OCRed documents, where the risk of all sorts of text artifacts"
+" is high. MuPDF tries to come up with a reasonable bbox height, "
+"independently from the :data:`fontsize` found in the PDF. So please "
+"ensure that the height of `span[\"bbox\"]` is **larger** than "
+"`span[\"size\"]`."
+msgstr ""
+
+#: ../../textpage.rst:326 8a9f78a3ca49476bb09d47f7c0037fd2
+msgid ""
+"You may request PyMuPDF to do all of the above automatically by executing"
+" `pymupdf.TOOLS.set_small_glyph_heights(True)`. This sets a global "
+"parameter so that all subsequent text searches and text extractions are "
+"based on reduced glyph heights, where meaningful."
+msgstr ""
+
+#: ../../textpage.rst:328 4c2b61999a4e4a13b8d42222a75f0b77
+msgid ""
+"The following shows the original span rectangle in red and the rectangle "
+"with re-computed height in blue."
+msgstr ""
+
+#: ../../textpage.rst:334 de6eebad5e374780b4087dafc5a35cea
+msgid ""
+"*\"flags\"* is an integer, which represents font properties except for "
+"the first bit 0. They are to be interpreted like this:"
+msgstr ""
+
+#: ../../textpage.rst:336 ba741a3fc759485985d49c19f01c9ef8
+msgid ""
+"bit 0: superscripted (:data:`TEXT_FONT_SUPERSCRIPT`) -- not a font "
+"property, detected by MuPDF code."
+msgstr ""
+
+#: ../../textpage.rst:337 78e75a3016a143eebba37096ad39d511
+msgid "bit 1: italic (:data:`TEXT_FONT_ITALIC`)"
+msgstr ""
+
+#: ../../textpage.rst:338 dea957fa07fb47e58b4eaa819d064d78
+msgid "bit 2: serifed (:data:`TEXT_FONT_SERIFED`)"
+msgstr ""
+
+#: ../../textpage.rst:339 9af423dfcf754de499eec516291b3dfa
+msgid "bit 3: monospaced (:data:`TEXT_FONT_MONOSPACED`)"
+msgstr ""
+
+#: ../../textpage.rst:340 251453629796445893d21c28cc8124ea
+msgid "bit 4: bold (:data:`TEXT_FONT_BOLD`)"
+msgstr ""
+
+#: ../../textpage.rst:342 59a6d01576154fe9bf8e8b9051b33213
+msgid "Test these characteristics like so:"
+msgstr ""
+
+#: ../../textpage.rst:348 bfc7d6a052ce4fce8790ede3a436fb69
+msgid ""
+"Bits 1 thru 4 are font properties, i.e. encoded in the font program. "
+"Please note, that this information is not necessarily correct or "
+"complete: fonts quite often contain wrong data here."
+msgstr ""
+
+#: ../../textpage.rst:350 4d1498d57d2b4c69ba82c3d86493fb97
+msgid ""
+"*\"char_flags\"* is an integer, which represents extra character "
+"properties:"
+msgstr ""
+
+#: ../../textpage.rst:352 3612fbd5dadd402d99e182ef3b916ea7
+msgid "bit 0: strikeout."
+msgstr ""
+
+#: ../../textpage.rst:353 3fdaa90226ad4e3dbe95664df8eea0cf
+msgid "bit 1: underline."
+msgstr ""
+
+#: ../../textpage.rst:354 0c3f086196de4719af885a8be8c7e0d0
+msgid "bit 2: synthetic (always 0, see char dictionary)."
+msgstr ""
+
+#: ../../textpage.rst:355 8168d259a6994df58b08b6a5bb6e528d
+msgid "bit 3: filled."
+msgstr ""
+
+#: ../../textpage.rst:356 b15cbf775d8242179c6218dcf678dfbc
+msgid "bit 4: stroked."
+msgstr ""
+
+#: ../../textpage.rst:357 fe26904a6aef423cb032d941a3f16e7f
+msgid "bit 5: clipped."
+msgstr ""
+
+#: ../../textpage.rst:359 cc08341dee4841cdb9efce8f8328c72c
+msgid ""
+"For example if not filled and not stroked (`if not (char_flags & 2**3 & "
+"2**4): ...`) then the text will be invisible."
+msgstr ""
+
+#: ../../textpage.rst:362 1a73125e6b5d4636bef571142a56d348
+msgid "(`char_flags` is new in v1.25.2.)"
+msgstr ""
+
+#: ../../textpage.rst:366 fc0755117ea040d38d703aefe8a1d835
+msgid "Character Dictionary for :meth:`extractRAWDICT`"
+msgstr ""
+
+#: ../../textpage.rst:371 d5cbb8a9af1f4428896b1b7fc4d8c549
+msgid "character's left baseline point, :data:`point_like`"
+msgstr ""
+
+#: ../../textpage.rst:372 a46239e4f25e455bb2cdf5860328b0d7
+msgid "character rectangle, :data:`rect_like`"
+msgstr ""
+
+#: ../../textpage.rst:373 446a80c6a1ac4c898322c4e4c35aa223
+msgid "synthetic"
+msgstr ""
+
+#: ../../textpage.rst:373 739878748b6447ef82df79dedaf0f65a
+msgid "bool."
+msgstr ""
+
+#: ../../textpage.rst:374 698361d0ea704ea78d1c12e2544b28b4
+msgid "c"
+msgstr ""
+
+#: ../../textpage.rst:374 24b9cd869f7344bd90d6f40b1c3862d3
+msgid "the character (unicode)"
+msgstr ""
+
+#: ../../textpage.rst:377 9a4e847fd26a450ab6af91fa2f536982
+msgid "(`synthetic` is new in v1.25.3.)"
+msgstr ""
+
+#: ../../textpage.rst:379 8ad57f9575ed4fa9bdfbde5224fb43a3
+msgid ""
+"This image shows the relationship between a character's bbox and its "
+"quad: |textpagechar|"
+msgstr ""
+
+#: ../../textpage.rst:381 1917647d6d434b7e9f9f59d21e6be2b1
+#: 3f06e78ea445472d92030debab4e3b04
+msgid "textpagechar"
+msgstr ""
+
+#: ../../textpage.rst:386 c5dd21ec4aaf4022b18a1dec50c7908d
+msgid "Footnotes"
+msgstr ""
+
+#: ../../textpage.rst:387 46ddf86e85364b05abc5c9ea6a706b17
+msgid ""
+"Image specifications for a PDF page are done in a page's (sub-) "
+":data:`dictionary`, called `/Resources`. Resource dictionaries can be "
+"**inherited** from any of the page's parent objects (usually the "
+":data:`catalog` -- the top-level parent). The PDF creator may e.g. define"
+" one `/Resources` on file level, naming all images and / or all fonts "
+"ever used by any page. In these cases, :meth:`Page.get_images` and "
+":meth:`Page.get_fonts` will consequently return the same lists for all "
+"pages. If desired, this situation can be reverted using "
+":meth:`Page.clean_contents`. After execution, the page's object "
+"definition will show fonts and images that are actually used."
+msgstr ""
+
+#: ../../textpage.rst:389 63c6426e75ed40b49222361f407a4bec
+msgid ""
+"The coordinate systems of MuPDF and PDF are different in that MuPDF uses "
+"the page's top-left point as `(0, 0)`. In PDF, this is the bottom-left "
+"point. Therefore, the positive direction for MuPDF's y-axis is **from top"
+" to bottom**. This causes the sign change for the sine value here: a "
+"**negative** value indicates anti-clockwise rotation of the text."
+msgstr ""
+
+#: ../../footer.rst:60 a56c8b8ce8ae4441b082d7b78de8ab79
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

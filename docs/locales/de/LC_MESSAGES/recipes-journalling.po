@@ -1,0 +1,171 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 1dec65ff7f144a209a6670156424f1bd
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 a2496778c1824e0d8507743948d5699d
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 d11779a821a640a9b5f1a505bdf860e4
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-journalling.rst:7 71340aa0c4f8460eb610827b5dd6a0e2
+msgid "Journalling"
+msgstr ""
+
+#: ../../recipes-journalling.rst:10 982db193623640f18388d6961fe5fc64
+msgid ""
+"Starting with version 1.19.0, journalling is possible when updating PDF "
+"documents."
+msgstr ""
+
+#: ../../recipes-journalling.rst:12 239c97bb5a8f4f329aa3e2fcd8a01db7
+msgid ""
+"Journalling is a logging mechanism which permits either **reverting** or "
+"**re-applying** changes to a PDF. Similar to LUWs \"Logical Units of "
+"Work\" in modern database systems, one can group a set of updates into an"
+" \"operation\". In MuPDF journalling, an operation plays the role of a "
+"LUW."
+msgstr ""
+
+#: ../../recipes-journalling.rst:14 2e4f6dca544a400cb7dc16a559d9e182
+msgid ""
+"In contrast to LUW implementations found in database systems, MuPDF "
+"journalling happens on a **per document level**. There is no support for "
+"simultaneous updates across multiple PDFs: one would have to establish "
+"one's own logic here."
+msgstr ""
+
+#: ../../recipes-journalling.rst:16 001589c65f8641d5a1bc838871c82e35
+msgid ""
+"Journalling must be *enabled* via a document method. Journalling is "
+"possible for existing or new documents. Journalling **can be disabled "
+"only** by closing the file."
+msgstr ""
+
+#: ../../recipes-journalling.rst:17 a4f5223ab97d41c0a62d52cebe7f3f76
+msgid ""
+"Once enabled, every change must happen inside an *operation* -- otherwise"
+" an exception is raised. An operation is started and stopped via document"
+" methods. Updates happening between these two calls form an LUW and can "
+"thus collectively be rolled back or re-applied, or, in MuPDF terminology "
+"\"undone\" resp. \"redone\"."
+msgstr ""
+
+#: ../../recipes-journalling.rst:18 25ef245260a64a689f1ba395d0478ac2
+msgid ""
+"At any point, the journalling status can be queried: whether journalling "
+"is active, how many operations have been recorded, whether \"undo\" or "
+"\"redo\" is possible, the current position inside the journal, etc."
+msgstr ""
+
+#: ../../recipes-journalling.rst:19 892e3b69463b47138a6b723746d7696b
+msgid ""
+"The journal can be **saved to** or **loaded from** a file. These are "
+"document methods."
+msgstr ""
+
+#: ../../recipes-journalling.rst:20 cdc871b87c994a95b38a0893539bf950
+msgid ""
+"When loading a journal file, compatibility with the document is checked "
+"and journalling is automatically enabled upon success."
+msgstr ""
+
+#: ../../recipes-journalling.rst:21 1196a86518ec42bca06599556dfdd95a
+msgid ""
+"For an **existing** PDF being journalled, a special new save method is "
+"available: :meth:`Document.save_snapshot`. This performs a special "
+"incremental save that includes all journalled updates so far. If its "
+"journal is saved at the same time (immediately after the document "
+"snapshot), then document and journal are in sync and can later on be used"
+" together to undo or redo operations or to continue journalled updates --"
+" just as if there had been no interruption."
+msgstr ""
+
+#: ../../recipes-journalling.rst:22 9d858c95d29142a3a507fa019d4e9d37
+msgid ""
+"The snapshot PDF is a valid PDF in every aspect and fully usable. If the "
+"document is however changed in any way without using its journal file, "
+"then a desynchronization will take place and the journal is rendered "
+"unusable."
+msgstr ""
+
+#: ../../recipes-journalling.rst:23 4e9981f3904e441abb451168eda31059
+msgid ""
+"Snapshot files are structured like incremental updates. Nevertheless, the"
+" internal journalling logic requires, that saving **must happen to a new "
+"file**. So the user should develop a file naming convention to support "
+"recognizable relationships between an original PDF, like `original.pdf` "
+"and its snapshot sets, like `original-snap1.pdf` / `original-snap1.log`, "
+"`original-snap2.pdf` / `original-snap2.log`, etc."
+msgstr ""
+
+#: ../../recipes-journalling.rst:26 264672a5144c439aa2688cf062e5a892
+msgid "Example Session 1"
+msgstr ""
+
+#: ../../recipes-journalling.rst:27 ../../recipes-journalling.rst:98
+#: 8fc51b450a4641898c023ca78938b76c b070a7f183aa43c1952ff72bd0f73150
+msgid "Description:"
+msgstr ""
+
+#: ../../recipes-journalling.rst:29 47b36e04f5904ef6b8e643c6c2931dc9
+msgid ""
+"Make a new PDF and enable journalling. Then add a page and some text "
+"lines -- each as a separate operation."
+msgstr ""
+
+#: ../../recipes-journalling.rst:30 d39c4b27b3da4f7d87244024fe21133e
+msgid ""
+"Navigate within the journal, undoing and redoing these updates and "
+"displaying status and file results::"
+msgstr ""
+
+#: ../../recipes-journalling.rst:97 7f4dff6cd221460f9f0864bb65418846
+msgid "Example Session 2"
+msgstr ""
+
+#: ../../recipes-journalling.rst:100 739153cf7c154739af31ab2abb5d842f
+msgid ""
+"Similar to previous, but after undoing some operations, we now add a "
+"different update. This will cause:"
+msgstr ""
+
+#: ../../recipes-journalling.rst:102 d1dfb6a4d5d948b6981dc9765882191b
+msgid "permanent removal of the undone journal entries"
+msgstr ""
+
+#: ../../recipes-journalling.rst:103 19eab643d86a4d72b86f188ae3dd2592
+msgid "the new update operation will become the new last entry."
+msgstr ""
+
+#: ../../footer.rst:60 187a959e74914bfe8f8d8164226852bd
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

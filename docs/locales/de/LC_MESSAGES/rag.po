@@ -1,0 +1,191 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 d58a444fc92843a18660ede50d62d095
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 6e2254ee60a14d48a1348f2b46d484d2
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 bc86116b658f4d3fb0e20919e6179a1e
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../rag.rst:6 1e69d82c08b049a6b539ae49ee8df24e
+msgid "PyMuPDF, LLM & RAG"
+msgstr ""
+
+#: ../../rag.rst:9 056a5c68abb744c7863c87748f5cc0b1
+msgid ""
+"Integrating |PyMuPDF| into your :title:`Large Language Model (LLM)` "
+"framework and overall :title:`RAG (Retrieval-Augmented Generation`) "
+"solution provides the fastest and most reliable way to deliver document "
+"data."
+msgstr ""
+
+#: ../../rag.rst:11 fee93922167c4b2d9d9054f8565193f4
+msgid ""
+"There are a few well known :title:`LLM` solutions which have their own "
+"interfaces with |PyMuPDF| - it is a fast growing area, so please let us "
+"know if you discover any more!"
+msgstr ""
+
+#: ../../rag.rst:13 87158dfd9b9a4174a93d56546e871f72
+msgid ""
+"If you need to export to :title:`Markdown` or obtain a "
+":title:`LlamaIndex` Document from a file:"
+msgstr ""
+
+#: ../../rag.rst:31 51971a71e3ca420db71fb2080da653ad
+msgid "Integration with :title:`LangChain`"
+msgstr ""
+
+#: ../../rag.rst:33 9e2065dc5185491abcf869e4a276c5be
+msgid ""
+"It is simple to integrate directly with :title:`LangChain` by using their"
+" dedicated loader as follows:"
+msgstr ""
+
+#: ../../rag.rst:43 236dcfb83a264f6c83e921a7905a29bc
+msgid ""
+"See `LangChain Using PyMuPDF "
+"<https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf"
+"/#using-pymupdf>`_ for full details."
+msgstr ""
+
+#: ../../rag.rst:47 f9ce52737bda4fc5b4075b6ad14b9e2e
+msgid "Integration with :title:`LlamaIndex`"
+msgstr ""
+
+#: ../../rag.rst:50 1b7d2270a3c74a44b70efbcee8b0d37f
+msgid ""
+"Use the dedicated `PyMuPDFReader` from :title:`LlamaIndex` 🦙 to manage "
+"your document loading."
+msgstr ""
+
+#: ../../rag.rst:58 40923d58ee41475bb0ee10e7014a578a
+msgid ""
+"See `Building RAG from Scratch "
+"<https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval>`_"
+" for more."
+msgstr ""
+
+#: ../../rag.rst:62 3055cf26690d4e289489b37eaf7b5333
+msgid "Preparing Data for Chunking"
+msgstr ""
+
+#: ../../rag.rst:64 e37920b16364455dad472a5c99218cda
+msgid ""
+"Chunking (or splitting) data is essential to give context to your "
+":title:`LLM` data and with :title:`Markdown` output now supported by "
+"|PyMuPDF| this means that `Level 3 chunking "
+"<https://medium.com/@anuragmishra_27746/five-levels-of-chunking-"
+"strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ is "
+"supported."
+msgstr ""
+
+#: ../../rag.rst:71 9a8d957771b04869afd1441e12a280be
+msgid "Outputting as :title:`Markdown`"
+msgstr ""
+
+#: ../../rag.rst:73 6076246f267449deace88b822ddabfe0
+msgid ""
+"In order to export your document in :title:`Markdown` format you will "
+"need a separate helper. Package :doc:`pymupdf4llm/index` is a high-level "
+"wrapper of |PyMuPDF| functions which for each page outputs standard and "
+"table text in an integrated Markdown-formatted string across all document"
+" pages:"
+msgstr ""
+
+#: ../../rag.rst:87 58590b8ebc244b9db1cc83c63adc2d1b
+msgid "For further information please refer to: :doc:`pymupdf4llm/index`."
+msgstr ""
+
+#: ../../rag.rst:91 b32a1b079e794491a5e021d26fb18453
+msgid "How to use :title:`Markdown` output"
+msgstr ""
+
+#: ../../rag.rst:93 8045470b5fa04886b83960e80fc71aae
+msgid ""
+"Once you have your data in :title:`Markdown` format you are ready to "
+"chunk/split it and supply it to your :title:`LLM`, for example, if this "
+"is :title:`LangChain` then do the following:"
+msgstr ""
+
+#: ../../rag.rst:109 4d0c5d7c2dc04c059fbdb5ad0709c2af
+msgid ""
+"For more see `5 Levels of Text Splitting <https://github.com"
+"/FullStackRetrieval-"
+"com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_"
+msgstr ""
+
+#: ../../rag.rst:113 896b1dd74ff24363becbdac98144b86c
+msgid "Related Blogs"
+msgstr ""
+
+#: ../../rag.rst:115 a036501ebb68414192f47e189aec5f3d
+msgid ""
+"To find out more about |PyMuPDF|, :title:`LLM` & :title:`RAG` check out "
+"our blogs for implementations & tutorials."
+msgstr ""
+
+#: ../../rag.rst:119 a8b36bcfa4c746e4b21ffd62e4c38618
+msgid "Methodologies to Extract Text"
+msgstr ""
+
+#: ../../rag.rst:121 f69b739e4b764e0b856de55aa7f97093
+msgid ""
+"`Enhanced Text Extraction <https://artifex.com/blog/rag-llm-and-pdf-"
+"enhanced-text-extraction>`_"
+msgstr ""
+
+#: ../../rag.rst:122 3ae24a0e46354d408bcdaf4deb16af33
+msgid ""
+"`Conversion to Markdown Text with PyMuPDF <https://artifex.com/blog/rag-"
+"llm-and-pdf-conversion-to-markdown-text-with-pymupdf>`_"
+msgstr ""
+
+#: ../../rag.rst:127 bbe057c5d511484c8b9bd0b656c6216c
+msgid "Create a Chatbot to discuss your documents"
+msgstr ""
+
+#: ../../rag.rst:129 1255eb5a25064e6c8ae8ca5b8af9b0a4
+msgid ""
+"`Make a simple command line Chatbot <https://artifex.com/blog/creating-a"
+"-rag-chatbot-with-chatgpt-and-pymupdf>`_"
+msgstr ""
+
+#: ../../rag.rst:130 569c7f488bc747a2801a4b6532a9c3dd
+msgid ""
+"`Make a Chatbot GUI <https://artifex.com/blog/building-a-rag-chatbot-gui-"
+"with-the-chatgpt-api-and-pymupdf>`_"
+msgstr ""
+
+#: ../../footer.rst:60 45a2c818f8ae4c1fa455751e51ab3e21
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

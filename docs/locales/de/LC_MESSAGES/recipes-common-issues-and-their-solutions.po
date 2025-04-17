@@ -1,0 +1,350 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 4668aba35041418d9985c1a35575a6b3
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 1011e86add0c4e648dea40533c7fd1a2
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 10324b8854a4413791056120093832e9
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:7
+#: 20bc28cec0154c7c9136122bd912f369
+msgid "Common Issues and their Solutions"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:10
+#: 7f1290c0169445d78461fff755cfc034
+msgid "How To Dynamically Clean Up Corrupt :title:`PDFs`"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:12
+#: ce6827f92d194d24abb5efce34f05be9
+msgid ""
+"This shows a potential use of |PyMuPDF| with another Python PDF library "
+"(the excellent pure Python package `pdfrw "
+"<https://pypi.python.org/pypi/pdfrw>`_ is used here as an example)."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:14
+#: 4b79f85178e14c0bada317304b337db0
+msgid ""
+"If a clean, non-corrupt / decompressed PDF is needed, one could "
+"dynamically invoke PyMuPDF to recover from many problems like so::"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:50
+#: e6d9c9e53bdc4e6ea4fff95948a77ce0
+msgid ""
+"With the command line utility *pdftk* (`available "
+"<https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ for Windows "
+"only, but reported to also run under `Wine <https://www.winehq.org/>`_) a"
+" similar result can be achieved, see `here "
+"<http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. "
+"However, you must invoke it as a separate process via *subprocess.Popen*,"
+" using stdin and stdout as communication vehicles."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:55
+#: 3f9ab9bf78a74d9781937269cf8ef3cb
+msgid "How to Convert Any Document to |PDF|"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:57
+#: ca2811011d7b40808c8a55f65188b25f
+msgid ""
+"Here is a script that converts any |PyMuPDF| :ref:`supported "
+"document<Supported_File_Types>` to a |PDF|. These include XPS, EPUB, FB2,"
+" CBZ and image formats, including multi-page TIFF images."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:59
+#: d7e2dfdcb75b40739daf46856a819f58
+msgid ""
+"It features maintaining any metadata, table of contents and links "
+"contained in the source document::"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:131
+#: a41bc630ff314f64bcfa4150a08c3c84
+msgid "Changing Annotations: Unexpected Behaviour"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:134
+#: 9b87b714c12948aa94ae2868604c760c
+msgid "Problem"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:135
+#: 5870f9a9b1184a3cb1849e71b71e5026
+msgid "There are two scenarios:"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:137
+#: b360eb295e35468b9a48ce456cc717e7
+msgid ""
+"**Updating** an annotation with PyMuPDF which was created by some other "
+"software."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:138
+#: c2f4bd673f784318906b6982c2873fdf
+msgid ""
+"**Creating** an annotation with PyMuPDF and later changing it with some "
+"other software."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:140
+#: 3a2c5f9ca0da4058b2119d1e5ee6432c
+msgid ""
+"In both cases you may experience unintended changes, like a different "
+"annotation icon or text font, the fill color or line dashing have "
+"disappeared, line end symbols have changed their size or even have "
+"disappeared too, etc."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:143
+#: ../../recipes-common-issues-and-their-solutions.rst:182
+#: ../../recipes-common-issues-and-their-solutions.rst:195
+#: 0ec3d7b289ed40d1b1c9a6e6509cb81c 3db222ba67d34ffe8b9c76049639a28f
+#: 4947608029184f4eacde97cb22e6b0a0
+msgid "Cause"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:144
+#: 580b99ed7b294df89844c876e4930bb6
+msgid ""
+"Annotation maintenance is handled differently by each PDF maintenance "
+"application. Some annotation types may not be supported, or not be "
+"supported fully or some details may be handled in a different way than in"
+" another application. **There is no standard.**"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:146
+#: 0d39ed4b97424a2a87eb4bec722728b0
+msgid ""
+"Almost always a PDF application also comes with its own icons (file "
+"attachments, sticky notes and stamps) and its own set of supported text "
+"fonts. For example:"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:148
+#: 65134846c0a240acb342d722b107de3f
+msgid ""
+"(Py-) MuPDF only supports these 5 basic fonts for 'FreeText' annotations:"
+" Helvetica, Times-Roman, Courier, ZapfDingbats and Symbol -- no italics /"
+" no bold variations. When changing a 'FreeText' annotation created by "
+"some other app, its font will probably not be recognized nor accepted and"
+" be replaced by Helvetica."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:150
+#: e2cbd8bfb3d14500a0612d1d8d2c5ec6
+msgid ""
+"PyMuPDF supports all PDF text markers (highlight, underline, strikeout, "
+"squiggly), but these types cannot be updated with Adobe Acrobat Reader."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:152
+#: 5f42aed9c005492a92b5b6aa0cbcd03e
+msgid ""
+"In most cases there also exists limited support for line dashing which "
+"causes existing dashes to be replaced by straight lines. For example:"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:154
+#: 7651dba336694614afc84cba3418f5cc
+msgid ""
+"PyMuPDF fully supports all line dashing forms, while other viewers only "
+"accept a limited subset."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:158
+#: 01eaf095c9b6491d88ab187baa0e5739
+msgid "Solutions"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:159
+#: ecb162091bfd40ba807179842faf6a91
+msgid "Unfortunately there is not much you can do in most of these cases."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:161
+#: f4ff16b309524593aafb3a90fa47384c
+msgid "Stay with the same software for **creating and changing** an annotation."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:162
+#: ddc8bae66d8249efbc79df236e51d0d0
+msgid ""
+"When using PyMuPDF to change an \"alien\" annotation, try to **avoid** "
+":meth:`Annot.update`. The following methods **can be used without it,** "
+"so that the original appearance should be maintained:"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:164
+#: 57c092ce6a7d45d4952de8c67279fa4f
+msgid ":meth:`Annot.set_rect` (location changes)"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:165
+#: d313ef9ae75449729e1849ab57d05a32
+msgid ":meth:`Annot.set_flags` (annotation behaviour)"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:166
+#: ff9f33feb2224cd69192417071637524
+msgid ":meth:`Annot.set_info` (meta information, except changes to *content*)"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:167
+#: 90c72eaaebfa4a848238a0cd487b74e6
+msgid ":meth:`Annot.set_popup` (create popup or change its rect)"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:168
+#: fea8fa06e33040f2b13ce9a7b5306f8f
+msgid ""
+":meth:`Annot.set_oc` (add / remove reference to optional content "
+"information)"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:169
+#: cee27cf68bda482690d014a3468ad911
+msgid ":meth:`Annot.set_open`"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:170
+#: 85c766ba5c7c4ec9a875af07684f5f8f
+msgid ":meth:`Annot.update_file` (file attachment changes)"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:174
+#: 6e6d7441feb444b08da4f309c51f2989
+msgid "Missing or Unreadable Extracted Text"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:175
+#: 01ae9eb704e14a1e8f24cf021dc91c0e
+msgid ""
+"Fairly often, text extraction does not work text as you would expect: "
+"text may be missing, or may not appear in the reading sequence visible on"
+" your screen, or contain garbled characters (like a ? or a \"TOFU\" "
+"symbol), etc. This can be caused by a number of different problems."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:178
+#: e80411b38d4845d9b2714609a65db94c
+msgid "Problem: no text is extracted"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:179
+#: 29d32a1dea084e1886b86272d02868c8
+msgid ""
+"Your PDF viewer does display text, but you cannot select it with your "
+"cursor, and text extraction delivers nothing."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:183
+#: 407916e2cc0148868141e8b6e9837feb
+msgid ""
+"You may be looking at an image embedded in the PDF page (e.g. a scanned "
+"PDF)."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:184
+#: 94397a359e604251a6ce3e563fe0ef48
+msgid ""
+"The PDF creator used no font, but **simulated** text by painting it, "
+"using little lines and curves. E.g. a capital \"D\" could be painted by a"
+" line \"|\" and a left-open semi-circle, an \"o\" by an ellipse, and so "
+"on."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:187
+#: ../../recipes-common-issues-and-their-solutions.rst:200
+#: 4fedb4cf875041c2a5e70dae89f7991f fb8a38a5ca084321aac57be8d1ebb7bb
+msgid "Solution"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:188
+#: 3ab64c25a2be4f59907562b0f68b24dc
+msgid ""
+"Use an OCR software like `OCRmyPDF <https://pypi.org/project/ocrmypdf/>`_"
+" to insert a hidden text layer underneath the visible page. The resulting"
+" PDF should behave as expected."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:191
+#: a8f6e51df1dc464fbb0f7475eba7a54b
+msgid "Problem: unreadable text"
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:192
+#: 7e6f3f7dc9964fac985a7fb4c533b3f2
+msgid ""
+"Text extraction does not deliver the text in readable order, duplicates "
+"some text, or is otherwise garbled."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:196
+#: 060884ca10f34a9fa6daba7b2794c592
+msgid ""
+"The single characters are readable as such (no \"<?>\" symbols), but the "
+"sequence in which the text is **coded in the file** deviates from the "
+"reading order. The motivation behind may be technical or protection of "
+"data against unwanted copies."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:197
+#: 99dd9930809d4551bfe5d806b32e28bc
+msgid ""
+"Many \"<?>\" symbols occur, indicating MuPDF could not interpret these "
+"characters. The font may indeed be unsupported by MuPDF, or the PDF "
+"creator may haved used a font that displays readable text, but on purpose"
+" obfuscates the originating corresponding unicode character."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:201
+#: 7e9a1b033ba149c29732bf6d66164707
+msgid "Use layout preserving text extraction: `python -m fitz gettext file.pdf`."
+msgstr ""
+
+#: ../../recipes-common-issues-and-their-solutions.rst:202
+#: 05bbf78e0c8c447794e360a1dda9f6df
+msgid ""
+"If other text extraction tools also don't work, then the only solution "
+"again is OCRing the page."
+msgstr ""
+
+#: ../../footer.rst:60 8010577d7dfe46e7ab6edda3adc1976a
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

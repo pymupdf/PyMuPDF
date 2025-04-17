@@ -1,0 +1,727 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 db5f378b70004af590010a41f0163be1
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 148acec04cbf474bb41f5d5e3c1ec508
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 e6b3ab82dcbf41f687b68d59732a00a5
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-text.rst:7 70700f14953047898a918c1a07026ce4
+msgid "Text"
+msgstr ""
+
+#: ../../recipes-text.rst:13 83030b51505549bba2596e8da94111a2
+msgid "How to Extract all Document Text"
+msgstr ""
+
+#: ../../recipes-text.rst:15 d8d7d26a27a346a5b03d28e400fed598
+msgid ""
+"This script will take a document filename and generate a text file from "
+"all of its text."
+msgstr ""
+
+#: ../../recipes-text.rst:17 c4c73613ac86439c93304a2549dbad7f
+msgid "The document can be any :ref:`supported type<Supported_File_Types>`."
+msgstr ""
+
+#: ../../recipes-text.rst:19 8a339400b648449eab4a10cf290842dc
+msgid ""
+"The script works as a command line tool which expects the document "
+"filename supplied as a parameter. It generates one text file named "
+"\"filename.txt\" in the script directory. Text of pages is separated by a"
+" form feed character::"
+msgstr ""
+
+#: ../../recipes-text.rst:28 8a4f5ec777ce40e8a27b5ef06541f000
+msgid ""
+"The output will be plain text as it is coded in the document. No effort "
+"is made to prettify in any way. Specifically for PDF, this may mean "
+"output not in usual reading order, unexpected line breaks and so forth."
+msgstr ""
+
+#: ../../recipes-text.rst:30 fa3eea374680406b9a9fba35f66055ca
+msgid ""
+"You have many options to rectify this -- see chapter :ref:`Appendix2`. "
+"Among them are:"
+msgstr ""
+
+#: ../../recipes-text.rst:32 93321f1d110c45879711cddd65ff7248
+msgid ""
+"Extract text in HTML format and store it as a HTML document, so it can be"
+" viewed in any browser."
+msgstr ""
+
+#: ../../recipes-text.rst:33 d31ce8ccb61f4333b9485c37ae95f7a1
+msgid ""
+"Extract text as a list of text blocks via *Page.get_text(\"blocks\")*. "
+"Each item of this list contains position information for its text, which "
+"can be used to establish a convenient reading order."
+msgstr ""
+
+#: ../../recipes-text.rst:34 97d77e0ecd494eb89e58bf1dfd6f89b0
+msgid ""
+"Extract a list of single words via *Page.get_text(\"words\")*. Its items "
+"are words with position information. Use it to determine text contained "
+"in a given rectangle -- see next section."
+msgstr ""
+
+#: ../../recipes-text.rst:36 f695a7c93e504149bb7de0f587892b2a
+msgid "See the following two sections for examples and further explanations."
+msgstr ""
+
+#: ../../recipes-text.rst:44 37809012042b408fab85b6b39de8e823
+msgid "How to Extract Text as Markdown"
+msgstr ""
+
+#: ../../recipes-text.rst:46 5c0dcdf0ae704f9aa9fd1bc738b0c185
+msgid ""
+"This is especially useful for :title:`RAG/LLM` environments - please see "
+":ref:`Outputting as Markdown <rag_outputting_as_md>`."
+msgstr ""
+
+#: ../../recipes-text.rst:52 442230f4e860484f83323c6a20d08e08
+msgid "How to Extract Key-Value Pairs from a Page"
+msgstr ""
+
+#: ../../recipes-text.rst:53 9555400172a34d69bae562156d51b80c
+msgid ""
+"If the layout of a page is *\"predictable\"* in some sense, then there is"
+" a simple way to find the values for a given set of keywords fast and "
+"easily -- without using regular expressions. Please see `this example "
+"script <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-"
+"extraction/lookup-keywords.py>`_."
+msgstr ""
+
+#: ../../recipes-text.rst:55 f8548ec2c56441c0aa02ed28f3607350
+msgid "\"Predictable\" in this context means:"
+msgstr ""
+
+#: ../../recipes-text.rst:57 0e297df5b4ed4548956122fabdd7e963
+msgid ""
+"Every keyword is followed by its value -- no other text is present in "
+"between them."
+msgstr ""
+
+#: ../../recipes-text.rst:58 f9375ed8400040619728b9f1d3031882
+msgid ""
+"The bottom of the value's boundary box is **not above** the one of the "
+"keyword."
+msgstr ""
+
+#: ../../recipes-text.rst:59 be1d806d61424c179b103fbdfef14d11
+msgid ""
+"There are **no other restrictions**: the page layout may or may not be "
+"fixed, and the text may also have been stored as one string. Key and "
+"value may have any distance from each other."
+msgstr ""
+
+#: ../../recipes-text.rst:61 05731f2a8f5b4e72a99dbd3afb4628ff
+msgid ""
+"For example, the following five key-value pairs will be correctly "
+"identified::"
+msgstr ""
+
+#: ../../recipes-text.rst:77 635adbc1c75c4e019220ca2fafd16863
+msgid "How to Extract Text from within a Rectangle"
+msgstr ""
+
+#: ../../recipes-text.rst:78 c66f827c3b4e4d40937891f31bca0ed8
+msgid ""
+"There is now (v1.18.0) more than one way to achieve this. We therefore "
+"have created a `folder <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/tree/master/textbox-extraction>`_ in the PyMuPDF-Utilities "
+"repository specifically dealing with this topic."
+msgstr ""
+
+#: ../../recipes-text.rst:88 d80121123daf4bf2a3e069027d837c3f
+msgid "How to Extract Text in Natural Reading Order"
+msgstr ""
+
+#: ../../recipes-text.rst:90 c1cc039bb3804acebad6d1f03565e6be
+msgid ""
+"One of the common issues with PDF text extraction is, that text may not "
+"appear in any particular reading order."
+msgstr ""
+
+#: ../../recipes-text.rst:92 16fbf3e452294bcd88f4d82c83bc87d6
+msgid ""
+"This is the responsibility of the PDF creator (software or a human). For "
+"example, page headers may have been inserted in a separate step -- after "
+"the document had been produced. In such a case, the header text will "
+"appear at the end of a page text extraction (although it will be "
+"correctly shown by PDF viewer software). For example, the following "
+"snippet will add some header and footer lines to an existing PDF::"
+msgstr ""
+
+#: ../../recipes-text.rst:104 978688d53bd949cc898416980acbc003
+msgid ""
+"The text sequence extracted from a page modified in this way will look "
+"like this:"
+msgstr ""
+
+#: ../../recipes-text.rst:106 ef048f5a008646e991b0568de7841cb2
+msgid "original text"
+msgstr ""
+
+#: ../../recipes-text.rst:107 dc14bb8d05724f89a619b2d3cceb4926
+msgid "header line"
+msgstr ""
+
+#: ../../recipes-text.rst:108 babbbbad94c4402ea4effe7f7adbca5d
+msgid "footer line"
+msgstr ""
+
+#: ../../recipes-text.rst:110 e694010b792d4eb0855e2f6564a46a67
+msgid ""
+"PyMuPDF has several means to re-establish some reading sequence or even "
+"to re-generate a layout close to the original:"
+msgstr ""
+
+#: ../../recipes-text.rst:112 716e99c2ff9344fe81fafd78de2007c3
+msgid ""
+"Use `sort` parameter of :meth:`Page.get_text`. It will sort the output "
+"from top-left to bottom-right (ignored for XHTML, HTML and XML output)."
+msgstr ""
+
+#: ../../recipes-text.rst:113 bcd2685affe8476281c9b4f6df0f6ff9
+msgid ""
+"Use the `pymupdf` module in CLI: `python -m pymupdf gettext ...`, which "
+"produces a text file where text has been re-arranged in layout-preserving"
+" mode. Many options are available to control the output."
+msgstr ""
+
+#: ../../recipes-text.rst:115 b14412bcce2e4fabab0f9c2421c08934
+msgid ""
+"You can also use the above mentioned `script "
+"<https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-"
+"from-a-rectangle>`_ with your modifications."
+msgstr ""
+
+#: ../../recipes-text.rst:122 6fb4548c9a0a42da9939b9ba59fee62a
+msgid ""
+"How to :index:`Extract Table Content <pair: extract; table>` from "
+"Documents"
+msgstr ""
+
+#: ../../recipes-text.rst:123 b9aeb958d874414a8dfbe817d7e491be
+msgid ""
+"If you see a table in a document, you are normally not looking at "
+"something like an embedded Excel or other identifiable object. It usually"
+" is just normal, standard text, formatted to appear as tabular data."
+msgstr ""
+
+#: ../../recipes-text.rst:125 48f2b8ac5dc54b469a4fac3b57e95083
+msgid ""
+"Extracting tabular data from such a page area therefore means that you "
+"must find a way to **identify** the table area (i.e. its boundary box), "
+"then **(1)** graphically indicate table and column borders, and **(2)** "
+"then extract text based on this information."
+msgstr ""
+
+#: ../../recipes-text.rst:127 b55a6db346bb4df3adb269cd4da2d2a1
+msgid ""
+"This can be a very complex task, depending on details like the presence "
+"or absence of lines, rectangles or other supporting vector graphics."
+msgstr ""
+
+#: ../../recipes-text.rst:129 2ab382191b1e4c8dbcb05ab17b9a6f16
+msgid ""
+"Method :meth:`Page.find_tables` does all that for you, with a high table "
+"detection precision. Its great advantage is that there are no external "
+"library dependencies, nor the need to employ artificial intelligence or "
+"machine learning technologies. It also provides an integrated interface "
+"to the well-known Python package for data analysis `pandas "
+"<https://pypi.org/project/pandas/>`_."
+msgstr ""
+
+#: ../../recipes-text.rst:131 b620d2150671401698d7a280f56ee3cc
+msgid ""
+"Please have a look at example `Jupyter notebooks "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-"
+"analysis>`_, which cover standard situations like multiple tables on one "
+"page or joining table fragments across multiple pages."
+msgstr ""
+
+#: ../../recipes-text.rst:138 259587f74c604a45bd83bdba19dbfdd9
+msgid "How to Mark Extracted Text"
+msgstr ""
+
+#: ../../recipes-text.rst:139 b7f64cd47ccb4f889b2a09f74c66564f
+msgid ""
+"There is a standard search function to search for arbitrary text on a "
+"page: :meth:`Page.search_for`. It returns a list of :ref:`Rect` objects "
+"which surround a found occurrence. These rectangles can for example be "
+"used to automatically insert annotations which visibly mark the found "
+"text."
+msgstr ""
+
+#: ../../recipes-text.rst:141 febfc5dbb25f420dbf6c3ef3e88b24c4
+msgid "This method has advantages and drawbacks. Pros are:"
+msgstr ""
+
+#: ../../recipes-text.rst:143 101f473976a74f1c9ab424859e8862dd
+msgid "The search string can contain blanks and wrap across lines"
+msgstr ""
+
+#: ../../recipes-text.rst:144 6ad25d7b6043421a8142042b3b9a3ec9
+msgid "Upper or lower case characters are treated equal"
+msgstr ""
+
+#: ../../recipes-text.rst:145 b3efeff8f1c9463ab435a4742bc0c5bd
+msgid "Word hyphenation at line ends is detected and resolved"
+msgstr ""
+
+#: ../../recipes-text.rst:146 7a50b0a1eba54da5a0cbd913bde35367
+msgid ""
+"Return may also be a list of :ref:`Quad` objects to precisely locate text"
+" that is **not parallel** to either axis -- using :ref:`Quad` output is "
+"also recommended, when page rotation is not zero."
+msgstr ""
+
+#: ../../recipes-text.rst:148 9f60ccd5aee74a1bb2f791ed857906ac
+msgid "But you also have other options::"
+msgstr ""
+
+#: ../../recipes-text.rst:182 324f957419b2409787a7496e75b13dee
+msgid ""
+"This script uses `Page.get_text(\"words\")` to look for a string, handed "
+"in via cli parameter. This method separates a page's text into \"words\" "
+"using white spaces as delimiters. Further remarks:"
+msgstr ""
+
+#: ../../recipes-text.rst:184 e11b43b6869e46b89ed4021f9ca781ea
+msgid ""
+"If found, the **complete word containing the string** is marked "
+"(underlined) -- not only the search string."
+msgstr ""
+
+#: ../../recipes-text.rst:185 04e60745b3b34c6b91dcf325e659bc11
+msgid ""
+"The search string may **not contain word delimiters**. By default, word "
+"delimiters are white spaces and the non-breaking space `chr(0xA0)`. If "
+"you use extra delimiting characters like `page.get_text(\"words\", "
+"delimiters=\"./,\")` then none of these characters should be included in "
+"your search string either."
+msgstr ""
+
+#: ../../recipes-text.rst:186 d2efc0fb67834d26a4980492e4ba653b
+msgid ""
+"As shown here, upper / lower cases are **respected**. But this can be "
+"changed by using the string method *lower()* (or even regular "
+"expressions) in function *mark_word*."
+msgstr ""
+
+#: ../../recipes-text.rst:187 f1f92985f2ae49809306e7b57ba6c5b1
+msgid "There is **no upper limit**: all occurrences will be detected."
+msgstr ""
+
+#: ../../recipes-text.rst:188 6639bc0b294042f3b7da287582d935d1
+msgid ""
+"You can use **anything** to mark the word: 'Underline', 'Highlight', "
+"'StrikeThrough' or 'Square' annotations, etc."
+msgstr ""
+
+#: ../../recipes-text.rst:189 f003fe97efd4436285d6bc3016b36180
+msgid ""
+"Here is an example snippet of a page of this manual, where \"MuPDF\" has "
+"been used as the search string. Note that all strings **containing "
+"\"MuPDF\"** have been completely underlined (not just the search string)."
+msgstr ""
+
+#: ../../recipes-text.rst:200 07364170c89f43d7a469ec584d3f4f06
+msgid "How to Mark Searched Text"
+msgstr ""
+
+#: ../../recipes-text.rst:204 11638cbd201f4578b319a8b04e773026
+msgid "This script searches for text and marks it::"
+msgstr ""
+
+#: ../../recipes-text.rst:230 15b785bdfebf418aba157f4f78a77e4b
+msgid "The result looks like this:"
+msgstr ""
+
+#: ../../recipes-text.rst:241 080eb1dc215a426e9e7a03e134dc4fa2
+msgid "How to Mark Non-horizontal Text"
+msgstr ""
+
+#: ../../recipes-text.rst:242 6fe2ff76b1d0421d8ab98c926c234cb0
+msgid ""
+"The previous section already shows an example for marking non-horizontal "
+"text, that was detected by text **searching**."
+msgstr ""
+
+#: ../../recipes-text.rst:244 9f3587b3ee80418e80f13b3ad91233ec
+msgid ""
+"But text **extraction** with the \"dict\" / \"rawdict\" options of "
+":meth:`Page.get_text` may also return text with a non-zero angle to the "
+"x-axis. This is indicated by the value of the line dictionary's `\"dir\"`"
+" key: it is the tuple `(cosine, sine)` for that angle. If `line[\"dir\"] "
+"!= (1, 0)`, then the text of all its spans is rotated by (the same) angle"
+" != 0."
+msgstr ""
+
+#: ../../recipes-text.rst:246 b5ac4e18122a4f8985e80cf88f3152b4
+msgid ""
+"The \"bboxes\" returned by the method however are rectangles only -- not "
+"quads. So, to mark span text correctly, its quad must be recovered from "
+"the data contained in the line and span dictionary. Do this with the "
+"following utility function (new in v1.18.9)::"
+msgstr ""
+
+#: ../../recipes-text.rst:251 220c8fb8fa4b46c781ff32905bc0a24e
+msgid ""
+"If you want to **mark the complete line** or a subset of its spans in one"
+" go, use the following snippet (works for v1.18.10 or later)::"
+msgstr ""
+
+#: ../../recipes-text.rst:258 85d1dfa0969b4848b83f9b2f117d981c
+msgid ""
+"The `spans` argument above may specify any sub-list of `line[\"spans\"]`."
+" In the example above, the second to second-to-last span are marked. If "
+"omitted, the complete line is taken."
+msgstr ""
+
+#: ../../recipes-text.rst:265 b4aaece1bac342df88b2588a53b1488f
+msgid "How to Analyze Font Characteristics"
+msgstr ""
+
+#: ../../recipes-text.rst:266 3d03a051124b43d1bae8d901b0aecd28
+msgid ""
+"To analyze the characteristics of text in a PDF use this elementary "
+"script as a starting point:"
+msgstr ""
+
+#: ../../recipes-text.rst:271 f055a412baca41b5a95b0ecadafe2e3e
+msgid "Here is the PDF page and the script output:"
+msgstr ""
+
+#: ../../recipes-text.rst:282 66219ea8cab542688f83c1bd81f081c1
+msgid "How to Insert Text"
+msgstr ""
+
+#: ../../recipes-text.rst:283 4e0c636dd4ac4eb387bcde62a6a2a175
+msgid ""
+"PyMuPDF provides ways to insert text on new or existing PDF pages with "
+"the following features:"
+msgstr ""
+
+#: ../../recipes-text.rst:285 155bbc5aa1454c93b980b30ac316c0b0
+msgid ""
+"choose the font, including built-in fonts and fonts that are available as"
+" files"
+msgstr ""
+
+#: ../../recipes-text.rst:286 b9dd50f8a43d417ea405cd07b235088d
+msgid "choose text characteristics like bold, italic, font size, font color, etc."
+msgstr ""
+
+#: ../../recipes-text.rst:287 f938ab7b656c436297d8120a887e4fcc
+msgid "position the text in multiple ways:"
+msgstr ""
+
+#: ../../recipes-text.rst:289 96ff2b06077841bf82fb23104230f9ed
+msgid "either as simple line-oriented output starting at a certain point,"
+msgstr ""
+
+#: ../../recipes-text.rst:290 dcf40c10ea294dc8a656732166297259
+msgid ""
+"or fitting text in a box provided as a rectangle, in which case text "
+"alignment choices are also available,"
+msgstr ""
+
+#: ../../recipes-text.rst:291 056f2e92f23f4d41beb702386a246a80
+msgid ""
+"choose whether text should be put in foreground (overlay existing "
+"content),"
+msgstr ""
+
+#: ../../recipes-text.rst:292 5999867be03a4be495cbfd225913c3d4
+msgid ""
+"all text can be arbitrarily \"morphed\", i.e. its appearance can be "
+"changed via a :ref:`Matrix`, to achieve effects like scaling, shearing or"
+" mirroring,"
+msgstr ""
+
+#: ../../recipes-text.rst:293 25c6fa1fb2344a02a3a693135a7b5ad4
+msgid ""
+"independently from morphing and in addition to that, text can be rotated "
+"by integer multiples of 90 degrees."
+msgstr ""
+
+#: ../../recipes-text.rst:295 2190abc125234360a3e1fab88ef34947
+msgid ""
+"All of the above is provided by three basic :ref:`Page`, resp. "
+":ref:`Shape` methods:"
+msgstr ""
+
+#: ../../recipes-text.rst:297 4fb036ddb792472197216092b9eefddb
+msgid ""
+":meth:`Page.insert_font` -- install a font for the page for later "
+"reference. The result is reflected in the output of "
+":meth:`Document.get_page_fonts`. The font can be:"
+msgstr ""
+
+#: ../../recipes-text.rst:299 3c7f3dadc700412b9396227e3e8b9ff6
+msgid "provided as a file,"
+msgstr ""
+
+#: ../../recipes-text.rst:300 40d5ff2c32c44c6584f3112ed978abef
+msgid "via :ref:`Font` (then use :attr:`Font.buffer`)"
+msgstr ""
+
+#: ../../recipes-text.rst:301 6267fd1e928e41658810a84d52de31c7
+msgid "already present somewhere in **this or another** PDF, or"
+msgstr ""
+
+#: ../../recipes-text.rst:302 2ebf7edb3c7e4c4482334300df5af372
+msgid "be a **built-in** font."
+msgstr ""
+
+#: ../../recipes-text.rst:304 e6a884a850ad4cb49e2a74eeb2f5bc61
+msgid ""
+":meth:`Page.insert_text` -- write some lines of text. Internally, this "
+"uses :meth:`Shape.insert_text`."
+msgstr ""
+
+#: ../../recipes-text.rst:306 5252e3a0b80e49a4af1e7a62b8a2cc00
+msgid ""
+":meth:`Page.insert_textbox` -- fit text in a given rectangle. Here you "
+"can choose text alignment features (left, right, centered, justified) and"
+" you keep control as to whether text actually fits. Internally, this uses"
+" :meth:`Shape.insert_textbox`."
+msgstr ""
+
+#: ../../recipes-text.rst:308 0d6285e91b3c45608b972b2de7612705
+msgid "Both text insertion methods automatically install the font as necessary."
+msgstr ""
+
+#: ../../recipes-text.rst:314 4615115cc7ec417e9025309e87d5c912
+msgid "How to Write Text Lines"
+msgstr ""
+
+#: ../../recipes-text.rst:315 c5ec955ab13243b49f36ee01f5a5e363
+msgid "Output some text lines on a page::"
+msgstr ""
+
+#: ../../recipes-text.rst:336 8385d05c2aaf4baf89657017938f1841
+msgid ""
+"With this method, only the **number of lines** will be controlled to not "
+"go beyond page height. Surplus lines will not be written and the number "
+"of actual lines will be returned. The calculation uses a line height "
+"calculated from the :data:`fontsize` and 36 points (0.5 inches) as bottom"
+" margin."
+msgstr ""
+
+#: ../../recipes-text.rst:338 86eb433806094945b5d70882c088708a
+msgid ""
+"Line **width is ignored**. The surplus part of a line will simply be "
+"invisible."
+msgstr ""
+
+#: ../../recipes-text.rst:340 a76488ed16d54e53b404c6f7a09d9313
+msgid ""
+"However, for built-in fonts there are ways to calculate the line width "
+"beforehand - see :meth:`get_text_length`."
+msgstr ""
+
+#: ../../recipes-text.rst:342 b366c349b7114db78ed6f108144468f9
+msgid ""
+"Here is another example. It inserts 4 text strings using the four "
+"different rotation options, and thereby explains, how the text insertion "
+"point must be chosen to achieve the desired result::"
+msgstr ""
+
+#: ../../recipes-text.rst:378 fb820c64521f4522a238d2ce77dcaf18
+msgid "This is the result:"
+msgstr ""
+
+#: ../../recipes-text.rst:390 541c84709e8840f99fe3aba0b40495a5
+msgid "How to Fill a Text Box"
+msgstr ""
+
+#: ../../recipes-text.rst:391 c6dcf5cccb0044f8b35d759a5221dfae
+msgid ""
+"This script fills 4 different rectangles with text, each time choosing a "
+"different rotation value::"
+msgstr ""
+
+#: ../../recipes-text.rst:428 2e957f827c5b40aaa4e166eb9499bfbb
+msgid ""
+"Some default values were used above: font size 11 and text alignment "
+"\"left\". The result will look like this:"
+msgstr ""
+
+#: ../../recipes-text.rst:438 c7e2172b7c074d11b35164dc32c22e23
+msgid "How to Fill a Box with HTML Text"
+msgstr ""
+
+#: ../../recipes-text.rst:439 42df2d56d1f34d98823882e630fe1cf7
+msgid ""
+"Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to"
+" insert text in a rectangle."
+msgstr ""
+
+#: ../../recipes-text.rst:441 d5759271e33d478eae11f568d17338fc
+msgid ""
+"Instead of simple, plain text, this method accepts HTML source, which may"
+" not only contain HTML tags but also styling instructions to influence "
+"things like font, font weight (bold) and style (italic), color and much "
+"more."
+msgstr ""
+
+#: ../../recipes-text.rst:443 ba663f954c914a1a8d20788c385f392c
+msgid ""
+"It is also possible to mix multiple fonts and languages, to output HTML "
+"tables and to insert images and URI links."
+msgstr ""
+
+#: ../../recipes-text.rst:445 e592608d0a5348499aff8a592bb61837
+msgid ""
+"For even more styling flexibility, an additional CSS source may also be "
+"given."
+msgstr ""
+
+#: ../../recipes-text.rst:447 11d3134828ab455a9beb1bd08b3eedc9
+msgid ""
+"The method is based on the :ref:`Story` class. Therefore, complex script "
+"systems like Devanagari, Nepali, Tamil and many are supported and written"
+" correctly thanks to using the HarfBuzz library - which provides this so-"
+"called **\"text shaping\"** feature."
+msgstr ""
+
+#: ../../recipes-text.rst:449 702e632bbb1846448ff097d413da8fb7
+msgid ""
+"Any required fonts to output characters are automatically pulled in from "
+"the Google NOTO font library - as a fallback (when the -- optionally "
+"supplied -- user font(s) do not contain some glyphs)."
+msgstr ""
+
+#: ../../recipes-text.rst:451 6c11c27cd47042e2974d9dad0680a2a9
+msgid ""
+"As a small glimpse into the features offered here, we will output the "
+"following HTML-enriched text::"
+msgstr ""
+
+#: ../../recipes-text.rst:476 2ad55055659d456fabde0186e22d4e26
+msgid ""
+"Please note how the \"css\" parameter is used to globally select the "
+"default \"sans-serif\" font and a font size of 14."
+msgstr ""
+
+#: ../../recipes-text.rst:478 ../../recipes-text.rst:546
+#: 3c4cca1121d6405eb83e0cb2871b7570 8e7f4fe263f24763bbf69efa19489d99
+msgid "The result will look like this:"
+msgstr ""
+
+#: ../../recipes-text.rst:483 b7f446683eca4524b8fc2bd988191712
+msgid "How to output HTML tables and images"
+msgstr ""
+
+#: ../../recipes-text.rst:485 ed6bb1a3fe524fbda24f9c97da319399
+msgid ""
+"Here is another example that outputs a table with this method. This time,"
+" we are including all the styling in the HTML source itself. Please also "
+"note, how it works to include an image - even within a table cell::"
+msgstr ""
+
+#: ../../recipes-text.rst:552 4cd24c13bbba4d8d8b0887c53d530e7e
+msgid "How to Output Languages of the World"
+msgstr ""
+
+#: ../../recipes-text.rst:554 5e1849ae29cd4ee787b3105c593def1a
+msgid ""
+"Our third example will demonstrate the automatic multi-language support. "
+"It includes automatic **text shaping** for complex scripting systems like"
+" Devanagari and right-to-left languages::"
+msgstr ""
+
+#: ../../recipes-text.rst:584 7f93ecf38f45410098070b9c478823f0
+msgid "And this is the output:"
+msgstr ""
+
+#: ../../recipes-text.rst:589 0fc8a571f2164e8b8fa47da93210cc9b
+msgid "How to Specify your Own Fonts"
+msgstr ""
+
+#: ../../recipes-text.rst:591 f4ddad35adde440a9851a6e69fcfcf35
+msgid ""
+"Define your font files in CSS syntax using the `@font-face` statement. "
+"You need a separate `@font-face` for every combination of font weight and"
+" font style (e.g. bold or italic) you want to be supported. The following"
+" example uses the famous MS Comic Sans font in its four variants regular,"
+" bold, italic and bold-italic."
+msgstr ""
+
+#: ../../recipes-text.rst:593 f8779468c07c47ef9000fb2979f5214c
+msgid ""
+"As these four font files are located in the system's folder "
+"`C:/Windows/Fonts` the method needs an :ref:`Archive` definition that "
+"points to that folder::"
+msgstr ""
+
+#: ../../recipes-text.rst:642 06ab66e236cc4a2ea7d4c5a99612f4dd
+msgid "How to Request Text Alignment"
+msgstr ""
+
+#: ../../recipes-text.rst:644 7795bb870b4f42f187a0efe85b6c761d
+msgid "This example combines multiple requirements:"
+msgstr ""
+
+#: ../../recipes-text.rst:646 ff142aa60660494db8d4272e60183ff1
+msgid "Rotate the text by 90 degrees anti-clockwise."
+msgstr ""
+
+#: ../../recipes-text.rst:647 c1627013d8474a4f82eb9fcc874f012c
+msgid ""
+"Use a font from package `pymupdf-fonts <https://pypi.org/project/pymupdf-"
+"fonts/>`_. You will see that the respective CSS definitions are a lot "
+"easier in this case."
+msgstr ""
+
+#: ../../recipes-text.rst:648 827ab2e55bb64443b6dcbb706662051a
+msgid "Align the text with the \"justify\" option."
+msgstr ""
+
+#: ../../recipes-text.rst:698 424d197ff94d4b4f9c4c0cc4513a960d
+msgid "How to Extract Text with Color"
+msgstr ""
+
+#: ../../recipes-text.rst:700 a842d1070655423986ddbb7afdbb289b
+msgid ""
+"Iterate through your text blocks and find the spans of text you need for "
+"this information."
+msgstr ""
+
+#: ../../footer.rst:60 b02445d3686f4215969d2dff8b922af2
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

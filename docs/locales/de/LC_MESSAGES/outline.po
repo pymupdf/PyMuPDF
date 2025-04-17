@@ -1,0 +1,227 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 eade87716b2747e7817d9414e8034522
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 6379b9d9980a4f9fabc3904f865e408b
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 dc2316e3820a455f9e030297b205a574
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../outline.rst:7 3ebaa51cc5b946e7a450900a8661c90c
+msgid "Outline"
+msgstr ""
+
+#: ../../outline.rst:9 5119b28a24af46d682652e038c5a1126
+msgid ""
+"*outline* (or \"bookmark\"), is a property of *Document*. If not *None*, "
+"it stands for the first outline item of the document. Its properties in "
+"turn define the characteristics of this item and also point to other "
+"outline items in \"horizontal\" or downward direction. The full tree of "
+"all outline items for e.g. a conventional table of contents (TOC) can be "
+"recovered by following these \"pointers\"."
+msgstr ""
+
+#: ../../outline.rst:12 c27e0f395b824686b522b514ecf1d098
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../outline.rst:12 cb55fadb7745417899fe5f3e385a6737
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../outline.rst:14 0e48e54f78de4ed6a2f0ef5660d74298
+msgid ":attr:`Outline.down`"
+msgstr ""
+
+#: ../../outline.rst:14 4bda059c28ab45bb8c9b17d781a5f749
+msgid "next item downwards"
+msgstr ""
+
+#: ../../outline.rst:15 af4e5daadaf54eb7a89a3012aee90476
+msgid ":attr:`Outline.next`"
+msgstr ""
+
+#: ../../outline.rst:15 89522a47c0db4668bf6da64302eda4d1
+msgid "next item same level"
+msgstr ""
+
+#: ../../outline.rst:16 2e773fb937834e4192d62907e44c0eae
+msgid ":attr:`Outline.page`"
+msgstr ""
+
+#: ../../outline.rst:16 c22ddb98cc114a5c94ca6d39d1bda4f4
+msgid "page number (0-based)"
+msgstr ""
+
+#: ../../outline.rst:17 61f54e5be3684a7e9b71f47ccdede803
+msgid ":attr:`Outline.title`"
+msgstr ""
+
+#: ../../outline.rst:17 93a433f132584065af026642754a98fb
+msgid "title"
+msgstr ""
+
+#: ../../outline.rst:18 e41061ce2b7e48a4aa31064fe88df3cf
+msgid ":attr:`Outline.uri`"
+msgstr ""
+
+#: ../../outline.rst:18 323881cb7b1d40ae85b03dd5a27df654
+msgid "string further specifying outline target"
+msgstr ""
+
+#: ../../outline.rst:19 198b8ace96d142379f9036f96c06bd73
+msgid ":attr:`Outline.is_external`"
+msgstr ""
+
+#: ../../outline.rst:19 f15b6eff0b2149948a823a986f443ba9
+msgid "target outside document"
+msgstr ""
+
+#: ../../outline.rst:20 7b2130996c994ef4857d2225858d3f28
+msgid ":attr:`Outline.is_open`"
+msgstr ""
+
+#: ../../outline.rst:20 1ce23358265b4971af79d5cb7f924035
+msgid "whether sub-outlines are open or collapsed"
+msgstr ""
+
+#: ../../outline.rst:21 3810e86f9dc24ee98109b10773fe9594
+msgid ":attr:`Outline.dest`"
+msgstr ""
+
+#: ../../outline.rst:21 be949162a84940be8d8d5b241b3bd8dc
+msgid "points to destination details object"
+msgstr ""
+
+#: ../../outline.rst:24 d60d251f33b04aba88575166c80cd268
+msgid "**Class API**"
+msgstr ""
+
+#: ../../outline.rst:30 0d3278496d6f48cca68af36994524ad7
+msgid ""
+"The next outline item on the next level down. Is *None* if the item has "
+"no children."
+msgstr ""
+
+#: ../../outline.rst 0f60e0258ec74a77850c19f4e818573b
+#: 359863649a1b46a5b9e315592d26b967 455943c48bd0401da7d61e80ae3c1629
+#: 46b1711a00d245fa90b3ef78e5ed461c 4d3e0f6d95214fe79ecf3af1cee7d067
+#: 6f6b16d6c7924b9190b762fc5f398c39 b2720f2be62b4f0ebd718c2c00bad2fe
+#: b5bdff1052b242918366fb27cd5edd6f
+msgid "type"
+msgstr ""
+
+#: ../../outline.rst:32 31df4a9a593e495e83bdab0377d48a45
+msgid ":ref:`Outline`"
+msgstr ""
+
+#: ../../outline.rst:36 821897bbe57144a2a9515d44d5988bfd
+msgid ""
+"The next outline item at the same level as this item. Is *None* if this "
+"is the last one in its level."
+msgstr ""
+
+#: ../../outline.rst:38 4805300829ae486787ed36cf2b1d07e6
+msgid "`Outline`"
+msgstr ""
+
+#: ../../outline.rst:42 6230223ef28b4e0f874585f6bd0fbfb4
+msgid "The page number (0-based) this bookmark points to."
+msgstr ""
+
+#: ../../outline.rst:44 c245da52b4444de3a1a7a67e7c8a4c6e
+msgid "int"
+msgstr ""
+
+#: ../../outline.rst:48 050383aa093344d4b72c9304ea29e434
+msgid "The item's title as a string or *None*."
+msgstr ""
+
+#: ../../outline.rst:50 ../../outline.rst:83 23062e46c343424b92d244ac235c1012
+#: 2826b0f053f246028f1017763eb6beba
+msgid "str"
+msgstr ""
+
+#: ../../outline.rst:54 33486d26fcf84b4287a9b62665e5d95d
+msgid ""
+"Indicator showing whether any sub-outlines should be expanded (*True*) or"
+" be collapsed (*False*). This information is interpreted by PDF reader "
+"software."
+msgstr ""
+
+#: ../../outline.rst:56 ../../outline.rst:62 39516f02d6ca4ea5818c20077384b2f7
+#: 7c679ae4b313481fa70a96efb56596b0
+msgid "bool"
+msgstr ""
+
+#: ../../outline.rst:60 6d936126ab42453088019c3a2c2d9b85
+msgid ""
+"A bool specifying whether the target is outside (*True*) of the current "
+"document."
+msgstr ""
+
+#: ../../outline.rst:66 ae26e1cb6f7740eab0cd822bccd86c6b
+msgid ""
+"A string specifying the link target. The meaning of this property should "
+"be evaluated in conjunction with property `is_external`:"
+msgstr ""
+
+#: ../../outline.rst:70 6a552a5230644d80b93626dc835ea86c
+msgid ""
+"`is_external` is true: ``uri`` points to some target outside the current "
+"PDF, which may be an internet resource (``uri`` starts with ``http://`` "
+"or similar), another file (``uri`` starts with ``file:`` or ``file://``) "
+"or some other service like an e-mail address (``uri`` starts with "
+"``mailto:``)."
+msgstr ""
+
+#: ../../outline.rst:76 c000b251feae4c25aa04f34b87aff7f3
+msgid ""
+"`is_external` is false: ``uri`` will be `None` or point to an internal "
+"location. In case of PDF documents, this should either be *#nnnn* to "
+"indicate a 1-based (!) page number *nnnn*, or a named location. The "
+"format varies for other document types, for example "
+"\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
+"document."
+msgstr ""
+
+#: ../../outline.rst:87 6ef34f3fc06140d2b6b9f9a43f092838
+msgid "The link destination details object."
+msgstr ""
+
+#: ../../outline.rst:89 79a5c71cf6224a6198800f498dc0ddb3
+msgid ":ref:`linkDest`"
+msgstr ""
+
+#: ../../footer.rst:60 e201dcf36b574d0280f4532c31067f5b
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

@@ -1,0 +1,1513 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 ff7a088e26e441d29ec4e3aca594d728
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 18977871afd44db590c7a3b2bb53f215
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 1b2c3384886c41a0827a54c74b8505d9
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../annot.rst:7 5000811e2d7e4bf0b31e898f6141c30a
+msgid "Annot"
+msgstr ""
+
+#: ../../annot.rst:9 6572aa4344904647b2861639064ec562
+msgid "|pdf_only_class|"
+msgstr ""
+
+#: ../../annot.rst:11 58f32778ecd843849cffbac30da6580a
+msgid ""
+"Quote from the :ref:`AdobeManual`: \"An annotation associates an object "
+"such as a note, sound, or movie with a location on a page of a PDF "
+"document, or provides a way to interact with the user by means of the "
+"mouse and keyboard.\""
+msgstr ""
+
+#: ../../annot.rst:13 a1ef865437ed4e5b8622fb4c309b374d
+msgid ""
+"There is a parent-child relationship between an annotation and its page. "
+"If the page object becomes unusable (closed document, any document "
+"structure change, etc.), then so does every of its existing annotation "
+"objects -- an exception is raised saying that the object is \"orphaned\","
+" whenever an annotation property or method is accessed."
+msgstr ""
+
+#: ../../annot.rst:16 c126f4b877914becad42b5b9654e9e4e
+msgid "**Attribute**"
+msgstr ""
+
+#: ../../annot.rst:16 3fa27aa576664040b2fb04bfaf95f590
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../annot.rst:18 ea087de99b44415f897643e65decb123
+msgid ":meth:`Annot.delete_responses`"
+msgstr ""
+
+#: ../../annot.rst:18 7f486bb052864bc2a47e8dfe9f73e9e8
+msgid "delete all responding annotations"
+msgstr ""
+
+#: ../../annot.rst:19 7b62bdd30e3e486b88c51a3324a55249
+msgid ":meth:`Annot.get_file`"
+msgstr ""
+
+#: ../../annot.rst:19 ad45a655b150485fb69b9ddefe467eee
+msgid "get attached file content"
+msgstr ""
+
+#: ../../annot.rst:20 c938adec44fd42ebbdfd6b8ab384b6dc
+msgid ":meth:`Annot.get_oc`"
+msgstr ""
+
+#: ../../annot.rst:20 ede08aa7b8a9490fb82654ba462331fe
+msgid "get :data:`xref` of an :data:`OCG` / :data:`OCMD`"
+msgstr ""
+
+#: ../../annot.rst:21 d2693fb2e1ba408bb519d0c17278ac67
+msgid ":meth:`Annot.get_pixmap`"
+msgstr ""
+
+#: ../../annot.rst:21 80fd13f75a364a16a5170ad843148df0
+msgid "image of the annotation as a pixmap"
+msgstr ""
+
+#: ../../annot.rst:22 cff57bdb24884692afe25a6a3850650d
+msgid ":meth:`Annot.get_sound`"
+msgstr ""
+
+#: ../../annot.rst:22 6994a4c09b9b405597ab42a1bec163f6
+msgid "get the sound of an audio annotation"
+msgstr ""
+
+#: ../../annot.rst:23 58ec6233ee8c46cd9b32b2d4537d1c4e
+msgid ":meth:`Annot.get_text`"
+msgstr ""
+
+#: ../../annot.rst:23 ../../annot.rst:24 7991062612ee456d9d02ac909cb903ab
+#: b049c9c1cfe14a53841638c277c3dc9d
+msgid "extract annotation text"
+msgstr ""
+
+#: ../../annot.rst:24 3293e6c0727e4c7fbb897607e9abda13
+msgid ":meth:`Annot.get_textbox`"
+msgstr ""
+
+#: ../../annot.rst:25 c7107ff6b91244629a578499c2693f97
+msgid ":meth:`Annot.get_textpage`"
+msgstr ""
+
+#: ../../annot.rst:25 f960592668bb4d61a14db7770f245ff7
+msgid "create a TextPage for the annotation"
+msgstr ""
+
+#: ../../annot.rst:26 08f9508de1fc426b8b0dad3648e4a0ab
+msgid ":meth:`Annot.set_border`"
+msgstr ""
+
+#: ../../annot.rst:26 7f667fc22c864184a53baf1b41f2f422
+msgid "set annotation's border properties"
+msgstr ""
+
+#: ../../annot.rst:27 d24ba1cc1ce34a149bcbf60b2434df4e
+msgid ":meth:`Annot.set_blendmode`"
+msgstr ""
+
+#: ../../annot.rst:27 922e48bd5c9c4d01bbcbdfa4a956b427
+msgid "set annotation's blend mode"
+msgstr ""
+
+#: ../../annot.rst:28 50bf516a0b764d70a67a2b30e60aeacb
+msgid ":meth:`Annot.set_colors`"
+msgstr ""
+
+#: ../../annot.rst:28 34603b17e7e24106b41fdcf554ba1360
+msgid "set annotation's colors"
+msgstr ""
+
+#: ../../annot.rst:29 ../../annot.rst:342 1c824645834845a0ae5154e55b3cdbf4
+#: cb309c0b399f41ffa927d9853ab58985
+msgid ":meth:`Annot.set_flags`"
+msgstr ""
+
+#: ../../annot.rst:29 163cd8ded8aa4fe89173df3c1b0d8d6b
+msgid "set annotation's flags field"
+msgstr ""
+
+#: ../../annot.rst:30 ac5223c7a43f49589c2d85e8b1380675
+msgid ":meth:`Annot.set_irt_xref`"
+msgstr ""
+
+#: ../../annot.rst:30 6acda0a7b8404cf7ae6381140fd376ab
+msgid "define the annotation to being \"In Response To\""
+msgstr ""
+
+#: ../../annot.rst:31 71e625c5f2854e86acf0da6bdbecafc6
+msgid ":meth:`Annot.set_name`"
+msgstr ""
+
+#: ../../annot.rst:31 93e021065f1249bca197aba645a1ae23
+msgid "set annotation's name field"
+msgstr ""
+
+#: ../../annot.rst:32 ../../annot.rst:343 d35d1936521f4902a7308fb2833b06f8
+#: dd1fc298be724240b0bbc96ae65e503d
+msgid ":meth:`Annot.set_oc`"
+msgstr ""
+
+#: ../../annot.rst:32 375a7e1792f34e01a55dd16d3f73d808
+msgid "set :data:`xref` to an :data:`OCG` / :data:`OCMD`"
+msgstr ""
+
+#: ../../annot.rst:33 c8b80eb861434f07bd261aa9435ac037
+msgid ":meth:`Annot.set_opacity`"
+msgstr ""
+
+#: ../../annot.rst:33 0798272be98b4e6284d7e419c7f6d4d6
+msgid "change transparency"
+msgstr ""
+
+#: ../../annot.rst:34 11786c94965b4da98e8467611d3aacc5
+msgid ":meth:`Annot.set_open`"
+msgstr ""
+
+#: ../../annot.rst:34 84272bd5f9ba495f958777194709def4
+msgid "open / close annotation or its Popup"
+msgstr ""
+
+#: ../../annot.rst:35 cf0b1c55f79c449299f2c02061edc6ed
+msgid ":meth:`Annot.set_popup`"
+msgstr ""
+
+#: ../../annot.rst:35 85d219e184364d30a1dc9a4764ea4c7d
+msgid "create a Popup for the annotation"
+msgstr ""
+
+#: ../../annot.rst:36 ../../annot.rst:341 5d07938cf9484386bbf4154a889a6a30
+#: 8015d3625a67455f88892d3ed0e7cda7
+msgid ":meth:`Annot.set_rect`"
+msgstr ""
+
+#: ../../annot.rst:36 871ad36e30794a4cb1ef6a47d85fd43b
+msgid "change annotation rectangle"
+msgstr ""
+
+#: ../../annot.rst:37 a1ad49c8d1884520aac479a12df9f827
+msgid ":meth:`Annot.set_rotation`"
+msgstr ""
+
+#: ../../annot.rst:37 cacca8eff36344cc8374cc89c957483e
+msgid "change rotation"
+msgstr ""
+
+#: ../../annot.rst:38 ../../annot.rst:344 6485afe67e3442258d9d3698bfc4b536
+#: 7557e579699f4dd79e2202a136f61f23
+msgid ":meth:`Annot.update_file`"
+msgstr ""
+
+#: ../../annot.rst:38 817586391bcb49fb9b9ee6f69cde7868
+msgid "update attached file content"
+msgstr ""
+
+#: ../../annot.rst:39 2ab6962c0ead4a75b45dd6cf2abaa51d
+msgid ":meth:`Annot.update`"
+msgstr ""
+
+#: ../../annot.rst:39 51fc956198004f8d9a16bc9ac938de48
+msgid "apply accumulated annot changes"
+msgstr ""
+
+#: ../../annot.rst:40 0ae5ddfde6a840b3bb5570b800f1d653
+msgid ":attr:`Annot.blendmode`"
+msgstr ""
+
+#: ../../annot.rst:40 c3b350ed72634609bf89ec671eb98821
+msgid "annotation BlendMode"
+msgstr ""
+
+#: ../../annot.rst:41 7c0ad77081df47acb4fb5fc50e2adc57
+msgid ":attr:`Annot.border`"
+msgstr ""
+
+#: ../../annot.rst:41 524c0edf6aaa466ebcdf8d43118eebd6
+msgid "border details"
+msgstr ""
+
+#: ../../annot.rst:42 391ec574189d4e5d99dcc5de5d15b441
+msgid ":attr:`Annot.colors`"
+msgstr ""
+
+#: ../../annot.rst:42 491d801bcbdf44f0a1cc60e0e0b43785
+msgid "border / background and fill colors"
+msgstr ""
+
+#: ../../annot.rst:43 70881f5fbe3f444ca69c132b8525a8a4
+msgid ":attr:`Annot.file_info`"
+msgstr ""
+
+#: ../../annot.rst:43 ed4a1667427941a0a42c016cdb472ecc
+msgid "get attached file information"
+msgstr ""
+
+#: ../../annot.rst:44 fc587e8b72b24093ba42f0200439612f
+msgid ":attr:`Annot.flags`"
+msgstr ""
+
+#: ../../annot.rst:44 412be177d1f04bb7aa7efbae8a26b2b9
+msgid "annotation flags"
+msgstr ""
+
+#: ../../annot.rst:45 e1730d3ddaf94a5ba8a40ae46d1ebd27
+msgid ":attr:`Annot.has_popup`"
+msgstr ""
+
+#: ../../annot.rst:45 d60eec1bd2e24dda97956603fa503999
+msgid "whether annotation has a Popup"
+msgstr ""
+
+#: ../../annot.rst:46 c2bf5bf4df6844c48801c20befcd9327
+msgid ":attr:`Annot.irt_xref`"
+msgstr ""
+
+#: ../../annot.rst:46 7448ababb2e746a394c74eb1d1d51424
+msgid "annotation to which this one responds"
+msgstr ""
+
+#: ../../annot.rst:47 722b5d2dc3fa466d87a301aa2009ce91
+msgid ":attr:`Annot.info`"
+msgstr ""
+
+#: ../../annot.rst:47 0f31b4b67f6c4f3580312e80d84264b1
+msgid "various information"
+msgstr ""
+
+#: ../../annot.rst:48 b80dffed8e3748148d2ccc8227450602
+msgid ":attr:`Annot.is_open`"
+msgstr ""
+
+#: ../../annot.rst:48 ddfc282227b548df89328272f9ef3b46
+msgid "whether annotation or its Popup is open"
+msgstr ""
+
+#: ../../annot.rst:49 2023405da922439f980b6e1c5fa916af
+msgid ":attr:`Annot.line_ends`"
+msgstr ""
+
+#: ../../annot.rst:49 96322f741c9c4c3cad018601e21b70f4
+msgid "start / end appearance of line-type annotations"
+msgstr ""
+
+#: ../../annot.rst:50 6440c9f13ce742aeb84a3ff8c0a58ba6
+msgid ":attr:`Annot.next`"
+msgstr ""
+
+#: ../../annot.rst:50 c697cfff2b7d432aa56de4e2f3d84bf5
+msgid "link to the next annotation"
+msgstr ""
+
+#: ../../annot.rst:51 69859d25e053434eb9f58f06a5e84215
+msgid ":attr:`Annot.opacity`"
+msgstr ""
+
+#: ../../annot.rst:51 2346e2f7904f4f4f89b78e3d4cc5191a
+msgid "the annot's transparency"
+msgstr ""
+
+#: ../../annot.rst:52 dc09b3803b4b40708d90ee360746806e
+msgid ":attr:`Annot.parent`"
+msgstr ""
+
+#: ../../annot.rst:52 d4300a6a5817452a904ca1424d707494
+msgid "page object of the annotation"
+msgstr ""
+
+#: ../../annot.rst:53 4a1c85bcc643456eb893652c94e1ffb1
+msgid ":attr:`Annot.popup_rect`"
+msgstr ""
+
+#: ../../annot.rst:53 310a3a9c999e45aa8530e9e0406ae7a1
+msgid "rectangle of the annotation's Popup"
+msgstr ""
+
+#: ../../annot.rst:54 29e2ed85a69c4705aa62eb078926195e
+msgid ":attr:`Annot.popup_xref`"
+msgstr ""
+
+#: ../../annot.rst:54 a58383e6b647405dae30968ba753daff
+msgid "the PDF :data:`xref` number of the annotation's Popup"
+msgstr ""
+
+#: ../../annot.rst:55 54f3ad9d61224189875abeaa829739fc
+msgid ":attr:`Annot.rect`"
+msgstr ""
+
+#: ../../annot.rst:55 ed12e42c92214db1a837f18c33ec864e
+msgid "rectangle containing the annotation"
+msgstr ""
+
+#: ../../annot.rst:56 b322c2136f6641d6b3700eb40d06354c
+msgid ":attr:`Annot.type`"
+msgstr ""
+
+#: ../../annot.rst:56 d05081e51bda43e1aed2a07fecee14ae
+msgid "type of the annotation"
+msgstr ""
+
+#: ../../annot.rst:57 7760d9f11dc1455bbce39fef1d726122
+msgid ":attr:`Annot.vertices`"
+msgstr ""
+
+#: ../../annot.rst:57 b65ac6b16aef48679a1d885ce92fd12c
+msgid "point coordinates of Polygons, PolyLines, etc."
+msgstr ""
+
+#: ../../annot.rst:58 324031e7bc8344b7891eea42262c24eb
+msgid ":attr:`Annot.xref`"
+msgstr ""
+
+#: ../../annot.rst:58 45eb2c6f94d241b9a99b179f77e1c730
+msgid "the PDF :data:`xref` number"
+msgstr ""
+
+#: ../../annot.rst:61 47b2c93409ed420491e9d1165df4fceb
+msgid "**Class API**"
+msgstr ""
+
+#: ../../annot.rst:73 86260e9a3eee40d8be9f41ac0a98d586
+msgid "Changed in v1.19.2: added support of dpi parameter."
+msgstr ""
+
+#: ../../annot.rst:75 880909430980416ea32acec47fd74620
+msgid ""
+"Creates a pixmap from the annotation as it appears on the page in "
+"untransformed coordinates. The pixmap's :ref:`IRect` equals "
+"*Annot.rect.irect* (see below). **All parameters are keyword only.**"
+msgstr ""
+
+#: ../../annot.rst 089ffb55a5c54d31b2a099695ee8e8b5
+#: 0e4c6fa44dde49ac847bd4cc76f84095 2d7cda1dee384169b88e5f69f469a86b
+#: 31ec6dab43204aea9cc8515ad1bcab55 345b4a70f79d44b0ad9a4fe11ae6749d
+#: 4df572c9469347c7b2d092efd5937020 57f3253f02da4f71af4c62f36a91b1f0
+#: 6311f05f830242038f6be5d788bd8b3a 83f0ce983b3149f19f1937976f26c38c
+#: 8a15651d997b433694fb86a9a61cf34e 9812334b860241feb0f05f5542163c29
+#: 9a80f3d4399746328022f9a04fb35393 a3f5c2dfd7d8447da39f78b071ecec3d
+#: ac371b0005864d5f867373b568c23cff bedb0b087bb84f0a8c0728a11f6879c9
+#: d115b2f26341443f9931ddf8b3474e58 d2a145a6bb0a425aaf5dba567f435051
+#: d99a889618da40e8a0fc713671dcf33e e38967643d4246a199e2b38e2a034778
+#: ecb79981326049eab38b7dd94daff1dd
+msgid "Parameters"
+msgstr ""
+
+#: ../../annot.rst:77 e417565017cd45dbb90662a4eb077f40
+msgid "a matrix to be used for image creation. Default is :ref:`Identity`."
+msgstr ""
+
+#: ../../annot.rst:79 b405de362c454c6e98060e7acc458ee5
+msgid ""
+"(new in v1.19.2) desired resolution in dots per inch. If not `None`, the "
+"matrix parameter is ignored."
+msgstr ""
+
+#: ../../annot.rst:81 b77081c57af64088978ad2f41b248bd4
+msgid "a colorspace to be used for image creation. Default is *pymupdf.csRGB*."
+msgstr ""
+
+#: ../../annot.rst:84 2dcd533cb5c24787bf3ef2ea667576c1
+msgid "whether to include transparency information. Default is *False*."
+msgstr ""
+
+#: ../../annot.rst 03bdb651fd5d43e0b50daa68b3f29301
+#: 07b682c9b1494fd680a932f123bea564 0d44e48248b94319939438ec421594ba
+#: 10ea7432521545c1b51851cb404aaa0a 1ddb2fc5b5524df78da3cbde901f4e28
+#: 23944f91176a44299ff38be1a9b2fcf0 2be3544d8d6f4593bc5ad0d1d8327da7
+#: 361c2326f3c041f6bd559b8d3528012d 3891e2a8472640c3be4bdedf20c6cc9f
+#: 49ff50d3391a465a93c0558311214b07 72e96380ba7442b789c04b2cef259e6b
+#: 776268181a164c45856b7f26c6d91330 797c9a492b094ed58f03d179a0c36352
+#: 7e96eff6b04d4d18ad9b50324bff1890 8e3aba14e0704da497c753ab9da937ce
+#: 9cdc041b2f43450fb713e2a0b8c9caba ae746abd2c394decb52eef9ad542d93f
+#: b4cfe4c19ed249038ce618565b456e1c b5b693248d7b4439a7ce3b2316508ee1
+#: c9b331263c504d9798802d4c76edf0f3 d112cfe7ae6f4091aba2610588a0ce1d
+#: dcac44df5c924b6d9b805a49b1754ba4 eb59a0c6a52e4d15ad132925deb11e2e
+#: f55053f9e847488593d336020468cebb
+msgid "Return type"
+msgstr ""
+
+#: ../../annot.rst:86 8bc98996e43b49e98902ab152c1681ae
+msgid ":ref:`Pixmap`"
+msgstr ""
+
+#: ../../annot.rst:90 0b7db7e99f7746abad597233349afdaf
+msgid ""
+"If the annotation has just been created or modified, you should "
+":meth:`Document.reload_page` the page first via `page = "
+"doc.reload_page(page)`."
+msgstr ""
+
+#: ../../annot.rst:92 672b6b5650554da988247bd501528456
+msgid ""
+"The pixmap will have *\"premultiplied\"* pixels if `alpha=True`. To learn"
+" about some background, e.g. look for \"Premultiplied alpha\" `here "
+"<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
+msgstr ""
+
+#: ../../annot.rst:110 ../../annot.rst:131 2c14274b38ca40928460b67999b1c1ec
+#: 5079bb8a71b44da3b5ef92fff930f701
+msgid "New in 1.18.0"
+msgstr ""
+
+#: ../../annot.rst:112 328e54dec81c4a1dbe69080e8e98eb9c
+msgid ""
+"Retrieves the content of the annotation in a variety of formats -- much "
+"like the same method for :ref:`Page`.. This currently only delivers "
+"relevant data for annotation types 'FreeText' and 'Stamp'. Other types "
+"return an empty string (or equivalent objects)."
+msgstr ""
+
+#: ../../annot.rst:114 58feb90344fd49c8b4824a369da850b4
+msgid ""
+"(positional only) the desired format - one of the following values. "
+"Please note that this method works exactly like the same-named method of "
+":ref:`Page`.  * \"text\" -- :meth:`TextPage.extractTEXT`, default * "
+"\"blocks\" -- :meth:`TextPage.extractBLOCKS` * \"words\" -- "
+":meth:`TextPage.extractWORDS` * \"html\" -- :meth:`TextPage.extractHTML` "
+"* \"xhtml\" -- :meth:`TextPage.extractXHTML` * \"xml\" -- "
+":meth:`TextPage.extractXML` * \"dict\" -- :meth:`TextPage.extractDICT` * "
+"\"json\" -- :meth:`TextPage.extractJSON` * \"rawdict\" -- "
+":meth:`TextPage.extractRAWDICT`"
+msgstr ""
+
+#: ../../annot.rst:114 c9e62c7b73724f1c8e6235f8f6cbda04
+msgid ""
+"(positional only) the desired format - one of the following values. "
+"Please note that this method works exactly like the same-named method of "
+":ref:`Page`."
+msgstr ""
+
+#: ../../annot.rst:116 41033f33feec4d6cbb8e872e49834e35
+msgid "\"text\" -- :meth:`TextPage.extractTEXT`, default"
+msgstr ""
+
+#: ../../annot.rst:117 0f63370b1d564689a30b933603e4c3e6
+msgid "\"blocks\" -- :meth:`TextPage.extractBLOCKS`"
+msgstr ""
+
+#: ../../annot.rst:118 913527d283fe4c76926fe0d4e4eaaf65
+msgid "\"words\" -- :meth:`TextPage.extractWORDS`"
+msgstr ""
+
+#: ../../annot.rst:119 dfeba93112b743e9b6b22423e828ae9c
+msgid "\"html\" -- :meth:`TextPage.extractHTML`"
+msgstr ""
+
+#: ../../annot.rst:120 80912195e04d40f9baf509203c257b1f
+msgid "\"xhtml\" -- :meth:`TextPage.extractXHTML`"
+msgstr ""
+
+#: ../../annot.rst:121 cd4deb7f93034a8bbfd0bd74e2f12450
+msgid "\"xml\" -- :meth:`TextPage.extractXML`"
+msgstr ""
+
+#: ../../annot.rst:122 b286687300f54486ae11f97ee845c847
+msgid "\"dict\" -- :meth:`TextPage.extractDICT`"
+msgstr ""
+
+#: ../../annot.rst:123 9dc28b03f1ea41e8b66cf1bb75ede2af
+msgid "\"json\" -- :meth:`TextPage.extractJSON`"
+msgstr ""
+
+#: ../../annot.rst:124 38208eb8ae134ee1a76f75088217b67d
+msgid "\"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
+msgstr ""
+
+#: ../../annot.rst:126 09f1c69a2a314fe4b0c7a41518666c60
+msgid ""
+"(keyword only) restrict the extraction to this area. Should hardly ever "
+"be required, defaults to :attr:`Annot.rect`."
+msgstr ""
+
+#: ../../annot.rst:127 10c8554551bc4032abd2670e94cdb2b8
+msgid ""
+"(keyword only) control the amount of data returned. Defaults to simple "
+"text extraction."
+msgstr ""
+
+#: ../../annot.rst:133 da44ee14361e4946b9f738c42752dbf1
+msgid ""
+"Return the annotation text. Mostly (except line breaks) equal to "
+":meth:`Annot.get_text` with the \"text\" option."
+msgstr ""
+
+#: ../../annot.rst:135 775ed8af3b514f7cb93fca3075fb7b66
+msgid "the area to consider, defaults to :attr:`Annot.rect`."
+msgstr ""
+
+#: ../../annot.rst:140 a37b251418e1438eb6557034157f78d6
+msgid "Create a :ref:`TextPage` for the annotation."
+msgstr ""
+
+#: ../../annot.rst:142 853a6807eb2e4838b3a76e058d318a16
+msgid ""
+"indicator bits controlling the content available for subsequent text "
+"extractions and searches -- see the parameter of :meth:`Annot.get_text`."
+msgstr ""
+
+#: ../../annot.rst:144 a0916e69962b40559ccefc18b36fe7ab
+msgid "restrict extracted text to this area."
+msgstr ""
+
+#: ../../annot.rst 10c25cc74cf14a4487da85267fd798e1
+#: 23ab237bc68240aab0c5942ffd105dbc 491acd8d88934a05b86aa6b039da0c4b
+#: 61ef90c5224d40d2a863f618127ffcbd 67a45cfcd15047fea621454ad26174e8
+#: 944c95687ff74ea6ad35abc0e299761a c03ec076d8fa47a889fcd76c059f864c
+msgid "Returns"
+msgstr ""
+
+#: ../../annot.rst:146 8ffa753f1b664b66bd4b57101af0dcac
+msgid ":ref:`TextPage`"
+msgstr ""
+
+#: ../../annot.rst:148 a9f9910300164ed1b6a9d9d35e97ccc7
+msgid "|history_begin|"
+msgstr ""
+
+#: ../../annot.rst:150 faba4699392d4b29a960fcfd7e0f9e79
+msgid "v1.25.5: fixed `clip` arg."
+msgstr ""
+
+#: ../../annot.rst:152 55dcf062ed404c9289bb09e898b26e1a
+msgid "|history_end|"
+msgstr ""
+
+#: ../../annot.rst:156 2a88cb05dd094eca83c54413f0cf5ce8
+msgid "Changed in version 1.16.10"
+msgstr ""
+
+#: ../../annot.rst:158 3d7812355216454aaffbae4bba32aae5
+msgid ""
+"Changes annotation properties. These include dates, contents, subject and"
+" author (title). Changes for *name* and *id* will be ignored. The update "
+"happens selectively: To leave a property unchanged, set it to *None*. To "
+"delete existing data, use an empty string."
+msgstr ""
+
+#: ../../annot.rst:160 99d8112ddc2a49fdacf5c1ba5e3c4e53
+msgid ""
+"a dictionary compatible with the *info* property (see below). All entries"
+" must be strings. If this argument is not a dictionary, the other "
+"arguments are used instead -- else they are ignored."
+msgstr ""
+
+#: ../../annot.rst:161 ../../annot.rst:162 ../../annot.rst:165
+#: 298f8bd243c74fd8815ee77d8616eb88 4f949b0c27064158a50619fef16f97c1
+#: d48ad8dfb0234e2f8a3fb95edc52b5ec
+msgid "*(new in v1.16.10)* see description in :attr:`info`."
+msgstr ""
+
+#: ../../annot.rst:163 b37754ca35e947d187046764f489d377
+msgid ""
+"*(new in v1.16.10)* date of annot creation. If given, should be in PDF "
+"datetime format."
+msgstr ""
+
+#: ../../annot.rst:164 4f5cc39695f54dd1ba9374889dd6ab3a
+msgid ""
+"*(new in v1.16.10)* date of last modification. If given, should be in PDF"
+" datetime format."
+msgstr ""
+
+#: ../../annot.rst:169 1e74b028b8224bbf9d84b29aa7a1f114
+msgid ""
+"Sets an annotation's line ending styles. Each of these annotation types "
+"is defined by a list of points which are connected by lines. The symbol "
+"identified by *start* is attached to the first point, and *end* to the "
+"last point of this list. For unsupported annotation types, a no-operation"
+" with a warning message results."
+msgstr ""
+
+#: ../../annot.rst:173 f51503de04174f5892b72d2795bc07b6
+msgid ""
+"While 'FreeText', 'Line', 'PolyLine', and 'Polygon' annotations can have "
+"these properties, (Py-) MuPDF does not support line ends for 'FreeText', "
+"because the call-out variant of it is not supported."
+msgstr ""
+
+#: ../../annot.rst:174 a700a60706ca4e569abfa259b0b9fb63
+msgid ""
+"*(Changed in v1.16.16)* Some symbols have an interior area (diamonds, "
+"circles, squares, etc.). By default, these areas are filled with the fill"
+" color of the annotation. If this is *None*, then white is chosen. The "
+"*fill_color* argument of :meth:`Annot.update` can now be used to override"
+" this and give line end symbols their own fill color."
+msgstr ""
+
+#: ../../annot.rst:176 db8246f575e5488d96aa74a3a2514029
+msgid "The symbol number for the first point."
+msgstr ""
+
+#: ../../annot.rst:177 3cc0f00120ce499a934058c5ccaf4de9
+msgid "The symbol number for the last point."
+msgstr ""
+
+#: ../../annot.rst:181 9b8aa01ea6a148488442f0b9f54fd48b
+msgid ""
+"Set the annotation's visibility using PDF optional content mechanisms. "
+"This visibility is controlled by the user interface of supporting PDF "
+"viewers. It is independent from other attributes like "
+":attr:`Annot.flags`."
+msgstr ""
+
+#: ../../annot.rst:183 b8604fe16b22458ea3a6c3ebed57b912
+msgid ""
+"the :data:`xref` of an optional contents group (OCG or OCMD). Any "
+"previous xref will be overwritten. If zero, a previous entry will be "
+"removed. An exception occurs if the xref is not zero and does not point "
+"to a valid PDF object."
+msgstr ""
+
+#: ../../annot.rst:185 552f6fa51ec3485693b27f15c1ad9e28
+msgid "This does **not require executing** :meth:`Annot.update` to take effect."
+msgstr ""
+
+#: ../../annot.rst:189 883041291cbb4087af3abbc8d2db4d3e
+msgid ""
+"Return the :data:`xref` of an optional content object, or zero if there "
+"is none."
+msgstr ""
+
+#: ../../annot.rst:191 da9806aa82134c699ec1298c08405974
+msgid "zero or the xref of an OCG (or OCMD)."
+msgstr ""
+
+#: ../../annot.rst:196 0232d0f9f89c4b9caf445de434761a86
+msgid "New in v1.19.3"
+msgstr ""
+
+#: ../../annot.rst:198 bd8f5da402b344e7a57080ae00f8f8ea
+msgid "Set annotation to be \"In Response To\" another one."
+msgstr ""
+
+#: ../../annot.rst:200 29a518aa3ac14b4fb96189039d52a919
+msgid ""
+"The :data:`xref` of another annotation.  .. note:: Must refer to an "
+"existing annotation on this page. Setting this property requires no "
+"subsequent `update()`."
+msgstr ""
+
+#: ../../annot.rst:200 044062a21f8a4ffba1e8c12a4dbfc7da
+msgid "The :data:`xref` of another annotation."
+msgstr ""
+
+#: ../../annot.rst:202 056ca100a6c744158b0f80b623e231b8
+msgid ""
+"Must refer to an existing annotation on this page. Setting this property "
+"requires no subsequent `update()`."
+msgstr ""
+
+#: ../../annot.rst:207 ../../annot.rst:216 ../../annot.rst:236
+#: 4f1bdf826df24156ae246c89b4778e32 712a3a2f72694e64a884ee7a5034ee28
+#: a6e6686854de4108a873d9d33f171c1c
+msgid "New in v1.18.4"
+msgstr ""
+
+#: ../../annot.rst:209 1f213b949eb642e28f99585ec1a407d4
+msgid ""
+"Set the annotation's Popup annotation to open or closed -- **or** the "
+"annotation itself, if its type is 'Text' (\"sticky note\")."
+msgstr ""
+
+#: ../../annot.rst:211 92f2770d0bff4361a606a0310fa7bbef
+msgid "the desired open state."
+msgstr ""
+
+#: ../../annot.rst:218 5b8c653d8a8843e8babb5fceb37261ea
+msgid ""
+"Create a Popup annotation for the annotation and specify its rectangle. "
+"If the Popup already exists, only its rectangle is updated."
+msgstr ""
+
+#: ../../annot.rst:220 7909b167cec241d99b7c2d3413fe1fbe
+msgid "the desired rectangle."
+msgstr ""
+
+#: ../../annot.rst:226 0026e882e4004b07b13c1e01e1fc77e4
+msgid ""
+"Set the annotation's transparency. Opacity can also be set in "
+":meth:`Annot.update`."
+msgstr ""
+
+#: ../../annot.rst:228 5405316104d84f4abcecbc698904a721
+msgid ""
+"a float in range *[0, 1]*. Any value outside is assumed to be 1. E.g. a "
+"value of 0.5 sets the transparency to 50%."
+msgstr ""
+
+#: ../../annot.rst:230 9a3c8b905c7949bbb3e5acb4a19981b6
+msgid "Three overlapping 'Circle' annotations with each opacity set to 0.5:"
+msgstr ""
+
+#: ../../annot.rst:238 95cea4131fbd4be4ac5581cfa874b1e4
+msgid ""
+"The annotation's blend mode. See :ref:`AdobeManual`, page 324 for "
+"explanations."
+msgstr ""
+
+#: ../../annot.rst:241 2ff0fa0dc5fe4ec8a25c8bc7b2d4fcef
+msgid "the blend mode or *None*."
+msgstr ""
+
+#: ../../annot.rst:246 e1a9e6a9cfe74f7ab8cc8cffb93c59bc
+msgid "New in v1.16.14"
+msgstr ""
+
+#: ../../annot.rst:248 e7ba898f2d6a4a198a520db5457bbad2
+msgid ""
+"Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for "
+"explanations. The blend mode can also be set in :meth:`Annot.update`."
+msgstr ""
+
+#: ../../annot.rst:250 ddb5fbe792ab4eae98a254729382b924
+msgid ""
+"set the blend mode. Use :meth:`Annot.update` to reflect this in the "
+"visual appearance. For predefined values see :ref:`BlendModes`. Use "
+"`PDF_BM_Normal` to **remove** a blend mode."
+msgstr ""
+
+#: ../../annot.rst:255 0cd5afc2c9a14bbfa787d0023b2604f0
+msgid "New in version 1.16.0"
+msgstr ""
+
+#: ../../annot.rst:257 64b51d5037e246d29be36ea82f374e63
+msgid ""
+"Change the name field of any annotation type. For 'FileAttachment' and "
+"'Text' annotations, this is the icon name, for 'Stamp' annotations the "
+"text in the stamp. The visual result (if any) depends on your PDF viewer."
+" See also :ref:`mupdficons`."
+msgstr ""
+
+#: ../../annot.rst:259 ea1dcd069e554ea7882c4893488c637c
+msgid "the new name."
+msgstr ""
+
+#: ../../annot.rst:261 01e8667a8ae34ab1a9f4fe7311f976b3
+msgid ""
+"If you set the name of a 'Stamp' annotation, then this will **not "
+"change** the rectangle, nor will the text be layouted in any way. If you "
+"choose a standard text from :ref:`StampIcons` (the **exact** name piece "
+"after `\"STAMP_\"`), you should receive the original layout. An "
+"**arbitrary text** will not be changed to upper case, but be written in "
+"font \"Times-Bold\" as is, horizontally centered in **one line** and be "
+"shortened to fit. To get your text fully displayed, its length using "
+":data:`fontsize` 20 must not exceed 190 points. So please make sure that "
+"the following inequality is true: `pymupdf.get_text_length(text, "
+"fontname=\"tibo\", fontsize=20) <= 190`."
+msgstr ""
+
+#: ../../annot.rst:265 86ab16b4319d42389d6edde9d42dc4f0
+msgid ""
+"Change the rectangle of an annotation. The annotation can be moved around"
+" and both sides of the rectangle can be independently scaled. However, "
+"the annotation appearance will never get rotated, flipped or sheared. "
+"This method only affects certain annotation types [#f2]_ and will lead to"
+" a message on Python's `sys.stderr` in other cases. No exception will be "
+"raised, but `False` will be returned."
+msgstr ""
+
+#: ../../annot.rst:267 a9a53793892b498e943440f97163a7d6
+msgid ""
+"the new rectangle of the annotation (finite and not empty). E.g. using a "
+"value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 "
+"pixels to the right and downwards."
+msgstr ""
+
+#: ../../annot.rst:269 6898411fb0da40fa867760423a53258f
+msgid "You **need not** invoke :meth:`Annot.update` for activation of the effect."
+msgstr ""
+
+#: ../../annot.rst:274 e67ffff21f5f4efaa7d4c8275c30a8fe
+msgid ""
+"Set the rotation of an annotation. This rotates the annotation rectangle "
+"around its center point. Then a **new annotation rectangle** is "
+"calculated from the resulting quad."
+msgstr ""
+
+#: ../../annot.rst:276 308edadc7a93427ea4c587eeedf6a4cb
+msgid ""
+"rotation angle in degrees. Arbitrary values are possible, but will be "
+"clamped to the interval `[0, 360)`."
+msgstr ""
+
+#: ../../annot.rst:279 f81088d72d42429a81b58cbe0635cf58
+msgid "You **must invoke** :meth:`Annot.update` to activate the effect."
+msgstr ""
+
+#: ../../annot.rst:280 cb61e0b1ff9649bc874eb5669b39fda1
+msgid ""
+"For PDF_ANNOT_FREE_TEXT, only one of the values 0, 90, 180 and 270 is "
+"possible and will **rotate the text** inside the current rectangle (which"
+" remains unchanged). Other values are silently ignored and replaced by 0."
+msgstr ""
+
+#: ../../annot.rst:281 2b42b8dba5254e0b9d8f787fc6ce8197
+msgid ""
+"Otherwise, only the following :ref:`AnnotationTypes` can be rotated: "
+"'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', "
+"'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op."
+msgstr ""
+
+#: ../../annot.rst:286 9b7d7c0af36c4997a1b2014f00fd693a
+msgid ""
+"Changed in version 1.16.9: Allow specification without using a "
+"dictionary. The direct parameters are used if *border* is not a "
+"dictionary."
+msgstr ""
+
+#: ../../annot.rst:288 6a3bcf3fd55e40f0906bfc9c73321125
+msgid "Changed in version 1.22.5: Support of the \"cloudy\" border effect."
+msgstr ""
+
+#: ../../annot.rst:290 766f20871ac840ad82e2a534a5d7428c
+msgid ""
+"PDF only: Change border width, dashing, style and cloud effect. See the "
+":attr:`Annot.border` attribute for more details."
+msgstr ""
+
+#: ../../annot.rst:293 5412a3c876dc445b8991e6bfe6206c97
+msgid ""
+"a dictionary as returned by the :attr:`border` property, with keys "
+"*\"width\"* (*float*), *\"style\"* (*str*),  *\"dashes\"* (*sequence*) "
+"and *clouds* (*int*). Omitted keys will leave the resp. property "
+"unchanged. Set the border argument to `None` (the default) to use the "
+"other arguments."
+msgstr ""
+
+#: ../../annot.rst:295 a1a029503d4f45a6bfc58610e6294894
+msgid "A non-negative value will change the border line width."
+msgstr ""
+
+#: ../../annot.rst:296 3133c2f7605a4781b259ff26dab31bcf
+msgid "A value other than `None` will change this border property."
+msgstr ""
+
+#: ../../annot.rst:297 1243de5fc0aa4006bdde153c4e9f164c
+msgid ""
+"All items of the sequence must be integers, otherwise the parameter is "
+"ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty "
+"sequence, \"style\" will automatically be set to \"D\" (dashed)."
+msgstr ""
+
+#: ../../annot.rst:298 03237562991b48e080aec6fb53dfc4aa
+msgid ""
+"A value >= 0 will change this property. Use `clouds=0` to remove the "
+"cloudy appearance completely. Only annotation types 'Square', 'Circle', "
+"and 'Polygon' are supported with this property."
+msgstr ""
+
+#: ../../annot.rst:302 4f67c0516f2e43d2a6432673d5bf3c8f
+msgid "Changes the annotation flags. Use the `|` operator to combine several."
+msgstr ""
+
+#: ../../annot.rst:304 9837a34f7e344f5db3646bd8c2935c08
+msgid "an integer specifying the required flags."
+msgstr ""
+
+#: ../../annot.rst:308 717edac376fa4c2781212ccf4f1300fb
+msgid ""
+"Changed in version 1.16.9: Allow colors to be directly set. These "
+"parameters are used if *colors* is not a dictionary."
+msgstr ""
+
+#: ../../annot.rst:310 d388c00f532d4aecafa4def64bd6c525
+msgid ""
+"Changes the \"stroke\" and \"fill\" colors for supported annotation types"
+" -- not all annotations accept both."
+msgstr ""
+
+#: ../../annot.rst:312 6de264581c6f4f85a50cbe3ab18a7397
+msgid ""
+"a dictionary containing color specifications. For accepted dictionary "
+"keys and values see below. The most practical way should be to first make"
+" a copy of the *colors* property and then modify this dictionary as "
+"required."
+msgstr ""
+
+#: ../../annot.rst:313 ../../annot.rst:314 36d2b5665df049e29f372ec83d1b2090
+#: f841d09bf133425690dda9c556072aa1
+msgid "see above."
+msgstr ""
+
+#: ../../annot.rst:316 13a268dfb4a44682b64f2e122fe775e3
+msgid ""
+"*Changed in v1.18.5:* To completely remove a color specification, use an "
+"empty sequence like `[]`. If you specify `None`, an existing "
+"specification will not be changed."
+msgstr ""
+
+#: ../../annot.rst:321 941d573346c9417a9e600b67f4c4cdfb
+msgid "New in version 1.16.12"
+msgstr ""
+
+#: ../../annot.rst:323 b371873f742e46ad9b68e6d4496f6e92
+msgid ""
+"Delete annotations referring to this one. This includes any 'Popup' "
+"annotations and all annotations responding to it."
+msgstr ""
+
+#: ../../annot.rst:337 826c48ae25be4dc5a9aa146fc165e55f
+msgid ""
+"Synchronize the appearance of an annotation with its properties after "
+"relevant changes."
+msgstr ""
+
+#: ../../annot.rst:339 a2fd472b5bf84f209bce5c88b39a1804
+msgid "You can safely **omit** this method **only** for the following changes:"
+msgstr ""
+
+#: ../../annot.rst:345 883f006d1b2a459bbf7d268dc47bd9eb
+msgid ":meth:`Annot.set_info` (except any changes to *\"content\"*)"
+msgstr ""
+
+#: ../../annot.rst:347 0e9409972acc4017918ec20f51e46ce4
+msgid ""
+"All arguments are optional. *(Changed in v1.16.14)* Blend mode and "
+"opacity are applicable to **all annotation types**. The other arguments "
+"are mostly special use, as described below."
+msgstr ""
+
+#: ../../annot.rst:349 f2acfb9d00cd4a1f8886ea7b59416839
+msgid ""
+"Color specifications may be made in the usual format used in PuMuPDF as "
+"sequences of floats ranging from 0.0 to 1.0 (including both). The "
+"sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK "
+"colorspaces respectively). For GRAY, just a float is also acceptable."
+msgstr ""
+
+#: ../../annot.rst:351 c579a7f52a8c4efba4049c2f1011da6d
+msgid ""
+"*(new in v1.16.14)* **valid for all annotation types:** change or set the"
+" annotation's transparency. Valid values are *0 <= opacity < 1*."
+msgstr ""
+
+#: ../../annot.rst:352 a81a6b9db111497fb78b5b3ceb27e377
+msgid ""
+"*(new in v1.16.14)* **valid for all annotation types:** change or set the"
+" annotation's blend mode. For valid values see :ref:`BlendModes`."
+msgstr ""
+
+#: ../../annot.rst:353 ae8e841246674f4ab53acaa575475903
+msgid "change :data:`fontsize` of the text. 'FreeText' annotations only."
+msgstr ""
+
+#: ../../annot.rst:354 26cc7f290781487ea2c8260b485b91f9
+msgid "change the text color. 'FreeText' annotations only."
+msgstr ""
+
+#: ../../annot.rst:355 b98848bcd4c84b94b4f2339e929facdb
+msgid "change the border color. 'FreeText' annotations only."
+msgstr ""
+
+#: ../../annot.rst:356 ea1d7e13b3fc45dcaeaa3bd564ccba38
+msgid ""
+"the fill color.  * 'Line', 'Polyline', 'Polygon' annotations: use it to "
+"give applicable line end symbols a fill color other than that of the "
+"annotation *(changed in v1.16.16)*."
+msgstr ""
+
+#: ../../annot.rst:356 70408a2e0957432fafc595f63a72dac3
+msgid "the fill color."
+msgstr ""
+
+#: ../../annot.rst:358 56698a0491524cf1839cfd2e29a272a8
+msgid ""
+"'Line', 'Polyline', 'Polygon' annotations: use it to give applicable line"
+" end symbols a fill color other than that of the annotation *(changed in "
+"v1.16.16)*."
+msgstr ""
+
+#: ../../annot.rst:360 98b738882d314e1ca9e47acfb29b9c4c
+msgid ""
+"*(new in v1.17.2)* add two diagonal lines to the annotation rectangle. "
+"'Redact' annotations only. If not desired, *False* must be specified even"
+" if the annotation was created with *False*."
+msgstr ""
+
+#: ../../annot.rst:361 317ef91a944a47d2bcd414dfa48b595b
+msgid ""
+"new rotation value. Default (-1) means no change. Supports 'FreeText' and"
+" several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_."
+" Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any "
+"integer is acceptable."
+msgstr ""
+
+#: ../../annot.rst:365 5d8619257f4e40e5be96294c5adbc57f
+msgid ""
+"Using this method inside a :meth:`Page.annots` loop is **not "
+"recommended!** This is because most annotation updates require the owning"
+" page to be reloaded -- which cannot be done inside this loop. Please use"
+" the example coding pattern given in the documentation of this generator."
+msgstr ""
+
+#: ../../annot.rst:370 ff9bc4bf0cdd4acc976c156f5a315306
+msgid "Basic information of the annot's attached file."
+msgstr ""
+
+#: ../../annot.rst:373 c32d33e3cdca401092ffe639bf885cc5
+msgid ""
+"a dictionary with keys *filename*, *ufilename*, *desc* (description), "
+"*size* (uncompressed file size), *length* (compressed length) for "
+"FileAttachment annot types, else *None*."
+msgstr ""
+
+#: ../../annot.rst:377 4ac1fb9aefc542cf945016ead24f219e
+msgid "Returns attached file content."
+msgstr ""
+
+#: ../../annot.rst:380 4f235876a19742f5b965f2ae9491d61f
+msgid "the content of the attached file."
+msgstr ""
+
+#: ../../annot.rst:390 be5cd657efdd473d928763bba0df5b4e
+msgid ""
+"Updates the content of an attached file. All arguments are optional. No "
+"arguments lead to a no-op."
+msgstr ""
+
+#: ../../annot.rst:392 a0ad11a9b58947a286714487e1c2087e
+msgid ""
+"the new file content. Omit to only change meta-information.  *(Changed in"
+" version 1.14.13)* *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../annot.rst:392 804bc0250bb544798eca747f4537b547
+msgid "the new file content. Omit to only change meta-information."
+msgstr ""
+
+#: ../../annot.rst:394 11834fed4d684da79f297310c1d94791
+msgid "*(Changed in version 1.14.13)* *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../annot.rst:396 7985a4acc30f428ca3928e1fd5bb9186
+msgid "new filename to associate with the file."
+msgstr ""
+
+#: ../../annot.rst:398 c51d1187235645a19eb686c1ec3a154d
+msgid "new unicode filename to associate with the file."
+msgstr ""
+
+#: ../../annot.rst:400 9312c3798d7e49c7b0526c1498516ca0
+msgid "new description of the file content."
+msgstr ""
+
+#: ../../annot.rst:404 8242ad3e8f6b4974832e88f31eac0d67
+msgid "Return the embedded sound of an audio annotation."
+msgstr ""
+
+#: ../../annot.rst:407 38833c4151ab4eb1a89dd8bceb570228
+msgid ""
+"the sound audio file and accompanying properties. These are the possible "
+"dictionary keys, of which only \"rate\" and \"stream\" are always "
+"present.  =========== "
+"======================================================= Key         "
+"Description =========== "
+"======================================================= rate        "
+"(float, requ.) samples per second channels    (int, opt.) number of sound"
+" channels bps         (int, opt.) bits per sample value per channel "
+"encoding    (str, opt.) encoding format: Raw, Signed, muLaw, ALaw "
+"compression (str, opt.) name of compression filter stream      (bytes, "
+"requ.) the sound file content =========== "
+"======================================================="
+msgstr ""
+
+#: ../../annot.rst:407 79ae636e3b544cd6b621add147e138b5
+msgid ""
+"the sound audio file and accompanying properties. These are the possible "
+"dictionary keys, of which only \"rate\" and \"stream\" are always "
+"present."
+msgstr ""
+
+#: ../../annot.rst:410 0b4fc6b85ef1479090143f2663f4c999
+msgid "Key"
+msgstr ""
+
+#: ../../annot.rst:410 1c994b43bf0d44c0820ed3b48815120a
+msgid "Description"
+msgstr ""
+
+#: ../../annot.rst:412 10203784bab44814ac64618438deabc8
+msgid "rate"
+msgstr ""
+
+#: ../../annot.rst:412 a983a057a13d497d8f91e9f59e5eac09
+msgid "(float, requ.) samples per second"
+msgstr ""
+
+#: ../../annot.rst:413 3c97dcc4efdc4791a046bca23054cb1b
+msgid "channels"
+msgstr ""
+
+#: ../../annot.rst:413 758eb73453cc466fbe0b3e537183b810
+msgid "(int, opt.) number of sound channels"
+msgstr ""
+
+#: ../../annot.rst:414 618e9b1f317145ab9b2b4f65a918ecbb
+msgid "bps"
+msgstr ""
+
+#: ../../annot.rst:414 5273044bf12f464b986e788dfcb075bc
+msgid "(int, opt.) bits per sample value per channel"
+msgstr ""
+
+#: ../../annot.rst:415 09e58c52e10d4eec90e2798ea701c1b7
+msgid "encoding"
+msgstr ""
+
+#: ../../annot.rst:415 9a81a8db10c54364aea6ec3b8e317efe
+msgid "(str, opt.) encoding format: Raw, Signed, muLaw, ALaw"
+msgstr ""
+
+#: ../../annot.rst:416 e8c893531a1348178d13e91dfd70d89b
+msgid "compression"
+msgstr ""
+
+#: ../../annot.rst:416 ce945113b1be4736bc132b8adfb4aac1
+msgid "(str, opt.) name of compression filter"
+msgstr ""
+
+#: ../../annot.rst:417 9e1d46ec4ad34aa7bec8e3020fc5b66c
+msgid "stream"
+msgstr ""
+
+#: ../../annot.rst:417 4de00f39b9834412b3cb30f1a730c6c2
+msgid "(bytes, requ.) the sound file content"
+msgstr ""
+
+#: ../../annot.rst:423 dad1a748ee124360ac7a5a31d4f5c0a3
+msgid ""
+"The annotation's transparency. If set, it is a value in range *[0, 1]*. "
+"The PDF default is 1. However, in an effort to tell the difference, we "
+"return *-1.0* if not set."
+msgstr ""
+
+#: ../../annot.rst:429 3ad7eb5c46b5403bb06e364a56cacbfd
+msgid "The owning page object of the annotation."
+msgstr ""
+
+#: ../../annot.rst:431 1b5914cbce69437181992042c380a420
+msgid ":ref:`Page`"
+msgstr ""
+
+#: ../../annot.rst:435 3e199076c06343159be68b9b9ac5854c
+msgid "The annot rotation."
+msgstr ""
+
+#: ../../annot.rst:438 f064f446736f4f3ca1bdda570466d81d
+msgid ""
+"a value [-1, 359]. If rotation is not at all, -1 is returned (and implies"
+" a rotation angle of 0). Other possible values are normalized to some "
+"value value 0 <= angle < 360."
+msgstr ""
+
+#: ../../annot.rst:442 1f476437e6b3410f9645674ced6eeb13
+msgid "The rectangle containing the annotation."
+msgstr ""
+
+#: ../../annot.rst:444 ../../annot.rst:541 0103de8760f04f8b89b8e02781091781
+#: 86935ea548d34e7faf9b648b84bb5422
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../annot.rst:448 419bed750a274cb29401beaa0ab8594e
+msgid "The next annotation on this page or None."
+msgstr ""
+
+#: ../../annot.rst:450 571c7db54b9c4cc895a02cc3323aa52b
+msgid "*Annot*"
+msgstr ""
+
+#: ../../annot.rst:454 3478938110934003bb0b27db9dd1d0f6
+msgid ""
+"A number and one or two strings describing the annotation type, like "
+"**[2, 'FreeText', 'FreeTextCallout']**. The second string entry is "
+"optional and may be empty. See the appendix :ref:`AnnotationTypes` for a "
+"list of possible values and their meanings."
+msgstr ""
+
+#: ../../annot.rst:460 d18d81d2c0e74065996a20b62876188b
+msgid ""
+"A dictionary containing various information. All fields are optional "
+"strings. For information items not provided, an empty string is returned."
+msgstr ""
+
+#: ../../annot.rst:462 1cdd4502a1294093bfc18ad103a2792b
+msgid ""
+"*name* -- e.g. for 'Stamp' annotations it will contain the stamp text "
+"like \"Sold\" or \"Experimental\", for other annot types you will see the"
+" name of the annot's icon here (\"PushPin\" for FileAttachment)."
+msgstr ""
+
+#: ../../annot.rst:464 d8988903bd564a26815802c44906eb95
+msgid ""
+"*content* -- a string containing the text for type *Text* and *FreeText* "
+"annotations. Commonly used for filling the text field of annotation pop-"
+"up windows."
+msgstr ""
+
+#: ../../annot.rst:466 b2ba350b46154e08a3e4b2ac58f36f9c
+msgid ""
+"*title* -- a string containing the title of the annotation pop-up window."
+" By convention, this is used for the **annotation author**."
+msgstr ""
+
+#: ../../annot.rst:468 56e95e9ee6f64bfe83d55681934676a0
+msgid "*creationDate* -- creation timestamp."
+msgstr ""
+
+#: ../../annot.rst:469 94225a86dd7e41ce95cf8ec26e18ceb5
+msgid "*modDate* -- last modified timestamp."
+msgstr ""
+
+#: ../../annot.rst:470 3a3948aa631a4dc1bc04385e2dca9396
+msgid "*subject* -- subject."
+msgstr ""
+
+#: ../../annot.rst:471 0bc8e45b8d36435684bfd646d1f1e5b4
+msgid ""
+"*id* -- *(new in version 1.16.10)* a unique identification of the "
+"annotation. This is taken from PDF key */NM*. Annotations added by "
+"PyMuPDF will have a unique name, which appears here."
+msgstr ""
+
+#: ../../annot.rst:478 a128a345685340cfa13587bc266a1624
+msgid ""
+"An integer whose low order bits contain flags for how the annotation "
+"should be presented."
+msgstr ""
+
+#: ../../annot.rst:484 a55e047cd36041628d5919c2b49276d0
+msgid ""
+"A pair of integers specifying start and end symbol of annotations types "
+"'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. "
+"For possible values and descriptions in this list, see the "
+":ref:`AdobeManual`, table 1.76 on page 400."
+msgstr ""
+
+#: ../../annot.rst:490 13761897f939405a97d8a3498f0040d7
+msgid ""
+"A list containing a variable number of point (\"vertices\") coordinates "
+"(each given by a pair of floats) for various types of annotations:"
+msgstr ""
+
+#: ../../annot.rst:492 9b008a64e3ec4e7c8eea518475d9ac74
+msgid "'Line' -- the starting and ending coordinates (2 float pairs)."
+msgstr ""
+
+#: ../../annot.rst:493 e58aa9b8392c4e12a2e4df235a8ad9e5
+msgid ""
+"'FreeText' -- 2 or 3 float pairs designating the starting, the (optional)"
+" knee point, and the ending coordinates."
+msgstr ""
+
+#: ../../annot.rst:494 7bfa92a879014f19b320c26616f6da2a
+msgid ""
+"'PolyLine' / 'Polygon' -- the coordinates of the edges connected by line "
+"pieces (n float pairs for n points)."
+msgstr ""
+
+#: ../../annot.rst:495 e2e1fefa75324b12af2a2e152477d2b4
+msgid ""
+"text markup annotations -- 4 float pairs specifying the *QuadPoints* of "
+"the marked text span (see :ref:`AdobeManual`, page 403)."
+msgstr ""
+
+#: ../../annot.rst:496 edec46c715024d748ae4737d4f9d8966
+msgid ""
+"'Ink' -- list of one to many sublists of vertex coordinates. Each such "
+"sublist represents a separate line in the drawing."
+msgstr ""
+
+#: ../../annot.rst:503 bd59b247d3c44bf38a70ffe1720bc49c
+msgid ""
+"dictionary of two lists of floats in range *0 <= float <= 1* specifying "
+"the \"stroke\" and the interior (\"fill\") colors. The stroke color is "
+"used for borders and everything that is actively painted or written "
+"(\"stroked\"). The fill color is used for the interior of objects like "
+"line ends, circles and squares. The lengths of these lists implicitly "
+"determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So \"[1.0, "
+"0.0, 0.0]\" stands for RGB color red. Both lists can be empty if no color"
+" is specified."
+msgstr ""
+
+#: ../../annot.rst:509 c49c07a1c4fd499da22862b729bd0114
+msgid "The PDF :data:`xref`."
+msgstr ""
+
+#: ../../annot.rst:515 229d9683a092484caea218d27e8a82ab
+msgid ""
+"The PDF :data:`xref` of an annotation to which this one responds. Return "
+"zero if this is no response annotation."
+msgstr ""
+
+#: ../../annot.rst:521 22cd8346d0a041539ab2b885daeb29c3
+msgid ""
+"The PDF :data:`xref` of the associated Popup annotation. Zero if non-"
+"existent."
+msgstr ""
+
+#: ../../annot.rst:527 a0ed476461bc407ea14ba28c1b792565
+msgid "Whether the annotation has a Popup annotation."
+msgstr ""
+
+#: ../../annot.rst:533 e7941e1065454f0f8b62f6df310fb8e0
+msgid ""
+"Whether the annotation's Popup is open -- **or** the annotation itself "
+"('Text' annotations only)."
+msgstr ""
+
+#: ../../annot.rst:539 943360bdb1974c80a2eb12cba6b49595
+msgid ""
+"The rectangle of the associated Popup annotation. Infinite rectangle if "
+"non-existent."
+msgstr ""
+
+#: ../../annot.rst:545 b0adc4587d03481aa617e7c63a5c89d5
+msgid ""
+"A tuple of four floats representing the `/RD` entry of the annotation. "
+"The four numbers describe the numerical differences (left, top, -right, "
+"-bottom) between two rectangles: the :attr:`rect` of the annotation and a"
+" rectangle contained within that rectangle. If the entry is missing, this"
+" property is `(0, 0, 0, 0)`. If the annotation border is a normal, "
+"straight line, these numbers are typically border width divided by 2. If "
+"the annotation has a \"cloudy\" border, you will see the breadth of the "
+"cloud semi-circles here. In general, the numbers need not be identical. "
+"To compute the inner rectangle do `a.rect + a.rect_delta`."
+msgstr ""
+
+#: ../../annot.rst:549 ac7cd9df53604c578d2e0e038b4f2aa3
+msgid ""
+"A dictionary containing border characteristics. Empty if no border "
+"information exists. The following keys may be present:"
+msgstr ""
+
+#: ../../annot.rst:551 e32ec3cdef384d7390414599188bf214
+msgid ""
+"*width* -- a float indicating the border thickness in points. The value "
+"is -1.0 if no width is specified."
+msgstr ""
+
+#: ../../annot.rst:553 3c4027a4271343f794a2c09a46c35ffe
+msgid ""
+"*dashes* -- a sequence of integers specifying a line dashing pattern. "
+"*[]* means no dashes, *[n]* means equal on-off lengths of *n* points, "
+"longer lists will be interpreted as specifying alternating on-off length "
+"values. See the :ref:`AdobeManual` page 126 for more details."
+msgstr ""
+
+#: ../../annot.rst:555 6f0beca4771340bc950824e0586004f7
+msgid ""
+"*style* -- 1-byte border style: **\"S\"** (Solid) = solid line "
+"surrounding the annotation, **\"D\"** (Dashed) = dashed line surrounding "
+"the annotation, the dash pattern is specified by the *dashes* entry, "
+"**\"B\"** (Beveled) = a simulated embossed rectangle that appears to be "
+"raised above the surface of the page, **\"I\"** (Inset) = a simulated "
+"engraved rectangle that appears to be recessed below the surface of the "
+"page, **\"U\"** (Underline) = a single line along the bottom of the "
+"annotation rectangle."
+msgstr ""
+
+#: ../../annot.rst:557 43804865211f4957b4ab00f844766472
+msgid ""
+"*clouds* -- an integer indicating a \"cloudy\" border, where ``n`` is an "
+"integer `-1 <= n <= 2`. A value `n = 0` indicates a straight line (no "
+"clouds), 1 means small and 2 means large semi-circles, mimicking the "
+"cloudy appearance. If -1, then no specification is present."
+msgstr ""
+
+#: ../../annot.rst:565 ad29546a4c774e9696b2fb1753e2bed6
+msgid "Annotation Icons in MuPDF"
+msgstr ""
+
+#: ../../annot.rst:566 e01c8a73c9a44cf8839c89752851d01c
+msgid ""
+"This is a list of icons referenceable by name for annotation types 'Text'"
+" and 'FileAttachment'. You can use them via the *icon* parameter when "
+"adding an annotation, or use the as argument in :meth:`Annot.set_name`. "
+"It is left to your discretion which item to choose when -- no mechanism "
+"will keep you from using e.g. the \"Speaker\" icon for a "
+"'FileAttachment'."
+msgstr ""
+
+#: ../../annot.rst:572 7c089224f63344fcba8697097a564015
+msgid "Example"
+msgstr ""
+
+#: ../../annot.rst:573 583a7a5d57f44851b86fd376a6aec42b
+msgid ""
+"Change the graphical image of an annotation. Also update the \"author\" "
+"and the text to be shown in the popup window::"
+msgstr ""
+
+#: ../../annot.rst:596 d29c75fc8898424e806cde474df35881
+msgid ""
+"This is how the circle annotation looks like before and after the change "
+"(pop-up windows displayed using Nitro PDF viewer):"
+msgstr ""
+
+#: ../../annot.rst:598 fb7ea614d50d49a3a8491368e2e82516
+msgid "|circle|"
+msgstr ""
+
+#: ../../annot.rst:600 a6222a025a02454abe58230b96b2a2a8
+#: fa94e2075bf7415597643866c18ab1b4
+msgid "circle"
+msgstr ""
+
+#: ../../annot.rst:604 00c8769e28fc422fb7202705ebb74eeb
+msgid "Footnotes"
+msgstr ""
+
+#: ../../annot.rst:605 5372e13a7237496289e4410fa7074f92
+msgid ""
+"Rotating an annotation also changes its rectangle. Depending on how the "
+"annotation was defined, the original rectangle is **cannot be "
+"reconstructed** by setting the rotation value to zero again and will be "
+"lost."
+msgstr ""
+
+#: ../../annot.rst:607 812e239885c44b8c95d47d70dab6a2d6
+msgid ""
+"Only the following annotation types support method "
+":meth:`Annot.set_rect`: Text, FreeText, Square, Circle, Redact, Stamp, "
+"Caret, FileAttachment, Sound, and Movie."
+msgstr ""
+
+#: ../../footer.rst:60 3e6e795dbb954a1f90e29e5c581fe2a0
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

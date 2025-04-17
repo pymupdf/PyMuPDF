@@ -1,0 +1,222 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 cac88fdfe639485b93df6094e0c3030e
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 9510201d07b04c55a3114ceb4b285f81
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 f2821506806f4e1f858415f54f224785
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:7 58b4044b498b4fa98a7e544066d6548c
+msgid "Opening Files"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:15 cae84881472c4a128e9b260c5de512f1
+msgid "Supported File Types"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:17 6696fc63a01c47ffa19215b2f6d2a5b4
+msgid "|PyMuPDF| can open files other than just |PDF|."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:19 52efb4e7a74844d7b47e10f1f9677f7f
+msgid "The following file types are supported:"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:26 fb0e540bc4eb4ac4b815230c9fe94127
+msgid "How to Open a File"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:28 8de724b91b61477183bf37f2a0ecd140
+msgid "To open a file, do the following:"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:35 ca2f4e8e9264476f8f8a228742e663fa
+msgid ""
+"The above creates a :ref:`Document`. The instruction `doc = "
+"pymupdf.Document(\"a.pdf\")` does exactly the same. So, `open` is just a "
+"convenient alias  and you can find its full API documented in that "
+"chapter."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:39 fb423287318a40b0a8079a8b86254936
+msgid "Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:41 23a14ae19b7643cd9324eb33cc30b516
+msgid ""
+"If you have a document with a wrong file extension for its type, you can "
+"still correctly open it."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:43 bcddf79a279b4b23b9c0c3c02a02d0ae
+msgid "Assume that *\"some.file\"* is actually an **XPS**. Open it like so:"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:53 a05b58c6b9ed4edab534e2127dc4dd90
+msgid ""
+"|PyMuPDF| itself does not try to determine the file type from the file "
+"contents. **You** are responsible for supplying the file type information"
+" in some way -- either implicitly, via the file extension, or explicitly "
+"as shown with the `filetype` parameter. There are pure :title:`Python` "
+"packages like `filetype <https://pypi.org/project/filetype/>`_ that help "
+"you doing this. Also consult the :ref:`Document` chapter for a full "
+"description."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:55 01594b5d61fd4877bc9bbe0b8a5d8de8
+msgid ""
+"If |PyMuPDF| encounters a file with an unknown / missing extension, it "
+"will try to open it as a |PDF|. So in these cases there is no need for "
+"additional precautions. Similarly, for memory documents, you can just "
+"specify `doc=pymupdf.open(stream=mem_area)` to open it as a |PDF| "
+"document."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:57 213861827ccf4095a7e7ec7f44323741
+msgid ""
+"If you attempt to open an unsupported file then |PyMuPDF| will throw a "
+"file data error."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:66 9408ee2e906e44feb3f19fde7131eee3
+msgid "Opening Remote Files"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:69 3c01cd03b6fd45c4bd767057e34ab038
+msgid ""
+"For remote files on a server (i.e. non-local files), you will need to "
+"*stream* the file data to |PyMuPDF|."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:71 b8988a2a5afc458592ac62ac241e9557
+msgid ""
+"For example use the `requests "
+"<https://requests.readthedocs.io/en/latest/>`_ library as follows:"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:84 3afd63c1a9de47f2b54f07057b1bda6b
+msgid "Opening Files from Cloud Services"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:86 cb885344d7a6494290518e5ac9e98541
+msgid ""
+"For further examples which deal with files held on typical cloud services"
+" please see these `Cloud Interactions code snippets "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/cloud-"
+"interactions>`_."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:94 1869089fe979430ba11b6a880eed5e13
+msgid "Opening Django Files"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:96 aee62dcd16f3444bbef1ae267e49fbb1
+msgid ""
+"Django implements a `File Storage API "
+"<https://docs.djangoproject.com/en/5.1/ref/files/storage/>`_ to store "
+"files. The default is the `FileSystemStorage "
+"<https://docs.djangoproject.com/en/5.1/ref/files/storage/#the-"
+"filesystemstorage-class>`_, but the `django-storages <https://django-"
+"storages.readthedocs.io/en/latest/index.html>`_ library provides a number"
+" of other storage backends."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:98 dfc6c49ca4114ccc98d1b314f2891bd5
+msgid ""
+"You can open the file, move the contents into memory, then pass the "
+"contents to |PyMuPDF| as a stream."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:113 9076a6c2f6f74a4fa882b9e2f66ab944
+msgid "Please note that if the file you open is large, you may run out of memory."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:115 3d79799d3f0a497ba8648550cd0ab745
+msgid ""
+"The File Storage API works well if you're using different storage "
+"backends in different environments. If you're only using the "
+"`FileSystemStorage`, you can simply use the `obj.file.name` to open the "
+"file directly with |PyMuPDF| as shown in an earlier example."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:123 85288abbd82c4edc9fb1dfee730d152d
+msgid "Opening Files as Text"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:126 6aa9839fd5d84413a0ce8f6e17824b60
+msgid ""
+"|PyMuPDF| has the capability to open any plain text file as a document. "
+"In order to do this you should provide the `filetype` parameter for the "
+"`pymupdf.open` function as `\"txt\"`."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:133 72d20b3c2e33457aacb836fbe07acbf0
+msgid ""
+"In this way you are able to open a variety of file types and perform the "
+"typical **non-PDF** specific features like text searching, text "
+"extracting and page rendering. Obviously, once you have rendered your "
+"`txt` content, then saving as |PDF| or merging with other |PDF| files is "
+"no problem."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:137 9b981eb61d194ca0b2ef17f23500da44
+msgid "Examples"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:141 3ac6d963ae5b402e94a3ad37e0fb12c9
+msgid "Opening a `C#` file"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:150 ff93dac3de6a4cb8bbb0076a69e1b632
+msgid "Opening an ``XML`` file"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:158 72a973937e15458f9a0fc4e9ae43e9ea
+msgid "Opening a `JSON` file"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:165 accacc140af14ec2998e5ca54b8909bb
+msgid "And so on!"
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:167 b47b21b5806a489b9807e5cb979132f7
+msgid ""
+"As you can imagine many text based file formats can be *very simply "
+"opened* and *interpreted* by |PyMuPDF|. This can make data analysis and "
+"extraction for a wide range of previously unavailable files suddenly "
+"possible."
+msgstr ""
+
+#: ../../footer.rst:60 c565e48ba51e43cbb1e960403a67a689
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

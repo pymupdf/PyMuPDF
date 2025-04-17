@@ -1,0 +1,2091 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 f10a8020c28249fca44848d866853453
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 8c253eade3be4573a8d216948f6a7359
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 c1dc5c8f7ce44ac4906d7f2e9ae8dd3c
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../functions.rst:5 f3404c3080304de29e895aac382d9965
+msgid "Functions"
+msgstr ""
+
+#: ../../functions.rst:6 70323b9e30fb490db389a3d997a1cab9
+msgid ""
+"The following are miscellaneous functions and attributes on a fairly low-"
+"level technical detail."
+msgstr ""
+
+#: ../../functions.rst:8 a7a4a6b9e92945e49a02a07f50b221d4
+msgid ""
+"Some functions provide detail access to PDF structures. Others are "
+"stripped-down, high performance versions of other functions which provide"
+" more information."
+msgstr ""
+
+#: ../../functions.rst:10 80d711cfafea41b6b18edc4996098631
+msgid "Yet others are handy, general-purpose utilities."
+msgstr ""
+
+#: ../../functions.rst:14 ce08da4d75f04c2d88814b9f4cb4b9fb
+msgid "**Function**"
+msgstr ""
+
+#: ../../functions.rst:14 87267f8f2f9c4906abe394a3726d8ce3
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../functions.rst:16 8c7b262e30494eb2900a478249533401
+msgid ":attr:`Annot.apn_bbox`"
+msgstr ""
+
+#: ../../functions.rst:16 3ec7f54fc6214998ac1f32de3ae05905
+msgid "PDF only: bbox of the appearance object"
+msgstr ""
+
+#: ../../functions.rst:17 62b2f314087e4c5d802938929352a251
+msgid ":attr:`Annot.apn_matrix`"
+msgstr ""
+
+#: ../../functions.rst:17 5d4bf95e115f4a79b0ac44f6d45a0cd4
+msgid "PDF only: the matrix of the appearance object"
+msgstr ""
+
+#: ../../functions.rst:18 23379817033347e4a0ad91ffc4860e15
+msgid ":attr:`Page.is_wrapped`"
+msgstr ""
+
+#: ../../functions.rst:18 49fe2cfdf483448abb46dfa426338186
+msgid "check whether contents wrapping is present"
+msgstr ""
+
+#: ../../functions.rst:19 11b42e143aba4579bfd08436ce71b89f
+msgid ":meth:`adobe_glyph_names`"
+msgstr ""
+
+#: ../../functions.rst:19 f7532442f88b4d4481a985a21e1e9dca
+msgid "list of glyph names defined in **Adobe Glyph List**"
+msgstr ""
+
+#: ../../functions.rst:20 bbe71f57dd1544d6abbffb3f025ad0d0
+msgid ":meth:`adobe_glyph_unicodes`"
+msgstr ""
+
+#: ../../functions.rst:20 2e63b3cdb4614f68bd0f06bdf473415c
+msgid "list of unicodes defined in **Adobe Glyph List**"
+msgstr ""
+
+#: ../../functions.rst:21 1dab9af8f225439a809a695624ad06ad
+msgid ":meth:`Annot.clean_contents`"
+msgstr ""
+
+#: ../../functions.rst:21 17d23fa135d74e28baebb9a590420a93
+msgid "PDF only: clean the annot's :data:`contents` object"
+msgstr ""
+
+#: ../../functions.rst:22 2565b744b5074b0197b985feda6260d3
+msgid ":meth:`Annot.set_apn_bbox`"
+msgstr ""
+
+#: ../../functions.rst:22 c603cce58b4e4f19ad03d7d5816decf7
+msgid "PDF only: set the bbox of the appearance object"
+msgstr ""
+
+#: ../../functions.rst:23 dec230a165a848fab667491090a3b48c
+msgid ":meth:`Annot.set_apn_matrix`"
+msgstr ""
+
+#: ../../functions.rst:23 1d4c8fcb695b41f794fe0181f55c4fed
+msgid "PDF only: set the matrix of the appearance object"
+msgstr ""
+
+#: ../../functions.rst:24 919aa9c3fa0d4cea9f07bf595fd68689
+msgid ":meth:`ConversionHeader`"
+msgstr ""
+
+#: ../../functions.rst:24 c5631d7a4fb54c26b307af4ec9a45d23
+msgid "return header string for *get_text* methods"
+msgstr ""
+
+#: ../../functions.rst:25 02f472d4f87e4921a7850ccf52b83efe
+msgid ":meth:`ConversionTrailer`"
+msgstr ""
+
+#: ../../functions.rst:25 67364fbb2a0641498bd046f77798342d
+msgid "return trailer string for *get_text* methods"
+msgstr ""
+
+#: ../../functions.rst:26 ec526b8d6e4c4baa8432dc878bc3b9c2
+msgid ":meth:`Document.del_xml_metadata`"
+msgstr ""
+
+#: ../../functions.rst:26 124e8e0efc184fe087303fef4d743203
+msgid "PDF only: remove XML metadata"
+msgstr ""
+
+#: ../../functions.rst:27 b6f93fdd44ad46129f8fa2758f2a4818
+msgid ":meth:`Document.get_char_widths`"
+msgstr ""
+
+#: ../../functions.rst:27 09b83665efc54bec90b1491e267e0f10
+msgid "PDF only: return a list of glyph widths of a font"
+msgstr ""
+
+#: ../../functions.rst:28 62aedd1eef214e3b9fd7dfd8a09d1ff3
+msgid ":meth:`Document.get_new_xref`"
+msgstr ""
+
+#: ../../functions.rst:28 0b6342969ec0441393c79f793e633ddd
+msgid "PDF only: create and return a new :data:`xref` entry"
+msgstr ""
+
+#: ../../functions.rst:29 62f8b93e8bf8444bbafae94639086f66
+msgid ":meth:`Document.is_stream`"
+msgstr ""
+
+#: ../../functions.rst:29 3b16adc919ff4ccb921eba7b7ec2457c
+msgid "PDF only: check whether an :data:`xref` is a stream object"
+msgstr ""
+
+#: ../../functions.rst:30 7a3f46883b23434fb745bea51dd302df
+msgid ":meth:`Document.xml_metadata_xref`"
+msgstr ""
+
+#: ../../functions.rst:30 b0b51441d32e4c969fe3b90dc9843f34
+msgid "PDF only: return XML metadata :data:`xref` number"
+msgstr ""
+
+#: ../../functions.rst:31 b4adeece49294f0a9217abd6f42e075d
+msgid ":meth:`Document.xref_length`"
+msgstr ""
+
+#: ../../functions.rst:31 cfa061cc4de4418a9a6c699fd6c1dbbf
+msgid "PDF only: return length of :data:`xref` table"
+msgstr ""
+
+#: ../../functions.rst:32 973a90abac464c3b8b375c56719a0bff
+msgid ":meth:`EMPTY_IRECT`"
+msgstr ""
+
+#: ../../functions.rst:32 ../../functions.rst:34
+#: 291e722b9502438bb05be547414824c7 55383aeb0dae482fa2d060d914f7b6b4
+msgid "return the (standard) empty / invalid rectangle"
+msgstr ""
+
+#: ../../functions.rst:33 205726f3db7d409494a330988f4f46ba
+msgid ":meth:`EMPTY_QUAD`"
+msgstr ""
+
+#: ../../functions.rst:33 101a675d89a348a39c26a4c078403def
+msgid "return the (standard) empty / invalid quad"
+msgstr ""
+
+#: ../../functions.rst:34 4b352eaf25a946d683f7845067fd3fe2
+msgid ":meth:`EMPTY_RECT`"
+msgstr ""
+
+#: ../../functions.rst:35 4c90b4ab2918473bbd455ac6e171a04b
+msgid ":meth:`get_pdf_now`"
+msgstr ""
+
+#: ../../functions.rst:35 fa79da54010c460cb80834428c14658a
+msgid "return the current timestamp in PDF format"
+msgstr ""
+
+#: ../../functions.rst:36 5235531d94bf455ca878c91fa390f88a
+msgid ":meth:`get_pdf_str`"
+msgstr ""
+
+#: ../../functions.rst:36 cd5a4fcf322c478eb525e24c4c3e9ca7
+msgid "return PDF-compatible string"
+msgstr ""
+
+#: ../../functions.rst:37 3cef9014049b46ef8fb2c04a8a96525d
+msgid ":meth:`get_text_length`"
+msgstr ""
+
+#: ../../functions.rst:37 7deedb3c51ef4df0b7c843146b9b6110
+msgid "return string length for a given font & :data:`fontsize`"
+msgstr ""
+
+#: ../../functions.rst:38 865c3294809b414a9f66ddd11a8975ba
+msgid ":meth:`glyph_name_to_unicode`"
+msgstr ""
+
+#: ../../functions.rst:38 c5ef798d869d46a488886a86148f9432
+msgid "return unicode from a glyph name"
+msgstr ""
+
+#: ../../functions.rst:39 777efc2daaf34022b9921b15fb3406ed
+msgid ":meth:`image_profile`"
+msgstr ""
+
+#: ../../functions.rst:39 4ad04b9521d940ed8675cf7ccf967fc5
+msgid "return a dictionary of basic image properties"
+msgstr ""
+
+#: ../../functions.rst:40 f9f1eaf655b84ca6aa0cca517c7f74e7
+msgid ":meth:`INFINITE_IRECT`"
+msgstr ""
+
+#: ../../functions.rst:40 ../../functions.rst:42
+#: 2b0312cf18394f9bb48eea5c1e82f262 8cb320f4f817465fbba9644f0f247810
+msgid "return the (only existing) infinite rectangle"
+msgstr ""
+
+#: ../../functions.rst:41 a1ac10acd9264731961d1b01f0eec40b
+msgid ":meth:`INFINITE_QUAD`"
+msgstr ""
+
+#: ../../functions.rst:41 c4853233b2054963818cbc88b3f9d8cb
+msgid "return the (only existing) infinite quad"
+msgstr ""
+
+#: ../../functions.rst:42 b1324daf9ff745fb9d2168d7be4648c7
+msgid ":meth:`INFINITE_RECT`"
+msgstr ""
+
+#: ../../functions.rst:43 4e1fe0343be849e89ad51baa5921d04a
+msgid ":meth:`make_table`"
+msgstr ""
+
+#: ../../functions.rst:43 fdf7383642024c03a67f955ae885907f
+msgid "split rectangle in sub-rectangles"
+msgstr ""
+
+#: ../../functions.rst:44 4adb8d71f2044344a5b26234ccf68e06
+msgid ":meth:`Page.clean_contents`"
+msgstr ""
+
+#: ../../functions.rst:44 f3cb03e57a5c41ae8143f7555a79c7fc
+msgid "PDF only: clean the page's :data:`contents` objects"
+msgstr ""
+
+#: ../../functions.rst:45 75ced595d7584e5f92e8eb2b62cd3ad4
+msgid ":meth:`Page.get_bboxlog`"
+msgstr ""
+
+#: ../../functions.rst:45 8c4f754edc4c4b319cc2b54860845f79
+msgid "list of rectangles that envelop text, drawing or image objects"
+msgstr ""
+
+#: ../../functions.rst:46 d1e897d011a04f2c920b3cd8c3a2f4d6
+msgid ":meth:`Page.get_contents`"
+msgstr ""
+
+#: ../../functions.rst:46 8087b4ddded34432a1081ed947f22cea
+msgid "PDF only: return a list of content :data:`xref` numbers"
+msgstr ""
+
+#: ../../functions.rst:47 4002cfc938c14ecaa48d6ee403f154d0
+msgid ":meth:`Page.get_displaylist`"
+msgstr ""
+
+#: ../../functions.rst:47 561f38475f9641f0bff2da76977dfe5a
+msgid "create the page's display list"
+msgstr ""
+
+#: ../../functions.rst:48 53c748a7a20f4af897e22b85db7febe7
+msgid ":meth:`Page.get_text_blocks`"
+msgstr ""
+
+#: ../../functions.rst:48 6a53466a2b9c4ca3a36d2fd49d6b817d
+msgid "extract text blocks as a Python list"
+msgstr ""
+
+#: ../../functions.rst:49 ccaaf6bb9f4345e6846f9b35f9f45357
+msgid ":meth:`Page.get_text_words`"
+msgstr ""
+
+#: ../../functions.rst:49 e1831d592e724dc3ac18729b5f39eb5e
+msgid "extract text words as a Python list"
+msgstr ""
+
+#: ../../functions.rst:50 b6be6a798be9474b861e51b28bd9c46c
+msgid ":meth:`Page.get_texttrace`"
+msgstr ""
+
+#: ../../functions.rst:50 1918ba1582404d0da1cfa1bb90facd9a
+msgid "low-level text information"
+msgstr ""
+
+#: ../../functions.rst:51 97f7f70a1f024c5596beba2d6083c370
+msgid ":meth:`Page.read_contents`"
+msgstr ""
+
+#: ../../functions.rst:51 fbbe70d6b80548bf81db0ed638604ff3
+msgid "PDF only: get complete, concatenated /Contents source"
+msgstr ""
+
+#: ../../functions.rst:52 97fc05c38d804f0c829d6226fae6ff64
+msgid ":meth:`Page.run`"
+msgstr ""
+
+#: ../../functions.rst:52 7d5ea217e7ce4dd2856d6dd788de51fa
+msgid "run a page through a device"
+msgstr ""
+
+#: ../../functions.rst:53 3f0fafaa94704a27945b473cc84d6b53
+msgid ":meth:`Page.set_contents`"
+msgstr ""
+
+#: ../../functions.rst:53 3a38b120e7094eef91491802cb5ede57
+msgid "PDF only: set page's :data:`contents` to some :data:`xref`"
+msgstr ""
+
+#: ../../functions.rst:54 0feca3c718384d869711f8270fcfe9a9
+msgid ":meth:`Page.wrap_contents`"
+msgstr ""
+
+#: ../../functions.rst:54 ae1231ecd4ea49c7813df81e4da27c5e
+msgid "wrap contents with stacking commands"
+msgstr ""
+
+#: ../../functions.rst:55 b104404c744c474293113d1eef9ae246
+msgid ":meth:`css_for_pymupdf_font`"
+msgstr ""
+
+#: ../../functions.rst:55 79e6c0cb8367467aae4981ef407ebca5
+msgid "create CSS source for a font in package pymupdf_fonts"
+msgstr ""
+
+#: ../../functions.rst:56 86e04922d0254df48749ddd782a42be2
+msgid ":meth:`paper_rect`"
+msgstr ""
+
+#: ../../functions.rst:56 850682504daa47a3b49a984ce1189a63
+msgid "return rectangle for a known paper format"
+msgstr ""
+
+#: ../../functions.rst:57 c4d147c5a1d64c82a16e7e347fe90738
+msgid ":meth:`paper_size`"
+msgstr ""
+
+#: ../../functions.rst:57 1c6cfbbad22542ec987d6587745efa4e
+msgid "return width, height for a known paper format"
+msgstr ""
+
+#: ../../functions.rst:58 3e78ca8b672c4df394141beb3ca86a19
+msgid ":meth:`paper_sizes`"
+msgstr ""
+
+#: ../../functions.rst:58 efdf46d6a1ee49d9a65b0785d1b8197d
+msgid "dictionary of pre-defined paper formats"
+msgstr ""
+
+#: ../../functions.rst:59 2b76da1b09664c2281a67555e1aee79d
+msgid ":meth:`planish_line`"
+msgstr ""
+
+#: ../../functions.rst:59 55e6af8933184b9799583466ae6b5260
+msgid "matrix to map a line to the x-axis"
+msgstr ""
+
+#: ../../functions.rst:60 adf4a6912b74494e8b4a81e1ad1e023d
+msgid ":meth:`recover_char_quad`"
+msgstr ""
+
+#: ../../functions.rst:60 2593d09e30694c1f9bd6ce4bdb1520cb
+msgid "compute the quad of a char (\"rawdict\")"
+msgstr ""
+
+#: ../../functions.rst:61 8b29bf9a3a4f4c3eb96ef7c0bd912926
+msgid ":meth:`recover_line_quad`"
+msgstr ""
+
+#: ../../functions.rst:61 7d233952bb8e4ce885f963dd77fb0e6f
+msgid "compute the quad of a subset of line spans"
+msgstr ""
+
+#: ../../functions.rst:62 72275833d3a1438faa6a801185292b81
+msgid ":meth:`recover_quad`"
+msgstr ""
+
+#: ../../functions.rst:62 5a8d087891f4445ea85ed013e701bc78
+msgid "compute the quad of a span (\"dict\", \"rawdict\")"
+msgstr ""
+
+#: ../../functions.rst:63 9eef281b47d64378adb6f46472037ad9
+msgid ":meth:`recover_span_quad`"
+msgstr ""
+
+#: ../../functions.rst:63 1a7eefd270d942119569ac42043ae560
+msgid "compute the quad of a subset of span characters"
+msgstr ""
+
+#: ../../functions.rst:64 d8411fe2450a4335b4720cfc8fd88ac1
+msgid ":meth:`set_messages`"
+msgstr ""
+
+#: ../../functions.rst:64 49fec9a75fe34e408cf4e2b564d9393e
+msgid "set destination of |PyMuPDF| messages."
+msgstr ""
+
+#: ../../functions.rst:65 bacb887d9fe64e2586f478457311f52e
+msgid ":meth:`sRGB_to_pdf`"
+msgstr ""
+
+#: ../../functions.rst:65 7b07cd68b95740db96d883725a23dfc8
+msgid "return PDF RGB color tuple from an sRGB integer"
+msgstr ""
+
+#: ../../functions.rst:66 d9fad77ca5bb4ea29e7e115ae41027d9
+msgid ":meth:`sRGB_to_rgb`"
+msgstr ""
+
+#: ../../functions.rst:66 3eb2e1a49c394d7190320f310ced9897
+msgid "return (R, G, B) color tuple from an sRGB integer"
+msgstr ""
+
+#: ../../functions.rst:67 dacbb5d08f684a739eea5e737a0f8475
+msgid ":meth:`unicode_to_glyph_name`"
+msgstr ""
+
+#: ../../functions.rst:67 e27898f4a503438b9c84fbaea53d8e46
+msgid "return glyph name from a unicode"
+msgstr ""
+
+#: ../../functions.rst:68 3761a359e2a440e6a6d94194ddd5ca47
+msgid ":meth:`get_tessdata`"
+msgstr ""
+
+#: ../../functions.rst:68 7916666e646e4f1b81e7eeb0f76726f4
+msgid "locates the language support of the Tesseract-OCR installation"
+msgstr ""
+
+#: ../../functions.rst:69 88ba621d00d6454d87a956ca2ea10427
+msgid ":meth:`colors_pdf_dict`"
+msgstr ""
+
+#: ../../functions.rst:69 8d156d20680342ef90bfb088e0b93fdf
+msgid "return dict of color names."
+msgstr ""
+
+#: ../../functions.rst:70 d6674fd6f92b465f9640631eee500d7b
+msgid ":meth:`colors_wx_list`"
+msgstr ""
+
+#: ../../functions.rst:70 72620216e10a478985af2dc1ca95125f
+msgid "return list of color names."
+msgstr ""
+
+#: ../../functions.rst:71 94e8002b7c134f61aae64d5f0ee42280
+msgid ":attr:`fitz_fontdescriptors`"
+msgstr ""
+
+#: ../../functions.rst:71 ccee6906defe4b3391fa9a827d7183b6
+msgid "dictionary of available supplement fonts"
+msgstr ""
+
+#: ../../functions.rst:72 d4da999f959b4d72813e7d4b11346f02
+msgid ":attr:`PYMUPDF_MESSAGE`"
+msgstr ""
+
+#: ../../functions.rst:72 d20b7c4d1f2d40a295f7f3556bd510ff
+msgid "destination of |PyMuPDF| messages."
+msgstr ""
+
+#: ../../functions.rst:73 b730944f16e5483a91a1d0e55c948756
+msgid ":attr:`pdfcolor`"
+msgstr ""
+
+#: ../../functions.rst:73 a7dbeae797964748bc2445c3524f2142
+msgid "dictionary of almost 500 RGB colors in PDF format."
+msgstr ""
+
+#: ../../functions.rst:78 002feca7554345c0b5cf4b41b774f168
+msgid ""
+"Convenience function to return width and height of a known paper format "
+"code. These values are given in pixels for the standard resolution 72 "
+"pixels = 1 inch."
+msgstr ""
+
+#: ../../functions.rst:80 17ca7e059e904354a626f297dde8741d
+msgid ""
+"Currently defined formats include **'A0'** through **'A10'**, **'B0'** "
+"through **'B10'**, **'C0'** through **'C10'**, **'Card-4x6'**, **'Card-"
+"5x7'**, **'Commercial'**, **'Executive'**, **'Invoice'**, **'Ledger'**, "
+"**'Legal'**, **'Legal-13'**, **'Letter'**, **'Monarch'** and **'Tabloid-"
+"Extra'**, each in either portrait or landscape format."
+msgstr ""
+
+#: ../../functions.rst:82 33458151eb9e4b27adb3007ddcaf2e74
+msgid ""
+"A format name must be supplied as a string (case **in** \\sensitive), "
+"optionally suffixed with \"-L\" (landscape) or \"-P\" (portrait). No "
+"suffix defaults to portrait."
+msgstr ""
+
+#: ../../functions.rst 0086ae19d23245d2a3c425d537cff985
+#: 0107a4c1a39347c4af4004ad0d5e403f 252c1e16d25c490cb7cbcce3b9f1cfce
+#: 4d137e1791c745deb8c590d5bfbb5dc5 53d3e4977fb146ad8669a8e821bfefc2
+#: 64c8593781c046ddb8f521a6f1f0b725 73e64bfff41249dc85e4ec96e8391f45
+#: 906ceb613e864f36a87c345f3583fe16 9710f4ab97144634a38ae20942d1913c
+#: 9926c7d0fcee400e841aa1890bc67ea2 9a5f4a6a98dc4147bdf82210a75f126b
+#: 9d47d65487774d9c8607562d808e63bc a546b36584fc4023a7e68fa52d3bb110
+#: a9f64f731e974ea0aa63eb249d1d18db b3ce1309b9604e59aa7340f733b76c42
+#: c25ed4ddc44a4d8292fe7a949a15fe58 c4cdb78e6944459a8934a78aadb3eaa5
+#: c9c22817211c49a2ae16da519ef351b3 d7d622d64742404689c069e3aca882b3
+#: d9a5cf2ad2a74ac69251b17f01c01ef3 da9e9f534e6d4e9f8dbbb79b9ea31590
+#: f4fb4b17df8044c5967eb49d08ad2940 f56da1d9666f450fbdb7617571826508
+msgid "Parameters"
+msgstr ""
+
+#: ../../functions.rst:84 d1edba4a2b0749ff9e106b3732d82d71
+msgid ""
+"any format name from above in upper or lower case, like *\"A4\"* or "
+"*\"letter-l\"*."
+msgstr ""
+
+#: ../../functions.rst 0121f158b26c43a2b9c36019a068d476
+#: 0ce6605af5f4478d8061e1965c2e1d97 106ca0af52b042ab892bc071e9202602
+#: 1c86a8e962aa499e9e410d093e1a7f88 256a84d8523f4aee8718f26909ba604d
+#: 327dfa749eae497cb7f5387483a9a444 32ee4d8eb19b45f6bae13ef61ea1df84
+#: 374143252c4d4144b7fc79a07ecbcfe9 54c6c9a08eb645fba6be747045bde8c4
+#: 550b0c06550e4a1db6acda53a6f75aee 64d7b707a7bf4582b8102acb5337d806
+#: 6c7410225afa49df905d5ed0d17dc474 6d694012d38941158e6047cbd6765876
+#: 7262ad3fefd743ddaa764526ac356634 89ce342518cf4fafa64b40ff6b7b140c
+#: 97d9ffa38655495f8a0013a370df5289 a8487089b1734e4eb813ff485ba54710
+#: a8684a1cd202441c86731484fca25ce8 b10068ceba924c31976b9242b92fd17f
+#: cd5f983948d04e5ab2670e6390e0052f d4a5ef1e9ff945c3b9d4e2747459e5b5
+#: e05046ff91b84ecfb6c3e9f910e35c6b e5e153a681464042ac902226ca22a638
+#: fec4328be3b2480a916f5378f659f73a
+msgid "Return type"
+msgstr ""
+
+#: ../../functions.rst 0b28aca76f944ff18b6098afd579680a
+#: 2b6133170db1444d825aff6739634e39 2b9736094e9f44c3a525fc5e7097a5e5
+#: 313496306a9743919ee5823a60c2d361 33ac39ac07414f85b3786ef4c9223ea3
+#: 454aad8620e64aa1a01848beb351cbec 5253deb9dac74a40b25e1b22197ba15d
+#: 53a771157e234176a0d7ae969d9b227a 58185911039140a28707f02ad521b3ab
+#: 5f35c2a270ac4eefa23fdc76dcee2484 624cf976820b41928dcd66343ff03da6
+#: 63b4df40d8c140b1be54bc04ef374174 6408e5ad41d2461a9f1df6fd1d10247a
+#: 770763d9916145aa866e83c019d3897f 87450388ea2e4b3ba78057e08bf8d59c
+#: 94045b20d2aa4b1db426dcb58eea1b10 94d79843696941f89e89964f275df7e5
+#: 9ff48f8556cd4c7799e4ae3e2becbe62 af5f6456a8f7493cae3a280402806308
+#: bd1a8c77553943e290203312960e2401 d3e45a9126484cd4a279e1ae5a54a761
+#: ddf4fe6c595f4133838d416f125ba6e5 debdc63467a94655af3b4c62c59d52cb
+#: e1773e4b9bbc4fc1b6025290b2dd5ef4 e7e7c4c4fd324c66870c6a5a75a9fe69
+msgid "Returns"
+msgstr ""
+
+#: ../../functions.rst:87 1b138ce45cb24fb29f004a1d4309d345
+msgid ""
+"*(width, height)* of the paper format. For an unknown format *(-1, -1)* "
+"is returned. Examples: *pymupdf.paper_size(\"A4\")* returns *(595, 842)* "
+"and *pymupdf.paper_size(\"letter-l\")* delivers *(792, 612)*."
+msgstr ""
+
+#: ../../functions.rst:93 405aadeaf0834803b43a3691be34a350
+msgid "Convenience function to return a :ref:`Rect` for a known paper format."
+msgstr ""
+
+#: ../../functions.rst:95 4321cecbf19e44b5969aaaac7d91192f
+msgid "any format name supported by :meth:`paper_size`."
+msgstr ""
+
+#: ../../functions.rst:97 6253b4e47f72404b86be542a1f5ba214
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../functions.rst:98 96cb4ba9703240cda5af5d9b5ebd4273
+msgid ""
+"*pymupdf.Rect(0, 0, width, height)* with *width, "
+"height=pymupdf.paper_size(s)*."
+msgstr ""
+
+#: ../../functions.rst:109 209aaeabd9fc46ac99b66ad31493b3d0
+msgid ""
+"Sets destination of |PyMuPDF| messages to a file descriptor, a file, an "
+"existing stream or `Python's logging system "
+"<https://docs.python.org/3/library/logging.html>`_."
+msgstr ""
+
+#: ../../functions.rst:113 494817e916d2455a86023b21c58f3a11
+msgid "Usually one would only set one arg, or one or more `pylogging*` args."
+msgstr ""
+
+#: ../../functions.rst:115 8e1da9c75a4d46cd98e9c4659b1a151c
+msgid ""
+"A text specification of destination; for details see description of "
+"environmental variable `PYMUPDF_MESSAGE`."
+msgstr ""
+
+#: ../../functions.rst:118 34909df9199646a4b311eeccca4936a0
+msgid "Write to file descriptor."
+msgstr ""
+
+#: ../../functions.rst:120 9b448bc58b824bb08b07efa6932546dd
+msgid ""
+"Write to existing stream, which must have methods `.write(text)` and "
+"`.flush()`."
+msgstr ""
+
+#: ../../functions.rst:123 f053785536f6462bba2672cfee39462e
+msgid "Write to a file."
+msgstr ""
+
+#: ../../functions.rst:125 5a0b5cb436f2417c881f352a3f16f2d2
+msgid "Append to a file."
+msgstr ""
+
+#: ../../functions.rst:127 ad3bbc6027e84e2bab9cb27d2b9ea314
+msgid "Write to Python's `logging` system."
+msgstr ""
+
+#: ../../functions.rst:129 11b3c7e90be841f99339dbc2b36b3221
+msgid "Write to Python's `logging` system using specified Logger."
+msgstr ""
+
+#: ../../functions.rst:131 71019e8509cd432ab8818a7b104e22de
+msgid "Write to Python's `logging` system using specified level."
+msgstr ""
+
+#: ../../functions.rst:133 c04c80653e184bbab2777ad6e8ce5511
+msgid ""
+"Write to Python's `logging` system using specified logger name. Only used"
+" if `pylogging_logger` is None. Default is `pymupdf`."
+msgstr ""
+
+#: ../../functions.rst:137 10dcacf9980a48319c1ccddf8727743f
+msgid ""
+"If any `pylogging*` arg is not None, we write to `Python's logging system"
+" <https://docs.python.org/3/library/logging.html>`_."
+msgstr ""
+
+#: ../../functions.rst:144 ../../functions.rst:156 ../../functions.rst:270
+#: 263672d47c2b4937aabab2ac1973bdd6 b0f3d381bde84d2e9d140f8eb6fc20c8
+#: fc756121bb534e6888ea52f5d5f7475b
+msgid "*New in v1.17.4*"
+msgstr ""
+
+#: ../../functions.rst:146 28a2adf5d1a8459a866ce88539692849
+msgid ""
+"Convenience function returning a PDF color triple (red, green, blue) for "
+"a given sRGB color integer as it occurs in :meth:`Page.get_text` "
+"dictionaries \"dict\" and \"rawdict\"."
+msgstr ""
+
+#: ../../functions.rst:148 ../../functions.rst:160
+#: 8382544bac0e4c58959a7c6356a5ea1d 938ab4f232fd47ad925a7c3d3141b81b
+msgid ""
+"an integer of format RRGGBB, where each color component is an integer in "
+"range(255)."
+msgstr ""
+
+#: ../../functions.rst:150 10f206e7d5e243329ebcb32246f8b902
+msgid ""
+"a tuple (red, green, blue) with float items in interval *0 <= item <= 1* "
+"representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` "
+"(red)."
+msgstr ""
+
+#: ../../functions.rst:158 3f1bd182a011433f95c261cb5072c83e
+msgid ""
+"Convenience function returning a color (red, green, blue) for a given "
+"*sRGB* color integer."
+msgstr ""
+
+#: ../../functions.rst:162 56008f93f9c4445e9550ff701c9a5067
+msgid ""
+"a tuple (red, green, blue) with integer items in `range(256)` "
+"representing the same color. Example `sRGB_to_pdf(0xff0000) = (255, 0, "
+"0)` (red)."
+msgstr ""
+
+#: ../../functions.rst:168 ../../functions.rst:183 ../../functions.rst:198
+#: ../../functions.rst:211 6909db03961b42e384921d94b42d088b
+#: 7fa4e5d78b60492e8580ca2bd95fc9e2 df918e2414764ab88723bfeb276d87b3
+#: e0895f463b6a4252a8d81f9f899483c2
+msgid "*New in v1.18.0*"
+msgstr ""
+
+#: ../../functions.rst:170 1c99f3f02cbe41beaaccdc4a304a0c18
+msgid ""
+"Return the unicode number of a glyph name based on the **Adobe Glyph "
+"List**."
+msgstr ""
+
+#: ../../functions.rst:172 4d64118594024a50bb3b89613e2a782a
+msgid ""
+"the name of some glyph. The function is based on the `Adobe Glyph List "
+"<https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_."
+msgstr ""
+
+#: ../../functions.rst:175 6f671fb8e68041e9babf072c102e5b6f
+msgid "the unicode. Invalid *name* entries return `0xfffd (65533)`."
+msgstr ""
+
+#: ../../functions.rst:177 ../../functions.rst:205 ../../functions.rst:218
+#: 1d529882b0fd460cb9ec78ab559a0ece 318abb6987cc4a819a5fcfa675571abb
+#: 3ff634aebfcc49c0a91be502177113cf
+msgid ""
+"A similar functionality is provided by package `fontTools "
+"<https://pypi.org/project/fonttools/>`_ in its *agl* sub-package."
+msgstr ""
+
+#: ../../functions.rst:185 609da01536814ffc8706b0bbea3ab5f8
+msgid ""
+"Return the glyph name of a unicode number, based on the **Adobe Glyph "
+"List**."
+msgstr ""
+
+#: ../../functions.rst:187 6a2134788061488f80d967a33cc10f18
+#: b79e55b908d046998fb2c3e15ba9aa33
+msgid ""
+"the unicode given by e.g. `ord(\"ß\")`. The function is based on the "
+"`Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_."
+msgstr ""
+
+#: ../../functions.rst:190 075e96968e27471791191d74ea61cb09
+msgid ""
+"the glyph name. E.g. `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` returns "
+"`'Adieresis'`."
+msgstr ""
+
+#: ../../functions.rst:192 2ebedf06c52f4f49a1b608ac0a185a68
+msgid ""
+"A similar functionality is provided by package `fontTools "
+"<https://pypi.org/project/fonttools/>`_: in its *agl* sub-package."
+msgstr ""
+
+#: ../../functions.rst:200 901a264999f74b27b1b6f0c75e3d26ce
+msgid "Return a list of glyph names defined in the **Adobe Glyph List**."
+msgstr ""
+
+#: ../../functions.rst:203 8a8082e41b3b4d36b08a96250bdea3ff
+msgid "list of strings."
+msgstr ""
+
+#: ../../functions.rst:213 2f4ba69189114cc490cffb97e8a0ab9f
+msgid ""
+"Return a list of unicodes for there exists a glyph name in the **Adobe "
+"Glyph List**."
+msgstr ""
+
+#: ../../functions.rst:216 74dae50c6b504e448879f45b492bc8ca
+msgid "list of integers."
+msgstr ""
+
+#: ../../functions.rst:224 6bcba2202f05412b80d121404158c83d
+msgid "*New in v1.21.0*"
+msgstr ""
+
+#: ../../functions.rst:226 fb495a7e4a74418db018826854000539
+msgid "**Utility function for use with \"Story\" applications.**"
+msgstr ""
+
+#: ../../functions.rst:228 4809306f864c4a89ad70d5975115d193
+msgid ""
+"Create CSS `@font-face` items for the given fontcode in pymupdf-fonts. "
+"Creates a CSS font-family for all fonts starting with string "
+"\"fontcode\"."
+msgstr ""
+
+#: ../../functions.rst:230 e303e778dae54e6386372944b977834f
+msgid ""
+"The font naming convention in package pymupdf-fonts is \"fontcode<sf>\", "
+"where the suffix \"sf\" is one of \"\" (empty), \"it\"/\"i\", "
+"\"bo\"/\"b\" or \"bi\". These suffixes thus represent the regular, "
+"italic, bold or bold-italic variants of that font."
+msgstr ""
+
+#: ../../functions.rst:232 49d93b48dea8445a957440edfb91fc78
+msgid "For example, font code \"notos\" refers to fonts"
+msgstr ""
+
+#: ../../functions.rst:234 d540049bb18b402b8e2fce94206a4c9d
+msgid "\"notos\" - \"Noto Sans Regular\""
+msgstr ""
+
+#: ../../functions.rst:235 bf50eb25ccaa4873a1e000b10f70f85d
+msgid "\"notosit\" - \"Noto Sans Italic\""
+msgstr ""
+
+#: ../../functions.rst:236 c64e89ce985b4b40b347a45ae5034e62
+msgid "\"notosbo\" - \"Noto Sans Bold\""
+msgstr ""
+
+#: ../../functions.rst:237 243f4afbd3cc424aace4fb3d1c4aeb29
+msgid "\"notosbi\" - \"Noto Sans Bold Italic\""
+msgstr ""
+
+#: ../../functions.rst:239 a51da85020894121a2adaabef5348f53
+msgid ""
+"The function creates (up to) four CSS `@font-face` definitions and "
+"collectively assigns the `font-family` name \"notos\" to them (or the "
+"\"name\" value if provided). Associated font buffers are placed / added "
+"to the provided archive."
+msgstr ""
+
+#: ../../functions.rst:241 3132df29e9a44c06b7d46173b110b76a
+msgid ""
+"To use the font in the Python API for :ref:`Story`, execute "
+"`.set_font(fontcode)` (or \"name\" if given). The correct font weight or "
+"style will automatically be selected as required."
+msgstr ""
+
+#: ../../functions.rst:243 21a24adeea0843709838dbd657e52cf5
+msgid ""
+"For example to replace the \"sans-serif\" HTML standard (i.e. Helvetica) "
+"with the above \"notos\", execute the following. Whenever \"sans-serif\" "
+"is used (whether explicitly or implicitly), the Noto Sans fonts will be "
+"selected."
+msgstr ""
+
+#: ../../functions.rst:245 6f8364fda1b84e83815345fa382938cb
+msgid ""
+"`CSS = pymupdf.css_for_pymupdf_font(\"notos\", name=\"sans-serif\", "
+"archive=...)`"
+msgstr ""
+
+#: ../../functions.rst:247 261383cb1f684bcaa5dc2ca977a8e1a7
+msgid "Expects and returns the CSS source, with the new CSS definitions appended."
+msgstr ""
+
+#: ../../functions.rst:249 5a7949de431b4714bf7738ba97e9843e
+msgid ""
+"one of the font codes present in package `pymupdf-fonts "
+"<https://pypi.org/project/pymupdf-fonts/>`_ (usually) representing the "
+"regular version of the font family."
+msgstr ""
+
+#: ../../functions.rst:250 82d6c0696254483d8cb06494af221497
+msgid ""
+"any already existing CSS source, or `None`. The function will append its "
+"new definitions to this. This is the string that **must be used** as "
+"`user_css` when creating the :ref:`Story`."
+msgstr ""
+
+#: ../../functions.rst:251 2d57c3a9f53d4da38683c5c30aed39d0
+msgid ""
+":ref:`Archive`, **mandatory**. All font binaries (i.e. up to four) found "
+"for \"fontcode\" will be added to the archive. This is the archive that "
+"**must be used** as `archive` when creating the :ref:`Story`."
+msgstr ""
+
+#: ../../functions.rst:252 a831e1b443044f949bfac61510ccb880
+msgid ""
+"the name under which the \"fontcode\" fonts should be found. If omitted, "
+"\"fontcode\" will be used."
+msgstr ""
+
+#: ../../functions.rst:255 4ecf6d28131348f3a658cd320f01200f
+msgid ""
+"Modified CSS, with appended `@font-face` statements for each font variant"
+" of fontcode. Fontbuffers associated with \"fontcode\" will have been "
+"added to 'archive'. The function will automatically find up to 4 font "
+"variants. All pymupdf-fonts (that are no special purpose like math or "
+"music, etc.) have regular, bold, italic and bold-italic variants. To see "
+"currently available font codes check "
+"`pymupdf.fitz_fontdescriptors.keys()`. This will show something like "
+"`dict_keys(['cascadia', 'cascadiai', 'cascadiab', 'cascadiabi', 'figbo', "
+"'figo', 'figbi', 'figit', 'fimbo', 'fimo', 'spacembo', 'spacembi', "
+"'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', "
+"'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', "
+"'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])`."
+msgstr ""
+
+#: ../../functions.rst:257 bd2b0caaa55b48a4a91a57acaef9b5db
+msgid ""
+"Here is a complete snippet for using the \"Noto Sans\" font instead of "
+"\"Helvetica\"::"
+msgstr ""
+
+#: ../../functions.rst:272 6c7eb3d6af61417aa66cef53d50ec562
+msgid ""
+"Convenience function to split a rectangle into sub-rectangles of equal "
+"size. Returns a list of `rows` lists, each containing `cols` :ref:`Rect` "
+"items. Each sub-rectangle can then be addressed by its row and column "
+"index."
+msgstr ""
+
+#: ../../functions.rst:274 55f942fd80da4d66bac2b35ee5a51276
+msgid "the rectangle to split."
+msgstr ""
+
+#: ../../functions.rst:275 555136c14a224f6ea35dce0f1ec9c79d
+msgid "the desired number of columns."
+msgstr ""
+
+#: ../../functions.rst:276 6569fd83357741b98b4916dc1ebc46ae
+msgid "the desired number of rows."
+msgstr ""
+
+#: ../../functions.rst:277 b5930e3aeb564e1c9a36af2644961112
+msgid ""
+"a list of :ref:`Rect` objects of equal size, whose union equals *rect*. "
+"Here is the layout of a 3x4 table created by `cell = "
+"pymupdf.make_table(rect, cols=4, rows=3)`:"
+msgstr ""
+
+#: ../../functions.rst:287 aeb0295f33ed4f3680e7eaae3631829e
+msgid "New in version 1.16.2)*"
+msgstr ""
+
+#: ../../functions.rst:289 dd962cf0f83d4e7bbe3373a541ff2cd6
+msgid ""
+"Return a matrix which maps the line from p1 to p2 to the x-axis such that"
+" p1 will become (0,0) and p2 a point with the same distance to (0,0)."
+msgstr ""
+
+#: ../../functions.rst:291 27847587bb6e480588c5a42b1044353e
+msgid "starting point of the line."
+msgstr ""
+
+#: ../../functions.rst:292 f4a34c3eb1de46778eed630ba3f8a554
+msgid "end point of the line."
+msgstr ""
+
+#: ../../functions.rst:294 0a643e5f3a5544c9a7f7eb96a29a5e50
+msgid ":ref:`Matrix`"
+msgstr ""
+
+#: ../../functions.rst:295 efc91beb38014b22a8c5dc17a55a5ad8
+msgid ""
+"a matrix which combines a rotation and a translation::     >>> p1 = "
+"pymupdf.Point(1, 1)    >>> p2 = pymupdf.Point(4, 5)    >>> abs(p2 - p1)  "
+"# distance of points    5.0    >>> m = pymupdf.planish_line(p1, p2)    "
+">>> p1 * m    Point(0.0, 0.0)    >>> p2 * m    Point(5.0, "
+"-5.960464477539063e-08)    >>> # distance of the resulting points    >>> "
+"abs(p2 * m - p1 * m)    5.0   .. image:: images/img-planish.png    "
+":scale: 40"
+msgstr ""
+
+#: ../../functions.rst:295 99ce4ad1b2e44ef9952ab645c2e2a29f
+msgid "a matrix which combines a rotation and a translation::"
+msgstr ""
+
+#: ../../functions.rst:319 cd6d3f128f3d404cb028905325357f80
+msgid ""
+"A dictionary of pre-defines paper formats. Used as basis for "
+":meth:`paper_size`."
+msgstr ""
+
+#: ../../functions.rst:325 779d1b9d87ec456386f8b682518e1b8d
+msgid "New in v1.17.5"
+msgstr ""
+
+#: ../../functions.rst:327 2a02368d2b68461c8413177ff0766a85
+msgid ""
+"A dictionary of usable fonts from repository `pymupdf-fonts "
+"<https://pypi.org/project/pymupdf-fonts/>`_. Items are keyed by their "
+"reserved fontname and provide information like this::"
+msgstr ""
+
+#: ../../functions.rst:343 cb398218853f42038512c72c146c78e8
+msgid "If `pymupdf-fonts` is not installed, the dictionary is empty."
+msgstr ""
+
+#: ../../functions.rst:345 d3a4226063254a47a7110bef0f56256f
+msgid ""
+"The dictionary keys can be used to define a :ref:`Font` via e.g. `font = "
+"pymupdf.Font(\"fimo\")` -- just like you can do it with the builtin fonts"
+" \"Helvetica\" and friends."
+msgstr ""
+
+#: ../../functions.rst:351 c7682a849a5048fe99f8c19c9aee7cb3
+msgid ""
+"If in `os.environ` when |PyMuPDF| is imported, sets destination of "
+"|PyMuPDF| messages. Otherwise messages are sent to `sys.stdout`."
+msgstr ""
+
+#: ../../functions.rst:355 3218febc90704ce79797a636f25c89c1
+msgid ""
+"If the value starts with `fd:`, the remaining text should be an integer "
+"file descriptor to which messages are written."
+msgstr ""
+
+#: ../../functions.rst:358 638ff04c1b724dbbabe6d8cde2b252fb
+msgid "For example `PYMUPDF_MESSAGE=fd:2` will send messages to stderr."
+msgstr ""
+
+#: ../../functions.rst:360 dcaaa640c313488f9ea010cb608902e7
+msgid ""
+"If the value starts with `path:`, the remaining text is the path of a "
+"file to which messages are written. If the file already exists, it is "
+"truncated."
+msgstr ""
+
+#: ../../functions.rst:364 859891baca6846a2a7b06125bba642c4
+msgid ""
+"If the value starts with `path+:`, the remaining text is the path of file"
+" to which messages are written. If the file already exists, we append "
+"output."
+msgstr ""
+
+#: ../../functions.rst:369 917bb5b5660c4baaacb483f666337304
+msgid ""
+"If the value starts with `logging:`, messages are written to `Python's "
+"logging system <https://docs.python.org/3/library/logging.html>`_. The "
+"remaining text can contain comma-separated name=value items:"
+msgstr ""
+
+#: ../../functions.rst:373 5220ec2027f94decbb3d5b101d6ac481
+msgid "`level=<int>` sets the logging level."
+msgstr ""
+
+#: ../../functions.rst:374 a4c4076564974edc9a9514098c5d95ed
+msgid "`name=<str>` sets the logger name (default is `pymupdf`)."
+msgstr ""
+
+#: ../../functions.rst:376 2a32a55410504c23b6cb4f12682cafa2
+msgid "Other items are ignored."
+msgstr ""
+
+#: ../../functions.rst:378 f0420cb19b0b4ec2bb48cadb322a64ba
+msgid "Other prefixes will cause an error."
+msgstr ""
+
+#: ../../functions.rst:380 c3898cead22f497ba9d9c391364c4c8a
+msgid "Also see `set_messages()`."
+msgstr ""
+
+#: ../../functions.rst:387 f5c9e9f015d44ceda40361601fc41f38
+msgid "New in v1.19.6"
+msgstr ""
+
+#: ../../functions.rst:389 f020265eebef4b1fb070d23fc83beb86
+msgid ""
+"Contains about 500 RGB colors in PDF format with the color name as key. "
+"To see what is there, you can obviously look at "
+"`pymupdf.pdfcolor.keys()`."
+msgstr ""
+
+#: ../../functions.rst:391 e139a8577f8340ffb015fab764a9655a
+msgid "Examples:"
+msgstr ""
+
+#: ../../functions.rst:393 40f5af3779d84dc282680e022cece0c1
+msgid "`pymupdf.pdfcolor[\"red\"] = (1.0, 0.0, 0.0)`"
+msgstr ""
+
+#: ../../functions.rst:394 413ce7dd0e8543f5868732ac0dbf8ef5
+msgid ""
+"`pymupdf.pdfcolor[\"skyblue\"] = (0.5294117647058824, 0.807843137254902, "
+"0.9215686274509803)`"
+msgstr ""
+
+#: ../../functions.rst:395 2842b0f25a2c490c94a9b5e64376f558
+msgid ""
+"`pymupdf.pdfcolor[\"wheat\"] = (0.9607843137254902, 0.8705882352941177, "
+"0.7019607843137254)`"
+msgstr ""
+
+#: ../../functions.rst:401 34272632112745f9a3d80b95aace8419
+msgid ""
+"Convenience function to return the current local timestamp in PDF "
+"compatible format, e.g. *D:20170501121525-04'00'* for local datetime May "
+"1, 2017, 12:15:25 in a timezone 4 hours westward of the UTC meridian."
+msgstr ""
+
+#: ../../functions.rst:404 d3e70a97bb2d4d0cbd2aabba7e397c47
+msgid "current local PDF timestamp."
+msgstr ""
+
+#: ../../functions.rst:410 99c490db0f4f4638842bcf149740cc60
+msgid "New in version 1.14.7"
+msgstr ""
+
+#: ../../functions.rst:412 6857c18d6df5448c947c917d8129b136
+msgid ""
+"Calculate the length of text on output with a given **builtin** font, "
+":data:`fontsize` and encoding."
+msgstr ""
+
+#: ../../functions.rst:414 0c724a86099b4016a27ca94ce9ff53fb
+msgid "the text string."
+msgstr ""
+
+#: ../../functions.rst:415 b4f673b68cc549d3a3a4ed4d11159d4f
+msgid ""
+"the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK "
+"fonts, identified by their \"reserved\" fontnames (see table in "
+":meth:`Page.insert_font`)."
+msgstr ""
+
+#: ../../functions.rst:416 fd9ab85296864b159297cf2f40c07b63
+msgid "the :data:`fontsize`."
+msgstr ""
+
+#: ../../functions.rst:417 659e6b24c6a54cd6be9215d2a7b7bec6
+msgid ""
+"the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic "
+"(Russian) are available. Relevant for Base-14 fonts \"Helvetica\", "
+"\"Courier\" and \"Times\" and their variants only. Make sure to use the "
+"same value as in the corresponding text insertion."
+msgstr ""
+
+#: ../../functions.rst:419 085fba5efa1b441c8a7a959307fadd09
+msgid ""
+"the length in points the string will have (e.g. when used in "
+":meth:`Page.insert_text`)."
+msgstr ""
+
+#: ../../functions.rst:421 0071e0f0d968469dbcf4380c63ab4efe
+msgid ""
+"This function will only do the calculation -- it won't insert font nor "
+"text."
+msgstr ""
+
+#: ../../functions.rst:423 beca988a40a1457882759c4d1063a516
+msgid ""
+"The :ref:`Font` class offers a similar method, :meth:`Font.text_length`, "
+"which supports Base-14 fonts and any font with a character map (CMap, "
+"Type 0 fonts)."
+msgstr ""
+
+#: ../../functions.rst:425 2621d40424214d07bbd4fab562324e61
+msgid ""
+"If you use this function to determine the required rectangle width for "
+"the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that"
+" they calculate on a **by-character level**. Because of rounding effects,"
+" this will mostly lead to a slightly larger number: "
+"*sum([pymupdf.get_text_length(c) for c in text]) > "
+"pymupdf.get_text_length(text)*. So either (1) do the same, or (2) use "
+"something like *pymupdf.get_text_length(text + \"'\")* for your "
+"calculation."
+msgstr ""
+
+#: ../../functions.rst:431 858e74323bb44d4aabd1ec6116e45b4e
+msgid ""
+"Make a PDF-compatible string: if the text contains code points *ord(c) > "
+"255*, then it will be converted to UTF-16BE with BOM as a hexadecimal "
+"character string enclosed in \"<>\" brackets like *<feff...>*. Otherwise,"
+" it will return the string enclosed in (round) brackets, replacing any "
+"characters outside the ASCII range with some special code. Also, every "
+"\"(\", \")\" or backslash is escaped with a backslash."
+msgstr ""
+
+#: ../../functions.rst:433 70176ef4d97a409dbe6452c90d7b85c1
+msgid "the object to convert"
+msgstr ""
+
+#: ../../functions.rst:436 d145e56ff72f4b868a418777ae2da0a0
+msgid "PDF-compatible string enclosed in either *()* or *<>*."
+msgstr ""
+
+#: ../../functions.rst:442 7699f58d78164df49cc2d12fb7cd9b3c
+msgid "New in v1.16.7"
+msgstr ""
+
+#: ../../functions.rst:443 957b32a916a54e10a69ac468ba8ebf2f
+msgid ""
+"Changed in v1.19.5: also return natural image orientation extracted from "
+"EXIF data if present."
+msgstr ""
+
+#: ../../functions.rst:444 af5e89f8d4524be697b2b949fe03e45a
+msgid ""
+"Changed in v1.22.5: always return `None` in error cases instead of an "
+"empty dictionary."
+msgstr ""
+
+#: ../../functions.rst:446 2b1e37d83d2345f9bc9d910447b32df9
+msgid ""
+"Show important properties of an image provided as a memory area. Its main"
+" purpose is to avoid using other Python packages just to determine them."
+msgstr ""
+
+#: ../../functions.rst:448 bb83a10d199948a28baf855069679fff
+msgid ""
+"either an image in memory or an **opened** file. An image in memory may "
+"be any of the formats `bytes`, `bytearray` or `io.BytesIO`."
+msgstr ""
+
+#: ../../functions.rst:451 b80c362428224f70893f7dbb18fef550
+msgid ""
+"No exception is ever raised. In case of an error, `None` is returned. "
+"Otherwise, there are the following items::     In [2]: "
+"pymupdf.image_profile(open(\"nur-ruhig.jpg\", \"rb\").read())    Out[2]:"
+"    {'width': 439,    'height': 501,    'orientation': 0,  # natural "
+"orientation (from EXIF)    'transform': (1.0, 0.0, 0.0, 1.0, 0.0, 0.0),  "
+"# orientation matrix    'xres': 96,    'yres': 96,    'colorspace': 3,"
+"    'bpc': 8,    'ext': 'jpeg',    'cs-name': 'DeviceRGB'}  There is the "
+"following relation to **Exif** information encoded in `orientation`, and "
+"correspondingly in the `transform` matrix-like (quoted from MuPDF "
+"documentation, *ccw* = counter-clockwise):     0. Undefined    1. 0 "
+"degree ccw rotation. (Exif = 1)    2. 90 degree ccw rotation. (Exif = 8)"
+"    3. 180 degree ccw rotation. (Exif = 3)    4. 270 degree ccw rotation."
+" (Exif = 6)    5. flip on X. (Exif = 2)    6. flip on X, then rotate ccw "
+"by 90 degrees. (Exif = 5)    7. flip on X, then rotate ccw by 180 "
+"degrees. (Exif = 4)    8. flip on X, then rotate ccw by 270 degrees. "
+"(Exif = 7)   .. note::     * For some \"exotic\" images (FAX encodings, "
+"RAW formats and the like), this method will not work. You can however "
+"still work with such images in PyMuPDF, e.g. by using "
+":meth:`Document.extract_image` or create pixmaps via `Pixmap(doc, xref)`."
+" These methods will automatically convert exotic images to the PNG format"
+" before returning results.    * You can also get the properties of images"
+" embedded in a PDF, via their :data:`xref`. In this case make sure to "
+"extract the raw stream: "
+"`pymupdf.image_profile(doc.xref_stream_raw(xref))`.    * Images as "
+"returned by the image blocks of :meth:`Page.get_text` using \"dict\" or "
+"\"rawdict\" options are also supported."
+msgstr ""
+
+#: ../../functions.rst:452 e84943d4656c4a47972901421acab8c3
+msgid ""
+"No exception is ever raised. In case of an error, `None` is returned. "
+"Otherwise, there are the following items::"
+msgstr ""
+
+#: ../../functions.rst:467 e1c02eedf39547b084e5b48dafffc726
+msgid ""
+"There is the following relation to **Exif** information encoded in "
+"`orientation`, and correspondingly in the `transform` matrix-like (quoted"
+" from MuPDF documentation, *ccw* = counter-clockwise):"
+msgstr ""
+
+#: ../../functions.rst:469 df23c683fa524ccc9fccbcd2d69f503e
+msgid "Undefined"
+msgstr ""
+
+#: ../../functions.rst:470 f8275cc11f6449f9b1b4178b941b44a7
+msgid "0 degree ccw rotation. (Exif = 1)"
+msgstr ""
+
+#: ../../functions.rst:471 a8b3b37b73d04b739d9a8a259e1dff82
+msgid "90 degree ccw rotation. (Exif = 8)"
+msgstr ""
+
+#: ../../functions.rst:472 062c3fd11ce642f1b8a0e042967c25d8
+msgid "180 degree ccw rotation. (Exif = 3)"
+msgstr ""
+
+#: ../../functions.rst:473 21c985c2793d46ff943d7bb01b5fde98
+msgid "270 degree ccw rotation. (Exif = 6)"
+msgstr ""
+
+#: ../../functions.rst:474 3ed66a5ba1bb42b892ec496c07ea5b91
+msgid "flip on X. (Exif = 2)"
+msgstr ""
+
+#: ../../functions.rst:475 54290bb6ec3b4339b21edb09c7be1a9a
+msgid "flip on X, then rotate ccw by 90 degrees. (Exif = 5)"
+msgstr ""
+
+#: ../../functions.rst:476 c893cd5f6eaa4095b8d48dcafbe803db
+msgid "flip on X, then rotate ccw by 180 degrees. (Exif = 4)"
+msgstr ""
+
+#: ../../functions.rst:477 a4b2bb8a084748028583799fa437e2b0
+msgid "flip on X, then rotate ccw by 270 degrees. (Exif = 7)"
+msgstr ""
+
+#: ../../functions.rst:482 9642e070a8d94067bd7aafb6a79a0acf
+msgid ""
+"For some \"exotic\" images (FAX encodings, RAW formats and the like), "
+"this method will not work. You can however still work with such images in"
+" PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps "
+"via `Pixmap(doc, xref)`. These methods will automatically convert exotic "
+"images to the PNG format before returning results."
+msgstr ""
+
+#: ../../functions.rst:483 0730816b36d9470fbfe5ffef4c9916a3
+msgid ""
+"You can also get the properties of images embedded in a PDF, via their "
+":data:`xref`. In this case make sure to extract the raw stream: "
+"`pymupdf.image_profile(doc.xref_stream_raw(xref))`."
+msgstr ""
+
+#: ../../functions.rst:484 df9a9e1daad84638aab9b2dbf6914506
+msgid ""
+"Images as returned by the image blocks of :meth:`Page.get_text` using "
+"\"dict\" or \"rawdict\" options are also supported."
+msgstr ""
+
+#: ../../functions.rst:491 a1e2b993edc14a45a3b8fe89caaa8ef1
+msgid ""
+"Return the header string required to make a valid document out of page "
+"text outputs."
+msgstr ""
+
+#: ../../functions.rst:493 ../../functions.rst:505
+#: 6a1fbfdf58b5440b96cb4b908da4904a aed0ed261f5f497998e8def7b43eb6d2
+msgid "type of document. Use the same as the output parameter of *get_text()*."
+msgstr ""
+
+#: ../../functions.rst:495 ca6c0195dc2f4fe28a7a155716d6fdc8
+msgid "optional arbitrary name to use in output types \"json\" and \"xml\"."
+msgstr ""
+
+#: ../../functions.rst:503 4afb8f14f4734193aaa42c1517d46188
+msgid ""
+"Return the trailer string required to make a valid document out of page "
+"text outputs. See :meth:`Page.get_text` for an example."
+msgstr ""
+
+#: ../../functions.rst:513 8d482e8a42044ad3afc48e2b7fffb27c
+msgid ""
+"Delete an object containing XML-based metadata from the PDF. (Py-) MuPDF "
+"does not support XML-based metadata. Use this if you want to make sure "
+"that the conventional metadata dictionary will be used exclusively. Many "
+"thirdparty PDF programs insert their own metadata in XML format and thus "
+"may override what you store in the conventional dictionary. This method "
+"deletes any such reference, and the corresponding PDF object will be "
+"deleted during next garbage collection of the file."
+msgstr ""
+
+#: ../../functions.rst:519 a72aa87bc68e4f4bb9703be4f74f288a
+msgid ""
+"Return the XML-based metadata :data:`xref` of the PDF if present -- also "
+"refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve "
+"the content via :meth:`Document.xref_stream` and then work with it using "
+"some XML software."
+msgstr ""
+
+#: ../../functions.rst:522 67817bc5551a458ba2d78406a1906f21
+msgid ":data:`xref` of PDF file level XML metadata -- or 0 if none exists."
+msgstr ""
+
+#: ../../functions.rst:528 93cbd43b947f4be192e5cebeef12cb87
+msgid "Run a page through a device."
+msgstr ""
+
+#: ../../functions.rst:530 b72d243c438742829f57b99405fd7d9d
+msgid "Device, obtained from one of the :ref:`Device` constructors."
+msgstr ""
+
+#: ../../functions.rst:533 c8020e6ac06b490d910a4453c2720322
+msgid ""
+"Transformation to apply to the page. Set it to :ref:`Identity` if no "
+"transformation is desired."
+msgstr ""
+
+#: ../../functions.rst:540 9992ddbf8ffc4b54959b0e40bc882789
+msgid "New in v1.19.0"
+msgstr ""
+
+#: ../../functions.rst:541 16801d5fbea9459f9c065e2e45ad6785
+msgid ""
+"Changed in v1.22.0: optionally also return the OCG name applicable to the"
+" boundary box."
+msgstr ""
+
+#: ../../functions.rst:543 67438b98643c46ff80ff211265df90a4
+msgid ""
+"a list of rectangles that envelop text, image or drawing objects. Each "
+"item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple "
+"consists of rectangle coordinates, and *type* is one of the following "
+"values. If `layers=True`, there is a third item containing the OCG name "
+"or `None`: `(type, (x0, y0, x1, y1), None)`.  * `\"fill-text\"` -- normal"
+" text (painted without character borders) * `\"stroke-text\"` -- text "
+"showing character borders only * `\"ignore-text\"` -- text that should "
+"not be displayed (e.g. as used by OCR text layers) * `\"fill-path\"` -- "
+"drawing with fill color (and no border) * `\"stroke-path\"` -- drawing "
+"with border (and no fill color) * `\"fill-image\"` -- displays an image *"
+" `\"fill-shade\"` -- display a shading  The item sequence represents the "
+"**sequence in which these commands are executed** to build the page's "
+"appearance. Therefore, if an item's bbox intersects or contains that of a"
+" previous item, then the previous item may be (partially) covered / "
+"hidden.   So this list can be used to detect such situations. An item's "
+"index in this list equals the value of a `\"seqno\"` in dictionaries as "
+"returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`."
+msgstr ""
+
+#: ../../functions.rst:543 4c16c87165ac4c3683c707f5278e54b2
+msgid ""
+"a list of rectangles that envelop text, image or drawing objects. Each "
+"item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple "
+"consists of rectangle coordinates, and *type* is one of the following "
+"values. If `layers=True`, there is a third item containing the OCG name "
+"or `None`: `(type, (x0, y0, x1, y1), None)`."
+msgstr ""
+
+#: ../../functions.rst:545 1f3baaa90f60489491041912650d2b50
+msgid "`\"fill-text\"` -- normal text (painted without character borders)"
+msgstr ""
+
+#: ../../functions.rst:546 8d03bd3914d941edad4fa681105b6cde
+msgid "`\"stroke-text\"` -- text showing character borders only"
+msgstr ""
+
+#: ../../functions.rst:547 564648c64c1c4eb1acd881a4c41559a8
+msgid ""
+"`\"ignore-text\"` -- text that should not be displayed (e.g. as used by "
+"OCR text layers)"
+msgstr ""
+
+#: ../../functions.rst:548 2012f24724e24d2e8b3d682c6c0dd95f
+msgid "`\"fill-path\"` -- drawing with fill color (and no border)"
+msgstr ""
+
+#: ../../functions.rst:549 e50df5ab435b4f6b90c2a709b7c028ec
+msgid "`\"stroke-path\"` -- drawing with border (and no fill color)"
+msgstr ""
+
+#: ../../functions.rst:550 dddccd8f9bf14c8392556865bb9ff046
+msgid "`\"fill-image\"` -- displays an image"
+msgstr ""
+
+#: ../../functions.rst:551 516bf44416f3416186b1467931874344
+msgid "`\"fill-shade\"` -- display a shading"
+msgstr ""
+
+#: ../../functions.rst:553 c6d414fcee334ceda5a5d4f95b414a9a
+msgid ""
+"The item sequence represents the **sequence in which these commands are "
+"executed** to build the page's appearance. Therefore, if an item's bbox "
+"intersects or contains that of a previous item, then the previous item "
+"may be (partially) covered / hidden."
+msgstr ""
+
+#: ../../functions.rst:556 6c70aeead4b54e3f8ffc2e256995b69c
+msgid ""
+"So this list can be used to detect such situations. An item's index in "
+"this list equals the value of a `\"seqno\"` in dictionaries as returned "
+"by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`."
+msgstr ""
+
+#: ../../functions.rst:563 30b8d1185b0f421f93d06d5a205a7f67
+msgid "New in v1.18.16"
+msgstr ""
+
+#: ../../functions.rst:564 620e7dd916f64b479cfda147a4f22c8d
+msgid "Changed in v1.19.0: added key \"seqno\"."
+msgstr ""
+
+#: ../../functions.rst:565 8063a63deea0416da32bcbd66284d856
+msgid ""
+"Changed in v1.19.1: stroke and fill colors now always are either RGB or "
+"GRAY"
+msgstr ""
+
+#: ../../functions.rst:566 8a6ee644042c4f919504d2a366486ed5
+msgid ""
+"Changed in v1.19.3: span and character bboxes are now also correct if "
+"`dir != (1, 0)`."
+msgstr ""
+
+#: ../../functions.rst:567 97c4ae32b3a0440c8c1f1296fbe716b2
+msgid "Changed in v1.22.0: add new dictionary key \"layer\"."
+msgstr ""
+
+#: ../../functions.rst:570 45cc7e74a2654f74bcfcabb65d9e7803
+msgid ""
+"Return low-level text information of the page. The method is available "
+"for **all** document types. The result is a list of Python dictionaries "
+"with the following content::"
+msgstr ""
+
+#: ../../functions.rst:606 759d41b8e915425ba2f090d80b0065ab
+msgid "Details:"
+msgstr ""
+
+#: ../../functions.rst:608 c027ebb8dfaf4fb9b454d85a0898a0bd
+msgid ""
+"Information above tagged with \"(1)\" has the same meaning and value as "
+"explained in :ref:`TextPage`."
+msgstr ""
+
+#: ../../functions.rst:610 71a2f731acc249aa8278de7e3edbb5a5
+msgid ""
+"Please note that the font ``flags`` value will never contain a "
+"*superscript* flag bit: the detection of superscripts is done within "
+"MuPDF :ref:`TextPage` code -- it is not a property of any font."
+msgstr ""
+
+#: ../../functions.rst:611 71e973788c8e4fd29354221499b566c1
+msgid ""
+"Also note, that the text *color* is encoded as the usual tuple of floats "
+"0 <= f <= 1 -- not in sRGB format. Depending on `span[\"type\"]`, "
+"interpret this as fill color or stroke color."
+msgstr ""
+
+#: ../../functions.rst:613 93a130aa74244d8ea4f44649257f0b0f
+msgid "There are 3 text span types:"
+msgstr ""
+
+#: ../../functions.rst:615 04bb9e4a8efd4f36b449a896e093e997
+msgid ""
+"0: Filled text -- equivalent to PDF text rendering mode 0 (`0 Tr`, the "
+"default in PDF), only each character's \"inside\" is shown."
+msgstr ""
+
+#: ../../functions.rst:616 66862797440b4cc89f0ab0b03386f731
+msgid ""
+"1: Stroked text -- equivalent to `1 Tr`, only the character borders are "
+"shown."
+msgstr ""
+
+#: ../../functions.rst:617 2acf0e18c96e49f880293e3357fd16f6
+msgid "3: Ignored text -- equivalent to `3 Tr` (hidden text)."
+msgstr ""
+
+#: ../../functions.rst:619 9de9513b92b54ed1bbabbb458b2a9fa0
+#, python-format
+msgid ""
+"Line width in this context is important only for processing "
+"`span[\"type\"] != 0`: it determines the thickness of the character's "
+"border line. This value may not be provided at all with the text data. In"
+" this case, a value of 5% of the :data:`fontsize` (`span[\"size\"] * "
+"0,05`) is generated. Often, an \"artificial\" bold text in PDF is created"
+" by `2 Tr`. There is no equivalent span type for this case. Instead, "
+"respective text is represented by two consecutive spans -- which are "
+"identical in every aspect, except for their types, which are 0, resp 1. "
+"It is your responsibility to handle this type of situation - in "
+":meth:`Page.get_text`, MuPDF is doing this for you."
+msgstr ""
+
+#: ../../functions.rst:620 6487d82fbf414538ae086ba2cf0e5fab
+msgid ""
+"For data compactness, the character's unicode is provided here. Use "
+"built-in function `chr()` for the character itself."
+msgstr ""
+
+#: ../../functions.rst:621 a660bf6a775c44649783a559eaf01274
+msgid ""
+"The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is "
+"invisible text, 1 (100%) is intransparent. Depending on `span[\"type\"]`,"
+" interpret this value as *fill* opacity or, resp. *stroke* opacity."
+msgstr ""
+
+#: ../../functions.rst:622 e6e4063809024f138da4aeb44e24eb92
+msgid ""
+"*(Changed in v1.19.0)* This value is equal or close to `char[\"bbox\"]` "
+"of \"rawdict\". In particular, the bbox **height** value is always "
+"computed as if **\"small glyph heights\"** had been requested."
+msgstr ""
+
+#: ../../functions.rst:623 4e62b747b8f9441b9279357f81f7e81b
+msgid "*(New in v1.19.0)* This is the union of all character bboxes."
+msgstr ""
+
+#: ../../functions.rst:624 03fcc8f1fed344049ab836df258e5e2e
+msgid ""
+"*(New in v1.19.0)* Enumerates the commands that build up the page's "
+"appearance. Can be used to find out whether text is effectively hidden by"
+" objects, which are painted \"later\", or *over* some object. So if there"
+" is a drawing or image with a higher sequence number, whose bbox overlaps"
+" (parts of) this text span, one may assume that such an object hides the "
+"resp. text. Different text spans have identical sequence numbers if they "
+"were created in one go."
+msgstr ""
+
+#: ../../functions.rst:625 a332ef5bf29948dab52498a113c1055c
+msgid ""
+"*(New in v1.22.0)* The name of the Optional Content Group (OCG) if "
+"applicable or `None`."
+msgstr ""
+
+#: ../../functions.rst:627 7d10accada8e4512a251cde3f4f3cb77
+msgid ""
+"Here is a list of similarities and differences of `page.get_texttrace()` "
+"compared to `page.get_text(\"rawdict\")`:"
+msgstr ""
+
+#: ../../functions.rst:629 14d43abeade64ae6a7e7a66f55a6b4e8
+msgid ""
+"The method is up to **twice as fast,** compared to \"rawdict\" "
+"extraction. Depends on the amount of text."
+msgstr ""
+
+#: ../../functions.rst:630 ddaa111279c14f54bf12d70419804137
+msgid ""
+"The returned data is very **much smaller in size** -- although it "
+"provides more information."
+msgstr ""
+
+#: ../../functions.rst:631 b5fcaaa904c848cb99d1cfd72df19bad
+msgid ""
+"Additional types of text **invisibility can be detected**: opacity = 0 or"
+" type > 1 or overlapping bbox of an object with a higher sequence number."
+msgstr ""
+
+#: ../../functions.rst:632 d3ffddc4c8c74b0c87f348dfe1c80ad4
+msgid ""
+"If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you "
+"may still be able to deduct desired information from the glyph id."
+msgstr ""
+
+#: ../../functions.rst:633 dd5d04de31034398aa834b1cdb6e56f6
+msgid ""
+"The `span[\"chars\"]` **contains no spaces**, **except** the document "
+"creator has explicitly coded them. They **will never be generated** like "
+"it happens in :meth:`Page.get_text` methods. To provide some help for "
+"doing your own computations here, the width of a space character is "
+"given. This value is derived from the font where possible. Otherwise the "
+"value of a fallback font is taken."
+msgstr ""
+
+#: ../../functions.rst:634 9652b19463904ee38c62ccc2b2239dff
+msgid ""
+"There is no effort to organize text like it happens for a :ref:`TextPage`"
+" (the hierarchy of blocks, lines, spans, and characters). Characters are "
+"simply extracted in sequence, one by one, and put in a span. Whenever any"
+" of the span's characteristics changes, a new span is started. So you may"
+" find characters with different `origin.y` values in the same span (which"
+" means they would appear in different lines). You cannot assume, that "
+"span characters are sorted in any particular order -- you must make sense"
+" of the info yourself, taking `span[\"dir\"]`, `span[\"wmode\"]`, etc. "
+"into account."
+msgstr ""
+
+#: ../../functions.rst:652 e762a117d84b42ecb7cf21d17049df5f
+msgid "Ligatures are represented like this:"
+msgstr ""
+
+#: ../../functions.rst:636 329c84b204634c1294fb77b93a056ef4
+msgid ""
+"MuPDF handles the following ligatures: \"fi\", \"ff\", \"fl\", \"ft\", "
+"\"st\", \"ffi\", and \"ffl\" (only the first 3 are mostly ever used). If "
+"the page contains e.g. ligature \"fi\", you will find the following two "
+"character items subsequent to each other::"
+msgstr ""
+
+#: ../../functions.rst:641 da6322372fb64311b85eea0cc2f68ccd
+msgid ""
+"This means that the bbox of the first ligature character is the area "
+"containing the complete, compound glyph. Subsequent ligature components "
+"are recognizable by their glyph value -1 and a bbox of width zero."
+msgstr ""
+
+#: ../../functions.rst:642 2284a09cdf584b6aa6f22b5aae18d4fe
+msgid ""
+"You may want to replace those 2 or 3 char tuples by one, that represents "
+"the ligature itself. Use the following mapping of ligatures to unicodes:"
+msgstr ""
+
+#: ../../functions.rst:644 0a799c550746408c85fef2c7576bfede
+msgid "`\"ff\" -> 0xFB00`"
+msgstr ""
+
+#: ../../functions.rst:645 9898a6f56cfe4eb4899294c8b6b06002
+msgid "`\"fi\" -> 0xFB01`"
+msgstr ""
+
+#: ../../functions.rst:646 5e3800258f5348718ebba22eb1059a6f
+msgid "`\"fl\" -> 0xFB02`"
+msgstr ""
+
+#: ../../functions.rst:647 936b3a65e7c742f8bfe6b86441ea1a98
+msgid "`\"ffi\" -> 0xFB03`"
+msgstr ""
+
+#: ../../functions.rst:648 a4aa6a1539d043e8abfc0b8638794818
+msgid "`\"ffl\" -> 0xFB04`"
+msgstr ""
+
+#: ../../functions.rst:649 984fff2c59774ed1be88a1741f6a305f
+msgid "`\"ft\" -> 0xFB05`"
+msgstr ""
+
+#: ../../functions.rst:650 a20f60a691f6403e83506643220c07c0
+msgid "`\"st\" -> 0xFB06`"
+msgstr ""
+
+#: ../../functions.rst:652 2ed2cd30247844df8bbc69833a24683a
+msgid ""
+"So you may want to replace the two example tuples above by the following "
+"single one: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (there is usually"
+" no need to lookup the correct glyph id for 0xFB01 in the resp. font, but"
+" you may execute `font.has_glyph(0xFB01)` and use its return value)."
+msgstr ""
+
+#: ../../functions.rst:654 ce7f0eaeb90046aab353b46f85433ed3
+msgid ""
+"**Changed in v1.19.3:** Similar to other text extraction methods, the "
+"character and span bboxes envelop the character quads. To recover the "
+"quads, follow the same methods :meth:`recover_quad`, "
+":meth:`recover_char_quad` or :meth:`recover_span_quad` as explained in "
+":ref:`textpagedict`. Use either `None` or `span[\"dir\"]` for the writing"
+" direction."
+msgstr ""
+
+#: ../../functions.rst:656 de65772c37bd47cf876f0743e9332fe9
+msgid ""
+"**Changed in v1.21.1:** If applicable, the name of the OCG is shown in "
+"`\"layer\"`."
+msgstr ""
+
+#: ../../functions.rst:662 10427f25463d47fdb17d58e686fdfc9e
+msgid ""
+"Ensures that the page's so-called graphics state is balanced and new "
+"content can be inserted correctly."
+msgstr ""
+
+#: ../../functions.rst:664 8259e8d0721848219547bfd39f7867b9
+msgid ""
+"In versions 1.24.1+ of PyMuPDF the method was improved and is being "
+"executed automatically as required, so you should no longer need to "
+"concern yourself with it."
+msgstr ""
+
+#: ../../functions.rst:666 a829f7373a644aff8f6037428bea9712
+msgid "We discourage using :meth:`Page.clean_contents` to achieve this."
+msgstr ""
+
+#: ../../functions.rst:672 db794a7ecc3a415baa480e8c9f7a6f1c
+msgid ""
+"Indicate whether the page's so-called graphic state is balanced. If "
+"`False`, :meth:`Page.wrap_contents` should be executed if new content is "
+"inserted (only relevant in `overlay=True` mode). In newer versions "
+"(1.24.1+), this check and corresponding adjustments are automatically "
+"executed -- you therefore should not be concerned about this anymore."
+msgstr ""
+
+#: ../../functions.rst:680 d203c9e2bbe24468bd5568a1db6ea2a7
+msgid ""
+"Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.  Use "
+":meth:`Page.get_text` with the \"blocks\" option instead."
+msgstr ""
+
+#: ../../functions.rst:688 99ad32943641482ab84b11366ccbbe4f
+msgid ""
+"Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use "
+":meth:`Page.get_text` with the \"words\" option instead."
+msgstr ""
+
+#: ../../functions.rst:696 a2853d3cdede4d2db456cfb83b815124
+msgid "Run a page through a list device and return its display list."
+msgstr ""
+
+#: ../../functions.rst:698 21e4b6cf9da846258448b5e17cbf3282
+msgid ":ref:`DisplayList`"
+msgstr ""
+
+#: ../../functions.rst:699 ffb9b48f375440e290527ab49901acf1
+msgid "the display list of the page."
+msgstr ""
+
+#: ../../functions.rst:705 5c87e4c0d7cf4cee8bd5c73c0185175c
+msgid ""
+"PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of "
+"a page. May be empty or contain multiple integers. If the page is cleaned"
+" (:meth:`Page.clean_contents`), it will be no more than one entry. The "
+"\"source\" of each `/Contents` object can be individually read by "
+":meth:`Document.xref_stream` using an item of this list. Method "
+":meth:`Page.read_contents` in contrast walks through this list and "
+"concatenates the corresponding sources into one `bytes` object."
+msgstr ""
+
+#: ../../functions.rst:713 90e498eeac6e4beeafac3412b4c240b6
+msgid ""
+"PDF only: Let the page's `/Contents` key point to this xref. Any "
+"previously used contents objects will be ignored and can be removed via "
+"garbage collection."
+msgstr ""
+
+#: ../../functions.rst:719 f9513e84e2ca4321bff8c46802105ac6
+msgid "Changed in v1.17.6"
+msgstr ""
+
+#: ../../functions.rst:721 22bc66a703e54067b1e2f2c5f119ba1d
+msgid ""
+"PDF only: Clean and concatenate all :data:`contents` objects associated "
+"with this page. \"Cleaning\" includes syntactical corrections, "
+"standardizations and \"pretty printing\" of the contents stream. "
+"Discrepancies between :data:`contents` and :data:`resources` objects will"
+" also be corrected if sanitize is true. See :meth:`Page.get_contents` for"
+" more details."
+msgstr ""
+
+#: ../../functions.rst:723 a3f4d1a068824a428423ffa2da562127
+msgid ""
+"Changed in version 1.16.0 Annotations are no longer implicitly cleaned by"
+" this method. Use :meth:`Annot.clean_contents` separately."
+msgstr ""
+
+#: ../../functions.rst:725 15c1db8404ca46dbaf4c906166750f5b
+msgid ""
+"*(new in v1.17.6)* if true, synchronization between resources and their "
+"actual use in the contents object is snychronized. For example, if a font"
+" is not actually used for any text of the page, then it will be deleted "
+"from the `/Resources/Font` object."
+msgstr ""
+
+#: ../../functions.rst:727 d98faf235eb84369adf87e543eaba7f2
+msgid ""
+"This is a complex function which may generate large amounts of new data "
+"and render old data unused. It is **not recommended** using it together "
+"with the **incremental save** option. Also note that the resulting "
+"singleton new */Contents* object is **uncompressed**. So you should save "
+"to a **new file** using options *\"deflate=True, garbage=3\"*."
+msgstr ""
+
+#: ../../functions.rst:729 f02d605a87d143948e528d28b56a3a2d
+msgid ""
+"Do not any longer use this method to ensure correct insertions on PDF "
+"pages. Since PyMuPDF version 1.24.2 this is taken care of automatically."
+msgstr ""
+
+#: ../../functions.rst:735 2196c7e1b31b40ddab3b297b291177f8
+msgid ""
+"*New in version 1.17.0.* Return the concatenation of all :data:`contents`"
+" objects associated with the page -- without cleaning or otherwise "
+"modifying them. Use this method whenever you need to parse this source in"
+" its entirety without having to bother how many separate contents objects"
+" exist."
+msgstr ""
+
+#: ../../functions.rst:744 9a37de9e2f3c4f5f8730e0926cb5527e
+msgid ""
+"Clean the :data:`contents` streams associated with the annotation. This "
+"is the same type of action which :meth:`Page.clean_contents` performs -- "
+"just restricted to this annotation."
+msgstr ""
+
+#: ../../functions.rst:751 c7c5b8d11bab42d1ab6490984348b460
+msgid ""
+"Return a list of character glyphs and their widths for a font that is "
+"present in the document. A font must be specified by its PDF cross "
+"reference number :data:`xref`. This function is called automatically from"
+" :meth:`Page.insert_text` and :meth:`Page.insert_textbox`. So you should "
+"rarely need to do this yourself."
+msgstr ""
+
+#: ../../functions.rst:753 0810b08678db4de2aa2a906546639b32
+msgid ""
+"cross reference number of a font embedded in the PDF. To find a font "
+":data:`xref`, use e.g. *doc.get_page_fonts(pno)* of page number *pno* and"
+" take the first entry of one of the returned list entries."
+msgstr ""
+
+#: ../../functions.rst:755 630cf059f27845f38b21edb71c79835d
+msgid ""
+"limits the number of returned entries. The default of 256 is enforced for"
+" all fonts that only support 1-byte characters, so-called \"simple "
+"fonts\" (checked by this method). All :ref:`Base-14-Fonts` are simple "
+"fonts."
+msgstr ""
+
+#: ../../functions.rst:758 c04bc439f7ef4026892771cb1184f704
+msgid ""
+"a list of *limit* tuples. Each character *c* has an entry  *(g, w)* in "
+"this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is "
+"the glyph id of the character, and float *w* is its normalized width. The"
+" actual width for some :data:`fontsize` can be calculated as *w * "
+"fontsize*. For simple fonts, the *g* entry can always be safely ignored. "
+"In all other cases *g* is the basis for graphically representing *c*."
+msgstr ""
+
+#: ../../functions.rst:760 3ef4cadd1af84e83949d7678fe2c81e3
+msgid "This function calculates the pixel width of a string called *text*::"
+msgstr ""
+
+#: ../../functions.rst:772 ecbe28bd36cf4da9890cb253317137d4
+msgid "New in version 1.14.14"
+msgstr ""
+
+#: ../../functions.rst:774 89120d06d2c2469199a7dcb86576f510
+msgid ""
+"PDF only: Check whether the object represented by :data:`xref` is a "
+":data:`stream` type. Return is *False* if not a PDF or if the number is "
+"outside the valid xref range."
+msgstr ""
+
+#: ../../functions.rst:776 a09f8f5311c14f39ab22fb0476dc55e1
+msgid ":data:`xref` number."
+msgstr ""
+
+#: ../../functions.rst:778 cefc628d4f1c49b8b44905792b59ddd8
+msgid ""
+"*True* if the object definition is followed by data wrapped in keyword "
+"pair *stream*, *endstream*."
+msgstr ""
+
+#: ../../functions.rst:784 2133898daacd4e1db066969afe31bb04
+msgid ""
+"Increase the :data:`xref` by one entry and return that number. This can "
+"then be used to insert a new object."
+msgstr ""
+
+#: ../../functions.rst:786 b937dc8deb524375b27622d6996b23e7
+msgid ""
+"int :returns: the number of the new :data:`xref` entry. Please note, that"
+" only a new entry in the PDF's cross reference table is created. At this "
+"point, there will not yet exist a PDF object associated with it. To "
+"create an (empty) object with this number use `doc.update_xref(xref, "
+"\"<<>>\")`."
+msgstr ""
+
+#: ../../functions.rst:793 232449497ffb4eedb8dae90f7b55fed0
+msgid "Return length of :data:`xref` table."
+msgstr ""
+
+#: ../../functions.rst:796 245e54c66fda43548f4bb15c292b7f52
+msgid "the number of entries in the :data:`xref` table."
+msgstr ""
+
+#: ../../functions.rst:802 8dc72dca25f445da9457591672f80769
+msgid ""
+"Compute the quadrilateral of a text span extracted via options \"dict\" "
+"or \"rawdict\" of :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../functions.rst:804 79949b47b0e8434da2450695ab50368e
+msgid ""
+"`line[\"dir\"]` of the owning line.  Use `None` for a span from "
+":meth:`Page.get_texttrace`."
+msgstr ""
+
+#: ../../functions.rst:805 ../../functions.rst:815 ../../functions.rst:826
+#: 0770a5ef3a8a47db94dbbe6aa5ce37d5 5c5d1cb049fa4b2db4557396cea5ef45
+#: 9218509c4f0844e3af20da0e09b821af
+msgid "the span."
+msgstr ""
+
+#: ../../functions.rst:806 659d93593c5c4212808a3586ed130e9f
+msgid ""
+"the :ref:`Quad` of the span, usable for text marker annotations "
+"('Highlight', etc.)."
+msgstr ""
+
+#: ../../functions.rst:812 3cd5684ddb9d43ccb146f4a824abc81d
+msgid ""
+"Compute the quadrilateral of a text character extracted via option "
+"\"rawdict\" of :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../functions.rst:814 ../../functions.rst:825
+#: d61965cb158a476ab9824dc5c8554d04 f84cc11dbc814f73857fec69aa9acd5b
+msgid ""
+"`line[\"dir\"]` of the owning line. Use `None` for a span from "
+":meth:`Page.get_texttrace`."
+msgstr ""
+
+#: ../../functions.rst:816 67ed1cab15584b639de82d14613b4292
+msgid "the character."
+msgstr ""
+
+#: ../../functions.rst:817 b0a52cdeaedc4130a8c46b7b8ec0809d
+msgid ""
+"the :ref:`Quad` of the character, usable for text marker annotations "
+"('Highlight', etc.)."
+msgstr ""
+
+#: ../../functions.rst:823 ed8ff97737994061997361b365b77280
+msgid ""
+"Compute the quadrilateral of a subset of characters of a span extracted "
+"via option \"rawdict\" of :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../functions.rst:827 e333f58502ed4eceb02ca72ec7d9a14b
+msgid ""
+"the characters to consider. If given, the selected extraction option must"
+" be \"rawdict\"."
+msgstr ""
+
+#: ../../functions.rst:828 5e23e60cd2b44deba9b5844d0be494e4
+msgid ""
+"the :ref:`Quad` of the selected characters, usable for text marker "
+"annotations ('Highlight', etc.)."
+msgstr ""
+
+#: ../../functions.rst:834 d5b5fa6626ea4e5fbd3c5729c70131ca
+msgid ""
+"Compute the quadrilateral of a subset of spans of a text line extracted "
+"via options \"dict\" or \"rawdict\" of :meth:`Page.get_text`."
+msgstr ""
+
+#: ../../functions.rst:836 77bdfd3566c640d5abf49df4e0523400
+msgid "the line."
+msgstr ""
+
+#: ../../functions.rst:837 4763d4513a72443a8cb2e1abde8e800b
+msgid ""
+"a sub-list of `line[\"spans\"]`. If omitted, the full line quad will be "
+"returned."
+msgstr ""
+
+#: ../../functions.rst:838 4457ad14e4724e9ca4aa3a5e256a3db8
+msgid ""
+"the :ref:`Quad` of the selected line spans, usable for text marker "
+"annotations ('Highlight', etc.)."
+msgstr ""
+
+#: ../../functions.rst:844 fa6ac2d5352e447898bb5eb220bb90b4
+msgid "Detect Tesseract language support folder."
+msgstr ""
+
+#: ../../functions.rst:846 6f11797ccc5148c581def86e479e2474
+msgid ""
+"This function is used to enable OCR via Tesseract even if the language "
+"support folder is not specified directly or in environment variable "
+"TESSDATA_PREFIX."
+msgstr ""
+
+#: ../../functions.rst:850 5be47dc2280f44249eb4b89a51c504a8
+msgid "If <tessdata> is set we return it directly."
+msgstr ""
+
+#: ../../functions.rst:852 610202bb1cc345d08689d17027881575
+msgid "Otherwise we return `os.environ['TESSDATA_PREFIX']` if set."
+msgstr ""
+
+#: ../../functions.rst:854 addd2c5751724dd19f1ad368ab40fab0
+msgid ""
+"Otherwise we search for a Tesseract installation and return its language "
+"support folder."
+msgstr ""
+
+#: ../../functions.rst:857 aaff4ea4400b47dcac737f3a953d4d18
+msgid "Otherwise we raise an exception."
+msgstr ""
+
+#: ../../functions.rst:867 59f441bd5735450d9f431cb8ac5d4d06
+msgid ""
+"Return the (unique) infinite rectangle `Rect(-2147483648.0, "
+"-2147483648.0, 2147483520.0, 2147483520.0)`, resp. the :ref:`IRect` and "
+":ref:`Quad` counterparts. It is the largest possible rectangle: all valid"
+" rectangles are contained in it."
+msgstr ""
+
+#: ../../functions.rst:877 6edd4f317e5e4c1f929fee4707063b02
+msgid ""
+"Return the \"standard\" empty and invalid rectangle `Rect(2147483520.0, "
+"2147483520.0, -2147483648.0, -2147483648.0)` resp. quad. Its top-left and"
+" bottom-right point values are reversed compared to the infinite "
+"rectangle. It will e.g. be used to indicate empty bboxes in "
+"`page.get_text(\"dict\")` dictionaries. There are however infinitely many"
+" empty or invalid rectangles."
+msgstr ""
+
+#: ../../functions.rst:883 ecbb9be9ecab43fe9b984e688d525aca
+msgid ""
+"Returns a dict mapping lower-case color name to `(red, green, blue)` "
+"tuple, and `red`, `green`, `blue` are floats in range 0..1."
+msgstr ""
+
+#: ../../functions.rst:888 7909544a776b416ca01ff4363ae21452
+msgid ""
+"Returns a list of `(colorname, red, green, blue)` tuples, where "
+"`colorname` is upper case and `red`, `green`, `blue` are integers in "
+"range 0..255."
+msgstr ""
+
+#: ../../footer.rst:60 029e415e5bba4c8cbd9b3986f648e693
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

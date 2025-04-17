@@ -1,0 +1,505 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 7f129fba564145f8954ab3f7e226f0ec
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 c67d240759fd40d187a0308599adeca9
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 076a135f5e7c4cc5bd9192d710ce8cdb
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:7 4f7ca622e5254dcb820080c8ec29fe16
+msgid "Low-Level Interfaces"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:10 1fea1e3b7f2f4f31a3c902bf61e962c9
+msgid ""
+"Numerous methods are available to access and manipulate PDF files on a "
+"fairly low level. Admittedly, a clear distinction between \"low level\" "
+"and \"normal\" functionality is not always possible or subject to "
+"personal taste."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:12 1de25fa4e10d4576a94ca8b7096618bd
+msgid ""
+"It also may happen, that functionality previously deemed low-level is "
+"later on assessed as being part of the normal interface. This has "
+"happened in v1.14.0 for the class :ref:`Tools` - you now find it as an "
+"item in the Classes chapter."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:14 1007d8a4ff5c4147805c1dc892b9b29c
+msgid ""
+"It is a matter of documentation only in which chapter of the "
+"documentation you find what you are looking for. Everything is available "
+"and always via the same interface."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:19 f087f3a96eec4b1a9dd86d6e8a3cffd7
+msgid "How to Iterate through the :data:`xref` Table"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:20 0027f20fcd894b3f921d205dbf3c6fbb
+msgid ""
+"A PDF's :data:`xref` table is a list of all objects defined in the file. "
+"This table may easily contain many thousands of entries -- the manual "
+":ref:`AdobeManual` for example has 127,000 objects. Table entry \"0\" is "
+"reserved and must not be touched. The following script loops through the "
+":data:`xref` table and prints each object's definition::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:32 bf35a4cef5db4592ba20e8879d737aff
+msgid "This produces the following output::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:72 b83975ea49a84c1a8993fd6918a32c64
+msgid "A PDF object definition is an ordinary ASCII string."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:77 2cab525052174e5889a8b5eeea539330
+msgid "How to Handle Object Streams"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:78 658c13e1cc6947b09fc237301c2bc678
+msgid ""
+"Some object types contain additional data apart from their object "
+"definition. Examples are images, fonts, embedded files or commands "
+"describing the appearance of a page."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:80 2796bcc0f1ed4c599541dd675171586e
+msgid ""
+"Objects of these types are called \"stream objects\". PyMuPDF allows "
+"reading an object's stream via method :meth:`Document.xref_stream` with "
+"the object's :data:`xref` as an argument. It is also possible to write "
+"back a modified version of a stream using :meth:`Document.update_stream`."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:82 3771d4779f8f40dba59160b01c9ee9cf
+msgid ""
+"Assume that the following snippet wants to read all streams of a PDF for "
+"whatever reason::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:91 9c27d6d70d6b40fba9999600e789863f
+msgid ""
+":meth:`Document.xref_stream` automatically returns a stream decompressed "
+"as a bytes object -- and :meth:`Document.update_stream` automatically "
+"compresses it if beneficial."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:96 8090153b26c14df4a507877668bc7624
+msgid "How to Handle Page Contents"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:97 848d7acefeb245dc8af34902fe0aff24
+msgid ""
+"A PDF page can have zero or multiple :data:`contents` objects. These are "
+"stream objects describing **what** appears **where** and **how** on a "
+"page (like text and images). They are written in a special mini-language "
+"described e.g. in chapter \"APPENDIX A - Operator Summary\" on page 643 "
+"of the :ref:`AdobeManual`."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:99 4188f5c77de44ced870411c31528cec5
+msgid ""
+"Every PDF reader application must be able to interpret the contents "
+"syntax to reproduce the intended appearance of the page."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:101 1f87bc0453d24082b53750397e2d3f74
+msgid ""
+"If multiple :data:`contents` objects are provided, they must be "
+"interpreted in the specified sequence in exactly the same way as if they "
+"were provided as a concatenation of the several."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:103 c8df9beb4ec84255a6972a53be5fca52
+msgid ""
+"There are good technical arguments for having multiple :data:`contents` "
+"objects:"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:105 98cc88c334df4c1ebefdc905e195d627
+msgid ""
+"It is a lot easier and faster to just add new :data:`contents` objects "
+"than maintaining a single big one (which entails reading, decompressing, "
+"modifying, recompressing, and rewriting it for each change)."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:106 f2458f2703db48d58afa2677cb1a6f0b
+msgid ""
+"When working with incremental updates, a modified big :data:`contents` "
+"object will bloat the update delta and can thus easily negate the "
+"efficiency of incremental saves."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:108 774608ae29314d87af2590cc55b0b96a
+msgid ""
+"For example, PyMuPDF adds new, small :data:`contents` objects in methods "
+":meth:`Page.insert_image`, :meth:`Page.show_pdf_page` and the "
+":ref:`Shape` methods."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:110 5cc4b562e7f643678dec3abbd5c901af
+msgid ""
+"However, there are also situations when a **single** :data:`contents` "
+"object is beneficial: it is easier to interpret and more compressible "
+"than multiple smaller ones."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:112 f8d8be1710d74bb9b417dc9948c862c9
+msgid "Here are two ways of combining multiple contents of a page::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:124 0016b0cc7db9493c9b5bfecfdd25e99c
+msgid ""
+"The clean function :meth:`Page.clean_contents` does a lot more than just "
+"glueing :data:`contents` objects: it also corrects and optimizes the PDF "
+"operator syntax of the page and removes any inconsistencies with the "
+"page's object definition."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:129 8fd84d6a4af441adb8fcf1c77aa5b0bd
+msgid "How to Access the PDF Catalog"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:130 2a2e41fa0c34401ea22c6f2ed40a89e7
+msgid ""
+"This is a central (\"root\") object of a PDF. It serves as a starting "
+"point to reach important other objects and it also contains some global "
+"options for the PDF::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:146 5b118633d9a341a1a95aed016917f5d2
+msgid ""
+"Indentation, line breaks and comments are inserted here for clarification"
+" purposes only and will not normally appear. For more information on the "
+"PDF catalog see section 7.7.2 on page 71 of the :ref:`AdobeManual`."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:151 f6b9f5c2736444a09a44be0af1efd3ef
+msgid "How to Access the PDF File Trailer"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:152 4cb33f7607ff4b7da3a368b706d7f85d
+msgid ""
+"The trailer of a PDF file is a :data:`dictionary` located towards the end"
+" of the file. It contains special objects, and pointers to important "
+"other information. See :ref:`AdobeManual` p. 42. Here is an overview:"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:155 6a08c29e38b14b4f8780edbf2bbd57ed
+msgid "**Key**"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:155 58913ef5bc0e42449995f9ddc470a9b6
+msgid "**Type**"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:155 6bd41f1c095b4146a4be333408ae4d28
+msgid "**Value**"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:157 4f3f1be3c87948899e54efc916c7ef18
+msgid "Size"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:157
+#: ../../recipes-low-level-interfaces.rst:158
+#: ../../recipes-low-level-interfaces.rst:163 81a6a91f16444f15bdeeaaf278f1bcd1
+#: 8682c7b530344453ade63634c104ed4f f11a36ccb1b94cd3ae600b685375afff
+msgid "int"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:157 c285913e7e4943f9867315f2d6712e7f
+msgid "Number of entries in the cross-reference table + 1."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:158 c49bb116e66c4fca9cdeb500ae675247
+msgid "Prev"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:158 28fbdab151c14d60acbe435e09d03829
+msgid "Offset to previous :data:`xref` section (indicates incremental updates)."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:159 96893c3d42a943ffaa753c2af598ddda
+msgid "Root"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:159
+#: ../../recipes-low-level-interfaces.rst:160
+#: ../../recipes-low-level-interfaces.rst:161 17e32472677349bfa94d61bc793d8475
+#: 2d049d53c6cd4ae8a2bc07f1cbcf53bb ce33dca31774448c9bdd1e213de5d090
+msgid "dictionary"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:159 fecd0772f75c49fdb36a4962c490461e
+msgid "(indirect) Pointer to the catalog. See previous section."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:160 b7b167190b0149ce9bdd9ef671d03ae2
+msgid "Encrypt"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:160 aa8f56b6637c4a7ca41846fa1ebf6eca
+msgid "Pointer to encryption object (encrypted files only)."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:161 d9be1827baa242068f64cd1307f9bd58
+msgid "Info"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:161 597be1c0e13342c694e56f1faf8dcca5
+msgid "(indirect) Pointer to information (metadata)."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:162 66abcc5c41b044d7ba24bef4374f4cba
+msgid "ID"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:162 e6d762fa8f38487992b7f2ddc8737388
+msgid "array"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:162 ae4de832cc2c4e1cb9943cb9a61596da
+msgid "File identifier consisting of two byte strings."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:163 fe39430132414ae0b7367e63724369e0
+msgid "XRefStm"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:163 2f5419e850a744d790f2b70a0e221c5a
+msgid "Offset of a cross-reference stream. See :ref:`AdobeManual` p. 49."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:166 f658e5b17a384d9c90104cba97aa85ff
+msgid ""
+"Access this information via PyMuPDF with :meth:`Document.pdf_trailer` or,"
+" equivalently, via :meth:`Document.xref_object` using -1 instead of a "
+"valid :data:`xref` number."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:187 98759bbd8d114604a80fbf742832adba
+msgid "How to Access XML Metadata"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:188 a4c560abb05646a6b21fccc292008ea0
+msgid ""
+"A PDF may contain XML metadata in addition to the standard metadata "
+"format. In fact, most PDF viewer or modification software adds this type "
+"of information when saving the PDF (Adobe, Nitro PDF, PDF-XChange, etc.)."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:190 a02f8f95ed834b4386f05f01b7baf217
+msgid ""
+"PyMuPDF has no way to **interpret or change** this information directly, "
+"because it contains no XML features. XML metadata is however stored as a "
+":data:`stream` object, so it can be read, modified with appropriate "
+"software and written back."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:202 763734a1837d4847a3c820225381f4cb
+msgid ""
+"Using some XML package, the XML data can be interpreted and / or modified"
+" and then stored back. The following also works, if the PDF previously "
+"had no XML metadata::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:213 b484e4babb6b4821a2d4ca50b936f40b
+msgid "How to Extend PDF Metadata"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:214 bd8ade0701494f0aa8d64389ba8c01db
+msgid ""
+"Attribute :attr:`Document.metadata` is designed so it works for all "
+":ref:`supported document types<Supported_File_Types>` in the same way: it"
+" is a Python dictionary with a **fixed set of key-value pairs**. "
+"Correspondingly, :meth:`Document.set_metadata` only accepts standard "
+"keys."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:216 2ed9e5740749448898a94bedd85fa94f
+msgid ""
+"However, PDFs may contain items not accessible like this. Also, there may"
+" be reasons to store additional information, like copyrights. Here is a "
+"way to handle **arbitrary metadata items** by using PyMuPDF low-level "
+"functions."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:218 f2e1b634d30a481da6cb600b52f2dccc
+msgid "As an example, look at this standard metadata output of some PDF::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:237 ae127729cd53409cb04f9ebc390699c4
+msgid ""
+"Use the following code to see **all items** stored in the metadata "
+"object::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:265 f219d010f8094f62934815b489d0dc25
+msgid ""
+"*Vice versa*, you can also **store private metadata items** in a PDF. It "
+"is your responsibility to make sure that these items conform to PDF "
+"specifications - especially they must be (unicode) strings. Consult "
+"section 14.3 (p. 548) of the :ref:`AdobeManual` for details and caveats::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:287 2dc3761486a541f6821711dfd609da05
+msgid ""
+"To delete selected keys, use `doc.xref_set_key(xref, \"mykey\", "
+"\"null\")`. As explained in the next section, string \"null\" is the PDF "
+"equivalent to Python's `None`. A key with that value will be treated as "
+"not being specified -- and physically removed in garbage collections."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:292 b8e1f01138dd4a638ffd1e3689508d1c
+msgid "How to Read and Update PDF Objects"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:297 c7c33727bafc478ca88a1cdae0ec859b
+msgid ""
+"There also exist granular, elegant ways to access and manipulate selected"
+" PDF :data:`dictionary` keys."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:299 04aa0e1d70b944b3a904ea382f4f0c30
+msgid ""
+":meth:`Document.xref_get_keys` returns the PDF keys of the object at "
+":data:`xref`::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:308 ec3415a9ffc54434860c48bc58bd55d9
+msgid "Compare with the full object definition::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:319 4ee823aae30f4627b0f7c02f4267bfdc
+msgid ""
+"Single keys can also be accessed directly via "
+":meth:`Document.xref_get_key`. The value **always is a string** together "
+"with type information, that helps with interpreting it::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:324 5b603693f93c4e03a5111618579b46ce
+msgid "Here is a full listing of the above page keys::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:335 f13dcde484e24d32bc88ea9b8cf371dd
+msgid ""
+"An undefined key inquiry returns `('null', 'null')` -- PDF object type "
+"`null` corresponds to `None` in Python. Similar for the booleans `true` "
+"and `false`."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:336 14eee493b6bb4c06b2afcbdade3ca9e7
+msgid ""
+"Let us add a new key to the page definition that sets its rotation to 90 "
+"degrees (you are aware that there actually exists "
+":meth:`Page.set_rotation` for this?)::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:351 b9ecea1e87e7421faea4ae09003de94f
+msgid ""
+"This method can also be used to remove a key from the :data:`xref` "
+"dictionary by setting its value to `null`: The following will remove the "
+"rotation specification from the page: `doc.xref_set_key(page.xref, "
+"\"Rotate\", \"null\")`. Similarly, to remove all links, annotations and "
+"fields from a page, use `doc.xref_set_key(page.xref, \"Annots\", "
+"\"null\")`. Because `Annots` by definition is an array, setting en empty "
+"array with the statement `doc.xref_set_key(page.xref, \"Annots\", "
+"\"[]\")` would do the same job in this case."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:353 25ee5ad120ca43a7af7fb238b8ee91cd
+msgid ""
+"PDF dictionaries can be hierarchically nested. In the following page "
+"object definition both, `Font` and `XObject` are subdictionaries of "
+"`Resources`::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:373 166311ecb59d42579d5324506515d2e5
+msgid ""
+"The above situation **is supported** by methods "
+":meth:`Document.xref_set_key` and :meth:`Document.xref_get_key`: use a "
+"path-like notation to point at the required key. For example, to retrieve"
+" the value of key `Im1` above, specify the complete chain of dictionaries"
+" \"above\" it in the key argument: `\"Resources/XObject/Im1\"`::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:378 decc969788824b2f905d28ed9ea37c97
+msgid ""
+"The path notation can also be used to **directly set a value**: use the "
+"following to let `Im1` point to a different object::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:399 8134074039144ebca0e928b428cf7ad4
+msgid ""
+"Be aware, that **no semantic checks** whatsoever will take place here: if"
+" the PDF has no xref 9999, it won't be detected at this point."
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:401 d717c7f21a174300a90bb992653ab939
+msgid ""
+"If a key does not exist, it will be created by setting its value. "
+"Moreover, if any intermediate keys do not exist either, they will also be"
+" created as necessary. The following creates an array `D` several levels "
+"below the existing dictionary `A`. Intermediate dictionaries `B` and `C` "
+"are automatically created::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:421 79d1fc2866c6405e852e7bc1d59c5f72
+msgid ""
+"When setting key values, basic **PDF syntax checking** will be done by "
+"MuPDF. For example, new keys can only be created **below a dictionary**. "
+"The following tries to create some new string item `E` below the "
+"previously created array `D`::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:429 891aef9e0fe9425881312a1752d59e9f
+msgid ""
+"It is also **not possible**, to create a key if some higher level key is "
+"an **\"indirect\"** object, i.e. an xref. In other words, xrefs can only "
+"be modified directly and not implicitly via other objects referencing "
+"them::"
+msgstr ""
+
+#: ../../recipes-low-level-interfaces.rst:442 cb6c84fd491f4c3eaab967eb4ab22326
+msgid ""
+"These are expert functions! There are no validations as to whether valid "
+"PDF objects, xrefs, etc. are specified. As with other low-level methods "
+"there is the risk to render the PDF, or parts of it unusable."
+msgstr ""
+
+#: ../../footer.rst:60 4695c17edec440ea85382cf6f78ad072
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

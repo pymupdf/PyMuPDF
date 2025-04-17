@@ -1,0 +1,723 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 fa4cb1c40839408c9c8cd07e9e01bb93
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 0eadbcdf62a345f492e6c5df071271b8
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 ac94c9f7137942e6a95a87c8a8567dd6
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../tools.rst:6 630133a66584427d8841e6ac73cd74b2
+msgid "Tools"
+msgstr ""
+
+#: ../../tools.rst:8 9874cd63550144bdb2077af42f68c67f
+msgid ""
+"This class is a collection of utility methods and attributes, mainly "
+"around memory management. To simplify and speed up its use, it is "
+"automatically instantiated under the name *TOOLS* when PyMuPDF is "
+"imported."
+msgstr ""
+
+#: ../../tools.rst:11 99d510145a8d481b814d6864371fd664
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../tools.rst:11 5a58a92212e44a278c9d89c56b3e1210
+msgid "**Description**"
+msgstr ""
+
+#: ../../tools.rst:13 2b964d526bc34dbca89696e9a7f8a649
+msgid ":meth:`Tools.gen_id`"
+msgstr ""
+
+#: ../../tools.rst:13 2e23b218a694403f803ca3d4641d1e46
+msgid "generate a unique identifier"
+msgstr ""
+
+#: ../../tools.rst:14 24f42327e36744579573d798b230bef0
+msgid ":meth:`Tools.store_shrink`"
+msgstr ""
+
+#: ../../tools.rst:14 b4c3bfa744874fc3a556cbd6b8e9b6b8
+msgid "shrink the storables cache [#f1]_"
+msgstr ""
+
+#: ../../tools.rst:15 bad8f3d46e5b4afdb102c4e7bf50d072
+msgid ":meth:`Tools.mupdf_warnings`"
+msgstr ""
+
+#: ../../tools.rst:15 a2b9a9e372e04cecb473e320064f1301
+msgid "return the accumulated MuPDF warnings"
+msgstr ""
+
+#: ../../tools.rst:16 965bf5733d4a437c9bf6499bb67ce938
+msgid ":meth:`Tools.mupdf_display_errors`"
+msgstr ""
+
+#: ../../tools.rst:16 95fb9fea93424795be84f9bccfc5a2c6
+msgid "control whether MuPDF errors are displayed as messages."
+msgstr ""
+
+#: ../../tools.rst:17 aae25f7b27504eacb2dcb5df61f4be65
+msgid ":meth:`Tools.mupdf_display_warnings`"
+msgstr ""
+
+#: ../../tools.rst:17 0ec8dcf6c973477abe4aa02ed3c8b605
+msgid "control whether MuPDF warnings are displayed as messages."
+msgstr ""
+
+#: ../../tools.rst:18 53a94e9b9d1044b394e412402f3dcf71
+msgid ":meth:`Tools.reset_mupdf_warnings`"
+msgstr ""
+
+#: ../../tools.rst:18 39ad9b132aad445c8698e388b85423ed
+msgid "empty MuPDF warnings/errors message buffer."
+msgstr ""
+
+#: ../../tools.rst:19 6719fb8425af4227a2a2717806cd2872
+msgid ":meth:`Tools.set_aa_level`"
+msgstr ""
+
+#: ../../tools.rst:19 084c6bfe822c4d048572d1bb4db01b5d
+msgid "set the anti-aliasing values"
+msgstr ""
+
+#: ../../tools.rst:20 30023363ff6e4e8aa20333cd744dab27
+msgid ":meth:`Tools.set_annot_stem`"
+msgstr ""
+
+#: ../../tools.rst:20 104ce28d382346ac85d8db2cfcb5da80
+msgid "set the prefix of new annotation / link ids"
+msgstr ""
+
+#: ../../tools.rst:21 de68f470119b4a60b48b7054e2f46a0c
+msgid ":meth:`Tools.set_small_glyph_heights`"
+msgstr ""
+
+#: ../../tools.rst:21 f69f8f062c094ffcac57dd21b3725054
+msgid "search and extract using small bbox heights"
+msgstr ""
+
+#: ../../tools.rst:22 a5f65f4e49c744f2b64fd47f8f963187
+msgid ":meth:`Tools.set_subset_fontnames`"
+msgstr ""
+
+#: ../../tools.rst:22 d7a4ef524baa414c934afd124e2039c8
+msgid "control suppression of subset fontname tags"
+msgstr ""
+
+#: ../../tools.rst:23 f7f424f91b824b6fbc8d16f177210157
+msgid ":meth:`Tools.show_aa_level`"
+msgstr ""
+
+#: ../../tools.rst:23 de220ac6db8f43b590219bfc76ada785
+msgid "return the anti-aliasing values"
+msgstr ""
+
+#: ../../tools.rst:24 9822bd4c433c4e73a4a62e8e2fd8d55d
+msgid ":meth:`Tools.unset_quad_corrections`"
+msgstr ""
+
+#: ../../tools.rst:24 1ebfd2086c444331b2bf1d386b71dc90
+msgid "disable PyMuPDF-specific code"
+msgstr ""
+
+#: ../../tools.rst:25 b93af0b1adae41ab8ef6adfe0264b3d7
+msgid ":attr:`Tools.fitz_config`"
+msgstr ""
+
+#: ../../tools.rst:25 4aabf943204d404e9bcd0659b004b61a
+msgid "configuration settings of PyMuPDF"
+msgstr ""
+
+#: ../../tools.rst:26 bda50dea0b1b426db8d540c41f8e225d
+msgid ":attr:`Tools.store_maxsize`"
+msgstr ""
+
+#: ../../tools.rst:26 d98d3a57e7f648caac4f8c85c2aa73dc
+msgid "maximum storables cache size"
+msgstr ""
+
+#: ../../tools.rst:27 832df81af8a44bf994b2927588b125b4
+msgid ":attr:`Tools.store_size`"
+msgstr ""
+
+#: ../../tools.rst:27 1e9ca667256f4ce88906ba326e637a59
+msgid "current storables cache size"
+msgstr ""
+
+#: ../../tools.rst:30 876332768bb84673a877ceb4dece1450
+msgid "**Class API**"
+msgstr ""
+
+#: ../../tools.rst:36 65fde22db17c4647b856922e599073a4
+msgid ""
+"A convenience method returning a unique positive integer which will "
+"increase by 1 on every invocation. Example usages include creating unique"
+" keys in databases - its creation should be faster than using timestamps "
+"by an order of magnitude."
+msgstr ""
+
+#: ../../tools.rst:38 ab15f82a042e4ed3b078c757f4e63b86
+msgid ""
+"MuPDF has dropped support for this in v1.14.0, so we have re-implemented "
+"a similar function with the following differences:"
+msgstr ""
+
+#: ../../tools.rst:40 84cae01ccf524246ac7b4d9427698005
+msgid ""
+"It is not part of MuPDF's global context and not threadsafe (not an issue"
+" because we do not support threads in PyMuPDF anyway)."
+msgstr ""
+
+#: ../../tools.rst:41 f05a3f0eec6c47eaab32b3d7dbadfa32
+msgid ""
+"It is implemented as *int*. This means that the maximum number is "
+"*sys.maxsize*. Should this number ever be exceeded, the counter starts "
+"over again at 1."
+msgstr ""
+
+#: ../../tools.rst 17bbc4e0e9b1480aab24e4c8d6b901fd
+#: 2c7d5afc0c614f2e947541283319a8aa 3f0e5e23a1b3401fab7534a9ffddfb6f
+#: 4bceb68ff0cf4c4db44a34b626d14422 4bfaf26ceea2422398c767ec7da4f944
+#: 656f7c4b2db04ef1928e253ee58fbda8 783c6110b0e84fa69ec1e999f0763115
+#: 886de849a3b644a3b7483f4f34d47ab1 9956690247394b5abfa7987d9cb2942f
+#: ae9fe9f8edaa4afa9830772bb949887b
+msgid "Return type"
+msgstr ""
+
+#: ../../tools.rst 05be31d115d84df1af6eec3998b6c813
+#: 1b38a72665554ad2b7b31cd24642d09f 322b991feded4473a556bdb214b03b1d
+#: 47b093107003487e9ca47b7610cc6159 63fec7ceb4ea496eba269d589582ac36
+#: a18d16ae4a364a9d863acd8c74a5fa94 b4f07341f4ad48e897984538401987b3
+#: c6c09e9c896c4a13b41f9be7c7bd6ff6 db36bae168a54d46838b57f99adb8f1d
+msgid "Returns"
+msgstr ""
+
+#: ../../tools.rst:44 d04c5dc089994e268783aceaffad24d8
+msgid "a unique positive integer."
+msgstr ""
+
+#: ../../tools.rst:49 5ebeca1825d746f39692eebb86cb9f42
+msgid "New in v1.18.6"
+msgstr ""
+
+#: ../../tools.rst:51 8b6fd71202b24c318c21b52e9aabae8c
+msgid "Set or inquire the prefix for the id of new annotations, fields or links."
+msgstr ""
+
+#: ../../tools.rst 1ecb667b90fb4a4baa562619c4cf215f
+#: 658ec43b52b04330bf7a40f38e909bbc 95eef4039ef94ba79c670022599c654c
+#: b3ae48d8f1a449ddbe4b6a9ae98cf4d9 c299a5cad9db4f4c84dde48c1ef4fc58
+#: c4311092aae34e4691fb6e3995c50792 c79cc99a8ac340c2a6a9adc2b3fe239a
+#: ca6497050d944cf788e55eb72bc9f7d1 f54117de12074455b85ab6c94ff7dd5b
+msgid "Parameters"
+msgstr ""
+
+#: ../../tools.rst:53 3501d21aa8734541bc1aa99a8ed5190c
+msgid ""
+"if omitted, the current value is returned, default is \"fitz\". "
+"Annotations, fields / widgets and links technically are subtypes of the "
+"same type of object (`/Annot`) in PDF documents. An `/Annot` object may "
+"be given a unique identifier within a page. For each of the applicable "
+"subtypes, PyMuPDF generates identifiers \"stem-Annn\", \"stem-Wnnn\" or "
+"\"stem-Lnnn\" respectively. The number \"nnn\" is used to enforce the "
+"required uniqueness."
+msgstr ""
+
+#: ../../tools.rst:56 b611d59a32fa4723ae6eea8e46c1e4fc
+msgid "the current value."
+msgstr ""
+
+#: ../../tools.rst:61 ed4a7b571b5840db82e999c073d641bb
+msgid "New in v1.18.5"
+msgstr ""
+
+#: ../../tools.rst:63 d110db042c104cd9a70ee2ba0ea17274
+msgid ""
+"Set or inquire reduced bbox heights in text extract and text search "
+"methods."
+msgstr ""
+
+#: ../../tools.rst:65 9dacdc2684a04823aaf2faa1c6a84582
+msgid ""
+"if omitted or `None`, the current setting is returned. For other values "
+"the *bool()* function is applied to set a global variable. If `True`, "
+":meth:`Page.search_for` and :meth:`Page.get_text` methods return "
+"character, span, line or block bboxes that have a height of *font size*. "
+"If `False` (standard setting when PyMuPDF is imported), bbox height will "
+"be based on font properties and normally equal *line height*."
+msgstr ""
+
+#: ../../tools.rst:68 ../../tools.rst:81 ../../tools.rst:95
+#: 3d9f991f869c4e3687694b4b5d83e20f 8fa94c128ef84d4db600a970cc431f03
+#: fb141d29fa904b54ac786f25cee529a0
+msgid "*True* or *False*."
+msgstr ""
+
+#: ../../tools.rst:70 6ff2af93fffb41d1952b1726635074e7
+msgid ""
+"Text extraction options \"xml\", \"xhtml\" and \"html\", which directly "
+"wrap MuPDF code, are not influenced by this."
+msgstr ""
+
+#: ../../tools.rst:74 3e2f146855c24da3bc5620a6dbf0fe16
+msgid "New in v1.18.9"
+msgstr ""
+
+#: ../../tools.rst:76 a47cf06efd8f42ed94738ff03d3423d2
+msgid "Control suppression of subset fontname tags in text extractions."
+msgstr ""
+
+#: ../../tools.rst:78 c87edd954d4c42e6b4fdd9829d79cd37
+msgid ""
+"if omitted / `None`, the current setting is returned. Arguments "
+"evaluating to `True` or `False` set a global variable. If `True`, options"
+" \"dict\", \"json\", \"rawdict\" and \"rawjson\" will return e.g. "
+"`\"NOHSJV+Calibri-Light\"`, otherwise only `\"Calibri-Light\"` (the "
+"default). The setting remains in effect until changed again."
+msgstr ""
+
+#: ../../tools.rst:83 82a85fb54bd7436c925ba3b349ae06ef
+msgid ""
+"Except mentioned above, no other text extraction variants are influenced "
+"by this. This is especially true for the options \"xml\", \"xhtml\" and "
+"\"html\", which are based on MuPDF code. They extract the font name "
+"`\"Calibri-Light\"`, or even just the **family** name -- `Calibri` in "
+"this example."
+msgstr ""
+
+#: ../../tools.rst:88 149b8e463c8f481c96e3b70333a749dc
+msgid "New in v1.18.10"
+msgstr ""
+
+#: ../../tools.rst:90 159ffb24af174c1f8c260dc38669bafc
+msgid ""
+"Enable / disable PyMuPDF-specific code, that tries to rebuild valid "
+"character quads when encountering nonsense in :meth:`Page.get_text` text "
+"extractions. This code depends on certain font properties (ascender and "
+"descender), which do not exist in rare situations and cause segmentation "
+"faults when trying to access them. This method sets a global parameter in"
+" PyMuPDF, which suppresses execution of this code."
+msgstr ""
+
+#: ../../tools.rst:92 e6745e3e0ce7442b9f04193751691b0a
+msgid ""
+"if omitted or `None`, the current setting is returned. For other values "
+"the *bool()* function is applied to set a global variable. If `True`, "
+"PyMuPDF will not try to access the resp. font properties and use values "
+"`ascender=0.8` and `descender=-0.2` instead."
+msgstr ""
+
+#: ../../tools.rst:100 4c85e3216c354121a73b16cd1b293077
+msgid "Reduce the storables cache by a percentage of its current size."
+msgstr ""
+
+#: ../../tools.rst:102 7618f829b73f402e918ae962dfb6a9f0
+msgid ""
+"the percentage of current size to free. If 100+ the store will be "
+"emptied, if zero, nothing will happen. MuPDF's caching strategy is "
+"\"least recently used\", so low-usage elements get deleted first."
+msgstr ""
+
+#: ../../tools.rst:105 b452872341864da4b7fbb34a1df97034
+msgid ""
+"the new current store size. Depending on the situation, the size "
+"reduction may be larger than the requested percentage."
+msgstr ""
+
+#: ../../tools.rst:109 ../../tools.rst:119 b2c6c42229034879a13c08954bd588f3
+#: b6ae51cffc9c4a38a66643a43141bf46
+msgid "New in version 1.16.14"
+msgstr ""
+
+#: ../../tools.rst:111 e883965495954aed98f30f83e9079e4f
+msgid ""
+"Return the current anti-aliasing values. These values control the "
+"rendering quality of graphics and text elements."
+msgstr ""
+
+#: ../../tools.rst:114 d4f138c5562e4a23a0da982a9c981f64
+msgid ""
+"A dictionary with the following initial content: `{'graphics': 8, 'text':"
+" 8, 'graphics_min_line_width': 0.0}`."
+msgstr ""
+
+#: ../../tools.rst:121 debfdfadcaeb4efd8e0c271b9fdc0a06
+msgid ""
+"Set the new number of bits to use for anti-aliasing. The same value is "
+"taken currently for graphics and text rendering. This might change in a "
+"future MuPDF release."
+msgstr ""
+
+#: ../../tools.rst:123 3afd6a391b304cf9a27f036dd2a8eaea
+msgid ""
+"an integer ranging between 0 and 8. Value outside this range will be "
+"silently changed to valid values. The value will remain in effect "
+"throughout the current session or until changed again."
+msgstr ""
+
+#: ../../tools.rst:128 ../../tools.rst:167 6647accef2ce43b5b05bcd3953c5d30a
+#: e0edaaaf95744a8f9baf9b72c5df725a
+msgid "New in version 1.16.0"
+msgstr ""
+
+#: ../../tools.rst:130 1c026c1906724ca1b13646c1e61293e9
+msgid "Empty MuPDF warnings message buffer."
+msgstr ""
+
+#: ../../tools.rst:135 df4c55d8bc2a4f6ca7f828393cd543b2
+msgid "Control whether MuPDF errors should be displayed as |PyMuPDF| messages."
+msgstr ""
+
+#: ../../tools.rst:138 ../../tools.rst:154 73102cae996e4e1ca4fda07841b0a537
+#: c281bd2c631d4437a13966f361de0044
+msgid "If `None`, the current setting is left unchanged."
+msgstr ""
+
+#: ../../tools.rst:139 4465af6643354c54be13db87f1577e1c
+msgid ""
+"Otherwise changes the current setting to `bool(value)`; if *True*, future"
+" MuPDF errors will be shown as :ref:`Messages`."
+msgstr ""
+
+#: ../../tools.rst:141 014bd4cfe67c4bb3bcc80ada14574ac7
+msgid ""
+"Regardless of this setting, MuPDF errors will always be stored in the "
+"warnings store."
+msgstr ""
+
+#: ../../tools.rst:142 ../../tools.rst:158 8670777bc54b406d9b8d60d6f5053a03
+#: 8d3b08113ac444d1b78d9668a9fc41e5
+msgid "Upon import of |PyMuPDF| this value is *True*."
+msgstr ""
+
+#: ../../tools.rst:144 ../../tools.rst:160 83494dc367d6491db6461f478975266d
+#: a414e7de4bda4732bfea1df4dd2a1c93
+msgid "The current setting as *True* or *False*."
+msgstr ""
+
+#: ../../tools.rst:146 ../../tools.rst:162 80a5617a5563495a9a4817dcf619cea1
+#: dddb4d52d6d14c31b7f962bd3d1b949d
+msgid "New in version 1.16.8"
+msgstr ""
+
+#: ../../tools.rst:151 af5f9e3136c24a14964064e6626325cf
+msgid "Control whether MuPDF warnings should be displayed as |PyMuPDF| messages."
+msgstr ""
+
+#: ../../tools.rst:155 ac6aeba8d7af46f58aaa48643288ede1
+msgid ""
+"Otherwise changes the current setting to `bool(value)`; if *True*, future"
+" MuPDF warnings will be shown as :ref:`Messages`."
+msgstr ""
+
+#: ../../tools.rst:157 634e03217c9946ba97edc0b2a56d297f
+msgid ""
+"Regardless of this setting, MuPDF warnings will always be stored in the "
+"warnings store."
+msgstr ""
+
+#: ../../tools.rst:169 ef0995c7931b4d9c8a892c119669e82d
+msgid ""
+"Return all stored MuPDF messages as a string with interspersed line-"
+"breaks."
+msgstr ""
+
+#: ../../tools.rst:171 d3fae7bc59084382bd08ee62f17f5669
+msgid "*(new in version 1.16.7)* whether to automatically empty the store."
+msgstr ""
+
+#: ../../tools.rst:176 ed88482c9c404c6eb13f4e44e68a6402
+msgid ""
+"A dictionary containing the actual values used for configuring PyMuPDF "
+"and MuPDF. Also refer to the installation chapter. This is an overview of"
+" the keys, each of which describes the status of a support aspect."
+msgstr ""
+
+#: ../../tools.rst:179 983aafaaf72f47258fa885a81ffc31de
+msgid "**Key**"
+msgstr ""
+
+#: ../../tools.rst:179 2f18cc5c3f894e9e8c20b1cf745c4d35
+msgid "**Support included for ...**"
+msgstr ""
+
+#: ../../tools.rst:181 67e338ca234a4c2aa997416d0d1c5e17
+msgid "plotter-g"
+msgstr ""
+
+#: ../../tools.rst:181 84bd5e00e5604b07b62a4f670c9ce45f
+msgid "Gray colorspace rendering"
+msgstr ""
+
+#: ../../tools.rst:182 76b2f02c816740679adf790799635016
+msgid "plotter-rgb"
+msgstr ""
+
+#: ../../tools.rst:182 79231c9485fd412994543d8f4d42c1fa
+msgid "RGB colorspace rendering"
+msgstr ""
+
+#: ../../tools.rst:183 91d85a25304d4436bfeed78b823f708d
+msgid "plotter-cmyk"
+msgstr ""
+
+#: ../../tools.rst:183 924491f03aaf43d8a889798e8268c631
+msgid "CMYK colorspcae rendering"
+msgstr ""
+
+#: ../../tools.rst:184 b0fe29a8de9a4503a0c5bd27e7fc2b1e
+msgid "plotter-n"
+msgstr ""
+
+#: ../../tools.rst:184 e2367e803bd544e0a704fa3f6f4a377f
+msgid "overprint rendering"
+msgstr ""
+
+#: ../../tools.rst:185 40de005f09c64d48a68030bc62f04a7a
+msgid "pdf"
+msgstr ""
+
+#: ../../tools.rst:185 017318bcef5043d3a24dc1ac259bd96d
+msgid "PDF documents"
+msgstr ""
+
+#: ../../tools.rst:186 7879df7588cf4b4881667d16ef9b4044
+msgid "xps"
+msgstr ""
+
+#: ../../tools.rst:186 554de734100a44889b05ea16bbbb4801
+msgid "XPS documents"
+msgstr ""
+
+#: ../../tools.rst:187 e899c76673eb4de781ea52b20f05d668
+msgid "svg"
+msgstr ""
+
+#: ../../tools.rst:187 2dfe37a142164ae3acbc5c646b670f4f
+msgid "SVG documents"
+msgstr ""
+
+#: ../../tools.rst:188 5f181d975a094cc29464ac24fe074950
+msgid "cbz"
+msgstr ""
+
+#: ../../tools.rst:188 0bc4106af7494ee88794d1ae4bb7ff79
+msgid "CBZ documents"
+msgstr ""
+
+#: ../../tools.rst:189 61552041ec884b1bbe274dbbda088bd1
+msgid "img"
+msgstr ""
+
+#: ../../tools.rst:189 d12314e92993424f83174027a6ec725b
+msgid "IMG documents"
+msgstr ""
+
+#: ../../tools.rst:190 dd29953e1c66455a9923bf816e2a3282
+msgid "html"
+msgstr ""
+
+#: ../../tools.rst:190 127d85fe33354ac7971afa414123d63a
+msgid "HTML documents"
+msgstr ""
+
+#: ../../tools.rst:191 10cbf4f7a1cd41b9a80e083b7c002bed
+msgid "epub"
+msgstr ""
+
+#: ../../tools.rst:191 9ec403b9146f43eea9153809fffae100
+msgid "EPUB documents"
+msgstr ""
+
+#: ../../tools.rst:192 481a896d6b84460e8c1282ef91422469
+msgid "jpx"
+msgstr ""
+
+#: ../../tools.rst:192 22765c91abce4d04836e6ff2519678ef
+msgid "JPEG2000 images"
+msgstr ""
+
+#: ../../tools.rst:193 d46c0035bc044897ada86595b3d04bda
+msgid "js"
+msgstr ""
+
+#: ../../tools.rst:193 dfe437b8979a42939b5938fb1f481ed3
+msgid "JavaScript"
+msgstr ""
+
+#: ../../tools.rst:194 8ddda388461a473c9736d53993c96bcf
+msgid "tofu"
+msgstr ""
+
+#: ../../tools.rst:194 7c1d3ad770de460f824862a33e06e231
+msgid "all TOFU fonts"
+msgstr ""
+
+#: ../../tools.rst:195 ac7fb6b9c8e445aeb8f522c60057cf2b
+msgid "tofu-cjk"
+msgstr ""
+
+#: ../../tools.rst:195 6285e0aecced48a88277034654e7e42d
+msgid "CJK font subset (China, Japan, Korea)"
+msgstr ""
+
+#: ../../tools.rst:196 2a0c3f09e54c410a975730ce5aaa00de
+msgid "tofu-cjk-ext"
+msgstr ""
+
+#: ../../tools.rst:196 32e4ef23a02f4c36a24fd31d49a5607e
+msgid "CJK font extensions"
+msgstr ""
+
+#: ../../tools.rst:197 8cf92f3f79df450ebefd0fbca0b7d825
+msgid "tofu-cjk-lang"
+msgstr ""
+
+#: ../../tools.rst:197 b7426777724d4f16b655a5c11d77f9dd
+msgid "CJK font language extensions"
+msgstr ""
+
+#: ../../tools.rst:198 703a769d7b434dcaa4cfa08f972492b2
+msgid "tofu-emoji"
+msgstr ""
+
+#: ../../tools.rst:198 846d00d7a0a249ea87e0c1029b8e395c
+msgid "TOFU emoji fonts"
+msgstr ""
+
+#: ../../tools.rst:199 66b289107a8e4e8abd1bd9d88d481d42
+msgid "tofu-historic"
+msgstr ""
+
+#: ../../tools.rst:199 6f259e97e9bd497d9e9a1e025bcf9982
+msgid "TOFU historic fonts"
+msgstr ""
+
+#: ../../tools.rst:200 14977ce1ee544b9abfc8db96b0cbb68c
+msgid "tofu-symbol"
+msgstr ""
+
+#: ../../tools.rst:200 dd5d0777ea504428b2029606f420e098
+msgid "TOFU symbol fonts"
+msgstr ""
+
+#: ../../tools.rst:201 629d3ba30efd4345bbc69f56a1d9810c
+msgid "tofu-sil"
+msgstr ""
+
+#: ../../tools.rst:201 bfbb2fb374b64c6082355e8e493b429f
+msgid "TOFU SIL fonts"
+msgstr ""
+
+#: ../../tools.rst:202 4f7a65512f0844ef818c1d9624c5c335
+msgid "icc"
+msgstr ""
+
+#: ../../tools.rst:202 7fc4ac21a5104fac97ffb3afa1c5980d
+msgid "ICC profiles"
+msgstr ""
+
+#: ../../tools.rst:203 c40e5ca7f3024ac2b2434d42fd91fc52
+msgid "py-memory"
+msgstr ""
+
+#: ../../tools.rst:203 9b71c6d69b014bf2b7b0c8fe41ce6e22
+msgid "using Python memory management [#f2]_"
+msgstr ""
+
+#: ../../tools.rst:204 ab89c03d6ab44abfb553acb0f1bf378b
+msgid "base14"
+msgstr ""
+
+#: ../../tools.rst:204 002400f1661d403bb8cd28b30acbd9b1
+msgid "Base-14 fonts (should always be true)"
+msgstr ""
+
+#: ../../tools.rst:207 a7392b4d969e4c53a89f24a17bedd641
+msgid ""
+"For an explanation of the term \"TOFU\" see `this Wikipedia article "
+"<https://en.wikipedia.org/wiki/Noto_fonts>`_::"
+msgstr ""
+
+#: ../../tools.rst:241 f0ca1b8827e0409b8d193598bd42bbb6
+msgid ""
+"Maximum storables cache size in bytes. **PyMuPDF** is generated with a "
+"value of 268'435'456 (256 MB, the default value), which you should "
+"therefore always see here. If this value is zero, then an \"unlimited\" "
+"growth is permitted."
+msgstr ""
+
+#: ../../tools.rst:247 c4a141a4e2f54f6c821d474393efda1b
+msgid ""
+"Current storables cache size in bytes. This value may change (and will "
+"usually increase) with every use of a **PyMuPDF** function. It will "
+"(automatically) decrease only when :attr:`Tools.store_maxsize` is going "
+"to be exceeded: in this case, **MuPDF** will evict low-usage objects "
+"until the value is again in range."
+msgstr ""
+
+#: ../../tools.rst:252 081f0727dfcf40879ab8811e1fa325d3
+msgid "Example Session"
+msgstr ""
+
+#: ../../tools.rst:288 99b53db972bc49c58f0d4592323bf6c1
+msgid "Footnotes"
+msgstr ""
+
+#: ../../tools.rst:289 df2b4099a10547688c103f8b5777ecc7
+msgid ""
+"This memory area is internally used by MuPDF, and it serves as a cache "
+"for objects that have already been read and interpreted, thus improving "
+"performance. The most bulky object types are images and also fonts. When "
+"an application starts up the MuPDF library (in our case this happens as "
+"part of *import pymupdf*), it must specify a maximum size for this area. "
+"PyMuPDF's uses the default value (256 MB) to limit memory consumption. "
+"Use the methods here to control or investigate store usage. For example: "
+"even after a document has been closed and all related objects have been "
+"deleted, the store usage may still not drop down to zero. So you might "
+"want to enforce that before opening another document."
+msgstr ""
+
+#: ../../tools.rst:291 cff1cb203bfb4dd0a6e7c5c76c91e337
+msgid ""
+"By default PyMuPDF and MuPDF use `malloc()`/`free()` for dynamic memory "
+"management. One can instead force them to use the Python allocation "
+"functions `PyMem_New()`/`PyMem_Del()`, by modifying *fitz/fitz.i* to do "
+"`#define JM_MEMORY 1` and rebuilding PyMuPDF."
+msgstr ""
+
+#: ../../footer.rst:60 03615545ca9c49a09aa7623e8edafff5
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

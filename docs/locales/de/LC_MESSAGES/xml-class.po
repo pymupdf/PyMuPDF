@@ -1,0 +1,1014 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 35b2e14fdbf9456f870ea5e07c6a1abe
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 9c383ee007cb459a8f5ce0a78b556be8
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 7207641edba74fb79cd09bd543f88a77
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../xml-class.rst:7 5a1acd7449794938872c81139fa8acd0
+msgid "Xml"
+msgstr ""
+
+#: ../../xml-class.rst:11 4ee590d80c2745afaad733bc8ba82e1d
+msgid "New in v1.21.0"
+msgstr ""
+
+#: ../../xml-class.rst:13 8fa4f25d9d5d4b7ea94cc3b663b67d4c
+msgid ""
+"This represents an HTML or an XML node. It is a helper class intended to "
+"access the DOM (Document Object Model) content of a :ref:`Story` object."
+msgstr ""
+
+#: ../../xml-class.rst:15 e5105e52125246098e3b455ef2776456
+msgid ""
+"There is no need to ever directly construct an :ref:`Xml` object: after "
+"creating a :ref:`Story`, simply take :attr:`Story.body` -- which is an "
+"Xml node -- and use it to navigate your way through the story's DOM."
+msgstr ""
+
+#: ../../xml-class.rst:19 086ba76b6eaa4206b74c6b525b2ae70b
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../xml-class.rst:19 9b744e4fa0694c9986e2250f2278784d
+msgid "**Description**"
+msgstr ""
+
+#: ../../xml-class.rst:21 f46174ffaec14c09984d82014f3fc9a4
+msgid ":meth:`~.add_bullet_list`"
+msgstr ""
+
+#: ../../xml-class.rst:21 eefa1933e3b5485eb89f2e53127bcbf1
+msgid "Add a :htmlTag:`ul` tag - bulleted list, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:22 16936bcd25534da28940c85397594734
+msgid ":meth:`~.add_codeblock`"
+msgstr ""
+
+#: ../../xml-class.rst:22 fcf17dab1d8645fe9307bbaad85e9a78
+msgid "Add a :htmlTag:`pre` tag, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:23 103a3a5af0f14cd1924448b542f62b6b
+msgid ":meth:`~.add_description_list`"
+msgstr ""
+
+#: ../../xml-class.rst:23 e2f66dd80053480e97b4eeeb1ff42a9c
+msgid "Add a :htmlTag:`dl` tag, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:24 b041d519f2b64e188188cddb8b2f4e9b
+msgid ":meth:`~.add_division`"
+msgstr ""
+
+#: ../../xml-class.rst:24 31129830737949a8bb370681ecfd4d06
+msgid "add a :htmlTag:`div` tag (renamed from “section”), context manager."
+msgstr ""
+
+#: ../../xml-class.rst:25 da7da028486141f58cf9c5a7952e1ba0
+msgid ":meth:`~.add_header`"
+msgstr ""
+
+#: ../../xml-class.rst:25 228124168ce64130ad9d0ff5b13646e0
+msgid "Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager."
+msgstr ""
+
+#: ../../xml-class.rst:26 806d8bfb5b3b4ce397764e9d4a0dc1d8
+msgid ":meth:`~.add_horizontal_line`"
+msgstr ""
+
+#: ../../xml-class.rst:26 c07169b784924633a5e1fd68c8af798c
+msgid "Add a :htmlTag:`hr` tag."
+msgstr ""
+
+#: ../../xml-class.rst:27 5a73b0a8f50a496691126bd9d77a5637
+msgid ":meth:`~.add_image`"
+msgstr ""
+
+#: ../../xml-class.rst:27 340cf98f4f3f4e4a84c228fd7be2e4d6
+msgid "Add a :htmlTag:`img` tag."
+msgstr ""
+
+#: ../../xml-class.rst:28 d158603be675421a8b7f39bb5ff0a586
+msgid ":meth:`~.add_link`"
+msgstr ""
+
+#: ../../xml-class.rst:28 339c28e41d7e44558a1e9b671ba9ef54
+msgid "Add a :htmlTag:`a` tag."
+msgstr ""
+
+#: ../../xml-class.rst:29 7f6b79bf740d49b1932cf6a6a6576758
+msgid ":meth:`~.add_number_list`"
+msgstr ""
+
+#: ../../xml-class.rst:29 0c01f30a42cf4468b8213216a1b3297c
+msgid "Add a :htmlTag:`ol` tag, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:30 8f9f02ea8c414d29a83d318465a0ff48
+msgid ":meth:`~.add_paragraph`"
+msgstr ""
+
+#: ../../xml-class.rst:30 253c26552e274fbeb3da81a3470eec14
+msgid "Add a :htmlTag:`p` tag."
+msgstr ""
+
+#: ../../xml-class.rst:31 b2d6acd206bb4cb2a8f6be0b5197c0d8
+msgid ":meth:`~.add_span`"
+msgstr ""
+
+#: ../../xml-class.rst:31 98fe31d20e7a4ae8af4eba0928d53dd1
+msgid "Add a :htmlTag:`span` tag, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:32 50600afc53a74e6c80d8b4eef6b2304e
+msgid ":meth:`~.add_subscript`"
+msgstr ""
+
+#: ../../xml-class.rst:32 c9cb764e916a4b27afb3c18ae5983896
+msgid ""
+"Add subscript text(:htmlTag:`sub` tag) - inline element, treated like "
+"text."
+msgstr ""
+
+#: ../../xml-class.rst:33 b72843ab592f40e8877c99fe4c941dcb
+msgid ":meth:`~.add_superscript`"
+msgstr ""
+
+#: ../../xml-class.rst:33 3630b21203814ea190918432f1ca2417
+msgid ""
+"Add subscript text (:htmlTag:`sup` tag) - inline element, treated like "
+"text."
+msgstr ""
+
+#: ../../xml-class.rst:34 69e9ce07a81841c280b49fa28bd70c97
+msgid ":meth:`~.add_code`"
+msgstr ""
+
+#: ../../xml-class.rst:34 ../../xml-class.rst:35 ../../xml-class.rst:36
+#: ../../xml-class.rst:37 5c6747963ef74d38b09f3a6fbd934145
+#: 8cd903b064c74812942fc2b54fcb182d aa212076d95d4d34aca0fedfba075d7c
+#: bbf8c37a914547df93d38bbff33c7496
+msgid "Add code text (:htmlTag:`code` tag) - inline element, treated like text."
+msgstr ""
+
+#: ../../xml-class.rst:35 ed457783f87b4432965ba520310e2912
+msgid ":meth:`~.add_var`"
+msgstr ""
+
+#: ../../xml-class.rst:36 baa6b54b7dec48428d61ef058714e1c8
+msgid ":meth:`~.add_samp`"
+msgstr ""
+
+#: ../../xml-class.rst:37 2e681286c7934f9e98e30aeed8f1e058
+msgid ":meth:`~.add_kbd`"
+msgstr ""
+
+#: ../../xml-class.rst:38 c90afbfd1f2a4432aa57f469ce1aa9c3
+msgid ":meth:`~.add_text`"
+msgstr ""
+
+#: ../../xml-class.rst:38 ../../xml-class.rst:162
+#: e05cf6e5226b4f768bfb698de671c8db fdddcc02af0b4c43a986178f7ab86439
+msgid "Add a text string. Line breaks ``\\n`` are honored as :htmlTag:`br` tags."
+msgstr ""
+
+#: ../../xml-class.rst:39 5ae611e247354be1a46cad16dd7fdf40
+msgid ":meth:`~.append_child`"
+msgstr ""
+
+#: ../../xml-class.rst:39 f501e0b055984ba48721852e2de6968d
+msgid "Append a child node."
+msgstr ""
+
+#: ../../xml-class.rst:40 25340d7a99fc4ccf860933df50d0ebec
+msgid ":meth:`~.clone`"
+msgstr ""
+
+#: ../../xml-class.rst:40 c331f277124c4ee3b8a1e9037493a3db
+msgid "Make a copy if this node."
+msgstr ""
+
+#: ../../xml-class.rst:41 89bd772f48204020b60419c2db9d5bff
+msgid ":meth:`~.create_element`"
+msgstr ""
+
+#: ../../xml-class.rst:41 405cddf85d9c49dd8e5b9cd0fcfa855d
+msgid "Make a new node with a given tag name."
+msgstr ""
+
+#: ../../xml-class.rst:42 b521f73a8f764b0f87ea954af8981b37
+msgid ":meth:`~.create_text_node`"
+msgstr ""
+
+#: ../../xml-class.rst:42 ../../xml-class.rst:306
+#: 36b72c94c0534f59897e7d90525f00ab dfd89d799b2a49de8a00c1c68015628f
+msgid "Create direct text for the current node."
+msgstr ""
+
+#: ../../xml-class.rst:43 fe2c4c6a496e4c30a74892bf305be0bf
+msgid ":meth:`~.find`"
+msgstr ""
+
+#: ../../xml-class.rst:43 318cef4b3a694140908577091226c3e3
+msgid "Find a sub-node with given properties."
+msgstr ""
+
+#: ../../xml-class.rst:44 a453fbff3b22420db8f0c51be152f8d6
+msgid ":meth:`~.find_next`"
+msgstr ""
+
+#: ../../xml-class.rst:44 8a60922fc34041dfa5e21d0caa6fac06
+msgid "Repeat previous \"find\" with the same criteria."
+msgstr ""
+
+#: ../../xml-class.rst:45 e198f0bc22b944d48e40dc5c38223e9b
+msgid ":meth:`~.insert_after`"
+msgstr ""
+
+#: ../../xml-class.rst:45 8f66fccc674d4dd8ab65c02ac8ba24fc
+msgid "Insert an element after current node."
+msgstr ""
+
+#: ../../xml-class.rst:46 9d6b713c56884ee1b369e276ec5102a7
+msgid ":meth:`~.insert_before`"
+msgstr ""
+
+#: ../../xml-class.rst:46 ae54a30b8bcf44daa6da5370718a075b
+msgid "Insert an element before current node."
+msgstr ""
+
+#: ../../xml-class.rst:47 e9116568aee3452182bda7d5810abf1e
+msgid ":meth:`~.remove`"
+msgstr ""
+
+#: ../../xml-class.rst:47 64bec43c81d140e9bb69363bbdaa051c
+msgid "Remove this node."
+msgstr ""
+
+#: ../../xml-class.rst:48 1ac7caa0aab541d2b460ac445585c6c7
+msgid ":meth:`~.set_align`"
+msgstr ""
+
+#: ../../xml-class.rst:48 ac6a6fbe13044fd787cd15a2670459ef
+msgid "Set the alignment using a CSS style spec. Only works for block-level tags."
+msgstr ""
+
+#: ../../xml-class.rst:49 2c4b7b6457d4484a92058c1de4270fe9
+msgid ":meth:`~.set_attribute`"
+msgstr ""
+
+#: ../../xml-class.rst:49 ../../xml-class.rst:172
+#: 804a76ddd5074a59b8d94661b6941469 e0a54f2af7784bddb2c2e0baf1536f26
+msgid "Set an arbitrary key to some value (which may be empty)."
+msgstr ""
+
+#: ../../xml-class.rst:50 fa0b42cca1304379b0bcfebdc442dd15
+msgid ":meth:`~.set_bgcolor`"
+msgstr ""
+
+#: ../../xml-class.rst:50 ../../xml-class.rst:199
+#: 63b3f2fe208b457ab9f31e92c5353ce8 bdaa46d0f4da43fca01a888db16337c7
+msgid "Set the background color. Only works for block-level tags."
+msgstr ""
+
+#: ../../xml-class.rst:51 ec6d2db5fec44f689ad6be9b934f0a82
+msgid ":meth:`~.set_bold`"
+msgstr ""
+
+#: ../../xml-class.rst:51 ../../xml-class.rst:205
+#: 9e58087d6ecb42dab3894c28babdec5b bdc6a779999c4686ac0ffe57b93a8bd7
+msgid "Set bold on or off or to some string value."
+msgstr ""
+
+#: ../../xml-class.rst:52 de15508d8d384d9da5d0b8cd2b1b780c
+msgid ":meth:`~.set_color`"
+msgstr ""
+
+#: ../../xml-class.rst:52 9189331756f9457b9a92c047923b268d
+msgid "Set text color."
+msgstr ""
+
+#: ../../xml-class.rst:53 9ac5e040ad994771a04fa353c7930b81
+msgid ":meth:`~.set_columns`"
+msgstr ""
+
+#: ../../xml-class.rst:53 5e49161f1d2d43c889352cd9ff8edfc8
+msgid "Set the number of columns. Argument may be any valid number or string."
+msgstr ""
+
+#: ../../xml-class.rst:54 09f99796e853445c8dcf98822e1ac0f7
+msgid ":meth:`~.set_font`"
+msgstr ""
+
+#: ../../xml-class.rst:54 cf00809415f04821b5afcfb274bc466e
+msgid "Set the font-family, e.g. “sans-serif”."
+msgstr ""
+
+#: ../../xml-class.rst:55 b6ea49c8641c4332b9398bef1a6359a3
+msgid ":meth:`~.set_fontsize`"
+msgstr ""
+
+#: ../../xml-class.rst:55 9fe5840d1b4e4891aa77b55e25a5b1e2
+msgid "Set the font size. Either a float or a valid HTML/CSS string."
+msgstr ""
+
+#: ../../xml-class.rst:56 893eb791a848403381a5172bc82ba8a2
+msgid ":meth:`~.set_id`"
+msgstr ""
+
+#: ../../xml-class.rst:56 f2aa328fbed64085b476f3b70fdf3881
+msgid "Set a :htmlTag:`id`. A check for uniqueness is performed."
+msgstr ""
+
+#: ../../xml-class.rst:57 783861b6af6e44bc8733b76733ec5da5
+msgid ":meth:`~.set_italic`"
+msgstr ""
+
+#: ../../xml-class.rst:57 0701120232e24ab7a942c75085ee4917
+msgid "Set italic on or off or to some string value."
+msgstr ""
+
+#: ../../xml-class.rst:58 309c49d3870449faa199927e29c64b96
+msgid ":meth:`~.set_leading`"
+msgstr ""
+
+#: ../../xml-class.rst:58 ../../xml-class.rst:249
+#: 040c50bebd594591ae1e863aa20683a6 dd67658b9d3349cc89ede4628205f1df
+msgid ""
+"Set inter-block text distance (`-mupdf-leading`), only works on block-"
+"level nodes."
+msgstr ""
+
+#: ../../xml-class.rst:59 2281f01a10cb44209c22340d5f31c661
+msgid ":meth:`~.set_lineheight`"
+msgstr ""
+
+#: ../../xml-class.rst:59 5fd19f3c7efd41d6be0dd0d482afa714
+msgid "Set height of a line. Float like 1.5, which sets to `1.5 * fontsize`."
+msgstr ""
+
+#: ../../xml-class.rst:60 da10321480c547bd877d788cbbc17d19
+msgid ":meth:`~.set_margins`"
+msgstr ""
+
+#: ../../xml-class.rst:60 562e9cf200d04d618d6ce2d9d0199a52
+msgid "Set the margin(s), float or string with up to 4 values."
+msgstr ""
+
+#: ../../xml-class.rst:61 7a9720be94704744b9ffc66d54860d47
+msgid ":meth:`~.set_pagebreak_after`"
+msgstr ""
+
+#: ../../xml-class.rst:61 ../../xml-class.rst:267
+#: 2e26773bf354417d9a1e518e237918a0 b15db1fb04a94a9db2c92c13e5185080
+msgid "Insert a page break after this node."
+msgstr ""
+
+#: ../../xml-class.rst:62 6f6e3d153b3b4739bb09a561522007a6
+msgid ":meth:`~.set_pagebreak_before`"
+msgstr ""
+
+#: ../../xml-class.rst:62 ../../xml-class.rst:271
+#: 7136cfd22a9d457a97a7e2513a45846f c2118e0dbcda4f5da4addfd12c35aa83
+msgid "Insert a page break before this node."
+msgstr ""
+
+#: ../../xml-class.rst:63 1bbac025080541ae80e078311ca65702
+msgid ":meth:`~.set_properties`"
+msgstr ""
+
+#: ../../xml-class.rst:63 1b2e863de6b347dd9e0815f739335444
+msgid "Set any or all desired properties in one call."
+msgstr ""
+
+#: ../../xml-class.rst:64 5b7ad8cc67534183884e12223b204bfb
+msgid ":meth:`~.add_style`"
+msgstr ""
+
+#: ../../xml-class.rst:64 b48568e9492448fea987302ce3977624
+msgid "Set (add) a “style” that is not supported by its own `set_` method."
+msgstr ""
+
+#: ../../xml-class.rst:65 eeab444cf1874576b113c84b0127b3e9
+msgid ":meth:`~.add_class`"
+msgstr ""
+
+#: ../../xml-class.rst:65 c6c3f6a173aa4093ad84ff360356b54b
+msgid "Set (add) a “class” attribute."
+msgstr ""
+
+#: ../../xml-class.rst:66 dacd474bcc8e488ab2843c5b8e98be3a
+msgid ":meth:`~.set_text_indent`"
+msgstr ""
+
+#: ../../xml-class.rst:66 2a9fa4287d5043b38c543cccd188d907
+msgid ""
+"Set indentation for first textblock line. Only works for block-level "
+"nodes."
+msgstr ""
+
+#: ../../xml-class.rst:67 42123ce0b6f24506853dac4a1af569fa
+msgid ":attr:`~.tagname`"
+msgstr ""
+
+#: ../../xml-class.rst:67 ../../xml-class.rst:370
+#: 36166f24a5d84c408d14f9f1a2dc2468 b8920a310a044b1987fdc6fed230bf95
+msgid "Either the HTML tag name like :htmlTag:`p` or `None` if a text node."
+msgstr ""
+
+#: ../../xml-class.rst:68 66c56dbdcc064ee483ccc6e18e6d9785
+msgid ":attr:`~.text`"
+msgstr ""
+
+#: ../../xml-class.rst:68 ../../xml-class.rst:374
+#: 28401b8b52b2423a8c4aa49d5fc3591b e4b6e887c7244003973e168bacadf31e
+msgid "Either the node's text or `None` if a tag node."
+msgstr ""
+
+#: ../../xml-class.rst:69 4a66c8e044cb475fa6fb2613a94f66e3
+msgid ":attr:`~.is_text`"
+msgstr ""
+
+#: ../../xml-class.rst:69 ca0266179d7442349348788c2abfc7fa
+msgid "Check if the node is a text."
+msgstr ""
+
+#: ../../xml-class.rst:70 e5f96a9fc17b4e368cfce3ef779be88c
+msgid ":attr:`~.first_child`"
+msgstr ""
+
+#: ../../xml-class.rst:70 ../../xml-class.rst:382
+#: 2f21de8ea3a74f8e8afccd49d6b046bc 42e3ed28baa943f6a3b5b61eebe41952
+msgid "Contains the first node one level below this one (or `None`)."
+msgstr ""
+
+#: ../../xml-class.rst:71 84b9f06f42b04e4782acf1d68068c5b4
+msgid ":attr:`~.last_child`"
+msgstr ""
+
+#: ../../xml-class.rst:71 ../../xml-class.rst:386
+#: 2c94509d8b3b40b4b94c1944dca9f128 676901a092fc4735b224b379bb0c3f9f
+msgid "Contains the last node one level below this one (or `None`)."
+msgstr ""
+
+#: ../../xml-class.rst:72 3dd91ae4326f41568dfd754dde88c7a4
+msgid ":attr:`~.next`"
+msgstr ""
+
+#: ../../xml-class.rst:72 ../../xml-class.rst:390
+#: cbabeaa3eefd40249b4dd37b701d59cc d36f34064bfa40a0a40827e73a241423
+msgid "The next node at the same level (or `None`)."
+msgstr ""
+
+#: ../../xml-class.rst:73 7a0463bd4ac7449dabbfab5a78bbbdd0
+msgid ":attr:`~.previous`"
+msgstr ""
+
+#: ../../xml-class.rst:73 ../../xml-class.rst:394
+#: 21ccb8eec1544ac69539f5504e1c2572 3bc7b50ddc0d48a1b11a3a42ff6bf3ff
+msgid "The previous node at the same level."
+msgstr ""
+
+#: ../../xml-class.rst:74 d61cc5bbd1f146c7972c2ebfc6200683
+msgid ":attr:`~.root`"
+msgstr ""
+
+#: ../../xml-class.rst:74 ../../xml-class.rst:398
+#: a71d233f5e2e429eb0443f3879620f09 cd5e5bf55358464abc8f27b0b2c4c712
+msgid "The top node of the DOM, which hence has the tagname :htmlTag:`html`."
+msgstr ""
+
+#: ../../xml-class.rst:79 7b4df043605440d3bb688f84d119f814
+msgid "**Class API**"
+msgstr ""
+
+#: ../../xml-class.rst:85 15f567e4f1754a959a432aa258e0d91d
+msgid ""
+"Add an :htmlTag:`ul` tag - bulleted list, context manager. See `ul "
+"<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_."
+msgstr ""
+
+#: ../../xml-class.rst:89 3c04822b8860402a8b9573c54e5194e3
+msgid ""
+"Add a :htmlTag:`pre` tag, context manager. See `pre "
+"<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre>`_."
+msgstr ""
+
+#: ../../xml-class.rst:93 0ed1cc73e1274f0a9666e87961987c78
+msgid ""
+"Add a :htmlTag:`dl` tag, context manager. See `dl "
+"<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl>`_."
+msgstr ""
+
+#: ../../xml-class.rst:97 0b0a1eaefbc1441fbd61bce939f12692
+msgid ""
+"Add a :htmlTag:`div` tag, context manager. See `div "
+"<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_."
+msgstr ""
+
+#: ../../xml-class.rst:101 8be2c66a14014d738a580d04d0c21248
+msgid ""
+"Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context "
+"manager. See `headings <https://developer.mozilla.org/en-"
+"US/docs/Web/HTML/Element/Heading_Elements>`_."
+msgstr ""
+
+#: ../../xml-class.rst 06667ae7d009417a97c1ecf590b1a67f
+#: 0aaa5b3f295942ebbbccb8d389cd898a 1aa126b038ed4ce781aecf808c57cdec
+#: 1d2b1dade7d6423bb8e41f0972a59fb3 1d556e1aced24a5a8be36537a9f59e1b
+#: 1e0cf1d1d2054403831bfb69810ee742 255c1340c66245b48f2a3cdf80e4214c
+#: 2c0eea03634e486dabab3f54b424fad2 46aa4928a5604814a92adf164d7fa247
+#: 49455d15a82740859665ec07012100a3 61e61452d3f94579997370f901426bce
+#: 67c4ccac4676478495f011032187051d 6e85e6b82e584e458e9f10f45aeaf176
+#: 9079b60e1ede4c158bdcc07baa224b19 a1450c78b0a74e7a9a133091ddb6e387
+#: a90aa7ae4f834d88b627c22105ee12ce cc4f042b90394b9eb95de870938d8c43
+#: d0e84706994a47c4aad671254c7a85e2 d1095b66b77e4a72a9793960df3fa674
+#: d23494315ac041c791e01f27f2af929e d96c7bfed45740ec810afcba0125a60a
+#: dd18489673354a54a1e8b0d472e4d131 e1d5789d094643a8b45b8b3c59f908b1
+#: e6d0fce46e4a49ef89c56b78e0914a3f edfbbc1dbdd840519996cc595579ac32
+#: f5a2500942f844c3ba7e25042d206f66 f9e99192da7d40888802688752c7595e
+msgid "Parameters"
+msgstr ""
+
+#: ../../xml-class.rst:103 05de048c66ba4b459eb9539250326096
+msgid "a value 1 - 6."
+msgstr ""
+
+#: ../../xml-class.rst:107 2c297e02768c469799efc10e37822f0e
+msgid ""
+"Add a :htmlTag:`hr` tag. See `hr <https://developer.mozilla.org/en-"
+"US/docs/Web/HTML/Element/hr>`_."
+msgstr ""
+
+#: ../../xml-class.rst:111 b970bd7ba2b14e329f30ab7f38392367
+msgid ""
+"Add an :htmlTag:`img` tag. This causes the inclusion of the named image "
+"in the DOM."
+msgstr ""
+
+#: ../../xml-class.rst:113 9fae2f8598bf4a7b873ba77fe44e109d
+msgid ""
+"the filename of the image. This **must be the member name** of some entry"
+" of the :ref:`Archive` parameter of the :ref:`Story` constructor."
+msgstr ""
+
+#: ../../xml-class.rst:114 f86a37a277f94897a82aefd1205cbb77
+msgid ""
+"if provided, either an absolute (int) value, or a percentage string like "
+"\"30%\". A percentage value refers to the width of the specified `where` "
+"rectangle in :meth:`Story.place`. If this value is provided and `height` "
+"is omitted, the image will be included keeping its aspect ratio."
+msgstr ""
+
+#: ../../xml-class.rst:115 fb3d1d9e2800433b822fc09a4d7e5b38
+msgid ""
+"if provided, either an absolute (int) value, or a percentage string like "
+"\"30%\". A percentage value refers to the height of the specified `where`"
+" rectangle in :meth:`Story.place`. If this value is provided and `width` "
+"is omitted, the image's aspect ratio will be honored."
+msgstr ""
+
+#: ../../xml-class.rst:119 7dc5d5cd96ba453683175419ccf0139d
+msgid "Add an :htmlTag:`a` tag - inline element, treated like text."
+msgstr ""
+
+#: ../../xml-class.rst:121 0e78457bb88a440b916bc48c1587500a
+msgid "the URL target."
+msgstr ""
+
+#: ../../xml-class.rst:122 29694751dcf94583ab50b52f45eac3c5
+msgid "the text to display. If omitted, the `href` text is shown instead."
+msgstr ""
+
+#: ../../xml-class.rst:126 b5e405fe3b834289ba24aee22e844046
+msgid "Add an :htmlTag:`ol` tag, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:130 76fa57288ce94e5f83f0c2179b72bfe6
+msgid "Add a :htmlTag:`p` tag, context manager."
+msgstr ""
+
+#: ../../xml-class.rst:134 ab34ee2cc1fd4256ad7020de606ebc05
+msgid "Add a :htmlTag:`span` tag, context manager. See `span`_"
+msgstr ""
+
+#: ../../xml-class.rst:138 07628e22868f42ffbcf7ddd9c0ac35d5
+msgid ""
+"Add \"subscript\" text(:htmlTag:`sub` tag) - inline element, treated like"
+" text."
+msgstr ""
+
+#: ../../xml-class.rst:142 dd9903a2ecf4404a9d6accc1e0749f79
+msgid ""
+"Add \"superscript\" text (:htmlTag:`sup` tag) - inline element, treated "
+"like text."
+msgstr ""
+
+#: ../../xml-class.rst:146 ed86a64559ee476a87e5777052bb75fe
+msgid ""
+"Add \"code\" text (:htmlTag:`code` tag) - inline element, treated like "
+"text."
+msgstr ""
+
+#: ../../xml-class.rst:150 23a0e0f64af1407a8d78e8b1fc6eba45
+msgid ""
+"Add \"variable\" text (:htmlTag:`var` tag) - inline element, treated like"
+" text."
+msgstr ""
+
+#: ../../xml-class.rst:154 16840c2eee994250a111a670c1982c07
+msgid ""
+"Add \"sample output\" text (:htmlTag:`samp` tag) - inline element, "
+"treated like text."
+msgstr ""
+
+#: ../../xml-class.rst:158 c12b71425d2847eb8bde80f536c4c5ca
+msgid ""
+"Add \"keyboard input\" text (:htmlTag:`kbd` tag) - inline element, "
+"treated like text."
+msgstr ""
+
+#: ../../xml-class.rst:166 a0c1e8813cc34b0b905e64b8843960a1
+msgid "Set the text alignment. Only works for block-level tags."
+msgstr ""
+
+#: ../../xml-class.rst:168 5c1f833338ba45238483066cd6ee050f
+msgid ""
+"either one of the :ref:`TextAlign` or the `text-align "
+"<https://developer.mozilla.org/en-US/docs/Web/CSS/text-align>`_ values."
+msgstr ""
+
+#: ../../xml-class.rst:174 ../../xml-class.rst:187 ../../xml-class.rst:195
+#: 2fe24dbf6c8e491da8d3a7aca96d7db7 a41e1f3d0e3646c4848ce0ef0df0f734
+#: e6ab290bc6c6427aa52cd824b5abcf95
+msgid "the name of the attribute."
+msgstr ""
+
+#: ../../xml-class.rst:175 d389ba2ac4a34151a91a26102e2b6460
+msgid "the (optional) value of the attribute."
+msgstr ""
+
+#: ../../xml-class.rst:179 07c3f60cb5574e45abb857f481b45d17
+msgid "Retrieve all attributes of the current nodes as a dictionary."
+msgstr ""
+
+#: ../../xml-class.rst 17192c246086475781cbc2a532fe77f7
+#: 316b287ac38d47998654b66e17120d3c 33b69c8e0c214f7e94b9e785d1d5acb0
+#: 397c2d06aeac40b0a74e6504b51ad4da e796210aabb44877bdc47c5faba1888b
+#: f45ca78bcbb745fd8bf01620b26911ca f470a993feb34859b12a4343388d8e3d
+msgid "Returns"
+msgstr ""
+
+#: ../../xml-class.rst:181 9a860899e73444138923297266a09e92
+msgid "a dictionary with the attributes and their values of the node."
+msgstr ""
+
+#: ../../xml-class.rst:185 367b3d6b05fe484c8692a5b9fdf0888d
+msgid "Get the attribute value of `key`."
+msgstr ""
+
+#: ../../xml-class.rst:189 0c606e3db4aa43e4b82e63059d8b9056
+msgid "a string with the value of `key`."
+msgstr ""
+
+#: ../../xml-class.rst:193 7ab7a2c9a37a49528c76d65040e92e55
+msgid "Remove the attribute `key` from the node."
+msgstr ""
+
+#: ../../xml-class.rst:201 4a286ef8c13b4a818402696f63abbbda
+msgid ""
+"either an RGB value like (255, 0, 0) (for \"red\") or a valid "
+"`background-color <https://developer.mozilla.org/en-US/docs/Web/CSS"
+"/background-color>`_ value."
+msgstr ""
+
+#: ../../xml-class.rst:207 0c4471f9c34f45e3b376695ecd25ae47
+msgid ""
+"`True`, `False` or a valid `font-weight <https://developer.mozilla.org"
+"/en-US/docs/Web/CSS/font-weight>`_ value."
+msgstr ""
+
+#: ../../xml-class.rst:211 377d0e10d7b548c88d42311255d9ff02
+msgid "Set the color of the text following."
+msgstr ""
+
+#: ../../xml-class.rst:213 0596f8f1cc684e51ac8e6a2e58d3f646
+msgid ""
+"either an RGB value like (255, 0, 0) (for \"red\") or a valid `color "
+"<https://developer.mozilla.org/en-US/docs/Web/CSS/color_value>`_ value."
+msgstr ""
+
+#: ../../xml-class.rst:217 9de3ba47655e45ea86e95f7806cc1761
+msgid "Set the number of columns."
+msgstr ""
+
+#: ../../xml-class.rst:219 d767dfd34bba48c2bd824015aedbfce5
+msgid ""
+"a valid `columns <https://developer.mozilla.org/en-"
+"US/docs/Web/CSS/columns>`_ value."
+msgstr ""
+
+#: ../../xml-class.rst:221 c5ee8d67ed604a779b356ad7a3beb3b6
+msgid "Currently ignored - supported in a future MuPDF version."
+msgstr ""
+
+#: ../../xml-class.rst:225 a3e16b087cf149fbbf6f316ad7d79880
+msgid "Set the font-family."
+msgstr ""
+
+#: ../../xml-class.rst:227 56592161ded1480aa5c21631ec00e5ac
+msgid "e.g. \"sans-serif\"."
+msgstr ""
+
+#: ../../xml-class.rst:231 e716de072f9544618374c016b382f40a
+msgid "Set the font size for text following."
+msgstr ""
+
+#: ../../xml-class.rst:233 4699b76ad7694bccbd943643ee021862
+msgid ""
+"a float or a valid `font-size <https://developer.mozilla.org/en-"
+"US/docs/Web/CSS/font-size>`_ value."
+msgstr ""
+
+#: ../../xml-class.rst:237 8cfd620b051940348ac0556e9ae65033
+msgid ""
+"Set a :htmlTag:`id`. This serves as a unique identification of the node "
+"within the DOM. Use it to easily locate the node to inspect or modify it."
+" A check for uniqueness is performed."
+msgstr ""
+
+#: ../../xml-class.rst:239 b6042d6da5b14d338da93ff2ac9afdc3
+msgid "id string of the node."
+msgstr ""
+
+#: ../../xml-class.rst:243 83dcfa78795e4c169619f1b4203a95f7
+msgid "Set italic on or off or to some string value for the text following it."
+msgstr ""
+
+#: ../../xml-class.rst:245 e74b3e4a56714306840b8bd5cdcfb8b6
+msgid ""
+"`True`, `False` or some valid `font-style <https://developer.mozilla.org"
+"/en-US/docs/Web/CSS/font-style>`_ value."
+msgstr ""
+
+#: ../../xml-class.rst:251 b9a0bdede6124f1fbbde6722313e5c2c
+msgid "the distance in points to the previous block."
+msgstr ""
+
+#: ../../xml-class.rst:255 f13883ee98f146ca9a924b575b3cc51a
+msgid "Set height of a line."
+msgstr ""
+
+#: ../../xml-class.rst:257 74dc61a744d94742a7eb18faf8251006
+msgid ""
+"a float like 1.5 (which sets to `1.5 * fontsize`), or some valid `line-"
+"height <https://developer.mozilla.org/en-US/docs/Web/CSS/line-height>`_ "
+"value."
+msgstr ""
+
+#: ../../xml-class.rst:261 f4aeb6cd082e4b039f2ef1c241cffc4a
+msgid "Set the margin(s)."
+msgstr ""
+
+#: ../../xml-class.rst:263 754876b7c7b84370b81e5f3f15bbae21
+msgid ""
+"float or string with up to 4 values. See `CSS documentation "
+"<https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_."
+msgstr ""
+
+#: ../../xml-class.rst:275 f2da4761cba1404d8c850cf58d8ba28c
+msgid ""
+"Set any or all desired properties in one call. The meaning of argument "
+"values equal the values of the corresponding `set_` methods."
+msgstr ""
+
+#: ../../xml-class.rst:277 c1f136b0c23e4147aef9acbc054decd4
+msgid ""
+"The properties set by this method are directly attached to the node, "
+"whereas every `set_` method generates a new :htmlTag:`span` below the "
+"current node that has the respective property. So to e.g. \"globally\" "
+"set some property for the :htmlTag:`body`, this method must be used."
+msgstr ""
+
+#: ../../xml-class.rst:281 0b00e9cdb0ed42819aad271da3e10621
+msgid "Set (add) some style attribute not supported by its own `set_` method."
+msgstr ""
+
+#: ../../xml-class.rst:283 457e6d62d41841ee8741782c6bfd201f
+msgid "any valid CSS style value."
+msgstr ""
+
+#: ../../xml-class.rst:287 996f4ece67a841e59d001f1d260f6571
+msgid "Set (add) some \"class\" attribute."
+msgstr ""
+
+#: ../../xml-class.rst:289 0cd9ff6d9c4640ab90612ca481fb1692
+msgid ""
+"the name of the class. Must have been defined in either the HTML or the "
+"CSS source of the DOM."
+msgstr ""
+
+#: ../../xml-class.rst:293 d40d57c4852c46539d9bdf515833a465
+msgid ""
+"Set indentation for the first textblock line. Only works for block-level "
+"nodes."
+msgstr ""
+
+#: ../../xml-class.rst:295 0d6bee0b55f24569a45c44d5e814b140
+msgid ""
+"a valid `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS"
+"/text-indent>`_ value. Please note that negative values do not work."
+msgstr ""
+
+#: ../../xml-class.rst:300 762e7d8fde1d4ad3ba5ae1bf4fa34033
+msgid ""
+"Append a child node. This is a low-level method used by other methods "
+"like :meth:`Xml.add_paragraph`."
+msgstr ""
+
+#: ../../xml-class.rst:302 8fe5eebdd2b1421fb687a21dfcea9fae
+msgid "the :ref:`Xml` node to append."
+msgstr ""
+
+#: ../../xml-class.rst:308 bb3c5252dd3542cc8f263ab35551dedd
+msgid "the text to append."
+msgstr ""
+
+#: ../../xml-class.rst 022bf50af61d4a8a854203e9ba18a1ce
+#: 70b34bf9aef34db599ca63934a722c36 87a8f73cb5e84da286de4cacee92e249
+#: c5fc1a77039842b2a10f66a29dbdb38e
+msgid "Return type"
+msgstr ""
+
+#: ../../xml-class.rst:310 ../../xml-class.rst:319
+#: 14d3d45c8f9f4c94b76c6b34f9156283 e219f8801a92456dacd23c1bab7c5fa4
+msgid ":ref:`Xml`"
+msgstr ""
+
+#: ../../xml-class.rst:311 0ed716b5c85d4de4a0457c85b58e194f
+msgid "the created element."
+msgstr ""
+
+#: ../../xml-class.rst:315 d82360adfca04cbeac23160c0a0c3afa
+msgid ""
+"Create a new node with a given tag. This a low-level method used by other"
+" methods like :meth:`Xml.add_paragraph`."
+msgstr ""
+
+#: ../../xml-class.rst:317 9d7b1665fb704f00a0416ea1627c3c3a
+msgid "the element tag."
+msgstr ""
+
+#: ../../xml-class.rst:320 ea5c614b041341e1be82c8015fbed2ef
+msgid ""
+"the created element. To actually bind it to the DOM, use "
+":meth:`Xml.append_child`."
+msgstr ""
+
+#: ../../xml-class.rst:324 20a9a38c30524aa7bc65ec6cbe680c47
+msgid "Insert the given element `elem` before this node."
+msgstr ""
+
+#: ../../xml-class.rst:326 ../../xml-class.rst:332
+#: 44a6c046ddfd4baa968b358f7db78b0a 848c5fe3c4bb49ffbb4f55cf1fcd0d94
+msgid "some :ref:`Xml` element."
+msgstr ""
+
+#: ../../xml-class.rst:330 31950c02ed55490db0883f1568fc5528
+msgid "Insert the given element `elem` after this node."
+msgstr ""
+
+#: ../../xml-class.rst:336 9b8dcc0c94654a25a10773d34514557e
+msgid ""
+"Make a copy of this node, which then may be appended (using "
+":meth:`Xml.append_child`) or inserted (using one of "
+":meth:`Xml.insert_before`, :meth:`Xml.insert_after`) in this DOM."
+msgstr ""
+
+#: ../../xml-class.rst:338 4f1ca41be752476f906e73d07f12fa64
+msgid "the clone (:ref:`Xml`) of the current node."
+msgstr ""
+
+#: ../../xml-class.rst:342 0cbed49f156d4211b12cb5bbe7060543
+msgid "Remove this node from the DOM."
+msgstr ""
+
+#: ../../xml-class.rst:347 ef3d6f9aa85c47ca9abe630e29080e81
+msgid "For debugging purposes, print this node's structure in a simplified form."
+msgstr ""
+
+#: ../../xml-class.rst:351 b77052465aff4e6c8134c42867815823
+msgid ""
+"Under the current node, find the first node with the given `tag`, "
+"attribute `att` and value `match`."
+msgstr ""
+
+#: ../../xml-class.rst:353 c3b5cf81b4a8466aaf9a51d9aa91aed8
+msgid "restrict search to this tag. May be `None` for unrestricted searches."
+msgstr ""
+
+#: ../../xml-class.rst:354 b3e60cf5c1694489b76c6b061502d815
+msgid "check this attribute. May be `None`."
+msgstr ""
+
+#: ../../xml-class.rst:355 445027aad8f349d5870b74bc71484e02
+msgid "the desired attribute value to match. May be `None`."
+msgstr ""
+
+#: ../../xml-class.rst:357 ../../xml-class.rst:364
+#: 458a0f17635a4ee3beaeda11ffc6cf06 d2fbb5102700450a865b3f902ceac384
+msgid ":ref:`Xml`."
+msgstr ""
+
+#: ../../xml-class.rst:358 b5de014d478e4703b88e1c98ad4dd9dd
+msgid "`None` if nothing found, otherwise the first matching node."
+msgstr ""
+
+#: ../../xml-class.rst:362 bfac5489d037476889d72ff8311df153
+msgid ""
+"Continue a previous :meth:`Xml.find` (or :meth:`find_next`) with the same"
+" values."
+msgstr ""
+
+#: ../../xml-class.rst:365 6e37f5e14b8849b1abe7bf97c7015bc2
+msgid "`None` if none more found, otherwise the next matching node."
+msgstr ""
+
+#: ../../xml-class.rst:378 b1a7309c8f0f4aebb4c722ef9ac56d8f
+msgid "Check if a text node."
+msgstr ""
+
+#: ../../xml-class.rst:402 277f48d6971041c6949eb351109c59a6
+msgid "Setting Text properties"
+msgstr ""
+
+#: ../../xml-class.rst:404 e4aa8bc7dde5406984bba698ad774b6a
+msgid ""
+"In HTML tags can be nested such that innermost text **inherits "
+"properties** from the tag enveloping its parent tag. For example "
+"`<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>`."
+msgstr ""
+
+#: ../../xml-class.rst:406 231ae74dcdca47a1af2c04684d880e45
+msgid ""
+"To achieve the same effect, methods like :meth:`Xml.set_bold` and "
+":meth:`Xml.set_italic` each open a temporary :htmlTag:`span` with the "
+"desired property underneath the current node."
+msgstr ""
+
+#: ../../xml-class.rst:408 703c755313884c3e8e069b836f756d47
+msgid ""
+"In addition, these methods return there parent node, so they can be "
+"concatenated with each other."
+msgstr ""
+
+#: ../../xml-class.rst:413 1317fdaa53304e249c7283355ae5ebb4
+msgid "Context Manager support"
+msgstr ""
+
+#: ../../xml-class.rst:414 66b960c3bdd444e0a671fd3e9b81e5a1
+msgid "The standard way to add nodes to a DOM is this::"
+msgstr ""
+
+#: ../../xml-class.rst:427 945235d10eaf46368506481d321761b5
+msgid ""
+"Methods that are flagged as \"context managers\" can conveniently be used"
+" in this way::"
+msgstr ""
+
+#: ../../footer.rst:60 1b8fa4a6d5c14ec9becef06082bce778
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

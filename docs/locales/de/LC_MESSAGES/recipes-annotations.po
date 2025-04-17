@@ -1,0 +1,123 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 d1ad502e2163461abd37b8e0afad7b09
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 9b5018bc6d0347e3ac0dca7c86ee8578
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 9215720d8e8043e38ff196c7e9cfe5f0
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-annotations.rst:7 43c8624c55e14be2aac3624caf95357e
+msgid "Annotations"
+msgstr ""
+
+#: ../../recipes-annotations.rst:12 3eb67bbfa6584d6e8bfe087440a64e64
+msgid "How to Add and Modify Annotations"
+msgstr ""
+
+#: ../../recipes-annotations.rst:14 0e7efcdb24c74719b4c01251f4a59aa5
+msgid ""
+"In |PyMuPDF|, new annotations can be added via :ref:`Page` methods. Once "
+"an annotation exists, it can be modified to a large extent using methods "
+"of the :ref:`Annot` class."
+msgstr ""
+
+#: ../../recipes-annotations.rst:16 2bf001f41c6b451b9937901bb58f7e23
+msgid ""
+"Annotations can **only** be inserted in |PDF| pages - other document "
+"types do not support annotation insertion."
+msgstr ""
+
+#: ../../recipes-annotations.rst:18 ba516eb1a56945e5a9bac7e9fa24fed1
+msgid ""
+"In contrast to many other tools, initial insert of annotations happens "
+"with a minimum number of properties. We leave it to the programmer to "
+"e.g. set attributes like author, creation date or subject."
+msgstr ""
+
+#: ../../recipes-annotations.rst:20 bc78178891f1440fbfa8e0aaff01e11c
+msgid ""
+"As an overview for these capabilities, look at the following script that "
+"fills a PDF page with most of the available annotations. Look in the next"
+" sections for more special situations:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:26 c8504dce5bb44372b1c68fe8f9b98fb7
+msgid "This script should lead to the following output:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:36 96b9bb9ba45a444c973060143fc425cf
+msgid "How to Use FreeText"
+msgstr ""
+
+#: ../../recipes-annotations.rst:37 e91fc84e2d79457190b40cbf621719b3
+msgid ""
+"This script shows a couple of basic ways to deal with 'FreeText' "
+"annotations:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:41 ../../recipes-annotations.rst:50
+#: 2cdef3691b1341f4a6850d9d8de067bb 350586a50d5144a2b8d9db627bd71e24
+msgid "The result looks like this:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:46 e86ede73d664430791e03da9a5d63702
+msgid "Here is an example for using rich text and call-out lines:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:63 f49b197275794adaa27d02d5ac0b32cf
+msgid "How to Use Ink Annotations"
+msgstr ""
+
+#: ../../recipes-annotations.rst:64 e0df9dc619c746da9593612a87cd3f0a
+msgid ""
+"Ink annotations are used to contain freehand scribbling. A typical "
+"example may be an image of your signature consisting of first name and "
+"last name. Technically an ink annotation is implemented as a **list of "
+"lists of points**. Each point list is regarded as a continuous line "
+"connecting the points. Different point lists represent independent line "
+"segments of the annotation."
+msgstr ""
+
+#: ../../recipes-annotations.rst:66 dbdd441a25c44bd4aae5f2367cf85f3d
+msgid ""
+"The following script creates an ink annotation with two mathematical "
+"curves (sine and cosine function graphs) as line segments:"
+msgstr ""
+
+#: ../../recipes-annotations.rst:70 bb6171a96157475f875163c29bc8e76f
+msgid "This is the result:"
+msgstr ""
+
+#: ../../footer.rst:60 79b679f62bef466ea3444589a3f3ef6f
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

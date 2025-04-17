@@ -1,0 +1,114 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 4d4488c4917748bd91bcc3dd579d4cd8
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 806d51d5b25e4c2dbf32c0b904cf8d32
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 7c1c6b7e76d04443adc894e153404331
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../colorspace.rst:7 9117f6e8aa1a4dc0a4d17d89aa5543d1
+msgid "Colorspace"
+msgstr ""
+
+#: ../../colorspace.rst:9 9ff1e9e9281248fbbe713af3f44fa1a1
+msgid "Represents the color space of a :ref:`Pixmap`."
+msgstr ""
+
+#: ../../colorspace.rst:12 b21c879680e34acdbd48605116e91b1a
+msgid "**Class API**"
+msgstr ""
+
+#: ../../colorspace.rst:18 728f2df68cff450fba89dc0e2961d0fd
+msgid "Constructor"
+msgstr ""
+
+#: ../../colorspace.rst 89cae8192bc741d38d655d66d7b02a2c
+msgid "Parameters"
+msgstr ""
+
+#: ../../colorspace.rst:20 9ca03de683124137b4c31d0d8cedbbb3
+msgid ""
+"A number identifying the colorspace. Possible values are :data:`CS_RGB`, "
+":data:`CS_GRAY` and :data:`CS_CMYK`."
+msgstr ""
+
+#: ../../colorspace.rst:24 ee0b34b3c30b495c99bb627cad25b1df
+msgid ""
+"The name identifying the colorspace. Example: *pymupdf.csCMYK.name = "
+"'DeviceCMYK'*."
+msgstr ""
+
+#: ../../colorspace.rst 1dec254d03ca404d997d0b3d10053f1d
+#: 57ea4a70ca2340d6aa71a8e9824e03a8
+msgid "type"
+msgstr ""
+
+#: ../../colorspace.rst:26 0a4657c57f1d49e39feed5228f4c5d25
+msgid "str"
+msgstr ""
+
+#: ../../colorspace.rst:30 b3000e3e34554cb5b72ca9feabc9711c
+msgid ""
+"The number of bytes required to define the color of one pixel. Example: "
+"*pymupdf.csCMYK.n == 4*."
+msgstr ""
+
+#: ../../colorspace.rst:32 09c02be8130e4c67b7e790e38c19788f
+msgid "int"
+msgstr ""
+
+#: ../../colorspace.rst:35 305216fe8af54e58abf2e1fce4d6f78a
+msgid "**Predefined Colorspaces**"
+msgstr ""
+
+#: ../../colorspace.rst:37 2a6d64970b50414ca57b9df4b896c7d6
+msgid ""
+"For saving some typing effort, there exist predefined colorspace objects "
+"for the three available cases."
+msgstr ""
+
+#: ../../colorspace.rst:39 acc3013bd78b41dc8fddea9d4ee301a5
+msgid ":data:`csRGB`  = *pymupdf.Colorspace(pymupdf.CS_RGB)*"
+msgstr ""
+
+#: ../../colorspace.rst:40 5813b3b4dcbf437f8815044834076e72
+msgid ":data:`csGRAY` = *pymupdf.Colorspace(pymupdf.CS_GRAY)*"
+msgstr ""
+
+#: ../../colorspace.rst:41 57fef72a75814b848806cf016b2c1baf
+msgid ":data:`csCMYK` = *pymupdf.Colorspace(pymupdf.CS_CMYK)*"
+msgstr ""
+
+#: ../../footer.rst:60 e39ad3f11f894208aed37df423e4558e
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../index.rst:33 8fd6f740bd354549b09f02e29d6aeb9f
+msgid "About"
+msgstr ""
+
+#: ../../index.rst:42 325ca6b150394307ad977ddc59e8199c
+msgid "User Guide"
+msgstr ""
+
+#: ../../index.rst:54 55f11e9ee1a448aaa422415824a72910
+msgid "How to Guide"
+msgstr ""
+
+#: ../../index.rst:61 382947f10dad49e09057aef86f6b7bdf
+msgid "API Reference"
+msgstr ""
+
+#: ../../index.rst:74 cf7180ed975342a3ad0632f165b96c7b
+msgid "Other"
+msgstr ""
+
+#: ../../header.rst:-1 17cdca8041b545be91c717e1482c6e92
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 929d834795de4b6c9c42aede9d848712
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 883d9811455e45eea8d6c2f3434cae01
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../index.rst:20 8cfb3ae729874f858ac4b9e18e20bf6a
+msgid "Welcome to |PyMuPDF|"
+msgstr ""
+
+#: ../../index.rst:22 32ae9730ead142168b8b4abaaef4b7c3
+msgid ""
+"|PyMuPDF| is a high-performance **Python** library for data extraction, "
+"analysis, conversion & manipulation of **PDF** (and other) documents."
+msgstr ""
+
+#: ../../index.rst:24 6a8830c4d9b54905a1ec1b90ebb54e90
+msgid ""
+"|PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and"
+" registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_."
+msgstr ""
+
+#: ../../footer.rst:60 ../../index.rst:29 11945e0949f341ad9d1670429005389a
+#: ec790aafb26941e99e919f9eba35a52e
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

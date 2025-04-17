@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 05b9195b227d4fbc825fc852831e4554
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 d1146968098a44928b810551252f816f
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 0072b638d978499db19c4b4f4f7a3707
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:17 0f0b2d7d9f684b409ff0e5784ca866ac
+msgid "Multiprocessing"
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:19 3062a6b9aec34db2aec0a9bb17a0ef61
+msgid ""
+"|PyMuPDF| does not support running on multiple threads - doing so may "
+"cause incorrect behaviour or even crash Python itself."
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:21 74aa37e95d05468c982d841a2f5e2366
+msgid ""
+"However, there is the option to use :title:`Python's` *multiprocessing* "
+"module in a variety of ways."
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:23 83777a97e9db4e779e16756b9eb3ee39
+msgid ""
+"If you are looking to speed up page-oriented processing for a large "
+"document, use this script as a starting point. It should be at least "
+"twice as fast as the corresponding sequential processing."
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:26 ../../recipes-multiprocessing.rst:37
+#: 2098918775344f8e9c7de44ba8423fb1 824c4f30793e4c428daf4a27269debd1
+msgid "|toggleStart|"
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:31 ../../recipes-multiprocessing.rst:42
+#: dd13074c598d44c4b568775518218436 ea94b563d305488a93bcc8650477d412
+msgid "|toggleEnd|"
+msgstr ""
+
+#: ../../recipes-multiprocessing.rst:34 9ad6e6b758c14434a47e7b271aebc806
+msgid ""
+"Here is a more complex example involving inter-process communication "
+"between a main process (showing a GUI) and a child process doing "
+"|PyMuPDF| access to a document."
+msgstr ""
+
+#: ../../footer.rst:60 fbfd1487311a41a4acc53de3122dc430
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

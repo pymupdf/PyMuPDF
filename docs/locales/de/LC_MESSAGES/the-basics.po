@@ -1,0 +1,807 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 ebd72ea23c554adea55b860ac32cfd10
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 d808fab239944edbb4a07604487c3d4d
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 32d34325b50d49718d4ae087152d121b
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../the-basics.rst:8 3ef401bbe47d4d928056b1ad88406df4
+msgid "The Basics"
+msgstr ""
+
+#: ../../the-basics.rst:13 7ad7d2aeeb0949939d1edf110e9cde48
+msgid "Opening a File"
+msgstr ""
+
+#: ../../the-basics.rst:16 b3977994add44c128857ebe6778dbce8
+msgid "To open a file, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:27 ../../the-basics.rst:58 ../../the-basics.rst:119
+#: ../../the-basics.rst:149 ../../the-basics.rst:199 ../../the-basics.rst:249
+#: ../../the-basics.rst:287 ../../the-basics.rst:377 ../../the-basics.rst:416
+#: ../../the-basics.rst:467 ../../the-basics.rst:553 ../../the-basics.rst:638
+#: ../../the-basics.rst:694 ../../the-basics.rst:886 ../../the-basics.rst:1070
+#: 2739866db7be4d6fbd854a42404c20bb 279266de676f42ee8ca372b72f1b50d3
+#: 42d583c1c82e4c1c9c61e4221d22858b 4bbc83d3c8014f94bca9c10402d0772f
+#: 6eb5cd518be24829a8fea50dc936924e 6f01de37c57b45dd826d3e9df5dd3352
+#: 72e59350df88431bb0d56787d262e6f3 76f22999a4234db0a736d9b66557dd9a
+#: 9aa232f9bff64aec84bc0061ae859fde a56f4151e39f4227823677221a30af73
+#: cb848559a7ed4bceb96742c75b6a8a26 d2d7c31ddd6a4481afad882faa434f0c
+#: d8991f84c3e6479fa2c6050dd8b27e28 e70c606f8abd4024a11d97fb8f7cd006
+#: fabe4bd1a2d042da9318fbae362a32ad
+msgid "**Taking it further**"
+msgstr ""
+
+#: ../../the-basics.rst:29 1ec0b9c37a314b2cb8dde60de149c32e
+msgid ""
+"See the :ref:`list of supported file types<Supported_File_Types>` and "
+":ref:`The How to Guide on Opening Files <HowToOpenAFile>` for more "
+"advanced options."
+msgstr ""
+
+#: ../../the-basics.rst:38 cb07704fb73043b2827ddfe5306bb8eb
+msgid "Extract text from a |PDF|"
+msgstr ""
+
+#: ../../the-basics.rst:40 63223b54f3cc495aa83fddc584a650c9
+msgid "To extract all the text from a |PDF| file, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:54 82cde87ae4a8477cb30daea5d72f5f54
+msgid ""
+"Of course it is not just |PDF| which can have text extracted - all the "
+":ref:`supported document file formats <About_Feature_Matrix>` such as "
+":title:`MOBI`, :title:`EPUB`, :title:`TXT` can have their text extracted."
+msgstr ""
+
+#: ../../the-basics.rst:60 68a8a1314b8a474a9636d7ff5ebf2245
+msgid ""
+"If your document contains image based text content the use OCR on the "
+"page for subsequent text extraction:"
+msgstr ""
+
+#: ../../the-basics.rst:67 ../../the-basics.rst:121
+#: 009d24e7339b46f7afe03c6afa62fbd2 b502b55793844906a001df204caff15f
+msgid ""
+"There are many more examples which explain how to extract text from "
+"specific areas or how to extract tables from documents. Please refer to "
+"the :ref:`How to Guide for Text<RecipesText>`."
+msgstr ""
+
+#: ../../the-basics.rst:69 58a9cf1efe6a40b5ada05038e2d55412
+msgid ""
+"You can now also :ref:`extract text in Markdown "
+"format<rag_outputting_as_md>`."
+msgstr ""
+
+#: ../../the-basics.rst:71 ../../the-basics.rst:123 ../../the-basics.rst:153
+#: ../../the-basics.rst:208 ../../the-basics.rst:255 ../../the-basics.rst:291
+#: ../../the-basics.rst:318 ../../the-basics.rst:343 ../../the-basics.rst:383
+#: ../../the-basics.rst:420 ../../the-basics.rst:474 ../../the-basics.rst:500
+#: ../../the-basics.rst:527 ../../the-basics.rst:608 ../../the-basics.rst:659
+#: ../../the-basics.rst:698 ../../the-basics.rst:762 ../../the-basics.rst:821
+#: ../../the-basics.rst:898 ../../the-basics.rst:928 ../../the-basics.rst:964
+#: ../../the-basics.rst:990 ../../the-basics.rst:1074
+#: 06196b3b11364bd8ba72a68806270fbc 28f136db73ea4ff8b27a322e19a05299
+#: 2a2f674929bc4956b9fa645ec55231da 2a42d66f67ea469da857b3aefcefb111
+#: 34dfbca2e1ef487085d769c401e479da 4b5819a0804e42669c6c95bd78540195
+#: 57551550d33b446da752ec01b2d38be1 58193e34f85e4f3286969bb715d2ed1b
+#: 758afc8b33924ed7afa93712789855ff 7c7a34a487ba49719ca245b940618040
+#: 926638700d944932adaab0f81e219328 99f090981eab4af2adb7c096da2ae2e3
+#: 9f4be351ab174a7fbfd5426ee671e7f8 ac69cd30aed24f97aa9c7c5eff88d4b3
+#: adf8863e8d274a1e9e4cd774f4b6c024 b6dfec45d83b42e68fc997fcb0213e92
+#: c34132ed22984098ac5b8bd1e9a4806b c8f4c6c1d0ee4228977d9294144fbc0e
+#: cb4e3c70daa14279926090c987c7a950 e547959996fc49f483ba7574079782d7
+#: f8047ddd3ad0454c8c7eb0d0258590f1 fca50bef410a492eb5e9db5cd98453f0
+#: fd039b9c5e9e49b2a72044dabcf4d52c
+msgid "**API reference**"
+msgstr ""
+
+#: ../../the-basics.rst:73 099a4007de224f26813b7e0c6086aba5
+msgid ":meth:`Page.get_text`"
+msgstr ""
+
+#: ../../the-basics.rst:85 3478a0ef399a4f90bdf04e54b4b848f8
+msgid "Extract images from a |PDF|"
+msgstr ""
+
+#: ../../the-basics.rst:87 2c137c284bae4ff3bd22402af36ebe06
+msgid "To extract all the images from a |PDF| file, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:125 58022a36615f4658a70db9b3d3cb08c0
+msgid ":meth:`Page.get_images`"
+msgstr ""
+
+#: ../../the-basics.rst:126 887f2573340f469a8f4bb2e328eaf5a3
+msgid ":ref:`Pixmap<Pixmap>`"
+msgstr ""
+
+#: ../../the-basics.rst:133 734558bdb8694762a5d412b1e2faa7e9
+msgid "Extract vector graphics"
+msgstr ""
+
+#: ../../the-basics.rst:135 0377de0bb75a443c8d1266b4d5b21c9a
+msgid "To extract all the vector graphics from a document page, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:145 495a59882911438aae6c87d4c09cc096
+msgid ""
+"This will return a dictionary of paths for any vector drawings found on "
+"the page."
+msgstr ""
+
+#: ../../the-basics.rst:151 edb401df140347688dfb686967959746
+msgid ""
+"Please refer to: :ref:`How to Extract "
+"Drawings<RecipesDrawingAndGraphics_Extract_Drawings>`."
+msgstr ""
+
+#: ../../the-basics.rst:155 99278f5d80fa49a1b1b55bb0d070fe0a
+msgid ":meth:`Page.get_drawings`"
+msgstr ""
+
+#: ../../the-basics.rst:166 3f2a04b771b4465fba3841d4145c94eb
+msgid "Merging |PDF| files"
+msgstr ""
+
+#: ../../the-basics.rst:168 00fbed70866b44078ae8b3f72592c767
+msgid "To merge |PDF| files, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:182 2c3a5d3d3d264086993c70ed0f9610ad
+msgid "Merging |PDF| files with other types of file"
+msgstr ""
+
+#: ../../the-basics.rst:184 2a56bc4e77b14621bdc02e63f9456750
+msgid ""
+"With :meth:`Document.insert_file` you can invoke the method to merge "
+":ref:`supported files<Supported_File_Types>` with |PDF|. For example:"
+msgstr ""
+
+#: ../../the-basics.rst:201 f2e00ac506914ac4b90cf6ba9b933452
+msgid ""
+"It is easy to join PDFs with :meth:`Document.insert_pdf` & "
+":meth:`Document.insert_file`. Given open |PDF| documents, you can copy "
+"page ranges from one to the other. You can select the point where the "
+"copied pages should be placed, you can revert the page sequence and also "
+"change page rotation."
+msgstr ""
+
+#: ../../the-basics.rst:203 097d528e7b89483887fe9b103286246d
+msgid ""
+"The GUI script `join.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/join-documents/join.py>`_ uses this method"
+" to join a list of files while also joining the respective table of "
+"contents segments. It looks like this:"
+msgstr ""
+
+#: ../../the-basics.rst:210 1fbf6ae246834c7daa68bb87e30c563d
+msgid ":meth:`Document.insert_pdf`"
+msgstr ""
+
+#: ../../the-basics.rst:211 eb458481793c4cb1b1e232362c454d05
+msgid ":meth:`Document.insert_file`"
+msgstr ""
+
+#: ../../the-basics.rst:218 b75e34a3e76543769aa5c7b08099b88e
+msgid "Working with Coordinates"
+msgstr ""
+
+#: ../../the-basics.rst:220 ba6915f5f3614cfc866c5d6a96dd7561
+msgid ""
+"There is one *mathematical term* that you should feel comfortable with "
+"when using **PyMuPDF** -  **\"coordinates\"**. Please have a quick look "
+"at the :ref:`Coordinates` section to understand the coordinate system to "
+"help you with positioning objects and understand your document space."
+msgstr ""
+
+#: ../../the-basics.rst:229 1a7cee38451a4ac49f536db1c8867f23
+msgid "Adding a watermark to a |PDF|"
+msgstr ""
+
+#: ../../the-basics.rst:231 7a831a320dcb4d03b66a33b5656a1592
+msgid "To add a watermark to a |PDF| file, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:251 32163f8855f94b3da489e46235d0f84f
+msgid ""
+"Adding watermarks is essentially as simple as adding an image at the base"
+" of each |PDF| page. You should ensure that the image has the required "
+"opacity and aspect ratio to make it look the way you need it to."
+msgstr ""
+
+#: ../../the-basics.rst:253 8b5f52f2d540405f8e19f3ff6efd6007
+msgid ""
+"In the example above a new image is created from each file reference, but"
+" to be more performant (by saving memory and file size) this image data "
+"should be referenced only once - see the code example and explanation on "
+":meth:`Page.insert_image` for the implementation."
+msgstr ""
+
+#: ../../the-basics.rst:257 fcfe127ad9414e8a9a9f6fe506eca749
+msgid ":meth:`Page.bound`"
+msgstr ""
+
+#: ../../the-basics.rst:258 ../../the-basics.rst:294
+#: 2122203304f24c7e86364c4e44d8c515 5bd4a37b290b484ab12ffef1d743e039
+msgid ":meth:`Page.insert_image`"
+msgstr ""
+
+#: ../../the-basics.rst:267 74156cf07c4c44abb86f01275234c22c
+msgid "Adding an image to a |PDF|"
+msgstr ""
+
+#: ../../the-basics.rst:269 e4ad47cff3e149b09cfcee436ce71ec0
+msgid "To add an image to a |PDF| file, for example a logo, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:289 ef303cbd63ea4d6cae44d744a77253f8
+msgid ""
+"As with the watermark example you should ensure to be more performant by "
+"only referencing the image once if possible - see the code example and "
+"explanation on :meth:`Page.insert_image`."
+msgstr ""
+
+#: ../../the-basics.rst:293 0a5e74d57a334f90b301d4f7266ae6a7
+msgid ":ref:`Rect<Rect>`"
+msgstr ""
+
+#: ../../the-basics.rst:303 97f7c41b4fcc40d297f51e89344ec00e
+msgid "Rotating a |PDF|"
+msgstr ""
+
+#: ../../the-basics.rst:305 a6bb30db140947ee94661859e458334a
+msgid "To add a rotation to a page, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:320 5b2ac1a6f5284ffdbcf63f04a5bb87e3
+msgid ":meth:`Page.set_rotation`"
+msgstr ""
+
+#: ../../the-basics.rst:328 5d0f43e3da814e9195c2500beb9b2aae
+msgid "Cropping a |PDF|"
+msgstr ""
+
+#: ../../the-basics.rst:330 ebcd5ad854a344fb8fdb76e0f157f822
+msgid "To crop a page to a defined :ref:`Rect<Rect>`, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:345 10f26d2a0e9f428c877fe76eca3149b4
+msgid ":meth:`Page.set_cropbox`"
+msgstr ""
+
+#: ../../the-basics.rst:354 37f2015ccbe843179609bdd2ce54ce25
+msgid ":index:`Attaching Files <triple: attach;embed;file>`"
+msgstr ""
+
+#: ../../the-basics.rst:356 73fa4a36d3114266a5b8c37898cdd520
+msgid "To attach another file to a page, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:379 fef41696e0104638bfa7e9e46f94d5da
+msgid ""
+"When adding the file with :meth:`Page.add_file_annot` note that the third"
+" parameter for the `filename` should include the actual file extension. "
+"Without this the attachment possibly will not be able to be recognized as"
+" being something which can be opened. For example, if the `filename` is "
+"just *\"attachment\"* when view the resulting PDF and attempting to open "
+"the attachment you may well get an error. However, with "
+"*\"attachment.pdf\"* this can be recognized and opened by PDF viewers as "
+"a valid file type."
+msgstr ""
+
+#: ../../the-basics.rst:381 2eb971ca49044acfb758808877174159
+msgid ""
+"The default icon for the attachment is by default a \"push pin\", however"
+" you can change this by setting the `icon` parameter."
+msgstr ""
+
+#: ../../the-basics.rst:385 472cb94f410f45d389386b479f752c7d
+msgid ":ref:`Point<Point>`"
+msgstr ""
+
+#: ../../the-basics.rst:386 ../../the-basics.rst:422
+#: bc83ca635d004bbea323fc12889c3475 e3b71ff6dabe4e7092a149500b391650
+msgid ":meth:`Document.tobytes`"
+msgstr ""
+
+#: ../../the-basics.rst:387 861dcb9381e943f982a5ff2233584d56
+msgid ":meth:`Page.add_file_annot`"
+msgstr ""
+
+#: ../../the-basics.rst:396 36ca0a3374d84c2d914b97f4600f49bc
+msgid ":index:`Embedding Files <triple: attach;embed;file>`"
+msgstr ""
+
+#: ../../the-basics.rst:398 3d3da8f629564876915a4356adb5a4c5
+msgid "To embed a file to a document, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:418 522ee31eaa5c4be29e943f9e031733ce
+msgid ""
+"As with :ref:`attaching files<The_Basics_Attaching_Files>`, when adding "
+"the file with :meth:`Document.embfile_add` note that the first parameter "
+"for the `filename` should include the actual file extension."
+msgstr ""
+
+#: ../../the-basics.rst:423 d105ed0d5499461a9a468719a7df3543
+msgid ":meth:`Document.embfile_add`"
+msgstr ""
+
+#: ../../the-basics.rst:433 2182d5b6f29e40d39aab4f677fedfa2b
+msgid "Deleting Pages"
+msgstr ""
+
+#: ../../the-basics.rst:435 634d1c5913ad422281859654914d1268
+msgid "To delete a page from a document, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:445 437764ad7c2747118b3feb3fa4f1367b
+msgid "To delete a multiple pages from a document, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:459 7ffda49506894b2ca02ad9e6bc7e975a
+msgid "What happens if I delete a page referred to by bookmarks or hyperlinks?"
+msgstr ""
+
+#: ../../the-basics.rst:461 9ccef7fc01e34b1f890333f741269c36
+msgid ""
+"A bookmark (entry in the Table of Contents) will become inactive and will"
+" no longer navigate to any page."
+msgstr ""
+
+#: ../../the-basics.rst:463 2db9a64894ac4cc5926029b386cc8dbc
+msgid ""
+"A hyperlink will be removed from the page that contains it. The visible "
+"content on that page will not otherwise be changed in any way."
+msgstr ""
+
+#: ../../the-basics.rst:469 a64aa50abd5848b8a15b0f27de5f2595
+msgid ""
+"The page index is zero-based, so to delete page 10 of a document you "
+"would do the following `doc.delete_page(9)`."
+msgstr ""
+
+#: ../../the-basics.rst:471 fb3cae6bf2b54a59b81ff59a5bb7563e
+msgid ""
+"Similarly, `doc.delete_pages(from_page=9, to_page=14)` will delete pages "
+"10 - 15 inclusive."
+msgstr ""
+
+#: ../../the-basics.rst:476 ed756abf6b3e413c9ffbb5a6caf6b88b
+msgid ":meth:`Document.delete_page`"
+msgstr ""
+
+#: ../../the-basics.rst:477 65198e829eef4bb381f47ddf30cc7e4f
+msgid ":meth:`Document.delete_pages`"
+msgstr ""
+
+#: ../../the-basics.rst:485 7bbd41be5ecb4d2e9c76a3a244cca14d
+msgid "Re-Arranging Pages"
+msgstr ""
+
+#: ../../the-basics.rst:487 a1f98aa6a7714dab99cef5e054cfb3bd
+msgid "To change the sequence of pages, i.e. re-arrange pages, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:502 f179f7f7f5794947ac4541278ba55b6e
+msgid ":meth:`Document.move_page`"
+msgstr ""
+
+#: ../../the-basics.rst:511 d21575e2370d4ad4ab02f2ab07dd150c
+msgid "Copying Pages"
+msgstr ""
+
+#: ../../the-basics.rst:514 57a67ecb95784254803c922f7d08f6c6
+msgid "To copy pages, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:529 5a496f287a5b41fbb7d2b54cb5c697c8
+msgid ":meth:`Document.copy_page`"
+msgstr ""
+
+#: ../../the-basics.rst:537 892cc58284e0408d8b96e992e24544cb
+msgid "Selecting Pages"
+msgstr ""
+
+#: ../../the-basics.rst:540 3db8f868455c4422a22a8739d7651725
+msgid "To select pages, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:555 09491c46d0124346a4620dc928ac2a9e
+msgid ""
+"With |PyMuPDF| you have all options to copy, move, delete or re-arrange "
+"the pages of a |PDF|. Intuitive methods exist that allow you to do this "
+"on a page-by-page level, like the :meth:`Document.copy_page` method."
+msgstr ""
+
+#: ../../the-basics.rst:557 f38fd21a8beb4136bb4eda2f7ed52873
+msgid ""
+"Or you alternatively prepare a complete new page layout in form of a "
+":title:`Python` sequence, that contains the page numbers you want, in the"
+" sequence you want, and as many times as you want each page. The "
+"following may illustrate what can be done with :meth:`Document.select`"
+msgstr ""
+
+#: ../../the-basics.rst:564 88e421ecb4fc4d56adaf214dccae4daa
+msgid ""
+"Now let's prepare a PDF for double-sided printing (on a printer not "
+"directly supporting this):"
+msgstr ""
+
+#: ../../the-basics.rst:566 74d3cda3847c46b7af864e6bc7c19cf8
+msgid ""
+"The number of pages is given by `len(doc)` (equal to `doc.page_count`). "
+"The following lists represent the even and the odd page numbers, "
+"respectively:"
+msgstr ""
+
+#: ../../the-basics.rst:573 2e020acac7f14b078d00def4cebc4fec
+msgid ""
+"This snippet creates the respective sub documents which can then be used "
+"to print the document:"
+msgstr ""
+
+#: ../../the-basics.rst:585 a77fc70595bb4766ad8a0d5ffca2b8cf
+msgid ""
+"For more information also have a look at this Wiki `article "
+"<https://github.com/pymupdf/PyMuPDF/wiki/Rearranging-Pages-of-a-PDF>`_."
+msgstr ""
+
+#: ../../the-basics.rst:588 6c87cc6c645e4408a02889aca746f748
+msgid ""
+"The following example will reverse the order of all pages (**extremely "
+"fast:** sub-second time for the 756 pages of the :ref:`AdobeManual`):"
+msgstr ""
+
+#: ../../the-basics.rst:598 b9eda6c35a9b4b569375594839df0a97
+msgid ""
+"This snippet duplicates the PDF with itself so that it will contain the "
+"pages *0, 1, ..., n, 0, 1, ..., n* **(extremely fast and without "
+"noticeably increasing the file size!)**:"
+msgstr ""
+
+#: ../../the-basics.rst:610 db170cb4731c4d9fb983242366f6e186
+msgid ":meth:`Document.select`"
+msgstr ""
+
+#: ../../the-basics.rst:621 11bf1fc8a6144c888028b25e240c5514
+msgid "Adding Blank Pages"
+msgstr ""
+
+#: ../../the-basics.rst:623 e6ba26e2fe264930b67c0e9ff511017c
+msgid "To add a blank page, do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:640 c73c566766104c198225c46f3fa4b332
+msgid "Use this to create the page with another pre-defined paper format:"
+msgstr ""
+
+#: ../../the-basics.rst:648 fa99380598a74f60a839a06cb2b9f706
+msgid ""
+"The convenience function :meth:`paper_size` knows over 40 industry "
+"standard paper formats to choose from. To see them, inspect dictionary "
+":attr:`paperSizes`. Pass the desired dictionary key to :meth:`paper_size`"
+" to retrieve the paper dimensions. Upper and lower case is supported. If "
+"you append \"-L\" to the format name, the landscape version is returned."
+msgstr ""
+
+#: ../../the-basics.rst:650 7bb204302fe64b9c8102ce9b60e306f1
+msgid ""
+"Here is a 3-liner that creates a |PDF|: with one empty page. Its file "
+"size is 460 bytes:"
+msgstr ""
+
+#: ../../the-basics.rst:661 16708fa927574853b07cfbe391fa574a
+msgid ":meth:`Document.new_page`"
+msgstr ""
+
+#: ../../the-basics.rst:662 555dd6a7a4ca428ca05ffe585eb7dd98
+msgid ":attr:`paperSizes`"
+msgstr ""
+
+#: ../../the-basics.rst:671 0c9d0f6b0af141bc92c8094e7d5d0fee
+msgid "Inserting Pages with Text Content"
+msgstr ""
+
+#: ../../the-basics.rst:673 8801a769c6764d358d2334b4dd80e5d6
+msgid ""
+"Using the :meth:`Document.insert_page` method also inserts a new page and"
+" accepts the same `width` and `height` parameters. But it lets you also "
+"insert arbitrary text into the new page and returns the number of "
+"inserted lines."
+msgstr ""
+
+#: ../../the-basics.rst:696 1f709a1e688c4c64ad9835a43df6b7e5
+msgid ""
+"The text parameter can be a (sequence of) string (assuming UTF-8 "
+"encoding). Insertion will start at :ref:`Point` (50, 72), which is one "
+"inch below top of page and 50 points from the left. The number of "
+"inserted text lines is returned."
+msgstr ""
+
+#: ../../the-basics.rst:700 5503e405b8a74c46ac510d142a942f92
+msgid ":meth:`Document.insert_page`"
+msgstr ""
+
+#: ../../the-basics.rst:711 28cd42d51f99409a89dd644e5a331e95
+msgid "Splitting Single Pages"
+msgstr ""
+
+#: ../../the-basics.rst:713 7caccc9bbcaa4fa2941b493e69be1447
+msgid ""
+"This deals with splitting up pages of a |PDF| in arbitrary pieces. For "
+"example, you may have a |PDF| with *Letter* format pages which you want "
+"to print with a magnification factor of four: each page is split up in 4 "
+"pieces which each going to a separate |PDF| page in *Letter* format "
+"again."
+msgstr ""
+
+#: ../../the-basics.rst:756 ../../the-basics.rst:814
+#: 3ad50277922f4b4c9ce6e2eb2d3b4350 650a82fa6a3444c7b4f1119637692c77
+msgid "Example:"
+msgstr ""
+
+#: ../../the-basics.rst:764 ../../the-basics.rst:823
+#: 7f62edf5aa794474925340a623c05d4b a9ff4ea823fa4eaf80c415c485663e6b
+msgid ":meth:`Page.cropbox_position`"
+msgstr ""
+
+#: ../../the-basics.rst:765 ../../the-basics.rst:824
+#: 86564b77e5c3440dba3f909f25fed95e ffceed2bb2ac4e738336a3eb438cb502
+msgid ":meth:`Page.show_pdf_page`"
+msgstr ""
+
+#: ../../the-basics.rst:775 02e8677a9ee44d47acfb3845cbeb17f3
+msgid "Combining Single Pages"
+msgstr ""
+
+#: ../../the-basics.rst:777 2f61c36415a847069ab18578a22a28b3
+msgid ""
+"This deals with joining |PDF| pages to form a new |PDF| with pages each "
+"combining two or four original ones (also called \"2-up\", \"4-up\", "
+"etc.). This could be used to create booklets or thumbnail-like overviews."
+msgstr ""
+
+#: ../../the-basics.rst:833 8a7f8d78c24e4f378fee6b2230783c26
+msgid "|PDF| Encryption & Decryption"
+msgstr ""
+
+#: ../../the-basics.rst:836 71dc729191e040fd8118fee77ba6a2a8
+msgid ""
+"Starting with version 1.16.0, |PDF| decryption and encryption (using "
+"passwords) are fully supported. You can do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:838 dd359c928f974ab5947e47392afdc2a9
+msgid ""
+"Check whether a document is password protected / (still) encrypted "
+"(:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`)."
+msgstr ""
+
+#: ../../the-basics.rst:839 f16ee2a615fe4984bb226ff54db0fe8f
+msgid "Gain access authorization to a document (:meth:`Document.authenticate`)."
+msgstr ""
+
+#: ../../the-basics.rst:840 6a05b415f16d40768f4e1564236d6231
+msgid ""
+"Set encryption details for PDF files using :meth:`Document.save` or "
+":meth:`Document.write` and"
+msgstr ""
+
+#: ../../the-basics.rst:842 a28670df924945ff88d6be01321e1a30
+msgid "decrypt or encrypt the content"
+msgstr ""
+
+#: ../../the-basics.rst:843 d73094fe4cc9466a9bf3378d56401b78
+msgid "set password(s)"
+msgstr ""
+
+#: ../../the-basics.rst:844 5aed08cd9fcc43ab8d5b06fb650a0ca6
+msgid "set the encryption method"
+msgstr ""
+
+#: ../../the-basics.rst:845 76a02a01b3e04059b3deb41a2a8ffb73
+msgid "set permission details"
+msgstr ""
+
+#: ../../the-basics.rst:847 7fca3b11f52b4b0ca3876005bd500c57
+msgid "A PDF document may have two different passwords:"
+msgstr ""
+
+#: ../../the-basics.rst:849 73c3a5f74efb4167905a89f8f1383c0a
+msgid ""
+"The **owner password** provides full access rights, including changing "
+"passwords, encryption method, or permission detail."
+msgstr ""
+
+#: ../../the-basics.rst:850 e2fb43f6fcdb49739207db257e3f97bb
+msgid ""
+"The **user password** provides access to document content according to "
+"the established permission details. If present, opening the |PDF| in a "
+"viewer will require providing it."
+msgstr ""
+
+#: ../../the-basics.rst:852 c66bf0cbf4934d79a253d8f6b43d51f4
+msgid ""
+"Method :meth:`Document.authenticate` will automatically establish access "
+"rights according to the password used."
+msgstr ""
+
+#: ../../the-basics.rst:854 8d09fb5167d443ef9ee672510c3def18
+msgid ""
+"The following snippet creates a new |PDF| and encrypts it with separate "
+"user and owner passwords. Permissions are granted to print, copy and "
+"annotate, but no changes are allowed to someone authenticating with the "
+"user password."
+msgstr ""
+
+#: ../../the-basics.rst:888 10c5018907dd4496be681ebd8e664fd6
+msgid ""
+"Opening this document with some viewer (Nitro Reader 5) reflects these "
+"settings:"
+msgstr ""
+
+#: ../../the-basics.rst:892 03d88819ea404f0aaf81ffe5d60d7425
+msgid ""
+"**Decrypting** will automatically happen on save as before when no "
+"encryption parameters are provided."
+msgstr ""
+
+#: ../../the-basics.rst:894 f367fcac22c6414ab97981825f130856
+msgid ""
+"To **keep the encryption method** of a PDF save it using "
+"`encryption=pymupdf.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() "
+"== True`, an incremental save is also possible."
+msgstr ""
+
+#: ../../the-basics.rst:896 beec27387fd7422bb3e063049ff22429
+msgid ""
+"To **change the encryption method** specify the full range of options "
+"above (`encryption`, `owner_pw`, `user_pw`, `permissions`). An "
+"incremental save is **not possible** in this case."
+msgstr ""
+
+#: ../../the-basics.rst:900 20699b9f6451443d8b941958c154d7a7
+msgid ":meth:`Document.save`"
+msgstr ""
+
+#: ../../the-basics.rst:909 d798da65fa514bd0aebc4068c084a7ca
+msgid "Extracting Tables from a :title:`Page`"
+msgstr ""
+
+#: ../../the-basics.rst:911 e4ef14dd9323461295fcdab920a24b7e
+msgid "Tables can be found and extracted from any document :ref:`Page`."
+msgstr ""
+
+#: ../../the-basics.rst:930 fc83ee37b6f443bc9104c718aa70c0ec
+msgid ":meth:`Page.find_tables`"
+msgstr ""
+
+#: ../../the-basics.rst:935 ae116fead03d40f4ae9e9e1fa4dd5657
+msgid ""
+"There is also the `pdf2docx extract tables method`_ which is capable of "
+"table extraction if you prefer."
+msgstr ""
+
+#: ../../the-basics.rst:944 09cbe8ebd73f4fdbae255f4eb4ac88d9
+msgid "Getting Page Links"
+msgstr ""
+
+#: ../../the-basics.rst:946 8f8e76066ac34e6288f125de53c52324
+msgid "Links can be extracted from a :ref:`Page` to return :ref:`Link` objects."
+msgstr ""
+
+#: ../../the-basics.rst:966 4b1b5f7afbde4704808ac3807d07675a
+msgid ":meth:`Page.first_link`"
+msgstr ""
+
+#: ../../the-basics.rst:975 b3aade8e69434effb9c03ef1b44c1f10
+msgid "Getting All Annotations from a Document"
+msgstr ""
+
+#: ../../the-basics.rst:977 6801cadfb5354b0ab04f7979d5a356ba
+msgid ""
+"Annotations (:ref:`Annot`) on pages can be retrieved with the "
+"`page.annots()` method."
+msgstr ""
+
+#: ../../the-basics.rst:992 bf4d519f3c994f33b280f0de93018463
+msgid ":meth:`Page.annots`"
+msgstr ""
+
+#: ../../the-basics.rst:1002 c5273dfabc3043a8b9607b2a9d28ce43
+msgid "Redacting content from a **PDF**"
+msgstr ""
+
+#: ../../the-basics.rst:1004 e030189f77db4e8983c5a6528654fd34
+msgid ""
+"Redactions are special types of annotations which can be marked onto a "
+"document page to denote an area on the page which should be securely "
+"removed. After marking an area with a rectangle then this area will be "
+"marked for *redaction*, once the redaction is *applied* then the content "
+"is securely removed."
+msgstr ""
+
+#: ../../the-basics.rst:1006 576dffbcb6454f419fb44e03a6766f97
+msgid ""
+"For example if we wanted to redact all instances of the name \"Jane Doe\""
+" from a document we could do the following:"
+msgstr ""
+
+#: ../../the-basics.rst:1034 512a331e2f6a4420af87d029a290261c
+msgid ""
+"Another example could be redacting an area of a page, but not to redact "
+"any line art (i.e. vector graphics) within the defined area, by setting a"
+" parameter flag as follows:"
+msgstr ""
+
+#: ../../the-basics.rst:1065 eed2e214f7454d77b9f11502e75e71b6
+msgid ""
+"Once a redacted version of a document is saved then the redacted content "
+"in the **PDF** is *irretrievable*. Thus, a redacted area in a document "
+"removes text and graphics completely from that area."
+msgstr ""
+
+#: ../../the-basics.rst:1072 24199c7a643e40f981bc9a2d6b9a76f5
+msgid ""
+"The are a few options for creating and applying redactions to a page, for"
+" the full API details to understand the parameters to control these "
+"options refer to the API reference."
+msgstr ""
+
+#: ../../the-basics.rst:1076 5620f79d90484e0c84d9f1e6cf483ef2
+msgid ":meth:`Page.add_redact_annot`"
+msgstr ""
+
+#: ../../the-basics.rst:1078 2238e86dba64405e99bc6de9a1e29266
+msgid ":meth:`Page.apply_redactions`"
+msgstr ""
+
+#: ../../the-basics.rst:1088 64e88b96ce2b4df99e9d8c97cae10c8f
+msgid "Converting PDF Documents"
+msgstr ""
+
+#: ../../the-basics.rst:1090 c9b689d1ca1242deaf0ecf74d670aa7b
+msgid ""
+"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"**python-docx** library to provide simple document conversion from "
+"**PDF** to **DOCX** format."
+msgstr ""
+
+#: ../../footer.rst:60 3aa3d5fcda7349e5a5c5339a71002610
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

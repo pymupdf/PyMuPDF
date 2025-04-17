@@ -1,0 +1,53 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.25.5\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: de\n"
+"Language-Team: de <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header-404.rst:-1 7d1db678351e48a589812b0fc43a3c6e
+msgid "Artifex"
+msgstr ""
+
+#: ../../header-404.rst:-1 1240b3bfde8e4c75af72a7add2aa6ece
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header-404.rst:-1 e9db42018d9749a3a1b1fcd7d2ffbad7
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../404.rst:4 47500cd0e1e4472092d58a3f1eb0de05
+msgid "404!"
+msgstr ""
+
+#: ../../404.rst:7 00f23d61373848a99a4874c470e1479a
+msgid "**This page is not available.**"
+msgstr ""
+
+#: ../../404.rst:10 108326f9c443411e998790ba1e98be35
+msgid "Please use the menu or search to find what you are looking for."
+msgstr ""
+
+#: ../../footer.rst:60 eab1290efc024ba1b73c0d32ce382104
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+
