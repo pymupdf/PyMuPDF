@@ -21,7 +21,7 @@ msgstr ""
 
 #: ../../index.rst:33 8fd6f740bd354549b09f02e29d6aeb9f
 msgid "About"
-msgstr ""
+msgstr "Hallo Harald!"
 
 #: ../../index.rst:42 325ca6b150394307ad977ddc59e8199c
 msgid "User Guide"
