@@ -35,28 +35,25 @@ To open a file, do the following:
 .. note:: The above creates a :ref:`Document`. The instruction `doc = pymupdf.Document("a.pdf")` does exactly the same. So, `open` is just a convenient alias  and you can find its full API documented in that chapter. 
 
 
-Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+File Recognizer: Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-If you have a document with a wrong file extension for its type, you can still correctly open it.
+If you have a document with a wrong file extension for its type, do not worry: it will still be opened correctly, thanks to the integrated file "content recognizer".
 
-Assume that *"some.file"* is actually an **XPS**. Open it like so:
+This component looks at the actual data in the file using a number of heuristics -- independent of the file extension. This of course is also true for file names **without** an extension.
 
-.. code-block:: python
+Here is a list of details about how the file content recognizer works:
 
-    doc = pymupdf.open("some.file", filetype="xps")
+* When opening from a file name, use the ``filetype`` parameter if you need to make sure that the created :ref:`Document` is of the expected type. An exception is raised for any mismatch.
 
+* Text files are an exception: they do not contain recognizable internal structures at all. Here, the file extension ".txt" and the ``filetype`` parameter continue to play a role and are used to create a "Tex" document. Correspondingly, text files with other / no extensions, can successfully be opened using `filetype="txt"`.
 
+* Using `filetype="txt"` will treat **any** file as containing plain text when opened from a file name / path -- even when its content is a supported document type.
 
-.. note::
+* When opening from a stream, the file content recognizer will ignore the ``filetype`` parameter entirely for known file types -- even in case of a mismatch or when `filetype="txt"` was specified.
 
-    |PyMuPDF| itself does not try to determine the file type from the file contents. **You** are responsible for supplying the file type information in some way -- either implicitly, via the file extension, or explicitly as shown with the `filetype` parameter. There are pure :title:`Python` packages like `filetype <https://pypi.org/project/filetype/>`_ that help you doing this. Also consult the :ref:`Document` chapter for a full description.
-
-    If |PyMuPDF| encounters a file with an unknown / missing extension, it will try to open it as a |PDF|. So in these cases there is no need for additional precautions. Similarly, for memory documents, you can just specify `doc=pymupdf.open(stream=mem_area)` to open it as a |PDF| document.
-
-    If you attempt to open an unsupported file then |PyMuPDF| will throw a file data error.
-
-
+    * Streams with a known file type cannot be opened as plain text.
+    * Specifying ``filetype`` currently only has an effect when no match was found. Then using ``filetype="txt"`` will treat the file as containing plain text.
 
 
 ----------
@@ -164,14 +161,7 @@ Opening a `JSON` file
 
 And so on!
 
-As you can imagine many text based file formats can be *very simply opened* and *interpreted* by |PyMuPDF|. This can make data analysis and extraction for a wide range of previously unavailable files suddenly possible.
-
-
-
-
-
-
-
+As you can imagine many text based file formats can be *very simply opened* and *interpreted* by |PyMuPDF|. This can make data analysis and extraction for a wide range of previously unavailable files possible.
 
 
 .. include:: footer.rst

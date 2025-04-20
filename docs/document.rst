@@ -170,28 +170,29 @@ For details on **embedded files** refer to Appendix 3.
 
   .. method:: __init__(self, filename=None, stream=None, *, filetype=None, rect=None, width=0, height=0, fontsize=11)
 
-    * Changed in v1.14.13: support `io.BytesIO` for memory documents.
-    * Changed in v1.19.6: Clearer, shorter and more consistent exception messages. File type "pdf" is always assumed if not specified. Empty files and memory areas will always lead to exceptions.
-
-    Creates a *Document* object.
+    Create a ``Document`` object.
 
     * With default parameters, a **new empty PDF** document will be created.
-    * If *stream* is given, then the document is created from memory and, if not a PDF, either *filename* or *filetype* must indicate its type.
-    * If *stream* is `None`, then a document is created from the file given by *filename*. Its type is inferred from the extension. This can be overruled by *filetype.*
+    * If ``stream`` is given, then the document is created from memory.
+    * If ``stream`` is `None`, then a document is created from the file given by ``filename``. 
 
-    :arg str,pathlib filename: A UTF-8 string or *pathlib* object containing a file path. The document type is inferred from the filename extension. If not present or not matching :ref:`a supported type<Supported_File_Types>`, a PDF document is assumed. For memory documents, this argument may be used instead of `filetype`, see below.
+    :arg str,pathlib filename: A UTF-8 string or ``pathlib.Path`` object containing a file path. The document type is always determined from the file content. The ``filetype`` parameter can be used to ensure that the detected type is as expected or, respectively, to force treating any file as plain text.
 
-    :arg bytes,bytearray,BytesIO stream: A memory area containing a supported document. If not a PDF, its type **must** be specified by either `filename` or `filetype`.
+    :arg bytes,bytearray,BytesIO stream: A memory area containing file data. The document type is **always** detected from the data content. The ``filetype`` parameter is ignored except for undetected data content. In that case only, using ``filetype="txt"`` will treat the data as containing plain text.
 
-    :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like *application/pdf*. Just using strings like "pdf"  or ".pdf" will also work. May be omitted for PDF documents, otherwise must match :ref:`a supported document type<Supported_File_Types>`.
+    :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Just using strings like "pdf"  or ".pdf" will also work. Can be omitted for :ref:`a supported document type<Supported_File_Types>`.
+    
+      If opening a file name / path only, it will be used to ensure that the detected type is as expected. An exception is raised for a mismatch. Using `filetype="txt"` will treat any file as containing plain text.
+      
+      When opening from memory, this parameter is ignored except for undetected data content. Only in that case, using ``filetype="txt"`` will treat the data as containing plain text.
 
     :arg rect_like rect: a rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter *fontsize*, each page will be accordingly laid out and hence also determine the number of pages.
 
-    :arg float width: may used together with *height* as an alternative to *rect* to specify layout information.
+    :arg float width: may used together with ``height`` as an alternative to ``rect`` to specify layout information.
 
-    :arg float height: may used together with *width* as an alternative to *rect* to specify layout information.
+    :arg float height: may used together with ``width`` as an alternative to ``rect`` to specify layout information.
 
-    :arg float fontsize: the default :data:`fontsize` for reflowable document types. This parameter is ignored if none of the parameters *rect* or *width* and *height* are specified. Will be used to calculate the page layout.
+    :arg float fontsize: the default :data:`fontsize` for reflowable document types. This parameter is ignored if none of the parameters ``rect`` or ``width`` and ``height`` are specified. Will be used to calculate the page layout.
 
     :raises TypeError: if the *type* of any parameter does not conform.
     :raises FileNotFoundError: if the file / path cannot be found. Re-implemented as subclass of `RuntimeError`.
@@ -203,31 +204,26 @@ For details on **embedded files** refer to Appendix 3.
 
       In case of problems you can see more detail in the internal messages store: `print(pymupdf.TOOLS.mupdf_warnings())` (which will be emptied by this call, but you can also prevent this -- consult :meth:`Tools.mupdf_warnings`).
 
-    .. note:: Not all document types are checked for valid formats already at open time. Raster images for example will raise exceptions only later, when trying to access the content. Other types (notably with non-binary content) may also be opened (and sometimes **accessed**) successfully -- sometimes even when having invalid content for the format:
-
-      * HTM, HTML, XHTML: **always** opened, `metadata["format"]` is "HTML5", resp. "XHTML".
-      * XML, FB2: **always** opened, `metadata["format"]` is "FictionBook2".
-
     Overview of possible forms, note: `open` is a synonym of `Document`::
 
         >>> # from a file
         >>> doc = pymupdf.open("some.xps")
         >>> # handle wrong extension
-        >>> doc = pymupdf.open("some.file", filetype="xps")
+        >>> doc = pymupdf.open("some.file", filetype="xps")  # assert expected type
+        >>> doc = pymupdf.open("some.file", filetype="txt")  # treat as plain text
         >>>
-        >>> # from memory, filetype is required if not a PDF
-        >>> doc = pymupdf.open("xps", mem_area)
-        >>> doc = pymupdf.open(None, mem_area, "xps")
-        >>> doc = pymupdf.open(stream=mem_area, filetype="xps")
+        >>> # from memory
+        >>> doc = pymupdf.open(stream=mem_area)  # works for any supported type
+        >>> doc = pymupdf.open(stream=unknown-type, filetype="txt")  # treat as plain text
         >>>
         >>> # new empty PDF
         >>> doc = pymupdf.open()
         >>> doc = pymupdf.open(None)
         >>> doc = pymupdf.open("")
 
-    .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint. So `pymupdf.open("file.jpg")` will work even for a PNG image.
+    .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint.
 
-    The Document class can be also be used as a **context manager**. On exit, the document will automatically be closed.
+    The Document class can be also be used as a **context manager**. Exiting the content manager will close the document automatically.
 
         >>> import pymupdf
         >>> with pymupdf.open(...) as doc:
@@ -921,8 +917,8 @@ For details on **embedded files** refer to Appendix 3.
 
           * **xref** (*int*) is the image object number
           * **smask** (*int*) is the object number of its soft-mask image
-          * **width** (*int*) is the image width
-          * **height** (*int*) is the image height
+          * *``width``* (*int*) is the image width
+          * *``height``* (*int*) is the image height
           * **bpc** (*int*) denotes the number of bits per component (normally 8)
           * **colorspace** (*str*) a string naming the colorspace (like **DeviceRGB**)
           * **alt_colorspace** (*str*) is any alternate colorspace depending on the value of **colorspace**
@@ -998,8 +994,8 @@ For details on **embedded files** refer to Appendix 3.
     Re-paginate ("reflow") the document based on the given page dimension and fontsize. This only affects some document types like e-books and HTML. Ignored if not supported. Supported documents have *True* in property :attr:`is_reflowable`.
 
     :arg rect_like rect: desired page size. Must be finite, not empty and start at point (0, 0).
-    :arg float width: use it together with *height* as alternative to *rect*.
-    :arg float height: use it together with *width* as alternative to *rect*.
+    :arg float width: use it together with ``height`` as alternative to ``rect``.
+    :arg float height: use it together with ``width`` as alternative to ``rect``.
     :arg float fontsize: the desired default fontsize.
 
   .. method:: select(s)
@@ -1744,8 +1740,8 @@ For details on **embedded files** refer to Appendix 3.
 
       * *ext* (*str*) image type (e.g. *'jpeg'*), usable as image file extension
       * *smask* (*int*) :data:`xref` number of a stencil (/SMask) image or zero
-      * *width* (*int*) image width
-      * *height* (*int*) image height
+      * ``width`` (*int*) image width
+      * ``height`` (*int*) image height
       * *colorspace* (*int*) the image's *colorspace.n* number.
       * *cs-name* (*str*) the image's *colorspace.name*.
       * *xres* (*int*) resolution in x direction. Please also see :data:`resolution`.
