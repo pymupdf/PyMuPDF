@@ -2916,8 +2916,6 @@ class Document:
                 else:
                     raise TypeError(f"bad stream: {type(stream)=}.")
                 stream = self.stream
-                if not (filename or filetype):
-                    filename = 'pdf'
             else:
                 self.stream = None
 
@@ -2962,21 +2960,37 @@ class Document:
                     # setting self.stream above ensures that the bytes will not be
                     # garbage collected?
                     data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
-                magic = filename
-                if not magic:
+                if filename is not None:
+                    magic = filename
+                elif filetype is not None:
                     magic = filetype
-                # fixme: pymupdf does:
-                #   handler = fz_recognize_document(gctx, filetype);
-                #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
-                # but prefer to leave fz_open_document_with_stream() to raise.
+                else:
+                    magic = ""
+                if magic.endswith(("txt", "text", "log")):
+                    magic = "txt"
+                else:
+                    magic = ""
                 try:
-                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                    if magic == "txt":
+                        handler = mupdf.ll_fz_recognize_document(magic)
+                        accel = mupdf.FzStream()
+                        archive = mupdf.FzArchive(None)
+                        doc = mupdf.ll_fz_document_handler_open(
+                                  handler,
+                                  data.m_internal,
+                                  accel.m_internal,
+                                  archive.m_internal,
+                                  None,   # recognize_state
+                        )
+                        doc = mupdf.FzDocument(doc)
+                    else:
+                        doc = mupdf.fz_open_document_with_stream(magic, data)
                 except Exception as e:
                     if g_exceptions_verbose > 1:    exception_info()
                     raise FileDataError('Failed to open stream') from e
             else:
                 if filename:
-                    if not filetype:
+                    if filetype != "txt":
                         try:
                             doc = mupdf.fz_open_document(filename)
                         except Exception as e:

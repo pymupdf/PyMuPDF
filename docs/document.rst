@@ -176,16 +176,12 @@ For details on **embedded files** refer to Appendix 3.
     * If ``stream`` is given, then the document is created from memory.
     * If ``stream`` is `None`, then a document is created from the file given by ``filename``. 
 
-    :arg str,pathlib filename: A UTF-8 string or ``pathlib.Path`` object containing a file path. The document type is always determined from the file content. The ``filetype`` parameter can be used to ensure that the detected type is as expected or, respectively, to force treating any file as plain text.
+    :arg str,pathlib filename: A UTF-8 string or ``pathlib.Path`` object containing a file path. The document type is always determined from the file content. The ``filetype`` parameter can be used to override this and open the file as a plain text document.
 
     :arg bytes,bytearray,BytesIO stream: A memory area containing file data. The document type is **always** detected from the data content. The ``filetype`` parameter is ignored except for undetected data content. In that case only, using ``filetype="txt"`` will treat the data as containing plain text.
 
-    :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Just using strings like "pdf"  or ".pdf" will also work. Can be omitted for :ref:`a supported document type<Supported_File_Types>`.
+    :arg str filetype: Currently only used to force opening the file as a plain text document. Use the value `"txt"` to achieve this. Before the implementation of MuPDF's file content recognizer, this parameter was essential to help determining the file type. As this is no longer necessary, other values are ignored.
     
-      If opening a file name / path only, it will be used to ensure that the detected type is as expected. An exception is raised for a mismatch. Using `filetype="txt"` will treat any file as containing plain text.
-      
-      When opening from memory, this parameter is ignored except for undetected data content. Only in that case, using ``filetype="txt"`` will treat the data as containing plain text.
-
     :arg rect_like rect: a rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter *fontsize*, each page will be accordingly laid out and hence also determine the number of pages.
 
     :arg float width: may used together with ``height`` as an alternative to ``rect`` to specify layout information.
@@ -207,14 +203,12 @@ For details on **embedded files** refer to Appendix 3.
     Overview of possible forms, note: `open` is a synonym of `Document`::
 
         >>> # from a file
-        >>> doc = pymupdf.open("some.xps")
-        >>> # handle wrong extension
-        >>> doc = pymupdf.open("some.file", filetype="xps")  # assert expected type
+        >>> doc = pymupdf.open("some.file")  # file type determined from content
         >>> doc = pymupdf.open("some.file", filetype="txt")  # treat as plain text
         >>>
         >>> # from memory
-        >>> doc = pymupdf.open(stream=mem_area)  # works for any supported type
-        >>> doc = pymupdf.open(stream=unknown-type, filetype="txt")  # treat as plain text
+        >>> doc = pymupdf.open(stream=mem_area)  # file type determined from content
+        >>> doc = pymupdf.open(stream=mem_area, filetype="txt")  # treat as plain text
         >>>
         >>> # new empty PDF
         >>> doc = pymupdf.open()

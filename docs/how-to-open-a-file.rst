@@ -38,22 +38,19 @@ To open a file, do the following:
 File Recognizer: Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-If you have a document with a wrong file extension for its type, do not worry: it will still be opened correctly, thanks to the integrated file "content recognizer".
+If you have a document with a wrong file extension for its type, do not worry: it will still be opened correctly, thanks to the integrated file "content recognizer" of the base library.
 
 This component looks at the actual data in the file using a number of heuristics -- independent of the file extension. This of course is also true for file names **without** an extension.
 
 Here is a list of details about how the file content recognizer works:
 
-* When opening from a file name, use the ``filetype`` parameter if you need to make sure that the created :ref:`Document` is of the expected type. An exception is raised for any mismatch.
+* When opening from a file name or a memory area, all supported :ref:`Document` types are automatically recognized by their content.
 
-* Text files are an exception: they do not contain recognizable internal structures at all. Here, the file extension ".txt" and the ``filetype`` parameter continue to play a role and are used to create a "Tex" document. Correspondingly, text files with other / no extensions, can successfully be opened using `filetype="txt"`.
+* Text files are an exception: they do not contain recognizable internal structures at all. If opening from a file name with a known plain text extension (like "txt" or "text") everything will still work.
 
-* Using `filetype="txt"` will treat **any** file as containing plain text when opened from a file name / path -- even when its content is a supported document type.
+* If opening from memory or from a file extension that is not known to be plain text, then ``filetype="txt"`` must be specified.
 
-* When opening from a stream, the file content recognizer will ignore the ``filetype`` parameter entirely for known file types -- even in case of a mismatch or when `filetype="txt"` was specified.
-
-    * Streams with a known file type cannot be opened as plain text.
-    * Specifying ``filetype`` currently only has an effect when no match was found. Then using ``filetype="txt"`` will treat the file as containing plain text.
+* Using `filetype="txt"` will treat **any** file as if containing plain text -- even when its content is a supported document type.
 
 
 ----------
