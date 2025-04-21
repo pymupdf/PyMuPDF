@@ -118,6 +118,7 @@
 
     <script>
         // highlightSelectedLanguage
+        var url_string = window.location.href;
 
         if (document.getElementsByTagName('html')[0].getAttribute('lang')=="ja") {
             document.getElementById("button-select-ja").style.backgroundColor = "#ff6600";
