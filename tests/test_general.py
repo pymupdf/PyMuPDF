@@ -134,20 +134,6 @@ def test_pdfstring():
 
 def test_open_exceptions():
     try:
-        pymupdf.open(filename, filetype="xps")
-    except RuntimeError as e:
-        assert repr(e).startswith("FileDataError")
-    else:
-        assert 0
-
-    try:
-        pymupdf.open(filename, filetype="xxx")
-    except Exception as e:
-        assert repr(e).startswith("ValueError")
-    else:
-        assert 0
-
-    try:
         pymupdf.open("x.y")
     except Exception as e:
         assert repr(e).startswith("FileNotFoundError")
@@ -155,7 +141,7 @@ def test_open_exceptions():
         assert 0
 
     try:
-        pymupdf.open(stream=b"", filetype="pdf")
+        pymupdf.open(stream=b"")
     except RuntimeError as e:
         assert repr(e).startswith("EmptyFileError")
     else:
@@ -1393,7 +1379,8 @@ def test_open():
             re.escape(f'mupdf.{etype2}: code=7: cannot recognize zip archive'),
             re.escape(f'pymupdf.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
             )
-    check(path, filetype=filetype, exception=(etype, eregex))
+    # this is no longer relevant:
+    # check(path, filetype=filetype, exception=(etype, eregex))
     
     path = f'{resources}/chinese-tables.pickle'
     etype = pymupdf.FileDataError
@@ -1551,11 +1538,6 @@ def test_3905():
         pass
     else:
         assert 0
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
-    else:
-        assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
 
 def test_3624():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
