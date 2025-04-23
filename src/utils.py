@@ -106,7 +106,7 @@ def write_text(
 def show_pdf_page(
         page,
         rect,
-        src,
+        docsrc,
         pno=0,
         keep_proportion=True,
         overlay=True,
@@ -114,11 +114,11 @@ def show_pdf_page(
         rotate=0,
         clip=None,
         ) -> int:
-    """Show page number 'pno' of PDF 'src' in rectangle 'rect'.
+    """Show page number 'pno' of PDF 'docsrc' in rectangle 'rect'.
 
     Args:
         rect: (rect-like) where to place the source image
-        src: (document) source PDF
+        docsrc: (document) source PDF
         pno: (int) source page number
         keep_proportion: (bool) do not change width-height-ratio
         overlay: (bool) put in foreground
@@ -165,15 +165,15 @@ def show_pdf_page(
     pymupdf.CheckParent(page)
     doc = page.parent
 
-    if not doc.is_pdf or not src.is_pdf:
+    if not doc.is_pdf or not docsrc.is_pdf:
         raise ValueError("is no PDF")
 
     if rect.is_empty or rect.is_infinite:
         raise ValueError("rect must be finite and not empty")
 
     while pno < 0:  # support negative page numbers
-        pno += src.page_count
-    src_page = src[pno]  # load source page
+        pno += docsrc.page_count
+    src_page = docsrc[pno]  # load source page
     if src_page.get_contents() == []:
         raise ValueError("nothing to show - source page empty")
 
@@ -199,7 +199,7 @@ def show_pdf_page(
         i += 1
         _imgname = n + str(i)
 
-    isrc = src._graft_id  # used as key for graftmaps
+    isrc = docsrc._graft_id  # used as key for graftmaps
     if doc._graft_id == isrc:
         raise ValueError("source document must not equal target")
 
@@ -210,7 +210,7 @@ def show_pdf_page(
         doc.Graftmaps[isrc] = gmap
 
     # take note of generated xref for automatic reuse
-    pno_id = (isrc, pno)  # id of src[pno]
+    pno_id = (isrc, pno)  # id of docsrc[pno]
     xref = doc.ShownPages.get(pno_id, 0)
 
     if overlay:
