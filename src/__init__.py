@@ -1567,6 +1567,12 @@ class Annot:
             cross_out: draw diagonal lines, 'Redact' only.
             rotate: set rotation, 'FreeText' and some others.
         """
+        annot_obj = mupdf.pdf_annot_obj(self.this)
+        
+        if border_color:
+            is_rich_text = mupdf.pdf_dict_get(annot_obj, PDF_NAME("RC"))
+            if not is_rich_text:
+                raise ValueError("cannot set border_color if rich_text is False")
         Annot.update_timing_test()
         CheckParent(self)
         def color_string(cs, code):

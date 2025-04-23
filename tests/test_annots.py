@@ -544,12 +544,25 @@ def test_4254():
     annot = page.add_freetext_annot(rect, "Test Annotation from minimal example")
     annot.set_border(width=1, dashes=(3, 3))
     annot.set_opacity(0.5)
+    try:
+        annot.set_colors(stroke=(1, 0, 0))
+    except ValueError as e:
+        assert 'cannot be used for FreeText annotations' in str(e), f'{e}'
+    else:
+        assert 0
     annot.update()
 
     rect = pymupdf.Rect(200, 200, 400, 400)
     annot2 = page.add_freetext_annot(rect, "Test Annotation from minimal example pt 2")
     annot2.set_border(width=1, dashes=(3, 3))
     annot2.set_opacity(0.5)
+    try:
+        annot2.set_colors(stroke=(1, 0, 0))
+    except ValueError as e:
+        assert 'cannot be used for FreeText annotations' in str(e), f'{e}'
+    else:
+        assert 0
+    annot.update()
     annot2.update()
 
     # stores top color for each pixmap
@@ -611,3 +624,66 @@ def test_richtext():
     annot.update(fill_color=gold, opacity=0.5, rotate=90)
     pix2 = page.get_pixmap()
     assert pix1.samples == pix2.samples
+
+
+def test_4447():
+    document = pymupdf.open()
+    
+    page = document.new_page()
+
+    text_color = (1, 0, 0)
+    fill_color = (0, 1, 0)
+    border_color = (0, 0, 1)
+
+    annot_rect = pymupdf.Rect(90.1, 486.73, 139.26, 499.46)
+
+    try:
+        annot = page.add_freetext_annot(
+            annot_rect,
+            "AETERM",
+            fontname="Arial",
+            fontsize=10,
+            text_color=text_color,
+            fill_color=fill_color,
+            border_color=border_color,
+            border_width=1,
+        )
+    except ValueError as e:
+        assert 'cannot set border_color if rich_text is False' in str(e), str(e)
+    else:
+        assert 0
+    
+    try:
+        annot = page.add_freetext_annot(
+                (30, 400, 100, 450),
+                "Two",
+                fontname="Arial",
+                fontsize=10,
+                text_color=text_color,
+                fill_color=fill_color,
+                border_color=border_color,
+                border_width=1,
+                )
+    except ValueError as e:
+        assert 'cannot set border_color if rich_text is False' in str(e), str(e)
+    else:
+        assert 0
+    
+    annot = page.add_freetext_annot(
+            (30, 500, 100, 550),
+            "Three",
+            fontname="Arial",
+            fontsize=10,
+            text_color=text_color,
+            border_width=1,
+            )
+    annot.update(text_color=text_color, fill_color=fill_color)
+    try:
+        annot.update(border_color=border_color)
+    except ValueError as e:
+        assert 'cannot set border_color if rich_text is False' in str(e), str(e)
+    else:
+        assert 0
+    
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4447.pdf')
+    document.save(path_out)
