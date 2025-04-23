@@ -1685,3 +1685,12 @@ def test_4415():
         pixmap.save(path_out)
         rms = gentle_compare.pixmaps_rms(path_out_expected, path_out)
         assert rms == 0, f'{rms=}'
+
+def test_4466():
+    path = os.path.normpath(f'{__file__}/../../tests/test_4466.pdf')
+    with pymupdf.Document(path) as document:
+        for page in document:
+            print(f'{page=}', flush=1)
+            pixmap = page.get_pixmap(clip=(0, 0, 10, 10))
+            print(f'{pixmap.n=} {pixmap.size=} {pixmap.stride=} {pixmap.width=} {pixmap.height=} {pixmap.x=} {pixmap.y=}', flush=1)
+            pixmap.is_unicolor  # Used to crash.

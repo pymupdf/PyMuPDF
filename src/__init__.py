@@ -10258,11 +10258,13 @@ class Pixmap:
             for i in range(n):
                 ret.append(mupdf.fz_samples_get(pm, offset+i))
             return ret
-        sample0 = _pixmap_read_samples( pm, 0, n)
-        for offset in range( n, count, n):
-            sample = _pixmap_read_samples( pm, offset, n)
-            if sample != sample0:
-                return False
+        for offset in range( 0, count, n):
+            if offset == 0:
+                sample0 = _pixmap_read_samples( pm, 0, n)
+            else:
+                sample = _pixmap_read_samples( pm, offset, n)
+                if sample != sample0:
+                    return False
         return True
 
     @property
