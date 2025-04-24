@@ -176,15 +176,11 @@ For details on **embedded files** refer to Appendix 3.
     * If ``stream`` is given, then the document is created from memory.
     * If ``stream`` is `None`, then a document is created from the file given by ``filename``. 
 
-    :arg str,pathlib filename: A UTF-8 string or ``pathlib.Path`` object containing a file path. The document type is always determined from the file content. The ``filetype`` parameter can be used to ensure that the detected type is as expected or, respectively, to force treating any file as plain text.
+    :arg str,pathlib filename: A UTF-8 string or ``pathlib.Path`` object containing a file path. The document type is (almost  [#f8]_) always determined from the file content. The ``filetype`` parameter can be used to force treating any file as plain text. For plain text files, there is no unambiguous way to recognize the content. Therefore the file extension or the ``filetype`` parameter must be given.
 
-    :arg bytes,bytearray,BytesIO stream: A memory area containing file data. The document type is **always** detected from the data content. The ``filetype`` parameter is ignored except for undetected data content. In that case only, using ``filetype="txt"`` will treat the data as containing plain text.
+    :arg bytes,bytearray,BytesIO stream: A memory area containing file data. With few exceptions [#f8]_, the document type is detected from the data content.
 
-    :arg str filetype: A string specifying the type of document. This may be anything looking like a filename (e.g. "x.pdf"), in which case MuPDF uses the extension to determine the type, or a mime type like ``application/pdf``. Just using strings like "pdf"  or ".pdf" will also work. Can be omitted for :ref:`a supported document type<Supported_File_Types>`.
-    
-      If opening a file name / path only, it will be used to ensure that the detected type is as expected. An exception is raised for a mismatch. Using `filetype="txt"` will treat any file as containing plain text.
-      
-      When opening from memory, this parameter is ignored except for undetected data content. Only in that case, using ``filetype="txt"`` will treat the data as containing plain text.
+    :arg str filetype: A string specifying the type of document. Will be ignored in most [#f8]_ cases for :ref:`a supported document type<Supported_File_Types>`. Text-based files usually have no unambiguous way to recognize the content. Therefore the file extension or the ``filetype`` parameter (especially when opening from memory) must usually be given.
 
     :arg rect_like rect: a rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter *fontsize*, each page will be accordingly laid out and hence also determine the number of pages.
 
@@ -208,13 +204,12 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> # from a file
         >>> doc = pymupdf.open("some.xps")
-        >>> # handle wrong extension
-        >>> doc = pymupdf.open("some.file", filetype="xps")  # assert expected type
-        >>> doc = pymupdf.open("some.file", filetype="txt")  # treat as plain text
+        >>> # handle wrong / missing extension when required
+        >>> doc = pymupdf.open("some.file", filetype="mobi")  # treat as MOBI e-book
         >>>
         >>> # from memory
-        >>> doc = pymupdf.open(stream=mem_area)  # works for any supported type
-        >>> doc = pymupdf.open(stream=unknown-type, filetype="txt")  # treat as plain text
+        >>> doc = pymupdf.open(stream=mem_area)  # works for most supported types
+        >>> doc = pymupdf.open(stream=ambiguous, filetype="mobi")  # treat as MOBI e-book
         >>>
         >>> # new empty PDF
         >>> doc = pymupdf.open()
@@ -2210,5 +2205,7 @@ Other Examples
 .. [#f6] For a *False* the **complete document** must be scanned. Both methods **do not load pages,** but only scan object definitions. This makes them at least 10 times faster than application-level loops (where total response time roughly equals the time for loading all pages). For the :ref:`AdobeManual` (756 pages) and the Pandas documentation (over 3070 pages) -- both have no annotations -- the method needs about 11 ms for the answer *False*. So response times will probably become significant only well beyond this order of magnitude.
 
 .. [#f7] This only works under certain conditions. For example, if there is normal text covered by some image on top of it, then this is undetectable and the respective text is **not** removed. Similar is true for white text on white background, and so on.
+
+.. [#f8] Almost all supported document types -- including all images -- are detected by MuPDF's built-in content recognizer. Exceptions are many text-based formats like plain text, program source code, etc. which have no unambiguous way for content identification. The e-book formats MOBI (extension ``.mobi``) and FictionBook (extension ``.fb2``) are two other exceptions which will probably be covered by the recognition feature soon. In these cases, the respective file extensions **must** be present - or (especially when opening from memory) the ``filetype`` must specify the document type.
 
 .. include:: footer.rst

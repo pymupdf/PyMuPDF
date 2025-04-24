@@ -100,8 +100,6 @@ def test_annot_clean_contents():
     annot = page.add_highlight_annot((10, 10, 20, 20))
 
     # the annotation appearance will not start with command b"q"
-
-
     # invoke appearance stream cleaning and reformatting
     annot.clean_contents()
 
@@ -133,19 +131,10 @@ def test_pdfstring():
 
 
 def test_open_exceptions():
-    try:
-        pymupdf.open(filename, filetype="xps")
-    except RuntimeError as e:
-        assert repr(e).startswith("FileDataError")
-    else:
-        assert 0
+    if pymupdf.mupdf_version_tuple < (1, 26):
+        print(f'Not testing open_exceptions because {pymupdf.mupdf_version=} < 1.26')
+        return
 
-    try:
-        pymupdf.open(filename, filetype="xxx")
-    except Exception as e:
-        assert repr(e).startswith("ValueError")
-    else:
-        assert 0
 
     try:
         pymupdf.open("x.y")
@@ -155,11 +144,52 @@ def test_open_exceptions():
         assert 0
 
     try:
-        pymupdf.open(stream=b"", filetype="pdf")
+        pymupdf.open(stream=b"")
     except RuntimeError as e:
         assert repr(e).startswith("EmptyFileError")
     else:
         assert 0
+
+    doc = pymupdf.open(filename, filetype="txt")
+    assert doc.metadata["format"] == "Text"
+
+    testfile = os.path.join(scriptdir, "resources", "Bezier.epub")
+    doc = pymupdf.open(testfile)
+    assert doc.metadata["format"] == "EPUB"
+    doc = pymupdf.open(stream=pathlib.Path(testfile).read_bytes())
+    assert doc.metadata["format"] == "EPUB"
+
+    testfile = os.path.join(scriptdir, "resources", "svg-file.svg")
+    doc = pymupdf.open(testfile)
+    assert doc.metadata["format"] == "SVG"
+    doc = pymupdf.open(stream=pathlib.Path(testfile).read_bytes())
+    assert doc.metadata["format"] == "SVG"
+
+    testfile = os.path.join(scriptdir, "resources", "xps-file.xps")
+    doc = pymupdf.open(testfile)
+    assert doc.metadata["format"] == "XPS"
+    doc = pymupdf.open(stream=pathlib.Path(testfile).read_bytes())
+    assert doc.metadata["format"] == "XPS"
+
+    testfile = os.path.join(scriptdir, "resources", "nur-ruhig.jpg")
+    doc = pymupdf.open(testfile)
+    assert doc.metadata["format"] == "Image"
+    doc = pymupdf.open(stream=pathlib.Path(testfile).read_bytes())
+    assert doc.metadata["format"] == "Image"
+
+    # FictionBook2 still requires filetype or correct extension!
+    testfile = os.path.join(scriptdir, "resources", "fb2-file.fb2")
+    doc = pymupdf.open(testfile)
+    assert doc.metadata["format"] == "FictionBook2"
+    doc = pymupdf.open(stream=pathlib.Path(testfile).read_bytes(), filetype="fb2")
+    assert doc.metadata["format"] == "FictionBook2"
+
+    # MOBI still requires filetype or correct extension!
+    testfile = os.path.join(scriptdir, "resources", "mobi-file.mobi")
+    doc = pymupdf.open(testfile)
+    assert doc.metadata["format"] == "MOBI"
+    doc = pymupdf.open(stream=pathlib.Path(testfile).read_bytes(), filetype="mobi")
+    assert doc.metadata["format"] == "MOBI"
 
 
 def test_bug1945():
@@ -1380,21 +1410,6 @@ def test_open():
     eregex = re.escape(f'Cannot open empty file: filename={path!r}.')
     check(path, exception=(etype, eregex))
     
-    path = f'{resources}/1.pdf'
-    filetype = 'xps'
-    etype = pymupdf.FileDataError
-    # 2023-12-12: On OpenBSD, for some reason the SWIG catch code only catches
-    # the exception as FzErrorBase.
-    etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorFormat'
-    eregex = (
-            # With a sysinstall with separate MuPDF install, we get
-            # `mupdf.FzErrorFormat` instead of `pymupdf.mupdf.FzErrorFormat`. So
-            # we just search for the former.
-            re.escape(f'mupdf.{etype2}: code=7: cannot recognize zip archive'),
-            re.escape(f'pymupdf.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
-            )
-    check(path, filetype=filetype, exception=(etype, eregex))
-    
     path = f'{resources}/chinese-tables.pickle'
     etype = pymupdf.FileDataError
     etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorUnsupported'
@@ -1546,7 +1561,7 @@ def test_3859():
 def test_3905():
     data = b'A,B,C,D\r\n1,2,1,2\r\n2,2,1,2\r\n'
     try:
-        document = pymupdf.open(stream=data)
+        document = pymupdf.open(stream=data, filetype="pdf")
     except pymupdf.FileDataError as e:
         pass
     else:

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FictionBook xmlns="http://www.gribuser.ru/xml/fictionbook/2.0" xmlns:xlink="http://www.w3.org/1999/xlink">
+<description>
+    <title-info>
+        <genre>computers</genre>
+        <author>
+            <first-name>Chris</first-name>
+            <last-name>Clark</last-name>
+        </author>
+        <book-title>Sample FB2 book</book-title>
+        <annotation>
+            <p>Short sample of a FictionBook2 book with simple metadata. Based on test_book.md from https://github.com/clach04/sample_reading_media</p>
+        </annotation>
+        <keywords>ebook,sample,markdown,fb2,FictionBook2</keywords>
+    </title-info>
+    <document-info>
+        <author>
+            <nickname>clach04</nickname>
+            <home-page>https://github.com/clach04/sample_reading_media</home-page>
+        </author>
+
+        <program-used>vim and scite</program-used>
+        <src-url>https://github.com/clach04/sample_reading_media</src-url>
+        <version>1.0</version>
+        <history>
+            <p>Initial version, written by hand.</p>
+        </history>
+    </document-info>
+</description>
+<body>
+    <title>
+        <p>This is a title</p>
+    </title>
+
+    <section id="test-header-h1">
+        <title>
+            <p>Test Header h1</p>
+        </title>
+
+        <p>A test paragraph.</p>
+        <p>Another test paragraph.</p>
+    </section>
+
+    <section id="another-test-header-h1">
+        <title>
+            <p>Another Test Header h1</p>
+        </title>
+
+        <section id="a-test-header-h2">
+            <title>
+                <p>A Test Header h2</p>
+            </title>
+        
+            <section id="a-test-header-h3">
+                <title>
+                    <p>A Test Header h3</p>
+                </title>
+
+                <p>Yet more copy</p>
+            </section>
+        </section>
+    </section>
+</body>
+</FictionBook>

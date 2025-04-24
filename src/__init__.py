@@ -2922,8 +2922,6 @@ class Document:
                 else:
                     raise TypeError(f"bad stream: {type(stream)=}.")
                 stream = self.stream
-                if not (filename or filetype):
-                    filename = 'pdf'
             else:
                 self.stream = None
 
@@ -2951,6 +2949,17 @@ class Document:
                 w = r.x1 - r.x0
                 h = r.y1 - r.y0
 
+            if from_file:
+                _, magic2 = os.path.splitext(filename)
+                if magic2.startswith("."):
+                    magic2 = magic2[1:]
+            else:
+                magic2 = ""
+            if isinstance(filetype, str):
+                magic = filetype
+            else:
+                magic = ""
+
             if stream is not None:
                 assert isinstance(stream, (bytes, memoryview))
                 if len(stream) == 0:
@@ -2962,65 +2971,56 @@ class Document:
                     buffer_ = mupdf.fz_new_buffer_from_copied_data(c)
                     data = mupdf.fz_open_buffer(buffer_)
                 else:
-                    # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
-                    # that the bytes string will not be modified; i think the
-                    # original PyMuPDF code makes the same assumption. Presumably
-                    # setting self.stream above ensures that the bytes will not be
-                    # garbage collected?
                     data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
-                magic = filename
-                if not magic:
-                    magic = filetype
-                # fixme: pymupdf does:
-                #   handler = fz_recognize_document(gctx, filetype);
-                #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
-                # but prefer to leave fz_open_document_with_stream() to raise.
+
                 try:
-                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                    if magic:
+                        handler = mupdf.ll_fz_recognize_document(magic)
+                        if not handler:
+                            raise FileDataError("Failed to open stream as {magic}")
+                        accel = mupdf.FzStream()
+                        archive = mupdf.FzArchive(None)
+                        doc = mupdf.ll_fz_document_handler_open(
+                                  handler,
+                                  data.m_internal,
+                                  accel.m_internal,
+                                  archive.m_internal,
+                                  None,   # recognize_state
+                        )
+                        doc = mupdf.FzDocument(doc)
+                    else:
+                        doc = mupdf.fz_open_document_with_stream(magic, data)
                 except Exception as e:
                     if g_exceptions_verbose > 1:    exception_info()
                     raise FileDataError('Failed to open stream') from e
             else:
                 if filename:
-                    if not filetype:
+                    if magic == "txt":
+                        handler = mupdf.ll_fz_recognize_document(magic)
+                    else:
+                        stream = mupdf.FzStream(filename)
+                        handler = mupdf.ll_fz_recognize_document_stream_content(stream.m_internal, magic)
+                        if not handler and magic2:
+                            handler = mupdf.ll_fz_recognize_document_stream_content(stream.m_internal, magic2)
+                    if handler:
+                        #log( f'{handler.open=}')
+                        #log( f'{dir(handler.open)=}')
                         try:
-                            doc = mupdf.fz_open_document(filename)
+                            accel = mupdf.FzStream()
+                            archive = mupdf.FzArchive(None)
+                            doc = mupdf.ll_fz_document_handler_open(
+                                    handler,
+                                    stream.m_internal,
+                                    accel.m_internal,
+                                    archive.m_internal,
+                                    None,   # recognize_state
+                            )
                         except Exception as e:
                             if g_exceptions_verbose > 1:    exception_info()
-                            raise FileDataError(f'Failed to open file {filename!r}.') from e
+                            raise FileDataError(f'Failed to open file {filename!r}') from e
+                        doc = mupdf.FzDocument(doc)
                     else:
-                        handler = mupdf.ll_fz_recognize_document(filetype)
-                        if handler:
-                            if handler.open:
-                                #log( f'{handler.open=}')
-                                #log( f'{dir(handler.open)=}')
-                                try:
-                                    stream = mupdf.FzStream(filename)
-                                    accel = mupdf.FzStream()
-                                    archive = mupdf.FzArchive(None)
-                                    if mupdf_version_tuple >= (1, 24, 8):
-                                        doc = mupdf.ll_fz_document_handler_open(
-                                                handler,
-                                                stream.m_internal,
-                                                accel.m_internal,
-                                                archive.m_internal,
-                                                None,   # recognize_state
-                                                )
-                                    else:
-                                        doc = mupdf.ll_fz_document_open_fn_call(
-                                                handler.open,
-                                                stream.m_internal,
-                                                accel.m_internal,
-                                                archive.m_internal,
-                                                )
-                                except Exception as e:
-                                    if g_exceptions_verbose > 1:    exception_info()
-                                    raise FileDataError(f'Failed to open file {filename!r} as type {filetype!r}.') from e
-                                doc = mupdf.FzDocument( doc)
-                            else:
-                                assert 0
-                        else:
-                            raise ValueError( MSG_BAD_FILETYPE)
+                        raise ValueError(MSG_BAD_FILETYPE)
                 else:
                     pdf = mupdf.PdfDocument()
                     doc = mupdf.FzDocument(pdf)
