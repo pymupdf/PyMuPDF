@@ -138,91 +138,139 @@ The |PyMuPDF4LLM| API
 
     .. attribute:: header_id
     
-        A dictionary mapping (integer) font sizes to Markdown header strings like ``{14: '# ', 12: '## '}``. The dictionary is created by the `IdentifyHeaders` constructor. The keys are the font sizes of the text spans in the document. The values are the respective header strings.
+        A dictionary mapping (integer) font sizes to Markdown header strings like ``{14: '# ', 12: '## '}``. The dictionary is created by the :class:`IdentifyHeaders` constructor. The keys are the font sizes of the text spans in the document. The values are the respective header strings.
 
-     .. attribute:: body_limit
+    .. attribute:: body_limit
 
         An integer value indicating the font size limit for body text. This is computed as ``min(header_id.keys()) - 1``. In the above example, body_limit would be 11.
 
 
-    **How to limit header levels (example)**
-    
-    Limit the generated header levels to 3::
-
-        import pymupdf, pymupdf4llm
-
-        filename = "input.pdf"
-        doc = pymupdf.open(filename)  # use a Document for subsequent processing
-        my_headers = pymupdf4llm.IdentifyHeaders(doc, max_levels=3)  # generate header info
-        md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
+----
 
 
-    **How to provide your own header logic (example 1)**
-    
-    Provide your own function which uses pre-determined, fixed font sizes::
+**How to limit header levels (example)**
 
-        import pymupdf, pymupdf4llm
+Limit the generated header levels to 3::
 
-        filename = "input.pdf"
-        doc = pymupdf.open(filename)  # use a Document for subsequent processing
+    import pymupdf, pymupdf4llm
 
-        def my_headers(span, page=None):
-            """
-            Provide some custom header logic.
-            This is a callable which accepts a text span and the page.
-            Could be extended to check for other properties of the span, for
-            instance the font name, text color and other attributes.
-            """
-            # header level is h1 if font size is larger than 14
-            # header level is h2 if font size is larger than 10
-            # otherwise it is body text
-            if span["size"] > 14:
-                return "# "
-            elif span["size"] > 10:
-                return "## "
-            else:
-                return ""
-        
-        # this will *NOT* scan the document for font sizes!
-        md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
+    filename = "input.pdf"
+    doc = pymupdf.open(filename)  # use a Document for subsequent processing
+    my_headers = pymupdf4llm.IdentifyHeaders(doc, max_levels=3)  # generate header info
+    md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
 
-    **How to provide your own header logic (example 2)**
-    
-    This user function uses the document's Table of Contents -- under the assumption that the bookmark text is also present as a header line on the page (which certainly need not be the case!)::
 
-        import pymupdf, pymupdf4llm
+**How to provide your own header logic (example 1)**
 
-        filename = "input.pdf"
-        doc = pymupdf.open(filename)  # use a Document for subsequent processing
-        TOC = doc.get_toc()  # use the table of contents for determining headers
+Provide your own function which uses pre-determined, fixed font sizes::
 
-        def my_headers(span, page=None):
-            """
-            Provide some custom header logic (experimental!).
-            This callable checks whether the span text matches any of the
-            TOC titles on this page.
-            If so, use TOC hierarchy level as header level.
-            """
-            # TOC items on this page:
-            toc = [t for t in TOC if t[-1] == page.number + 1]
+    import pymupdf, pymupdf4llm
 
-            if not toc:  # no TOC items on this page
-                return ""
+    filename = "input.pdf"
+    doc = pymupdf.open(filename)  # use a Document for subsequent processing
 
-            # look for a match in the TOC items
-            for lvl, title, _ in toc:
-                if span["text"].startswith(title):
-                    return "#" * lvl + " "
-                if title.startswith(span["text"]):
-                    return "#" * lvl + " "
-            
+    def my_headers(span, page=None):
+        """
+        Provide some custom header logic.
+        This is a callable which accepts a text span and the page.
+        Could be extended to check for other properties of the span, for
+        instance the font name, text color and other attributes.
+        """
+        # header level is h1 if font size is larger than 14
+        # header level is h2 if font size is larger than 10
+        # otherwise it is body text
+        if span["size"] > 14:
+            return "# "
+        elif span["size"] > 10:
+            return "## "
+        else:
             return ""
+    
+    # this will *NOT* scan the document for font sizes!
+    md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
+
+**How to provide your own header logic (example 2)**
+
+This user function uses the document's Table of Contents -- under the assumption that the bookmark text is also present as a header line on the page (which certainly need not be the case!)::
+
+    import pymupdf, pymupdf4llm
+
+    filename = "input.pdf"
+    doc = pymupdf.open(filename)  # use a Document for subsequent processing
+    TOC = doc.get_toc()  # use the table of contents for determining headers
+
+    def my_headers(span, page=None):
+        """
+        Provide some custom header logic (experimental!).
+        This callable checks whether the span text matches any of the
+        TOC titles on this page.
+        If so, use TOC hierarchy level as header level.
+        """
+        # TOC items on this page:
+        toc = [t for t in TOC if t[-1] == page.number + 1]
+
+        if not toc:  # no TOC items on this page
+            return ""
+
+        # look for a match in the TOC items
+        for lvl, title, _ in toc:
+            if span["text"].startswith(title):
+                return "#" * lvl + " "
+            if title.startswith(span["text"]):
+                return "#" * lvl + " "
         
-        # this will *NOT* scan the document for font sizes!
-        md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
+        return ""
+    
+    # this will *NOT* scan the document for font sizes!
+    md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
 
 ----
 
+
+.. class:: TocHeaders
+
+    .. method:: __init__(self, doc: pymupdf.Document | str)
+
+        Create an object which uses the document's Table of Contents (TOC) to determine header levels. Upon object creation, the table of contents is read via the `Document.get_toc()` method. The TOC data is then used to determine header levels in the `to_markdown()` method.
+
+        This is an alternative to :class:`IdentifyHeaders`. Instead of running through the full document to identify font sizes, it uses the document's Table Of
+        Contents (TOC) to identify headers on pages. Like :class:`IdentifyHeaders`, this also is no guarantee to find headers, but for well-built Table of Contents, there is a good chance for more correctly identifying header lines on document pages than the font-size-based approach.
+
+        It also has the advantage of being much faster than the font-size-based approach, as it does not execute a full document scan or even access any of the document pages.
+
+        Examples where this approach works very well are the Adobe's files on PDF documentation.
+
+        Please note that this feature **does not read document pages** where the table of contents may exist as normal standard text. It only accesses data as provided by the `Document.get_toc()` method. It will not identify any headers for documents where the table of contents is not available as a collection of bookmarks.
+
+    .. method:: get_header_id(self, span: dict, page=None) -> str
+    
+        Return appropriate markdown header prefix. This is either an empty string or a string of "#" characters followed by a space.
+
+        Given a text span from a "dict" extraction variant, determine the markdown header prefix string of 0 to n concatenated "#" characters.
+
+        :arg dict span: a dictionary containing the text span information. This is the same dictionary as returned by `page.get_text("dict")`.
+
+        :arg Page page: the owning page object. This can be used when additional information needs to be extracted.
+
+        :returns: a string of "#" characters followed by a space.
+
+
+
+**How to use class TocHeaders**
+
+This is a version of previous **example 2** that uses :class:`TocHeaders` for header identification::
+
+    import pymupdf, pymupdf4llm
+
+    filename = "input.pdf"
+
+    doc = pymupdf.open(filename)  # use a Document for subsequent processing
+    my_headers = pymupdf4llm.TocHeaders(doc)  # use the table of contents for determining headers
+    
+    # this will *NOT* scan the document for font sizes!
+    md_text = pymupdf4llm.to_markdown(doc, hdr_info=my_headers)
+
+-----
 
 .. class:: pdf_markdown_reader.PDFMarkdownReader
 
