@@ -20,6 +20,7 @@ python is already defined.
 
 Args:
 
+    --gdb 0|1
     --mupdf-dir <mupdf_dir>
         Path of MuPDF checkout; default is 'mupdf'.
     --mupdf-do 0|1
@@ -134,6 +135,7 @@ def main():
     
     # Set default behaviour.
     #
+    gdb = False
     use_installer = True
     mupdf_do = True
     mupdf_dir = 'mupdf'
@@ -165,6 +167,7 @@ def main():
         if arg in ('-h', '--help'):
             log(__doc__)
             return
+        elif arg == '--gdb':            gdb = int(next(args))
         elif arg == '--mupdf-do':       mupdf_do = int(next(args))
         elif arg == '--mupdf-dir':      mupdf_dir = next(args)
         elif arg == '--mupdf-git':      mupdf_git = next(args)
@@ -369,6 +372,8 @@ def main():
     # 2024-03-20: Not sure whether/where `pymupdf` binary is installed, so we
     # disable the test_cli* tests.
     command += f' {pymupdf_dir}/scripts/test.py'
+    if gdb:
+        command += ' --gdb 1'
     command += f' -v 0'
     if pytest_name is None:
         excluded_tests = (
