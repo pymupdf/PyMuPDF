@@ -253,7 +253,7 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
 .. py:data:: TEXT_COLLECT_STRUCTURE
 
-    256 -- Not supported.
+    256 -- Not supported yet.
 
 .. py:data:: TEXT_ACCURATE_BBOXES
 
@@ -264,17 +264,45 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
 .. py:data:: TEXT_COLLECT_VECTORS
 
-    1024 -- Not supported.
+    1024 -- Not supported yet.
 
 .. py:data:: TEXT_IGNORE_ACTUALTEXT
 
-    2048 -- Ignore built-in differences between text appearing in e.g. PDF viewers versus text stored in the PDF. See :ref:`AdobeManual`, page 615 for background. If set, the **stored** ("replacement" text) is ignored in favor of the displayed text.
+    2048 -- Ignore built-in differences between text appearing in e.g. PDF viewers versus text stored in the PDF. See :ref:`AdobeManual`, page 615 for background. If set, the **stored** ("replacement" text) is ignored in favor of the **displayed** text.
 
 .. py:data:: TEXT_STEXT_SEGMENT
 
     4096 -- Attempt to segment page into different regions.
 
-The following constants represent the default combinations of the above for text extraction and searching:
+.. py:data:: TEXT_STEXT_PARAGRAPH_BREAK
+
+    8192 -- Not supported yet.
+
+.. py:data:: TEXT_STEXT_TABLE_HUNT
+
+    16384 -- Not supported yet.
+
+.. py:data:: TEXT_COLLECT_STYLES
+
+    32768 -- Detect underlined and strikeout text. Also detect and handle faked bold text in most cases.
+
+.. py:data:: TEXT_GID_FOR_UNKNOWN_UNICODE
+
+    65536 -- An alternative to `TEXT_CID_FOR_UNKNOWN_UNICODE` that uses the GID (glyph ID) instead of the CID (character ID). Both flags should never be used together, because results are undefined.
+
+.. py:data:: TEXT_CLIP_RECT
+
+    1 << 17 -- Not supported yet.
+
+.. py:data:: TEXT_ACCURATE_ASCENDERS
+
+    1 << 18 -- Not supported yet.
+
+.. py:data:: TEXT_ACCURATE_SIDE_BEARINGS
+
+    1 << 19 -- Not supported yet.
+
+The following constants represent default combinations of the above for text extraction and searching:
 
 .. py:data:: TEXTFLAGS_TEXT
 
