@@ -360,6 +360,8 @@ else:
         from . import mupdf
     except Exception:
         import mupdf
+    if hasattr(mupdf, 'internal_check_ndebug'):
+        mupdf.internal_check_ndebug()
     mupdf.reinit_singlethreaded()
 
 def _int_rc(text):
