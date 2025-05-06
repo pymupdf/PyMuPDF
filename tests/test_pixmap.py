@@ -200,7 +200,10 @@ def test_3050():
         else:
             assert rms == 0
         wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'PDF stream Length incorrect'
+        if pymupdf.mupdf_version_tuple >= (1, 26, 0):
+            assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
+        else:
+            assert wt == 'PDF stream Length incorrect'
 
 def test_3058():
     doc = pymupdf.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
