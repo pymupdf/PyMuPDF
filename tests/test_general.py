@@ -141,19 +141,12 @@ def test_pdfstring():
 
 
 def test_open_exceptions():
-    try:
-        pymupdf.open(filename, filetype="xps")
-    except RuntimeError as e:
-        assert repr(e).startswith("FileDataError")
-    else:
-        assert 0
+    path  = os.path.normpath(f'{__file__}/../../tests/resources/001003ED.pdf')
+    doc = pymupdf.open(path, filetype="xps")
+    assert 'PDF' in doc.metadata["format"]
 
-    try:
-        pymupdf.open(filename, filetype="xxx")
-    except Exception as e:
-        assert repr(e).startswith("ValueError")
-    else:
-        assert 0
+    doc = pymupdf.open(path, filetype="xxx")
+    assert 'PDF' in doc.metadata["format"]
 
     try:
         pymupdf.open("x.y")
@@ -165,8 +158,9 @@ def test_open_exceptions():
     try:
         pymupdf.open(stream=b"", filetype="pdf")
     except RuntimeError as e:
-        assert repr(e).startswith("EmptyFileError")
+        assert repr(e).startswith("EmptyFileError"), f'{repr(e)=}'
     else:
+        print(f'{doc.metadata["format"]=}')
         assert 0
 
 
@@ -1361,7 +1355,7 @@ def test_open():
                 assert 0, \
                         f'Incorrect exception, expected {etype}, received {type(e)=}.'
             else:
-                assert 0, f'Did not received exception, expected {etype=}.'
+                assert 0, f'Did not received exception, expected {etype=}. {filename=} {stream=} {filetype=} {exception=}'
         else:
             document = pymupdf.open(filename=filename, stream=stream, filetype=filetype)
             return document
@@ -1406,7 +1400,7 @@ def test_open():
             re.escape(f'mupdf.{etype2}: code=7: cannot recognize zip archive'),
             re.escape(f'pymupdf.FileDataError: Failed to open file {path!r} as type {filetype!r}.'),
             )
-    check(path, filetype=filetype, exception=(etype, eregex))
+    check(path, filetype=filetype, exception=None)
     
     path = f'{resources}/chinese-tables.pickle'
     etype = pymupdf.FileDataError
@@ -1559,9 +1553,9 @@ def test_3859():
 def test_3905():
     data = b'A,B,C,D\r\n1,2,1,2\r\n2,2,1,2\r\n'
     try:
-        document = pymupdf.open(stream=data)
+        document = pymupdf.open(stream=data, filetype='pdf')
     except pymupdf.FileDataError as e:
-        pass
+        print(f'test_3905(): e: {e}')
     else:
         assert 0
     wt = pymupdf.TOOLS.mupdf_warnings()
