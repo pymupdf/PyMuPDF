@@ -2885,6 +2885,7 @@ class Document:
         global JM_mupdf_show_errors
         JM_mupdf_show_errors_old = JM_mupdf_show_errors
         JM_mupdf_show_errors = 0
+        
         try:
             self.is_closed    = False
             self.is_encrypted = False
@@ -2901,51 +2902,6 @@ class Document:
                 self.this_is_pdf = True
                 return
         
-            # Classic implementation temporarily sets JM_mupdf_show_errors=0 then
-            # restores the previous value in `fz_always() {...}` before returning.
-            #
-        
-            if not filename or type(filename) is str:
-                pass
-            elif hasattr(filename, "absolute"):
-                filename = str(filename)
-            elif hasattr(filename, "name"):
-                filename = filename.name
-            else:
-                raise TypeError(f"bad filename: {type(filename)=} {filename=}.")
-
-            if stream is not None:
-                if isinstance(stream, (bytes, memoryview)):
-                    self.stream = stream
-                elif isinstance(stream, bytearray):
-                    self.stream = bytes(stream)
-                elif isinstance(stream, io.BytesIO):
-                    self.stream = stream.getvalue()
-                else:
-                    raise TypeError(f"bad stream: {type(stream)=}.")
-                stream = self.stream
-                if not (filename or filetype):
-                    filename = 'pdf'
-            else:
-                self.stream = None
-
-            if filename and self.stream is None:
-                from_file = True
-                self._name = filename
-            else:
-                from_file = False
-                self._name = ""
-
-            if from_file:
-                if not os.path.exists(filename):
-                    msg = f"no such file: '{filename}'"
-                    raise FileNotFoundError(msg)
-                elif not os.path.isfile(filename):
-                    msg = f"'{filename}' is no file"
-                    raise FileDataError(msg)
-                elif os.path.getsize(filename) == 0:
-                    raise EmptyFileError(f'Cannot open empty file: {filename=}.')
-
             w = width
             h = height
             r = JM_rect_from_py(rect)
@@ -2953,86 +2909,86 @@ class Document:
                 w = r.x1 - r.x0
                 h = r.y1 - r.y0
 
+            self._name = filename
+            self.stream = stream
+            
             if stream is not None:
+                if filename is not None and filetype is None:
+                    # 2025-05-06: Use <filename> as the filetype. This is
+                    # reversing precedence - we used to use <filename> if both
+                    # were set.
+                    filetype = filename
+                if isinstance(stream, (bytes, memoryview)):
+                    pass
+                elif isinstance(stream, bytearray):
+                    stream = bytes(stream)
+                elif isinstance(stream, io.BytesIO):
+                    stream = stream.getvalue()
+                else:
+                    raise TypeError(f"bad stream: {type(stream)=}.")
+                self.stream = stream
+                
                 assert isinstance(stream, (bytes, memoryview))
                 if len(stream) == 0:
+                    # MuPDF raise an exception for this but also generates
+                    # warnings, which is not very helpful for us. So instead we
+                    # raise a specific exception.
                     raise EmptyFileError('Cannot open empty stream.')
-                c = stream
-                #len = (size_t) PyBytes_Size(stream);
-
-                if mupdf_cppyy:
-                    buffer_ = mupdf.fz_new_buffer_from_copied_data(c)
-                    data = mupdf.fz_open_buffer(buffer_)
-                else:
-                    # Pass raw bytes data to mupdf.fz_open_memory(). This assumes
-                    # that the bytes string will not be modified; i think the
-                    # original PyMuPDF code makes the same assumption. Presumably
-                    # setting self.stream above ensures that the bytes will not be
-                    # garbage collected?
-                    data = mupdf.fz_open_memory(mupdf.python_buffer_data(c), len(c))
-                magic = filename
-                if not magic:
-                    magic = filetype
-                # fixme: pymupdf does:
-                #   handler = fz_recognize_document(gctx, filetype);
-                #   if (!handler) raise ValueError( MSG_BAD_FILETYPE)
-                # but prefer to leave fz_open_document_with_stream() to raise.
+                    
+                stream2 = mupdf.fz_open_memory(mupdf.python_buffer_data(stream), len(stream))
                 try:
-                    doc = mupdf.fz_open_document_with_stream(magic, data)
+                    doc = mupdf.fz_open_document_with_stream(filetype if filetype else '', stream2)
                 except Exception as e:
                     if g_exceptions_verbose > 1:    exception_info()
                     raise FileDataError('Failed to open stream') from e
-            else:
-                if filename:
-                    if not filetype:
-                        try:
-                            doc = mupdf.fz_open_document(filename)
-                        except Exception as e:
-                            if g_exceptions_verbose > 1:    exception_info()
-                            raise FileDataError(f'Failed to open file {filename!r}.') from e
-                    else:
-                        handler = mupdf.ll_fz_recognize_document(filetype)
-                        if handler:
-                            if handler.open:
-                                #log( f'{handler.open=}')
-                                #log( f'{dir(handler.open)=}')
-                                try:
-                                    stream = mupdf.FzStream(filename)
-                                    accel = mupdf.FzStream()
-                                    archive = mupdf.FzArchive(None)
-                                    if mupdf_version_tuple >= (1, 24, 8):
-                                        doc = mupdf.ll_fz_document_handler_open(
-                                                handler,
-                                                stream.m_internal,
-                                                accel.m_internal,
-                                                archive.m_internal,
-                                                None,   # recognize_state
-                                                )
-                                    else:
-                                        doc = mupdf.ll_fz_document_open_fn_call(
-                                                handler.open,
-                                                stream.m_internal,
-                                                accel.m_internal,
-                                                archive.m_internal,
-                                                )
-                                except Exception as e:
-                                    if g_exceptions_verbose > 1:    exception_info()
-                                    raise FileDataError(f'Failed to open file {filename!r} as type {filetype!r}.') from e
-                                doc = mupdf.FzDocument( doc)
-                            else:
-                                assert 0
-                        else:
-                            raise ValueError( MSG_BAD_FILETYPE)
+            
+            elif filename:
+                assert not stream
+                if isinstance(filename, str):
+                    pass
+                elif hasattr(filename, "absolute"):
+                    filename = str(filename)
+                elif hasattr(filename, "name"):
+                    filename = filename.name
                 else:
-                    pdf = mupdf.PdfDocument()
-                    doc = mupdf.FzDocument(pdf)
+                    raise TypeError(f"bad filename: {type(filename)=} {filename=}.")
+                self._name = filename
+                
+                # Generate our own specific exceptions. This avoids MuPDF
+                # generating warnings etc.
+                if not os.path.exists(filename):
+                    raise FileNotFoundError(f"no such file: '{filename}'")
+                elif not os.path.isfile(filename):
+                    raise FileDataError(f"'{filename}' is no file")
+                elif os.path.getsize(filename) == 0:
+                    raise EmptyFileError(f'Cannot open empty file: {filename=}.')
+                
+                if filetype:
+                    # Override the type implied by <filename>. MuPDF does not
+                    # have a way to do this directly so we open via a stream.
+                    try:
+                        fz_stream = mupdf.fz_open_file(filename)
+                        doc = mupdf.fz_open_document_with_stream(filetype, fz_stream)
+                    except Exception as e:
+                        if g_exceptions_verbose > 1:    exception_info()
+                        raise FileDataError(f'Failed to open file {filename!r} as type {filetype!r}.') from e
+                else:
+                    try:
+                        doc = mupdf.fz_open_document(filename)
+                    except Exception as e:
+                        if g_exceptions_verbose > 1:    exception_info()
+                        raise FileDataError(f'Failed to open file {filename!r}.') from e
+
+            else:
+                pdf = mupdf.PdfDocument()
+                doc = mupdf.FzDocument(pdf)
+            
             if w > 0 and h > 0:
                 mupdf.fz_layout_document(doc, w, h, fontsize)
             elif mupdf.fz_is_document_reflowable(doc):
                 mupdf.fz_layout_document(doc, 400, 600, 11)
-            this = doc
 
-            self.this = this
+            self.this = doc
 
             # fixme: not sure where self.thisown gets initialised in PyMuPDF.
             #
