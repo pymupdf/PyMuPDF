@@ -12,6 +12,13 @@ This README assumes you have [Sphinx v5.0.2 installed](https://www.sphinx-doc.or
 
 Within `docs` update the associated restructured text (`.rst`) files. These files represent the corresponding document pages. 
 
+### Conventions
+
+- Code parameters should be referenced within backticks, not italics, double backtick is better for safety
+- When referencing names of common things surround with | , e.g. |PyMuPDF| , not PyMuPDF, see `header.rst` for names listing
+- When hyperlinking, avoid inline hyperlinks and try to references link from common location at page bottom, also avoid the use of "here" or "click here" as this provides little information about the link content. e.g.
+
+"`Click here <link>` for our Story class". Should be re-written to something more like "Find out more `on our Story class <link>`"
 
 ## Building HTML documentation
 

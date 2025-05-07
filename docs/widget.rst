@@ -12,7 +12,7 @@ This class represents a PDF Form field, also called a "widget". Throughout this 
 
 Like annotations, widgets live on PDF pages. Similar to annotations, the first widget on a page is accessible via :attr:`Page.first_widget` and subsequent widgets can be accessed via the :attr:`Widget.next` property.
 
-*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset of general annotations. Consequently, :attr:`Page.first_annot` and :meth:`Annot.next` will deliver **non-widget annotations exclusively**, and be *None* if only form fields exist on a page. Vice versa, :attr:`Page.first_widget` and :meth:`Widget.next` will only show widgets. This design decision is purely internal to MuPDF; technically, links, annotations and fields have a lot in common and also continue to share the better part of their code within (Py-) MuPDF.
+*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset of general annotations. Consequently, :attr:`Page.first_annot` and :meth:`Annot.next` will deliver **non-widget annotations exclusively**, and be ``None`` if only form fields exist on a page. Vice versa, :attr:`Page.first_widget` and :meth:`Widget.next` will only show widgets. This design decision is purely internal to MuPDF; technically, links, annotations and fields have a lot in common and also continue to share the better part of their code within (Py-) MuPDF.
 
 
 **Class API**
@@ -63,11 +63,11 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: next
 
-       Point to the next form field on the page. The last widget returns *None*.
+       Point to the next form field on the page. The last widget returns ``None``.
 
     .. attribute:: border_color
 
-       A list of up to 4 floats defining the field's border color. Default value is *None* which causes border style and border width to be ignored.
+       A list of up to 4 floats defining the field's border color. Default value is ``None`` which causes border style and border width to be ignored.
 
     .. attribute:: border_style
 
@@ -119,7 +119,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
     .. attribute:: is_signed
 
-       A bool indicating the signing status of a signature field, else *None*.
+       A bool indicating the signing status of a signature field, else ``None``.
 
     .. attribute:: rect
 
@@ -153,52 +153,52 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
        * New in version 1.16.12
        
-       JavaScript text (unicode) for an action associated with the widget, or *None*. This is the only script action supported for **button type** widgets.
+       JavaScript text (unicode) for an action associated with the widget, or ``None``. This is the only script action supported for **button type** widgets.
 
     .. attribute:: script_stroke
 
        * New in version 1.16.12
        
-       JavaScript text (unicode) to be performed when the user types a key-stroke into a text field or combo box or modifies the selection in a scrollable list box. This action can check the keystroke for validity and reject or modify it. *None* if not present.
+       JavaScript text (unicode) to be performed when the user types a key-stroke into a text field or combo box or modifies the selection in a scrollable list box. This action can check the keystroke for validity and reject or modify it. ``None`` if not present.
 
     .. attribute:: script_format
 
        * New in version 1.16.12
        
-       JavaScript text (unicode) to be performed before the field is formatted to display its current value. This action can modify the field’s value before formatting. *None* if not present.
+       JavaScript text (unicode) to be performed before the field is formatted to display its current value. This action can modify the field’s value before formatting. ``None`` if not present.
 
     .. attribute:: script_change
 
        * New in version 1.16.12
        
-       JavaScript text (unicode) to be performed when the field’s value is changed. This action can check the new value for validity. *None* if not present.
+       JavaScript text (unicode) to be performed when the field’s value is changed. This action can check the new value for validity. ``None`` if not present.
 
     .. attribute:: script_calc
 
        * New in version 1.16.12
        
-       JavaScript text (unicode) to be performed to recalculate the value of this field when that of another field changes. *None* if not present.
+       JavaScript text (unicode) to be performed to recalculate the value of this field when that of another field changes. ``None`` if not present.
 
     .. attribute:: script_blur
 
        * New in version 1.22.6
        
-       JavaScript text (unicode) to be performed on losing the focus of this field. *None* if not present.
+       JavaScript text (unicode) to be performed on losing the focus of this field. ``None`` if not present.
 
     .. attribute:: script_focus
 
        * New in version 1.22.6
        
-       JavaScript text (unicode) to be performed on focusing this field. *None* if not present.
+       JavaScript text (unicode) to be performed on focusing this field. ``None`` if not present.
 
     .. note::
 
        1. For **adding** or **changing** one of the above scripts,
          just put the appropriate JavaScript source code in the widget attribute.
-         To **remove** a script, set the respective attribute to *None*.
+         To **remove** a script, set the respective attribute to ``None``.
 
        2. Button fields only support :attr:`script`.
-         Other script entries will automatically be set to *None*.
+         Other script entries will automatically be set to ``None``.
 
        3. It is worthwhile to look at
           `this <https://experienceleague.adobe.com/docs/experience-manager-learn/assets/FormsAPIReference.pdf?lang=en>`_

@@ -6,7 +6,7 @@
 Outline
 ================
 
-*outline* (or "bookmark"), is a property of *Document*. If not *None*, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in "horizontal" or downward direction. The full tree of all outline items for e.g. a conventional table of contents (TOC) can be recovered by following these "pointers".
+*outline* (or "bookmark"), is a property of *Document*. If not ``None``, it stands for the first outline item of the document. Its properties in turn define the characteristics of this item and also point to other outline items in "horizontal" or downward direction. The full tree of all outline items for e.g. a conventional table of contents (TOC) can be recovered by following these "pointers".
 
 ============================ ==================================================
 **Method / Attribute**       **Short Description**
@@ -27,13 +27,13 @@ Outline
 
    .. attribute:: down
 
-      The next outline item on the next level down. Is *None* if the item has no children.
+      The next outline item on the next level down. Is ``None`` if the item has no children.
 
       :type: :ref:`Outline`
 
    .. attribute:: next
 
-      The next outline item at the same level as this item. Is *None* if this is the last one in its level.
+      The next outline item at the same level as this item. Is ``None`` if this is the last one in its level.
 
       :type: `Outline`
 
@@ -45,19 +45,19 @@ Outline
 
    .. attribute:: title
 
-      The item's title as a string or *None*.
+      The item's title as a string or ``None``.
 
       :type: str
 
    .. attribute:: is_open
 
-      Indicator showing whether any sub-outlines should be expanded (*True*) or be collapsed (*False*). This information is interpreted by PDF reader software.
+      Indicator showing whether any sub-outlines should be expanded (``True``) or be collapsed (``False``). This information is interpreted by PDF reader software.
 
       :type: bool
 
    .. attribute:: is_external
 
-      A bool specifying whether the target is outside (*True*) of the current document.
+      A bool specifying whether the target is outside (``True``) of the current document.
 
       :type: bool
 

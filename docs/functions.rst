@@ -771,11 +771,11 @@ Yet others are handy, general-purpose utilities.
 
       * New in version 1.14.14
 
-      PDF only: Check whether the object represented by :data:`xref` is a :data:`stream` type. Return is *False* if not a PDF or if the number is outside the valid xref range.
+      PDF only: Check whether the object represented by :data:`xref` is a :data:`stream` type. Return is ``False`` if not a PDF or if the number is outside the valid xref range.
 
       :arg int xref: :data:`xref` number.
 
-      :returns: *True* if the object definition is followed by data wrapped in keyword pair *stream*, *endstream*.
+      :returns: ``True`` if the object definition is followed by data wrapped in keyword pair *stream*, *endstream*.
 
 -----
 

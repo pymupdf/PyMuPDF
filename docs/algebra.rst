@@ -74,7 +74,7 @@ a|b       **union rectangle:** "a" must be a rectangle, and "b" may be
 b in a    if "b" is a number, then `b in tuple(a)` is returned.
           If "b" is :data:`point_like`, :data:`rect_like` or :data:`quad_like`,
           then "a" must be a rectangle, and `a.contains(b)` is returned.
-a == b    *True* if *bool(a-b)* is *False* ("b" may be "a-like").
+a == b    ``True`` if *bool(a-b)* is ``False`` ("b" may be "a-like").
 ========= ===========================================================================
 
 

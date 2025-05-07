@@ -215,7 +215,7 @@ These are our run time findings in **seconds** along with a base rate summary co
    :header-rows: 1
 
    * - **Name**
-     - **PyMuPDF**
+     - |PyMuPDF|
      - **PDFrw**
      - **PikePDF**
      - **PyPDF2**
@@ -293,7 +293,7 @@ These are our run time findings in **seconds** along with a base rate summary co
    :header-rows: 1
 
    * - **Name**
-     - **PyMuPDF**
+     - |PyMuPDF|
      - **XPDF**
      - **PyPDF2**
      - **PDFMiner**
@@ -405,7 +405,7 @@ These are our run time findings in **seconds** along with a base rate summary co
    :header-rows: 1
 
    * - **Name**
-     - **PyMuPDF**
+     - |PyMuPDF|
      - **XPDF**
      - **PDF2JPG**
    * - adobe.pdf
