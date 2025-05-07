@@ -9,11 +9,11 @@ Tutorial
 
 .. highlight:: python
 
-This tutorial will show you the use of |PyMuPDF|, :title:`MuPDF` in :title:`Python`, step by step.
+This tutorial will show you the use of |PyMuPDF|, |MuPDF| in Python, step by step.
 
-Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitly.
+Because |MuPDF| supports not only PDF, but also XPS, OpenXPS, CBZ, CBR, FB2 and EPUB formats, so does |PyMuPDF| [#f1]_. Nevertheless, for the sake of brevity we will only talk about PDF files. At places where indeed only PDF files are supported, this will be mentioned explicitly.
 
-In addition to this introduction, please do visit PyMuPDF's `Youtube Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the following in the form of Youtube "Shorts" and longer videos.
+In addition to this introduction, please do visit PyMuPDF's `YouTube Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the following in the form of YouTube "Shorts" and longer videos.
 
 Importing the Bindings
 ==========================
@@ -164,9 +164,9 @@ This example creates a **raster** image of a page's content::
 
     pix = page.get_pixmap()
 
-*pix* is a :ref:`Pixmap` object which (in this case) contains an **RGB** image of the page, ready to be used for many purposes. Method :meth:`Page.get_pixmap` offers lots of variations for controlling the image: resolution / DPI, colorspace (e.g. to produce a grayscale image or an image with a subtractive color scheme), transparency, rotation, mirroring, shifting, shearing, etc. For example: to create an **RGBA** image (i.e. containing an alpha channel), specify *pix = page.get_pixmap(alpha=True)*.
+``pix`` is a :ref:`Pixmap` object which (in this case) contains an **RGB** image of the page, ready to be used for many purposes. Method :meth:`Page.get_pixmap` offers lots of variations for controlling the image: resolution / DPI, colorspace (e.g. to produce a grayscale image or an image with a subtractive color scheme), transparency, rotation, mirroring, shifting, shearing, etc. For example: to create an **RGBA** image (i.e. containing an alpha channel), specify *pix = page.get_pixmap(alpha=True)*.
 
-A :ref:`Pixmap` contains a number of methods and attributes which are referenced below. Among them are the integers *width*, *height* (each in pixels) and *stride* (number of bytes of one horizontal image line). Attribute *samples* represents a rectangular area of bytes representing the image data (a Python *bytes* object).
+A :ref:`Pixmap` contains a number of methods and attributes which are referenced below. Among them are the integers ``width``, ``height`` (each in pixels) and ``stride`` (number of bytes of one horizontal image line). Attribute ``samples`` represents a rectangular area of bytes representing the image data (a Python ``bytes`` object).
 
 .. note:: You can also create a **vector** image of a page by using :meth:`Page.get_svg_image`. Refer to this `Vector Image Support page`_ for details.
 
@@ -366,7 +366,7 @@ Embedding Data
 
 PDFs can be used as containers for arbitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
-PyMuPDF fully supports this feature via :ref:`Document` *embfile_** methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
+PyMuPDF fully supports this feature via :ref:`Document` ``embfile_*`` methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
 
 
 Saving
@@ -374,7 +374,7 @@ Saving
 
 As mentioned above, :meth:`Document.save` will **always** save the document in its current state.
 
-You can write changes back to the **original PDF** by specifying option *incremental=True*. This process is (usually) **extremely fast**, since changes are **appended to the original file** without completely rewriting it.
+You can write changes back to the **original PDF** by specifying option ``incremental=True``. This process is (usually) **extremely fast**, since changes are **appended to the original file** without completely rewriting it.
 
 :meth:`Document.save` options correspond to options of MuPDF's command line utility *mutool clean*, see the following table.
 
@@ -394,9 +394,9 @@ linear=True         l           create a linearized version
 expand=True         d           decompress all streams
 =================== =========== ==================================================
 
-.. note:: For an explanation of terms like *object, stream, xref* consult the :ref:`Glossary` chapter.
+.. note:: For an explanation of terms like ``object``, ``stream``, ``xref`` consult the :ref:`Glossary` chapter.
 
-For example, *mutool clean -ggggz file.pdf* yields excellent compression results. It corresponds to *doc.save(filename, garbage=4, deflate=True)*.
+For example, ``mutool clean -ggggz file.pdf`` yields excellent compression results. It corresponds to ``doc.save(filename, garbage=4, deflate=True)``.
 
 Closing
 =========

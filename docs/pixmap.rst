@@ -91,7 +91,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :type colorspace: :ref:`Colorspace`
 
       :arg source: the source pixmap.
-      :type source: ``Pixmap``
+      :type source: :ref:`Pixmap`.
 
    .. method:: __init__(self, source, mask)
 
@@ -100,17 +100,17 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       **Copy and add image mask:** Copy *source* pixmap, add an alpha channel with transparency data from a mask pixmap.
 
       :arg source: pixmap without alpha channel.
-      :type source: :ref:`Pixmap`
+      :type source: :ref:`Pixmap`.
 
       :arg mask: a mask pixmap. Must be a graysale pixmap.
-      :type mask: :ref:`Pixmap`
+      :type mask: :ref:`Pixmap`.
 
    .. method:: __init__(self, source, width, height, [clip])
 
       **Copy and scale:** Copy *source* pixmap, scaling new width and height values -- the image will appear stretched or shrunk accordingly. Supports partial copying. The source colorspace may be ``None``.
 
       :arg source: the source pixmap.
-      :type source: ``Pixmap``
+      :type source: :ref:`Pixmap`.
 
       :arg float width: desired target width.
 
@@ -125,7 +125,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       **Copy and add or drop alpha:** Copy *source* and add or drop its alpha channel. Identical copy if *alpha* equals *source.alpha*. If an alpha channel is added, its values will be set to 255.
 
       :arg source: source pixmap.
-      :type source: ``Pixmap``
+      :type source: :ref:`Pixmap`.
 
       :arg bool alpha: whether the target will have an alpha channel, default and mandatory if source colorspace is ``None``.
 
@@ -394,7 +394,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Create a Pillow Image from the pixmap. PIL / Pillow must be installed.
 
       :raises ImportError: if Pillow is not installed.
-      :returns: a ˇˇPIL.Imageˇˇ object
+      :returns: a ``PIL.Image`` object
 
    ..  method:: pil_save(*args, unmultiply=False, **kwargs)
 
@@ -406,7 +406,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`.
       
-      :arg bool unmultiply: If the pixmap's colorspace is RGB with transparency, the alpha values may or may not already be multiplied into the color components ref/green/blue (called "premultiplied"). To enforce undoing premultiplication, set this parameter to `True`. To learn about some background, e.g. look for "Premultiplied alpha" `here <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
+      :arg bool unmultiply: If the pixmap's colorspace is RGB with transparency, the alpha values may or may not already be multiplied into the color components ref/green/blue (called "premultiplied"). To enforce undoing premultiplication, set this parameter to `True`. To learn about some background, e.g. look for `"Premultiplied alpha" on this page <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
 
 
       For details on other parameters see the Pillow documentation.

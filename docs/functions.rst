@@ -132,9 +132,9 @@ Yet others are handy, general-purpose utilities.
           Write to Python's `logging` system using specified level.
       :arg str pylogging_name:
           Write to Python's `logging` system using specified logger name.
-          Only used if `pylogging_logger` is None. Default is `pymupdf`.
+          Only used if `pylogging_logger` is ``None``. Default is `pymupdf`.
 
-      If any `pylogging*` arg is not None, we write to `Python's logging system
+      If any `pylogging*` arg is not ``None``, we write to `Python's logging system
       <https://docs.python.org/3/library/logging.html>`_.
 
 -----
@@ -172,7 +172,7 @@ Yet others are handy, general-purpose utilities.
       :arg str name: the name of some glyph. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
 
       :rtype: int
-      :returns: the unicode. Invalid *name* entries return `0xfffd (65533)`.
+      :returns: the unicode. Invalid ``name`` entries return `0xfffd (65533)`.
 
       .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
 
@@ -412,7 +412,7 @@ Yet others are handy, general-purpose utilities.
       Calculate the length of text on output with a given **builtin** font, :data:`fontsize` and encoding.
 
       :arg str text: the text string.
-      :arg str fontname: the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth:`Page.insert_font`).
+      :arg str fontname: the font name. Must be one of either the :ref:`Base-14-Fonts` or the CJK fonts, identified by their "reserved" fontnames (see table in :meth:`Page.insert_font`).
       :arg float fontsize: the :data:`fontsize`.
       :arg int encoding: the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic (Russian) are available. Relevant for Base-14 fonts "Helvetica", "Courier" and "Times" and their variants only. Make sure to use the same value as in the corresponding text insertion.
       :rtype: float

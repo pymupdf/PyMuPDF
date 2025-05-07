@@ -8,9 +8,9 @@ Font
 
 * New in v1.16.18
 
-This class represents a font as defined in MuPDF (*fz_font_s* structure). It is required for the new class :ref:`TextWriter` and the new :meth:`Page.write_text`. Currently, it has no connection to how fonts are used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`, respectively.
+This class represents a font as defined in |MuPDF| (``fz_font_s`` structure). It is required for the new class :ref:`TextWriter` and the new :meth:`Page.write_text`. Currently, it has no connection to how fonts are used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`, respectively.
 
-A Font object also contains useful general information, like the font bbox, the number of defined glyphs, glyph names or the bbox of a single glyph.
+A ``Font`` object also contains useful general information, like the font bbox, the number of defined glyphs, glyph names or the ``bbox`` of a single glyph.
 
 
 ==================================== ============================================
@@ -74,7 +74,7 @@ A Font object also contains useful general information, like the font bbox, the 
       :arg bool is_italic: look for an italic font.
       :arg bool is_serif: look for a serifed font.
 
-      :returns: a MuPDF font if successful. This is the overall sequence of checks to determine an appropriate font:
+      :returns: a |MuPDF| font if successful. This is the overall sequence of checks to determine an appropriate font:
 
          =========== ============================================================
          Argument    Action
@@ -138,9 +138,9 @@ A Font object also contains useful general information, like the font bbox, the 
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
 
-      Check whether the unicode *chr* exists in the font or (option) some fallback font. May be used to check whether any "TOFU" symbols will appear on output.
+      Check whether the unicode ``chr`` exists in the font or (option) some fallback font. May be used to check whether any "TOFU" symbols will appear on output.
 
-      :arg int chr: the unicode of the character (i.e. *ord()*).
+      :arg int chr: the unicode of the character (i.e. ``ord()``).
       :arg str language: the language -- currently unused.
       :arg int script: the UCDN script number.
       :arg bool fallback: *(new in v1.17.5)* perform an extended search in fallback fonts or restrict to current font (default).
@@ -152,7 +152,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Return an array of unicodes supported by this font.
 
-      :returns: an *array.array* [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. *chr()* of every item in this array has a glyph in the font without using fallbacks. This is an example display of the supported glyphs:
+      :returns: an ``array.array`` [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. ``chr()`` of every item in this array has a glyph in the font without using fallbacks. This is an example display of the supported glyphs:
 
          >>> import pymupdf
          >>> font = pymupdf.Font("math")
@@ -191,8 +191,8 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Calculate the "width" of the character's glyph (visual representation).
 
-      :arg int chr: the unicode number of the character. Use *ord()*, not the character itself. Again, this should normally work even if a character is not supported by that font, because fallback fonts will be checked where necessary.
-      :arg int wmode: write mode, 0 = horizontal, 1 = vertical.
+      :arg int chr: the unicode number of the character. Use ``ord()``, not the character itself. Again, this should normally work even if a character is not supported by that font, because fallback fonts will be checked where necessary.
+      :arg int wmode: write mode, ``0`` = horizontal, ``1`` = vertical.
 
       The other parameters are not in use currently.
 
@@ -218,7 +218,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       The glyph rectangle relative to :data:`fontsize` 1.
 
-      :arg int chr: *ord()* of the character.
+      :arg int chr: ``ord()`` of the character.
 
       :returns: a :ref:`Rect`.
 
@@ -227,7 +227,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       Show the name of the character's glyph.
 
-      :arg int ch: the unicode number of the character. Use *ord()*, not the character itself.
+      :arg int ch: the unicode number of the character. Use ``ord()``, not the character itself.
 
       :returns: a string representing the glyph's name. E.g. `font.glyph_name(ord("#")) = "numbersign"`. For an invalid code ".notfound" is returned.
       
@@ -340,7 +340,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       * New in v1.18.0
 
-      The ascender value of the font, see `here <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details. Please note that there is a difference to the strict definition: our value includes everything above the baseline -- not just the height difference between upper case "A" and and lower case "a".
+      The ascender value of the font, see `ascender typography <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details. Please note that there is a difference to the strict definition: our value includes everything above the baseline -- not just the height difference between upper case "A" and and lower case "a".
 
       :rtype: float
 
@@ -348,7 +348,7 @@ A Font object also contains useful general information, like the font bbox, the 
 
       * New in v1.18.0
 
-      The descender value of the font, see `here <https://en.wikipedia.org/wiki/Descender>`_ for details. This value always is negative and is the portion that some glyphs descend below the base line, for example "g" or "y". As a consequence, the value `ascender - descender` is the total height, that every glyph of the font fits into. This is true at least for most fonts -- as always, there are exceptions, especially for calligraphic fonts, etc.
+      The descender value of the font, see `descender typography <https://en.wikipedia.org/wiki/Descender>`_ for details. This value always is negative and is the portion that some glyphs descend below the base line, for example "g" or "y". As a consequence, the value `ascender - descender` is the total height, that every glyph of the font fits into. This is true at least for most fonts -- as always, there are exceptions, especially for calligraphic fonts, etc.
 
       :rtype: float
 

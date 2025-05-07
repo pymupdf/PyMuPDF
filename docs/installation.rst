@@ -30,7 +30,7 @@ For example:
 Installation
 ---------------------------------------------------------
 
-PyMuPDF should be installed using pip with::
+|PyMuPDF| should be installed using pip with::
 
   pip install --upgrade pymupdf
 

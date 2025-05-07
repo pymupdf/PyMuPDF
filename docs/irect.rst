@@ -75,7 +75,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
       Checks whether *x* is contained in the rectangle. It may be :data:`rect_like`, :data:`point_like` or a number. If *x* is an empty rectangle, this is always true. Conversely, if the rectangle is empty this is always ``False``, if *x* is not an empty rectangle and not a number. If *x* is a number, it will be checked to be one of the four components. *x in irect* and *irect.contains(x)* are equivalent.
 
       :arg x: the object to check.
-      :type x: :ref:`IRect` or :ref:`Rect` or :ref:`Point` or int
+      :type x: :ref:`IRect` or :ref:`Rect` or :ref:`Point` or `int`.
 
       :rtype: bool
 

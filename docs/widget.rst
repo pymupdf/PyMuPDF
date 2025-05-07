@@ -213,7 +213,7 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
 
 Standard Fonts for Widgets
 ----------------------------------
-Widgets use their own resources object */DR*. A widget resources object must at least contain a */Font* object. Widget fonts are independent from page fonts. We currently support the 14 PDF base fonts using the following fixed reference names, or any name of an already existing field font. When specifying a text font for new or changed widgets, **either** choose one in the first table column (upper and lower case supported), **or** one of the already existing form fonts. In the latter case, spelling must exactly match.
+Widgets use their own resources object ``/DR``. A widget resources object must at least contain a ``/Font`` object. Widget fonts are independent from page fonts. We currently support the 14 PDF base fonts using the following fixed reference names, or any name of an already existing field font. When specifying a text font for new or changed widgets, **either** choose one in the first table column (upper and lower case supported), **or** one of the already existing form fonts. In the latter case, spelling must exactly match.
 
 To find out already existing field fonts, inspect the list :attr:`Document.FormFonts`.
 
@@ -236,7 +236,7 @@ TiRo          Times-Roman
 ZaDb          ZapfDingbats
 ============= =======================
 
-You are generally free to use any font for every widget. However, we recommend using *ZaDb* ("ZapfDingbats") and :data:`fontsize` 0 for check boxes: typical viewers will put a correctly sized tickmark in the field's rectangle, when it is clicked.
+You are generally free to use any font for every widget. However, we recommend using ``ZaDb`` ("ZapfDingbats") and :data:`fontsize` 0 for check boxes: typical viewers will put a correctly sized tickmark in the field's rectangle, when it is clicked.
 
 Supported Widget Types
 -----------------------
