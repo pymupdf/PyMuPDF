@@ -700,10 +700,7 @@ def build():
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdf.dylib', to_dir)
-            if mupdf_version_tuple >= (1, 25):
-                # MuPDF-1.25+ language bindings build also builds
-                # libmupdf-threads.a.
-                add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
+            add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
         elif pyodide:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdfcpp.so', 'PyMuPDF.libs/')
@@ -712,10 +709,7 @@ def build():
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
-            if mupdf_version_tuple >= (1, 25):
-                # MuPDF-1.25+ language bindings build also builds
-                # libmupdf-threads.a.
-                add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
+            add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
 
         if 'd' in PYMUPDF_SETUP_FLAVOUR:
             # Add MuPDF C and C++ headers to `ret_d`. Would prefer to use
@@ -802,10 +796,7 @@ def build_mupdf_windows(
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
     windows_build_tail = f'build\\shared-{tesseract}{build_type}'
     if g_py_limited_api:
-        if get_mupdf_version(mupdf_local) >= (1, 24, 11):
-            windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
-        else:
-            windows_build_tail += f'-Py_LIMITED_API={pipcl.current_py_limited_api()}'
+        windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
@@ -982,16 +973,12 @@ def build_mupdf_unix(
     if (
             linux
             and os.environ.get('PYMUPDF_SETUP_MUPDF_BSYMBOLIC', '1') == '1'
-            and mupdf_version_tuple >= (1, 24, 3)
             ):
         log(f'Appending `bsymbolic-` to MuPDF build path.')
         build_prefix += 'bsymbolic-'
     log(f'{g_py_limited_api=}')
     if g_py_limited_api:
-        if get_mupdf_version(mupdf_local) >= (1, 24, 11):
-            build_prefix += f'Py_LIMITED_API_{pipcl.current_py_limited_api()}-'
-        else:
-            build_prefix += f'Py_LIMITED_API={pipcl.current_py_limited_api()}-'
+        build_prefix += f'Py_LIMITED_API_{pipcl.current_py_limited_api()}-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.

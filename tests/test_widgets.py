@@ -337,10 +337,6 @@ def test_3950():
 
 
 def test_4004():
-    if pymupdf.mupdf_version_tuple < (1, 25):
-        print(f'test_4004(): not running because requires MuPDF >= 1.25.')
-        return
-    
     import collections
     
     def get_widgets_by_name(doc):

@@ -264,9 +264,6 @@ def test_htmlbox3():
 
 
 def test_3559():
-    if pymupdf.mupdf_version_tuple < (1, 24, 4):
-        print(f'test_3559(): Not running because mupdf known to SEGV.')
-        return
     doc = pymupdf.Document()
     page = doc.new_page()
     text_insert="""<body><h3></h3></body>"""

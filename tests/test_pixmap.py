@@ -366,10 +366,7 @@ def test_3493():
     out1 = do(1)
     out2 = do(2)
     print(f'{len(out0)=} {len(out1)=} {len(out2)=}.')
-    if pymupdf.mupdf_version_tuple >= (1, 24, 3):
-        assert out1 == out0
-    else:
-        assert out1 != out0
+    assert out1 == out0
     assert out2 == out0
 
 
@@ -417,9 +414,7 @@ def test_3448():
     path_diff = os.path.normpath(f'{__file__}/../../tests/test_3448-diff.png')
     diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 24, 11):
-        assert 30 <= rms < 45
-    elif pymupdf.mupdf_version_tuple < (1, 25, 5):
+    if pymupdf.mupdf_version_tuple < (1, 25, 5):
         # Prior to fix for mupdf bug 708274.
         assert 1 < rms < 2
     else:
