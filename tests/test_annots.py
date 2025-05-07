@@ -193,10 +193,7 @@ def test_redact2():
     page.add_redact_annot(page.rect)
     page.apply_redactions(text=1)
     t = page.get_text("words")
-    if pymupdf.mupdf_version_tuple < (1, 24, 2):
-        assert t == []
-    else:
-        assert t == all_text0
+    assert t == all_text0
     assert not page.get_drawings()
 
 
@@ -390,10 +387,6 @@ def test_3209():
     pdf.save(path)  # Check the output PDF that the annotation is correctly drawn
 
 def test_3863():
-    if pymupdf.mupdf_version_tuple < (1, 24, 10):
-        print(f'test_3863(): not running because {pymupdf.mupdf_version_tuple=} < 1.24.10.')
-        return
-    
     path_in = os.path.normpath(f'{__file__}/../../tests/resources/test_3863.pdf')
     path_out = os.path.normpath(f'{__file__}/../../tests/test_3863.pdf.pdf')
     
@@ -470,15 +463,11 @@ def test_parent():
     try:
         print(a)  # should raise
     except Exception as e:
-        if pymupdf.mupdf_version_tuple >= (1, 25):
-            if platform.system() == 'OpenBSD':
-                assert isinstance(e, pymupdf.mupdf.FzErrorBase), f'Incorrect {type(e)=}.'
-            else:
-                assert isinstance(e, pymupdf.mupdf.FzErrorArgument), f'Incorrect {type(e)=}.'
-            assert str(e) == 'code=4: annotation not bound to any page', f'Incorrect error text {str(e)=}.'
+        if platform.system() == 'OpenBSD':
+            assert isinstance(e, pymupdf.mupdf.FzErrorBase), f'Incorrect {type(e)=}.'
         else:
-            assert isinstance(e, ReferenceError)
-            assert str(e) == 'weakly-referenced object no longer exists'
+            assert isinstance(e, pymupdf.mupdf.FzErrorArgument), f'Incorrect {type(e)=}.'
+        assert str(e) == 'code=4: annotation not bound to any page', f'Incorrect error text {str(e)=}.'
     else:
         assert 0, f'Failed to get expected exception.'
 

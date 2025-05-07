@@ -320,10 +320,6 @@ def test_3594():
             for line in text.split('\n'):
                 print(f'    {line!r}')
             print('='*40)
-    if pymupdf.mupdf_version_tuple < (1, 24, 3):
-        # We expect MuPDF warnings.
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt
 
 
 def test_3687():
@@ -388,10 +384,7 @@ def test_4026():
         blocks = page.get_text('blocks')
         for i, block in enumerate(blocks):
             print(f'block {i}: {block}')
-        if pymupdf.mupdf_version_tuple < (1, 25):
-            assert len(blocks) == 15
-        else:
-            assert len(blocks) == 5
+        assert len(blocks) == 5
 
 def test_3725():
     # This currently just shows the extracted text. We don't check it is as expected.
@@ -455,10 +448,7 @@ def test_4139():
                         seen.add(color)
                         print(f"B{b_ctr}.L{l_ctr}.S{s_ctr}: {color=} {hex(color)=} {s=}")
                         assert color == 0, f'{s=}'
-                        if pymupdf.mupdf_version_tuple >= (1, 25):
-                            assert s['alpha'] == 255
-                        else:
-                            assert not 'alpha' in s
+                        assert s['alpha'] == 255
 
 
 def test_4245():

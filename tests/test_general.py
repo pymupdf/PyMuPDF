@@ -895,14 +895,12 @@ def test_bboxlog_2885():
     page=doc[0]
     
     bbl = page.get_bboxlog()
-    if pymupdf.mupdf_version_tuple >= (1, 24, 9):
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'invalid marked content and clip nesting'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'invalid marked content and clip nesting'
     
     bbl = page.get_bboxlog(layers=True)
-    if pymupdf.mupdf_version_tuple >= (1, 24, 9):
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'invalid marked content and clip nesting'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'invalid marked content and clip nesting'
 
 def test_3081():
     '''
@@ -1591,10 +1589,7 @@ def test_scientific_numbers():
     page.insert_text(point, "Test")
     contents = page.read_contents()
     print(f'{contents=}')
-    if pymupdf.mupdf_version_tuple >= (1, 24, 2):
-        assert b" 1e-" not in contents
-    else:
-        assert b" 1e-" in contents
+    assert b" 1e-" not in contents
 
 def test_3615():
     print('')
@@ -1614,16 +1609,8 @@ def test_3654():
         for page in document:
             content += page.get_text() + '\n\n'
     content = content.strip()
-    
-    if pymupdf.mupdf_version_tuple < (1, 25):
-        # As of 2024-07-04 we get a warning for this input file.
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'dropping unclosed output'
 
 def test_3727():
-    if pymupdf.mupdf_version_tuple < (1, 24, 9):
-        print('test_3727(): not running because known to segv: {pymupdf.mupdf_version=}')
-        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3727.pdf')
     doc = pymupdf.open(path)
     for page in doc:
@@ -1681,17 +1668,14 @@ def test_3450():
     print(f'test_3450(): {t=}')
 
 def test_3859():
-    if pymupdf.mupdf_version_tuple > (1, 24, 9):
-        print(f'{pymupdf.mupdf.PDF_NULL=}.')
-        print(f'{pymupdf.mupdf.PDF_TRUE=}.')
-        print(f'{pymupdf.mupdf.PDF_FALSE=}.')
-        for name in ('NULL', 'TRUE', 'FALSE'):
-            name2 = f'PDF_{name}'
-            v = getattr(pymupdf.mupdf, name2)
-            print(f'{name=} {name2=} {v=} {type(v)=}')
-            assert type(v)==pymupdf.mupdf.PdfObj, f'`v` is not a pymupdf.mupdf.PdfObj.'
-    else:
-        assert not hasattr(pymupdf.mupdf, 'PDF_TRUE')
+    print(f'{pymupdf.mupdf.PDF_NULL=}.')
+    print(f'{pymupdf.mupdf.PDF_TRUE=}.')
+    print(f'{pymupdf.mupdf.PDF_FALSE=}.')
+    for name in ('NULL', 'TRUE', 'FALSE'):
+        name2 = f'PDF_{name}'
+        v = getattr(pymupdf.mupdf, name2)
+        print(f'{name=} {name2=} {v=} {type(v)=}')
+        assert type(v)==pymupdf.mupdf.PdfObj, f'`v` is not a pymupdf.mupdf.PdfObj.'
 
 def test_3905():
     data = b'A,B,C,D\r\n1,2,1,2\r\n2,2,1,2\r\n'
@@ -1717,12 +1701,9 @@ def test_3624():
         print(f'Saving to {path_png=}.')
         pixmap.save(path_png)
         rms = gentle_compare.pixmaps_rms(path_png_expected, path_png)
-        if pymupdf.mupdf_version_tuple < (1, 24, 10):
-            assert rms > 12
-        else:
-            # We get small differences in sysinstall tests, where some
-            # thirdparty libraries can differ.
-            assert rms < 1
+        # We get small differences in sysinstall tests, where some thirdparty
+        # libraries can differ.
+        assert rms < 1
 
 
 def test_4043():

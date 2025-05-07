@@ -31,10 +31,7 @@ def test_707673():
     page.clean_contents(sanitize=True)
     words1 = page.get_text("words")
     ok = gentle_compare.gentle_compare(words0, words1)
-    if pymupdf.mupdf_version_tuple >= (1, 24, 1):
-        assert ok
-    else:
-        assert not ok
+    assert ok
 
 
 def test_707727():
@@ -56,15 +53,8 @@ def test_707727():
     if pymupdf.mupdf_version_tuple >= (1, 25, 2):
         # New sanitising gives small fp rounding errors.
         assert rms < 0.05
-    elif pymupdf.mupdf_version_tuple > (1, 24, 1):
-        assert rms == 0
     else:
-        assert rms != 0
-    if pymupdf.mupdf_version_tuple <= (1, 24, 1):
-        # We expect warnings.
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        print(f"{wt=}")
-        assert wt
+        assert rms == 0
 
 
 def test_707721():
@@ -72,11 +62,6 @@ def test_707721():
     PyMuPDF issue https://github.com/pymupdf/PyMuPDF/issues/3357
     MuPDF issue: https://bugs.ghostscript.com/show_bug.cgi?id=707721
     """
-    if pymupdf.mupdf_version_tuple < (1, 24, 2):
-        print(
-            "test_707721(): not running because MuPDF-{pymupdf.mupdf_version} known to hang."
-        )
-        return
     filename = os.path.join(scriptdir, "resources", "test_3357.pdf")
     doc = pymupdf.open(filename)
     page = doc[0]
@@ -110,7 +95,4 @@ def test_3376():
     words1 = page.get_text("words", sort=True)
 
     ok = gentle_compare.gentle_compare(words0_e, words1)
-    if pymupdf.mupdf_version_tuple >= (1, 24, 2):
-        assert ok
-    else:
-        assert not ok
+    assert ok

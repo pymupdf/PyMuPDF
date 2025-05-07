@@ -22,10 +22,7 @@ def test_q_count():
     # Although counts of q and Q are equal now, the unshielded 'cm' before
     # the first 'q' makes the contents unusable for insertions.
     pymupdf.TOOLS._insert_contents(page, b"1 0 0 -1 0 0 cm q ", False)  # prepend
-    if pymupdf.mupdf_version_tuple >= (1, 24, 2):
-        assert page.is_wrapped is False
-    else:
-        assert page.is_wrapped
+    assert page.is_wrapped is False
     if page._count_q_balance() == (0, 0):
         print("imbalance undetected by q balance count")
 

@@ -281,11 +281,7 @@ def test_3813():
         text = page.get_text()
     text_utf8 = text.encode()
     
-    if pymupdf.mupdf_version_tuple < (1, 24, 11):
-        # MuPDF gets things wrong.
-        text_expected_utf8 = b'Count is \xef\xac\x81ne:\n1. Lorem\n1. Sub Lorem\n2. Sub Lorem\n2. Lorem\n3. Lorem\nBroken count:\n1. Lorem\n\xe2\x80\xa2  Sub Lorem\n\xe2\x80\xa2  Sub Lorem\n4. Lorem\n5. Lorem\n'
-    else:
-        text_expected_utf8 = b'Count is \xef\xac\x81ne:\n1. Lorem\n1. Sub Lorem\n2. Sub Lorem\n2. Lorem\n3. Lorem\nBroken count:\n1. Lorem\n\xe2\x80\xa2  Sub Lorem\n\xe2\x80\xa2  Sub Lorem\n2. Lorem\n3. Lorem\n'
+    text_expected_utf8 = b'Count is \xef\xac\x81ne:\n1. Lorem\n1. Sub Lorem\n2. Sub Lorem\n2. Lorem\n3. Lorem\nBroken count:\n1. Lorem\n\xe2\x80\xa2  Sub Lorem\n\xe2\x80\xa2  Sub Lorem\n2. Lorem\n3. Lorem\n'
     text_expected = text_expected_utf8.decode()
     
     print(f'text_utf8:\n    {text_utf8!r}')

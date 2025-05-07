@@ -414,10 +414,7 @@ def _format_g(value, *, fmt='%g'):
             ret += _format_g(v, fmt=fmt)
         return ret
     else:
-        if mupdf_version_tuple >= (1, 24, 2):
-            return mupdf.fz_format_double(fmt, value)
-        else:
-            return fmt % value
+        return mupdf.fz_format_double(fmt, value)
         
 format_g = _format_g
 
@@ -6415,9 +6412,6 @@ class Font:
         '''
         Returns sorted list of valid unicodes of a fz_font.
         '''
-        if mupdf_version_tuple < (1, 24, 11):
-            # mupdf.fz_enumerate_font_cmap2() not available.
-            return []
         ucs_gids = mupdf.fz_enumerate_font_cmap2(self.this)
         ucss = [i.ucs for i in ucs_gids]
         ucss_unique = set(ucss)
@@ -13474,18 +13468,11 @@ TEXT_DEHYPHENATE = mupdf.FZ_STEXT_DEHYPHENATE
 TEXT_PRESERVE_SPANS = mupdf.FZ_STEXT_PRESERVE_SPANS
 TEXT_MEDIABOX_CLIP = mupdf.FZ_STEXT_MEDIABOX_CLIP
 TEXT_CID_FOR_UNKNOWN_UNICODE = mupdf.FZ_STEXT_USE_CID_FOR_UNKNOWN_UNICODE
-if mupdf_version_tuple >= (1, 25):
-    TEXT_COLLECT_STRUCTURE = mupdf.FZ_STEXT_COLLECT_STRUCTURE
-    TEXT_ACCURATE_BBOXES = mupdf.FZ_STEXT_ACCURATE_BBOXES
-    TEXT_COLLECT_VECTORS = mupdf.FZ_STEXT_COLLECT_VECTORS
-    TEXT_IGNORE_ACTUALTEXT = mupdf.FZ_STEXT_IGNORE_ACTUALTEXT
-    TEXT_STEXT_SEGMENT = mupdf.FZ_STEXT_SEGMENT
-else:
-    TEXT_COLLECT_STRUCTURE = 256
-    TEXT_ACCURATE_BBOXES = 512
-    TEXT_COLLECT_VECTORS = 1024
-    TEXT_IGNORE_ACTUALTEXT = 2048
-    TEXT_STEXT_SEGMENT = 4096
+TEXT_COLLECT_STRUCTURE = mupdf.FZ_STEXT_COLLECT_STRUCTURE
+TEXT_ACCURATE_BBOXES = mupdf.FZ_STEXT_ACCURATE_BBOXES
+TEXT_COLLECT_VECTORS = mupdf.FZ_STEXT_COLLECT_VECTORS
+TEXT_IGNORE_ACTUALTEXT = mupdf.FZ_STEXT_IGNORE_ACTUALTEXT
+TEXT_STEXT_SEGMENT = mupdf.FZ_STEXT_SEGMENT
 
 TEXTFLAGS_WORDS = (0
         | TEXT_PRESERVE_LIGATURES
@@ -16458,10 +16445,7 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             # FZ_STEXT_SYNTHETIC is per-char, not per-span.
             style.char_flags = ch.m_internal.flags & ~mupdf.FZ_STEXT_SYNTHETIC
         style.font = JM_font_name(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
-        if mupdf_version_tuple >= (1, 25):
-            style.argb = ch.m_internal.argb
-        else:
-            style.argb = ch.m_internal.color
+        style.argb = ch.m_internal.argb
         style.asc = JM_font_ascender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.desc = JM_font_descender(mupdf.FzFont(mupdf.ll_fz_keep_font(ch.m_internal.font)))
         style.bidi = ch.m_internal.bidi
