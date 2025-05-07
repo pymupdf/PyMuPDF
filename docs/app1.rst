@@ -94,7 +94,7 @@ Example output::
 HTML
 ~~~~
 
-:meth:`TextPage.extractHTML` (or *Page.get_text("html")* output fully reflects the structure of the page's *TextPage* -- much like DICT / JSON below. This includes images, font information and text positions. If wrapped in HTML header and trailer code, it can readily be displayed by an internet browser. Our above example::
+:meth:`TextPage.extractHTML` (or *Page.get_text("html")* output fully reflects the structure of the page's ``TextPage`` -- much like DICT / JSON below. This includes images, font information and text positions. If wrapped in HTML header and trailer code, it can readily be displayed by an internet browser. Our above example::
 
     >>> for line in page.get_text("html").splitlines():
             print(line)
@@ -159,7 +159,7 @@ To address the font issue, you can use a simple utility script to scan through t
 DICT (or JSON)
 ~~~~~~~~~~~~~~~~
 
-:meth:`TextPage.extractDICT` (or *Page.get_text("dict", sort=False)*) output fully reflects the structure of a *TextPage* and provides image content and position detail (*bbox* -- boundary boxes in pixel units) for every block, line and span. Images are stored as *bytes* for DICT output and base64 encoded strings for JSON output.
+:meth:`TextPage.extractDICT` (or *Page.get_text("dict", sort=False)*) output fully reflects the structure of a ``TextPage`` and provides image content and position detail (*bbox* -- boundary boxes in pixel units) for every block, line and span. Images are stored as *bytes* for DICT output and base64 encoded strings for JSON output.
 
 For a visualization of the dictionary structure have a look at :ref:`textpagedict`.
 
@@ -266,7 +266,7 @@ XHTML
 
 Text Extraction Flags Defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-* New in version 1.16.2: Method :meth:`Page.get_text` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than *None*, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
+* New in version 1.16.2: Method :meth:`Page.get_text` supports a keyword parameter *flags* *(int)* to control the amount and the quality of extracted data. The following table shows the defaults settings (flags parameter omitted or None) for each extraction variant. If you specify flags with a value other than ``None``, be aware that you must set **all desired** options. A description of the respective bit settings can be found in :ref:`TextPreserve`.
 
 * New in v1.19.6: The default combinations in the following table are now available as Python constants: :data:`TEXTFLAGS_TEXT`, :data:`TEXTFLAGS_WORDS`, :data:`TEXTFLAGS_BLOCKS`, :data:`TEXTFLAGS_DICT`, :data:`TEXTFLAGS_RAWDICT`, :data:`TEXTFLAGS_HTML`, :data:`TEXTFLAGS_XHTML`, :data:`TEXTFLAGS_XML`, and :data:`TEXTFLAGS_SEARCH`. You can now easily modify a default flag, e.g.
 

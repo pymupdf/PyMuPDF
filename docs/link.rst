@@ -69,13 +69,13 @@ There is a parent-child relationship between a link and its page. If the page ob
 
    .. attribute:: colors
 
-      Meaningful for PDF only: A dictionary of two tuples of floats in range `0 <= float <= 1` specifying the *stroke* and the interior (*fill*) colors. If not a PDF, *None* is returned. As mentioned above, the fill color is always `None` for links. The stroke color is used for the border of the link rectangle. The length of the tuple implicitly determines the colorspace: 1 = GRAY, 3 = RGB, 4 = CMYK. So `(1.0, 0.0, 0.0)` stands for RGB color red. The value of each float *f* is mapped to the integer value *i* in range 0 to 255 via the computation *f = i / 255*.
+      Meaningful for PDF only: A dictionary of two tuples of floats in range `0 <= float <= 1` specifying the *stroke* and the interior (*fill*) colors. If not a PDF, ``None`` is returned. As mentioned above, the fill color is always `None` for links. The stroke color is used for the border of the link rectangle. The length of the tuple implicitly determines the colorspace: 1 = GRAY, 3 = RGB, 4 = CMYK. So `(1.0, 0.0, 0.0)` stands for RGB color red. The value of each float *f* is mapped to the integer value *i* in range 0 to 255 via the computation *f = i / 255*.
 
       :rtype: dict
 
    .. attribute:: border
 
-      Meaningful for PDF only: A dictionary containing border characteristics. It will be *None* for non-PDFs and an empty dictionary if no border information exists. The following keys can occur:
+      Meaningful for PDF only: A dictionary containing border characteristics. It will be ``None`` for non-PDFs and an empty dictionary if no border information exists. The following keys can occur:
 
       * *width* -- a float indicating the border thickness in points. The value is -1.0 if no width is specified.
 
@@ -126,7 +126,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
    .. attribute:: next
 
-      The next link or *None*.
+      The next link or ``None``.
 
       :type: *Link*
 

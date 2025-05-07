@@ -113,11 +113,11 @@ To see how these fonts can be used -- including the **CJK built-in** fonts -- lo
 Adobe PDF References
 ---------------------------
 
-This PDF Reference manual published by Adobe is frequently quoted throughout this documentation. It can be viewed and downloaded from `here <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_.
+This PDF Reference manual published by Adobe is frequently quoted throughout this documentation. It can be viewed and downloaded from `opensource.adobe.com <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_.
 
-.. note:: For a long time, an older version was also available under `this <http://www.adobe.com/content/dam/Adobe/en/devnet/acrobat/pdfs/pdf_reference_1-7.pdf>`_ link. It seems to be taken off of the web site in October 2021. Earlier (pre 1.19.*) versions of the PyMuPDF documentation used to refer to this document. We have undertaken an effort to replace referrals to the current specification above.
 
 ------------
+
 
 .. _SequenceTypes:
 
@@ -174,7 +174,7 @@ Python on the other hand implements the OO-model in a very clean way. The interf
 
 When you use one of PyMuPDF's objects or methods, this will result in execution of some code in *pymupdf.py*, which in turn will call some C code compiled with *fitz_wrap.c*.
 
-Because SWIG goes a long way to keep the Python and the C level in sync, everything works fine, if a certain set of rules is being strictly followed. For example: **never access** a :ref:`Page` object, after you have closed (or deleted or set to *None*) the owning :ref:`Document`. Or, less obvious: **never access** a page or any of its children (links or annotations) after you have executed one of the document methods *select()*, *delete_page()*, *insert_page()* ... and more.
+Because SWIG goes a long way to keep the Python and the C level in sync, everything works fine, if a certain set of rules is being strictly followed. For example: **never access** a :ref:`Page` object, after you have closed (or deleted or set to ``None``) the owning :ref:`Document`. Or, less obvious: **never access** a page or any of its children (links or annotations) after you have executed one of the document methods *select()*, *delete_page()*, *insert_page()* ... and more.
 
 But just no longer accessing invalidated objects is actually not enough: They should rather be actively deleted entirely, to also free C-level resources (meaning allocated memory).
 
@@ -186,7 +186,7 @@ The required logic has therefore been built into PyMuPDF itself in the following
 
 1. If a page "loses" its owning document or is being deleted itself, all of its currently existing annotations and links will be made unusable in Python, and their C-level counterparts will be deleted and deallocated.
 
-2. If a document is closed (or deleted or set to *None*) or if its structure has changed, then similarly all currently existing pages and their children will be made unusable, and corresponding C-level deletions will take place. "Structure changes" include methods like *select()*, *delePage()*, *insert_page()*, *insert_pdf()* and so on: all of these will result in a cascade of object deletions.
+2. If a document is closed (or deleted or set to ``None``) or if its structure has changed, then similarly all currently existing pages and their children will be made unusable, and corresponding C-level deletions will take place. "Structure changes" include methods like *select()*, *delePage()*, *insert_page()*, *insert_pdf()* and so on: all of these will result in a cascade of object deletions.
 
 The programmer will normally not realize any of this. If he, however, tries to access invalidated objects, exceptions will be raised.
 
@@ -314,10 +314,10 @@ two ways:
   Call `set_messages()`:
 
 
-MuPDF errors and warnings
+|MuPDF| errors and warnings
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MuPDF generates text errors and warnings.
+|MuPDF| generates text errors and warnings.
 
 *
   These errors and warnings are appended to an internal list, accessible with
@@ -334,7 +334,7 @@ MuPDF generates text errors and warnings.
     These messages are prefixed with `MuPDF error:` and `MuPDF warning:`
     respectively.
   
-Some MuPDF errors may lead to Python exceptions.
+Some |MuPDF| errors may lead to Python exceptions.
 
 Example output for a **recoverable error**. We are opening a damaged PDF, but MuPDF is able to repair it and gives us a little information on what happened. Then we illustrate how to find out whether the document can later be saved incrementally. Checking the :attr:`Document.is_dirty` attribute at this point also indicates that during `pymupdf.open` the document had to be repaired:
 
@@ -395,7 +395,7 @@ Images have a coordinate system with integer coordinates. Origin `(0, 0)` is the
 Origin Point, Point Size and Y-Axis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In **PDF**, the origin `(0, 0)` of a page is located at its **bottom-left point**. In **MuPDF**, the origin `(0, 0)` of a page is located at its **top-left point**.
+In |PDF|, the origin `(0, 0)` of a page is located at its **bottom-left point**. In |MuPDF|, the origin `(0, 0)` of a page is located at its **top-left point**.
 
 
 .. image:: images/img-coordinate-space.png
@@ -404,14 +404,14 @@ Coordinates are float numbers and measured in **points**, where:
 
 - **one point equals 1/72 inches**.
 
-Typical document page sizes are **ISO A4** and **Letter**. A **Letter** page has a size of **8.5 x 11 inches**, corresponding to **612 x 792 points**. In the **PDF** coordinate system, the top-left point of a **Letter** page hence has the coordinate `(0, 792)` as **the y-axis points upwards**. Now we know our document size the **MuPDF** coordinate system for the bottom right would be coordinate `(612, 792)` (and for **PDF** this coordinate would then be `(612,0)`).
+Typical document page sizes are **ISO A4** and **Letter**. A **Letter** page has a size of **8.5 x 11 inches**, corresponding to **612 x 792 points**. In the |PDF| coordinate system, the top-left point of a **Letter** page hence has the coordinate `(0, 792)` as **the y-axis points upwards**. Now we know our document size the |MuPDF| coordinate system for the bottom right would be coordinate `(612, 792)` (and for |PDF| this coordinate would then be `(612,0)`).
 
-- Theoretically, there are **infinitely many** coordinate positions on a **PDF** page. In practice however, at most the first 5 decimal places are sufficient for a reasonable precision.
+- Theoretically, there are **infinitely many** coordinate positions on a |PDF| page. In practice however, at most the first 5 decimal places are sufficient for a reasonable precision.
 
 
-- In **MuPDF**, multiple document formats are supported - **PDF** just being one among **over a dozen others**. Images are also supported as documents in **MuPDF** (therefore having one page usually). This is one of the reasons why **MuPDF** uses a coordinate system with the origin `(0, 0)` being the **top-left** point of any document page. **The y-axis points downwards**, like with images. Coordinates in **MuPDF** in any case are floats, like in **PDF**.
+- In |MuPDF|, multiple document formats are supported - |PDF| just being one among **over a dozen others**. Images are also supported as documents in |MuPDF| (therefore having one page usually). This is one of the reasons why |MuPDF| uses a coordinate system with the origin `(0, 0)` being the **top-left** point of any document page. **The y-axis points downwards**, like with images. Coordinates in |MuPDF| in any case are floats, like in |PDF|.
 
-- A rectangle `Rect(0, 0, 100, 100)` for instance in **MuPDF** (and thus **PyMuPDF**) therefore is a square with edges of length 100 points (= 1.39 inches or 3.53 centimeters). Its top-left corner is the origin. To switch between the two coordinate systems **PDF** to **MuPDF**, every :ref:`Page` object has a :attr:`Page.transformation_matrix`. Its inverse can be used to compute a rectangle's PDF coordinates. In this way we can conveniently find that `Rect(0, 0, 100, 100)` in **MuPDF** is the same as `Rect(0, 692, 100, 792)` in **PDF**. See this code snippet::
+- A rectangle `Rect(0, 0, 100, 100)` for instance in |MuPDF| (and thus |PyMuPDF|) therefore is a square with edges of length 100 points (= 1.39 inches or 3.53 centimeters). Its top-left corner is the origin. To switch between the two coordinate systems |PDF| to |MuPDF|, every :ref:`Page` object has a :attr:`Page.transformation_matrix`. Its inverse can be used to compute a rectangle's PDF coordinates. In this way we can conveniently find that `Rect(0, 0, 100, 100)` in |MuPDF| is the same as `Rect(0, 692, 100, 792)` in |PDF|. See this code snippet::
 
     >>> page = doc.new_page(width=612, height=792)  # make new Letter page
     >>> ptm = page.transformation_matrix

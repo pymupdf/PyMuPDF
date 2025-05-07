@@ -81,17 +81,17 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg irect_like irect: The pixmap's position and dimension.
 
-      :arg bool alpha: Specifies whether transparency bytes should be included. Default is *False*.
+      :arg bool alpha: Specifies whether transparency bytes should be included. Default is ``False``.
 
    .. method:: __init__(self, colorspace, source)
 
-      **Copy and set colorspace:** Copy *source* pixmap converting colorspace. Any colorspace combination is possible, but source colorspace must not be *None*.
+      **Copy and set colorspace:** Copy *source* pixmap converting colorspace. Any colorspace combination is possible, but source colorspace must not be ``None``.
 
-      :arg colorspace: desired **target** colorspace. This **may also be** *None*. In this case, a "masking" pixmap is created: its :attr:`Pixmap.samples` will consist of the source's alpha bytes only.
+      :arg colorspace: desired **target** colorspace. This **may also be** ``None``. In this case, a "masking" pixmap is created: its :attr:`Pixmap.samples` will consist of the source's alpha bytes only.
       :type colorspace: :ref:`Colorspace`
 
       :arg source: the source pixmap.
-      :type source: *Pixmap*
+      :type source: ``Pixmap``
 
    .. method:: __init__(self, source, mask)
 
@@ -107,10 +107,10 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: __init__(self, source, width, height, [clip])
 
-      **Copy and scale:** Copy *source* pixmap, scaling new width and height values -- the image will appear stretched or shrunk accordingly. Supports partial copying. The source colorspace may be *None*.
+      **Copy and scale:** Copy *source* pixmap, scaling new width and height values -- the image will appear stretched or shrunk accordingly. Supports partial copying. The source colorspace may be ``None``.
 
       :arg source: the source pixmap.
-      :type source: *Pixmap*
+      :type source: ``Pixmap``
 
       :arg float width: desired target width.
 
@@ -125,9 +125,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       **Copy and add or drop alpha:** Copy *source* and add or drop its alpha channel. Identical copy if *alpha* equals *source.alpha*. If an alpha channel is added, its values will be set to 255.
 
       :arg source: source pixmap.
-      :type source: *Pixmap*
+      :type source: ``Pixmap``
 
-      :arg bool alpha: whether the target will have an alpha channel, default and mandatory if source colorspace is *None*.
+      :arg bool alpha: whether the target will have an alpha channel, default and mandatory if source colorspace is ``None``.
 
       .. note:: A typical use includes separation of color and transparency bytes in separate pixmaps. Some applications require this like e.g. *wx.Bitmap.FromBufferAndAlpha()* of *wxPython*:
 
@@ -179,7 +179,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       **From a PDF image:** Create a pixmap from an image **contained in PDF** *doc* identified by its :data:`xref`. All pimap properties are set by the image. Have a look at `extract-img1.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img1.py>`_ and `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img2.py>`_ to see how this can be used to recover all of a PDF's images.
 
-      :arg doc: an opened **PDF** document.
+      :arg doc: an opened |PDF| document.
       :type doc: :ref:`Document`
 
       :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.get_page_images`, which also shows the :data:`xref` numbers of each image.
@@ -210,7 +210,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: gamma_with(gamma)
 
-      Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with colorspace *None* are ignored with a warning.
+      Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with colorspace ``None`` are ignored with a warning.
 
       :arg float gamma: *gamma = 1.0* does nothing, *gamma < 1.0* lightens, *gamma > 1.0* darkens the image.
 
@@ -248,7 +248,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg sequence color: the desired value, given as a sequence of integers in `range(256)`. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
       :rtype: bool
-      :returns: *False* if the rectangle was invalid or had an empty intersection with :attr:`Pixmap.irect`, else *True*.
+      :returns: ``False`` if the rectangle was invalid or had an empty intersection with :attr:`Pixmap.irect`, else ``True``.
 
       .. note::
 
@@ -285,12 +285,12 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (`None`), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
       :arg bool premultiply: *New in v1.18.13:* whether to premultiply color components with the alpha value.
-      :arg list,tuple opaque: ignore the alpha value and set this color to fully transparent. A sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. Default is *None*. For example, a typical choice for RGB would be `opaque=(255, 255, 255)` (white).
+      :arg list,tuple opaque: ignore the alpha value and set this color to fully transparent. A sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. Default is ``None``. For example, a typical choice for RGB would be `opaque=(255, 255, 255)` (white).
 
 
    .. method:: invert_irect([irect])
 
-      Invert the color of all pixels in :ref:`IRect` *irect*. Will have no effect if colorspace is *None*.
+      Invert the color of all pixels in :ref:`IRect` *irect*. Will have no effect if colorspace is ``None``.
 
       :arg irect_like irect: The area to be inverted. Omit to invert everything.
 
@@ -486,7 +486,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: colorspace
 
-      The colorspace of the pixmap. This value may be *None* if the image is to be treated as a so-called *image mask* or *stencil mask* (currently happens for extracted PDF document images only).
+      The colorspace of the pixmap. This value may be ``None`` if the image is to be treated as a so-called *image mask* or *stencil mask* (currently happens for extracted PDF document images only).
 
       :type: :ref:`Colorspace`
 
@@ -610,7 +610,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: n
 
-      Number of components per pixel. This number depends on colorspace and alpha. If colorspace is not *None* (stencil masks), then *Pixmap.n - Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is *None*, then *n == alpha == 1*.
+      Number of components per pixel. This number depends on colorspace and alpha. If colorspace is not ``None`` (stencil masks), then *Pixmap.n - Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is ``None``, then *n == alpha == 1*.
 
       :type: int
 
@@ -628,7 +628,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. attribute:: interpolate
 
-      An information-only boolean flag set to *True* if the image will be drawn using "linear interpolation". If *False* "nearest neighbour sampling" will be used.
+      An information-only boolean flag set to ``True`` if the image will be drawn using "linear interpolation". If ``False`` "nearest neighbour sampling" will be used.
 
       :type: bool
 

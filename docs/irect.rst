@@ -72,7 +72,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
    .. method:: contains(x)
 
-      Checks whether *x* is contained in the rectangle. It may be :data:`rect_like`, :data:`point_like` or a number. If *x* is an empty rectangle, this is always true. Conversely, if the rectangle is empty this is always *False*, if *x* is not an empty rectangle and not a number. If *x* is a number, it will be checked to be one of the four components. *x in irect* and *irect.contains(x)* are equivalent.
+      Checks whether *x* is contained in the rectangle. It may be :data:`rect_like`, :data:`point_like` or a number. If *x* is an empty rectangle, this is always true. Conversely, if the rectangle is empty this is always ``False``, if *x* is not an empty rectangle and not a number. If *x* is a number, it will be checked to be one of the four components. *x in irect* and *irect.contains(x)* are equivalent.
 
       :arg x: the object to check.
       :type x: :ref:`IRect` or :ref:`Rect` or :ref:`Point` or int
@@ -81,7 +81,7 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
    .. method:: intersects(r)
 
-      Checks whether the rectangle and the :data:`rect_like` "r" contain a common non-empty :ref:`IRect`. This will always be *False* if either is infinite or empty.
+      Checks whether the rectangle and the :data:`rect_like` "r" contain a common non-empty :ref:`IRect`. This will always be ``False`` if either is infinite or empty.
 
       :arg rect_like r: the rectangle to check.
 
@@ -200,13 +200,13 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
    .. attribute:: is_infinite
 
-      *True* if rectangle is infinite, *False* otherwise.
+      ``True`` if rectangle is infinite, ``False`` otherwise.
 
       :type: bool
 
    .. attribute:: is_empty
 
-      *True* if rectangle is empty, *False* otherwise.
+      ``True`` if rectangle is empty, ``False`` otherwise.
 
       :type: bool
 

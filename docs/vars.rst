@@ -419,7 +419,7 @@ See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for details.
 
 Annotation Types
 ~~~~~~~~~~~~~~~~~
-These identifiers also cover **links** and **widgets**: the PDF specification technically handles them all in the same way, whereas **MuPDF** (and PyMuPDF) treats them as three basically different types of objects.
+These identifiers also cover **links** and **widgets**: the PDF specification technically handles them all in the same way, whereas |MuPDF| (and PyMuPDF) treats them as three basically different types of objects.
 
 ::
 

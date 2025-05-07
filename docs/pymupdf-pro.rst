@@ -96,7 +96,7 @@ Import |PyMuPDF Pro| and you can then reference **Office** documents directly, e
 From then on you can work with document pages just as you would do normally, but with respect to the `restrictions <PyMuPDFPro_Restrictions>`.
 
 
-Converting an **Office** document to **PDF**
+Converting an **Office** document to |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The following code snippet can convert your **Office** document to |PDF| format:

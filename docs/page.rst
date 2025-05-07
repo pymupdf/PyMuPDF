@@ -1918,7 +1918,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: load_widget(xref)
 
-      PDF only: return the field identified by *xref*.
+      PDF only: return the field identified by :data:`xref`.
 
       :arg int xref: the field's xref.
 
@@ -2281,7 +2281,7 @@ Each entry of the :meth:`Page.get_links` list is a dictionary with the following
 
 * *uri*:  a string specifying the destination internet resource. Required for *LINK_URI*, else ignored. You should make sure to start this string with an unambiguous substring, that classifies the subtype of the URL, like `"http://"`, `"https://"`, `"file://"`, `"ftp://"`, `"mailto:"`, etc. Otherwise your browser will try to interpret the text and come to unwanted / unexpected conclusions about the intended URL type.
 
-* *xref*: an integer specifying the PDF :data:`xref` of the link object. Do not change this entry in any way. Required for link deletion and update, otherwise ignored. For non-PDF documents, this entry contains *-1*. It is also *-1* for **all** entries in the *get_links()* list, if **any** of the links is not supported by MuPDF - see :ref:`notes_on_supporting_links`.
+* :data:`xref`: an integer specifying the PDF :data:`xref` of the link object. Do not change this entry in any way. Required for link deletion and update, otherwise ignored. For non-PDF documents, this entry contains *-1*. It is also *-1* for **all** entries in the *get_links()* list, if **any** of the links is not supported by MuPDF - see :ref:`notes_on_supporting_links`.
 
 .. _notes_on_supporting_links:
 

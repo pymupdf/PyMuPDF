@@ -167,7 +167,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: contains(x)
 
-      Checks whether *x* is contained in the rectangle. It may be an *IRect*, *Rect*, *Point* or number. If *x* is an empty rectangle, this is always true. If the rectangle is empty this is always *False* for all non-empty rectangles and for all points. `x in rect` and `rect.contains(x)` are equivalent.
+      Checks whether *x* is contained in the rectangle. It may be an *IRect*, *Rect*, *Point* or number. If *x* is an empty rectangle, this is always true. If the rectangle is empty this is always ``False`` for all non-empty rectangles and for all points. `x in rect` and `rect.contains(x)` are equivalent.
 
       :arg x: the object to check.
       :type x: :data:`rect_like` or :data:`point_like`.
@@ -176,7 +176,7 @@ The following remarks are also valid for :ref:`IRect` objects:
 
    .. method:: intersects(r)
 
-      Checks whether the rectangle and a :data:`rect_like` "r" contain a common non-empty :ref:`Rect`. This will always be *False* if either is infinite or empty.
+      Checks whether the rectangle and a :data:`rect_like` "r" contain a common non-empty :ref:`Rect`. This will always be ``False`` if either is infinite or empty.
 
       :arg rect_like r: the rectangle to check.
 

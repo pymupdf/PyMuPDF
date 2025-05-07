@@ -75,7 +75,7 @@ Using this object entails three steps:
       :arg font: a :ref:`Font`. If omitted, `pymupdf.Font("helv")` will be used.
       :arg float fontsize: the :data:`fontsize`, a positive number, default 11.
       :arg str language: the language to use, e.g. "en" for English. Meaningful values should be compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future use: currently has no effect as far as we know.
-      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
+      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is ``False``. If ``True``, any Latin parts within the text will automatically converted. There are no other consequences, i.e. :attr:`TextWriter.last_point` will still be the rightmost character, and there neither is any alignment taking place. Hence you may want to use :meth:`TextWriter.fill_textbox` instead.
       :arg bool small_caps: *(New in v1.18.15)* look for the character's Small Capital version in the font. If present, take that value instead. Otherwise the original character (this font or the fallback font) will be taken. The fallback font will never return small caps. For example, this snippet::
 
          >>> doc = pymupdf.open()
@@ -124,10 +124,10 @@ Using this object entails three steps:
       :arg font: the :ref:`Font`, default `pymupdf.Font("helv")`.
       :arg float fontsize: the :data:`fontsize`.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
-      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is *False*. If *True*, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
+      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is ``False``. If ``True``, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
       :arg bool warn: on text overflow do nothing, warn, or raise an exception. Overflow text will never be written. **Changed in v1.18.9:**
 
-        * Default is *None*.
+        * Default is ``None``.
         * The list of overflow lines will be returned.
 
       :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.

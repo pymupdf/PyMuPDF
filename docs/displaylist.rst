@@ -37,7 +37,7 @@ A display list is populated with objects from a page, usually by executing :meth
       :arg mediabox: The page's rectangle.
       :type mediabox: :ref:`Rect`
 
-      :rtype: *DisplayList*
+      :rtype: ``DisplayList``
 
    .. method:: run(device, matrix, area)
     
