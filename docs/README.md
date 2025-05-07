@@ -14,8 +14,8 @@ Within `docs` update the associated restructured text (`.rst`) files. These file
 
 ### Conventions
 
-- Code parameters should be referenced within backticks, not italics, double backtick is better for safety
-- When referencing names of common things surround with | , e.g. |PyMuPDF| , not PyMuPDF, see `header.rst` for names listing
+- Code parameters and referenced code objects should be referenced within backticks, not italics, double backtick is better for safety
+- When referencing names of some of our products surround with | , e.g. |PyMuPDF| , not PyMuPDF, see `header.rst` for products names listing
 - When hyperlinking, avoid inline hyperlinks and try to references link from common location at page bottom, also avoid the use of "here" or "click here" as this provides little information about the link content. e.g.
 
 "`Click here <link>` for our Story class". Should be re-written to something more like "Find out more `on our Story class <link>`"

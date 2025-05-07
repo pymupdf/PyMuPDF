@@ -133,7 +133,7 @@ The following remarks are also valid for :ref:`IRect` objects:
       :arg m: The matrix for the transformation.
       :type m: :data:`matrix_like`
 
-      :rtype: *Rect*
+      :rtype: ``Rect``
       :returns: the smallest rectangle that contains the transformed original.
 
    .. method:: intersect(r)

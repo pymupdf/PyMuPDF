@@ -184,7 +184,7 @@ Using this object entails three steps:
       :rtype: :ref:`Rect`
 
 
-.. note:: To see some demo scripts dealing with TextWriter, have a look at `this <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ repository.
+.. note:: To see some demo scripts dealing with TextWriter, have a look at `the TextWriter demo scripts <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_.
 
   1. Opacity and color apply to **all the text** in this object.
   2. If you need different colors / transparency, you must create a separate TextWriter. Whenever you determine the color should change, simply append the text to the respective TextWriter using the previously returned :attr:`last_point` as position for the new text span.
