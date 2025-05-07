@@ -7,11 +7,14 @@
 import io
 import os
 
+import fnmatch
+import json
 import pymupdf
 import pathlib
 import pickle
 import platform
 import re
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -1417,6 +1420,146 @@ def test_open():
     check(stream=stream, exception=(etype, etext))
     
     check(stream=b'', exception=(pymupdf.EmptyFileError, re.escape('Cannot open empty stream.')))
+
+
+def test_open2():
+    '''
+    Checks behaviour of fz_open_document() and fz_open_document_with_stream()
+    with different filenames/magic values.
+    '''
+    root = os.path.normpath(f'{__file__}/../..')
+    root = relpath(root)
+    
+    # Find tests/resources/test_open2.* input files/streams. We calculate
+    # paths relative to the PyMuPDF checkout directory <root>, to allow use
+    # of tests/resources/test_open2_expected.json regardless of the actual
+    # checkout directory.
+    print()
+    sys.path.append(root)
+    try:
+        import pipcl
+    finally:
+        del sys.path[0]
+    paths = pipcl.git_items(f'{root}/tests/resources')
+    paths = fnmatch.filter(paths, f'test_open2.*')
+    paths = [f'tests/resources/{i}' for i in paths]
+    
+    # Get list of extensions of input files.
+    extensions = set()
+    extensions.add('.txt')
+    extensions.add('')
+    for path in paths:
+        _, ext = os.path.splitext(path)
+        extensions.add(ext)
+    extensions = sorted(list(extensions))
+    
+    def get_result(e, document):
+        '''
+        Return fz_lookup_metadata(document, 'format') or [ERROR].
+        '''
+        if e:
+            return f'[error]'
+        else:
+            try:
+                return pymupdf.mupdf.fz_lookup_metadata2(document, 'format')
+            except Exception:
+                return ''
+    
+    def dict_set_path(dict_, *items):
+        for item in items[:-2]:
+            dict_ = dict_.setdefault(item, dict())
+        dict_[items[-2]] = items[-1]
+
+    results = dict()
+    
+    # Prevent warnings while we are running.
+    _g_out_message = pymupdf._g_out_message
+    pymupdf._g_out_message = None
+    try:
+        results = dict()
+        
+        for path in paths:
+            print(path)
+            for ext in extensions:
+                path2 = f'foo{ext}'
+                shutil.copy2(f'{root}/{path}', path2)
+                
+                # Test fz_open_document().
+                e = None
+                document = None
+                try:
+                    document = pymupdf.mupdf.fz_open_document(path2)
+                except Exception as ee:
+                    e = ee
+                wt = pymupdf.TOOLS.mupdf_warnings()
+                text = get_result(e, document)
+                print(f'    fz_open_document({path2})  => {text}')
+                dict_set_path(results, path, ext, 'file', text)
+
+                # Test fz_open_document_with_stream().
+                e = None
+                document = None
+                with open(f'{root}/{path}', 'rb') as f:
+                    data = f.read()
+                stream = pymupdf.mupdf.fz_open_memory(pymupdf.mupdf.python_buffer_data(data), len(data))
+                try:
+                    document = pymupdf.mupdf.fz_open_document_with_stream(ext, stream)
+                except Exception as ee:
+                    e = ee
+                wt = pymupdf.TOOLS.mupdf_warnings()
+                text = get_result(e, document)
+                print(f'    fz_open_document_with_stream(magic={ext!r}) => {text}')
+                dict_set_path(results, path, ext, 'stream', text)
+                
+    finally:
+        pymupdf._g_out_message = _g_out_message
+    
+    # Create html table.
+    path_html = os.path.normpath(f'{__file__}/../../tests/test_open2.html')
+    with open(path_html, 'w') as f:
+        f.write(f'<html>\n')
+        f.write(f'<body>\n')
+        f.write(f'<table border="1" style="border-collapse:collapse" cellpadding="4">\n')
+        f.write(f'<tr><td></td><th colspan="{len(extensions)}">Extension/magic')
+        f.write(f'<tr><th style="border-bottom: 4px solid black; border-right: 4px solid black;">Data file</th>')
+        for ext in extensions:
+            f.write(f'<th style="border-bottom: 4px solid black;">{ext}</th>')
+        f.write('\n')
+        for path in sorted(results.keys()):
+            _, ext = os.path.splitext(path)
+            f.write(f'<tr><th style="border-right: 4px solid black;">{os.path.basename(path)}</th>')
+            for ext2 in sorted(results[path].keys()):
+                text_file = results[path][ext2]['file']
+                text_stream = results[path][ext2]['stream']
+                b1, b2 = ('<b>', '</b>') if ext2==ext else ('', '')
+                if text_file == text_stream:
+                    if text_file == '[error]':
+                        f.write(f'<td><div style="color: #808080;">{b1}{text_file}{b2}</div></td>')
+                    else:
+                        f.write(f'<td>{b1}{text_file}{b2}</td>')
+                else:
+                    f.write(f'<td>file: {b1}{text_file}{b2}</td><br>')
+                    f.write(f'<td>stream: {b1}{text_stream}{b2}</td>')
+            f.write('</tr>\n')
+        f.write(f'</table>\n')
+        f.write(f'/<body>\n')
+        f.write(f'</html>\n')
+    print(f'Have created: {path_html}')
+    
+    with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
+        results_expected = json.load(f)
+    
+    if pymupdf.mupdf_version_tuple >= (1, 26):
+        if results != results_expected:
+            print(f'results != results_expected:')
+            def show(r, name):
+                text = json.dumps(r, indent=4, sort_keys=1)
+                print(f'{name}:')
+                print(textwrap.indent(text, '    '))
+            show(results_expected, 'results_expected')
+            show(results, 'results')
+            assert 0
+    
 
 def test_533():
     if not hasattr(pymupdf, 'mupdf'):
