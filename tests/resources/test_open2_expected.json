@@ -1,0 +1,808 @@
+{
+    "tests/resources/test_open2.cbz": {
+        "": {
+            "file": "zip",
+            "stream": "zip"
+        },
+        ".cbz": {
+            "file": "zip",
+            "stream": "zip"
+        },
+        ".doc": {
+            "file": "zip",
+            "stream": "zip"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.doc": {
+        "": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".cbz": {
+            "file": "cfb",
+            "stream": "cfb"
+        },
+        ".doc": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.docx": {
+        "": {
+            "file": "Office document",
+            "stream": "Office document"
+        },
+        ".cbz": {
+            "file": "zip",
+            "stream": "zip"
+        },
+        ".doc": {
+            "file": "Office document",
+            "stream": "Office document"
+        },
+        ".docx": {
+            "file": "Office document",
+            "stream": "Office document"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.epub": {
+        "": {
+            "file": "EPUB",
+            "stream": "EPUB"
+        },
+        ".cbz": {
+            "file": "zip",
+            "stream": "zip"
+        },
+        ".doc": {
+            "file": "EPUB",
+            "stream": "EPUB"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "EPUB",
+            "stream": "EPUB"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.fb2": {
+        "": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".cbz": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".doc": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.html": {
+        "": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".cbz": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".doc": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.jpg": {
+        "": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".cbz": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".doc": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".docx": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".epub": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".fb2": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".html": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".pdf": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".svg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".txt": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".xhtml": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".xml": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".xps": {
+            "file": "Image",
+            "stream": "Image"
+        }
+    },
+    "tests/resources/test_open2.mobi": {
+        "": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".cbz": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".doc": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "MOBI",
+            "stream": "MOBI"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.pdf": {
+        "": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".cbz": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".doc": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".docx": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".epub": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".fb2": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".html": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".jpg": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".mobi": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".pdf": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".svg": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".txt": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".xhtml": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".xml": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        },
+        ".xps": {
+            "file": "PDF 1.5",
+            "stream": "PDF 1.5"
+        }
+    },
+    "tests/resources/test_open2.svg": {
+        "": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".cbz": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".doc": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".docx": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".epub": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".fb2": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".html": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".jpg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".mobi": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".pdf": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".xhtml": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".xml": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".xps": {
+            "file": "SVG",
+            "stream": "SVG"
+        }
+    },
+    "tests/resources/test_open2.xhtml": {
+        "": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".cbz": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".doc": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.xml": {
+        "": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".cbz": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".doc": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".docx": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".epub": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".fb2": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".html": {
+            "file": "HTML5",
+            "stream": "HTML5"
+        },
+        ".jpg": {
+            "file": "Image",
+            "stream": "Image"
+        },
+        ".mobi": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".pdf": {
+            "file": "[error]",
+            "stream": "[error]"
+        },
+        ".svg": {
+            "file": "SVG",
+            "stream": "SVG"
+        },
+        ".txt": {
+            "file": "Text",
+            "stream": "Text"
+        },
+        ".xhtml": {
+            "file": "XHTML",
+            "stream": "XHTML"
+        },
+        ".xml": {
+            "file": "FictionBook2",
+            "stream": "FictionBook2"
+        },
+        ".xps": {
+            "file": "[error]",
+            "stream": "[error]"
+        }
+    },
+    "tests/resources/test_open2.xps": {
+        "": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".cbz": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".doc": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".docx": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".epub": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".fb2": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".html": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".jpg": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".mobi": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".pdf": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".svg": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".txt": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".xhtml": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".xml": {
+            "file": "XPS",
+            "stream": "XPS"
+        },
+        ".xps": {
+            "file": "XPS",
+            "stream": "XPS"
+        }
+    }
+}
