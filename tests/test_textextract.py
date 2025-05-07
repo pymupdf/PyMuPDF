@@ -197,7 +197,7 @@ def test_2954():
     text_none, n_fffd_none = get()
     text_0, n_fffd_0 = get(flags0)
     
-    text_1, n_fffd_1 = get(flags0 | pymupdf.TEXT_CID_FOR_UNKNOWN_UNICODE)
+    text_1, n_fffd_1 = get(flags0 | pymupdf.TEXT_USE_CID_FOR_UNKNOWN_UNICODE)
 
     assert n_fffd_none == n_fffd_good
     assert n_fffd_0 == n_fffd_bad
@@ -434,7 +434,7 @@ def test_4139():
     flags = (0
             | pymupdf.TEXT_PRESERVE_IMAGES
             | pymupdf.TEXT_PRESERVE_WHITESPACE
-            | pymupdf.TEXT_CID_FOR_UNKNOWN_UNICODE
+            | pymupdf.TEXT_USE_CID_FOR_UNKNOWN_UNICODE
             )
     with pymupdf.open(path) as document:
         page = document[0]
