@@ -1030,6 +1030,7 @@ class Annot:
         CheckParent(self)
         options = mupdf.FzStextOptions(flags)
         if clip:
+            assert hasattr(mupdf, 'FZ_STEXT_CLIP_RECT'), f'MuPDF-{mupdf_version} does not support FZ_STEXT_CLIP_RECT.'
             clip2 = JM_rect_from_py(clip)
             options.clip = clip2.internal()
             options.flags |= mupdf.FZ_STEXT_CLIP_RECT
