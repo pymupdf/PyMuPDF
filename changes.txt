@@ -2,6 +2,29 @@ Change Log
 ==========
 
 
+**Changes in version 1.25.6 ()**
+
+* Fixed issues:
+
+  * **Fixed** `4404 <https://github.com/pymupdf/PyMuPDF/issues/4404>`_: 
+  * **Fixed** `4439 <https://github.com/pymupdf/PyMuPDF/issues/4439>`_: 
+  * **Fixed** `4412 <https://github.com/pymupdf/PyMuPDF/issues/4412>`_: 
+  * **Fixed** `4324 <https://github.com/pymupdf/PyMuPDF/issues/4324>`_: 
+  * **Fixed** `4447 <https://github.com/pymupdf/PyMuPDF/issues/4447>`_: 
+
+* Other:
+
+  * Support image stamp annotations.
+  * Support recoloring pages.
+  * Added example of using Django's file storage API to open files with pymupdf.
+  * Clarified FreeText annotation color options.
+    We now raise an exception if an attempt is made to set attributes that can not be supported.
+  * Fixed potential segv in Pixmap.is_unicolor().
+  * Added runtime assert that that PyMuPDF and MuPDF were built with compatible
+    NDEBUG settings (related to `4390 <https://github.com/pymupdf/PyMuPDF/issues/4390>`_).
+  * Simplified handling of filename/filetype when opening documents.
+
+
 **Changes in version 1.25.5 (2025-03-31)**
 
 * Fixed issues:
