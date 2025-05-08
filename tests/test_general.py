@@ -1425,6 +1425,10 @@ def test_open2():
     Checks behaviour of fz_open_document() and fz_open_document_with_stream()
     with different filenames/magic values.
     '''
+    if platform.system() == 'Windows':
+        print(f'test_open2(): not running on Windows because `git ls-files` known fail on Github Windows runners.')
+        return
+    
     root = os.path.normpath(f'{__file__}/../..')
     root = relpath(root)
     
