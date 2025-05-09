@@ -60,17 +60,17 @@ msgstr ""
 "/PyMuPDF-Utilities>`_ には、豊富な例、デモ、およびユースケースが含まれています。"
 
 #: ../../resources.rst:31 a988ec2fa8394fa0b393ad0e6da6b227
-msgid "Do you need **PDF** to **DOCX** conversion?"
-msgstr "**PDF** を **DOCX** に変換する必要がありますか？"
+msgid "Do you need |PDF| to **DOCX** conversion?"
+msgstr "|PDF| を **DOCX** に変換する必要がありますか？"
 
 #: ../../resources.rst:33 7401720778844c0cb5feb42073d3acd1
 msgid ""
-"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"We recommend the pdf2docx_ library which uses |PyMuPDF| and the "
 "**python-docx** library to provide simple document conversion from "
-"**PDF** to **DOCX** format."
+"|PDF| to **DOCX** format."
 msgstr ""
-"pdf2docx_ ライブラリをお勧めします。これは、**PDF** から **DOCX** 形式への簡単なドキュメント変換を提供するために "
-"**PyMuPDF** と **python-docx** ライブラリを使用しています。"
+"pdf2docx_ ライブラリをお勧めします。これは、|PDF| から **DOCX** 形式への簡単なドキュメント変換を提供するために "
+"|PyMuPDF| と **python-docx** ライブラリを使用しています。"
 
 #: ../../footer.rst:60 fdbaf044197a47369288f1a5a0bc21fc
 msgid "This documentation covers all versions up to |version|."

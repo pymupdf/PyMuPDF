@@ -467,25 +467,25 @@ msgstr "ピクマップの位置と寸法。"
 #: ../../pixmap.rst:83 e675e8b40c614575a6467d7adbab7466
 msgid ""
 "Specifies whether transparency bytes should be included. Default is "
-"*False*."
-msgstr "透明度バイトを含めるかどうかを指定します。デフォルトは *False* です。"
+"``False``."
+msgstr "透明度バイトを含めるかどうかを指定します。デフォルトは ``False`` です。"
 
 #: ../../pixmap.rst:87 eed5de98cfda427bab6eb165b67cfd61
 msgid ""
 "**Copy and set colorspace:** Copy *source* pixmap converting colorspace. "
 "Any colorspace combination is possible, but source colorspace must not be"
-" *None*."
+" ``None``."
 msgstr ""
 "**コピーとカラースペースの設定:** カラースペースを変換しながら *ソース* "
-"ピクマップをコピーします。どのカラースペースの組み合わせでも可能ですが、ソースカラースペースは *None* であってはいけません。"
+"ピクマップをコピーします。どのカラースペースの組み合わせでも可能ですが、ソースカラースペースは ``None`` であってはいけません。"
 
 #: ../../pixmap.rst:89 81e9b0558fe549d89145823bbd70d282
 msgid ""
-"desired **target** colorspace. This **may also be** *None*. In this case,"
+"desired **target** colorspace. This **may also be** ``None``. In this case,"
 " a \"masking\" pixmap is created: its :attr:`Pixmap.samples` will consist"
 " of the source's alpha bytes only."
 msgstr ""
-"**ターゲット** となるカラースペース。これは *None* **である場合もあります** 。この場合、 \"マスク\" "
+"**ターゲット** となるカラースペース。これは ``None`` **である場合もあります** 。この場合、 \"マスク\" "
 "ピクマップが作成されます。その :attr:`Pixmap.samples` は、ソースのアルファバイトだけで構成されます。"
 
 #: ../../pixmap.rst:92 ../../pixmap.rst:111 3d95b72c0e1c4c10921ced354248ebaf
@@ -515,11 +515,11 @@ msgstr "マスクピクマップ。グレースケールのピクマップであ
 msgid ""
 "**Copy and scale:** Copy *source* pixmap, scaling new width and height "
 "values -- the image will appear stretched or shrunk accordingly. Supports"
-" partial copying. The source colorspace may be *None*."
+" partial copying. The source colorspace may be ``None``."
 msgstr ""
 "**コピーとスケーリング:** "
 "ソースピクマップをコピーし、新しい幅と高さの値にスケーリングします。イメージはそれに応じてストレッチまたは縮小されます。部分的なコピーをサポートしています。ソースカラースペースは"
-" *None* であってもかまいません。"
+" ``None`` であってもかまいません。"
 
 #: ../../pixmap.rst:114 add02cdc16184f8b93aab2e6868113de
 msgid "desired target width."
@@ -558,8 +558,8 @@ msgstr "ソースのピクマップ。"
 #: ../../pixmap.rst:129 9d0d3020d95644419270f242bd10e721
 msgid ""
 "whether the target will have an alpha channel, default and mandatory if "
-"source colorspace is *None*."
-msgstr "対象にアルファチャンネルがあるかどうか、デフォルトで、ソースのcolorspaceが *None* の場合は必須です。"
+"source colorspace is ``None``."
+msgstr "対象にアルファチャンネルがあるかどうか、デフォルトで、ソースのcolorspaceが ``None`` の場合は必須です。"
 
 #: ../../pixmap.rst:131 ecb350af29e94c7c86bd9302cd3741ef
 msgid ""
@@ -698,8 +698,8 @@ msgstr ""
 "をご覧ください。これにより、PDFのすべてのイメージを復元できます。"
 
 #: ../../pixmap.rst:181 6f929fa13fee4991a1d5b0be02119c89
-msgid "an opened **PDF** document."
-msgstr "開かれた **PDF** ドキュメント。"
+msgid "an opened |PDF| document."
+msgstr "開かれた |PDF| ドキュメント。"
 
 #: ../../pixmap.rst:184 e937d117978049858e1d2adb5355a9cf
 msgid ""
@@ -774,8 +774,8 @@ msgstr "`tint_with(0xFF0000, 0x0000FF)` は黒を赤に変更し、白を青に�
 #: ../../pixmap.rst:212 1b72d750c0614bfa96598cf9b92e0a9f
 msgid ""
 "Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with"
-" colorspace *None* are ignored with a warning."
-msgstr "ピクセルマップにガンマ係数を適用し、つまり明るくしたり暗くしたりします。色空間が *None* のピクセルマップは警告とともに無視されます。"
+" colorspace ``None`` are ignored with a warning."
+msgstr "ピクセルマップにガンマ係数を適用し、つまり明るくしたり暗くしたりします。色空間が ``None`` のピクセルマップは警告とともに無視されます。"
 
 #: ../../pixmap.rst:214 f7f82e1500894678ab67e9463845319f
 msgid ""
@@ -887,9 +887,9 @@ msgstr ""
 
 #: ../../pixmap.rst:250 cad89ee4645d4720b61f0a3a07a69556
 msgid ""
-"*False* if the rectangle was invalid or had an empty intersection with "
-":attr:`Pixmap.irect`, else *True*."
-msgstr "irectが無効であるか、:attr:`Pixmap.irect` と交差しない場合は *False*、それ以外の場合は *True* 。"
+"``False`` if the rectangle was invalid or had an empty intersection with "
+":attr:`Pixmap.irect`, else ``True``."
+msgstr "irectが無効であるか、:attr:`Pixmap.irect` と交差しない場合は ``False``、それ以外の場合は ``True`` 。"
 
 #: ../../pixmap.rst:254 ca74972e297e469bb23db2acebeda0de
 msgid ""
@@ -978,18 +978,18 @@ msgstr "*v1.18.13で新登場：* カラーコンポーネントをアルファ�
 msgid ""
 "ignore the alpha value and set this color to fully transparent. A "
 "sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. "
-"Default is *None*. For example, a typical choice for RGB would be "
+"Default is ``None``. For example, a typical choice for RGB would be "
 "`opaque=(255, 255, 255)` (white)."
 msgstr ""
 "アルファ値を無視し、この色を完全に透明に設定します。長さが :attr:`Pixmap.n` で `range(256)` "
-"内の整数のシーケンスです。デフォルトは *None* です。たとえば、RGBの典型的な選択肢は `opaque=(255, 255, 255)` "
+"内の整数のシーケンスです。デフォルトは ``None`` です。たとえば、RGBの典型的な選択肢は `opaque=(255, 255, 255)` "
 "（白）です。"
 
 #: ../../pixmap.rst:292 446c70bfb33b412b9c5217ca057edebf
 msgid ""
 "Invert the color of all pixels in :ref:`IRect` *irect*. Will have no "
-"effect if colorspace is *None*."
-msgstr ":ref:`IRect` *irect* 内のすべてのピクセルの色を反転させます。colorspaceが *None* の場合は効果がありません。"
+"effect if colorspace is ``None``."
+msgstr ":ref:`IRect` *irect* 内のすべてのピクセルの色を反転させます。colorspaceが ``None`` の場合は効果がありません。"
 
 #: ../../pixmap.rst:294 13be9b8c0ac44f05ab5a593374d05e0e
 msgid "The area to be inverted. Omit to invert everything."
@@ -1471,11 +1471,11 @@ msgstr ""
 
 #: ../../pixmap.rst:483 3d4e13c745cc4e8ba14296d6a8d93459
 msgid ""
-"The colorspace of the pixmap. This value may be *None* if the image is to"
+"The colorspace of the pixmap. This value may be ``None`` if the image is to"
 " be treated as a so-called *image mask* or *stencil mask* (currently "
 "happens for extracted PDF document images only)."
 msgstr ""
-"Pixmapのカラースペース。この値は、イメージが *イメージマスク* または *ステンシルマスク* として扱われる場合、*None* "
+"Pixmapのカラースペース。この値は、イメージが *イメージマスク* または *ステンシルマスク* として扱われる場合、``None`` "
 "になることがあります（現在、抽出されたPDFドキュメントイメージのみが該当）。"
 
 #: ../../pixmap.rst:485 447b6aee475846cd87f965e0f410851c
@@ -1658,12 +1658,12 @@ msgstr "ピクセル単位での左上隅のY座標。直接変更できませ�
 #, fuzzy
 msgid ""
 "Number of components per pixel. This number depends on colorspace and "
-"alpha. If colorspace is not *None* (stencil masks), then *Pixmap.n - "
-"Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is *None*, "
+"alpha. If colorspace is not ``None`` (stencil masks), then *Pixmap.n - "
+"Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is ``None``, "
 "then *n == alpha == 1*."
 msgstr ""
-"ピクセルごとのコンポーネントの数。この数は色空間とアルファに依存します。色空間が *None* でない場合（ステンシルマスク）、*Pixmap.n"
-" - Pixmap.alpha == pixmap.colorspace.n* がtrueです。色空間が *None* の場合、*n == "
+"ピクセルごとのコンポーネントの数。この数は色空間とアルファに依存します。色空間が ``None`` でない場合（ステンシルマスク）、*Pixmap.n"
+" - Pixmap.alpha == pixmap.colorspace.n* がtrueです。色空間が ``None`` の場合、*n == "
 "alpha == 1* です。"
 
 #: ../../pixmap.rst:607 cc7c26c6084046dd95eccd6b73266f99
@@ -1686,11 +1686,11 @@ msgstr ""
 
 #: ../../pixmap.rst:619 b9356239952842f9a41847e818bae505
 msgid ""
-"An information-only boolean flag set to *True* if the image will be drawn"
-" using \"linear interpolation\". If *False* \"nearest neighbour "
+"An information-only boolean flag set to ``True`` if the image will be drawn"
+" using \"linear interpolation\". If ``False`` \"nearest neighbour "
 "sampling\" will be used."
 msgstr ""
-"情報のみのブールフラグで、イメージが「線形補間」を使用して描画される場合に *True* に設定されます。*False* "
+"情報のみのブールフラグで、イメージが「線形補間」を使用して描画される場合に ``True`` に設定されます。``False`` "
 "の場合、「最近傍サンプリング」が使用されます。"
 
 #: ../../pixmap.rst:626 c20f7877ee8e4aca8232d0e33111a52b

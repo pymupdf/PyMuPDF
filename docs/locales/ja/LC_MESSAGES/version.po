@@ -28,12 +28,12 @@ msgstr "このドキュメントは |version| までのすべてのバージョ�
 
 #: ../../version.rst:5 a791a0fb3fcb472b813fb33b93260627
 msgid ""
-"The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
+"The major and minor versions of |PyMuPDF| and |MuPDF| will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
-" **MuPDF**."
+" |MuPDF|."
 msgstr ""
-"**PyMuPDF** と **MuPDF** のメジャーおよびマイナーバージョンは常に同じになります。第三の修飾子（パッチレベル）のみが "
-"**MuPDF** のものと異なる場合があります。"
+"|PyMuPDF| と |MuPDF| のメジャーおよびマイナーバージョンは常に同じになります。第三の修飾子（パッチレベル）のみが "
+"|MuPDF| のものと異なる場合があります。"
 
 #: ../../version.rst:7 5d97e665327d4a3f84cf075271536562
 msgid ""

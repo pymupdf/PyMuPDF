@@ -63,17 +63,17 @@ msgid "Parameters"
 msgstr ""
 
 #: ../../device.rst:19 318bafa96d164867857828ab66d99dd4
-msgid "either a *Pixmap* or  a *DisplayList*."
-msgstr "*Pixmap* または *DisplayList* のいずれか。"
+msgid "either a ``Pixmap`` or  a ``DisplayList``."
+msgstr "``Pixmap`` または ``DisplayList`` のいずれか。"
 
 #: ../../device.rst:22 3ab538117d9d4cbf96f449fcdafb0260
 msgid ""
-"An optional `IRect` for *Pixmap* devices to restrict rendering to a "
+"An optional `IRect` for ``Pixmap`` devices to restrict rendering to a "
 "certain area of the page. If the complete page is required, specify "
-"*None*. For display list devices, this parameter must be omitted."
+"``None``. For display list devices, this parameter must be omitted."
 msgstr ""
-"*Pixmap* デバイス用の任意の `IRect` "
-"で、ページの特定の領域にレンダリングを制限するためのものです。完全なページが必要な場合は、*None* "
+"``Pixmap`` デバイス用の任意の `IRect` "
+"で、ページの特定の領域にレンダリングを制限するためのものです。完全なページが必要な場合は、``None`` "
 "を指定してください。表示リストデバイスの場合、このパラメータは省略する必要があります。"
 
 #: ../../device.rst:27 33861c8084374c259e3c6708aea00c10
@@ -81,7 +81,7 @@ msgid "Constructor for a text page device."
 msgstr "テキストページデバイスのコンストラクタ。"
 
 #: ../../device.rst:29 a30cf7e99efa4409a4adc2930b18db5e
-msgid "*TextPage* object"
+msgid "``TextPage`` object"
 msgstr "TextPageオブジェクト"
 
 #: ../../device.rst:32 8db2aa5e40654497b061f9aa49f766b8

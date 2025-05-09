@@ -139,7 +139,7 @@ msgid "Return type"
 msgstr "戻り値の型"
 
 #: ../../displaylist.rst:40 ba7135f3972943969dd0a672a419ae77
-msgid "*DisplayList*"
+msgid "``DisplayList``"
 msgstr ""
 
 #: ../../displaylist.rst:44 66233325346e48dcac5eeb77f20f84ec

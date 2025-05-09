@@ -25,11 +25,11 @@ msgstr ""
 
 #: ../../pymupdf4llm/index.rst:10 5489e517df2f47f498f82040822ba124
 msgid ""
-"|PyMuPDF4LLM| is aimed to make it easier to extract **PDF** content in "
+"|PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in "
 "the format you need for **LLM** & **RAG** environments. It supports "
 ":ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex"
 " document output <extracting_as_llamaindex>`."
-msgstr "|PyMuPDF4LLM| は、**LLM** や **RAG** 環境で必要な形式で **PDF** コンテンツを簡単に抽出できるようにすることを目的としています。 **Markdown** 形式での抽出や、 **LlamaIndex** ドキュメント出力もサポートしています。"
+msgstr "|PyMuPDF4LLM| は、**LLM** や **RAG** 環境で必要な形式で |PDF| コンテンツを簡単に抽出できるようにすることを目的としています。 **Markdown** 形式での抽出や、 **LlamaIndex** ドキュメント出力もサポートしています。"
 
 #: ../../pymupdf4llm/index.rst:14 69882351177c40e28baed2d5997c44b9
 msgid ""
@@ -70,7 +70,7 @@ msgstr "機能"
 msgid ""
 "This package converts the pages of a file to text in **Markdown** format "
 "using |PyMuPDF|."
-msgstr "このパッケージは、**PyMuPDF** を使用して **PDF** のページを **Markdown** 形式のテキストに変換します。"
+msgstr "このパッケージは、|PyMuPDF| を使用して |PDF| のページを **Markdown** 形式のテキストに変換します。"
 
 #: ../../pymupdf4llm/index.rst:30 28ffd2e3f3c74f1089cdd35d3db7a45f
 msgid ""

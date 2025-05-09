@@ -677,11 +677,11 @@ msgstr "アノテーションタイプ"
 msgid ""
 "These identifiers also cover **links** and **widgets**: the PDF "
 "specification technically handles them all in the same way, whereas "
-"**MuPDF** (and PyMuPDF) treats them as three basically different types of"
+"|MuPDF| (and PyMuPDF) treats them as three basically different types of"
 " objects."
 msgstr ""
 "これらの識別子は **リンク** と **ウィジェット** "
-"も含みます。PDF仕様では、技術的にはこれらをすべて同じ方法で処理しますが、**MuPDF** "
+"も含みます。PDF仕様では、技術的にはこれらをすべて同じ方法で処理しますが、|MuPDF| "
 "（およびPyMuPDF）では、基本的には異なる3つのオブジェクトタイプとして扱われます。"
 
 #: ../../vars.rst:411 630c43ba559a493f8ba3611dda8c66cf

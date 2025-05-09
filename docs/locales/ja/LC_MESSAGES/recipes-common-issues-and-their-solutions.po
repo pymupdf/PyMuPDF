@@ -529,7 +529,7 @@ msgstr ""
 #~ msgstr "v1.16.0以降、プロパティPage.is_wrappedがあり、ページの内容がその文字列ペアでラップされているかどうかを確認できます。"
 
 #~ msgid ""
-#~ "If it is *False* or if you "
+#~ "If it is ``False`` or if you "
 #~ "want to be on the safe side, "
 #~ "pick one of the following:"
 #~ msgstr "それが `False` であるか、安全側に立ちたい場合、次のいずれかを選択してください："
