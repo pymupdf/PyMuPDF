@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-11 21:42+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,33 +19,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 4f03be8180204754988c55a7b696d86d
+#: ../../header.rst:-1 05967661a4da47e68c009a247e2e85aa
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 0b6aeb31abf04a6dbfbacbbfcee57e80
+#: ../../header.rst:-1 ba8db4757b2445c58daa7ce09daa3966
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 bdef90ed999b4a358e88decc62b11d13
+#: ../../header.rst:-1 edfb0c5405f04fbcbc0db3172f2657d9
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../tutorial.rst:8 45c369cdb40e4f369b1a9cc3c1b7ae18
+#: ../../tutorial.rst:8 e378dc60236d4b669bffb87e1333d47f
 msgid "Tutorial"
 msgstr "チュートリアル"
 
-#: ../../tutorial.rst:12 6f3c63e19da047448c6ffe459604ef03
+#: ../../tutorial.rst:12 79164895cbdb4876ab62b8a34848f031
 msgid ""
 "This tutorial will show you the use of |PyMuPDF|, :title:`MuPDF` in "
 ":title:`Python`, step by step."
 msgstr "このチュートリアルでは、PythonでのPyMuPDF、MuPDFのステップバイステップの使用方法を紹介します。"
 
-#: ../../tutorial.rst:14 d19addc14b2a4cf0aa9fae8e78554798
+#: ../../tutorial.rst:14 f3586dfb42924abab88898f06f38cbcd
 msgid ""
 "Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ,"
 " CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the"
@@ -53,36 +53,43 @@ msgid ""
 "indeed only PDF files are supported, this will be mentioned explicitly."
 msgstr "MuPDFはPDFだけでなく、XPS、OpenXPS、CBZ、CBR、FB2、EPUB形式もサポートしており、PyMuPDFも同様です[1]。ただし、簡潔さのために、ここではPDFファイルについてのみ話を進めます。本当にPDFファイルのみがサポートされている場所では、明示的にその旨を記述します。"
 
-#: ../../tutorial.rst:17 be9b8abe23ed4738beca173089e7267f
+#: ../../tutorial.rst:16 e30cf64f80944d90ba7ccfbb03a3a9c1
+msgid ""
+"In addition to this introduction, please do visit PyMuPDF's `Youtube "
+"Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the "
+"following in the form of Youtube \"Shorts\" and longer videos."
+msgstr ""
+
+#: ../../tutorial.rst:19 071e51fe96454d0bbe2eb32b51f301b3
 msgid "Importing the Bindings"
 msgstr "バインディングのインポート"
 
-#: ../../tutorial.rst:18 f73f0c4bcd944d71b96b4f695ef5caa2
+#: ../../tutorial.rst:20 357ec7fa762f4147880f4a0936252038
 msgid ""
 "The Python bindings to MuPDF are made available by this import statement."
 " We also show here how your version can be checked::"
 msgstr "MuPDFへのPythonバインディングは、このインポート文によって利用可能になります。また、ここではあなたのバージョンを確認する方法も示します::"
 
-#: ../../tutorial.rst:28 3210f6fad5a4404c9bfeb3b5d53181de
+#: ../../tutorial.rst:30 d6ab45b822f0475dbbb14ee5380a0998
 msgid "Note on the Name *fitz*"
 msgstr "*fitz* という名前についての注意事項"
 
-#: ../../tutorial.rst:30 b5d8c55bab284997b74137b2760021c9
+#: ../../tutorial.rst:32 adb2b197702149509f7c2fbb9f6a165b
 msgid ""
 "Old versions of |PyMuPDF| had their **Python** import name as `fitz`. "
 "Newer versions use `pymupdf` instead, and offer `fitz` as a fallback so "
 "that old code will still work."
 msgstr "このライブラリのPythonのトップレベルインポート名は **\"fitz\"** です。 これには歴史的な理由があります："
 
-#: ../../tutorial.rst:32 e8435d0ae6024ae0ad7363c0e6c4b197
+#: ../../tutorial.rst:34 5042f5b8984445b1bc0c884c052724d0
 msgid "The reason for the name `fitz` is a historical curiosity:"
 msgstr "これには歴史的な理由があります："
 
-#: ../../tutorial.rst:34 48f75945c145466a854c193c16687f9a
+#: ../../tutorial.rst:36 f16e7e4c92a34191b574e5067a982638
 msgid "The original rendering library for MuPDF was called *Libart*."
 msgstr "MuPDFの元々のレンダリングライブラリは *Libart* と呼ばれていました。"
 
-#: ../../tutorial.rst:36 3e5c8a7c802c4d6dafe5aac8a58db134
+#: ../../tutorial.rst:38 a713609310154ab681ad34dab4a1f930
 msgid ""
 "*\"After Artifex Software acquired the MuPDF project, the development "
 "focus shifted on writing a new modern graphics library called \"Fitz\". "
@@ -96,23 +103,23 @@ msgstr ""
 "Fitzの開発に移りました。Fitzは元々古くなったGhostscriptグラフィックスライブラリを置き換えるためのR＆Dプロジェクトとして意図されていましたが、代わりにMuPDFを駆動するレンダリングエンジンになりました。」*"
 " (  `Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_ より引用 ) 。"
 
-#: ../../tutorial.rst:40 05a43680b1ac4c0dba83d21def5e28dc
+#: ../../tutorial.rst:42 fc94f501fa3b4087ad6c2a2164191050
 msgid ""
 "Use of legacy name `fitz` can fail if defunct pypi.org package `fitz` is "
 "installed; see :ref:`problems-after-installation`."
 msgstr ""
 
-#: ../../tutorial.rst:46 ed1e9da11b114aa18ed86ba14224b95a
+#: ../../tutorial.rst:48 dd31bf6c9991404bb140492c93eada39
 msgid "Opening a Document"
 msgstr "ドキュメントの開く"
 
-#: ../../tutorial.rst:48 c26801d8921743e09c27ad468041b735
+#: ../../tutorial.rst:50 de12fcbc4f284a9bbc276df2ee856cf3
 msgid ""
 "To access a :ref:`supported document<Supported_File_Types>`, it must be "
 "opened with the following statement::"
 msgstr ":ref:`サポートされているドキュメント <Supported_File_Types>` にアクセスするには、次の文で開く必要があります::"
 
-#: ../../tutorial.rst:52 3225e50521bc4176bcabebc10ffd4d11
+#: ../../tutorial.rst:54 d0c152720d6643c89f87490ed6a0d318
 msgid ""
 "This creates the :ref:`Document` object *doc*. *filename* must be a "
 "Python string (or a `pathlib.Path`) specifying the name of an existing "
@@ -122,7 +129,7 @@ msgstr ""
 "オブジェクトdocが作成されます。filenameは、既存のファイルの名前を指定するPythonの文字列（または `pathlib.Path` "
 "）である必要があります。"
 
-#: ../../tutorial.rst:54 e65a3dd25a0546fa91b4aa47b8903fb3
+#: ../../tutorial.rst:56 1bafacc42fd249d88fd507712ca0f967
 msgid ""
 "It is also possible to open a document from memory data, or to create a "
 "new, empty PDF. See :ref:`Document` for details. You can also use "
@@ -131,70 +138,70 @@ msgstr ""
 "また、メモリデータからドキュメントを開くことや、新しい空のPDFを作成することも可能です。詳細については、 :ref:`Document` "
 "を参照してください。 :ref:`Document` はコンテキストマネージャとしても使用できます。"
 
-#: ../../tutorial.rst:56 5b5daaab1e474a44b9c16d5934ca1dec
+#: ../../tutorial.rst:58 bb20205b53c14774a64794e857274b39
 msgid ""
 "A document contains many attributes and functions. Among them are meta "
 "information (like \"author\" or \"subject\"), number of total pages, "
 "outline and encryption information."
 msgstr "ドキュメントには多くの属性と関数が含まれています。その中には、メタ情報（「author」や「subject」など）、総ページ数、アウトライン、暗号化情報などがあります。"
 
-#: ../../tutorial.rst:59 e98bc1c9981e4a3d8136a68120db315c
+#: ../../tutorial.rst:61 751d099725e1445597c4429e4a527b30
 msgid "Some :ref:`Document` Methods and Attributes"
 msgstr "いくつかの :ref:`Document` メソッドと属"
 
-#: ../../tutorial.rst:62 1124f30415eb4f149739aff7aa58501b
+#: ../../tutorial.rst:64 23e9d02038de4d26b3f3046ff9290c2a
 msgid "**Method / Attribute**"
 msgstr "**メソッド / 属性**"
 
-#: ../../tutorial.rst:62 dd38737b09cb48b4b8846abe6bec78e8
+#: ../../tutorial.rst:64 ea3bd02523914cd6ad04b24051580e86
 msgid "**Description**"
 msgstr "説明"
 
-#: ../../tutorial.rst:64 27dfa7ba41d748bd8daa9af2b841051b
+#: ../../tutorial.rst:66 d52833dbb20e4d63b865b2b38316a4f6
 msgid ":attr:`Document.page_count`"
 msgstr ""
 
-#: ../../tutorial.rst:64 095b689ccdee4bf999c46642db019e04
+#: ../../tutorial.rst:66 4eb8d47eece141dcaae4dc82fae01cf9
 msgid "the number of pages (*int*)"
 msgstr "ページ数 (*int*)"
 
-#: ../../tutorial.rst:65 ab462367143a43c0b22349e805ca156b
+#: ../../tutorial.rst:67 60de5a4a274c48eea29e36ad651c71ae
 msgid ":attr:`Document.metadata`"
 msgstr ""
 
-#: ../../tutorial.rst:65 661a655f79d84d33846797a2ea9fd32e
+#: ../../tutorial.rst:67 6b75aa58187d4de7910e3ae60b594e6e
 msgid "the metadata (*dict*)"
 msgstr "メタデータ (*dict*)"
 
-#: ../../tutorial.rst:66 39b0a8402b874431834852609b6033a3
+#: ../../tutorial.rst:68 166a5fe4285449ddaf7070f3bff9a8f8
 msgid ":meth:`Document.get_toc`"
 msgstr ""
 
-#: ../../tutorial.rst:66 84e916269b1c400db732edf6bfbf2cfc
+#: ../../tutorial.rst:68 b37c69de939840ebb9e4e3bb5cf3b35e
 msgid "get the table of contents (*list*)"
 msgstr "目次を取得する (*list*)"
 
-#: ../../tutorial.rst:67 1d36052736034df4a2beaef0d9e0f367
+#: ../../tutorial.rst:69 4b9427462b01465d9f721e32c45441b3
 msgid ":meth:`Document.load_page`"
 msgstr ""
 
-#: ../../tutorial.rst:67 997fa4117a6144e2914168eb388f3ab9
+#: ../../tutorial.rst:69 55e0bf1b22c84de5a546ee4003634bde
 msgid "read a :ref:`Page`"
 msgstr ":ref:`Page` を読む"
 
-#: ../../tutorial.rst:71 ea1d38bbd3e44707a40bb33485575dac
+#: ../../tutorial.rst:73 0d0efe9358564831abcdae7b46d423ad
 msgid "Accessing Meta Data"
 msgstr "メタデータへのアクセス"
 
-#: ../../tutorial.rst:72 c1ad79422ac1421883ff74a0bf5f07d4
+#: ../../tutorial.rst:74 3bf0259c5d844a5ea33f28f009d1084c
 msgid ""
 "PyMuPDF fully supports standard metadata. :attr:`Document.metadata` is a "
 "Python dictionary with the following keys. It is available for **all "
 "document types**, though not all entries may always contain data. For "
 "details of their meanings and formats consult the respective manuals, "
 "e.g. :ref:`AdobeManual` for PDF. Further information can also be found in"
-" chapter :ref:`Document`. The meta data fields are strings or ``None`` if "
-"not otherwise indicated. Also be aware that not all of them always "
+" chapter :ref:`Document`. The meta data fields are strings or ``None`` if"
+" not otherwise indicated. Also be aware that not all of them always "
 "contain meaningful data -- even if they are not ``None``."
 msgstr ""
 "PyMuPDFは標準的なメタデータを完全にサポートしています。 :attr:`Document.metadata` "
@@ -203,83 +210,83 @@ msgstr ""
 "の章でも見つけることができます。メタデータのフィールドは文字列または ``None`` "
 "です（特に指定がない場合）。また、それらのすべてが常に意味のあるデータを含んでいるわけではないことにも注意してください。"
 
-#: ../../tutorial.rst:75 21b50e01c419432d82c841cb354aaf08
+#: ../../tutorial.rst:77 c50c4a8525e24079a77ac54b1fc4233c
 msgid "Key"
 msgstr "キー"
 
-#: ../../tutorial.rst:75 712ea484df5945ca98d51cd6e6482ee8
+#: ../../tutorial.rst:77 d80dc529b03e4fdcb3723e17909641ec
 msgid "Value"
 msgstr "値"
 
-#: ../../tutorial.rst:77 f23d6cb5791a41a7be3d125c90f65d31
+#: ../../tutorial.rst:79 1270501ff746404d9a540ac46ca40289
 msgid "producer"
 msgstr ""
 
-#: ../../tutorial.rst:77 0367d9cff10a4ea99b253ae12d0546de
+#: ../../tutorial.rst:79 1d7515f242594d6793585075ae2a1c3e
 msgid "producer (producing software)"
 msgstr "プロデューサー（生成ソフトウェア）"
 
-#: ../../tutorial.rst:78 460ea65cbff748c190dabcc16f8949a3
+#: ../../tutorial.rst:80 468ddd00b3c144bd9b3e154204fbed15
 msgid "format"
 msgstr ""
 
-#: ../../tutorial.rst:78 7cf13dd79fa445788e40aabac234a61d
+#: ../../tutorial.rst:80 b1eb1e1957bc48a0851024ce094c662f
 msgid "format: 'PDF-1.4', 'EPUB', etc."
 msgstr "形式：'PDF-1.4'、'EPUB'など"
 
-#: ../../tutorial.rst:79 4dfa007cf4214e87bbcbae4b175844ad
+#: ../../tutorial.rst:81 b1122070ff9b4c4494bedf4f3388d9b5
 msgid "encryption"
 msgstr ""
 
-#: ../../tutorial.rst:79 e10cb466d0a54f96b6c4008fe24d8de6
+#: ../../tutorial.rst:81 91a989f6b4d84da0be125c5870b85629
 msgid "encryption method used if any"
 msgstr "暗号化方法（適用されている場合）"
 
-#: ../../tutorial.rst:80 0fcb3c39bd1541f1a8a73ef8e4aa0297
-#: 336b6b9e481040649151f3b8b4ff4c04
+#: ../../tutorial.rst:82 19480fa53c3544319c83fd3fad08e759
+#: 7f2a63267f694384a554dae16109df23
 msgid "author"
 msgstr ""
 
-#: ../../tutorial.rst:81 99353368720e4fb7975c52a17d580a7a
+#: ../../tutorial.rst:83 f5b61af7d3294bdf9ce3dc42e2a1a8b0
 msgid "modDate"
 msgstr ""
 
-#: ../../tutorial.rst:81 51e3e3512b2e4c02aaa084a82029fb65
+#: ../../tutorial.rst:83 801fc48a09794a0fac77225f214744e9
 msgid "date of last modification"
 msgstr "最終更新日"
 
-#: ../../tutorial.rst:82 45ab1bdebda846e09f663712d1d97ec3
-#: ee46c5ccf93148e79eb0525ae52daf16
+#: ../../tutorial.rst:84 5c1f0ad075c14921a33eff59aae70720
+#: 8bade788738649d8a71c0a402d4ee15e
 msgid "keywords"
 msgstr ""
 
-#: ../../tutorial.rst:83 5886688cc3674225a5b9ff5b94383087
-#: beaf9c02a04f4adba03af96e23bb7810
+#: ../../tutorial.rst:85 32abcccab99941608fef4dea21fa26ef
+#: a7b239e234ac4e738b57649e92f97b58
 msgid "title"
 msgstr ""
 
-#: ../../tutorial.rst:84 b8bae7764cdc477cb4982a275244e8f4
+#: ../../tutorial.rst:86 43ebc843826848f08ba05a060612babd
 msgid "creationDate"
 msgstr ""
 
-#: ../../tutorial.rst:84 45eac2e827054b9ea16e60184bdcc610
+#: ../../tutorial.rst:86 6df64ddf396941d9b363802e71a17d4e
 msgid "date of creation"
 msgstr "作成日"
 
-#: ../../tutorial.rst:85 331bfd070c0842e0820a50dd7758b451
+#: ../../tutorial.rst:87 8bb3abe30fe64d669b807607a52a2420
 msgid "creator"
 msgstr ""
 
-#: ../../tutorial.rst:85 cec2eb4ceb794737bace6eb05ba36001
+#: ../../tutorial.rst:87 9db959512cba40f4a6390f8fa75faa93
 msgid "creating application"
 msgstr "作成アプリケーション"
 
-#: ../../tutorial.rst:86 08165a39c8c149bbb31c494de7c6c228
-#: 56d66879db304f4b8a76dd31537de773
+#: ../../tutorial.rst:88 1b1f49a6b78841abb58585aa54af2bdc
+#: 9ac5fc37fe5d4f25b601404e30ab2154
 msgid "subject"
 msgstr ""
 
-#: ../../tutorial.rst:89 dc7057cc255b49d297c0bcece12a3f4a
+#: ../../tutorial.rst:91 219ce7c6343d408ab8d80fbc0a05ec6e
 msgid ""
 "Apart from these standard metadata, **PDF documents** starting from PDF "
 "version 1.4 may also contain so-called *\"metadata streams\"* (see also "
@@ -298,7 +305,7 @@ msgstr ""
 "`lxml`_  "
 "などのパッケージを使用してストリーム全体を抽出し、検査または変更し、その結果をPDFに再格納することはできます。必要な場合は、このデータを完全に削除することもできます。"
 
-#: ../../tutorial.rst:91 e231fb5a8ed043e1b1e7161121aa68ae
+#: ../../tutorial.rst:93 1cdab6c40c754d80b0e856afad24a1db
 msgid ""
 "There are two utility scripts in the repository that `metadata import "
 "(PDF only)`_ resp. `metadata export`_ metadata from resp. to CSV files."
@@ -306,17 +313,17 @@ msgstr ""
 "リポジトリには、`metadata import(PDF only)`_ および `metadata export`_ "
 "をCSVファイルに行うための2つのユーティリティスクリプトがあります"
 
-#: ../../tutorial.rst:94 58f5f89c300b408c9c25583de0d9dec1
+#: ../../tutorial.rst:96 b5cc3dbefd4d4224905521dd275497b2
 msgid "Working with Outlines"
 msgstr "アウトラインと一緒に作業する"
 
-#: ../../tutorial.rst:95 1e49c4aed5094ba498206b78273e63d0
+#: ../../tutorial.rst:97 436fc3a7e03f4a90bb900308d8dd7548
 msgid ""
 "The easiest way to get all outlines (also called \"bookmarks\") of a "
 "document, is by loading its *table of contents*::"
 msgstr "アウトライン（または「ブックマーク」とも呼ばれる）を取得する最も簡単な方法は、そのドキュメントの目次を読み込むことです::"
 
-#: ../../tutorial.rst:99 1235092746c6420886c29a9eb7b1c4d4
+#: ../../tutorial.rst:101 3b688b47071e4d87b3d7cd95ced8dd08
 msgid ""
 "This will return a Python list of lists *[[lvl, title, page, ...], ...]* "
 "which looks much like a conventional table of contents found in books."
@@ -324,7 +331,7 @@ msgstr ""
 "これにより、Pythonのリストであるリスト [[lvl, title, page, ...], ...] "
 "が返されます。これは、本に見られる伝統的な目次に非常によく似たものです。"
 
-#: ../../tutorial.rst:101 f134cf60e2474c5ab17036845bc01697
+#: ../../tutorial.rst:103 71983635bbe745518b0e2bf0de62b01c
 msgid ""
 "*lvl* is the hierarchy level of the entry (starting from 1), *title* is "
 "the entry's title, and *page* the page number (1-based!). Other "
@@ -333,7 +340,7 @@ msgstr ""
 "lvl はエントリーの階層レベル（1から開始）を示し、title はエントリーのタイトル、page "
 "はページ番号（1から始まる）を示します。その他のパラメータはブックマークのターゲットの詳細を説明します。"
 
-#: ../../tutorial.rst:103 2ebeac69e9424be9972f198fc43df27a
+#: ../../tutorial.rst:105 4b50bc776e3842c5ad39eb2a80765944
 msgid ""
 "There are two utility scripts in the repository that `toc import (PDF "
 "only)`_ resp. `toc export`_ table of contents from resp. to CSV files."
@@ -341,39 +348,39 @@ msgstr ""
 "リポジトリ内には、CSVファイルから目次をインポートおよびエクスポートするためのユーティリティスクリプトが2つあります。詳細は、 `toc "
 "import (PDF only)`_  および `toc export`_ をご覧ください。"
 
-#: ../../tutorial.rst:106 c259e0d9fc6b4cb283ed73134b45ffe2
+#: ../../tutorial.rst:108 e99a2b08c8ac4dbfaaada3a4d3febd23
 msgid "Working with Pages"
 msgstr "ページの操作"
 
-#: ../../tutorial.rst:107 a5a4b014f1784320affafed50bf260c7
+#: ../../tutorial.rst:109 484157f129e74a108d83a0687d390d90
 msgid ":ref:`Page` handling is at the core of MuPDF's functionality."
 msgstr ":ref:`Page` の処理はMuPDFの機能の中核です。"
 
-#: ../../tutorial.rst:109 816bae734c734504bb83cac518a42f63
+#: ../../tutorial.rst:111 39d19b40747a4209be020d521fab3d56
 msgid ""
 "You can render a page into a raster or vector (SVG) image, optionally "
 "zooming, rotating, shifting or shearing it."
 msgstr "ページをラスターまたはベクター（SVG）イメージにレンダリングすることができます。オプションでズーム、回転、シフト、またはシアーを行うこともできます"
 
-#: ../../tutorial.rst:110 a5ebd0b3ca86495b980ceb9468065acf
+#: ../../tutorial.rst:112 ee05f9cee64f40dbbd92d40df9081fc4
 msgid ""
 "You can extract a page's text and images in many formats and search for "
 "text strings."
 msgstr "テキストと画像を多くの形式で抽出し、テキスト文字列を検索することができます。"
 
-#: ../../tutorial.rst:111 95810b4b32e149f78e031e853db265c7
+#: ../../tutorial.rst:113 0a743e8513164292a9ed45182829305a
 msgid ""
 "For PDF documents many more methods are available to add text or images "
 "to pages."
 msgstr "PDFドキュメントの場合、さらに多くのメソッドが利用可能で、テキストや画像をページに追加することができます"
 
-#: ../../tutorial.rst:113 7319b143b3ae4c22961b89de4dd6787b
+#: ../../tutorial.rst:115 33b8b5b674bd42bfa3c10352d8386ded
 msgid ""
 "First, a :ref:`Page` must be created. This is a method of "
 ":ref:`Document`::"
 msgstr "最初に :ref:`Page` を作成する必要があります。これは :ref:`Document`  のメソッドです::"
 
-#: ../../tutorial.rst:118 9572efa6dad4431a882ab96f2b09c2bb
+#: ../../tutorial.rst:120 0f62eb911c7a46b8b2f7d6b911449ad4
 msgid ""
 "Any integer `-∞ < pno < page_count` is possible here. Negative numbers "
 "count backwards from the end, so *doc[-1]* is the last page, like with "
@@ -382,21 +389,21 @@ msgstr ""
 "ここでは、どんな整数  `-∞ < pno < page_count`  でも可能です。負の数は末尾から逆に数えますので、doc[-1] "
 "はPythonのシーケンスと同様に最後のページになります"
 
-#: ../../tutorial.rst:120 726e062734b346f19ed915d49e5bc705
+#: ../../tutorial.rst:122 a6c304f33507429b9a30bd8e926fbf12
 msgid ""
 "Some more advanced way would be using the document as an **iterator** "
 "over its pages::"
 msgstr "より高度な方法として、ドキュメントをそのページの  **イテレータ** として使用することもできます::"
 
-#: ../../tutorial.rst:134 96de34d5a16b4b1e8a3c0b973dd62085
+#: ../../tutorial.rst:136 dd002e48ae7445049b3b31ec113b9e39
 msgid "Once you have your page, here is what you would typically do with it:"
 msgstr "ページを取得したら、通常は次のようなことを行います："
 
-#: ../../tutorial.rst:137 c820f555815142e6819155105b20f347
+#: ../../tutorial.rst:139 479b18109bc34625a53a33ca74bca74c
 msgid "Inspecting the Links, Annotations or Form Fields of a Page"
 msgstr "リンク、注釈、またはフォームフィールドをページで調査する"
 
-#: ../../tutorial.rst:138 2f43c0cdb45a413aa557d30d91e5534f
+#: ../../tutorial.rst:140 93f1bc7076b84e53b34a0bf7b7752426
 msgid ""
 "Links are shown as \"hot areas\" when a document is displayed with some "
 "viewer software. If you click while your cursor shows a hand symbol, you "
@@ -404,32 +411,32 @@ msgid ""
 "Here is how to get all links::"
 msgstr "リンクは、ドキュメントがビューアソフトウェアで表示されるときに「ホットエリア」として表示されます。カーソルが手のシンボルを示すときにクリックすると、通常、そのホットエリアにエンコードされたターゲットに移動します。以下はすべてのリンクを取得する方法です::"
 
-#: ../../tutorial.rst:143 af0fe830c7de4648bada2cc1dc2fffce
+#: ../../tutorial.rst:145 a0f2daeae55d47ce99d8e84b319faece
 msgid ""
 "*links* is a Python list of dictionaries. For details see "
 ":meth:`Page.get_links`."
 msgstr "`links` はPythonの辞書のリストです。詳細は :meth:`Page.get_links` を参照してください。"
 
-#: ../../tutorial.rst:145 ac094282215443faba176676d525dce0
+#: ../../tutorial.rst:147 b27868bc6ccb46f282f088bb49db681f
 msgid "You can also use an iterator which emits one link at a time::"
 msgstr "また、一度に1つのリンクを生成するイテレータを使用することもできます::"
 
-#: ../../tutorial.rst:150 9720e0ef917744949b9f3bbd21372ff2
+#: ../../tutorial.rst:152 f4ad01b38b1040bfa0d9b295acad14bd
 msgid ""
 "If dealing with a PDF document page, there may also exist annotations "
 "(:ref:`Annot`) or form fields (:ref:`Widget`), each of which have their "
 "own iterators::"
 msgstr "PDFドキュメントのページを扱う場合、注釈（:ref:`Annot`）やフォームフィールド（:ref:`Widget`）も存在する場合があります。それぞれに独自のイテレータがあります::"
 
-#: ../../tutorial.rst:160 9af4d9e333f64220b81a3667ef7b3ec1
+#: ../../tutorial.rst:162 aa1e66c76cd84d98a396687a12122803
 msgid "Rendering a Page"
 msgstr "ページのレンダリング"
 
-#: ../../tutorial.rst:161 4a7532782c874655aa4975ba594c3d95
+#: ../../tutorial.rst:163 7114d4014690481fbb394caeafe88cd0
 msgid "This example creates a **raster** image of a page's content::"
 msgstr "以下の例は、ページの内容をラスター画像として作成します::"
 
-#: ../../tutorial.rst:165 f595d799a1364ae0a7263e9bd3d33379
+#: ../../tutorial.rst:167 5d490b2d2071456590b70ad02b2040a3
 msgid ""
 "*pix* is a :ref:`Pixmap` object which (in this case) contains an **RGB** "
 "image of the page, ready to be used for many purposes. Method "
@@ -445,7 +452,7 @@ msgstr ""
 "メソッドには、画像を制御するためのさまざまなオプションが用意されています：解像度/DPI、カラースペース（例えば、グレースケールイメージや減色カラースキームのイメージを作成するために）、透明度、回転、ミラーリング、シフト、シアーなどがあります。例えば、RGBAイメージ（アルファチャネルを含むイメージ）を作成する場合は、`pix"
 " = page.get_pixmap(alpha=True)` と指定します。"
 
-#: ../../tutorial.rst:167 42b644f15d084920a4ff59a3488ea527
+#: ../../tutorial.rst:169 d83c8c8ecf374c119c71005bd91511c7
 msgid ""
 "A :ref:`Pixmap` contains a number of methods and attributes which are "
 "referenced below. Among them are the integers *width*, *height* (each in "
@@ -458,7 +465,7 @@ msgstr ""
 "`stride` （1つの水平イメージラインのバイト数）があります。属性 `samples` "
 "は、イメージデータを表すバイトの長方形領域（Pythonの `bytes` オブジェクト）を表します。"
 
-#: ../../tutorial.rst:169 8ec3ec02647343c6980f05fe7de31d50
+#: ../../tutorial.rst:171 33dc6238724b49c3a201a622c7289f3c
 msgid ""
 "You can also create a **vector** image of a page by using "
 ":meth:`Page.get_svg_image`. Refer to this `Vector Image Support page`_ "
@@ -468,19 +475,19 @@ msgstr ""
 "を使用することで、ページのベクターイメージを作成することもできます。詳細については、`Vector Image Support page`_ "
 "ページを参照してください。"
 
-#: ../../tutorial.rst:172 657257197f3140d092ad14ec2cfd588d
+#: ../../tutorial.rst:174 845ef517b9e143a1afe1950cb45677ee
 msgid "Saving the Page Image in a File"
 msgstr "ページのイメージをファイルに保存する"
 
-#: ../../tutorial.rst:173 0183cddfd10a4f49939fbb238d12b28b
+#: ../../tutorial.rst:175 bdeba468768e4188b09289122c78230f
 msgid "We can simply store the image in a PNG file::"
 msgstr "簡単にページのイメージをPNGファイルに保存できます::"
 
-#: ../../tutorial.rst:178 c98f92e5ccf241c9a0e63c01a7c52971
+#: ../../tutorial.rst:180 710babb269494a0db2dff3a59b541b75
 msgid "Displaying the Image in GUIs"
 msgstr "GUIでイメージを表示する"
 
-#: ../../tutorial.rst:179 454b4082bf4b40699b13cc26c5412df0
+#: ../../tutorial.rst:181 6f459b063b0e46e39a3a571d118d161c
 msgid ""
 "We can also use it in GUI dialog managers. :attr:`Pixmap.samples` "
 "represents an area of bytes of all the pixels as a Python bytes object. "
@@ -490,29 +497,29 @@ msgstr ""
 "は、すべてのピクセルのバイトの領域をPythonのbytesオブジェクトとして表します。以下はいくつかの例ですが、さらに多くの例は "
 "`examples`_  ディレクトリで見つけることができます。"
 
-#: ../../tutorial.rst:182 b0eef6e1015b4c7d8df4297d80ec5e58
+#: ../../tutorial.rst:184 04c74142d3a5408cb2df43362abab4a9
 msgid "wxPython"
 msgstr ""
 
-#: ../../tutorial.rst:183 02cff6d545d541a6a01caf6dd8eb9d95
+#: ../../tutorial.rst:185 8ae38c97a4d746519d5b07ea1f0c2915
 msgid ""
 "Consult their documentation for adjustments to RGB(A) pixmaps and, "
 "potentially, specifics for your wxPython release::"
 msgstr "RGB(A)のピクセルマップに対する調整や、可能な場合はwxPythonのリリースに特有の詳細については、関連するドキュメントを参照してください。"
 
-#: ../../tutorial.rst:191 123c4ff4599e4840b66de94e1400a4af
+#: ../../tutorial.rst:193 4ecff91251c346c1828b5c2212df148d
 msgid "Tkinter"
 msgstr ""
 
-#: ../../tutorial.rst:192 09865225740b453fbbcc13354593083a
+#: ../../tutorial.rst:194 3937a8f51b8d431183782d33e29fdb0d
 msgid "Please also see section 3.19 of the `Pillow documentation`_::"
 msgstr "`Pillow documentation`_ ドキュメントのセクション3.19も参照してください。"
 
-#: ../../tutorial.rst:201 a635f17bbb34429d96332e199506d3b3
+#: ../../tutorial.rst:203 54cb07c2be2245af96a39fc1d108cbd6
 msgid "The following **avoids using Pillow**::"
 msgstr "以下の方法では、Pillowを使用しないようにしています。"
 
-#: ../../tutorial.rst:208 9f2fdfd296454335912e2cf14de6eb7f
+#: ../../tutorial.rst:210 278fa9ee08b341d5b6c8abb366fc16ec
 msgid ""
 "If you are looking for a complete Tkinter script paging through **any "
 "supported** document, `here it is!`_. It can also zoom into pages, and it"
@@ -524,58 +531,58 @@ msgstr ""
 "/browse-document/browse.py>`_ また、このスクリプトではページをズームインすることもでき、Python "
 "2または3で動作します。非常に便利な純粋なPythonパッケージである `PySimpleGUI`_ が必要です。"
 
-#: ../../tutorial.rst:211 e88a0d41461d42ac87116cf57794a018
+#: ../../tutorial.rst:213 c0267a22336c4e4da907533f35f9d341
 msgid "PyQt4, PyQt5, PySide"
 msgstr ""
 
-#: ../../tutorial.rst:212 01fc06b8445441fdba5ba4f05069cdf4
+#: ../../tutorial.rst:214 9a6ff2af3cb64216a96d828ef5117a0d
 msgid "Please also see section 3.16 of the `Pillow documentation`_::"
 msgstr "Pillowドキュメントのセクション3.16も参照してください。"
 
-#: ../../tutorial.rst:221 809a1eece82a424dacb05cdba97334c1
+#: ../../tutorial.rst:223 a7cc76e286584e9a867c24ef3add76a8
 msgid ""
 "Again, you also can get along **without using Pillow.** Qt's `QImage` "
 "luckily supports native Python pointers, so the following is the "
 "recommended way to create Qt images::"
 msgstr "Pillowを使用せずに進めることもできます。幸運なことに、QtのQImageはネイティブなPythonポインタをサポートしているので、以下はQtイメージを作成する推奨される方法です。"
 
-#: ../../tutorial.rst:231 6801f71e96284115b96332f1052d127a
+#: ../../tutorial.rst:233 10d5fdd6f131454eae7a2e63c574c5bd
 msgid "Extracting Text and Images"
 msgstr "テキストや画像を抽出する"
 
-#: ../../tutorial.rst:232 2a7e536bbb5f4ee7889636890e3218ad
+#: ../../tutorial.rst:234 1943f89f643845f0b54db821bcc3e09d
 msgid ""
 "We can also extract all text, images and other information of a page in "
 "many different forms, and levels of detail::"
 msgstr "ページのすべてのテキスト、画像、およびその他の情報を、さまざまな形式や詳細レベルで抽出することもできます。::"
 
-#: ../../tutorial.rst:236 f27ff346213e48049fd8531518568108
+#: ../../tutorial.rst:238 554e63dabc1248f783b976d361dcec69
 msgid ""
 "Use one of the following strings for *opt* to obtain different formats "
 "[#f2]_:"
 msgstr "異なるフォーマットを得るために、以下の文字列のうち1つをoptに使用できます [#f2]_:"
 
-#: ../../tutorial.rst:238 f33991c1c3fe47199e5f5b3b64c62cf5
+#: ../../tutorial.rst:240 f44036ad1ba24ece8a18ea2fc98c1f03
 msgid ""
 "**\"text\"**: (default) plain text with line breaks. No formatting, no "
 "text position details, no images."
 msgstr "**\"text\"**:  (デフォルト) 行送りのプレーンテキスト。書式設定やテキストの位置の詳細、画像は含まれません。"
 
-#: ../../tutorial.rst:240 78e3f23632844b8595703906218e191b
+#: ../../tutorial.rst:242 a77470c3dd534162802cade7841cd2f0
 msgid "**\"blocks\"**: generate a list of text blocks (= paragraphs)."
 msgstr "**\"blocks\"**: テキストブロック（段落）のリストを生成します。"
 
-#: ../../tutorial.rst:242 a5be0262a4864c08aa1757e1deba9bc5
+#: ../../tutorial.rst:244 0203e41b56554819a6376440502f5b4b
 msgid "**\"words\"**: generate a list of words (strings not containing spaces)."
 msgstr "**\"words\"**: 単語（スペースを含まない文字列）のリストを生成します。"
 
-#: ../../tutorial.rst:244 1ae2b870ed724fb1aee781aa7bf9e600
+#: ../../tutorial.rst:246 04c3946009704057bae58608e81e89bc
 msgid ""
 "**\"html\"**: creates a full visual version of the page including any "
 "images. This can be displayed with your internet browser."
 msgstr "**\"html\"**: 画像を含むページの完全な視覚的バージョンを作成します。これはインターネットブラウザで表示できます。"
 
-#: ../../tutorial.rst:246 81def871abf14bc8a12ffeb5bd21096d
+#: ../../tutorial.rst:248 e96b199aabba4aca94d6b53b75aa27cd
 msgid ""
 "**\"dict\"** / **\"json\"**: same information level as HTML, but provided"
 " as a Python dictionary or resp. JSON string. See "
@@ -585,7 +592,7 @@ msgstr ""
 "HTMLと同じ情報レベルですが、Pythonの辞書またはJSON文字列として提供されます。その構造の詳細については、:meth:`TextPage.extractDICT`"
 " を参照してください。"
 
-#: ../../tutorial.rst:248 f280f036e1024b5ea8a759edc38d59a1
+#: ../../tutorial.rst:250 69d52fc9b54b4109b44c122576994849
 msgid ""
 "**\"rawdict\"** / **\"rawjson\"**: a super-set of **\"dict\"** / "
 "**\"json\"**. It additionally provides character detail information like "
@@ -595,13 +602,13 @@ msgstr ""
 "\"json\"のスーパーセットです。これにはXMLのような文字の詳細情報も含まれます。その構造の詳細については、:meth:`TextPage.extractRAWDICT`"
 " を参照してください。"
 
-#: ../../tutorial.rst:250 d8e212e28a0a4b79af9f807d475f5c29
+#: ../../tutorial.rst:252 a895c3b5c62848bf973a2b44b58097ef
 msgid ""
 "**\"xhtml\"**: text information level as the TEXT version but includes "
 "images. Can also be displayed by internet browsers."
 msgstr "**\"xhtml\"**: TEXTバージョンのテキスト情報レベルを含み、画像も含まれます。インターネットブラウザでも表示できます。"
 
-#: ../../tutorial.rst:252 176577a4f3c14b4a9cafd98d1dd2057c
+#: ../../tutorial.rst:254 7c2a9b1d406a472e990d81723f7546b9
 msgid ""
 "**\"xml\"**: contains no images, but full position and font information "
 "down to each single text character. Use an XML module to interpret."
@@ -609,21 +616,22 @@ msgstr ""
 "**\"xml\"**: "
 "画像は含まれませんが、各テキスト文字までの完全な位置とフォント情報を含みます。XMLモジュールを使用して解釈することができます。"
 
-#: ../../tutorial.rst:254 6e04179b7e324ab8bf552f78d950a2d7
+#: ../../tutorial.rst:256 38ebfd1e60f2470db255fe5ce90e60cb
+#, fuzzy
 msgid ""
 "To give you an idea about the output of these alternatives, we did text "
-"example extracts. See :ref:`Appendix2`."
+"example extracts. See :ref:`Appendix1`."
 msgstr "これらの代替方法の出力のイメージを示すために、テキストの例抽出を行いました。:ref:`Appendix2` を参照してください"
 
-#: ../../tutorial.rst:257 df4280fd734d4bb9b4d2b309686c39c1
+#: ../../tutorial.rst:259 570661af75b040a2ab647ae2c7ed0b06
 msgid "Searching for Text"
 msgstr "テキストを検索す"
 
-#: ../../tutorial.rst:258 decde5e7b2284d1684dfdbde83d9c5ec
+#: ../../tutorial.rst:260 bd492032074c47a88220162f66174e76
 msgid "You can find out, exactly where on a page a certain text string appears::"
 msgstr "特定のテキスト文字列がページのどこに現れるかを正確に調べることができます。::"
 
-#: ../../tutorial.rst:262 b45d7cf216454e39992deccd3e2dae89
+#: ../../tutorial.rst:264 d38076507d744dce945e696f5729c684
 msgid ""
 "This delivers a list of rectangles (see :ref:`Rect`), each of which "
 "surrounds one occurrence of the string \"mupdf\" (case insensitive). You "
@@ -633,7 +641,7 @@ msgstr ""
 "このコードは、\"mupdf\"（大文字と小文字を区別しない）という文字列が含まれる各領域を囲む長方形（ :ref:`Rect` "
 "参照）のリストを生成します。この情報を使って、それらの領域を強調表示したり（PDFのみ）、文書のクロスリファレンスを作成したりすることができます。"
 
-#: ../../tutorial.rst:264 d03ef52663034037b21c5f6b821a40a4
+#: ../../tutorial.rst:266 64b9d94c27d2430a9a761da4084e0510
 msgid ""
 "Please also do have a look at chapter :ref:`cooperation` and at demo "
 "programs `demo.py`_ and `demo-lowlevel.py`_. Among other things they "
@@ -645,11 +653,11 @@ msgstr ""
 "も参照してください。これらには、:ref:`TextPage` 、 :ref:`Device` 、:ref:`DisplayList` "
 "クラスをより直接的に制御する方法に関する詳細な情報が含まれています。例えば、パフォーマンスを考慮する必要がある場合などに役立ちます"
 
-#: ../../tutorial.rst:271 632beb6aacd9445ca925978b6f16e9f3
+#: ../../tutorial.rst:273 2fcdc8a391004211a63c3682b7fb5f2b
 msgid "Stories: Generating PDF from HTML Source"
 msgstr "ストーリー: HTMLソースからPDFを生成する"
 
-#: ../../tutorial.rst:273 46fc5f3012c24b62a15a98d7478fcff3
+#: ../../tutorial.rst:275 ab8a9b2cdb7641d881c73fc7abf43268
 msgid ""
 "The :ref:`Story` class is a new feature of PyMuPDF version 1.21.0. It "
 "represents support for MuPDF's **\"story\"** interface."
@@ -657,13 +665,13 @@ msgstr ""
 "ストーリークラスはPyMuPDFバージョン1.21.0の新機能です。これはMuPDFの :ref:`Story` "
 "インターフェースに対するサポートを表しています。"
 
-#: ../../tutorial.rst:275 d7a66d96d3d3404fa8f28fb7e94b003a
+#: ../../tutorial.rst:277 d6963f89881a4fba95e7b1099865b22a
 msgid ""
 "The following is a quote from the book `\"MuPDF Explored\"`_ by Robin "
 "Watts from `Artifex`_:"
 msgstr "以下はArtifexのRobin Wattsによる書籍「MuPDF Explored」からの引用です。"
 
-#: ../../tutorial.rst:279 df3cedde1e514339a9b1a64b764d5775
+#: ../../tutorial.rst:281 f4ecf26b2cd04a978bf74422d5fa8c30
 msgid ""
 "*Stories provide a way to easily layout styled content for use with "
 "devices, such as those offered by Document Writers (...). The concept of "
@@ -673,7 +681,7 @@ msgid ""
 "multiple columns, possibly across multiple pages.*"
 msgstr "*ストーリーは、ドキュメントライターなどのデバイスで使用するためのスタイル付きコンテンツを簡単にレイアウトする方法を提供します。ストーリーという概念は、デスクトップパブリッシングから来ており、それ自体が新聞から取り入れられています。伝統的な新聞のレイアウトを考えると、複数の列や複数のページにわたって配置されたさまざまなニュース記事（ストーリー）で構成されています。*"
 
-#: ../../tutorial.rst:281 19804b1bbea64cfaa709bb87cc0bd2d9
+#: ../../tutorial.rst:283 24ef55c29a4d468781822c3a0c6ae60e
 msgid ""
 "*Accordingly, MuPDF uses a story to represent a flow of text with styling"
 " information. The user of the story can then supply a sequence of "
@@ -683,26 +691,26 @@ msgid ""
 "text should be flowed (the layout).*"
 msgstr "*それに応じて、MuPDFでは、テキストのフローとスタイリング情報を表すためにストーリーを使用しています。ストーリーのユーザーは、ストーリーをレイアウトするための矩形のシーケンスを提供し、配置されたテキストを出力デバイスに描画できます。これにより、テキスト自体（ストーリー）がテキストを配置する領域（レイアウト）から分離されるという概念が保持されます*"
 
-#: ../../tutorial.rst:285 70b3985beaaf451593764cd6f13ecefa
+#: ../../tutorial.rst:287 8a384a5047b544f5900574c11df5e1df
 msgid ""
 "A Story works somewhat similar to an internet browser: It faithfully "
 "parses and renders HTML hypertext and also optional stylesheets (CSS). "
 "But its **output is a PDF** -- not web pages."
 msgstr "ストーリーは、インターネットブラウザといくつかの点で似ています。それは忠実にHTMLハイパーテキストとオプションのスタイルシート（CSS）を解析してレンダリングします。ただし、出力されるのはPDFであり、ウェブページではありません。"
 
-#: ../../tutorial.rst:288 4c3c684f667b4dddb375e2dac6895da5
+#: ../../tutorial.rst:290 42027a24ac6c46fc91baef0cd7076471
 msgid ""
 "When creating a :ref:`Story`, the input from up to three different "
 "information sources is taken into account. All these items are optional."
 msgstr "ストーリーを作成する際には、最大3つの異なる情報源からの入力が考慮されます。これらのすべてのアイテムはオプションです。"
 
-#: ../../tutorial.rst:290 e7709d03c4664113aa375231155deb0b
+#: ../../tutorial.rst:292 9adeb199229844bb83284b74fda7555e
 msgid ""
 "HTML source code, either a Python string or **created by the script** "
 "using methods of :ref:`Xml`."
 msgstr "HTMLソースコード：Pythonの文字列として提供されるか、 :ref:`Xml` のメソッドを使用してスクリプトによって作成されます。"
 
-#: ../../tutorial.rst:292 1d443460f8a142e683f9a489703e12ef
+#: ../../tutorial.rst:294 e48f3a50012241f0849b4d6077b00e10
 msgid ""
 "CSS (Cascaded Style Sheet) source code, provided as a Python string. CSS "
 "can be used to provide styling information (text font size, color, etc.) "
@@ -710,7 +718,7 @@ msgid ""
 "read from a file."
 msgstr "CSS（カスケーディングスタイルシート）ソースコード：Pythonの文字列として提供されます。CSSは、ウェブページにおけるように、スタイリング情報（テキストフォントサイズ、色など）を提供するために使用できます。もちろん、この文字列はファイルから読み込むこともできます。"
 
-#: ../../tutorial.rst:294 7e848db4f5b54cbe815c21fdacecfe95
+#: ../../tutorial.rst:296 cb2f2cd086c14b9894c55183dc6a8b80
 msgid ""
 "An :ref:`Archive` **must be used** whenever the DOM references images, or"
 " uses text fonts except the standard :ref:`Base-14-Fonts`, CJK fonts and "
@@ -720,7 +728,7 @@ msgstr ""
 "、CJKフォント、およびPyMuPDFバイナリに生成されたNOTOフォント以外のテキストフォントを使用する場合、 :ref:`Archive` "
 "を使用する必要があります。"
 
-#: ../../tutorial.rst:297 cdd0ee1dedc9441598d16724dd3b412e
+#: ../../tutorial.rst:299 92aa9219931649b5972b55f06acaba5f
 msgid ""
 "The :ref:`API<Xml>` allows creating DOMs completely from scratch, "
 "including desired styling information. It can also be used to modify or "
@@ -731,7 +739,7 @@ msgstr ""
 "この :ref:`API<Xml>` "
 "では、望むスタイル情報を含めて、DOMを完全にゼロから作成することができます。また、提供されたHTMLを変更したり拡張したりするためにも使用できます。テキストは削除や置換ができ、スタイルも変更できます。データベースから抽出されたテキストを追加して、テンプレートのようなHTMLドキュメントを作成することもできます。"
 
-#: ../../tutorial.rst:299 f758c97a6c5c4e0f97a1167e54d705c0
+#: ../../tutorial.rst:301 bfef6bbfde0e4e9f95799418e6b840d0
 msgid ""
 "It is **not required** to provide syntactically complete HTML documents: "
 "snippets like `<b>Hello <i>World!</i></b>` are fully accepted, and many /"
@@ -740,7 +748,7 @@ msgstr ""
 "文法的に完全なHTMLドキュメントを提供する必要はありません。例えば ``<b>Hello<i>World!</i></b>`` "
 "のような断片も完全に受け入れられ、多くの場合、構文エラーは自動的に修正されます。"
 
-#: ../../tutorial.rst:301 1f116b34f05a4e17b462098251e03ea3
+#: ../../tutorial.rst:303 043777ef2f3349c3a0173448f52cecbb
 msgid ""
 "After the HTML is considered complete, it can be used to create a PDF "
 "document. This happens via the new :ref:`DocumentWriter` class. The "
@@ -751,7 +759,7 @@ msgstr ""
 "クラスを介して行われます。プログラマーはそのメソッドを呼び出して新しい空のページを作成し、:ref:`Story` "
 "に矩形を渡してそれらを埋めることができます。"
 
-#: ../../tutorial.rst:303 695e45b12fce4782b5c4fd0aa27b6555
+#: ../../tutorial.rst:305 23c7aafe13d34181a4d91db97ba388ce
 msgid ""
 "The story in turn will return completion codes indicating whether or not "
 "more content is waiting to be written. Which part of the content will "
@@ -763,23 +771,23 @@ msgstr ""
 "は、書き込まれる待機中のコンテンツがあるかどうかを示す完了コードを返します。コンテンツのどの部分がどの矩形またはどのページに配置されるかは、:ref:`Story`"
 " 自体によって自動的に決定されます。矩形を提供すること以外では影響を与えることはできません。"
 
-#: ../../tutorial.rst:305 e21c7de25cdd486aa5f25b939ac8d907
+#: ../../tutorial.rst:307 4c261efdbac741c4982404ab01604e2b
 msgid ""
 "Please see the :ref:`Stories recipes<RecipesStories>` for a number of "
 "typical use cases."
 msgstr "典型的な使用例については、 :ref:`Stories recipes<RecipesStories>` レシピをご覧ください。"
 
-#: ../../tutorial.rst:309 399930cfb2e8488d960d96f3d1355d9c
+#: ../../tutorial.rst:311 1cfcd608ebe3470d989d732b1053ef15
 msgid "PDF Maintenance"
 msgstr "PDFメンテナンス"
 
-#: ../../tutorial.rst:310 6da3e65befc0429c9a4ffa71eb88187f
+#: ../../tutorial.rst:312 adb1c7c8a9924ac6ad2c05db95c0343a
 msgid ""
 "PDFs are the only document type that can be **modified** using PyMuPDF. "
 "Other file types are read-only."
 msgstr "PDFはPyMuPDFを使用して変更できる唯一のドキュメントタイプです。他のファイルタイプは読み取り専用です。"
 
-#: ../../tutorial.rst:312 68d32990c279421098c78b364bae7855
+#: ../../tutorial.rst:314 9cd40dae8b664758b29583ab66394808
 msgid ""
 "However, you can convert **any document** (including images) to a PDF and"
 " then apply all PyMuPDF features to the conversion result. Find out more "
@@ -792,43 +800,43 @@ msgstr ""
 "で詳細を確認できます。また、任意のサポートされているドキュメントをPDFに変換できるデモスクリプト `pdf-converter.py`_ "
 "も確認してください。"
 
-#: ../../tutorial.rst:314 5f13499a67cb4723bc9beff29bde1579
+#: ../../tutorial.rst:316 f2e2843ced0b43dca260d5fb7417e81a
 msgid ""
 ":meth:`Document.save()` always stores a PDF in its current (potentially "
 "modified) state on disk."
 msgstr ":meth:`Document.save()` は常に現在の（変更された可能性のある）PDFをディスクに保存します。"
 
-#: ../../tutorial.rst:316 aafb21e9bd5d4bec92efc66f2dc9b3fe
+#: ../../tutorial.rst:318 211603a41aaf4aa2bf96e1dcba2c8d1e
 msgid ""
 "You normally can choose whether to save to a new file, or just append "
 "your modifications to the existing one (\"incremental save\"), which "
 "often is very much faster."
 msgstr "通常、新しいファイルに保存するか、既存のファイルに変更内容を追加するか（「増分保存」）を選択できます。増分保存は非常に高速な場合があります。"
 
-#: ../../tutorial.rst:318 5a055b9f80a74e1ea22dc0eccc70c054
+#: ../../tutorial.rst:320 f22382b263444329820b3e4b1c1f8ecc
 msgid ""
 "The following describes ways how you can manipulate PDF documents. This "
 "description is by no means complete: much more can be found in the "
 "following chapters."
 msgstr "以下にPDFドキュメントを操作する方法を示しますが、これに限らず、詳細は次の章でさらに見つけることができます。"
 
-#: ../../tutorial.rst:321 9dfb0dbe13d042f8ad369bceb1ec00e8
+#: ../../tutorial.rst:323 d99528fe55cc49799b2ad8ee3460f8cd
 msgid "Modifying, Creating, Re-arranging and Deleting Pages"
 msgstr "ページの修正、作成、再配置、および削"
 
-#: ../../tutorial.rst:322 3c2d01c1c0d44d82b73f260519b3337d
+#: ../../tutorial.rst:324 107ff92570a24cde96fad3fd09fef0fb
 msgid ""
 "There are several ways to manipulate the so-called **page tree** (a "
 "structure describing all the pages) of a PDF:"
 msgstr "PDFの**ページツリー** （すべてのページを記述する構造）を操作するためには、いくつかの方法があります。"
 
-#: ../../tutorial.rst:324 ddde9b75f1a441b88a2c1def1b695149
+#: ../../tutorial.rst:326 0003af108e2840da87372ff1fd5226f0
 msgid ""
 ":meth:`Document.delete_page` and :meth:`Document.delete_pages` delete "
 "pages."
 msgstr ":meth:`Document.delete_page` と :meth:`Document.delete_pages` はページを削除します。"
 
-#: ../../tutorial.rst:326 80586b5f3ab84355b52c1ed1b5ab92ac
+#: ../../tutorial.rst:328 a944cc4bb64749afa365e43f0c2c95a3
 msgid ""
 ":meth:`Document.copy_page`, :meth:`Document.fullcopy_page` and "
 ":meth:`Document.move_page` copy or move a page to other locations within "
@@ -837,7 +845,7 @@ msgstr ""
 ":meth:`Document.copy_page` 、 :meth:`Document.fullcopy_page` 、 "
 ":meth:`Document.move_page` は、ページを同じドキュメント内の他の場所にコピーしたり移動したりします。"
 
-#: ../../tutorial.rst:328 7fd9845cd7a34926b170a73f91d885fb
+#: ../../tutorial.rst:330 d3c938ecfec045e88fcfd36f38d2a459
 msgid ""
 ":meth:`Document.select` shrinks a PDF down to selected pages. Parameter "
 "is a sequence [#f3]_ of the page numbers that you want to keep. These "
@@ -850,55 +858,55 @@ msgstr ""
 "`0 <= i < page_count` "
 "にある必要があります。実行されると、このリストに含まれていないすべてのページが削除されます。残ったページは指定した順序通りに（指定回数分！）現れます。"
 
-#: ../../tutorial.rst:330 bee45078771343fe83ad7589e9012370
+#: ../../tutorial.rst:332 e8d7536dada8429993f454c33ebe1bc6
 msgid "So you can easily create new PDFs with"
 msgstr "したがって、次のような簡単な方法で新しいPDFを作成できます:"
 
-#: ../../tutorial.rst:332 25f33f4aacc9481d9fcb26ac31000c06
+#: ../../tutorial.rst:334 500d467e659f464a9be86508595c8f8f
 msgid "the first or last 10 pages,"
 msgstr "最初または最後の10ページ"
 
-#: ../../tutorial.rst:333 c7c3c8359a674a6491917634dd15c752
+#: ../../tutorial.rst:335 7ac997363c834974a15fe70f9cf887f3
 msgid "only the odd or only the even pages (for doing double-sided printing),"
 msgstr "奇数ページのみまたは偶数ページのみ（両面印刷用）"
 
-#: ../../tutorial.rst:334 dba8bebe0ee64ea882afea944db98add
+#: ../../tutorial.rst:336 52d03385fca64465abb5a7a68be887b4
 msgid "pages that **do** or **don't** contain a given text,"
 msgstr "特定のテキストを含むまたは含まないページ"
 
-#: ../../tutorial.rst:335 2a6089857c724acabb3bdc592344d853
+#: ../../tutorial.rst:337 312b16ee73bc4053a1765c3727eabba4
 msgid "reverse the page sequence, ..."
 msgstr "ページの順序を逆にする"
 
-#: ../../tutorial.rst:337 01c6ba3f04c54e5e85448bff1b8801ad
+#: ../../tutorial.rst:339 0680eca8c5384e47a5c6af617fd6dbd4
 msgid "... whatever you can think of."
 msgstr "... など、思いつく限りのことができます。"
 
-#: ../../tutorial.rst:339 654cd5efc8cb4584bc1b6853a319a9e4
+#: ../../tutorial.rst:341 8ffb226602e84b2d8f7b1aaa97cb6721
 msgid ""
 "The saved new document will contain links, annotations and bookmarks that"
 " are still valid (i.a.w. either pointing to a selected page or to some "
 "external resource)."
 msgstr "保存された新しいドキュメントには、まだ有効なリンク、注釈、およびブックマークが含まれています（選択したページを指すか、あるいは外部リソースを指すかを問わず）。"
 
-#: ../../tutorial.rst:341 f5798f770efb4771baad5858c6577c52
+#: ../../tutorial.rst:343 d0b34cee85ee45e1ab3443c8523a5a4b
 msgid ""
 ":meth:`Document.insert_page` and :meth:`Document.new_page` insert new "
 "pages."
 msgstr ":meth:`Document.insert_page` および :meth:`Document.new_page` は新しいページを挿入します。"
 
-#: ../../tutorial.rst:343 d3f4a5fbc2e5431da14ef1042b090e43
+#: ../../tutorial.rst:345 f2f4d69bc1a84523881267ef1a381d4f
 msgid ""
 "Pages themselves can moreover be modified by a range of methods (e.g. "
 "page rotation, annotation and link maintenance, text and image "
 "insertion)."
 msgstr "さらに、ページ自体はさまざまな方法で変更できます（ページの回転、注釈とリンクの維持、テキストと画像の挿入など）"
 
-#: ../../tutorial.rst:346 886f8b946f4e4815b799d36417df9b2a
+#: ../../tutorial.rst:348 92e85309c2254d6bb062cb77b4648dc2
 msgid "Joining and Splitting PDF Documents"
 msgstr "PDF文書の結合と分割"
 
-#: ../../tutorial.rst:348 6a463d0603f84c70b5002c8b6550b832
+#: ../../tutorial.rst:350 7b1f14d511a84c488a347bf0238d9901
 msgid ""
 "Method :meth:`Document.insert_pdf` copies pages **between different** PDF"
 " documents. Here is a simple **joiner** example (*doc1* and *doc2* being "
@@ -907,29 +915,29 @@ msgstr ""
 "メソッド  :meth:`Document.insert_pdf` は異なるPDF文書間でページをコピーします。以下は簡単な結合の例です（ "
 "`doc1` と `doc2` は開かれたPDF文書です）::"
 
-#: ../../tutorial.rst:353 222316e138ce4cf8b89e7d711d14d46f
+#: ../../tutorial.rst:355 c79912677faf4c54a26a5189bc4b5b80
 msgid ""
 "Here is a snippet that **splits** *doc1*. It creates a new document of "
 "its first and its last 10 pages::"
 msgstr "以下は、 `doc1` を分割するスニペットです。最初の10ページと最後の10ページを含む新しいドキュメントを作成します。"
 
-#: ../../tutorial.rst:360 8b1f5cd97d5d4a58b50e0bc338be4e94
+#: ../../tutorial.rst:362 b3a608ade2a3470186e036c291477c96
 msgid ""
 "More can be found in the :ref:`Document` chapter. Also have a look at "
 "`PDFjoiner.py`_."
 msgstr ":ref:`Document` の章にはさらに詳細が記載されています。また、 `PDFjoiner.py`_ も確認してください。"
 
-#: ../../tutorial.rst:363 0bfca11b309e46ff9d4c43b51835a69f
+#: ../../tutorial.rst:365 02b0c1a5f04b4dae8aa27371760eead5
 msgid "Embedding Data"
 msgstr "データの埋め込み"
 
-#: ../../tutorial.rst:365 9bbce0f40b384bdb9d054f814f3e32af
+#: ../../tutorial.rst:367 b28d4ebda3a14d069e6534c239bf2dac
 msgid ""
 "PDFs can be used as containers for arbitrary data (executables, other "
 "PDFs, text or binary files, etc.) much like ZIP archives."
 msgstr "PDFはZIPアーカイブのように、任意のデータ（実行可能ファイル、他のPDF、テキストファイル、バイナリファイルなど）をコンテナとして使用できます。"
 
-#: ../../tutorial.rst:367 dcb45e64b7164f3f91e401f4dc7dfe32
+#: ../../tutorial.rst:369 04c4033a230c46ceab62df3ef213205b
 msgid ""
 "PyMuPDF fully supports this feature via :ref:`Document` *embfile_** "
 "methods and attributes. For some detail read :ref:`Appendix 3`, consult "
@@ -943,17 +951,17 @@ msgstr ""
 "、`embedded-export.py`_ 、`embedded-import.py`_ 、および `embedded-list.py`_ "
 "も参考になるでしょう。"
 
-#: ../../tutorial.rst:371 340d14d57d8a4581acfdc8877d52cc2b
+#: ../../tutorial.rst:373 6c50eafa9b144cf3b3aeb36f946eed07
 msgid "Saving"
 msgstr "保存"
 
-#: ../../tutorial.rst:373 b4667ead58a74dcdac8d1e28cfd6d6ad
+#: ../../tutorial.rst:375 1b094625b4f6439996e7f95040640fc7
 msgid ""
 "As mentioned above, :meth:`Document.save` will **always** save the "
 "document in its current state."
 msgstr "前述のように、 :meth:`Document.save` は常にドキュメントを現在の状態で保存します。"
 
-#: ../../tutorial.rst:375 6002bbacc2c6498b8161677eb0042526
+#: ../../tutorial.rst:377 3884d37d66e24f51a21bf2c8d54682a0
 msgid ""
 "You can write changes back to the **original PDF** by specifying option "
 "*incremental=True*. This process is (usually) **extremely fast**, since "
@@ -963,7 +971,7 @@ msgstr ""
 "オプション  `incremental=True`  "
 "を指定することで、変更を元のPDFに書き戻すことができます。このプロセスは（通常）非常に高速です。変更は元のファイルに追加されるため、完全に書き直す必要がありません。"
 
-#: ../../tutorial.rst:377 7eca2c4369e74912b68d3d667864d6fa
+#: ../../tutorial.rst:379 d82a59f0f1444f528e7b0b1e41005091
 msgid ""
 ":meth:`Document.save` options correspond to options of MuPDF's command "
 "line utility *mutool clean*, see the following table."
@@ -971,157 +979,157 @@ msgstr ""
 ":meth:`Document.save` のオプションは、MuPDFのコマンドラインユーティリティmutool "
 "cleanのオプションと対応しています。以下の表を参照してください。"
 
-#: ../../tutorial.rst:380 deb6ed9fc26d488cbeb48034f7a07864
+#: ../../tutorial.rst:382 a2719cded81243c89f81bd304431e1f0
 msgid "**Save Option**"
 msgstr "**保存オプション**"
 
-#: ../../tutorial.rst:380 8baa3a94461248c7972221b21c6b3ad9
+#: ../../tutorial.rst:382 b9882b9da2064022b9a963dd902e4653
 msgid "**mutool**"
 msgstr ""
 
-#: ../../tutorial.rst:380 2055bebf68c54ac095f22a042ba44554
+#: ../../tutorial.rst:382 881334199d6f47a0adc238b7051b91c1
 msgid "**Effect**"
 msgstr "**効果**"
 
-#: ../../tutorial.rst:382 5408663cb784444ba42fa5563353bf13
+#: ../../tutorial.rst:384 c2182e3340414c48bab7b2e765f85e93
 msgid "garbage=1"
 msgstr ""
 
-#: ../../tutorial.rst:382 965dabeefa5c404fae59f052733757da
+#: ../../tutorial.rst:384 dc388d3599fb43f999961f8e2fc8eb8e
 msgid "g"
 msgstr ""
 
-#: ../../tutorial.rst:382 a3dda7fbcc8848c6a82bbebf4f4ed658
+#: ../../tutorial.rst:384 b34589850ac84fe1b67edee04343ac0d
 msgid "garbage collect unused objects"
 msgstr "未使用のオブジェクトをガベージコレクションします"
 
-#: ../../tutorial.rst:383 486a73fcb8354f50baa862c8d32486ff
+#: ../../tutorial.rst:385 92070a3202d74b5db0e7662c386310c9
 msgid "garbage=2"
 msgstr ""
 
-#: ../../tutorial.rst:383 691ad099151c47b68f5030b4fe59e98f
+#: ../../tutorial.rst:385 95a46fcf657b4a4991e56eb9755ba000
 msgid "gg"
 msgstr ""
 
-#: ../../tutorial.rst:383 06ec4170fe6042efb8c195d25f5a37c8
+#: ../../tutorial.rst:385 62e16e074c2448d8bc155dfdf6afdda5
 msgid "in addition to 1, compact :data:`xref` tables"
 msgstr "1に加えて、xrefテーブルをコンパクトにします"
 
-#: ../../tutorial.rst:384 2a5e9719d775450da1ef342d656afdbd
+#: ../../tutorial.rst:386 77f025b11a83409b84f2eee80fad402d
 msgid "garbage=3"
 msgstr ""
 
-#: ../../tutorial.rst:384 2d2d1da053664ec1b6b0de5ef32bcab2
+#: ../../tutorial.rst:386 504485e1d6cb4d1d8786e62f8faa978e
 msgid "ggg"
 msgstr ""
 
-#: ../../tutorial.rst:384 5d07495a34e6485396e72c69f87a3a27
+#: ../../tutorial.rst:386 c3e117b3d4be42728175ceb24ebbb432
 msgid "in addition to 2, merge duplicate objects"
 msgstr "2に加えて、重複したオブジェクトをマージします"
 
-#: ../../tutorial.rst:385 d46b5ea944074583a37d04c5a65f13ac
+#: ../../tutorial.rst:387 386d21dd828449d48e07ec9006e3324c
 msgid "garbage=4"
 msgstr ""
 
-#: ../../tutorial.rst:385 b1eaae90c6774363a9d02d3e0aef52c4
+#: ../../tutorial.rst:387 1778e2d92f1945379bbbaaeb6d1d0a3f
 msgid "gggg"
 msgstr ""
 
-#: ../../tutorial.rst:385 50ff9369067d49078e1162941be486a2
+#: ../../tutorial.rst:387 2fb520a34ee84f6c917f2f946463f294
 msgid "in addition to 3, merge duplicate stream content"
 msgstr "3に加えて、重複したストリームの内容をマージします"
 
-#: ../../tutorial.rst:386 646e858cdb5a4b8bab338979983c1247
+#: ../../tutorial.rst:388 057be323cb4046688e8d955e27729089
 msgid "clean=True"
 msgstr ""
 
-#: ../../tutorial.rst:386 f05caab04aff42edba7aecaee7f098c2
+#: ../../tutorial.rst:388 8bcf19b7dc0d4b4eafad5f7a4c84c22d
 msgid "cs"
 msgstr ""
 
-#: ../../tutorial.rst:386 db8a8e22ddb34831b596e58ee4b8fea3
+#: ../../tutorial.rst:388 68e84f8fcc4e4051be0ea61e6b72951c
 msgid "clean and sanitize content streams"
 msgstr "コンテンツストリームをクリーンアップしてサニタイズします"
 
-#: ../../tutorial.rst:387 abb8410f3ad841c280a0c74967b5fe47
+#: ../../tutorial.rst:389 bcb99a6d5341449f80aaa25be82c209c
 msgid "deflate=True"
 msgstr ""
 
-#: ../../tutorial.rst:387 16bc363b9dd043999e379000c6717b26
+#: ../../tutorial.rst:389 f027ea4ce13144049bfd333a3e9a666f
 msgid "z"
 msgstr ""
 
-#: ../../tutorial.rst:387 7549c82249954a6e9f904f9da5042a97
+#: ../../tutorial.rst:389 6f2e9b1158804573acb4d20e2daca889
 msgid "deflate uncompressed streams"
 msgstr "非圧縮のストリームをdeflate圧縮します"
 
-#: ../../tutorial.rst:388 eff2557eb8a44805863f9b77af806c32
+#: ../../tutorial.rst:390 53905bc3eb97437e8911ddbc5d100554
 msgid "deflate_images=True"
 msgstr ""
 
-#: ../../tutorial.rst:388 06ac26346e4a4bd0b0277064e027f7af
+#: ../../tutorial.rst:390 34acaac300444bf08486a3959b81dece
 msgid "i"
 msgstr ""
 
-#: ../../tutorial.rst:388 0dcecb01227f4b478e49543adf890436
+#: ../../tutorial.rst:390 9b6809eb583e495cb5a8a322074180f8
 msgid "deflate image streams"
 msgstr "画像ストリームをdeflate圧縮します"
 
-#: ../../tutorial.rst:389 26fd4348c659461a8ca10e7c35bf06a9
+#: ../../tutorial.rst:391 72d3e5a396dd4fb29d03b762a58b906a
 msgid "deflate_fonts=True"
 msgstr ""
 
-#: ../../tutorial.rst:389 d7203ddda227496f88000d659379461e
+#: ../../tutorial.rst:391 a4e6652a6a14408f8335a8fe83b9bf96
 msgid "f"
 msgstr ""
 
-#: ../../tutorial.rst:389 c87fc4bea32a4a6b9fef1df82e3fe5be
+#: ../../tutorial.rst:391 6ee5c61d2867436ba3dcf2f8ef83ab86
 msgid "deflate fontfile streams"
 msgstr "フォントファイルストリームをdeflate圧縮します"
 
-#: ../../tutorial.rst:390 256c7402189e4b3799a0992ca292865c
+#: ../../tutorial.rst:392 7a28d660d2b04da9badd9d56176db271
 msgid "ascii=True"
 msgstr ""
 
-#: ../../tutorial.rst:390 b18baed49d1e4dffa617dee7d7cb24aa
+#: ../../tutorial.rst:392 15cdc88f7d8b45d2913cdac93cb0abba
 msgid "a"
 msgstr ""
 
-#: ../../tutorial.rst:390 6eee1768e5834126acb294b21992cab1
+#: ../../tutorial.rst:392 3c7d9fd90dab4253a99aa01e0a6a51ff
 msgid "convert binary data to ASCII format"
 msgstr "バイナリデータをASCII形式に変換します"
 
-#: ../../tutorial.rst:391 51505b1d2e24438c9cda8d5221d48dcb
+#: ../../tutorial.rst:393 76e5877279f846468b87ea5fcba8cb52
 msgid "linear=True"
 msgstr ""
 
-#: ../../tutorial.rst:391 21229be4e9e7439a953c39c66bc82b63
+#: ../../tutorial.rst:393 ef0deabe1236445f823821ccb49065c9
 msgid "l"
 msgstr ""
 
-#: ../../tutorial.rst:391 7ac39bb9d7f74bbb8bd531fd0a1c2761
+#: ../../tutorial.rst:393 5d6bef23e4d5440fa6c61fdaedc7e1e3
 msgid "create a linearized version"
 msgstr "線形化バージョンを作成します"
 
-#: ../../tutorial.rst:392 4306674075b24557bf45156a934bc7af
+#: ../../tutorial.rst:394 564a5f2120f64c54aa1efdd8dded2a0d
 msgid "expand=True"
 msgstr ""
 
-#: ../../tutorial.rst:392 48ca0fecb42f437c927478eaeb38f69a
+#: ../../tutorial.rst:394 70de347592a0460bbfd4e06cdd95a0d4
 msgid "d"
 msgstr ""
 
-#: ../../tutorial.rst:392 093b24d5133c473199016bc675d27cfc
+#: ../../tutorial.rst:394 a00de27f23244fc49535777b88b9fc4a
 msgid "decompress all streams"
 msgstr "すべてのストリームを解凍します"
 
-#: ../../tutorial.rst:395 2b39cef7f6be4df1908b94343cf5cbe5
+#: ../../tutorial.rst:397 6c7e230d21b34ca7a5f0c7de6b5d5187
 msgid ""
 "For an explanation of terms like *object, stream, xref* consult the "
 ":ref:`Glossary` chapter."
 msgstr "オブジェクト、ストリーム、xrefなどの用語の詳細については、 :ref:`Glossary`  の章を参照してください。"
 
-#: ../../tutorial.rst:397 2783ed990cb74a8dae331df80f41e201
+#: ../../tutorial.rst:399 dc0df99a528d4978997189a285ab567f
 msgid ""
 "For example, *mutool clean -ggggz file.pdf* yields excellent compression "
 "results. It corresponds to *doc.save(filename, garbage=4, deflate=True)*."
@@ -1129,17 +1137,17 @@ msgstr ""
 "例えば、 `mutool clean -ggggz file.pdf`  は優れた圧縮結果をもたらします。これは "
 "`doc.save(filename, garbage=4, deflate=True)` に対応しています。"
 
-#: ../../tutorial.rst:400 908e6ab8d7fa4072a65d5f77e000f63c
+#: ../../tutorial.rst:402 77dd1b8c5ae8491eadd5ee69c5c969ca
 msgid "Closing"
 msgstr "クローズ"
 
-#: ../../tutorial.rst:401 de8bd0e1f03742df8f8687134e8712da
+#: ../../tutorial.rst:403 f54a1c4a6b194905adcc2de9c957a901
 msgid ""
 "It is often desirable to \"close\" a document to relinquish control of "
 "the underlying file to the OS, while your program continues."
 msgstr "プログラムが継続する間に、基になるファイルの制御をOSに戻すために、ドキュメントを「クローズ」することがしばしば望まれます。"
 
-#: ../../tutorial.rst:403 f882fd29fc4a45c7b81fbe0f8189f883
+#: ../../tutorial.rst:405 aba7fafb6d144278a587237e62031f63
 msgid ""
 "This can be achieved by the :meth:`Document.close` method. Apart from "
 "closing the underlying file, buffer areas associated with the document "
@@ -1148,11 +1156,11 @@ msgstr ""
 "これは :meth:`Document.close` "
 "メソッドによって実現できます。基になるファイルをクローズするだけでなく、ドキュメントに関連するバッファ領域も解放されます。"
 
-#: ../../tutorial.rst:406 4cfd3ca990664a00b8b8c99e06f32c49
+#: ../../tutorial.rst:408 ef36cad35b2b43b3b4e6a75a3cad4061
 msgid "Further Reading"
 msgstr "さらなる情報"
 
-#: ../../tutorial.rst:407 fceb5ce9c12040d4b04b5897ef645190
+#: ../../tutorial.rst:409 413e5c22ce7b4e7c946d398ff40ff7bc
 msgid ""
 "Also have a look at PyMuPDF's `Wiki`_ pages. Especially those named in "
 "the sidebar under title **\"Recipes\"** cover over 15 topics written in "
@@ -1162,18 +1170,18 @@ msgstr ""
 "ページもご覧ください。特に、サイドバーのタイトル「Recipes」の下に名前が挙げられているものは、15以上のトピックが「How-"
 "To」スタイルで書かれています。"
 
-#: ../../tutorial.rst:409 e8dc5020aeba446b96733d278aed0139
+#: ../../tutorial.rst:411 cc93bd599e14470998e742dc7e454487
 msgid ""
 "This document also contains a :ref:`FAQ`. This chapter has close "
 "connection to the aforementioned recipes, and it will be extended with "
 "more content over time."
 msgstr ":ref:`Recipes: Table of Contents<RecipesTOC>` をご覧ください。"
 
-#: ../../tutorial.rst:416 0741bd44e9d443b793ccf05e83603b91
+#: ../../tutorial.rst:418 cb8fc0b5b1c848168a96624e65dd29fc
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../tutorial.rst:417 08ab7a977a1b4f2bba932f5b6a98dbb9
+#: ../../tutorial.rst:419 b94228407b8545b2a40f21dedce5ff06
 msgid ""
 "PyMuPDF lets you also open several image file types just like normal "
 "documents. See section :ref:`ImageFiles` in chapter :ref:`Pixmap` for "
@@ -1182,7 +1190,7 @@ msgstr ""
 "PyMuPDFは通常のドキュメントと同様に、いくつかの画像ファイル形式も開くことができます。詳細は、章 :ref:`Pixmap` のセクション "
 ":ref:`ImageFiles` を参照してください。"
 
-#: ../../tutorial.rst:419 235b482d363847b192f4fbc3f1487994
+#: ../../tutorial.rst:421 0530b8abe40b49d793ce8d1b1741140a
 msgid ""
 ":meth:`Page.get_text` is a convenience wrapper for several methods of "
 "another PyMuPDF class, :ref:`TextPage`. The names of these methods "
@@ -1194,7 +1202,7 @@ msgstr ""
 "に渡された引数文字列に対応しています。例えば、 `Page.get_text(“dict”)`  は  "
 "`TextPage.extractDICT()` と同等です。"
 
-#: ../../tutorial.rst:421 42c3e2f2e9b248cbb898ed7215b52258
+#: ../../tutorial.rst:423 83003f91b1bd4cb183918e279dd80e30
 msgid ""
 "\"Sequences\" are Python objects conforming to the sequence protocol. "
 "These objects implement a method named *__getitem__()*. Best known "
@@ -1203,13 +1211,9 @@ msgid ""
 "Refer to :ref:`SequenceTypes` for details."
 msgstr "\"シーケンス\"とは、シーケンスプロトコルに準拠したPythonオブジェクトのことを指します。これらのオブジェクトは、getitem()という名前のメソッドを実装しています。よく知られた例としては、Pythonのタプルやリストがあります。しかし、array.array、numpy.array、およびPyMuPDFの「geometry」オブジェクト（幾何オブジェクトのためのオペレーター代数）もシーケンスです。詳細については、「PyMuPDFにおけるPythonシーケンスの引数の使用」を参照してください"
 
-#: ../../footer.rst:60 8f45ed30bb01436f880f4038e9a238cc
+#: ../../footer.rst:60 2332c1f552f94af7ba9abc4470a1da83
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 561d84eb251f45dfb6c1bca52412e0cf
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 #~ msgstr ""
@@ -1223,4 +1227,7 @@ msgstr ""
 #~ "with other packages named \"fitz\" in"
 #~ " the same Python environment."
 #~ msgstr "したがって、PyMuPDFは同じPython環境で「fitz」という名前のパッケージと共存することはできません"
+
+#~ msgid "Discord logo"
+#~ msgstr ""
 

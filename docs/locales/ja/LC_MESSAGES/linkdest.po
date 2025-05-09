@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,33 +19,33 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 c7ae1f4b5f6a40d8bb8721c992dfc19c
+#: ../../header.rst:-1 c9d403d602c14550a5468c49b79ec151
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 cc07b3d31f90462f8683785e55d0a5e5
+#: ../../header.rst:-1 2ce574ba495d4bef8dfc597a774b5eb2
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 7cd2b89eec8b4e0593838437d3487f2c
+#: ../../header.rst:-1 8d5420280aa04b0e82c737fe2879efc1
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../linkdest.rst:7 642d1c22b5b247379ab3e52fa5368734
+#: ../../linkdest.rst:7 5be0406fa37d496c8d775d5c14ccbc9b
 msgid "linkDest"
 msgstr ""
 
-#: ../../linkdest.rst:8 edc558b79898455baf113c0c56e39121
+#: ../../linkdest.rst:8 dbc5983be663459da1a305db6fd4b633
 msgid ""
 "Class representing the `dest` property of an outline entry or a link. "
 "Describes the destination to which such entries point."
 msgstr "アウトラインエントリまたはリンクの `dest` プロパティを表すクラス。これらのエントリが指す先の目的地を説明します。"
 
-#: ../../linkdest.rst:10 bd1bdbda078b413aaf7f70340185c3ef
+#: ../../linkdest.rst:10 fadcf1b2cb264b42a61422b1b39f9940
 msgid ""
 "Up to MuPDF v1.9.0 this class existed inside MuPDF and was dropped in "
 "version 1.10.0. For backward compatibility, PyMuPDF is still maintaining "
@@ -55,115 +55,115 @@ msgstr ""
 "MuPDF "
 "v1.9.0まで、このクラスはMuPDF内に存在し、バージョン1.10.0で削除されました。後方互換性のため、PyMuPDFはそれを引き続き維持していますが、その属性のいくつかは実際にはMuPDFを介して利用可能なデータでバックアップされていないことに注意してください。"
 
-#: ../../linkdest.rst:13 ce64560004174982a5aca5faee977807
+#: ../../linkdest.rst:13 5cc4c7e9b4c94a61b74581d3ab546826
 msgid "**Attribute**"
 msgstr "**属性**"
 
-#: ../../linkdest.rst:13 d641c2a24bbc42e49c30b0c7654d1cdb
+#: ../../linkdest.rst:13 2bb1dd6fb2e14d74b6262ace5e110a91
 msgid "**Short Description**"
 msgstr "**短い説明**"
 
-#: ../../linkdest.rst:15 54abd340aa124790ab2c2af89b34ffd0
+#: ../../linkdest.rst:15 4f46e630676f4c0d9573cd5caeeeec87
 msgid ":attr:`linkDest.dest`"
 msgstr ""
 
-#: ../../linkdest.rst:15 3541634ad3c1463f8caec96a7c27f0b8
+#: ../../linkdest.rst:15 b8176d37e0ab4c298fa79512e4e04ca7
 msgid "destination"
 msgstr "目的地"
 
-#: ../../linkdest.rst:16 2febf49e60ca4f71b5e564e49e008c72
+#: ../../linkdest.rst:16 7d38469c9fd94cc5ae034b83b7dc6c89
 msgid ":attr:`linkDest.fileSpec`"
 msgstr ""
 
-#: ../../linkdest.rst:16 2b7586a701334911b2569f5589045f7b
+#: ../../linkdest.rst:16 c7535db1bddc446a8d9ec72cbe6ffee5
 msgid "file specification (path, filename)"
 msgstr "ファイル仕様（パス、ファイル名）"
 
-#: ../../linkdest.rst:17 995991331502480ba15f0a7c55164fa5
+#: ../../linkdest.rst:17 09737ba6f55b4fd39a12293d1d0d3425
 msgid ":attr:`linkDest.flags`"
 msgstr ""
 
-#: ../../linkdest.rst:17 399de24acc6e4e91933d26464b7ed97d
+#: ../../linkdest.rst:17 b064dee65c8e4774b3aaf4042b4297e5
 msgid "descriptive flags"
 msgstr "説明的なフラグ"
 
-#: ../../linkdest.rst:18 48a41064dc254c4db5343665ad735f59
+#: ../../linkdest.rst:18 4bcf60e4eab64157a425d9fc9067c73d
 msgid ":attr:`linkDest.isMap`"
 msgstr ""
 
-#: ../../linkdest.rst:18 1054ee9dd57f487faf3f761f66ea374b
+#: ../../linkdest.rst:18 07f875efd9754adc83c776866a862b02
 msgid "is this a MAP?"
 msgstr "これはMAPですか？"
 
-#: ../../linkdest.rst:19 834d187117814d16b31a980d7fa68e5a
+#: ../../linkdest.rst:19 91af568ccac84cd5b4ee16d388bbb93e
 msgid ":attr:`linkDest.isUri`"
 msgstr ""
 
-#: ../../linkdest.rst:19 23959cecce9d4a76aa7680a3ce7ef1a1
+#: ../../linkdest.rst:19 ee75600c30be45058d58b89f78d55876
 msgid "is this a URI?"
 msgstr "これはURIですか？"
 
-#: ../../linkdest.rst:20 2afc08d35d214c7eae5dce92f01357c5
+#: ../../linkdest.rst:20 855d7ecb78564fbcbf4373cff63475fe
 msgid ":attr:`linkDest.kind`"
 msgstr ""
 
-#: ../../linkdest.rst:20 8682d11f401f437c8c0ec7ac0a9eb990
+#: ../../linkdest.rst:20 8649be963579431cbf6b4132d29871dc
 msgid "kind of destination"
 msgstr "目的地の種類"
 
-#: ../../linkdest.rst:21 75fc20a075654b18ae9236f8250e4155
+#: ../../linkdest.rst:21 2e3bd4e2ae394a558dbc24ba2ac241b8
 msgid ":attr:`linkDest.lt`"
 msgstr ""
 
-#: ../../linkdest.rst:21 59693accefc442f083a0556f0fe9bcc5
+#: ../../linkdest.rst:21 704e8f3a402648918640ee171f22159a
 msgid "top left coordinates"
 msgstr "左上の座標"
 
-#: ../../linkdest.rst:22 450e3a552cc6467091bd004becd47db0
+#: ../../linkdest.rst:22 e72f8149e16f4a28b4994101fa9458fa
 msgid ":attr:`linkDest.named`"
 msgstr ""
 
-#: ../../linkdest.rst:22 415655173d044c13b3ba18b9068f82f1
+#: ../../linkdest.rst:22 7024a1c5676a4db182cde158adddcefd
 msgid "name if named destination"
 msgstr "名前付き目的地の名前"
 
-#: ../../linkdest.rst:23 4615a0d12fba4faf8cb7ffd5435b49c5
+#: ../../linkdest.rst:23 a607a689ec9a430585a215fd17274636
 msgid ":attr:`linkDest.newWindow`"
 msgstr ""
 
-#: ../../linkdest.rst:23 e69a9088c11f437e990d2507e487517d
+#: ../../linkdest.rst:23 306056d18da1405fb16d64afcd5db2b1
 msgid "name of new window"
 msgstr "新しいウィンドウの名前"
 
-#: ../../linkdest.rst:24 5cb427cbe0174bed8f13427acb90b315
+#: ../../linkdest.rst:24 0e354263696b4dea884ce7b0e8659268
 msgid ":attr:`linkDest.page`"
 msgstr ""
 
-#: ../../linkdest.rst:24 b3200edc188b46cf82dcfd4ae6c0d612
+#: ../../linkdest.rst:24 709b2315bb6242709a51deccd9017a09
 msgid "page number"
 msgstr "ページ番号"
 
-#: ../../linkdest.rst:25 5d3f5e497105490097ba04edd117d505
+#: ../../linkdest.rst:25 db8af5778b80458c8954ad3b5d8f4b1d
 msgid ":attr:`linkDest.rb`"
 msgstr ""
 
-#: ../../linkdest.rst:25 2efa129c8b8147ff9c391ea3b37bfe0d
+#: ../../linkdest.rst:25 cc7df48156634225ab78f47225de634e
 msgid "bottom right coordinates"
 msgstr "右下の座標"
 
-#: ../../linkdest.rst:26 549b3aa583a340368ef1265c404379f7
+#: ../../linkdest.rst:26 9591bd156430496fa34539728e98f4f2
 msgid ":attr:`linkDest.uri`"
 msgstr ""
 
-#: ../../linkdest.rst:26 da326e97578d481f87b400ea4d0e7e0e
+#: ../../linkdest.rst:26 cd8d4153a6044983bdc26e8c29c809ad
 msgid "URI"
 msgstr ""
 
-#: ../../linkdest.rst:29 ef29d23bfdf341eca51fbdcb51071d76
+#: ../../linkdest.rst:29 578749192c9f4502a4e8daf7c90af448
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../linkdest.rst:35 ae71905d1c13467d84171423a343e443
+#: ../../linkdest.rst:35 bcd161881123491fb6ea03b01fee7817
 msgid ""
 "Target destination name if :attr:`linkDest.kind` is :data:`LINK_GOTOR` "
 "and :attr:`linkDest.page` is *-1*."
@@ -171,24 +171,24 @@ msgstr ""
 ":attr:`linkDest.kind` が:data:`LINK_GOTOR` であり、:attr:`linkDest.page` が "
 "*-1* の場合、対象の宛先名。"
 
-#: ../../linkdest.rst 07a6a4ec30ad47f7be433c6a654617cc
-#: 095d3686fc0949688c05bf0454c5e200 3bb6e15c10ca45079c22a4190fa1c888
-#: 4f88f6d6f22f499ab137b3d3505d0f3d 608c19d1df3541e6ba7b6e75bb9b09ac
-#: 66e78c6aa27f4817a639e0d80c2bec4f 7eb5a98c54924f1aa0dd03f1f95f844b
-#: 8f02277c51d64b44a9d8af8332882d33 90cf3a3718ff444987550ec2c8bc0437
-#: ab0151e821a341c399c2846b4f24e066 bd4f0a4742a7412bb703453b0531b3be
-#: d85da3784b5d41afba5464aff580aab8
+#: ../../linkdest.rst 24dee675d4504f8981a51fa2b8c9ae57
+#: 3c8f45e7a79841869726ce8c2db738bb 4e7db470641845cb993cb6d79edfc402
+#: 5282e07210cd45d1afe857765c18bb82 600998af429f4438b130f86a27543213
+#: 6190f4a6cbe547ee9bd7ce0672cbe0ea 6a314b30d1cd42cfb8ce9fbf698ea996
+#: 870a506b36024eee8203fa29ce90b30b a7317f9a30854058bcfea86fbe37948e
+#: cefd59f82f5344b9bb86d527d790c30d df60e9fbe1294169ba1907f3adf1b9ee
+#: f0cbb7037b834652bf39d488832ee865
 msgid "type"
 msgstr ""
 
 #: ../../linkdest.rst:37 ../../linkdest.rst:43 ../../linkdest.rst:79
-#: ../../linkdest.rst:103 005d28ec5d7e4b8082dbfe153306bd4d
-#: 39b141f3c206406082cefdd46d5083be d668624f91ae4e7dbbdaff15575ff1c6
-#: f7a3eee263ea4cddae49893aab3a949b
+#: ../../linkdest.rst:103 5bb912195e6349f8b39f6b50f9cb244b
+#: 621a722c520f47be96d16809c80f9936 ef378de79abf404d8902449278613652
+#: f1c0a413cf6f4affa2d72ce50adf67ef
 msgid "str"
 msgstr ""
 
-#: ../../linkdest.rst:41 e678f66ab59e4695948714032eecbb50
+#: ../../linkdest.rst:41 0d7b86556af7432ca01f62687b7105b8
 msgid ""
 "Contains the filename and path this link points to, if "
 ":attr:`linkDest.kind` is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`."
@@ -196,7 +196,7 @@ msgstr ""
 ":attr:`linkDest.kind` が :data:`LINK_GOTOR` または :data:`LINK_LAUNCH` "
 "の場合、このリンクが指すファイル名とパスが含まれています。"
 
-#: ../../linkdest.rst:47 8943cf9f7b6a46ae88519ec9a2b36abc
+#: ../../linkdest.rst:47 e82ff43942aa42d181926cc8311a04ad
 msgid ""
 "A bitfield describing the validity and meaning of the different aspects "
 "of the destination. As far as possible, link destinations are constructed"
@@ -210,30 +210,30 @@ msgstr ""
 " Flags` を参照してください。"
 
 #: ../../linkdest.rst:49 ../../linkdest.rst:67 ../../linkdest.rst:91
-#: 226041ad921b487cbc64a0d8101fafce 47f99943021a469aaeb9e878d45bad7d
-#: bfbfb857c3ea464bb219268f046d38be
+#: 1e2a30929fb3424ca85ef2673484279a c4abce4eafe44aa48a61e88929d22db8
+#: e6f10f094da249a08f0b1da68a5ad807
 msgid "int"
 msgstr ""
 
-#: ../../linkdest.rst:53 93c225a1fa7a4e759b7288467340134c
+#: ../../linkdest.rst:53 5ca1397ac660408a8118784ff2e478e2
 msgid ""
 "This flag specifies whether to track the mouse position when the URI is "
 "resolved. Default value: False."
 msgstr "このフラグは、URIが解決されるときにマウスの位置を追跡するかどうかを指定します。デフォルト値：False。"
 
 #: ../../linkdest.rst:55 ../../linkdest.rst:61 ../../linkdest.rst:85
-#: 1c35303c34b44e748eba9ad9a8ce151f 5f716f8888934c8fab243c3a08e2c99b
-#: 79f8cf46eabc4dd18cbfc2f1ccfd1875
+#: 03a9fad387d243f5936876e77a91a777 5d8a261398264f87bcb172afe9477166
+#: b1cc8e9c4d094ea7b9418b5001babd00
 msgid "bool"
 msgstr ""
 
-#: ../../linkdest.rst:59 b4bf4ffcaf5640b688eb404242124b25
+#: ../../linkdest.rst:59 9653264615ef4612b74c934e94035162
 msgid ""
 "Specifies whether this destination is an internet resource (as opposed to"
 " e.g. a local file specification in URI format)."
 msgstr "この宛先がインターネットリソースであるか（URI形式のローカルファイル仕様とは異なる場合）、指定します。"
 
-#: ../../linkdest.rst:65 84de128b7a504abaa4a2f6fc93890306
+#: ../../linkdest.rst:65 572624f8e5234fcfabe2886d19f59fb8
 msgid ""
 "Indicates the type of this destination, like a place in this document, a "
 "URI, a file launch, an action or a place in another file. Look at "
@@ -242,16 +242,16 @@ msgstr ""
 "この宛先のタイプを示します。この文書内の場所、URI、ファイル起動、アクション、または他のファイル内の場所など。リンク宛先の種類を確認するには、:ref:`linkDest"
 " Kinds` を参照してください。"
 
-#: ../../linkdest.rst:71 0948c762cf2341f5927c66a89e8c9ef3
+#: ../../linkdest.rst:71 8df3c853090f4d899931e326f5459d67
 msgid "The top left :ref:`Point` of the destination."
 msgstr "宛先の左上の :ref:`Point` 。"
 
-#: ../../linkdest.rst:73 ../../linkdest.rst:97 6e78e40991f84930b5871e092807598b
-#: b28d1d351b90442c9f8e62ef5dcbdac5
+#: ../../linkdest.rst:73 ../../linkdest.rst:97 3c5d8c4d8bb041fc8c0f7572f332a8fa
+#: 4501f09bd6dd44348a5a0d661f366be0
 msgid ":ref:`Point`"
 msgstr ""
 
-#: ../../linkdest.rst:77 245844ae70044380a0b912149fa98c67
+#: ../../linkdest.rst:77 35ddae2dc20442baa69cb10014649914
 msgid ""
 "This destination refers to some named action to perform (e.g. a "
 "javascript, see :ref:`AdobeManual`). Standard actions provided are "
@@ -260,11 +260,11 @@ msgstr ""
 "この宛先は実行する名前付きアクションを指します（たとえば、JavaScriptなど、:ref:`AdobeManual` "
 "を参照）。提供される標準アクションは、*NextPage*、*PrevPage*、*FirstPage*、および *LastPage* です。"
 
-#: ../../linkdest.rst:83 a4514486d31c4694b2a2e53f8d5ec397
+#: ../../linkdest.rst:83 8f9e7bda1b8f488aa95b2e92bbb2e3d2
 msgid "If true, the destination should be launched in a new window."
 msgstr "trueの場合、宛先は新しいウィンドウで起動する必要があります。"
 
-#: ../../linkdest.rst:89 de6335fc77f44645bbf8b6e5847c4ff3
+#: ../../linkdest.rst:89 2a3bd78c3548465da36247eac48b559e
 msgid ""
 "The page number (in this or the target document) this destination points "
 "to. Only set if :attr:`linkDest.kind` is :data:`LINK_GOTOR` or "
@@ -277,19 +277,18 @@ msgstr ""
 ":data:`LINK_GOTOR` の場合、*-1* になる場合があります。この場合、:attr:`linkDest.dest` "
 "には対象の文書内の宛先の名前が含まれます。"
 
-#: ../../linkdest.rst:95 36eb348ce8c84de2972f60c8c6ec617b
+#: ../../linkdest.rst:95 c402b9a2b14a499684cc75932a7b3061
 msgid "The bottom right :ref:`Point` of this destination."
 msgstr "この宛先の右下の :ref:`Point`。"
 
-#: ../../linkdest.rst:101 f420474f449b4549a50c7d45736a1629
+#: ../../linkdest.rst:101 efac7e980e8e403c9d1c9d57cd1420bc
 msgid "The name of the URI this destination points to."
 msgstr "この宛先が指すURIの名前。"
 
-#: ../../footer.rst:71 c4db191277414e66bbfc547c723f812a
+#: ../../footer.rst:60 d9aa1a371bcc4440af0a82a4a3ca0b1f
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 4fb4742851a84b719525b0c09ef20a84
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 

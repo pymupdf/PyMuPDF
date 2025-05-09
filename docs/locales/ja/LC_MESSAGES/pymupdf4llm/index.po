@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-01 16:48+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,60 +19,82 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../pymupdf4llm/index.rst:8 5b8fb9003a704ca6b7fdb23f05023024
+#: ../../header.rst:-1 a84d929820f24736805d1a33254caaa4
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 a1b9b769f9164850b5833a74b4609b4f
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 80467e59d59b4910b2d8cf9af1052bd1
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:8 703ddb8e7e9548e2b22644982881c8e8
 msgid "PyMuPDF4LLM"
 msgstr ""
 
-#: ../../pymupdf4llm/index.rst:10 5489e517df2f47f498f82040822ba124
+#: ../../pymupdf4llm/index.rst:10 dae2ff70c8bd479fb23e2d60283f0739
 msgid ""
-"|PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in "
-"the format you need for **LLM** & **RAG** environments. It supports "
+"|PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in the "
+"format you need for **LLM** & **RAG** environments. It supports "
 ":ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex"
 " document output <extracting_as_llamaindex>`."
-msgstr "|PyMuPDF4LLM| は、**LLM** や **RAG** 環境で必要な形式で |PDF| コンテンツを簡単に抽出できるようにすることを目的としています。 **Markdown** 形式での抽出や、 **LlamaIndex** ドキュメント出力もサポートしています。"
+msgstr ""
+"|PyMuPDF4LLM| は、**LLM** や **RAG** 環境で必要な形式で |PDF| "
+"コンテンツを簡単に抽出できるようにすることを目的としています。 **Markdown** 形式での抽出や、 **LlamaIndex** "
+"ドキュメント出力もサポートしています。"
 
-#: ../../pymupdf4llm/index.rst:14 69882351177c40e28baed2d5997c44b9
+#: ../../pymupdf4llm/index.rst:14 479be0d6bcbf423a8f21eaad1099d850
 msgid ""
 "You can extend the supported file types to also include **Office** "
 "document formats (DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX) by :ref:`using "
 "PyMuPDF Pro with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`."
-msgstr ":ref:`PyMuPDF ProをPyMuPDF4LLMと併用することで <using_pymupdf4llm_withpymupdfpro>`、対応するファイル形式を拡張し、 **Office** ドキュメント形式（DOC/DOCX、XLS/XLSX、PPT/PPTX、HWP/HWPX）も含めることができます。"
+msgstr ""
+":ref:`PyMuPDF ProをPyMuPDF4LLMと併用することで "
+"<using_pymupdf4llm_withpymupdfpro>`、対応するファイル形式を拡張し、 **Office** "
+"ドキュメント形式（DOC/DOCX、XLS/XLSX、PPT/PPTX、HWP/HWPX）も含めることができます。"
 
-#: ../../pymupdf4llm/index.rst:17 7a616078fd824010ad54f3558207a1b5
+#: ../../pymupdf4llm/index.rst:17 88bc23fd6aab4c13999f607fcaa24fe8
 msgid "Features"
 msgstr "特徴"
 
-#: ../../pymupdf4llm/index.rst:19 400c06ae14c349aaacd8f5424376525f
+#: ../../pymupdf4llm/index.rst:19 0e7d39d10d844ea190a65305e8a5383b
 msgid "Support for multi-column pages"
 msgstr "マルチカラムページのサポート"
 
-#: ../../pymupdf4llm/index.rst:20 a7b127916a6647809cc5f7c630db6697
+#: ../../pymupdf4llm/index.rst:20 e86a689a833942978ed6351570c186ae
 msgid ""
 "Support for image and vector graphics extraction (and inclusion of "
 "references in the MD text)"
 msgstr "画像およびベクターグラフィックスの抽出のサポート（MDテキストへの参照の挿入を含む）"
 
-#: ../../pymupdf4llm/index.rst:21 49db5c47138d4af4827f9d33a97299ac
+#: ../../pymupdf4llm/index.rst:21 89e0c9f4fa2142d0a8d1601280872394
 msgid "Support for page chunking output."
 msgstr "ページ分割出力のサポート"
 
-#: ../../pymupdf4llm/index.rst:22 0f60a9dbc1cd40b2bcc7cab3076a8f28
+#: ../../pymupdf4llm/index.rst:22 eafc188f9e984c3a848b1c1a7e6f199f
 msgid ""
 "Direct support for output as :ref:`LlamaIndex Documents "
 "<extracting_as_llamaindex>`."
 msgstr ":ref:`LlamaIndexドキュメント <extracting_as_llamaindex>` としての直接出力のサポート"
 
-#: ../../pymupdf4llm/index.rst:26 e17e5cab17dc47f196f6a94fa23ff7b1
+#: ../../pymupdf4llm/index.rst:26 2ad1f7d1302746ae8e8f83b14dcdba8d
 msgid "Functionality"
 msgstr "機能"
 
-#: ../../pymupdf4llm/index.rst:28 53e904952e964eecb34f58916c83aec1
+#: ../../pymupdf4llm/index.rst:28 3e1817178ea248cf8606c0aece719045
 msgid ""
 "This package converts the pages of a file to text in **Markdown** format "
 "using |PyMuPDF|."
 msgstr "このパッケージは、|PyMuPDF| を使用して |PDF| のページを **Markdown** 形式のテキストに変換します。"
 
-#: ../../pymupdf4llm/index.rst:30 28ffd2e3f3c74f1089cdd35d3db7a45f
+#: ../../pymupdf4llm/index.rst:30 81a05398d1ca436485386081b8062dcd
 msgid ""
 "Standard text and tables are detected, brought in the right reading "
 "sequence and then together converted to **GitHub**-compatible "
@@ -81,47 +103,49 @@ msgstr ""
 "標準のテキストやテーブルが検出され、適切な読み取り順序で取り込まれ、その後一緒に **GitHub** 互換の **Markdown** "
 "テキストに変換されます。"
 
-#: ../../pymupdf4llm/index.rst:32 f8f07e7e7e9d4f6fa5d28e1eee7d7eb9
+#: ../../pymupdf4llm/index.rst:32 593eab1fb0214b6294964584b13a0083
 msgid ""
 "Header lines are identified via the font size and appropriately prefixed "
 "with one or more `#` tags."
 msgstr "ヘッダー行はフォントサイズで識別され、適切に1つまたは複数の＃タグで接頭語が付けられます。"
 
-#: ../../pymupdf4llm/index.rst:34 a9bc3e297256481d882567b0e464a3b8
+#: ../../pymupdf4llm/index.rst:34 bfbac5aee5e7496f852f4de536a8db8f
 msgid ""
 "Bold, italic, mono-spaced text and code blocks are detected and formatted"
 " accordingly. Similar applies to ordered and unordered lists."
 msgstr "太字、斜体、等幅テキスト、およびコードブロックが検出され、それに応じて書式が付けられます。順序付けられたリストと順不同リストにも同様のことが適用されます。"
 
-#: ../../pymupdf4llm/index.rst:36 f40de678033c4ac99eb72054a4f6becc
+#: ../../pymupdf4llm/index.rst:36 740e76221d1448b38d46122f1776001d
 msgid ""
 "By default, all document pages are processed. If desired, a subset of "
 "pages can be specified by providing a list of `0`-based page numbers."
 msgstr "デフォルトでは、すべての文書ページが処理されます。必要に応じて、`0` から始まるページ番号のリストを指定してサブセットのページを指定できます。"
 
-#: ../../pymupdf4llm/index.rst:40 2d939cfb6eb04904bae00df0c3f92134
+#: ../../pymupdf4llm/index.rst:40 06d164779ff94a568128a9db39c9030a
 msgid "Installation"
 msgstr "インストール"
 
-#: ../../pymupdf4llm/index.rst:43 7a4ae15762224602accc03800171f6fe
+#: ../../pymupdf4llm/index.rst:43 ea858ab3ed1f41b69849b46d74d8143c
 msgid "Install the package via **pip** with:"
 msgstr "パッケージを **pip** を使用してインストールするには、次のコマンドを使用します:"
 
-#: ../../pymupdf4llm/index.rst:54 9fe67d7e6a0d485290197a3b4e9ebf86
+#: ../../pymupdf4llm/index.rst:54 513f20b7a04e437098ca66ee416eac9f
 msgid "Extracting a file as **Markdown**"
 msgstr "ファイルをMarkdown形式で抽出する"
 
-#: ../../pymupdf4llm/index.rst:56 620f51ebd7bd492581a361a00bdc14c5
+#: ../../pymupdf4llm/index.rst:56 39ff5fad6dd14f639b8373ad18f3c56a
 msgid ""
 "To retrieve your document content in **Markdown** simply install the "
 "package and then use a couple of lines of **Python** code to get results."
-msgstr "ドキュメントの内容を **Markdown** で取得するには、パッケージをインストールし、数行の **Python** コードを使用するだけで結果を得ることができます。"
+msgstr ""
+"ドキュメントの内容を **Markdown** で取得するには、パッケージをインストールし、数行の **Python** "
+"コードを使用するだけで結果を得ることができます。"
 
-#: ../../pymupdf4llm/index.rst:60 c1eb2d7417d14757a0ee1807899c7972
+#: ../../pymupdf4llm/index.rst:60 faf1cd9fbd964a95a8f649660c300162
 msgid "Then in your **Python** script do:"
 msgstr "**Python** スクリプトでは:"
 
-#: ../../pymupdf4llm/index.rst:71 a0450ade72524ebe95797db73a5dda99
+#: ../../pymupdf4llm/index.rst:71 539fd84130c04d1989f863d170eeaedd
 msgid ""
 "Instead of the filename string as above, one can also provide a "
 ":ref:`PyMuPDF Document <Document>`. A second parameter may be a list of "
@@ -132,77 +156,84 @@ msgstr ""
 "を指定することもできます。2番目のパラメータは、`0` から始まるページ番号のリストであり、例えば `[0,1]` "
 "はドキュメントの最初のページと2番目のページを選択します。"
 
-#: ../../pymupdf4llm/index.rst:74 c2110a48a53f42ad8a763f0b7d47395e
+#: ../../pymupdf4llm/index.rst:74 6e32f37e871245878caa0a76588c0a22
 msgid ""
 "If you want to store your **Markdown** file, e.g. store as a UTF8-encoded"
 " file, then do:"
 msgstr "**Markdown** ファイルを保存したい場合、例えばUTF8でエンコードされたファイルとして保存する場合は、次のようにします。"
 
-#: ../../pymupdf4llm/index.rst:87 ce66fa78070f4b069dee4ee7a06e4d46
+#: ../../pymupdf4llm/index.rst:87 13ab2d0739c946ae8bb9c7775c73eb63
 msgid "Extracting a file as a **LlamaIndex** document"
 msgstr "ファイルをLlamaIndexドキュメントとして抽出する"
 
-#: ../../pymupdf4llm/index.rst:89 a6e64ac317cb4d47be831a483551a55e
+#: ../../pymupdf4llm/index.rst:89 e385dbe676fa489b9173ab587b03cdaa
 msgid ""
 "|PyMuPDF4LLM| supports direct conversion to a **LLamaIndex** document. A "
 "document is first converted into **Markdown** format and then a "
 "**LlamaIndex** document is returned as follows:"
-msgstr "|PyMuPDF4LLM| は **LlamaIndex** ドキュメントへの直接変換をサポートしています。ドキュメントはまず **Markdown** 形式に変換され、その後、以下のように **LlamaIndex** ドキュメントとして返されます。"
+msgstr ""
+"|PyMuPDF4LLM| は **LlamaIndex** ドキュメントへの直接変換をサポートしています。ドキュメントはまず "
+"**Markdown** 形式に変換され、その後、以下のように **LlamaIndex** ドキュメントとして返されます。"
 
-#: ../../pymupdf4llm/index.rst:103 3b3da1d1ea184fe893f569542a283b78
+#: ../../pymupdf4llm/index.rst:103 fe38b9668c864ec2b663fd24fc489e3a
 msgid "Using with |PyMuPDF Pro|"
 msgstr "PyMuPDF Proとの使用 "
 
-#: ../../pymupdf4llm/index.rst:106 49ac5a3bf11b434ab14b9382035daa90
+#: ../../pymupdf4llm/index.rst:106 ac7b2b319a75411bbed7864c904b30ec
 msgid ""
 "For **Office** document support, |PyMuPDF4LLM| works seamlessly with "
 "|PyMuPDF Pro|. Assuming you have :doc:`../pymupdf-pro` installed you will"
 " be able to work with **Office** documents as expected:"
-msgstr "**Office** ドキュメントのサポートのために、|PyMuPDF4LLM| は |PyMuPDF Pro| とシームレスに動作します。:doc:`../pymupdf-pro` がインストールされている場合、期待通りに **Office** ドキュメントを操作できます。"
+msgstr ""
+"**Office** ドキュメントのサポートのために、|PyMuPDF4LLM| は |PyMuPDF Pro| "
+"とシームレスに動作します。:doc:`../pymupdf-pro` がインストールされている場合、期待通りに **Office** "
+"ドキュメントを操作できます。"
 
-#: ../../pymupdf4llm/index.rst:117 07d4d1e29ca74026b0876fbca84bee45
+#: ../../pymupdf4llm/index.rst:117 e192eeb9c87d4c5c9bdfce1a07c20cee
 msgid ""
 "As you can see |PyMuPDF Pro| functionality will be available within the "
 "|PyMuPDF4LLM| context!"
 msgstr "ご覧のとおり、|PyMuPDF Pro| の機能は |PyMuPDF4LLM| のコンテキスト内で利用可能になります！"
 
-#: ../../pymupdf4llm/index.rst:122 ad2bb3f07e2d4eaa9d6007a9ef49cd50
+#: ../../pymupdf4llm/index.rst:122 d36b718aca944afe8346bd4e994359c6
 msgid "API"
 msgstr ""
 
-#: ../../pymupdf4llm/index.rst:124 b1a56eb7953743348477b8776ee757d9
+#: ../../pymupdf4llm/index.rst:124 909e996df58542a2a27e35eb6cd018fd
 msgid "See :ref:`the PyMuPDF4LLM API <pymupdf4llm-api>`."
 msgstr ":ref:`PyMuPDF4LLM API <pymupdf4llm-api>` をご覧ください。"
 
-#: ../../pymupdf4llm/index.rst:127 f0dfd6180e04469e85e7e092cba6a112
+#: ../../pymupdf4llm/index.rst:127 cd8ef0dca8034281a46603d2d4eb7fab
 msgid "Further Resources"
 msgstr "追加リソース"
 
-#: ../../pymupdf4llm/index.rst:131 550ae136e65e49f49ed46d2687ab4cfc
+#: ../../pymupdf4llm/index.rst:131 b22cbb362d6d40f5b0948407ab7c9181
 msgid "Sample code"
 msgstr "サンプルコード"
 
-#: ../../pymupdf4llm/index.rst:133 12b1c1ea770a44c88722ee1841815177
+#: ../../pymupdf4llm/index.rst:133 d7cfdfa3054c49a1bd12d190550076a0
+#, fuzzy
 msgid ""
 "`Command line RAG Chatbot with PyMuPDF "
-"<https://github.com/pymupdf/RAG/tree/main/country-capitals>`_"
+"<https://github.com/pymupdf/RAG/tree/main/examples/country-capitals>`_"
 msgstr ""
 "`PyMuPDFを使用したコマンドラインRAGチャットボット <https://github.com/pymupdf/RAG/tree/main"
 "/country-capitals>`_"
 
-#: ../../pymupdf4llm/index.rst:134 8652d218208447b4a3806ed032cccc19
+#: ../../pymupdf4llm/index.rst:134 4e68994fede248e1ad26e816a6603f09
+#, fuzzy
 msgid ""
 "`Example of a Browser Application using Langchain and PyMuPDF "
-"<https://github.com/pymupdf/RAG/tree/main/GUI>`_"
+"<https://github.com/pymupdf/RAG/tree/main/examples/GUI>`_"
 msgstr ""
 "`LangchainとPyMuPDFを使用したブラウザアプリケーションの例 "
 "<https://github.com/pymupdf/RAG/tree/main/GUI>`_"
 
-#: ../../pymupdf4llm/index.rst:138 7b37408477ee496eb25cb7dc7f603075
+#: ../../pymupdf4llm/index.rst:138 70432248c1a84d729f6836dbf522d9e6
 msgid "Blogs"
 msgstr "ブログ"
 
-#: ../../pymupdf4llm/index.rst:140 8d90b87f32874ad6a27b9ed073dde7d2
+#: ../../pymupdf4llm/index.rst:140 72e25633aa344939ae72cb881f754bfe
 msgid ""
 "`RAG/LLM and PDF: Enhanced Text Extraction <https://artifex.com/blog/rag-"
 "llm-and-pdf-enhanced-text-extraction>`_"
@@ -210,7 +241,7 @@ msgstr ""
 "`RAG/LLMとPDF: テキスト抽出の強化 <https://qiita.com/jamie-"
 "lemon/items/455e14f83b4f5c81034b>`_"
 
-#: ../../pymupdf4llm/index.rst:141 507e8befa06b4d4c8f80da8c1650a038
+#: ../../pymupdf4llm/index.rst:141 2f216379d0ed46a682a7b58f7f31ac5d
 msgid ""
 "`Creating a RAG Chatbot with ChatGPT and PyMuPDF "
 "<https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-"
@@ -219,7 +250,7 @@ msgstr ""
 "`ChatGPTとPyMuPDFを使用したRAGチャットボットの作成 <https://qiita.com/jamie-"
 "lemon/items/df6703906392ae8295f3>`_"
 
-#: ../../pymupdf4llm/index.rst:142 06422ac2815641a2a66438250f1ea4ff
+#: ../../pymupdf4llm/index.rst:142 3ce05b35ac46423ebeaeee45e9fedebe
 msgid ""
 "`Building a RAG Chatbot GUI with the ChatGPT API and PyMuPDF "
 "<https://artifex.com/blog/building-a-rag-chatbot-gui-with-the-chatgpt-"
@@ -228,7 +259,7 @@ msgstr ""
 "`ChatGPT APIとPyMuPDFを使用してRAGチャットボットGUIを構築 <https://qiita.com/jamie-"
 "lemon/items/f075ae56cf56723c9409>`_"
 
-#: ../../pymupdf4llm/index.rst:143 70bc717e6af048a4b32795386b9dbb81
+#: ../../pymupdf4llm/index.rst:143 a9e4304031124d608de6572eba56224f
 msgid ""
 "`RAG/LLM and PDF: Conversion to Markdown Text with PyMuPDF "
 "<https://artifex.com/blog/rag-llm-and-pdf-conversion-to-markdown-text-"
@@ -237,12 +268,10 @@ msgstr ""
 "`RAG/LLMとPDF：PyMuPDFを使用したMarkdownテキストへの変換 <https://qiita.com/jamie-"
 "lemon/items/1f2eb43f439fd28202a0>`_"
 
-#: ../../footer.rst:60 4d1bb6b57d3946d19254fcf3f4486bf1
+#: ../../footer.rst:60 d3e889c035a6497bbfee92a94a12fe1c
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 450942a8ed68488683e30fe733d11816
-msgid "Discord logo"
-msgstr ""
-
+#~ msgid "Discord logo"
+#~ msgstr ""
 

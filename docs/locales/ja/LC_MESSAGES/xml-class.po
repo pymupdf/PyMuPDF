@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,31 +19,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 296acac2430a4acb95babbe8059d890f
+#: ../../header.rst:-1 35b2e14fdbf9456f870ea5e07c6a1abe
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 e629737f67ec46fc90214bfba617ee99
+#: ../../header.rst:-1 9c383ee007cb459a8f5ce0a78b556be8
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 0400c673f5344ffbb4058ff9e040e0f2
+#: ../../header.rst:-1 7207641edba74fb79cd09bd543f88a77
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../xml-class.rst:7 b3de26d70edc4e13af4d8b5ba5b608ed
+#: ../../xml-class.rst:7 5a1acd7449794938872c81139fa8acd0
 msgid "Xml"
 msgstr ""
 
-#: ../../xml-class.rst:11 5013022e2fb5403d806ddeb505d14686
+#: ../../xml-class.rst:11 4ee590d80c2745afaad733bc8ba82e1d
 msgid "New in v1.21.0"
 msgstr "v1.21.0で新たに追加"
 
-#: ../../xml-class.rst:13 9b91f192fe714e06a4352de677a55892
+#: ../../xml-class.rst:13 8fa4f25d9d5d4b7ea94cc3b663b67d4c
 msgid ""
 "This represents an HTML or an XML node. It is a helper class intended to "
 "access the DOM (Document Object Model) content of a :ref:`Story` object."
@@ -51,7 +51,7 @@ msgstr ""
 "Xmlクラスは、HTMLまたはXMLノードを表します。これは、:ref:`Story` オブジェクトのDOM（Document Object "
 "Model）コンテンツにアクセスするためのヘルパークラスです。"
 
-#: ../../xml-class.rst:15 1031c761eae2496b9487063318247c79
+#: ../../xml-class.rst:15 e5105e52125246098e3b455ef2776456
 msgid ""
 "There is no need to ever directly construct an :ref:`Xml` object: after "
 "creating a :ref:`Story`, simply take :attr:`Story.body` -- which is an "
@@ -60,465 +60,466 @@ msgstr ""
 ":ref:`Xml` オブジェクトを直接構築する必要はありません。:ref:`Story` を作成した後、単に "
 ":attr:`Story.body` を取得し（これはXmlノードです）、それを使用してストーリーのDOMを操作できます。"
 
-#: ../../xml-class.rst:19 19c764c1c8e14ce4b032628fb106cbe5
+#: ../../xml-class.rst:19 086ba76b6eaa4206b74c6b525b2ae70b
 msgid "**Method / Attribute**"
 msgstr "**メソッド/属性**"
 
-#: ../../xml-class.rst:19 fe5243cd99cb431f8ebdd73ae37fc597
+#: ../../xml-class.rst:19 9b744e4fa0694c9986e2250f2278784d
 msgid "**Description**"
 msgstr "**説明**"
 
-#: ../../xml-class.rst:21 81d3f25413b74e3db13def07fa949d6c
+#: ../../xml-class.rst:21 f46174ffaec14c09984d82014f3fc9a4
 msgid ":meth:`~.add_bullet_list`"
 msgstr ""
 
-#: ../../xml-class.rst:21 b6bb39685adc4920a5a73190a6453858
+#: ../../xml-class.rst:21 eefa1933e3b5485eb89f2e53127bcbf1
 msgid "Add a :htmlTag:`ul` tag - bulleted list, context manager."
 msgstr ":htmlTag:`ul` タグを追加します - 箇条書きリスト、コンテキストマネージャ。"
 
-#: ../../xml-class.rst:22 52f3b9e8b41943dea80380b4f4ca1a77
+#: ../../xml-class.rst:22 16936bcd25534da28940c85397594734
 msgid ":meth:`~.add_codeblock`"
 msgstr ""
 
-#: ../../xml-class.rst:22 87056210553742afa7275574aa980b61
+#: ../../xml-class.rst:22 fcf17dab1d8645fe9307bbaad85e9a78
 msgid "Add a :htmlTag:`pre` tag, context manager."
 msgstr ":htmlTag:`pre` タグを追加します、コンテキストマネージャ。"
 
-#: ../../xml-class.rst:23 8039ac7b64b74fc1ace0a3a04f3a2aae
+#: ../../xml-class.rst:23 103a3a5af0f14cd1924448b542f62b6b
 msgid ":meth:`~.add_description_list`"
 msgstr ""
 
-#: ../../xml-class.rst:23 786d958850b04e329ff9a2e1a0e90d5c
+#: ../../xml-class.rst:23 e2f66dd80053480e97b4eeeb1ff42a9c
 msgid "Add a :htmlTag:`dl` tag, context manager."
 msgstr ":htmlTag:`dl` タグを追加します、コンテキストマネージャ。"
 
-#: ../../xml-class.rst:24 3afeb30892844ff1a43aec509cd35103
+#: ../../xml-class.rst:24 b041d519f2b64e188188cddb8b2f4e9b
 msgid ":meth:`~.add_division`"
 msgstr ""
 
-#: ../../xml-class.rst:24 3f7a2df72c2c4aacacda2ff0cedcb986
+#: ../../xml-class.rst:24 31129830737949a8bb370681ecfd4d06
 msgid "add a :htmlTag:`div` tag (renamed from “section”), context manager."
 msgstr ":htmlTag:`div` タグを追加します（「section」と名前変更）、コンテキストマネージャ。"
 
-#: ../../xml-class.rst:25 f307a60da478453b8dee7372a5bd0775
+#: ../../xml-class.rst:25 da7da028486141f58cf9c5a7952e1ba0
 msgid ":meth:`~.add_header`"
 msgstr ""
 
-#: ../../xml-class.rst:25 aeb3afc97dc44b7f8b31d39f7ceca02c
+#: ../../xml-class.rst:25 228124168ce64130ad9d0ff5b13646e0
 msgid "Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager."
 msgstr "headerタグ（:htmlTag:`h1` から :htmlTag:`h6` のいずれか）を追加します、コンテキストマネージャ。"
 
-#: ../../xml-class.rst:26 3adc2d1525c0435ea783160b69f4fefe
+#: ../../xml-class.rst:26 806d8bfb5b3b4ce397764e9d4a0dc1d8
 msgid ":meth:`~.add_horizontal_line`"
 msgstr ""
 
-#: ../../xml-class.rst:26 cdfa333503d54a24a706d95ea551ba6f
+#: ../../xml-class.rst:26 c07169b784924633a5e1fd68c8af798c
 msgid "Add a :htmlTag:`hr` tag."
 msgstr ":htmlTag:`hr` タグを追加します。"
 
-#: ../../xml-class.rst:27 fc547f0808f44617a43a5387cc0a285d
+#: ../../xml-class.rst:27 5a73b0a8f50a496691126bd9d77a5637
 msgid ":meth:`~.add_image`"
 msgstr ""
 
-#: ../../xml-class.rst:27 9b741a151d614af881c4cf0f5eb29c75
+#: ../../xml-class.rst:27 340cf98f4f3f4e4a84c228fd7be2e4d6
 msgid "Add a :htmlTag:`img` tag."
 msgstr ":htmlTag:`img` タグを追加します。"
 
-#: ../../xml-class.rst:28 910a5d4e8e28461ebf10e93ea0768165
+#: ../../xml-class.rst:28 d158603be675421a8b7f39bb5ff0a586
 msgid ":meth:`~.add_link`"
 msgstr ""
 
-#: ../../xml-class.rst:28 0ac282dd6f34451285057893d36ee0d8
+#: ../../xml-class.rst:28 339c28e41d7e44558a1e9b671ba9ef54
 msgid "Add a :htmlTag:`a` tag."
 msgstr ":htmlTag:`a` タグを追加します。"
 
-#: ../../xml-class.rst:29 3c424d2756d6417abfbee088d6d60aea
+#: ../../xml-class.rst:29 7f6b79bf740d49b1932cf6a6a6576758
 msgid ":meth:`~.add_number_list`"
 msgstr ""
 
-#: ../../xml-class.rst:29 4c1b652e42d645ffb8ab67e19216b6cf
+#: ../../xml-class.rst:29 0c01f30a42cf4468b8213216a1b3297c
 msgid "Add a :htmlTag:`ol` tag, context manager."
 msgstr ":htmlTag:`ol` タグを追加します、コンテキストマネージャ。"
 
-#: ../../xml-class.rst:30 89618e939cda4a569dc4a0786192d14e
+#: ../../xml-class.rst:30 8f9f02ea8c414d29a83d318465a0ff48
 msgid ":meth:`~.add_paragraph`"
 msgstr ""
 
-#: ../../xml-class.rst:30 b18f51f85ea74b5c88862aaaac1c778c
+#: ../../xml-class.rst:30 253c26552e274fbeb3da81a3470eec14
 msgid "Add a :htmlTag:`p` tag."
 msgstr ":htmlTag:`p` タグを追加します。"
 
-#: ../../xml-class.rst:31 85535521eb3a4250b51f3f74ed18fa29
+#: ../../xml-class.rst:31 b2d6acd206bb4cb2a8f6be0b5197c0d8
 msgid ":meth:`~.add_span`"
 msgstr ""
 
-#: ../../xml-class.rst:31 d5a4345f08b34b289d30762e009902a2
+#: ../../xml-class.rst:31 98fe31d20e7a4ae8af4eba0928d53dd1
 msgid "Add a :htmlTag:`span` tag, context manager."
 msgstr ":htmlTag:`span` タグを追加します。コンテキストマネージャーです。"
 
-#: ../../xml-class.rst:32 01160e5a1aed4befb59b2d946d7ec706
+#: ../../xml-class.rst:32 50600afc53a74e6c80d8b4eef6b2304e
 msgid ":meth:`~.add_subscript`"
 msgstr ""
 
-#: ../../xml-class.rst:32 5538c3781b414db78a23569c7945cef5
+#: ../../xml-class.rst:32 c9cb764e916a4b27afb3c18ae5983896
 msgid ""
 "Add subscript text(:htmlTag:`sub` tag) - inline element, treated like "
 "text."
 msgstr "添字テキスト（:htmlTag:`sub` タグ）を追加します。行内要素で、テキストのように扱われます。"
 
-#: ../../xml-class.rst:33 519e08b13b2540d5998a7e62aabaa021
+#: ../../xml-class.rst:33 b72843ab592f40e8877c99fe4c941dcb
 msgid ":meth:`~.add_superscript`"
 msgstr ""
 
-#: ../../xml-class.rst:33 332102c1792b441299bd029455b0b24b
+#: ../../xml-class.rst:33 3630b21203814ea190918432f1ca2417
 msgid ""
 "Add subscript text (:htmlTag:`sup` tag) - inline element, treated like "
 "text."
 msgstr "上付きテキスト（:htmlTag:`sup` タグ）を追加します。行内要素で、テキストのように扱われます。"
 
-#: ../../xml-class.rst:34 a9f834d9d3444fc5ad6b2475631d92bf
+#: ../../xml-class.rst:34 69e9ce07a81841c280b49fa28bd70c97
 msgid ":meth:`~.add_code`"
 msgstr ""
 
 #: ../../xml-class.rst:34 ../../xml-class.rst:35 ../../xml-class.rst:36
-#: ../../xml-class.rst:37 3cbd1256a0ab42a590872ceb88d1fde3
-#: 4e81016e770649ffb73502c1d5ba11f0 775d2d1c73dc40c0a4e8db66578b25d9
-#: e4b773105a634eb091fa24047578eb5a
+#: ../../xml-class.rst:37 5c6747963ef74d38b09f3a6fbd934145
+#: 8cd903b064c74812942fc2b54fcb182d aa212076d95d4d34aca0fedfba075d7c
+#: bbf8c37a914547df93d38bbff33c7496
 msgid "Add code text (:htmlTag:`code` tag) - inline element, treated like text."
 msgstr "コードテキスト（:htmlTag:`code` タグ）を追加します。行内要素で、テキストのように扱われます。"
 
-#: ../../xml-class.rst:35 bf2e2b687ead4e3b9231143383c1178f
+#: ../../xml-class.rst:35 ed457783f87b4432965ba520310e2912
 msgid ":meth:`~.add_var`"
 msgstr ""
 
-#: ../../xml-class.rst:36 684bb42dbaab409895640baeca17a995
+#: ../../xml-class.rst:36 baa6b54b7dec48428d61ef058714e1c8
 msgid ":meth:`~.add_samp`"
 msgstr ""
 
-#: ../../xml-class.rst:37 d729ae36103f4f5a9a6542eb8fc0bb59
+#: ../../xml-class.rst:37 2e681286c7934f9e98e30aeed8f1e058
 msgid ":meth:`~.add_kbd`"
 msgstr ""
 
-#: ../../xml-class.rst:38 5e5a8edab0304b6c84a066e9ff353bf1
+#: ../../xml-class.rst:38 c90afbfd1f2a4432aa57f469ce1aa9c3
 msgid ":meth:`~.add_text`"
 msgstr ""
 
 #: ../../xml-class.rst:38 ../../xml-class.rst:162
-#: 58bf67df5e1d4051aa07851fac3bb304 a958357715bf49db81db825b68dd3d4e
-msgid "Add a text string. Line breaks `\\n` are honored as :htmlTag:`br` tags."
+#: e05cf6e5226b4f768bfb698de671c8db fdddcc02af0b4c43a986178f7ab86439
+#, fuzzy
+msgid "Add a text string. Line breaks ``\\n`` are honored as :htmlTag:`br` tags."
 msgstr "テキスト文字列を追加します。改行 ``\\n`` は :htmlTag:`br` タグとして認識されます。"
 
-#: ../../xml-class.rst:39 1fa1ed10fcad496fba63a9acbd408698
+#: ../../xml-class.rst:39 5ae611e247354be1a46cad16dd7fdf40
 msgid ":meth:`~.append_child`"
 msgstr ""
 
-#: ../../xml-class.rst:39 3afb93fbcf534da689ee42692aacefcd
+#: ../../xml-class.rst:39 f501e0b055984ba48721852e2de6968d
 msgid "Append a child node."
 msgstr "子ノードを追加します。"
 
-#: ../../xml-class.rst:40 df4ee7b42ef249a39dd1d1bfded80141
+#: ../../xml-class.rst:40 25340d7a99fc4ccf860933df50d0ebec
 msgid ":meth:`~.clone`"
 msgstr ""
 
-#: ../../xml-class.rst:40 ea753a7e638d433aaaf64fe7332b4c21
+#: ../../xml-class.rst:40 c331f277124c4ee3b8a1e9037493a3db
 msgid "Make a copy if this node."
 msgstr "このノードのコピーを作成します。"
 
-#: ../../xml-class.rst:41 218d557d863642ec9841fdb94504e332
+#: ../../xml-class.rst:41 89bd772f48204020b60419c2db9d5bff
 msgid ":meth:`~.create_element`"
 msgstr ""
 
-#: ../../xml-class.rst:41 d24145a924454105bd1686200a9434ad
+#: ../../xml-class.rst:41 405cddf85d9c49dd8e5b9cd0fcfa855d
 msgid "Make a new node with a given tag name."
 msgstr "指定されたタグ名で新しいノードを作成します。"
 
-#: ../../xml-class.rst:42 b42faafe21bc4d9bbb46137ca5e2fee7
+#: ../../xml-class.rst:42 b521f73a8f764b0f87ea954af8981b37
 msgid ":meth:`~.create_text_node`"
 msgstr ""
 
 #: ../../xml-class.rst:42 ../../xml-class.rst:306
-#: 9936afee82994e3a92873afa75b87c74 fa7b9e5b696a4b8aa1ab37f0018ac2ff
+#: 36b72c94c0534f59897e7d90525f00ab dfd89d799b2a49de8a00c1c68015628f
 msgid "Create direct text for the current node."
 msgstr "現在のノードに直接テキストを作成します。"
 
-#: ../../xml-class.rst:43 80438dd735064d739ad9e3bec0085e09
+#: ../../xml-class.rst:43 fe2c4c6a496e4c30a74892bf305be0bf
 msgid ":meth:`~.find`"
 msgstr ""
 
-#: ../../xml-class.rst:43 2454baab7d4f41228181c7b76233f956
+#: ../../xml-class.rst:43 318cef4b3a694140908577091226c3e3
 msgid "Find a sub-node with given properties."
 msgstr "指定されたプロパティを持つサブノードを検索します。"
 
-#: ../../xml-class.rst:44 d1daa2bbddd6431ba7780d1850d33b27
+#: ../../xml-class.rst:44 a453fbff3b22420db8f0c51be152f8d6
 msgid ":meth:`~.find_next`"
 msgstr ""
 
-#: ../../xml-class.rst:44 c6ba1311ca9c4cd89291e3b47fbbae63
+#: ../../xml-class.rst:44 8a60922fc34041dfa5e21d0caa6fac06
 msgid "Repeat previous \"find\" with the same criteria."
 msgstr "前回の「find」と同じ条件で繰り返します。"
 
-#: ../../xml-class.rst:45 6e0e533a16f94a35ac186bc525d27115
+#: ../../xml-class.rst:45 e198f0bc22b944d48e40dc5c38223e9b
 msgid ":meth:`~.insert_after`"
 msgstr ""
 
-#: ../../xml-class.rst:45 974329517f2e4f9f9f0e48ccd9dddb1c
+#: ../../xml-class.rst:45 8f66fccc674d4dd8ab65c02ac8ba24fc
 msgid "Insert an element after current node."
 msgstr "現在のノードの後に要素を挿入します。"
 
-#: ../../xml-class.rst:46 a1ab70e4a4f741b6a18db8773798a318
+#: ../../xml-class.rst:46 9d6b713c56884ee1b369e276ec5102a7
 msgid ":meth:`~.insert_before`"
 msgstr ""
 
-#: ../../xml-class.rst:46 88740137ac7c42ce9d70e8c7136acd14
+#: ../../xml-class.rst:46 ae54a30b8bcf44daa6da5370718a075b
 msgid "Insert an element before current node."
 msgstr "現在のノードの前に要素を挿入します。"
 
-#: ../../xml-class.rst:47 1c22cb0b8cb140bc98b85bbe55668320
+#: ../../xml-class.rst:47 e9116568aee3452182bda7d5810abf1e
 msgid ":meth:`~.remove`"
 msgstr ""
 
-#: ../../xml-class.rst:47 602e3944a2d7454fabf32319b9c04571
+#: ../../xml-class.rst:47 64bec43c81d140e9bb69363bbdaa051c
 msgid "Remove this node."
 msgstr "このノードを削除します。"
 
-#: ../../xml-class.rst:48 ae2bcf93c3bc4963bd5b07924422f482
+#: ../../xml-class.rst:48 1ac7caa0aab541d2b460ac445585c6c7
 msgid ":meth:`~.set_align`"
 msgstr ""
 
-#: ../../xml-class.rst:48 69ffb24403904d2aa67649a57b599386
+#: ../../xml-class.rst:48 ac6a6fbe13044fd787cd15a2670459ef
 msgid "Set the alignment using a CSS style spec. Only works for block-level tags."
 msgstr "CSS スタイル仕様を使用して配置を設定します。ブロックレベルのタグにのみ適用されます。"
 
-#: ../../xml-class.rst:49 fa79d8d7eecc43a08f285b67d70c1a11
+#: ../../xml-class.rst:49 2c4b7b6457d4484a92058c1de4270fe9
 msgid ":meth:`~.set_attribute`"
 msgstr ""
 
 #: ../../xml-class.rst:49 ../../xml-class.rst:172
-#: 1307df1d50464a6081ac5b82135f9d1c 2effd8a8b0414f9e84019d3be3ca8a3c
+#: 804a76ddd5074a59b8d94661b6941469 e0a54f2af7784bddb2c2e0baf1536f26
 msgid "Set an arbitrary key to some value (which may be empty)."
 msgstr "任意のキーに値（空である可能性があります）を設定します。"
 
-#: ../../xml-class.rst:50 477a7a09b8fe421ea3e44c506e7843de
+#: ../../xml-class.rst:50 fa0b42cca1304379b0bcfebdc442dd15
 msgid ":meth:`~.set_bgcolor`"
 msgstr ""
 
 #: ../../xml-class.rst:50 ../../xml-class.rst:199
-#: 8a986926f5ee44b3a51490f4f275da20 f0dbb78ea34a456686fea9cc03a212f3
+#: 63b3f2fe208b457ab9f31e92c5353ce8 bdaa46d0f4da43fca01a888db16337c7
 msgid "Set the background color. Only works for block-level tags."
 msgstr "背景色を設定します。ブロックレベルのタグにのみ適用されます。"
 
-#: ../../xml-class.rst:51 35b521c466a845599d605d96a7ee3962
+#: ../../xml-class.rst:51 ec6d2db5fec44f689ad6be9b934f0a82
 msgid ":meth:`~.set_bold`"
 msgstr ""
 
 #: ../../xml-class.rst:51 ../../xml-class.rst:205
-#: 70b544aa9c12417799af06c6d5b1bf1b be969f24fc2c49399d2d69806d2cd237
+#: 9e58087d6ecb42dab3894c28babdec5b bdc6a779999c4686ac0ffe57b93a8bd7
 msgid "Set bold on or off or to some string value."
 msgstr "太字をオンまたはオフに設定するか、ある文字列の値に設定します。"
 
-#: ../../xml-class.rst:52 d2848aa9342146edb7cbe29fc665df80
+#: ../../xml-class.rst:52 de15508d8d384d9da5d0b8cd2b1b780c
 msgid ":meth:`~.set_color`"
 msgstr ""
 
-#: ../../xml-class.rst:52 1d8f3eaa0cf44625919ca83d5a8da567
+#: ../../xml-class.rst:52 9189331756f9457b9a92c047923b268d
 msgid "Set text color."
 msgstr "テキストの色を設定します。"
 
-#: ../../xml-class.rst:53 27722e7714f340b98c94e2bac412877b
+#: ../../xml-class.rst:53 9ac5e040ad994771a04fa353c7930b81
 msgid ":meth:`~.set_columns`"
 msgstr ""
 
-#: ../../xml-class.rst:53 9f2c831a15b341bab917d63dd4e9bdad
+#: ../../xml-class.rst:53 5e49161f1d2d43c889352cd9ff8edfc8
 msgid "Set the number of columns. Argument may be any valid number or string."
 msgstr "列数を設定します。引数は任意の有効な数値または文字列である必要があります。"
 
-#: ../../xml-class.rst:54 bc241ab90bf741f6b8599f0cb141cf46
+#: ../../xml-class.rst:54 09f99796e853445c8dcf98822e1ac0f7
 msgid ":meth:`~.set_font`"
 msgstr ""
 
-#: ../../xml-class.rst:54 6f9e3e1e5cec43cfaf5b2926d478afd3
+#: ../../xml-class.rst:54 cf00809415f04821b5afcfb274bc466e
 msgid "Set the font-family, e.g. “sans-serif”."
 msgstr "フォントファミリーを設定します。例: \"sans-serif\"。"
 
-#: ../../xml-class.rst:55 01b7813b4e6246d99690d8b79207ccfb
+#: ../../xml-class.rst:55 b6ea49c8641c4332b9398bef1a6359a3
 msgid ":meth:`~.set_fontsize`"
 msgstr ""
 
-#: ../../xml-class.rst:55 2ea61f4019a14f349f49b89ffc114bfc
+#: ../../xml-class.rst:55 9fe5840d1b4e4891aa77b55e25a5b1e2
 msgid "Set the font size. Either a float or a valid HTML/CSS string."
 msgstr "フォントサイズを設定します。浮動小数点数または有効なHTML/CSS文字列のいずれかです。"
 
-#: ../../xml-class.rst:56 2298a9bb9b8c44028013408f33fb4a8b
+#: ../../xml-class.rst:56 893eb791a848403381a5172bc82ba8a2
 msgid ":meth:`~.set_id`"
 msgstr ""
 
-#: ../../xml-class.rst:56 91d7438009f34deebb029f560780b3d5
+#: ../../xml-class.rst:56 f2aa328fbed64085b476f3b70fdf3881
 msgid "Set a :htmlTag:`id`. A check for uniqueness is performed."
 msgstr ":htmlTag:`id` を設定します。一意性のチェックが実行されます。"
 
-#: ../../xml-class.rst:57 0ae28f410adb46dcb61584afa9381274
+#: ../../xml-class.rst:57 783861b6af6e44bc8733b76733ec5da5
 msgid ":meth:`~.set_italic`"
 msgstr ""
 
-#: ../../xml-class.rst:57 60bfe10047314fbe90557257bd2c0cae
+#: ../../xml-class.rst:57 0701120232e24ab7a942c75085ee4917
 msgid "Set italic on or off or to some string value."
 msgstr "イタリック体をオンまたはオフ、または一部の文字列値に設定します。"
 
-#: ../../xml-class.rst:58 f13070f015174cb3883a33ab5855c52f
+#: ../../xml-class.rst:58 309c49d3870449faa199927e29c64b96
 msgid ":meth:`~.set_leading`"
 msgstr ""
 
 #: ../../xml-class.rst:58 ../../xml-class.rst:249
-#: cd2e6532f5ec4357be2a046a728ce9d1 eec6725705284680bdf39575ae948662
+#: 040c50bebd594591ae1e863aa20683a6 dd67658b9d3349cc89ede4628205f1df
 msgid ""
 "Set inter-block text distance (`-mupdf-leading`), only works on block-"
 "level nodes."
 msgstr "インターブロックテキスト間の距離（`-mupdf-leading`）を設定します。ブロックレベルのノードでのみ機能します。"
 
-#: ../../xml-class.rst:59 be7f70c10d2d46adbbefaacf9a79b89f
+#: ../../xml-class.rst:59 2281f01a10cb44209c22340d5f31c661
 msgid ":meth:`~.set_lineheight`"
 msgstr ""
 
-#: ../../xml-class.rst:59 d6ceaf5d3d5349e8af141f148398c5dd
+#: ../../xml-class.rst:59 5fd19f3c7efd41d6be0dd0d482afa714
 msgid "Set height of a line. Float like 1.5, which sets to `1.5 * fontsize`."
 msgstr "行の高さを設定します。1.5のような浮動小数点数は、`1.5 * fontsize` に設定します。"
 
-#: ../../xml-class.rst:60 a2f43f3c4a1d42fbaba382655abe93ec
+#: ../../xml-class.rst:60 da10321480c547bd877d788cbbc17d19
 msgid ":meth:`~.set_margins`"
 msgstr ""
 
-#: ../../xml-class.rst:60 4cd734fcaeaa480981b859c40b74b310
+#: ../../xml-class.rst:60 562e9cf200d04d618d6ce2d9d0199a52
 msgid "Set the margin(s), float or string with up to 4 values."
 msgstr "マージンを設定します。浮動小数点数または最大4つの値を持つ文字列です。"
 
-#: ../../xml-class.rst:61 d1d9423dcbf24cf3af56e6bce760064b
+#: ../../xml-class.rst:61 7a9720be94704744b9ffc66d54860d47
 msgid ":meth:`~.set_pagebreak_after`"
 msgstr ""
 
 #: ../../xml-class.rst:61 ../../xml-class.rst:267
-#: 09d384ec96934ff7ae90ee0b75ab23f7 2a734a129f224fc5a121508506fa0e76
+#: 2e26773bf354417d9a1e518e237918a0 b15db1fb04a94a9db2c92c13e5185080
 msgid "Insert a page break after this node."
 msgstr "このノードの後に改ページを挿入します。"
 
-#: ../../xml-class.rst:62 fa930ec581bc4daea8b1bcbdb5a7867a
+#: ../../xml-class.rst:62 6f6e3d153b3b4739bb09a561522007a6
 msgid ":meth:`~.set_pagebreak_before`"
 msgstr ""
 
 #: ../../xml-class.rst:62 ../../xml-class.rst:271
-#: 80b99e8507c647c08a9f5136d4707133 910b391d1fc64086bffb32b56dd17b62
+#: 7136cfd22a9d457a97a7e2513a45846f c2118e0dbcda4f5da4addfd12c35aa83
 msgid "Insert a page break before this node."
 msgstr "このノードの前に改ページを挿入します。"
 
-#: ../../xml-class.rst:63 e75a164844134d4fa985ecff78c577b3
+#: ../../xml-class.rst:63 1bbac025080541ae80e078311ca65702
 msgid ":meth:`~.set_properties`"
 msgstr ""
 
-#: ../../xml-class.rst:63 48bdbe6858a749739ba1e9676cd1f01c
+#: ../../xml-class.rst:63 1b2e863de6b347dd9e0815f739335444
 msgid "Set any or all desired properties in one call."
 msgstr "1つの呼び出しで任意またはすべての所望のプロパティを設定します。"
 
-#: ../../xml-class.rst:64 e59908c884944aeb94419811d38c79b1
+#: ../../xml-class.rst:64 5b7ad8cc67534183884e12223b204bfb
 msgid ":meth:`~.add_style`"
 msgstr ""
 
-#: ../../xml-class.rst:64 f3063f32a48046c993a1177620f2b77c
+#: ../../xml-class.rst:64 b48568e9492448fea987302ce3977624
 msgid "Set (add) a “style” that is not supported by its own `set_` method."
 msgstr "独自の `set_` メソッドでサポートされていない \"スタイル\" を設定（追加）します。"
 
-#: ../../xml-class.rst:65 21a22ad4c5e742d68ebd77fce3a4bec5
+#: ../../xml-class.rst:65 eeab444cf1874576b113c84b0127b3e9
 msgid ":meth:`~.add_class`"
 msgstr ""
 
-#: ../../xml-class.rst:65 07ca130edf4c44629581e643f4cab271
+#: ../../xml-class.rst:65 c6c3f6a173aa4093ad84ff360356b54b
 msgid "Set (add) a “class” attribute."
 msgstr "\"クラス\" 属性を設定（追加）します。"
 
-#: ../../xml-class.rst:66 8f806b3c77fa48c1a4235897c4e08e56
+#: ../../xml-class.rst:66 dacd474bcc8e488ab2843c5b8e98be3a
 msgid ":meth:`~.set_text_indent`"
 msgstr ""
 
-#: ../../xml-class.rst:66 abc8782bf2a745309720a0fa3c839384
+#: ../../xml-class.rst:66 2a9fa4287d5043b38c543cccd188d907
 msgid ""
 "Set indentation for first textblock line. Only works for block-level "
 "nodes."
 msgstr "最初のテキストブロック行のインデントを設定します。ブロックレベルのノードでのみ機能します。"
 
-#: ../../xml-class.rst:67 b96181331367489099dc6e24008a6e48
+#: ../../xml-class.rst:67 42123ce0b6f24506853dac4a1af569fa
 msgid ":attr:`~.tagname`"
 msgstr ""
 
 #: ../../xml-class.rst:67 ../../xml-class.rst:370
-#: 15e33e8b8f594a658b9e38cdcf805cfc 85381e985cce46f3b5dccc8bba152573
+#: 36166f24a5d84c408d14f9f1a2dc2468 b8920a310a044b1987fdc6fed230bf95
 msgid "Either the HTML tag name like :htmlTag:`p` or `None` if a text node."
 msgstr "HTMLタグ名（例: :htmlTag:`p`）またはテキストノードの場合は `None`。"
 
-#: ../../xml-class.rst:68 56fa121060c84b5eaef073cd7349c2f2
+#: ../../xml-class.rst:68 66c56dbdcc064ee483ccc6e18e6d9785
 msgid ":attr:`~.text`"
 msgstr ""
 
 #: ../../xml-class.rst:68 ../../xml-class.rst:374
-#: 2029a638dfab494180b263a727a1a80b 7ff3168d93254d0da3a63b56e08bf3da
+#: 28401b8b52b2423a8c4aa49d5fc3591b e4b6e887c7244003973e168bacadf31e
 msgid "Either the node's text or `None` if a tag node."
 msgstr "ノードのテキストまたはテキストノードの場合は `None`。"
 
-#: ../../xml-class.rst:69 300bd8f515ee4e628b9843e141ebd964
+#: ../../xml-class.rst:69 4a66c8e044cb475fa6fb2613a94f66e3
 msgid ":attr:`~.is_text`"
 msgstr ""
 
-#: ../../xml-class.rst:69 8fae5170efa343e692b68bc9070c878f
+#: ../../xml-class.rst:69 ca0266179d7442349348788c2abfc7fa
 msgid "Check if the node is a text."
 msgstr "ノードがテキストかどうかを確認します。"
 
-#: ../../xml-class.rst:70 8d1880a1f8a24468a03560c18843bcab
+#: ../../xml-class.rst:70 e5f96a9fc17b4e368cfce3ef779be88c
 msgid ":attr:`~.first_child`"
 msgstr ""
 
 #: ../../xml-class.rst:70 ../../xml-class.rst:382
-#: 19262463fbff48fc9e2e867c5df6c5ea 1eb8ae4221234937a0242283c4656a05
+#: 2f21de8ea3a74f8e8afccd49d6b046bc 42e3ed28baa943f6a3b5b61eebe41952
 msgid "Contains the first node one level below this one (or `None`)."
 msgstr "このノードの1レベル下の最初のノードを含みます（または `None`）。"
 
-#: ../../xml-class.rst:71 46a85cea7de84bee89a6ae37ce72100f
+#: ../../xml-class.rst:71 84b9f06f42b04e4782acf1d68068c5b4
 msgid ":attr:`~.last_child`"
 msgstr ""
 
 #: ../../xml-class.rst:71 ../../xml-class.rst:386
-#: 3f4101f3b8ee483d9ef154d3206b58fe 778b9c92e0684cd1899dd6ef19a65c2f
+#: 2c94509d8b3b40b4b94c1944dca9f128 676901a092fc4735b224b379bb0c3f9f
 msgid "Contains the last node one level below this one (or `None`)."
 msgstr "このノードの1レベル下の最後のノードを含みます（または `None`）。"
 
-#: ../../xml-class.rst:72 9a3c194c003649e1854a421556773c66
+#: ../../xml-class.rst:72 3dd91ae4326f41568dfd754dde88c7a4
 msgid ":attr:`~.next`"
 msgstr ""
 
 #: ../../xml-class.rst:72 ../../xml-class.rst:390
-#: 8fef0e02029b48e9b6b400a8b3424a46 ac1cba1a91974e1298fbded78e764cbd
+#: cbabeaa3eefd40249b4dd37b701d59cc d36f34064bfa40a0a40827e73a241423
 msgid "The next node at the same level (or `None`)."
 msgstr "同じレベルの次のノード（または `None`）。"
 
-#: ../../xml-class.rst:73 412b4d03b5a641f4b20f77689cc0c08d
+#: ../../xml-class.rst:73 7a0463bd4ac7449dabbfab5a78bbbdd0
 msgid ":attr:`~.previous`"
 msgstr ""
 
 #: ../../xml-class.rst:73 ../../xml-class.rst:394
-#: cd964c74d6c64e7da2dbeec0b0c59a2f f8910c07c4214e6287ba3946378c03d7
+#: 21ccb8eec1544ac69539f5504e1c2572 3bc7b50ddc0d48a1b11a3a42ff6bf3ff
 msgid "The previous node at the same level."
 msgstr "同じレベルの前のノード。"
 
-#: ../../xml-class.rst:74 9855a2f04e2e46ce9101415b64dc2555
+#: ../../xml-class.rst:74 d61cc5bbd1f146c7972c2ebfc6200683
 msgid ":attr:`~.root`"
 msgstr ""
 
 #: ../../xml-class.rst:74 ../../xml-class.rst:398
-#: 3e3b7cb5041e4762bb1c4014b3ceeabe eb8102b6859b495d99145ddc3e4e584f
+#: a71d233f5e2e429eb0443f3879620f09 cd5e5bf55358464abc8f27b0b2c4c712
 msgid "The top node of the DOM, which hence has the tagname :htmlTag:`html`."
 msgstr "DOMのトップノードで、したがって :htmlTag:`html` というタグ名を持っています。"
 
-#: ../../xml-class.rst:79 fb9ef43bc439482cad5a951b2c301fe6
+#: ../../xml-class.rst:79 7b4df043605440d3bb688f84d119f814
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../xml-class.rst:85 50c562c814564c449829bbc9afdbb977
+#: ../../xml-class.rst:85 15f567e4f1754a959a432aa258e0d91d
 msgid ""
 "Add an :htmlTag:`ul` tag - bulleted list, context manager. See `ul "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_."
@@ -527,7 +528,7 @@ msgstr ""
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_ "
 "を参照してください。"
 
-#: ../../xml-class.rst:89 174edc5279694c348b0b3b0db789c16a
+#: ../../xml-class.rst:89 3c04822b8860402a8b9573c54e5194e3
 msgid ""
 "Add a :htmlTag:`pre` tag, context manager. See `pre "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre>`_."
@@ -536,7 +537,7 @@ msgstr ""
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre>`_ "
 "を参照してください。"
 
-#: ../../xml-class.rst:93 bba48ddf46cb4d04a942f63d16959376
+#: ../../xml-class.rst:93 0ed1cc73e1274f0a9666e87961987c78
 msgid ""
 "Add a :htmlTag:`dl` tag, context manager. See `dl "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl>`_."
@@ -545,7 +546,7 @@ msgstr ""
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl>`_ "
 "を参照してください。"
 
-#: ../../xml-class.rst:97 b2aa11c8d88d4a6e9287a25df228fd11
+#: ../../xml-class.rst:97 0b0a1eaefbc1441fbd61bce939f12692
 msgid ""
 "Add a :htmlTag:`div` tag, context manager. See `div "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_."
@@ -554,7 +555,7 @@ msgstr ""
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_ "
 "を参照してください。"
 
-#: ../../xml-class.rst:101 da125a4e1e3a46e4aa8a998d31500303
+#: ../../xml-class.rst:101 8be2c66a14014d738a580d04d0c21248
 msgid ""
 "Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context "
 "manager. See `headings <https://developer.mozilla.org/en-"
@@ -564,28 +565,28 @@ msgstr ""
 "`見出し <https://developer.mozilla.org/en-"
 "US/docs/Web/HTML/Element/Heading_Elements>`_ を参照してください。"
 
-#: ../../xml-class.rst 024cc11a2324423e9672406643c790d3
-#: 07b6c8b5572e40f9a57255f2dacbd3cc 29c13b624cf146969cd16cfc55249705
-#: 4fe3ebba484b42ddb55eba79c9c27a31 5e01d892130e4859abac03db0f6f6fac
-#: 5ea5e25c70fb40e5a632629e14ce0152 6320093e8876421aa0c0cde45e1e8cab
-#: 6cdc85c2d7324535b7ea0240df808aba 6eed1be97c5042ce9ea6f04625ed6c41
-#: 717fb573fd2f40bd936f93caf7c40c6c 802f512e315e4b638f3e77a1768c9c3e
-#: 8be1839a274348638fa38a4f8077b415 8d9be97075ee4dc88381afea5e6edea5
-#: 932121080f8243c9ac385c4e920ba472 9a8885a18a94445698e60de98d8c6725
-#: a0723f84802648158d4a4375ecbb9de2 ab4f4b35396a4590a9be6a5bb3a14c22
-#: ac6cd58df2df43dbbf0969f71ed71701 b8fbdaead6cd44dd8fe1069d634366dd
-#: c35b8f2b6d9646ac850f6d988fe17db0 c79c2a5ce2244cdcaa354f0d2f2557e8
-#: ce48aaae71354d05a5fbc667f4bd1862 d593327d41d44e48b4626dadff4fdca4
-#: dedd229740e64133b16bf51f95161b91 deea3b754cb049bbbc5e4e7484bd7d38
-#: fdca45ac119b47adb610197cc64c9afa fec4c1e4576e40429a4dda979b9530e8
+#: ../../xml-class.rst 06667ae7d009417a97c1ecf590b1a67f
+#: 0aaa5b3f295942ebbbccb8d389cd898a 1aa126b038ed4ce781aecf808c57cdec
+#: 1d2b1dade7d6423bb8e41f0972a59fb3 1d556e1aced24a5a8be36537a9f59e1b
+#: 1e0cf1d1d2054403831bfb69810ee742 255c1340c66245b48f2a3cdf80e4214c
+#: 2c0eea03634e486dabab3f54b424fad2 46aa4928a5604814a92adf164d7fa247
+#: 49455d15a82740859665ec07012100a3 61e61452d3f94579997370f901426bce
+#: 67c4ccac4676478495f011032187051d 6e85e6b82e584e458e9f10f45aeaf176
+#: 9079b60e1ede4c158bdcc07baa224b19 a1450c78b0a74e7a9a133091ddb6e387
+#: a90aa7ae4f834d88b627c22105ee12ce cc4f042b90394b9eb95de870938d8c43
+#: d0e84706994a47c4aad671254c7a85e2 d1095b66b77e4a72a9793960df3fa674
+#: d23494315ac041c791e01f27f2af929e d96c7bfed45740ec810afcba0125a60a
+#: dd18489673354a54a1e8b0d472e4d131 e1d5789d094643a8b45b8b3c59f908b1
+#: e6d0fce46e4a49ef89c56b78e0914a3f edfbbc1dbdd840519996cc595579ac32
+#: f5a2500942f844c3ba7e25042d206f66 f9e99192da7d40888802688752c7595e
 msgid "Parameters"
 msgstr ""
 
-#: ../../xml-class.rst:103 1ce82c759eea4e3c9800371dd5803375
+#: ../../xml-class.rst:103 05de048c66ba4b459eb9539250326096
 msgid "a value 1 - 6."
 msgstr "値（1 - 6）。"
 
-#: ../../xml-class.rst:107 dcb0489ba089443abe776b0454f77cd1
+#: ../../xml-class.rst:107 2c297e02768c469799efc10e37822f0e
 msgid ""
 "Add a :htmlTag:`hr` tag. See `hr <https://developer.mozilla.org/en-"
 "US/docs/Web/HTML/Element/hr>`_."
@@ -593,13 +594,13 @@ msgstr ""
 ":htmlTag:`hr` タグを追加します。詳細は `hr <https://developer.mozilla.org/en-"
 "US/docs/Web/HTML/Element/hr>`_ を参照してください。"
 
-#: ../../xml-class.rst:111 43e83410852143d6a5c0f43f265bb4f9
+#: ../../xml-class.rst:111 b970bd7ba2b14e329f30ab7f38392367
 msgid ""
 "Add an :htmlTag:`img` tag. This causes the inclusion of the named image "
 "in the DOM."
 msgstr ":htmlTag:`img` タグを追加します。これにより、指定された名前の画像が DOM に含まれます。"
 
-#: ../../xml-class.rst:113 a739524e6e014b1692f24668de326291
+#: ../../xml-class.rst:113 9fae2f8598bf4a7b873ba77fe44e109d
 msgid ""
 "the filename of the image. This **must be the member name** of some entry"
 " of the :ref:`Archive` parameter of the :ref:`Story` constructor."
@@ -607,7 +608,7 @@ msgstr ""
 "画像のファイル名。これは :ref:`Story` コンストラクタの :ref:`Archive` パラメータのエントリの "
 "**メンバー名である必要があります** 。"
 
-#: ../../xml-class.rst:114 9ebf88d72a56409fa42faf5db62280fd
+#: ../../xml-class.rst:114 f86a37a277f94897a82aefd1205cbb77
 msgid ""
 "if provided, either an absolute (int) value, or a percentage string like "
 "\"30%\". A percentage value refers to the width of the specified `where` "
@@ -618,7 +619,7 @@ msgstr ""
 "で指定された `where` の長方形の幅を指します。この値が提供され、`height` "
 "が省略された場合、画像はアスペクト比を保持したまま含まれます。"
 
-#: ../../xml-class.rst:115 33a68d796a6a4e7aa08cd525b2904672
+#: ../../xml-class.rst:115 fb3d1d9e2800433b822fc09a4d7e5b38
 msgid ""
 "if provided, either an absolute (int) value, or a percentage string like "
 "\"30%\". A percentage value refers to the height of the specified `where`"
@@ -628,71 +629,71 @@ msgstr ""
 "提供された場合、絶対値（int）または「30%」などのパーセンテージ文字列。パーセンテージ値は :meth:`Story.place` "
 "で指定された `where` 長方形の高さを指します。この値が提供され、`width` が省略された場合、画像のアスペクト比が維持されます。"
 
-#: ../../xml-class.rst:119 16b08e6b02b448d1869b44939b57b6ad
+#: ../../xml-class.rst:119 7dc5d5cd96ba453683175419ccf0139d
 msgid "Add an :htmlTag:`a` tag - inline element, treated like text."
 msgstr ":htmlTag:`a` タグを追加します - インライン要素で、テキストのように扱われます。"
 
-#: ../../xml-class.rst:121 4f5885541aec4f1681504c5b8022c421
+#: ../../xml-class.rst:121 0e78457bb88a440b916bc48c1587500a
 msgid "the URL target."
 msgstr "URL の対象。"
 
-#: ../../xml-class.rst:122 daf14fcbddfa4e8f9312bfadf1eb4084
+#: ../../xml-class.rst:122 29694751dcf94583ab50b52f45eac3c5
 msgid "the text to display. If omitted, the `href` text is shown instead."
 msgstr "表示するテキスト。省略した場合、`href` のテキストが代わりに表示されます。"
 
-#: ../../xml-class.rst:126 2ed69065bcc54bef8f132896d4735a43
+#: ../../xml-class.rst:126 b5e405fe3b834289ba24aee22e844046
 msgid "Add an :htmlTag:`ol` tag, context manager."
 msgstr ":htmlTag:`ol` タグを追加します。コンテキストマネージャーです。"
 
-#: ../../xml-class.rst:130 38daf667477948bba31f3fbf13705aee
+#: ../../xml-class.rst:130 76fa57288ce94e5f83f0c2179b72bfe6
 msgid "Add a :htmlTag:`p` tag, context manager."
 msgstr ":htmlTag:`p` タグを追加します。コンテキストマネージャーです。"
 
-#: ../../xml-class.rst:134 f77310b2d5b9494b9cf5da0eb7663c25
+#: ../../xml-class.rst:134 ab34ee2cc1fd4256ad7020de606ebc05
 msgid "Add a :htmlTag:`span` tag, context manager. See `span`_"
 msgstr ":htmlTag:`span` タグを追加します。コンテキストマネージャーです。span タグについては `span`_ を参照してください。"
 
-#: ../../xml-class.rst:138 b2855744f7694d8688b63669113597b7
+#: ../../xml-class.rst:138 07628e22868f42ffbcf7ddd9c0ac35d5
 msgid ""
 "Add \"subscript\" text(:htmlTag:`sub` tag) - inline element, treated like"
 " text."
 msgstr "\"subscript\" テキスト（:htmlTag:`sub` タグ）を追加します。テキストと同様に扱われるインライン要素です。"
 
-#: ../../xml-class.rst:142 7e341b817ad5456fb5940fcfc3df39b9
+#: ../../xml-class.rst:142 dd9903a2ecf4404a9d6accc1e0749f79
 msgid ""
 "Add \"superscript\" text (:htmlTag:`sup` tag) - inline element, treated "
 "like text."
 msgstr "\"superscript\" テキスト（:htmlTag:`sup` タグ）を追加します。テキストと同様に扱われるインライン要素です。"
 
-#: ../../xml-class.rst:146 8f7bb64cb4c04d1ca3284b9fc7593f70
+#: ../../xml-class.rst:146 ed86a64559ee476a87e5777052bb75fe
 msgid ""
 "Add \"code\" text (:htmlTag:`code` tag) - inline element, treated like "
 "text."
 msgstr "\"code\" テキスト（:htmlTag:`code` タグ）を追加します。テキストと同様に扱われるインライン要素です。"
 
-#: ../../xml-class.rst:150 0b4b00a36d184c089979f1c9ff3c6de9
+#: ../../xml-class.rst:150 23a0e0f64af1407a8d78e8b1fc6eba45
 msgid ""
 "Add \"variable\" text (:htmlTag:`var` tag) - inline element, treated like"
 " text."
 msgstr "\"variable\" テキスト（:htmlTag:`var` タグ）を追加します。テキストと同様に扱われるインライン要素です。"
 
-#: ../../xml-class.rst:154 895c0d15e29c4e6b8dfaa85263f001e4
+#: ../../xml-class.rst:154 16840c2eee994250a111a670c1982c07
 msgid ""
 "Add \"sample output\" text (:htmlTag:`samp` tag) - inline element, "
 "treated like text."
 msgstr "\"sample output\" テキスト（:htmlTag:`samp` タグ）を追加します。テキストと同様に扱われるインライン要素です。"
 
-#: ../../xml-class.rst:158 f307ef2221df4d8cabf352e9f5a19508
+#: ../../xml-class.rst:158 c12b71425d2847eb8bde80f536c4c5ca
 msgid ""
 "Add \"keyboard input\" text (:htmlTag:`kbd` tag) - inline element, "
 "treated like text."
 msgstr "\"keyboard input\" テキスト（:htmlTag:`kbd` タグ）を追加します。テキストと同様に扱われるインライン要素です。"
 
-#: ../../xml-class.rst:166 6a99c0b9dc7a474e9cf033077936a5db
+#: ../../xml-class.rst:166 a0c1e8813cc34b0b905e64b8843960a1
 msgid "Set the text alignment. Only works for block-level tags."
 msgstr "テキストの配置を設定します。ブロックレベルのタグにのみ対応しています。"
 
-#: ../../xml-class.rst:168 568fadc862084cf18f4c1939f65afd7e
+#: ../../xml-class.rst:168 5c1f833338ba45238483066cd6ee050f
 msgid ""
 "either one of the :ref:`TextAlign` or the `text-align "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/text-align>`_ values."
@@ -701,43 +702,43 @@ msgstr ""
 "US/docs/Web/CSS/text-align>`_ のいずれかの値です。"
 
 #: ../../xml-class.rst:174 ../../xml-class.rst:187 ../../xml-class.rst:195
-#: 6d316d5f35dc47cabd5a9e43808dd906 a71d18e2fc384564a61117cc44ca1890
-#: d68a22a7cc244d228156f4f082b7bcb7
+#: 2fe24dbf6c8e491da8d3a7aca96d7db7 a41e1f3d0e3646c4848ce0ef0df0f734
+#: e6ab290bc6c6427aa52cd824b5abcf95
 msgid "the name of the attribute."
 msgstr "属性の名前。"
 
-#: ../../xml-class.rst:175 e0e47e58fe774dd09b3243078594533b
+#: ../../xml-class.rst:175 d389ba2ac4a34151a91a26102e2b6460
 msgid "the (optional) value of the attribute."
 msgstr "(オプションの) 属性の値。"
 
-#: ../../xml-class.rst:179 8332bb38a6c54a5aa9670df64e17dccd
+#: ../../xml-class.rst:179 07c3f60cb5574e45abb857f481b45d17
 msgid "Retrieve all attributes of the current nodes as a dictionary."
 msgstr "現在のノードのすべての属性を辞書として取得します。"
 
-#: ../../xml-class.rst 1112bce0d9af4621912d000f0d1d2fb0
-#: 2bf36695ecca41d4a18533449905a8f7 2d9d35c1734f431caa5e5150336433b8
-#: 3fe8b7b42a6b4da48a829b4f2649b9eb 5bc4a41a051e427795a35d51a82da550
-#: 83e1e5ab54984ed4a71db1da79a5c7a5 9368f91ec2714f3f8b958e5f233942b5
+#: ../../xml-class.rst 17192c246086475781cbc2a532fe77f7
+#: 316b287ac38d47998654b66e17120d3c 33b69c8e0c214f7e94b9e785d1d5acb0
+#: 397c2d06aeac40b0a74e6504b51ad4da e796210aabb44877bdc47c5faba1888b
+#: f45ca78bcbb745fd8bf01620b26911ca f470a993feb34859b12a4343388d8e3d
 msgid "Returns"
 msgstr "戻り値:"
 
-#: ../../xml-class.rst:181 02d0f35a40094bcd925f4e6328544e4d
+#: ../../xml-class.rst:181 9a860899e73444138923297266a09e92
 msgid "a dictionary with the attributes and their values of the node."
 msgstr "ノードの属性とその値を含む辞書。"
 
-#: ../../xml-class.rst:185 58f87414daae449a917c2991b3b6fd3f
+#: ../../xml-class.rst:185 367b3d6b05fe484c8692a5b9fdf0888d
 msgid "Get the attribute value of `key`."
 msgstr "`key` ーの属性値を取得します。"
 
-#: ../../xml-class.rst:189 6670253faadc4dc181423fcc504ba426
+#: ../../xml-class.rst:189 0c606e3db4aa43e4b82e63059d8b9056
 msgid "a string with the value of `key`."
 msgstr "`key` ーの値を含む文字列。"
 
-#: ../../xml-class.rst:193 5dcf2858d61f42efa01043ce0db9a77b
+#: ../../xml-class.rst:193 7ab7a2c9a37a49528c76d65040e92e55
 msgid "Remove the attribute `key` from the node."
 msgstr "ノードから属性 `key` を削除します。"
 
-#: ../../xml-class.rst:201 f2b26dea919044509ec1d945b9873e21
+#: ../../xml-class.rst:201 4a286ef8c13b4a818402696f63abbbda
 msgid ""
 "either an RGB value like (255, 0, 0) (for \"red\") or a valid "
 "`background-color <https://developer.mozilla.org/en-US/docs/Web/CSS"
@@ -746,7 +747,7 @@ msgstr ""
 "RGB値（例：(255, 0, 0)、\"red\"の場合）または有効な `background-color "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/background-color>`_ 値。"
 
-#: ../../xml-class.rst:207 a849c209d0ac443cab8c46ebb71c1473
+#: ../../xml-class.rst:207 0c4471f9c34f45e3b376695ecd25ae47
 msgid ""
 "`True`, `False` or a valid `font-weight <https://developer.mozilla.org"
 "/en-US/docs/Web/CSS/font-weight>`_ value."
@@ -754,11 +755,11 @@ msgstr ""
 "`True`、`False`、または有効な `font-weight <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/font-weight>`_ 値。"
 
-#: ../../xml-class.rst:211 14608dcbd63d44778d4a4fa76977c404
+#: ../../xml-class.rst:211 377d0e10d7b548c88d42311255d9ff02
 msgid "Set the color of the text following."
 msgstr "後続するテキストの色を設定します。"
 
-#: ../../xml-class.rst:213 d78009beb81c4b4dbe7435aa0500b604
+#: ../../xml-class.rst:213 0596f8f1cc684e51ac8e6a2e58d3f646
 msgid ""
 "either an RGB value like (255, 0, 0) (for \"red\") or a valid `color "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/color_value>`_ value."
@@ -766,11 +767,11 @@ msgstr ""
 "RGB値（例：(255, 0, 0)、\"red\"の場合）または有効な `カラー <https://developer.mozilla.org"
 "/en-US/docs/Web/CSS/color_value>`_ 値。"
 
-#: ../../xml-class.rst:217 62030de0f71c4851b9a8ff602b9cbfc5
+#: ../../xml-class.rst:217 9de3ba47655e45ea86e95f7806cc1761
 msgid "Set the number of columns."
 msgstr "列の数を設定します。"
 
-#: ../../xml-class.rst:219 a9b833c4f8aa4f188672e129958b67f5
+#: ../../xml-class.rst:219 d767dfd34bba48c2bd824015aedbfce5
 msgid ""
 "a valid `columns <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/columns>`_ value."
@@ -778,23 +779,23 @@ msgstr ""
 "有効な `columns <https://developer.mozilla.org/en-US/docs/Web/CSS/columns>`_"
 " 値。"
 
-#: ../../xml-class.rst:221 d6a80d60383b439a908701930cdb2e7c
+#: ../../xml-class.rst:221 c5ee8d67ed604a779b356ad7a3beb3b6
 msgid "Currently ignored - supported in a future MuPDF version."
 msgstr "現在は無視されており、将来のMuPDFバージョンでサポートされます。"
 
-#: ../../xml-class.rst:225 5f7767693a974d12bb8afb150aa5fbc2
+#: ../../xml-class.rst:225 a3e16b087cf149fbbf6f316ad7d79880
 msgid "Set the font-family."
 msgstr "フォントファミリーを設定します。"
 
-#: ../../xml-class.rst:227 bab24823b442489a97603838b2b789ba
+#: ../../xml-class.rst:227 56592161ded1480aa5c21631ec00e5ac
 msgid "e.g. \"sans-serif\"."
 msgstr "例：\"sans-serif\"など。"
 
-#: ../../xml-class.rst:231 11d2423ad1614409b86032525e09c448
+#: ../../xml-class.rst:231 e716de072f9544618374c016b382f40a
 msgid "Set the font size for text following."
 msgstr "後続するテキストのフォントサイズを設定します。"
 
-#: ../../xml-class.rst:233 1a17279ad8b34581898f6047548a25f6
+#: ../../xml-class.rst:233 4699b76ad7694bccbd943643ee021862
 msgid ""
 "a float or a valid `font-size <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/font-size>`_ value."
@@ -802,7 +803,7 @@ msgstr ""
 "floatまたは有効な `font-size <https://developer.mozilla.org/en-US/docs/Web/CSS"
 "/font-size>`_ 値。"
 
-#: ../../xml-class.rst:237 cd0a177eb19441ff8a434dbecc0b6edd
+#: ../../xml-class.rst:237 8cfd620b051940348ac0556e9ae65033
 msgid ""
 "Set a :htmlTag:`id`. This serves as a unique identification of the node "
 "within the DOM. Use it to easily locate the node to inspect or modify it."
@@ -811,15 +812,15 @@ msgstr ""
 ":htmlTag:`id` "
 "を設定します。これはDOM内でノードを一意に識別するためのもので、ノードを簡単に見つけて調査または変更するために使用します。一意性のチェックが実行されます。"
 
-#: ../../xml-class.rst:239 3dd8ec9655d7401b903bcb84b19ca8ad
+#: ../../xml-class.rst:239 b6042d6da5b14d338da93ff2ac9afdc3
 msgid "id string of the node."
 msgstr "ノードのID文字列。"
 
-#: ../../xml-class.rst:243 4931ed385c144bd7b877b5f24b4832d8
+#: ../../xml-class.rst:243 83dcfa78795e4c169619f1b4203a95f7
 msgid "Set italic on or off or to some string value for the text following it."
 msgstr "後続するテキストのイタリックをオンまたはオフ、または一部の有効なフォントスタイル値に設定します。"
 
-#: ../../xml-class.rst:245 6da4ce36e7544163b10683b0e7a3fc35
+#: ../../xml-class.rst:245 e74b3e4a56714306840b8bd5cdcfb8b6
 msgid ""
 "`True`, `False` or some valid `font-style <https://developer.mozilla.org"
 "/en-US/docs/Web/CSS/font-style>`_ value."
@@ -827,26 +828,26 @@ msgstr ""
 "`True`、`False`、または有効な `font-style <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/font-style>`_ 値。"
 
-#: ../../xml-class.rst:251 31c259c3700a4683978ade1aacd4ee68
+#: ../../xml-class.rst:251 b9a0bdede6124f1fbbde6722313e5c2c
 msgid "the distance in points to the previous block."
 msgstr "前のブロックからの距離（ポイント単位）。"
 
-#: ../../xml-class.rst:255 f23cdab16b5f48a6be6e6134c22d5400
+#: ../../xml-class.rst:255 f13883ee98f146ca9a924b575b3cc51a
 msgid "Set height of a line."
 msgstr "行の高さを設定します。"
 
-#: ../../xml-class.rst:257 02afe7ae37a54c11b990ab5fa3563d71
+#: ../../xml-class.rst:257 74dc61a744d94742a7eb18faf8251006
 msgid ""
 "a float like 1.5 (which sets to `1.5 * fontsize`), or some valid `line-"
 "height <https://developer.mozilla.org/en-US/docs/Web/CSS/line-height>`_ "
 "value."
 msgstr "value – 1.5のような浮動小数点数（これは `1.5 * fontsize`に設定されます）または有効な行の高さの値。"
 
-#: ../../xml-class.rst:261 58160829ef30498bbc7a368f4aadcb73
+#: ../../xml-class.rst:261 f4aeb6cd082e4b039f2ef1c241cffc4a
 msgid "Set the margin(s)."
 msgstr "マージン（マージン）を設定します。"
 
-#: ../../xml-class.rst:263 6cc5b700b0c84044940763e6718e180f
+#: ../../xml-class.rst:263 754876b7c7b84370b81e5f3f15bbae21
 msgid ""
 "float or string with up to 4 values. See `CSS documentation "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_."
@@ -854,13 +855,13 @@ msgstr ""
 "floatまたは最大4つの値を含む文字列。`CSSのドキュメンテーション <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/margin>`_ を参照してください。"
 
-#: ../../xml-class.rst:275 369d0dfa18af4da8b3aa14b641737bb3
+#: ../../xml-class.rst:275 f2da4761cba1404d8c850cf58d8ba28c
 msgid ""
 "Set any or all desired properties in one call. The meaning of argument "
 "values equal the values of the corresponding `set_` methods."
 msgstr "一度の呼び出しで任意またはすべての所望のプロパティを設定します。引数の値の意味は、対応する `set_` メソッドの値と同じです。"
 
-#: ../../xml-class.rst:277 457b183445c04a15945f8a6ad21c44fd
+#: ../../xml-class.rst:277 c1f136b0c23e4147aef9acbc054decd4
 msgid ""
 "The properties set by this method are directly attached to the node, "
 "whereas every `set_` method generates a new :htmlTag:`span` below the "
@@ -871,31 +872,31 @@ msgstr ""
 " :htmlTag:`span` "
 "が生成されます。したがって、本文のいくつかのプロパティを「グローバルに」設定するには、このメソッドを使用する必要があります。"
 
-#: ../../xml-class.rst:281 faa1b60f358148dd9f0eb1b59089bb0f
+#: ../../xml-class.rst:281 0b00e9cdb0ed42819aad271da3e10621
 msgid "Set (add) some style attribute not supported by its own `set_` method."
 msgstr "独自の `set_` メソッドでサポートされていないスタイル属性を設定（追加）します。"
 
-#: ../../xml-class.rst:283 114bb7e2919741348dc6dc76790a8899
+#: ../../xml-class.rst:283 457e6d62d41841ee8741782c6bfd201f
 msgid "any valid CSS style value."
 msgstr "有効なCSSスタイル値。"
 
-#: ../../xml-class.rst:287 0003f443189f4ea991abc58dcec20006
+#: ../../xml-class.rst:287 996f4ece67a841e59d001f1d260f6571
 msgid "Set (add) some \"class\" attribute."
 msgstr "いくつかの「class」属性を設定（追加）します。"
 
-#: ../../xml-class.rst:289 3ad56c4e78e64512b039ac5583f4563a
+#: ../../xml-class.rst:289 0cd9ff6d9c4640ab90612ca481fb1692
 msgid ""
 "the name of the class. Must have been defined in either the HTML or the "
 "CSS source of the DOM."
 msgstr "クラスの名前。DOMのHTMLまたはCSSソースで定義されている必要があります。"
 
-#: ../../xml-class.rst:293 526f5d96762240919ce0fcc2fe9ac8d0
+#: ../../xml-class.rst:293 d40d57c4852c46539d9bdf515833a465
 msgid ""
 "Set indentation for the first textblock line. Only works for block-level "
 "nodes."
 msgstr "最初のテキストブロックの行のインデントを設定します。ブロックレベルのノードでのみ機能します。"
 
-#: ../../xml-class.rst:295 93db6cf8f4ae4921a6277cf9f19b4534
+#: ../../xml-class.rst:295 0d6bee0b55f24569a45c44d5e814b140
 msgid ""
 "a valid `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS"
 "/text-indent>`_ value. Please note that negative values do not work."
@@ -903,36 +904,36 @@ msgstr ""
 "有効な `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS/text-"
 "indent>`_ 値。負の値は機能しないことに注意してください。"
 
-#: ../../xml-class.rst:300 d6471054a05e49e6896fef2fd6664a79
+#: ../../xml-class.rst:300 762e7d8fde1d4ad3ba5ae1bf4fa34033
 msgid ""
 "Append a child node. This is a low-level method used by other methods "
 "like :meth:`Xml.add_paragraph`."
 msgstr "子ノードを追加します。これは、:meth:`Xml.add_paragraph` などの他のメソッドで使用される低レベルのメソッドです。"
 
-#: ../../xml-class.rst:302 c3f31ed08a2b42da9812404489ada9d3
+#: ../../xml-class.rst:302 8fe5eebdd2b1421fb687a21dfcea9fae
 msgid "the :ref:`Xml` node to append."
 msgstr "追加する :ref:`Xml` ノード。"
 
-#: ../../xml-class.rst:308 f2f4857e67034ac58cc369a80014ca73
+#: ../../xml-class.rst:308 bb3c5252dd3542cc8f263ab35551dedd
 msgid "the text to append."
 msgstr "追加するテキスト。"
 
-#: ../../xml-class.rst 0b5c6d05335240f1bea8d5e7fe35da00
-#: 57c5e8858cca4c86a191dbe6c5117226 dec9bdbe2b7a44f3a9c55a2060c9a423
-#: ef49ea189abd4b7c93de4ed70648a439
+#: ../../xml-class.rst 022bf50af61d4a8a854203e9ba18a1ce
+#: 70b34bf9aef34db599ca63934a722c36 87a8f73cb5e84da286de4cacee92e249
+#: c5fc1a77039842b2a10f66a29dbdb38e
 msgid "Return type"
 msgstr ""
 
 #: ../../xml-class.rst:310 ../../xml-class.rst:319
-#: 2d131d264f524eb587df3d9cbe212492 f76c44b538b4474eb598566975d192a6
+#: 14d3d45c8f9f4c94b76c6b34f9156283 e219f8801a92456dacd23c1bab7c5fa4
 msgid ":ref:`Xml`"
 msgstr ""
 
-#: ../../xml-class.rst:311 a11b1d20ae094320ab04203f6b78f3b8
+#: ../../xml-class.rst:311 0ed716b5c85d4de4a0457c85b58e194f
 msgid "the created element."
 msgstr "作成された要素。"
 
-#: ../../xml-class.rst:315 269051fcf14d41e1a96a4b89eb195498
+#: ../../xml-class.rst:315 d82360adfca04cbeac23160c0a0c3afa
 msgid ""
 "Create a new node with a given tag. This a low-level method used by other"
 " methods like :meth:`Xml.add_paragraph`."
@@ -940,30 +941,30 @@ msgstr ""
 "指定されたタグで新しいノードを作成します。これは、:meth:`Xml.add_paragraph` "
 "などの他のメソッドで使用される低レベルなメソッドです。"
 
-#: ../../xml-class.rst:317 54ec4e208ff7471480deb267d2c493c5
+#: ../../xml-class.rst:317 9d7b1665fb704f00a0416ea1627c3c3a
 msgid "the element tag."
 msgstr "要素のタグ。"
 
-#: ../../xml-class.rst:320 e1f70947f8a04442971d6f040a21683a
+#: ../../xml-class.rst:320 ea5c614b041341e1be82c8015fbed2ef
 msgid ""
 "the created element. To actually bind it to the DOM, use "
 ":meth:`Xml.append_child`."
 msgstr "作成された要素。実際にDOMにバインドするには、:meth:`Xml.append_child` を使用します。"
 
-#: ../../xml-class.rst:324 1b2a97eec3ae4c90a0b3b3ee07575ce3
+#: ../../xml-class.rst:324 20a9a38c30524aa7bc65ec6cbe680c47
 msgid "Insert the given element `elem` before this node."
 msgstr "指定された要素 `elem` をこのノードの前に挿入します。"
 
 #: ../../xml-class.rst:326 ../../xml-class.rst:332
-#: 959d3973a7c04ec0b24714bfc4a06dc9 a690ced3ba004a36aa7e1b23d0b4137e
+#: 44a6c046ddfd4baa968b358f7db78b0a 848c5fe3c4bb49ffbb4f55cf1fcd0d94
 msgid "some :ref:`Xml` element."
 msgstr "いくつかの :ref:`Xml` 要素。"
 
-#: ../../xml-class.rst:330 d4a52f9d5c4240bbb865960c420e668c
+#: ../../xml-class.rst:330 31950c02ed55490db0883f1568fc5528
 msgid "Insert the given element `elem` after this node."
 msgstr "指定された要素 `elem` をこのノードの後に挿入します。"
 
-#: ../../xml-class.rst:336 d7fba22b08f74338951767ea7255221a
+#: ../../xml-class.rst:336 9b8dcc0c94654a25a10773d34514557e
 msgid ""
 "Make a copy of this node, which then may be appended (using "
 ":meth:`Xml.append_child`) or inserted (using one of "
@@ -973,65 +974,65 @@ msgstr ""
 "を使用）または挿入（:meth:`Xml.insert_before` 、:meth:`Xml.insert_after` "
 "のいずれかを使用）できるようにします。"
 
-#: ../../xml-class.rst:338 e9261f042f214df282a7c876285b8925
+#: ../../xml-class.rst:338 4f1ca41be752476f906e73d07f12fa64
 msgid "the clone (:ref:`Xml`) of the current node."
 msgstr "現在のノードのクローン（:ref:`Xml`）。"
 
-#: ../../xml-class.rst:342 cabe5c672f59467c8ff274a857ae18e0
+#: ../../xml-class.rst:342 0cbed49f156d4211b12cb5bbe7060543
 msgid "Remove this node from the DOM."
 msgstr "このノードをDOMから削除します。"
 
-#: ../../xml-class.rst:347 7b6f5cd9e67c4249bdaa629120165de2
+#: ../../xml-class.rst:347 ef3d6f9aa85c47ca9abe630e29080e81
 msgid "For debugging purposes, print this node's structure in a simplified form."
 msgstr "デバッグ目的で、このノードの構造を簡略化された形式で表示します。"
 
-#: ../../xml-class.rst:351 e6a7ddff5b6a4796806cf337e83187f3
+#: ../../xml-class.rst:351 b77052465aff4e6c8134c42867815823
 msgid ""
 "Under the current node, find the first node with the given `tag`, "
 "attribute `att` and value `match`."
 msgstr "現在のノードの下で、指定された `tag` 、属性 `att`、値 `match` を持つ最初のノードを検索します。"
 
-#: ../../xml-class.rst:353 ba64f0b2d33e4c5ba358b133edce6294
+#: ../../xml-class.rst:353 c3b5cf81b4a8466aaf9a51d9aa91aed8
 msgid "restrict search to this tag. May be `None` for unrestricted searches."
 msgstr "このタグに制限して検索します。無制限の検索の場合は `None` にできます。"
 
-#: ../../xml-class.rst:354 ddb431a9911c4fc48c7067e0d14e1a65
+#: ../../xml-class.rst:354 b3e60cf5c1694489b76c6b061502d815
 msgid "check this attribute. May be `None`."
 msgstr "この属性を確認します。`None` にできます。"
 
-#: ../../xml-class.rst:355 96349390d0f745d490ea2f5bb66fd14d
+#: ../../xml-class.rst:355 445027aad8f349d5870b74bc71484e02
 msgid "the desired attribute value to match. May be `None`."
 msgstr "致する属性値を指定します。`None` にできます。"
 
 #: ../../xml-class.rst:357 ../../xml-class.rst:364
-#: c1263439146e46f7927c4b3fb302ffdc c5f76183d6244baf800735e4d0554419
+#: 458a0f17635a4ee3beaeda11ffc6cf06 d2fbb5102700450a865b3f902ceac384
 msgid ":ref:`Xml`."
 msgstr ""
 
-#: ../../xml-class.rst:358 4269947ef685432b9b599ab250582b22
+#: ../../xml-class.rst:358 b5de014d478e4703b88e1c98ad4dd9dd
 msgid "`None` if nothing found, otherwise the first matching node."
 msgstr "何も見つからない場合は `None`、それ以外の場合は最初の一致するノード。"
 
-#: ../../xml-class.rst:362 03e06ac661c24d6cacfb878136b1cf06
+#: ../../xml-class.rst:362 bfac5489d037476889d72ff8311df153
 #, fuzzy
 msgid ""
 "Continue a previous :meth:`Xml.find` (or :meth:`find_next`) with the same"
 " values."
 msgstr "以前の :meth:`Xml.find`（または :meth:`find_next` ）を同じ値で継続します。"
 
-#: ../../xml-class.rst:365 6c2d14db6b8a4ffe9ac257883ff96451
+#: ../../xml-class.rst:365 6e37f5e14b8849b1abe7bf97c7015bc2
 msgid "`None` if none more found, otherwise the next matching node."
 msgstr "それ以上見つからない場合は `None`、それ以外の場合は次の一致するノード。"
 
-#: ../../xml-class.rst:378 9abc364a60614c5c82b90ea6f1c467ee
+#: ../../xml-class.rst:378 b1a7309c8f0f4aebb4c722ef9ac56d8f
 msgid "Check if a text node."
 msgstr "テキストノードであるかどうかを確認します。"
 
-#: ../../xml-class.rst:402 6a91395836664c8885dcc24724d4507e
+#: ../../xml-class.rst:402 277f48d6971041c6949eb351109c59a6
 msgid "Setting Text properties"
 msgstr "テキストのプロパティを設定する"
 
-#: ../../xml-class.rst:404 48d3b83460a84a219849466dbee271b2
+#: ../../xml-class.rst:404 e4aa8bc7dde5406984bba698ad774b6a
 msgid ""
 "In HTML tags can be nested such that innermost text **inherits "
 "properties** from the tag enveloping its parent tag. For example "
@@ -1041,7 +1042,7 @@ msgstr ""
 "。たとえば、`<p><b>some bold text<i>this is bold and italic</i></b>regular "
 "text</p>`。"
 
-#: ../../xml-class.rst:406 52066d1f66434115b310775715ccd33a
+#: ../../xml-class.rst:406 231ae74dcdca47a1af2c04684d880e45
 msgid ""
 "To achieve the same effect, methods like :meth:`Xml.set_bold` and "
 ":meth:`Xml.set_italic` each open a temporary :htmlTag:`span` with the "
@@ -1050,31 +1051,30 @@ msgstr ""
 "同じ効果を得るために、:meth:`Xml.set_bold` や :meth:`Xml.set_italic` "
 "などのメソッドは、各々所望のプロパティを持つ一時的な :htmlTag:`span` を現在のノードの下に追加します。"
 
-#: ../../xml-class.rst:408 67ce19b698e1408a94c6234059a00c29
+#: ../../xml-class.rst:408 703c755313884c3e8e069b836f756d47
 msgid ""
 "In addition, these methods return there parent node, so they can be "
 "concatenated with each other."
 msgstr "さらに、これらのメソッドは親ノードを返すため、それらを連結することができます。"
 
-#: ../../xml-class.rst:413 4de7894e99f24e9487de5e5628f83962
+#: ../../xml-class.rst:413 1317fdaa53304e249c7283355ae5ebb4
 msgid "Context Manager support"
 msgstr "コンテキストマネージャのサポート"
 
-#: ../../xml-class.rst:414 16e8d4aff35c4ad4bb0ef8f14b909e94
+#: ../../xml-class.rst:414 66b960c3bdd444e0a671fd3e9b81e5a1
 msgid "The standard way to add nodes to a DOM is this::"
 msgstr "DOMにノードを追加する標準的な方法は次のとおりです::"
 
-#: ../../xml-class.rst:427 e62f4b4e31f9420086354b1b60a6199c
+#: ../../xml-class.rst:427 945235d10eaf46368506481d321761b5
 msgid ""
 "Methods that are flagged as \"context managers\" can conveniently be used"
 " in this way::"
 msgstr "コンテキストマネージャとしてフラグが付いているメソッドは、次のように便利に使用できます::"
 
-#: ../../footer.rst:71 23b38b6220d54de48a7f1eef9fc88a88
+#: ../../footer.rst:60 1b8fa4a6d5c14ec9becef06082bce778
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 2f8aa8ff20b441949d7339dbb7686a37
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-01 16:48+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,217 +19,222 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 65e6874f0dce4ceba0ac7b5a0fe541c7
+#: ../../header.rst:-1 eade87716b2747e7817d9414e8034522
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 11c10f419a994a49afb7f4d97fa321f2
+#: ../../header.rst:-1 6379b9d9980a4f9fabc3904f865e408b
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 ac98ab7904af4ab9aa3a40bf70964aba
+#: ../../header.rst:-1 dc2316e3820a455f9e030297b205a574
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../outline.rst:7 e264451d33854b90b8e9a456aa2ef946
+#: ../../outline.rst:7 3ebaa51cc5b946e7a450900a8661c90c
 msgid "Outline"
 msgstr "Outline (アウトライン)"
 
-#: ../../outline.rst:9 f2a708b4015144d2ad7b3468131332c5
+#: ../../outline.rst:9 5119b28a24af46d682652e038c5a1126
 msgid ""
-"*outline* (or \"bookmark\"), is a property of *Document*. If not ``None``, "
-"it stands for the first outline item of the document. Its properties in "
-"turn define the characteristics of this item and also point to other "
-"outline items in \"horizontal\" or downward direction. The full tree of "
-"all outline items for e.g. a conventional table of contents (TOC) can be "
-"recovered by following these \"pointers\"."
+"*outline* (or \"bookmark\"), is a property of *Document*. If not "
+"``None``, it stands for the first outline item of the document. Its "
+"properties in turn define the characteristics of this item and also point"
+" to other outline items in \"horizontal\" or downward direction. The full"
+" tree of all outline items for e.g. a conventional table of contents "
+"(TOC) can be recovered by following these \"pointers\"."
 msgstr ""
 "*アウトライン*（または「ブックマーク」）は、*Document* のプロパティです。それが ``None`` "
 "でない場合、それはドキュメントの最初のアウトライン項目を表します。そのプロパティは、この項目の特性を定義し、また「水平」または下向きの方向に他のアウトライン項目を指します。たとえば、通常の目次（TOC）のためのすべてのアウトライン項目の完全なツリーは、これらの「ポインター」をたどることで回復できます。"
 
-#: ../../outline.rst:12 310246ec551e4da28970879408d931ff
+#: ../../outline.rst:12 c27e0f395b824686b522b514ecf1d098
 msgid "**Method / Attribute**"
 msgstr "**メソッド / 属性**"
 
-#: ../../outline.rst:12 b7dbde06b57d42ccba9c916757c5f581
+#: ../../outline.rst:12 cb55fadb7745417899fe5f3e385a6737
 msgid "**Short Description**"
 msgstr "**短い説明**"
 
-#: ../../outline.rst:14 84209c70deeb495cacff8b73b2e8746c
+#: ../../outline.rst:14 0e48e54f78de4ed6a2f0ef5660d74298
 msgid ":attr:`Outline.down`"
 msgstr ""
 
-#: ../../outline.rst:14 6e0c2993eb374f1d830ab1fe51a2020f
+#: ../../outline.rst:14 4bda059c28ab45bb8c9b17d781a5f749
 msgid "next item downwards"
 msgstr "次の項目は下向き"
 
-#: ../../outline.rst:15 4298509e04434f4ba975eea40f0da8f5
+#: ../../outline.rst:15 af4e5daadaf54eb7a89a3012aee90476
 msgid ":attr:`Outline.next`"
 msgstr ""
 
-#: ../../outline.rst:15 6398bb20c0d94350b0d9f68c01e1e9b5
+#: ../../outline.rst:15 89522a47c0db4668bf6da64302eda4d1
 msgid "next item same level"
 msgstr "同じレベルの次の項目"
 
-#: ../../outline.rst:16 3ca1c8c262d440f4a67765b89b5afe82
+#: ../../outline.rst:16 2e773fb937834e4192d62907e44c0eae
 msgid ":attr:`Outline.page`"
 msgstr ""
 
-#: ../../outline.rst:16 6500b4ce7d514d3e9b7f113af5491aed
+#: ../../outline.rst:16 c22ddb98cc114a5c94ca6d39d1bda4f4
 msgid "page number (0-based)"
 msgstr "ページ番号（0から始まる）"
 
-#: ../../outline.rst:17 737c21db59fa4166af04b8094f8bb243
+#: ../../outline.rst:17 61f54e5be3684a7e9b71f47ccdede803
 msgid ":attr:`Outline.title`"
 msgstr ""
 
-#: ../../outline.rst:17 67f792e91d9f405cb1e366f0961a6d81
+#: ../../outline.rst:17 93a433f132584065af026642754a98fb
 msgid "title"
 msgstr "タイトル"
 
-#: ../../outline.rst:18 d71a00d4f4644a05aa3201ebd2ab7d85
+#: ../../outline.rst:18 e41061ce2b7e48a4aa31064fe88df3cf
 msgid ":attr:`Outline.uri`"
 msgstr ""
 
-#: ../../outline.rst:18 cdd576987ebf4f53a4efdcb567ea15ad
+#: ../../outline.rst:18 323881cb7b1d40ae85b03dd5a27df654
 msgid "string further specifying outline target"
 msgstr "アウトラインのターゲットをさらに指定する文字列"
 
-#: ../../outline.rst:19 1d489058a08a44c7a90d0a0f8da12ce7
+#: ../../outline.rst:19 198b8ace96d142379f9036f96c06bd73
 msgid ":attr:`Outline.is_external`"
 msgstr ""
 
-#: ../../outline.rst:19 615cb71a196b47289034b30e0fd1aae1
+#: ../../outline.rst:19 f15b6eff0b2149948a823a986f443ba9
 msgid "target outside document"
 msgstr "ドキュメントの外部のターゲットかどうか"
 
-#: ../../outline.rst:20 0305b84895cd4f51bf50dfe47b1b0c25
+#: ../../outline.rst:20 7b2130996c994ef4857d2225858d3f28
 msgid ":attr:`Outline.is_open`"
 msgstr ""
 
-#: ../../outline.rst:20 0feac04584174efd87c88abc782e633c
+#: ../../outline.rst:20 1ce23358265b4971af79d5cb7f924035
 msgid "whether sub-outlines are open or collapsed"
 msgstr "サブアウトラインが開いているか折りたたまれているか"
 
-#: ../../outline.rst:21 1b8c1474ba8c42179b0f64ccbe328c19
+#: ../../outline.rst:21 3810e86f9dc24ee98109b10773fe9594
 msgid ":attr:`Outline.dest`"
 msgstr ""
 
-#: ../../outline.rst:21 182d4719d90e40c4a1eb4cfbc247c324
+#: ../../outline.rst:21 be949162a84940be8d8d5b241b3bd8dc
 msgid "points to destination details object"
 msgstr "宛先の詳細オブジェクトを指す"
 
-#: ../../outline.rst:24 62f2b4ced4944d7faca8fc777c9ae281
+#: ../../outline.rst:24 d60d251f33b04aba88575166c80cd268
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../outline.rst:30 5cb88905eda344a3acb46c904fbed4cd
+#: ../../outline.rst:30 0d3278496d6f48cca68af36994524ad7
 msgid ""
-"The next outline item on the next level down. Is ``None`` if the item has "
-"no children."
+"The next outline item on the next level down. Is ``None`` if the item has"
+" no children."
 msgstr "次の階層のアウトライン項目です。アイテムに子要素がない場合は ``None`` です。"
 
-#: ../../outline.rst 24a0f693a9d4430c8d9555d7dc6f1c69
-#: 30e087665ec4410599f01a6a85813704 462933d959eb43ab88cf32fd3bc3d881
-#: 476e751e1a80456fb5d34ab6faa38595 7e8afe3d0a924c7ea035455293327b60
-#: be194250105a4c39abf6f8ee24a13694 cc1878b46c37469d9ec39a5026e4ddb8
-#: d7390dc04f9346e9bcc141ddb1b32d19
+#: ../../outline.rst 0f60e0258ec74a77850c19f4e818573b
+#: 359863649a1b46a5b9e315592d26b967 455943c48bd0401da7d61e80ae3c1629
+#: 46b1711a00d245fa90b3ef78e5ed461c 4d3e0f6d95214fe79ecf3af1cee7d067
+#: 6f6b16d6c7924b9190b762fc5f398c39 b2720f2be62b4f0ebd718c2c00bad2fe
+#: b5bdff1052b242918366fb27cd5edd6f
 msgid "type"
 msgstr ""
 
-#: ../../outline.rst:32 9d66a313f5d848749279fe784dda0f60
+#: ../../outline.rst:32 31df4a9a593e495e83bdab0377d48a45
 msgid ":ref:`Outline`"
 msgstr ""
 
-#: ../../outline.rst:36 59720c69bce64e8ea7530d6a802cc6b7
+#: ../../outline.rst:36 821897bbe57144a2a9515d44d5988bfd
 msgid ""
-"The next outline item at the same level as this item. Is ``None`` if this "
-"is the last one in its level."
+"The next outline item at the same level as this item. Is ``None`` if this"
+" is the last one in its level."
 msgstr "このアイテムと同じレベルの次のアウトライン項目です。このアイテムがそのレベルで最後の場合、``None`` です。"
 
-#: ../../outline.rst:38 a10704b39764499a98399079f98fbeee
+#: ../../outline.rst:38 4805300829ae486787ed36cf2b1d07e6
 msgid "`Outline`"
 msgstr ""
 
-#: ../../outline.rst:42 bf0af8c2ee564588a039c3bf106904f4
+#: ../../outline.rst:42 6230223ef28b4e0f874585f6bd0fbfb4
 msgid "The page number (0-based) this bookmark points to."
 msgstr "このブックマークが指すページ番号（0から始まる）です。"
 
-#: ../../outline.rst:44 ecd1b38ccfe343339df0ce85a4001e4e
+#: ../../outline.rst:44 c245da52b4444de3a1a7a67e7c8a4c6e
 msgid "int"
 msgstr ""
 
-#: ../../outline.rst:48 fe11a63c40a644a2912820a709e89af6
+#: ../../outline.rst:48 050383aa093344d4b72c9304ea29e434
 msgid "The item's title as a string or ``None``."
 msgstr "アイテムのタイトル、または ``None`` の文字列です。"
 
-#: ../../outline.rst:50 ../../outline.rst:83 0bf0f7e68df9429e9c015e872750bb13
-#: 9d3dbd5e9289478b82d41148be377d8f
+#: ../../outline.rst:50 ../../outline.rst:83 23062e46c343424b92d244ac235c1012
+#: 2826b0f053f246028f1017763eb6beba
 msgid "str"
 msgstr ""
 
-#: ../../outline.rst:54 b3a76aacf642473890b8f8b16b00f729
+#: ../../outline.rst:54 33486d26fcf84b4287a9b62665e5d95d
 msgid ""
-"Indicator showing whether any sub-outlines should be expanded (``True``) or"
-" be collapsed (``False``). This information is interpreted by PDF reader "
-"software."
+"Indicator showing whether any sub-outlines should be expanded (``True``) "
+"or be collapsed (``False``). This information is interpreted by PDF "
+"reader software."
 msgstr "サブアウトラインが展開されるべきか（``True``）折りたたまれるべきか（``False``）を示すインジケーターです。この情報はPDFリーダーソフトウェアによって解釈されます。"
 
-#: ../../outline.rst:56 ../../outline.rst:62 70d50d81617147ce8326e8dfe5e18ece
-#: a52690857de940c286eafb4df8a9e6d2
+#: ../../outline.rst:56 ../../outline.rst:62 39516f02d6ca4ea5818c20077384b2f7
+#: 7c679ae4b313481fa70a96efb56596b0
 msgid "bool"
 msgstr ""
 
-#: ../../outline.rst:60 2300873f3b38439f9cfb125350892daf
+#: ../../outline.rst:60 6d936126ab42453088019c3a2c2d9b85
 msgid ""
-"A bool specifying whether the target is outside (``True``) of the current "
-"document."
+"A bool specifying whether the target is outside (``True``) of the current"
+" document."
 msgstr "対象が現在のドキュメントの外部（``True``）かどうかを示すブール値です。"
 
-#: ../../outline.rst:66 f7f05b5400e54910920b5b4e2653db4e
+#: ../../outline.rst:66 ae26e1cb6f7740eab0cd822bccd86c6b
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with property `is_external`:"
 msgstr "リンクの対象を指定する文字列。このプロパティの意味は、プロパティ `is_external` と一緒に評価されるべきです。"
 
-#: ../../outline.rst:70 80555c24a5b844fd923605684a0ff47c
+#: ../../outline.rst:70 6a552a5230644d80b93626dc835ea86c
+#, fuzzy
 msgid ""
-"`is_external` is true: `uri` points to some target outside the current "
-"PDF, which may be an internet resource (`uri` starts with \"http://\" or "
-"similar), another file (`uri` starts with \"file:\" or \"file://\") or "
-"some other service like an e-mail address (`uri` starts with "
-"\"mailto:\")."
-msgstr "`is_external` がtrueの場合： `uri` は、現在のPDFの外部のターゲットを指します。これは、インターネットリソース（ `uri` が \"http://\" などで始まる）、別のファイル（`uri` が \"file:\" または \"file://\" で始まる）、または電子メールアドレスなどのその他のサービス（ `uri` が \"mailto:\" で始まる）である可能性があります。"
+"`is_external` is true: ``uri`` points to some target outside the current "
+"PDF, which may be an internet resource (``uri`` starts with ``http://`` "
+"or similar), another file (``uri`` starts with ``file:`` or ``file://``) "
+"or some other service like an e-mail address (``uri`` starts with "
+"``mailto:``)."
+msgstr ""
+"`is_external` がtrueの場合： `uri` は、現在のPDFの外部のターゲットを指します。これは、インターネットリソース（ "
+"`uri` が \"http://\" などで始まる）、別のファイル（`uri` が \"file:\" または \"file://\" "
+"で始まる）、または電子メールアドレスなどのその他のサービス（ `uri` が \"mailto:\" で始まる）である可能性があります。"
 
-#: ../../outline.rst:76 b9a1ebc948614925962e16c047386bd1
+#: ../../outline.rst:76 c000b251feae4c25aa04f34b87aff7f3
+#, fuzzy
 msgid ""
-"`is_external` is false: `uri` will be `None` or point to an internal "
+"`is_external` is false: ``uri`` will be `None` or point to an internal "
 "location. In case of PDF documents, this should either be *#nnnn* to "
 "indicate a 1-based (!) page number *nnnn*, or a named location. The "
 "format varies for other document types, for example "
 "\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
 "document."
-msgstr "`is_external` がfalseの場合：`uri` は `None` になるか、または内部の位置を指します。PDFドキュメントの場合、これは1から始まるページ番号 *nnnn* を示すために *#nnnn* であるか、名前付きの場所を示します。他のドキュメントタイプの場合、形式は異なります。たとえば、XPSドキュメントのページ番号2（1から始まる）の場合は \"../FixedDoc.fdoc#PG_2_LNK_1\" です。"
+msgstr ""
+"`is_external` がfalseの場合：`uri` は `None` "
+"になるか、または内部の位置を指します。PDFドキュメントの場合、これは1から始まるページ番号 *nnnn* を示すために *#nnnn* "
+"であるか、名前付きの場所を示します。他のドキュメントタイプの場合、形式は異なります。たとえば、XPSドキュメントのページ番号2（1から始まる）の場合は"
+" \"../FixedDoc.fdoc#PG_2_LNK_1\" です。"
 
-#: ../../outline.rst:87 f52eefedca7745c48e690d90be7c1829
+#: ../../outline.rst:87 6ef34f3fc06140d2b6b9f9a43f092838
 msgid "The link destination details object."
 msgstr "リンクの宛先詳細オブジェクトです。"
 
-#: ../../outline.rst:89 0869b68ce6a44720b6a0e71c48245947
+#: ../../outline.rst:89 79a5c71cf6224a6198800f498dc0ddb3
 msgid ":ref:`linkDest`"
 msgstr ""
 
-#: ../../footer.rst:60 e4facefe6b3f4ecea815fe8ee7303e63
+#: ../../footer.rst:60 e201dcf36b574d0280f4532c31067f5b
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 3314c8aeb699484383e9bcc47d171268
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid ""
 #~ "A string specifying the link target. "
@@ -239,17 +244,17 @@ msgstr ""
 #~ " in which case *isExternal == False*."
 #~ " If *uri* starts with *file://*, "
 #~ "*mailto:*, or an internet resource name,"
-#~ " *isExternal* is ``True``. In all other"
-#~ " cases *isExternal == False* and "
-#~ "*uri* points to an internal location."
-#~ " In case of PDF documents, this "
-#~ "should either be *#nnnn* to indicate "
-#~ "a 1-based (!) page number *nnnn*, "
-#~ "or a named location. The format "
-#~ "varies for other document types, e.g."
-#~ " *uri = '../FixedDoc.fdoc#PG_21_LNK_84'* for "
-#~ "page number 21 (1-based) in an XPS"
-#~ " document."
+#~ " *isExternal* is ``True``. In all "
+#~ "other cases *isExternal == False* and"
+#~ " *uri* points to an internal "
+#~ "location. In case of PDF documents, "
+#~ "this should either be *#nnnn* to "
+#~ "indicate a 1-based (!) page number "
+#~ "*nnnn*, or a named location. The "
+#~ "format varies for other document types,"
+#~ " e.g. *uri = '../FixedDoc.fdoc#PG_21_LNK_84'* "
+#~ "for page number 21 (1-based) in an"
+#~ " XPS document."
 #~ msgstr ""
 #~ "リンクのターゲットを指定する文字列です。このプロパティの意味は *isExternal* "
 #~ "と連動して評価されるべきです。値が ``None`` の場合、*isExternal == "
@@ -260,4 +265,7 @@ msgstr ""
 #~ "*#nnnn* "
 #~ "であるか、名前付きの場所である必要があります。他のドキュメントタイプの場合、例えばXPSドキュメントの場合、*uri = "
 #~ "'../FixedDoc.fdoc#PG_21_LNK_84'* は、ページ番号21（1から始まる）を示します。"
+
+#~ msgid "Discord logo"
+#~ msgstr ""
 

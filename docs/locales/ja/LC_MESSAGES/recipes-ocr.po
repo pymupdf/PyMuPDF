@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.24.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-06 22:50+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -18,160 +18,180 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 ffd3e7057f514f9b9ff44479bb5b2fff
+#: ../../header.rst:-1 8c06718aa6d94a588549b1b5d04439ff
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 09a474b289fe4ebcbd83747929de276b
+#: ../../header.rst:-1 53d78f25612a42cea99758721dc13394
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDFは、PDF（およびその他）ドキュメントのデータ抽出、分析、変換、および操作のための高性能なPythonライブラリです。"
 
-#: ../../header.rst:-1 becac363cb7748df98799a247432c3b9
+#: ../../header.rst:-1 bffa3c55f0b648508f7e9ef104450bca
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキストの抽出、PDF画像の抽出、PDF変換、PDFテーブル、PDF分割、PDF作成、Pyodide、PyScript"
 
-#: ../../recipes-ocr.rst:17 31525020ff744203ab8e4609085154e3
+#: ../../recipes-ocr.rst:17 c241da654a734566aa9837f159d775f0
 msgid "OCR - Optical Character Recognition"
 msgstr "OCR - 光学文字認識"
 
-#: ../../recipes-ocr.rst:19 70f1b4f66e994695b5eaa33affb4bb96
+#: ../../recipes-ocr.rst:19 0aa275f26c85470caecaed5eecb9df0b
 msgid ""
 "|PyMuPDF| has integrated support for OCR (Optical Character Recognition)."
 " It is possible to use OCR for both, images (via the :ref:`Pixmap` class)"
 " and for document pages."
-msgstr "|PyMuPDF| にはOCR（光学文字認識）の統合サポートがあります。OCRは、画像（ :ref:`Pixmap` クラスを介して）および文書ページの両方に使用できます。"
+msgstr ""
+"|PyMuPDF| にはOCR（光学文字認識）の統合サポートがあります。OCRは、画像（ :ref:`Pixmap` "
+"クラスを介して）および文書ページの両方に使用できます。"
 
-#: ../../recipes-ocr.rst:21 f6d13399a9eb44ab8156a7074337fd11
+#: ../../recipes-ocr.rst:21 51aed55192864e8e92dfdbae828d1b05
+#, fuzzy
 msgid ""
 "The feature is currently based on Tesseract-OCR which must be installed "
-"as a separate application -- see the installation chapter."
-msgstr "この機能は現在、Tesseract-OCRに基づいており、別途アプリケーションとしてインストールする必要があります。インストール手順は、インストールチャプターを参照してください。"
+"as a separate application -- see the :ref:`installation_ocr`."
+msgstr ""
+"この機能は現在、Tesseract-"
+"OCRに基づいており、別途アプリケーションとしてインストールする必要があります。インストール手順は、インストールチャプターを参照してください。"
 
-#: ../../recipes-ocr.rst:24 af12d2bad83f4352a9e5c66b526751da
+#: ../../recipes-ocr.rst:24 b1216080a3f54b3c8f76397e1abb6bfb
 msgid "How to OCR an Image"
 msgstr "画像のOCR方法"
 
-#: ../../recipes-ocr.rst:25 e933f63d241c49fa9c060d4560704cd3
+#: ../../recipes-ocr.rst:25 3246894b688c4472b993c9cb737b849b
 msgid ""
 "A supported image must first be converted to a :ref:`Pixmap`. The Pixmap "
 "can then be saved to a 1-page PDF. This page will look like the original "
 "image with the same width and height. It will contain a layer of text as "
 "recognized by Tesseract."
-msgstr "サポートされている画像はまず :ref:`Pixmap` に変換される必要があります。次に、Pixmapを1ページのPDFに保存できます。このページは、元の画像と同じ幅と高さを持つように見えます。それには、Tesseractによって認識されたテキストのレイヤーが含まれています。"
+msgstr ""
+"サポートされている画像はまず :ref:`Pixmap` "
+"に変換される必要があります。次に、Pixmapを1ページのPDFに保存できます。このページは、元の画像と同じ幅と高さを持つように見えます。それには、Tesseractによって認識されたテキストのレイヤーが含まれています。"
 
-#: ../../recipes-ocr.rst:27 05e0366e2c414d788c37ab9a4127b182
+#: ../../recipes-ocr.rst:27 d4515bb735c54591a730fae2a142b782
 msgid ""
 "The PDF can be generated via one of the methods "
 ":meth:`Pixmap.pdfocr_save` or :meth:`Pixmap.pdfocr_tobytes`, as a file on"
 " disk or as a PDF in memory."
-msgstr "PDFは、次のいずれかの方法、つまり :meth:`Pixmap.pdfocr_save` または :meth:`Pixmap.pdfocr_tobytes` を使用して、ディスク上のファイルとして、またはメモリ内のPDFとして生成できます。"
+msgstr ""
+"PDFは、次のいずれかの方法、つまり :meth:`Pixmap.pdfocr_save` または "
+":meth:`Pixmap.pdfocr_tobytes` を使用して、ディスク上のファイルとして、またはメモリ内のPDFとして生成できます。"
 
-#: ../../recipes-ocr.rst:29 b96fc4f4e3d84f76934be3135192b4de
+#: ../../recipes-ocr.rst:29 487a184cd0104d00b896c90725d548eb
 msgid ""
 "The text can be extracted and searched with the usual text extraction and"
 " search methods (:meth:`Page.get_text`, :meth:`Page.search_for`, etc.). "
 "Please also note the following important facts and prerequisites:"
-msgstr "通常のテキスト抽出および検索方法（ :meth:`Page.get_text` 、 :meth:`Page.search_for` など）を使用して、テキストを抽出および検索することができます。また、次の重要な事実と前提条件にも注意してください："
+msgstr ""
+"通常のテキスト抽出および検索方法（ :meth:`Page.get_text` 、 :meth:`Page.search_for` "
+"など）を使用して、テキストを抽出および検索することができます。また、次の重要な事実と前提条件にも注意してください："
 
-#: ../../recipes-ocr.rst:31 43e54c3cc05b4b5585ea453c3839bf16
+#: ../../recipes-ocr.rst:31 fea2a323626648cf8e2f358bf60c9790
 msgid ""
 "When converting the image to a Pixmap, please confirm that the color "
 "space is RGB and alpha is `False` (no transparency). Convert the original"
 " Pixmap if necessary."
-msgstr "画像をPixmapに変換する際に、カラースペースがRGBであり、alphaが `False` （透明度なし）であることを確認してください。必要に応じて元のPixmapを変換してください。"
+msgstr ""
+"画像をPixmapに変換する際に、カラースペースがRGBであり、alphaが `False` "
+"（透明度なし）であることを確認してください。必要に応じて元のPixmapを変換してください。"
 
-#: ../../recipes-ocr.rst:32 8f28a3cc6be94de0af1ab2cacb284ee1
+#: ../../recipes-ocr.rst:32 602c256e951449f1a5d1de19052b4e81
 msgid ""
 "All text is written as \"hidden\" with Tesseract's own `GlyphLessFont`, a"
 " mono-spaced font with metrics comparable to Courier."
-msgstr "すべてのテキストは、Tesseractの独自の `GlyphLessFont` で「非表示」として書かれています。これは、Courierに類似したメトリクスを持つ等幅フォントです。"
+msgstr ""
+"すべてのテキストは、Tesseractの独自の `GlyphLessFont` "
+"で「非表示」として書かれています。これは、Courierに類似したメトリクスを持つ等幅フォントです。"
 
-#: ../../recipes-ocr.rst:33 9450c608017b4bdcbdd9f2aa85b33af8
+#: ../../recipes-ocr.rst:33 cec1c1656b124ccb8c05d4e5faabe5fe
 msgid ""
 "All text has the properties regular and black (i.e. no bold, no italic, "
 "no information about the original fonts)."
 msgstr "すべてのテキストは、regularとblackのプロパティを持ちます（太字や斜体はなく、元のフォントに関する情報はありません）。"
 
-#: ../../recipes-ocr.rst:34 e891d79044a244f9a99ed8bfec74a58c
+#: ../../recipes-ocr.rst:34 40decd5ed0f641c5a1a1df6f0e46b543
 msgid ""
 "Tesseract does not recognize vector graphics (i.e. no drawings / line-"
 "art)."
 msgstr "Tesseractはベクトルグラフィックスを認識しません（つまり、図面や線画はありません）。"
 
-#: ../../recipes-ocr.rst:36 4ae89317d6da4f3dab02be0e3d32fd13
+#: ../../recipes-ocr.rst:36 92a869d875f440a1823e69cb418dd13c
 msgid "This approach is also recommended to OCR a complete scanned PDF:"
 msgstr "スキャンされた完全なPDFをOCRするためにも、この手法が推奨されています："
 
-#: ../../recipes-ocr.rst:38 037620616bb8432194a78237a63be2aa
+#: ../../recipes-ocr.rst:38 66094238af8143488b9393b6174ad73b
 msgid "Render each page to a :ref:`Pixmap` with desired resolution"
 msgstr "各ページを所望の解像度で :ref:`Pixmap` にレンダリングします"
 
-#: ../../recipes-ocr.rst:39 bbb3d11b8d914808ab61648715765aba
+#: ../../recipes-ocr.rst:39 117254e7b2ba43c181367c88db16205e
 msgid "Append the resulting 1-page PDF to the output PDF"
 msgstr "得られた1ページのPDFを出力PDFに追加します"
 
-#: ../../recipes-ocr.rst:42 548bb18034af43d6978b2147b6af2dcb
+#: ../../recipes-ocr.rst:42 d7dece4adeb4437b99e1820d71befa7c
 msgid "How to OCR a Document Page"
 msgstr "ドキュメントページのOCR方法"
 
-#: ../../recipes-ocr.rst:43 505ecd77862a4703a3a5f782a59dc584
+#: ../../recipes-ocr.rst:43 7c3e4697da8f4603b29acd1ad05093d5
 msgid ""
 "Any supported document page can be OCR-ed -- either the complete page or "
 "only the image areas on it."
 msgstr "サポートされているどのドキュメントページでもOCR処理が可能です。ページ全体、またはその上の画像領域のみを対象にすることができます。"
 
-#: ../../recipes-ocr.rst:45 ca84d390514649cc96543b0da127cd8d
+#: ../../recipes-ocr.rst:45 ba6c9f5cda8043bf858b00e93aa23ded
 msgid ""
 "Because optical character recognition is about one thousand times slower "
 "than standard text extraction, we make sure to do OCR only once per page "
 "and store the result in a :ref:`TextPage`. Using this TextPage for all "
 "subsequent extractions and text searches will then happen with "
 "|PyMuPDF|'s usual top speed."
-msgstr "光学文字認識は通常のテキスト抽出よりも約1000倍遅いため、1ページにつき1回だけOCR処理を行い、その結果をTextPageに保存します。この :ref:`TextPage` をすべての後続の抽出とテキスト検索に使用することで、PyMuPDFの通常の高速性で処理が行われます。"
+msgstr ""
+"光学文字認識は通常のテキスト抽出よりも約1000倍遅いため、1ページにつき1回だけOCR処理を行い、その結果をTextPageに保存します。この "
+":ref:`TextPage` をすべての後続の抽出とテキスト検索に使用することで、PyMuPDFの通常の高速性で処理が行われます。"
 
-#: ../../recipes-ocr.rst:47 1f890018c3964fe0b5c8fe3e6051831c
+#: ../../recipes-ocr.rst:47 30ced681346a45b69d752411d4546ef8
 msgid "To OCR a document page, follow this approach:"
 msgstr "ドキュメントページをOCRするには、この手順に従ってください："
 
-#: ../../recipes-ocr.rst:49 ab979876f36f4d609da1092e7d6b6cff
+#: ../../recipes-ocr.rst:49 d100d50f78564e60a3c001137881dbe0
 msgid ""
 "Determine whether OCR is needed / beneficial at all. A number of criteria"
 " can be used for this decision, like:"
 msgstr "まず、OCRが全く必要であるか、または有益かどうかを判断します。この決定には、次のような基準を使用できます："
 
-#: ../../recipes-ocr.rst:51 8c045937992d47b78c82a6d8df08a06c
+#: ../../recipes-ocr.rst:51 d822f6b5f27e4ec8985dabafd5355ded
 msgid "page is completely covered by an image"
 msgstr "ページが画像で完全にカバーされている"
 
-#: ../../recipes-ocr.rst:52 dbef0a4fb18b46018789d51d5b510402
+#: ../../recipes-ocr.rst:52 e2b83dfda8654688ace9b92549d12d49
 msgid "no text exists on the page"
 msgstr "ページにテキストが存在しない"
 
-#: ../../recipes-ocr.rst:53 7a8aadb2cef9497c90139672ac9cce73
+#: ../../recipes-ocr.rst:53 92db54fd9afa4d38a9032f18d836b8cf
 msgid "thousands of small vector graphics (indicating *simulated* text)"
 msgstr "数千の小さなベクトルグラフィックス（ *模擬* テキストを示す）"
 
-#: ../../recipes-ocr.rst:55 68d85f5f93b8486cab4fe6ccb2c4faf8
+#: ../../recipes-ocr.rst:55 83ba5b35db48464f8945a3dabc2e53f0
 msgid ""
 "OCR the page and store result in a :ref:`TextPage` object using an "
 "instruction like `tp = page.get_textpage_ocr(...)`."
-msgstr "ページをOCR処理し、結果を :ref:`TextPage` オブジェクトに保存します。この操作は、 `tp = page.get_textpage_ocr(...)`  のような命令を使用して行います。"
+msgstr ""
+"ページをOCR処理し、結果を :ref:`TextPage` オブジェクトに保存します。この操作は、 `tp = "
+"page.get_textpage_ocr(...)`  のような命令を使用して行います。"
 
-#: ../../recipes-ocr.rst:57 57c5b61b19ab4ed0820045b1e0ace284
+#: ../../recipes-ocr.rst:57 58b836a92fe443749da93c2ff3c9a23e
 msgid ""
 "Refer to the produced :ref:`TextPage` in all subsequent text extractions "
 "and searches via the `textpage=tp` parameter."
-msgstr "以降のすべてのテキスト抽出と検索では、 `textpage=tp`  パラメータを使用して生成された :ref:`TextPage` を参照してください。"
+msgstr ""
+"以降のすべてのテキスト抽出と検索では、 `textpage=tp`  パラメータを使用して生成された :ref:`TextPage` "
+"を参照してください。"
 
-#: ../../footer.rst:60 245349d25ace430f8e58fd2f0af91c11
+#: ../../footer.rst:60 3baf39a2c3104ca786b8b27e9c52e1a8
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは、|version| までのすべてのバージョンをカバーしています。"
 
-#: ../../footer.rst:-1 ce2657706c384ee7b6144eea3e030bae
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 
