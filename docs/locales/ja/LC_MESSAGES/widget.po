@@ -67,7 +67,7 @@ msgid ""
 "*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset "
 "of general annotations. Consequently, :attr:`Page.first_annot` and "
 ":meth:`Annot.next` will deliver **non-widget annotations exclusively**, "
-"and be *None* if only form fields exist on a page. Vice versa, "
+"and be ``None`` if only form fields exist on a page. Vice versa, "
 ":attr:`Page.first_widget` and :meth:`Widget.next` will only show widgets."
 " This design decision is purely internal to MuPDF; technically, links, "
 "annotations and fields have a lot in common and also continue to share "
@@ -160,15 +160,15 @@ msgstr ""
 "を実行するのを忘れないでください。"
 
 #: ../../widget.rst:66 b01793481fe74f07ab3df692d073c0f8
-msgid "Point to the next form field on the page. The last widget returns *None*."
-msgstr "ページ上の次のフォームフィールドを指します。最後のウィジェットは *None* を返します。"
+msgid "Point to the next form field on the page. The last widget returns ``None``."
+msgstr "ページ上の次のフォームフィールドを指します。最後のウィジェットは ``None`` を返します。"
 
 #: ../../widget.rst:70 9ee8f261021f4e19b24978d08ea2f69c
 msgid ""
 "A list of up to 4 floats defining the field's border color. Default value"
-" is *None* which causes border style and border width to be ignored."
+" is ``None`` which causes border style and border width to be ignored."
 msgstr ""
-"フィールドの境界線の色を定義する最大4つの浮動小数点数のリストです。デフォルト値は *None* "
+"フィールドの境界線の色を定義する最大4つの浮動小数点数のリストです。デフォルト値は ``None`` "
 "で、これにより境界線スタイルと境界線の幅が無視されます。"
 
 #: ../../widget.rst:74 1a17db11a8e14d7a9ad985804d711217
@@ -242,8 +242,8 @@ msgid "The caption string of a button-type field."
 msgstr "ボタンタイプのフィールドのキャプション文字列。"
 
 #: ../../widget.rst:122 8e15d8f126a34ddf9f5fef890b0c50df
-msgid "A bool indicating the signing status of a signature field, else *None*."
-msgstr "署名フィールドの署名ステータスを示すブール値。それ以外の場合は *None*。"
+msgid "A bool indicating the signing status of a signature field, else ``None``."
+msgstr "署名フィールドの署名ステータスを示すブール値。それ以外の場合は ``None``。"
 
 #: ../../widget.rst:126 0469a1e2efcb485f86d728964f836ac5
 msgid "The rectangle containing the field."
@@ -300,10 +300,10 @@ msgstr "バージョン1.16.12で新登場"
 #: ../../widget.rst:156 caae2d94a2df47c2bfb7d5ae5e12fd3c
 msgid ""
 "JavaScript text (unicode) for an action associated with the widget, or "
-"*None*. This is the only script action supported for **button type** "
+"``None``. This is the only script action supported for **button type** "
 "widgets."
 msgstr ""
-"ウィジェットに関連付けられたアクション用のJavaScriptテキスト（Unicode）、または *None*。これは **ボタンタイプ** "
+"ウィジェットに関連付けられたアクション用のJavaScriptテキスト（Unicode）、または ``None``。これは **ボタンタイプ** "
 "のウィジェットに対してサポートされる唯一のスクリプトアクションです。"
 
 #: ../../widget.rst:162 1eaecdbbadcb41dea7b03794f34f5b55
@@ -311,33 +311,33 @@ msgid ""
 "JavaScript text (unicode) to be performed when the user types a key-"
 "stroke into a text field or combo box or modifies the selection in a "
 "scrollable list box. This action can check the keystroke for validity and"
-" reject or modify it. *None* if not present."
+" reject or modify it. ``None`` if not present."
 msgstr ""
 "JavaScriptテキスト（Unicode）は、ユーザーがテキストフィールドまたはコンボボックスにキーストロークを入力するか、スクロール可能なリストボックスの選択を変更するときに実行されるアクションです。このアクションはキーストロークの妥当性をチェックし、拒否または変更することができます。存在しない場合は"
-" *None* です。"
+" ``None`` です。"
 
 #: ../../widget.rst:168 1488bfaabc784268903a84e76710999d
 msgid ""
 "JavaScript text (unicode) to be performed before the field is formatted "
 "to display its current value. This action can modify the field’s value "
-"before formatting. *None* if not present."
+"before formatting. ``None`` if not present."
 msgstr ""
 "このアクションは、フィールドが現在の値を表示するためにフォーマットされる前に、フィールドの値を変更するために実行されるJavaScriptテキスト（Unicode）です。存在しない場合は"
-" *None* です。"
+" ``None`` です。"
 
 #: ../../widget.rst:174 1149c188896c4c22a0c9292eb0a3311f
 msgid ""
 "JavaScript text (unicode) to be performed when the field’s value is "
-"changed. This action can check the new value for validity. *None* if not "
+"changed. This action can check the new value for validity. ``None`` if not "
 "present."
 msgstr ""
 "このアクションは、フィールドの値が変更されたときに実行されるJavaScriptテキスト（Unicode）です。このアクションは新しい値の妥当性をチェックすることができます。存在しない場合は"
-" *None* です。"
+" ``None`` です。"
 
 #: ../../widget.rst:180 2c6ab01285c04f13918bee90a1f03b23
 msgid ""
 "JavaScript text (unicode) to be performed to recalculate the value of "
-"this field when that of another field changes. *None* if not present."
+"this field when that of another field changes. ``None`` if not present."
 msgstr "バージョン1.16.12で新規追"
 
 #: ../../widget.rst:184 ../../widget.rst:190 113b64153c08403a9595642cf812348b
@@ -348,14 +348,14 @@ msgstr "バージョン1.22.6で新規追加"
 #: ../../widget.rst:186 9f0d883e51d044c2853a318e928c47a5
 msgid ""
 "JavaScript text (unicode) to be performed on losing the focus of this "
-"field. *None* if not present."
-msgstr "このフィールドからフォーカスを失ったときに実行されるJavaScriptテキスト（Unicode）です。存在しない場合は *None* です。"
+"field. ``None`` if not present."
+msgstr "このフィールドからフォーカスを失ったときに実行されるJavaScriptテキスト（Unicode）です。存在しない場合は ``None`` です。"
 
 #: ../../widget.rst:192 6aa89a8471774875b77db3ccf6d98056
 msgid ""
-"JavaScript text (unicode) to be performed on focusing this field. *None* "
+"JavaScript text (unicode) to be performed on focusing this field. ``None`` "
 "if not present."
-msgstr "このフィールドにフォーカスが当たったときに実行されるJavaScriptテキスト（Unicode）です。存在しない場合は *None* です。"
+msgstr "このフィールドにフォーカスが当たったときに実行されるJavaScriptテキスト（Unicode）です。存在しない場合は ``None`` です。"
 
 #: ../../widget.rst:196 088db5cda5a9469eb743cca86bfb1f62
 msgid "For **adding** or **changing** one of the above scripts,"
@@ -364,9 +364,9 @@ msgstr "上記のいずれかのスクリプトを **追加** または **変更
 #: ../../widget.rst:197 a13da8b83a1245f18b31c96d319fb400
 msgid ""
 "just put the appropriate JavaScript source code in the widget attribute. "
-"To **remove** a script, set the respective attribute to *None*."
+"To **remove** a script, set the respective attribute to ``None``."
 msgstr ""
-"適切なJavaScriptソースコードをウィジェット属性に配置するだけです。スクリプトを **削除する** には、該当する属性を *None* "
+"適切なJavaScriptソースコードをウィジェット属性に配置するだけです。スクリプトを **削除する** には、該当する属性を ``None`` "
 "に設定します。"
 
 #: ../../widget.rst:200 8200ffbf5bd440b18f2422353699302b
@@ -374,8 +374,8 @@ msgid "Button fields only support :attr:`script`."
 msgstr "ボタンフィールドは :attr:`script` をサポートしています"
 
 #: ../../widget.rst:201 fa3b5a61c24543d2a01e1b9d8212cca5
-msgid "Other script entries will automatically be set to *None*."
-msgstr "他のスクリプトエントリは自動的に *None* に設定されます。"
+msgid "Other script entries will automatically be set to ``None``."
+msgstr "他のスクリプトエントリは自動的に ``None`` に設定されます。"
 
 #: ../../widget.rst:203 4f330027cada4e549d8ccadabd2a319a
 msgid ""

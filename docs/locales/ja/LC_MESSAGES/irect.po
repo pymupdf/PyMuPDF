@@ -310,7 +310,7 @@ msgid ""
 "Checks whether *x* is contained in the rectangle. It may be "
 ":data:`rect_like`, :data:`point_like` or a number. If *x* is an empty "
 "rectangle, this is always true. Conversely, if the rectangle is empty "
-"this is always *False*, if *x* is not an empty rectangle and not a "
+"this is always ``False``, if *x* is not an empty rectangle and not a "
 "number. If *x* is a number, it will be checked to be one of the four "
 "components. *x in irect* and *irect.contains(x)* are equivalent."
 msgstr ""
@@ -327,11 +327,11 @@ msgstr "確認するオブジェクト。"
 #: ../../irect.rst:84 c15489917b614153b4d918fa2c9de206
 msgid ""
 "Checks whether the rectangle and the :data:`rect_like` \"r\" contain a "
-"common non-empty :ref:`IRect`. This will always be *False* if either is "
+"common non-empty :ref:`IRect`. This will always be ``False`` if either is "
 "infinite or empty."
 msgstr ""
 "長方形と :data:`rect_like`「r」が共通の非空 :ref:`IRect` "
-"を含むかどうかをチェックします。どちらかが無限または空の場合、これは常に *False* になります。"
+"を含むかどうかをチェックします。どちらかが無限または空の場合、これは常に ``False`` になります。"
 
 #: ../../irect.rst:86 789a4aa42bca4228a809f5c994363124
 msgid "the rectangle to check."
@@ -490,8 +490,8 @@ msgid "Y-coordinate of the bottom corners."
 msgstr "下端のY座標です。"
 
 #: ../../irect.rst:203 4d3014cd0a0f4578afab149ef43a9349
-msgid "*True* if rectangle is infinite, *False* otherwise."
-msgstr "四角形が無限の場合は *True* 、それ以外の場合は*False* です。"
+msgid "``True`` if rectangle is infinite, ``False`` otherwise."
+msgstr "四角形が無限の場合は ``True`` 、それ以外の場合は``False`` です。"
 
 #: ../../irect.rst:205 ../../irect.rst:211 55fe5ed17d7444ca87c28b08e67b9806
 #: fd2998890cfc4e5b915a0440e9ecf616
@@ -499,8 +499,8 @@ msgid "bool"
 msgstr ""
 
 #: ../../irect.rst:209 905491a2dc3f4df799f2a2d41f37f10b
-msgid "*True* if rectangle is empty, *False* otherwise."
-msgstr "四角形が空の場合は *True*、それ以外の場合は *False* です。"
+msgid "``True`` if rectangle is empty, ``False`` otherwise."
+msgstr "四角形が空の場合は ``True``、それ以外の場合は ``False`` です。"
 
 #: ../../irect.rst:216 9bab25baaead4aef9fc8b020ccbbd28d
 msgid ""

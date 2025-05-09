@@ -436,8 +436,8 @@ msgid "a colorspace to be used for image creation. Default is *pymupdf.csRGB*."
 msgstr "画像の作成に使用されるカラースペース。デフォルトは *pymupdf.csRGB* です。"
 
 #: ../../annot.rst:83 fcfedb41f14e4061ba26f9747b54769d
-msgid "whether to include transparency information. Default is *False*."
-msgstr "透明情報を含めるかどうか。デフォルトは *False* です。"
+msgid "whether to include transparency information. Default is ``False``."
+msgstr "透明情報を含めるかどうか。デフォルトは ``False`` です。"
 
 #: ../../annot.rst 016e1cf6953b4897a30d2c05d8655bff
 #: 0d71ec2bc6c94992af02136160e906d5 1ac58ca510184d47872825b637006208
@@ -579,11 +579,11 @@ msgstr "バージョン 1.16.10 で変更"
 msgid ""
 "Changes annotation properties. These include dates, contents, subject and"
 " author (title). Changes for *name* and *id* will be ignored. The update "
-"happens selectively: To leave a property unchanged, set it to *None*. To "
+"happens selectively: To leave a property unchanged, set it to ``None``. To "
 "delete existing data, use an empty string."
 msgstr ""
 "注釈のプロパティを変更します。これには日付、内容、題名、および著者（タイトル）が含まれます。*名前* と *ID* "
-"の変更は無視されます。更新は選択的に行われます：プロパティを変更しない場合は、それを *None* "
+"の変更は無視されます。更新は選択的に行われます：プロパティを変更しない場合は、それを ``None`` "
 "に設定します。既存のデータを削除するには、空の文字列を使用します。"
 
 #: ../../annot.rst:143 b559a50cdee64ba7872d7ced4a94e51b
@@ -638,13 +638,13 @@ msgstr ""
 msgid ""
 "*(Changed in v1.16.16)* Some symbols have an interior area (diamonds, "
 "circles, squares, etc.). By default, these areas are filled with the fill"
-" color of the annotation. If this is *None*, then white is chosen. The "
+" color of the annotation. If this is ``None``, then white is chosen. The "
 "*fill_color* argument of :meth:`Annot.update` can now be used to override"
 " this and give line end symbols their own fill color."
 msgstr ""
 "*（v1.16.16 で変更）* "
 "一部のシンボルには内部領域（ダイヤモンド、円、正方形など）があります。デフォルトでは、これらの領域は注釈の塗りつぶし色で塗りつぶされます。これが "
-"*None* の場合、白色が選択されます。:meth:`Annot.update` の *fill_color* "
+"``None`` の場合、白色が選択されます。:meth:`Annot.update` の *fill_color* "
 "引数を使用して、線終端シンボルに独自の塗りつぶし色を設定することができるようになりました。"
 
 #: ../../annot.rst:159 1d196d375e03485f8edda9c3a99e6b10
@@ -770,8 +770,8 @@ msgid ""
 msgstr "注釈のブレンドモード。詳細については :ref:`AdobeManual` 、ページ324を参照してください。"
 
 #: ../../annot.rst:224 e9ed482e6e23459aaf953c46cc3be588
-msgid "the blend mode or *None*."
-msgstr "ブレンドモードまたは *None* 。"
+msgid "the blend mode or ``None``."
+msgstr "ブレンドモードまたは ``None`` 。"
 
 #: ../../annot.rst:229 e180015a649e4a8aa6f0fdb91010a732
 msgid "New in v1.16.14"
@@ -1088,11 +1088,11 @@ msgstr ""
 #: ../../annot.rst:343 1adc6e192c79414ca13bd3eb91304333
 msgid ""
 "*(new in v1.17.2)* add two diagonal lines to the annotation rectangle. "
-"'Redact' annotations only. If not desired, *False* must be specified even"
-" if the annotation was created with *False*."
+"'Redact' annotations only. If not desired, ``False`` must be specified even"
+" if the annotation was created with ``False``."
 msgstr ""
-"*（v1.17.2で新規）* 注釈の矩形に2本の対角線を追加します。 'Redact' 注釈のみです。希望しない場合、注釈が*False* "
-"で作成された場合でも *False* を指定する必要があります。"
+"*（v1.17.2で新規）* 注釈の矩形に2本の対角線を追加します。 'Redact' 注釈のみです。希望しない場合、注釈が``False`` "
+"で作成された場合でも ``False`` を指定する必要があります。"
 
 #: ../../annot.rst:344 d46bd879c5b84b30a8efa46258ae6221
 msgid ""
@@ -1123,11 +1123,11 @@ msgstr "アノットが添付されたファイルの基本情報。"
 msgid ""
 "a dictionary with keys *filename*, *ufilename*, *desc* (description), "
 "*size* (uncompressed file size), *length* (compressed length) for "
-"FileAttachment annot types, else *None*."
+"FileAttachment annot types, else ``None``."
 msgstr ""
 "FileAttachmentアノットタイプの場合、*filename* （ファイル名）、*ufilename* "
 "（Unicodeファイル名）、*desc* （説明）、*size* （非圧縮ファイルサイズ）、*length* "
-"（圧縮長さ）のキーを持つ辞書。それ以外の場合は *None* 。"
+"（圧縮長さ）のキーを持つ辞書。それ以外の場合は ``None`` 。"
 
 #: ../../annot.rst:360 6ed8e40b0fe64787923674de06c106f5
 msgid "Returns attached file content."
@@ -1371,7 +1371,7 @@ msgstr "注釈の表示方法を示すフラグを含む低位ビットを持つ
 #: ../../annot.rst:467 651313d04e8642b8a1e2a8b69649c8c8
 msgid ""
 "A pair of integers specifying start and end symbol of annotations types "
-"'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. "
+"'FreeText', 'Line', 'PolyLine', and 'Polygon'. ``None`` if not applicable. "
 "For possible values and descriptions in this list, see the "
 ":ref:`AdobeManual`, table 1.76 on page 400."
 msgstr ""

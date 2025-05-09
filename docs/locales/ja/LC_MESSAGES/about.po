@@ -151,9 +151,9 @@ msgstr ""
 
 #: ../../version.rst:5 dc72afbeec5047e080293715b0cb5e2e
 msgid ""
-"The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
+"The major and minor versions of |PyMuPDF| and |MuPDF| will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
-" **MuPDF**."
+" |MuPDF|."
 msgstr ""
 
 #: ../../version.rst:7 5c135fff424a4caaaa725b7dd49535b2

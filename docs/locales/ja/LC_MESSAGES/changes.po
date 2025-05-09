@@ -3953,7 +3953,7 @@ msgid ""
 "**Changed** :ref:`TextWriter` output to also accept text in right to left"
 " mode (Arabian, Hebrew): :meth:`TextWriter.fill_textbox`, "
 ":meth:`TextWriter.append`. These methods now accept a new boolean "
-"parameter `right_to_left`, which is *False* by default. Implements `#897 "
+"parameter `right_to_left`, which is ``False`` by default. Implements `#897 "
 "<https://github.com/pymupdf/PyMuPDF/issues/897>`_."
 msgstr ""
 
@@ -4746,7 +4746,7 @@ msgstr ""
 msgid ""
 "**Added** option ``text_as_path`` to :meth:`Page.getSVGimage`. this "
 "implements `#580 <https://github.com/pymupdf/PyMuPDF/issues/580>`_. "
-"Generates much smaller SVG files with parseable text if set to *False*."
+"Generates much smaller SVG files with parseable text if set to ``False``."
 msgstr ""
 
 #: ../../../changes.txt:1601 792be4fc23c94eb8944154ea18481a5f
@@ -4770,7 +4770,7 @@ msgstr ""
 #: ../../../changes.txt:1605 14e584213d344a629549253c6bbd371d
 msgid ""
 "**Fixed** issue `#559 <https://github.com/pymupdf/PyMuPDF/issues/559>`_. "
-"This **MuPDF** bug is being temporarily fixed with a pre-version of "
+"This |MuPDF| bug is being temporarily fixed with a pre-version of "
 "MuPDF's next release."
 msgstr ""
 
@@ -5442,7 +5442,7 @@ msgstr ""
 #: ../../../changes.txt:1825 9a3419df3cb14885adf9c518f079784c
 msgid ""
 "**Changed** :attr:`Document.is_form_pdf` to now contain the number of "
-"widgets, and *False* if not a PDF or this number is zero."
+"widgets, and ``False`` if not a PDF or this number is zero."
 msgstr ""
 
 #: ../../../changes.txt:1830 fb4ff43aac784ba89fc936513f6919d2
@@ -6321,7 +6321,7 @@ msgstr ""
 
 #: ../../../changes.txt:2095 cdd6013beed14094a1095bee6ea4f49d
 msgid ""
-"**Changed** method :meth:`Document._getXrefStream` to now return *None* "
+"**Changed** method :meth:`Document._getXrefStream` to now return ``None`` "
 "if the object is no stream and no longer raise an exception if otherwise."
 msgstr ""
 
@@ -6449,7 +6449,7 @@ msgstr ""
 msgid ""
 "**Changed** :meth:`Document.embfile_Del` to now automatically delete "
 "**all entries** having the supplied identifying name. The return code is "
-"now an integer count of the removed entries (was *None* previously)."
+"now an integer count of the removed entries (was ``None`` previously)."
 msgstr ""
 
 #: ../../../changes.txt:2135 355a26af349249f4a9bffb30be85884d
@@ -6592,8 +6592,8 @@ msgstr ""
 
 #: ../../../changes.txt:2170 142f04c6f0f04253980bd752c29c6516
 msgid ""
-"**Added** :attr:`Document.isDirty` which is *True* if a PDF has been "
-"changed in this session. Reset to *False* on each :meth:`Document.save` "
+"**Added** :attr:`Document.isDirty` which is ``True`` if a PDF has been "
+"changed in this session. Reset to ``False`` on each :meth:`Document.save` "
 "or :meth:`Document.write`."
 msgstr ""
 
@@ -6623,7 +6623,7 @@ msgid ""
 "has been renamed to :attr:`Annot.widget_value`. Values of all form field "
 "types (except signatures) are now supported. A new attribute "
 ":attr:`Annot.widget_choices` contains the selectable values of listboxes "
-"and comboboxes. All these attributes now contain *None* if no value is "
+"and comboboxes. All these attributes now contain ``None`` if no value is "
 "present."
 msgstr ""
 
@@ -6836,7 +6836,7 @@ msgstr ""
 
 #: ../../../changes.txt:2257 67c3392ac3b442b883d8ba634255f1f5
 msgid ""
-"Many functions now return *None* instead of *0*, if the result has no "
+"Many functions now return ``None`` instead of *0*, if the result has no "
 "other meaning than just indicating successful execution "
 "(:meth:`Document.close`, :meth:`Document.save`, :meth:`Document.select`, "
 ":meth:`Pixmap.save` and many others)."
@@ -7058,7 +7058,7 @@ msgstr ""
 
 #: ../../../changes.txt:2342 f32fc6d22ccb4e6e96165c07a54a6273
 msgid ""
-"A new *Pixmap* constructor allows creating pixmap copies with an added "
+"A new ``Pixmap`` constructor allows creating pixmap copies with an added "
 "alpha channel. A new method also allows directly manipulating alpha "
 "values."
 msgstr ""
@@ -7224,8 +7224,8 @@ msgstr ""
 #: ../../../changes.txt:2391 de34f08ad62e434e9ac8a893a7ba59a4
 msgid ""
 "The alpha (transparency) channel for pixmaps is now optional. Letting "
-"alpha default to *False* significantly reduces pixmap sizes (by 20% -- "
-"CMYK, 25% -- RGB, 50% -- GRAY). Many *Pixmap* constructors therefore now "
+"alpha default to ``False`` significantly reduces pixmap sizes (by 20% -- "
+"CMYK, 25% -- RGB, 50% -- GRAY). Many ``Pixmap`` constructors therefore now "
 "accept an *alpha* boolean to control inclusion of this channel. Other "
 "pixmap constructors (e.g. those for file and image input) create pixmaps "
 "with no alpha alltogether. On the downside, save methods for pixmaps no "
@@ -7236,7 +7236,7 @@ msgstr ""
 
 #: ../../../changes.txt:2393 494fe3d1a36742b7a43cdd3beb181d86
 msgid ""
-"*DisplayList* and *TextPage* class constructors now **require the "
+"``DisplayList`` and ``TextPage`` class constructors now **require the "
 "mediabox** of the page they are referring to (i.e. the *page.bound()* "
 "rectangle). There is no way to construct this information from other "
 "sources, therefore a source code change cannot be avoided in these cases."
@@ -7415,7 +7415,7 @@ msgstr ""
 
 #: ../../../changes.txt:2437 455ac763e0be40b9932300ed0ce93fe2
 msgid ""
-"*fitz.open()* (no parameters) creates a new empty **PDF** document, i.e. "
+"*fitz.open()* (no parameters) creates a new empty |PDF| document, i.e. "
 "if saved afterwards, it must be given a *.pdf* extension."
 msgstr ""
 
@@ -7806,7 +7806,7 @@ msgstr ""
 
 #~ msgid ""
 #~ "*pymupdf.open()* (no parameters) creates a "
-#~ "new empty **PDF** document, i.e. if "
+#~ "new empty |PDF| document, i.e. if "
 #~ "saved afterwards, it must be given "
 #~ "a *.pdf* extension."
 #~ msgstr ""

@@ -384,7 +384,7 @@ msgstr "PyMuPDFでは、画像にそのようなマスクがあるかどうか�
 #: ../../recipes-images.rst:218 a4f56f945e124bb6b57ecb8a0f76e66a
 msgid ""
 "An item of :meth:`Document.get_page_images` has the general format "
-"`(xref, smask, ...)`, where *xref* is the image's :data:`xref` and "
+"`(xref, smask, ...)`, where :data:`xref` is the image's :data:`xref` and "
 "*smask*, if positive, then it is the :data:`xref` of a mask."
 msgstr ""
 ":meth:`Document.get_page_images` の項目は一般的な形式 `（xref、smask、...）` "
@@ -767,7 +767,7 @@ msgstr "出力ファイルの代わりに、 `pix.tobytes(\"yyy\")` を使用し
 #: ../../recipes-images.rst:396 013d948a6a4f43628638f2bca596e77e
 msgid ""
 "As a matter of course, input and output formats must be compatible in "
-"terms of colorspace and transparency. The *Pixmap* class has batteries "
+"terms of colorspace and transparency. The ``Pixmap`` class has batteries "
 "included if adjustments are needed."
 msgstr ""
 "もちろん、入力と出力のフォーマットは、色空間と透過性の面で互換性が必要です。 :ref:`Pixmap` "

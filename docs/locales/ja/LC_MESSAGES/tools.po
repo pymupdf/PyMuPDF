@@ -284,8 +284,8 @@ msgstr ""
 #: ../../tools.rst:67 ../../tools.rst:80 ../../tools.rst:94
 #: c48dd77e4f764b718c3776b713c65803 cdcc3f20ff3844f489d12ce645b8f6b3
 #: cea18557659248828b78d2bddce7ec73
-msgid "*True* or *False*."
-msgstr "*True* または *False*。"
+msgid "``True`` or ``False``."
+msgstr "``True`` または ``False``。"
 
 #: ../../tools.rst:69 07ee592cf3e540fea5cbe0177d0b18fd
 msgid ""
@@ -425,15 +425,15 @@ msgid ""
 "if not a bool, the current setting is returned. If true, MuPDF errors "
 "will be shown on *sys.stderr*, otherwise suppressed. In any case, "
 "messages continue to be stored in the warnings store. Upon import of "
-"PyMuPDF this value is *True*."
+"PyMuPDF this value is ``True``."
 msgstr ""
 "boolでない場合、現在の設定が返されます。Trueの場合、MuPDFのエラーは *sys.stderr* "
 "に表示され、それ以外の場合は抑制されます。いずれの場合も、メッセージは警告ストアに引き続き保存されます。PyMuPDFのインポート時にこの値は "
-"*True* です。"
+"``True`` です。"
 
 #: ../../tools.rst:140 1edb8037391149e285b1b3fb47f2b395
-msgid "*True* or *False*"
-msgstr "*True* または *False*"
+msgid "``True`` or ``False``"
+msgstr "``True`` または ``False``"
 
 #: ../../tools.rst:147 f11867d020484d3ca963ebbad76662ad
 msgid ""
@@ -663,23 +663,23 @@ msgstr ""
 
 #: ../../tools.rst:219 ec2ddd615e8a4f11946e8824d15f2f68
 msgid ""
-"Maximum storables cache size in bytes. **PyMuPDF** is generated with a "
+"Maximum storables cache size in bytes. |PyMuPDF| is generated with a "
 "value of 268'435'456 (256 MB, the default value), which you should "
 "therefore always see here. If this value is zero, then an \"unlimited\" "
 "growth is permitted."
 msgstr ""
-"ストアブルキャッシュの最大サイズ（バイト単位）。 **PyMuPDF** は、デフォルト値である268'435'456（256 "
+"ストアブルキャッシュの最大サイズ（バイト単位）。 |PyMuPDF| は、デフォルト値である268'435'456（256 "
 "MB）で生成されており、したがって常にここで見るはずです。この値がゼロの場合、増加の「制限なし」が許可されています。"
 
 #: ../../tools.rst:225 1a3961f9445d465693773c6cb8fe4f8c
 msgid ""
 "Current storables cache size in bytes. This value may change (and will "
-"usually increase) with every use of a **PyMuPDF** function. It will "
+"usually increase) with every use of a |PyMuPDF| function. It will "
 "(automatically) decrease only when :attr:`Tools.store_maxsize` is going "
-"to be exceeded: in this case, **MuPDF** will evict low-usage objects "
+"to be exceeded: in this case, |MuPDF| will evict low-usage objects "
 "until the value is again in range."
 msgstr ""
-"現在のストアブルキャッシュのサイズ（バイト単位）。この値は、 **PyMuPDF** の関数を使用するたびに変更される可能性があります（通常は増加します）。この値は、:attr:`Tools.store_maxsize`"
+"現在のストアブルキャッシュのサイズ（バイト単位）。この値は、 |PyMuPDF| の関数を使用するたびに変更される可能性があります（通常は増加します）。この値は、:attr:`Tools.store_maxsize`"
 " が超過される場合にのみ（自動的に）減少し、その場合、MuPDFは使用率の低いオブジェクトを削除して、値が再び範囲内に収まるようにします。"
 
 #: ../../tools.rst:230 4e6a0912d6d741aebf0ea69831dbb8c5

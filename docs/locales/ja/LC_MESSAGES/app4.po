@@ -586,7 +586,7 @@ msgstr "以下は、実行時間の結果（ **秒単位**）と、 |PyMuPDF| �
 #: ../../app4.rst:218 ../../app4.rst:296 ../../app4.rst:408
 #: 1076732c4650415d9ae9712245ce04d6 4bf8949048cd4b0f8b92915d0b57b775
 #: 576dab0709b944ec87a333c5c6379149
-msgid "**PyMuPDF**"
+msgid "|PyMuPDF|"
 msgstr ""
 
 #: ../../app4.rst:219 950c266f0e194cac90cd56a4bf85aac2

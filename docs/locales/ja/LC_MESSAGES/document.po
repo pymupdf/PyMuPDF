@@ -1407,10 +1407,10 @@ msgstr "オプションコンテンツオブジェクトのクロスリファレ
 
 #: ../../document.rst:257 63469c401eb544a999130a4e2c26d3f7
 msgid ""
-"If *xref* represents an image or form xobject, set or remove the cross "
+"If :data:`xref` represents an image or form xobject, set or remove the cross "
 "reference number *ocxref* of an optional contents object."
 msgstr ""
-"*xref* が画像またはフォームXObjectを表す場合、オプションコンテンツオブジェクトのクロスリファレンス番号 *ocxref*  "
+":data:`xref` が画像またはフォームXObjectを表す場合、オプションコンテンツオブジェクトのクロスリファレンス番号 *ocxref*  "
 "を設定または削除します。"
 
 #: ../../document.rst:259 169916f08b484ce38ab1b3d191f09316
@@ -1728,8 +1728,8 @@ msgid "the :data:`xref` of the OCMD."
 msgstr ":data:`xref` （int）- OCMDのxref。"
 
 #: ../../document.rst:367 8dd61c1853fe4f66ab5dfd61745a9259
-msgid "a dictionary with the keys *xref*, *ocgs*, *policy* and *ve*."
-msgstr "*xref* 、*ocgs* 、*policy*、*ve* のキーを持つ辞書"
+msgid "a dictionary with the keys :data:`xref`, *ocgs*, *policy* and *ve*."
+msgstr ":data:`xref` 、*ocgs* 、*policy*、*ve* のキーを持つ辞書"
 
 #: ../../document.rst:374 ada5fdf7dffe44b9ac897d9bdc61a88e
 msgid ""
@@ -1909,7 +1909,7 @@ msgstr "オーナーまたはユーザーパスワード。"
 msgid ""
 "a positive value if successful, zero otherwise (the string does not match"
 " either password). If positive, the indicator "
-":attr:`Document.is_encrypted` is set to *False*. **Positive** return "
+":attr:`Document.is_encrypted` is set to ``False``. **Positive** return "
 "codes carry the following information detail:  * 1 => authenticated, but "
 "the PDF has neither owner nor user passwords. * 2 => authenticated with "
 "the **user** password. * 4 => authenticated with the **owner** password. "
@@ -1931,11 +1931,11 @@ msgstr ""
 msgid ""
 "a positive value if successful, zero otherwise (the string does not match"
 " either password). If positive, the indicator "
-":attr:`Document.is_encrypted` is set to *False*. **Positive** return "
+":attr:`Document.is_encrypted` is set to ``False``. **Positive** return "
 "codes carry the following information detail:"
 msgstr ""
 "成功した場合は正の値、それ以外はゼロです（文字列がどちらのパスワードとも一致しない場合）。正の戻り値がある場合、インジケータ "
-":attr:`Document.is_encrypted` は *False* に設定されます。**正の** "
+":attr:`Document.is_encrypted` は ``False`` に設定されます。**正の** "
 "戻り値コードには、次の情報の詳細が含まれています："
 
 #: ../../document.rst:461 288e75c977254026a0fd7447fcc2180a
@@ -2660,11 +2660,11 @@ msgstr "ドキュメントのアウトラインチェーンから目次（TOC）
 
 #: ../../document.rst:740 91de05775cc04c49a45b6335c14ad090
 msgid ""
-"Indicates whether a simple or a detailed TOC is required. If *False*, "
+"Indicates whether a simple or a detailed TOC is required. If ``False``, "
 "each item of the list also contains a dictionary with :ref:`linkDest` "
 "details for each outline entry."
 msgstr ""
-"簡単なTOCまたは詳細なTOCが必要かを示す値です。*False* の場合、リストの各アイテムにはアウトラインエントリごとの "
+"簡単なTOCまたは詳細なTOCが必要かを示す値です。``False`` の場合、リストの各アイテムにはアウトラインエントリごとの "
 ":ref:`linkDest` の詳細を含む辞書も含まれます。"
 
 #: ../../document.rst:744 b6b321849fca4d9cbbdfefba3728f879
@@ -2923,11 +2923,11 @@ msgstr "キーの値。空でない文字列である必要があり、望まし
 
 #: ../../document.rst:845 9a60b42bad884755b87ef53ddaea3226
 msgid ""
-"**xref** -- must be provided as `\"nnn 0 R\"` with a valid :data:`xref` "
+"*:data:`xref`* -- must be provided as `\"nnn 0 R\"` with a valid :data:`xref` "
 "number nnn of the PDF. The suffix \"`0 R`\" is required to be "
 "recognizable as an xref by PDF applications."
 msgstr ""
-"**xref** – 有効なPDFのxref番号nnnを持つ `\"nnn 0 R\"` として提供される必要があります。サフィックス \"`0 "
+"*:data:`xref`* – 有効なPDFのxref番号nnnを持つ `\"nnn 0 R\"` として提供される必要があります。サフィックス \"`0 "
 "R`\" はPDFアプリケーションによって :data:`xref` として認識されるため必要です。"
 
 #: ../../document.rst:846 44ddb27720124eee975b9f94637fa84a
@@ -3063,7 +3063,7 @@ msgid ""
 "*embedded* (not copied) from other PDFs. For example, "
 ":meth:`Page.show_pdf_page` will create this type of object. An item of "
 "this list has the following layout: `(xref, name, invoker, bbox)`, where"
-"  * **xref** (*int*) is the XObject's :data:`xref`. * **name** (*str*) is"
+"  * *:data:`xref`* (*int*) is the XObject's :data:`xref`. * **name** (*str*) is"
 " the symbolic name to reference the XObject. * **invoker** (*int*) the "
 ":data:`xref` of the invoking XObject or zero if the page directly invokes"
 " it. * **bbox** (:ref:`Rect`) the boundary box of the XObject's location "
@@ -3086,8 +3086,8 @@ msgstr ""
 "bbox)`、ここで"
 
 #: ../../document.rst:890 51a7c36434ba4aec91923c9ebbc9145a
-msgid "**xref** (*int*) is the XObject's :data:`xref`."
-msgstr "**xref** (*int*) はXObjectの :data:`xref` です。"
+msgid "*:data:`xref`* (*int*) is the XObject's :data:`xref`."
+msgstr "*:data:`xref`* (*int*) はXObjectの :data:`xref` です。"
 
 #: ../../document.rst:891 a8e2a68e04714a49ab17d1b0ae7ff5a2
 msgid "**name** (*str*) is the symbolic name to reference the XObject."
@@ -3129,7 +3129,7 @@ msgstr "このページがそのページ自体の場合、参照元の :data:`x
 msgid ""
 "a list of images **referenced** by this page. Each item looks like  "
 "`(xref, smask, width, height, bpc, colorspace, alt. colorspace, name, "
-"filter, referencer)`  Where    * **xref** (*int*) is the image object "
+"filter, referencer)`  Where    * *:data:`xref`* (*int*) is the image object "
 "number   * **smask** (*int*) is the object number of its soft-mask image"
 "   * **width** and **height** (*ints*) are the image dimensions   * "
 "**bpc** (*int*) denotes the number of bits per component (normally 8)   *"
@@ -3157,8 +3157,8 @@ msgid "Where"
 msgstr "ここで"
 
 #: ../../document.rst:911 a194cb5b4f0c4fab8ad533f43d90087d
-msgid "**xref** (*int*) is the image object number"
-msgstr "**xref** (*int*) は画像オブジェクトの番号です"
+msgid "*:data:`xref`* (*int*) is the image object number"
+msgstr "*:data:`xref`* (*int*) は画像オブジェクトの番号です"
 
 #: ../../document.rst:912 3b0c2730d22d4a57961aabc3ddce70ea
 msgid "**smask** (*int*) is the object number of its soft-mask image"
@@ -3221,13 +3221,13 @@ msgstr "PDFのみ: ページによって参照されるすべてのフォント�
 
 #: ../../document.rst:929 cb1f163d6d434dc7890c298294b27d87
 msgid ""
-"whether to also include the referencer's :data:`xref`. If *True*, the "
+"whether to also include the referencer's :data:`xref`. If ``True``, the "
 "returned items are one entry longer. Use this option if you need to know,"
 " whether the page directly references the font. In this case the last "
 "entry is 0. If the font is referenced by an `/XObject` of the page, you "
 "will find its :data:`xref` here."
 msgstr ""
-"参照元の :data:`xref` も含めるかどうか。*True* "
+"参照元の :data:`xref` も含めるかどうか。``True`` "
 "の場合、返されるアイテムは1つ多くなります。ページがフォントを直接参照しているかどうかを知る必要がある場合は、このオプションを使用します。この場合、最後のエントリは0です。フォントがページの"
 " `/XObject` によって参照される場合、その :data:`xref` をここで見つけることができます。"
 
@@ -3245,9 +3245,9 @@ msgstr "ここで"
 
 #: ../../document.rst:939 98c92e898dac4b2ba3805f14ffaffd96
 msgid ""
-"**xref** (*int*) is the font object number (may be zero if the PDF uses "
+"*:data:`xref`* (*int*) is the font object number (may be zero if the PDF uses "
 "one of the builtin fonts directly)"
-msgstr "**xref** (*int*) はフォントオブジェクト番号です（PDFが組み込みフォントを直接使用している場合、ゼロになることがあります）"
+msgstr "*:data:`xref`* (*int*) はフォントオブジェクト番号です（PDFが組み込みフォントを直接使用している場合、ゼロになることがあります）"
 
 #: ../../document.rst:940 bc23886a68d74bb8bcff01236b343857
 msgid ""
@@ -3319,11 +3319,11 @@ msgstr "その他のパラメータについては、ページのメソッドを
 msgid ""
 "Re-paginate (\"reflow\") the document based on the given page dimension "
 "and fontsize. This only affects some document types like e-books and "
-"HTML. Ignored if not supported. Supported documents have *True* in "
+"HTML. Ignored if not supported. Supported documents have ``True`` in "
 "property :attr:`is_reflowable`."
 msgstr ""
 "与えられたページの寸法とフォントサイズに基づいて、ドキュメントを再ページ割り（\"リフロー\"）します。これは電子書籍やHTMLなどの一部のドキュメントタイプにのみ影響します。サポートされていない場合は無視されます。サポートされているドキュメントには"
-" :attr:`is_reflowable` プロパティで *True* が設定されています。"
+" :attr:`is_reflowable` プロパティで ``True`` が設定されています。"
 
 #: ../../document.rst:983 24cee37012c2474d89889ab5d2d80f3c
 msgid "desired page size. Must be finite, not empty and start at point (0, 0)."
@@ -3821,9 +3821,9 @@ msgstr "'FileAttachment' 注釈を検索してファイルコンテンツを削�
 #: ../../document.rst:1177 1b84816544814b4b8d88a63e9462e812
 msgid ""
 "Remove any comments from page painting sources. If this option is set to "
-"*False*, then this is also done for *hidden_text* and *redactions*."
+"``False``, then this is also done for *hidden_text* and *redactions*."
 msgstr ""
-"ページ描画ソースからコメントを削除します。このオプションが *False* に設定されている場合、*hidden_text* と "
+"ページ描画ソースからコメントを削除します。このオプションが ``False`` に設定されている場合、*hidden_text* と "
 "*redactions* に対しても同様の処理が行われます。"
 
 #: ../../document.rst:1178 12bdce2aff9446159cc8b03f22584cc7
@@ -4228,7 +4228,7 @@ msgid ""
 "copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal "
 "links to outside the copied page range are **always excluded**."
 msgstr ""
-"(内部および外部) リンクをコピーに含めるかどうかを選択します。デフォルトは *True* です。コピー対象外のコピー範囲外の内部リンクは "
+"(内部および外部) リンクをコピーに含めるかどうかを選択します。デフォルトは ``True`` です。コピー対象外のコピー範囲外の内部リンクは "
 "**常に除外されます** 。"
 
 #: ../../document.rst:1315 e013d614033240f4be60a30fd875896d
@@ -4250,12 +4250,12 @@ msgstr ""
 #: ../../document.rst:1317 7350f906710749efbbe57767571a5c2b
 msgid ""
 "*(new in v1.18.0)* controls whether the list of already copied objects "
-"should be **dropped** after this method, default *True*. Set it to 0 "
+"should be **dropped** after this method, default ``True``. Set it to 0 "
 "except for the last one of multiple insertions from the same source PDF. "
 "This saves target file size and speeds up execution considerably."
 msgstr ""
 "*(v1.18.0で新規追加)* このメソッドの後にすでにコピーされたオブジェクトのリストを **削除する** かどうかを制御します。デフォルトは"
-" *True* "
+" ``True`` "
 "です。同じソースPDFからの複数の挿入の最後以外は、0に設定します。これにより、対象ファイルのサイズが節約され、実行が大幅に高速化されます。"
 
 #: ../../document.rst:1321 89d26e56fe6242d98fe950c59829e64c
@@ -4985,10 +4985,10 @@ msgstr ""
 msgid ""
 "PDF only: Return the trailer source of the PDF,  which is usually located"
 " at the PDF file's end. This is :meth:`Document.xref_object` with an "
-"*xref* argument of -1."
+":data:`xref` argument of -1."
 msgstr ""
 "PDF のみ: PDF のトレーラーソースを返します。通常、これは PDF ファイルの末尾にあります。これは "
-":meth:`Document.xref_object` で *xref* 引数が -1 の場合です。"
+":meth:`Document.xref_object` で :data:`xref` 引数が -1 の場合です。"
 
 #: ../../document.rst:1633 0dea79778eb9401bb19526952508858e
 msgid ""
@@ -5062,12 +5062,12 @@ msgstr ""
 
 #: ../../document.rst:1672 347990c53d53453ab7028d00d82be224
 msgid ""
-"Replace the stream of an object identified by *xref*, which must be a PDF"
+"Replace the stream of an object identified by :data:`xref`, which must be a PDF"
 " dictionary. If the object is no :data:`stream`, it will be turned into "
 "one. The function automatically performs a compress operation "
 "(\"deflate\") where beneficial."
 msgstr ""
-"xref で識別されるオブジェクトのストリームを置き換えます。*xref* は PDF "
+"xref で識別されるオブジェクトのストリームを置き換えます。:data:`xref` は PDF "
 "辞書である必要があります。オブジェクトがストリームでない場合、それをストリームに変換します。この関数は、有益な場合には自動的に圧縮操作（\"deflate\"）を実行します。"
 
 #: ../../document.rst:1676 75adcf00f93f48e68aee2d0c01d1bf60
@@ -5099,12 +5099,12 @@ msgstr ""
 
 #: ../../document.rst:1683 dcb9fb9e602d4490b3775113887afc27
 msgid ""
-"if *xref* does not represent a PDF :data:`dict`. An empty dictionary "
+"if :data:`xref` does not represent a PDF :data:`dict`. An empty dictionary "
 "``<<>>`` is accepted. So if you just created the xref and want to give it"
 " a stream, first execute `doc.update_object(xref, \"<<>>\")`, and then "
 "insert the stream data with this method."
 msgstr ""
-"*xref* が PDF 辞書を表していない場合。空の辞書 < は受け入れられます。したがって、xref "
+":data:`xref` が PDF 辞書を表していない場合。空の辞書 < は受け入れられます。したがって、xref "
 "を作成し、それにストリームを指定する場合は、まず `doc.update_object(xref, \"<<>>\")` "
 "を実行し、その後、このメソッドでストリームデータを挿入してください。"
 
@@ -5433,16 +5433,16 @@ msgstr "PDF のみ: ドキュメント内にリンクまたは注釈が存在す
 
 #: ../../document.rst:1813 835781f5d5f24293baf039bb48244263
 msgid ""
-"*True* / *False*. As opposed to fields, which are also stored in a "
+"``True`` / ``False``. As opposed to fields, which are also stored in a "
 "central place of a PDF document, the existence of links / annotations can"
 " only be detected by parsing each page. These methods are tuned to do "
-"this efficiently and will immediately return, if the answer is *True* for"
+"this efficiently and will immediately return, if the answer is ``True`` for"
 " a page. For PDFs with many thousand pages however, an answer may take "
 "some time [#f6]_ if no link, resp. no annotation is found."
 msgstr ""
-"*True* / *False* 。フィールドとは異なり、リンクや注釈の存在は PDF "
+"``True`` / ``False`` 。フィールドとは異なり、リンクや注釈の存在は PDF "
 "ドキュメントの中心的な場所に格納されているわけではなく、各ページを解析してのみ検出できます。これらのメソッドは効率的に実行するように調整されており、ページに対して"
-" *True* の回答がある場合、すぐに返されます。ただし、多くのページを持つ PDF "
+" ``True`` の回答がある場合、すぐに返されます。ただし、多くのページを持つ PDF "
 "の場合、リンクや注釈が見つからない場合、回答に時間がかかることがあります [#f6]_。"
 
 #: ../../document.rst:1818 ca428b139b5a4bf5b5a430f8356eb702
@@ -5685,14 +5685,14 @@ msgstr ""
 
 #: ../../document.rst:1934 4b92693a3b2c40ee8632e7a98266127f
 msgid ""
-"*False* if document is still open. If closed, most other attributes and "
+"``False`` if document is still open. If closed, most other attributes and "
 "methods will have been deleted / disabled. In addition, :ref:`Page` "
 "objects referring to this document (i.e. created with "
 ":meth:`Document.load_page`) and their dependent objects will no longer be"
 " usable. For reference purposes, :attr:`Document.name` still exists and "
 "will contain the filename of the original document (if applicable)."
 msgstr ""
-"もし文書がまだ開いている場合は *False* "
+"もし文書がまだ開いている場合は ``False`` "
 "です。閉じた場合、他のほとんどの属性やメソッドが削除されたり無効になります。また、この文書を参照する :ref:`Page` "
 "オブジェクト（すなわち :meth:`Document.load_page` "
 "で作成されたもの）とそれに依存するオブジェクトは利用できなくなります。参照用に、:attr:`Document.name` "
@@ -5710,20 +5710,20 @@ msgstr ""
 
 #: ../../document.rst:1940 a2ac90eca9934e1aaad6d0af94528bcb
 msgid ""
-"*True* if this is a PDF document and contains unsaved changes, else "
-"*False*."
-msgstr "これがPDFドキュメントであり、保存されていない変更が含まれている場合は *True* 、それ以外は *False* です。"
+"``True`` if this is a PDF document and contains unsaved changes, else "
+"``False``."
+msgstr "これがPDFドキュメントであり、保存されていない変更が含まれている場合は ``True`` 、それ以外は ``False`` です。"
 
 #: ../../document.rst:1946 1dd1dc093e574efeaa9fe2ae814eb7b8
-msgid "*True* if this is a PDF document, else *False*."
-msgstr "これがPDFドキュメントである場合は *True* 、それ以外は *False* です。"
+msgid "``True`` if this is a PDF document, else ``False``."
+msgstr "これがPDFドキュメントである場合は ``True`` 、それ以外は ``False`` です。"
 
 #: ../../document.rst:1952 1931e87700ad4cd7ad416eee51e0d0ae
 msgid ""
-"*False* if this is not a PDF or has no form fields, otherwise the number "
+"``False`` if this is not a PDF or has no form fields, otherwise the number "
 "of root form fields (fields with no ancestors)."
 msgstr ""
-"これがPDFでないか、フォームフィールドが含まれていない場合は *False* "
+"これがPDFでないか、フォームフィールドが含まれていない場合は ``False`` "
 "であり、それ以外の場合はルートフォームフィールド（祖先のないフィールド）の数です。"
 
 #: ../../document.rst:1954 f0c08b7fdfc547dea287ea469b2d2f99
@@ -5736,11 +5736,11 @@ msgstr ""
 
 #: ../../document.rst:1960 b33491644eda4ccba4df8a5f5aaff67f
 msgid ""
-"*True* if document has a variable page layout (like e-books or HTML). In "
+"``True`` if document has a variable page layout (like e-books or HTML). In "
 "this case you can set the desired page dimensions during document "
 "creation (open) or via method :meth:`layout`."
 msgstr ""
-"文書が可変ページレイアウト（電子書籍やHTMLのような）を持つ場合は *True* です。この場合、文書の作成（オープン）時または "
+"文書が可変ページレイアウト（電子書籍やHTMLのような）を持つ場合は ``True`` です。この場合、文書の作成（オープン）時または "
 ":meth:`layout` メソッドを使用して所望のページ寸法を設定できます。"
 
 #: ../../document.rst:1966 57f5d4584063496c905f4f9be9ad6176
@@ -5749,18 +5749,18 @@ msgstr "v1.18.2で新しく追加されました。"
 
 #: ../../document.rst:1968 40e99767ae8b41159c6739db5926f21e
 msgid ""
-"*True* if PDF has been repaired during open (because of major structure "
-"issues). Always *False* for non-PDF documents. If true, more details have"
+"``True`` if PDF has been repaired during open (because of major structure "
+"issues). Always ``False`` for non-PDF documents. If true, more details have"
 " been stored in `TOOLS.mupdf_warnings()`, and "
-":meth:`Document.can_save_incrementally` will return *False*."
+":meth:`Document.can_save_incrementally` will return ``False``."
 msgstr ""
-"PDFがオープン時に修復された場合は *True* です（主要な構造上の問題のため）。非PDF文書の場合は常に *False* です。*True*"
+"PDFがオープン時に修復された場合は ``True`` です（主要な構造上の問題のため）。非PDF文書の場合は常に ``False`` です。``True``"
 " の場合、詳細は `TOOLS.mupdf_warnings()` "
-"に保存され、:meth:`Document.can_save_incrementally` は *False* を返します。"
+"に保存され、:meth:`Document.can_save_incrementally` は ``False`` を返します。"
 
 #: ../../document.rst:1976 e1375e94e6e04849b6f348dfd4dbef0e
-msgid "*True* if PDF is in linearized format. *False* for non-PDF documents."
-msgstr "PDFが直線化形式である場合は *True* です。非PDF文書の場合はFalseです。"
+msgid "``True`` if PDF is in linearized format. ``False`` for non-PDF documents."
+msgstr "PDFが直線化形式である場合は ``True`` です。非PDF文書の場合はFalseです。"
 
 #: ../../document.rst:1984 2afa57ff2bcb49df9aab9875c47b5978
 msgid ""
@@ -5821,9 +5821,9 @@ msgstr ""
 #: ../../document.rst:2020 45cb1bca4b714c4b9799812f7954a9d3
 msgid ""
 "This indicator initially equals :attr:`Document.needs_pass`. After "
-"successful authentication, it is set to *False* to reflect the situation."
+"successful authentication, it is set to ``False`` to reflect the situation."
 msgstr ""
-"この指示は、最初に :attr:`Document.needs_pass` と等しいです。認証が成功した後、状況を反映するために *False* "
+"この指示は、最初に :attr:`Document.needs_pass` と等しいです。認証が成功した後、状況を反映するために ``False`` "
 "に設定されます。"
 
 #: ../../document.rst:2026 56b0dd3030c9409da215fee133f5f1ca
@@ -6111,18 +6111,18 @@ msgstr "「Form XObjects」の例は、:meth:`Page.show_pdf_page` によって�
 
 #: ../../document.rst:2188 fe48711608014440b68f510dc4ceb6e3
 msgid ""
-"For a *False* the **complete document** must be scanned. Both methods "
+"For a ``False`` the **complete document** must be scanned. Both methods "
 "**do not load pages,** but only scan object definitions. This makes them "
 "at least 10 times faster than application-level loops (where total "
 "response time roughly equals the time for loading all pages). For the "
 ":ref:`AdobeManual` (756 pages) and the Pandas documentation (over 3070 "
 "pages) -- both have no annotations -- the method needs about 11 ms for "
-"the answer *False*. So response times will probably become significant "
+"the answer ``False``. So response times will probably become significant "
 "only well beyond this order of magnitude."
 msgstr ""
-"*False* の場合、完全なドキュメントをスキャンする必要があります。ただし、これらのメソッドは "
+"``False`` の場合、完全なドキュメントをスキャンする必要があります。ただし、これらのメソッドは "
 "**ページを読み込まず**、オブジェクト定義のみをスキャンします。これにより、アプリケーションレベルのループよりも少なくとも10倍高速になります（合計応答時間はすべてのページを読み込む時間とほぼ同じです）。:ref:`AdobeManual`（756ページ）とPandasのドキュメンテーション（3070ページ以上）の両方に注釈がない場合、このメソッドは"
-" *False* "
+" ``False`` "
 "の回答に約11ミリ秒かかります。したがって、応答時間はおそらくこのオーダーオブマグニチュードをはるかに超えた範囲で初めて重要になる可能性があります。"
 
 #: ../../document.rst:2190 e7272d938e0546f3806ea23b27b93aaf

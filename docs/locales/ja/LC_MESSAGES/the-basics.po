@@ -240,11 +240,11 @@ msgstr "座標を扱う"
 #: ../../the-basics.rst:220 7fc6241eece94e388e4c5e6b3da32bd3
 msgid ""
 "There is one *mathematical term* that you should feel comfortable with "
-"when using **PyMuPDF** -  **\"coordinates\"**. Please have a quick look "
+"when using |PyMuPDF| -  **\"coordinates\"**. Please have a quick look "
 "at the :ref:`Coordinates` section to understand the coordinate system to "
 "help you with positioning objects and understand your document space."
 msgstr ""
-"**PyMuPDF** を使用する際に快適に感じるべき *数学用語* が1つあります - **「座標」** "
+"|PyMuPDF| を使用する際に快適に感じるべき *数学用語* が1つあります - **「座標」** "
 "です。オブジェクトの配置や文書空間の理解に役立つ座標系を理解するために、:ref:`Coordinates` セクションを簡単にご覧ください。"
 
 #: ../../the-basics.rst:229 cc5bb54d6a664070913b675128806e89
@@ -805,8 +805,8 @@ msgid ":meth:`Page.annots`"
 msgstr ":meth:`Page.get_text`"
 
 #: ../../the-basics.rst:1002 50c0ec3880c441cf8658ea7c70c45ad8
-msgid "Redacting content from a **PDF**"
-msgstr "**PDF** からコンテンツを塗りつぶす"
+msgid "Redacting content from a |PDF|"
+msgstr "|PDF| からコンテンツを塗りつぶす"
 
 #: ../../the-basics.rst:1004 180c459e0c884ea5a3c0e02bed8c4b23
 msgid ""
@@ -833,10 +833,10 @@ msgstr "別の例として、ページの領域を塗りつぶすが、定義さ
 #: ../../the-basics.rst:1065 e05ae9a504e94e9d9ba27fdade28e9b7
 msgid ""
 "Once a redacted version of a document is saved then the redacted content "
-"in the **PDF** is *irretrievable*. Thus, a redacted area in a document "
+"in the |PDF| is *irretrievable*. Thus, a redacted area in a document "
 "removes text and graphics completely from that area."
 msgstr ""
-"文書の塗りつぶし済みバージョンを保存すると、**PDF** 内の塗りつぶされたコンテンツは *取り戻すことができなくなります* "
+"文書の塗りつぶし済みバージョンを保存すると、|PDF| 内の塗りつぶされたコンテンツは *取り戻すことができなくなります* "
 "。したがって、文書内の塗りつぶされた領域は、その領域からテキストとグラフィックスを完全に削除します。"
 
 #: ../../the-basics.rst:1072 185c831063184e2a81241c83ff00ffd3
@@ -862,11 +862,11 @@ msgstr "PDF ドキュメントの変換"
 
 #: ../../the-basics.rst:1090 a54014656a8a4771b91cfb56770aad17
 msgid ""
-"We recommend the pdf2docx_ library which uses **PyMuPDF** and the "
+"We recommend the pdf2docx_ library which uses |PyMuPDF| and the "
 "**python-docx** library to provide simple document conversion from "
-"**PDF** to **DOCX** format."
+"|PDF| to **DOCX** format."
 msgstr ""
-"PyMuPDF を使用する pdf2docx_ ライブラリと、**PDF** から **DOCX** 形式への簡単なドキュメント変換を提供する "
+"PyMuPDF を使用する pdf2docx_ ライブラリと、|PDF| から **DOCX** 形式への簡単なドキュメント変換を提供する "
 "**python-docx** ライブラリをお勧めします。"
 
 #: ../../footer.rst:60 27e2c89bdd75442c9a5743124593ff88

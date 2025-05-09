@@ -272,7 +272,7 @@ msgid "a == b"
 msgstr ""
 
 #: ../../algebra.rst:73 a0f643e2c1844bb794ec3c92ab0cbabe
-msgid "*True* if *bool(a-b)* is *False* (\"b\" may be \"a-like\")."
+msgid "``True`` if *bool(a-b)* is ``False`` (\"b\" may be \"a-like\")."
 msgstr "bool(a-b) が `False` であれば `True` を返します（\"b\"は\"a-like\"である可能性があります）。"
 
 #: ../../algebra.rst:77 90de045e22724073b368489f0bc9198f
