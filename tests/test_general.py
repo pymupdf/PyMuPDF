@@ -1483,8 +1483,9 @@ def test_open2():
         for path in paths:
             print(path)
             for ext in extensions:
-                path2 = f'foo{ext}'
-                shutil.copy2(f'{root}/{path}', path2)
+                path2 = f'{root}/foo{ext}'
+                path3 = shutil.copy2(f'{root}/{path}', path2)
+                assert(path3 == path2)
                 
                 # Test fz_open_document().
                 e = None
@@ -1495,7 +1496,7 @@ def test_open2():
                     e = ee
                 wt = pymupdf.TOOLS.mupdf_warnings()
                 text = get_result(e, document)
-                print(f'    fz_open_document({path2})  => {text}')
+                print(f'    fz_open_document({path2}) => {text}')
                 dict_set_path(results, path, ext, 'file', text)
 
                 # Test fz_open_document_with_stream().
@@ -1521,6 +1522,7 @@ def test_open2():
     with open(path_html, 'w') as f:
         f.write(f'<html>\n')
         f.write(f'<body>\n')
+        f.write(f'<p>{time.strftime("%F-%T")}\n')
         f.write(f'<table border="1" style="border-collapse:collapse" cellpadding="4">\n')
         f.write(f'<tr><td></td><th colspan="{len(extensions)}">Extension/magic')
         f.write(f'<tr><th style="border-bottom: 4px solid black; border-right: 4px solid black;">Data file</th>')
@@ -1540,18 +1542,21 @@ def test_open2():
                     else:
                         f.write(f'<td>{b1}{text_file}{b2}</td>')
                 else:
-                    f.write(f'<td>file: {b1}{text_file}{b2}</td><br>')
-                    f.write(f'<td>stream: {b1}{text_stream}{b2}</td>')
+                    f.write(f'<td>file: {b1}{text_file}{b2}<br>')
+                    f.write(f'stream: {b1}{text_stream}{b2}</td>')
             f.write('</tr>\n')
         f.write(f'</table>\n')
         f.write(f'/<body>\n')
         f.write(f'</html>\n')
     print(f'Have created: {path_html}')
     
-    with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
-        results_expected = json.load(f)
-    
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_open2.json')
+    with open(path_out, 'w') as f:
+        json.dump(results, f, indent=4, sort_keys=1)
+        
     if pymupdf.mupdf_version_tuple >= (1, 26):
+        with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
+            results_expected = json.load(f)
         if results != results_expected:
             print(f'results != results_expected:')
             def show(r, name):
