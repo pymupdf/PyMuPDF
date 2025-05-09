@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,54 +19,54 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 98633b74650f4f368314c1e087d8a723
+#: ../../header.rst:-1 b0e2cd94d0aa4b3a934fbebb0e61235b
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 7c0bcdcd9ff74351abbcfcba72b58e09
+#: ../../header.rst:-1 f1baafce3d564895b00cf4bc56d7bb33
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 dfb56bc186b5495f9b3cf600e64f272b
+#: ../../header.rst:-1 819b0bef657b4ba4a0ab2d3e4ec0b4d8
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../glossary.rst:7 87e01380a92e4f4ca20314289ce76620
+#: ../../glossary.rst:7 9941910a374d4a0db2b472ea37c6f1f8
 msgid "Glossary"
 msgstr "用語集"
 
-#: ../../glossary.rst:11 d9645c6f37d7406983e6e2be167f78d4
+#: ../../glossary.rst:11 0c491cef7a4041028d651475e56a294b
 msgid ""
 "This is an essential general mathematical / geometrical term for "
 "understanding this documentation. Please see this section for a more "
 "detailed discussion: :ref:`Coordinates`."
 msgstr ""
 
-#: ../../glossary.rst:15 5d9926d99e6140498a76ce0b7f1a68f9
+#: ../../glossary.rst:15 b03cc7629633424488939ad7912ff819
 msgid "A Python sequence of 6 numbers."
 msgstr "6つの数字からなるPythonのシーケンス。"
 
-#: ../../glossary.rst:19 7101f0cee372419ebae2136010d546f1
+#: ../../glossary.rst:19 bd43bb115ff04c94b19ca36c5f5d02f6
 msgid "A Python sequence of 4 numbers."
 msgstr "4つの数字からなるPythonのシーケンス。"
 
-#: ../../glossary.rst:23 c8cacc02ab7142f5890f7b46e2508e42
+#: ../../glossary.rst:23 1a31b68b33264ca5a77bd2b6902ffe53
 msgid "A Python sequence of 4 integers."
 msgstr "4つの整数からなるPythonのシーケンス。"
 
-#: ../../glossary.rst:27 73dc4dc1395f415ca2371197fde69cd0
+#: ../../glossary.rst:27 2a42549c54164862ab4a896ad4f7e587
 msgid "A Python sequence of 2 numbers."
 msgstr "2つの数字からなるPythonのシーケンス。"
 
-#: ../../glossary.rst:31 396355bcd75140418bbb7fe9a25421b4
+#: ../../glossary.rst:31 5d5f5915c82d4921bed1e2f95ab91ecb
 msgid "A Python sequence of 4 :data:`point_like` items."
 msgstr "4つの :data:`point_like` アイテムからなるPythonのシーケンス。"
 
-#: ../../glossary.rst:35 5e49607eb8064d5484e42cb3ea16c0c7
+#: ../../glossary.rst:35 775806cbba59489bac52cba16de32799
 msgid ""
 "A number of values in a PDF can inherited by objects further down in a "
 "parent-child relationship. The mediabox (physical size) of pages may for "
@@ -77,7 +77,7 @@ msgstr ""
 "PDF内のいくつかの値は、親子関係で下位のオブジェクトに継承されることがあります。例えば、ページのmediabox（物理的なサイズ）は一度だけ指定されるか、:data:`pagetree`"
 " のいくつかのノードで指定され、それ以外の値を指定しない子供たちにとってその値が取得されます。"
 
-#: ../../glossary.rst:41 50db8ba49a2f4971aef4d735feffdf5c
+#: ../../glossary.rst:41 d6aa867681e449c0a945275210eb6353
 msgid ""
 "A PDF array of 4 floats specifying a physical page size -- "
 "(:data:`inheritable`, mandatory). This rectangle should contain all other"
@@ -97,7 +97,7 @@ msgstr ""
 ":attr:`Page.mediabox` は常に、ページオブジェクト定義内の `/MediaBox` "
 "キーと同じ座標を示します。他のすべての矩形に関して、MuPDFはy座標を変換し、上部境界が参照点となるようにします。これは時に混乱することがあります。例えば、次のような状況に遭遇することがあります。"
 
-#: ../../glossary.rst:43 c96b230d8ef2445d9b9f0f4e43de87d5
+#: ../../glossary.rst:43 4b7aa0adab17468e947f9b8eb328fd00
 msgid ""
 "The page definition contains the following identical values: `/MediaBox ["
 " 36 45 607.5 765 ]`, `/CropBox [ 36 45 607.5 765 ]`."
@@ -105,13 +105,13 @@ msgstr ""
 "ページ定義には次のような同一の値が含まれています:  `/MediaBox [ 36 45 607.5 765 ]` 、 `/CropBox [ "
 "36 45 607.5 765 ]`。 "
 
-#: ../../glossary.rst:44 9e8cfd88590644cd8b3345ff2ff2e6c4
+#: ../../glossary.rst:44 c3336320e59f48f9986d52f340b7a4d4
 msgid ""
 "PyMuPDF accordingly shows `page.mediabox = Rect(36.0, 45.0, 607.5, "
 "765.0)`."
 msgstr "したがって、PyMuPDFは `page.mediabox = Rect(36.0, 45.0, 607.5, 765.0)` と表示します。 "
 
-#: ../../glossary.rst:45 e957287ce41f46de972315e80c56aa3c
+#: ../../glossary.rst:45 a216a8839aee420cbe653cdb1e90cee1
 msgid ""
 "**BUT:** `page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)`, because the two "
 "y-coordinates have been transformed (45 subtracted from both of them)."
@@ -119,7 +119,7 @@ msgstr ""
 "しかし、 `page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)` "
 "です。なぜなら、2つのy座標が変換されているため（両方から45が引かれているため）です。"
 
-#: ../../glossary.rst:49 42a9b0d066c74ec8b9496f164ac4fea5
+#: ../../glossary.rst:49 8fa4e076a5e744bfa85ec3664e4908ce
 msgid ""
 "A PDF array of 4 floats specifying a page's visible area -- "
 "(:data:`inheritable`, optional). It is the default for TrimBox, ArtBox "
@@ -133,7 +133,7 @@ msgstr ""
 " -  :attr:`Page.rect` とは対照的です。また、ページ矩形以外では、クロップボックスの左上隅が(0, "
 "0)であるかどうかは問題ありません。"
 
-#: ../../glossary.rst:54 3c12792e76ed4656bb48c2e0a3697974
+#: ../../glossary.rst:54 695d4331e2574a73a6bc119defe798a4
 msgid ""
 "A central PDF :data:`dictionary` -- also called the \"root\" -- "
 "containing document-wide parameters and pointers to many other "
@@ -144,7 +144,7 @@ msgstr ""
 "で、文書全体のパラメータと多くの他の情報へのポインタを含んでいます。その :data:`xref` は "
 ":meth:`Document.pdf_catalog` で返されます。"
 
-#: ../../glossary.rst:58 2388345375504f7aa7f1a59a1f27496a
+#: ../../glossary.rst:58 972c6ce4df00407a83efb4a5e33cf1b8
 msgid ""
 "More precisely, the **PDF trailer** contains information in "
 ":data:`dictionary` format. It is usually located at the file's end. In "
@@ -156,14 +156,14 @@ msgstr ""
 "形式の情報が含まれています。通常、ファイルの末尾に配置されています。この辞書には、カタログやメタデータの :data:`xref` "
 "、:data:`xref` の数などが含まれています。PDF仕様の定義は次のとおりです："
 
-#: ../../glossary.rst:60 17283d99978f440997c28898a7e7894c
+#: ../../glossary.rst:60 c620690ecfe5406fbe8d467efeb91794
 msgid ""
 "*\"The trailer of a PDF file enables an application reading the file to "
 "quickly find the cross-reference table and certain special objects. "
 "Applications should read a PDF file from its end.\"*"
 msgstr "「PDFファイルのトレーラーは、ファイルを読むアプリケーションがクロスリファレンステーブルと特定の特別なオブジェクトを迅速に見つけることを可能にします。アプリケーションはPDFファイルを末尾から読むべきです。」"
 
-#: ../../glossary.rst:62 49e450a94657450ba6d590eac41e9077
+#: ../../glossary.rst:62 bbfcfb28f25f49608557cc077c9f2ff2
 msgid ""
 "To access the trailer in PyMuPDF, use the usual methods "
 ":meth:`Document.xref_object`, :meth:`Document.xref_get_key` and "
@@ -174,7 +174,7 @@ msgstr ""
 ":meth:`Document.xref_get_key` 、:meth:`Document.xref_get_keys` "
 "を使用し、正のxref番号の代わりに `-1` を指定します。"
 
-#: ../../glossary.rst:66 6af89fe1bb4d44808a2c0abca0d09847
+#: ../../glossary.rst:66 52c596bdac704429bcc9b0406875b7fc
 msgid ""
 "A **content stream** is a PDF :data:`object` with an attached "
 ":data:`stream`, whose data consists of a sequence of instructions "
@@ -195,17 +195,17 @@ msgstr ""
 ":ref:`AdobeManual` の「Operator "
 "Summary」章（p.643）をご覧ください。PDFページには0から多くのコンテンツオブジェクトを持つことができます。コンテンツオブジェクトが存在しない場合、ページは空になります（ただし注釈は表示される可能性があります）。複数のコンテンツオブジェクトがある場合、それらは1つのオブジェクトに存在するかのように順番に解釈されます（つまり、連結された文字列のように）。なお、同じ構文を使用する他のストリームオブジェクトタイプもあることに注意してください。たとえば、注釈に関連する外観辞書やフォームXObjectなどです。"
 
-#: ../../glossary.rst:68 6f507c79d58949b18e85d75b20465b57
+#: ../../glossary.rst:68 fcc09656179a42c7974f67c0e38f4c94
 msgid "PyMuPDF provides a number of methods to deal with contents of PDF pages:"
 msgstr "PyMuPDFは、PDFページのコンテンツに対処するためのいくつかのメソッドを提供しています："
 
-#: ../../glossary.rst:70 40768387957a4177ae2bd28cd6c078df
+#: ../../glossary.rst:70 aa25f61d861242e7a13b1c745587ebad
 msgid ""
 ":meth:`Page.read_contents()` -- reads and concatenates all page contents "
 "into one `bytes` object."
 msgstr ":meth:`Page.read_contents()` – ページのすべてのコンテンツを読み込んで1つのバイトオブジェクトに連結します。"
 
-#: ../../glossary.rst:71 1baf2ad6c28d4d4ebafd64f87ece87a7
+#: ../../glossary.rst:71 85a71eda07ba4442b8014231e74ff345
 msgid ""
 ":meth:`Page.clean_contents()` -- a wrapper of a MuPDF function that "
 "reads, concatenates and syntax-cleans all page contents. After this, only"
@@ -218,7 +218,7 @@ msgstr ""
 "`/Contents` オブジェクトのみが存在します。さらに、ページの :data:`resources` "
 "はそれと同期され、ページが実際に参照する画像、フォント、その他のオブジェクトのみが含まれるようになります。"
 
-#: ../../glossary.rst:72 d6732fd9427b404abf33e5bf3f11da3a
+#: ../../glossary.rst:72 47bbed208b0b4183bd6abbb069ce2eb9
 msgid ""
 ":meth:`Page.get_contents()` -- return a list of :data:`xref` numbers of a"
 " page's :data:`contents` objects. May be empty. Use "
@@ -229,13 +229,13 @@ msgstr ""
 "番号のリストを返します。空かもしれません。:meth:`Document.xref_stream()` "
 "をこれらのxrefの1つとともに使用して、対応するコンテンツセクションを読み込むことができます。"
 
-#: ../../glossary.rst:73 62fbe782eaab4f5092260c26151df9c1
+#: ../../glossary.rst:73 fc38f58008f949d283ae3b24382f368a
 msgid ""
 ":meth:`Page.set_contents()` -- set a page's `/Contents` key to the "
 "provided :data:`xref` number."
 msgstr ":meth:`Page.set_contents()` – ページの `/Contents` キーを指定されたxref番号に設定します。"
 
-#: ../../glossary.rst:77 08bedb6cb7ff4bad988ef8d2901c32ab
+#: ../../glossary.rst:77 7f136697e7be484382e85c200cb2c6dc
 msgid ""
 "A :data:`dictionary` containing references to any resources (like images "
 "or fonts) required by a PDF :data:`page` (required, inheritable, "
@@ -249,7 +249,7 @@ msgstr ""
 ":data:`dictionary` "
 "は、オブジェクト定義内のキー/リソースの下にサブ辞書として表示されます。継承可能なオブジェクトタイプであるため、すべてのページまたは一部のページの「親」リソースが存在する可能性があります。"
 
-#: ../../glossary.rst:81 279201da4a73418dac26375cced7a49a
+#: ../../glossary.rst:81 bf3936e13b07411e9f15d4dea0704603
 msgid ""
 "A PDF :data:`object` type, which is somewhat comparable to the same-named"
 " Python notion: \"A dictionary object is an associative table containing "
@@ -263,13 +263,13 @@ msgstr ""
 "のタイプで、同じ名前のPythonの概念に多少似ています。「辞書オブジェクトは、辞書のエントリとして知られるオブジェクトのペアを含む連想テーブルです。各エントリの最初の要素はキーであり、2番目の要素は値です。キーは名前である必要があります（...）。値は他の辞書を含む他の種類のオブジェクトであることができます。値がnull"
 " (...) の辞書エントリは、不在のエントリと同等です。」（:ref:`AdobeManual` p. 18）。"
 
-#: ../../glossary.rst:83 c195de5788544203aafb1a6b52db7ce5
+#: ../../glossary.rst:83 a5774d115d78486887db6243636d5362
 msgid ""
 "Dictionaries are the most important :data:`object` type in PDF. Here is "
 "an example (describing a :data:`page`)::"
 msgstr "辞書は、PDF内で最も重要なオブジェクトのタイプです。以下は、:data:`page` を記述する例です::"
 
-#: ../../glossary.rst:102 c74e0783d0de45f3b58a229268d46c49
+#: ../../glossary.rst:102 45aa2b19b71e458e8fa25a2c78d596a6
 msgid ""
 "*Contents*, *Type*, *MediaBox*, etc. are **keys**, *40 0 R*, *Page*, *[0 "
 "0 595.32 841.92]*, etc. are the respective **values**. The strings "
@@ -278,7 +278,7 @@ msgstr ""
 "Contents、Type、MediaBoxなどはキーであり、40 0 R、Page、[0 0 595.32 "
 "841.92]などはそれぞれの値です。「<<」と「>>」という文字列は、オブジェクト定義を括るために使用されます。"
 
-#: ../../glossary.rst:104 54bd2a13696c4c128fee944d80fc570f
+#: ../../glossary.rst:104 a6f9190af07842339804c618355e0e27
 msgid ""
 "This example also shows the syntax of **nested** dictionary values: "
 "*Resources* has an object as its value, which in turn is a dictionary "
@@ -288,7 +288,7 @@ msgstr ""
 "この例は、ネストされた辞書の値の構文も示しています。Resourcesはその値としてオブジェクトを持ち、それ自体がExtGState（値は<</R7"
 " 26 0 R>>で、これは別の辞書です）、などのキーを持つ辞書です。"
 
-#: ../../glossary.rst:108 95961bdaf86049ab84e31b23652e94d1
+#: ../../glossary.rst:108 b97660907730454fb80cae8fff9da131
 msgid ""
 "A PDF page is a :data:`dictionary` object which defines one page in a "
 "PDF, see :ref:`AdobeManual` p. 71."
@@ -296,7 +296,7 @@ msgstr ""
 "PDFページは、PDF内の1つのページを定義する :data:`dictionary` オブジェクトであり、 :ref:`AdobeManual`"
 " p. 71を参照してください。"
 
-#: ../../glossary.rst:112 5ce5a2af63bd4902bc58673478a47352
+#: ../../glossary.rst:112 97d4db102e0e4330938ad1f4e7fca422
 msgid ""
 "The pages of a document are accessed through a structure known as the "
 "page tree, which defines the ordering of pages in the document. The tree "
@@ -308,7 +308,7 @@ msgstr ""
 "文書のページは、ページツリーとして知られる構造を介してアクセスされ、文書内のページの順序を定義します。このツリー構造により、限られたメモリしか使用しないPDFコンシューマーアプリケーションでも、数千ページを含む文書を迅速に開くことができます。ツリーには2種類のノードが含まれています。中間ノードはページツリーノードと呼ばれ、葉ノードはページオブジェクトと呼ばれます。（:ref:`AdobeManual`"
 " p. 75）。"
 
-#: ../../glossary.rst:114 bf7882890a264cf69714f64989c24800
+#: ../../glossary.rst:114 2dbcc685903a4543922f7629dbdc1af4
 msgid ""
 "While it is possible to list all page references in just one array, PDFs "
 "with many pages are often created using *balanced tree* structures "
@@ -317,7 +317,7 @@ msgid ""
 "page number from a linear to some logarithmic order of magnitude."
 msgstr "ページ参照を単一の配列でリストすることは可能ですが、多くのページを含むPDFは、より迅速な単一ページへのアクセスのためにバランスの取れたツリー構造（「ページツリー」）を使用して作成されることがよくあります。全ページ数に対して、これにより平均ページアクセス時間がページ番号による線形から対数のオーダーに削減されることがあります。"
 
-#: ../../glossary.rst:116 73f78167e0c742cab1b72cd3d1e3583e
+#: ../../glossary.rst:116 aca1e345565340d197f15bb05ce23148
 msgid ""
 "For fast page access, MuPDF can use its own array in memory -- "
 "independently from what may or may not be present in the document file. "
@@ -327,7 +327,7 @@ msgstr ""
 "高速なページアクセスのために、MuPDFは独自のメモリ内配列を使用できます - "
 "文書ファイルに存在するかどうかに関係なく。この配列はページ番号でインデックスされるため、完全にバランスが取れたページツリーを経由するアクセスよりもはるかに高速です。"
 
-#: ../../glossary.rst:120 57f551b4a4b5469bb82f79c1bea56485
+#: ../../glossary.rst:120 cf48ba84c41b4860a00bb4859a5f1ab6
 msgid ""
 "Similar to Python, PDF supports the notion *object*, which can come in "
 "eight basic types: boolean values (\"true\" or \"false\"), integer and "
@@ -348,7 +348,7 @@ msgstr ""
 "13）。オブジェクトはラベルを割り当てることで識別可能にすることができます。このラベルは、間接オブジェクトと呼ばれます。PyMuPDFは、:meth:`Document.xref_object`"
 "  を介して間接オブジェクトの定義をクロスリファレンス番号を使って取得することができます。"
 
-#: ../../glossary.rst:124 b50100447e5c48038bbfaf6a4680f467
+#: ../../glossary.rst:124 65f67d11513245eea25bbcfe453941d4
 msgid ""
 "A PDF :data:`dictionary` :data:`object` type which is followed by a "
 "sequence of bytes, similar to Python *bytes*. \"However, a PDF "
@@ -364,7 +364,7 @@ msgstr ""
 "タイプで、Pythonのbytesに似たバイト列が続きます。ただし、「PDFアプリケーションはストリームを段階的に読むことができますが、文字列は完全に読む必要があります。さらに、ストリームの長さは無制限ですが、文字列は実装の制限に従います。そのため、画像やページの説明などの大量のデータを含むオブジェクトは、ストリームとして表現されます。」「ストリームは、キーワード「stream」と「endstream」で囲まれた0バイト以上のバイトで構成される"
 " :data:`dictionary` の後に続きます」::"
 
-#: ../../glossary.rst:135 35a1ee86bcfd4318bde0c3ee35444c97
+#: ../../glossary.rst:135 1f0727e3f450432f9923a4ffd2cc8cee
 msgid ""
 "See :ref:`AdobeManual` p. 19. PyMuPDF supports retrieving stream content "
 "via :meth:`Document.xref_stream`. Use :meth:`Document.is_stream` to "
@@ -374,7 +374,7 @@ msgstr ""
 "を介してストリームコンテンツを取得するサポートを提供しています。オブジェクトがストリームタイプかどうかを判断するには、:meth:`Document.is_stream`"
 " を使用します。"
 
-#: ../../glossary.rst:139 6b195420ae1a442fa45b1c2b0f3861ca
+#: ../../glossary.rst:139 d732f9dcef7e47028ca43a5647adcb9c
 msgid ""
 "A mathematical notion meaning a vector of norm (\"length\") 1 -- usually "
 "the Euclidean norm is implied. In PyMuPDF, this term is restricted to "
@@ -383,7 +383,7 @@ msgstr ""
 "数学的な概念で、ノルム（「長さ」）が1のベクトルを意味します。通常、ユークリッドノルムが含まれます。PyMuPDFでは、この用語は "
 ":ref:`Point` オブジェクトに制限されます。:attr:`Point.unit` を参照してください。"
 
-#: ../../glossary.rst:143 732e8751585740f380cd43e574cbe977
+#: ../../glossary.rst:143 26fb51d68f234a088d1702a7b331d879
 msgid ""
 "Abbreviation for cross-reference number: this is an integer unique "
 "identification for objects in a PDF. There exists a cross-reference table"
@@ -391,20 +391,20 @@ msgid ""
 " which stores the relative position of each object for quick lookup. The "
 "cross-reference table is one entry longer than the number of existing "
 "object: item zero is reserved and must not be used in any way. Many "
-"PyMuPDF classes have an :data:`xref` attribute (which is zero for non-PDFs), "
-"and one can find out the total number of objects in a PDF via "
+"PyMuPDF classes have an :data:`xref` attribute (which is zero for non-"
+"PDFs), and one can find out the total number of objects in a PDF via "
 ":meth:`Document.xref_length` *- 1*."
 msgstr ""
 "クロスリファレンス番号の省略形：これはPDF内のオブジェクトに対する一意の識別子である整数です。各PDFにはクロスリファレンステーブルが存在し（物理的には複数の別々のセグメントで構成される場合があります）、各オブジェクトの相対位置をクイックルックアップのために保存します。クロスリファレンステーブルは既存のオブジェクトの数よりも1つ長いエントリを持っており、アイテム0は予約され、何の方法でも使用してはいけません。多くのPyMuPDFクラスにはxref属性（非PDFの場合はゼロ）があり、:meth:`Document.xref_length`"
 " - 1を介してPDF内のオブジェクトの総数を知ることができます。"
 
-#: ../../glossary.rst:148 5eceab782a7049678ee8da1a364e7c88
+#: ../../glossary.rst:148 6c021fd6a5aa44d7b8b3e0905f3f7b08
 msgid ""
 "When referring to font size this metric is measured in points where 1 "
 "inch = 72 points."
 msgstr "フォントサイズを指す際、このメトリックは1インチ = 72ポイントとして測定されます。"
 
-#: ../../glossary.rst:152 63eca8f640994da3a260f20dc9f34b32
+#: ../../glossary.rst:152 c558da0bdc1446d89fcd51030a930245
 msgid ""
 "Images and :ref:`Pixmap` objects may contain resolution information "
 "provided as \"dots per inch\", dpi, in each direction (horizontal and "
@@ -420,7 +420,7 @@ msgstr ""
 " :attr:`Pixmap.xres` 、:attr:`Pixmap.yres` "
 "に設定します。入力内で有意義な情報が見つからない場合（非正の値や4800を超える値など）、代わりに「適切な」デフォルト値を使用します。通常のデフォルト値は96ですが、一部の場合（例えばJPXイメージの場合）は72になる場合もあります。"
 
-#: ../../glossary.rst:156 b3596d25e2f24a8dac3dccaca160233a
+#: ../../glossary.rst:156 8e9c840d574c4b3d8c897a834b9362df
 msgid ""
 "Optional content properties dictionary - a sub :data:`dictionary` of the "
 "PDF :data:`catalog`. The central place to store optional content "
@@ -436,7 +436,7 @@ msgstr ""
 "、必須、すべてのオプショナルコンテンツグループをリストする配列、（2） `/D` "
 "、必須、デフォルトのオプショナルコンテンツ構成辞書（OCCD）、（3） `/Configs` 、オプション、代替のOCCDの配列。"
 
-#: ../../glossary.rst:161 5be131747b2c487b86266699a017cc2b
+#: ../../glossary.rst:161 0100632cdca744f69f1f6913c969d05d
 msgid ""
 "Optional content configuration dictionary - a PDF :data:`dictionary` "
 "inside the PDF :data:`OCPD`. It stores a setting of ON / OFF states of "
@@ -453,7 +453,7 @@ msgstr ""
 " の `/D` 構成は常にアクティブになります。ビューアは `/D` 、または配列 `/Configs` "
 "に含まれるオプショナル構成のいずれかに切り替える方法を提供する必要があります。"
 
-#: ../../glossary.rst:166 03e82faa9c9b4b5d9ebe19bf46bfed67
+#: ../../glossary.rst:166 43b7c2249e154c59bf5a59cfd2cf86e2
 msgid ""
 "Optional content group -- a :data:`dictionary` object used to control the"
 " visibility of other PDF objects like images or annotations. "
@@ -467,7 +467,7 @@ msgstr ""
 "オブジェクト。どのページで定義されているかに関係なく、同じOCGを持つオブジェクトは、OCGをONまたはOFFに設定することで同時に表示または非表示にできます。これは多くのPDFビューア（Adobe"
 " Acrobat）が提供するユーザーインターフェース、またはプログラムを使用して達成できます。"
 
-#: ../../glossary.rst:170 d5a9b3ce3ecd4b52839e8497b27cc838
+#: ../../glossary.rst:170 f4ba5ac63bea490bbc335d7fade50a6b
 msgid ""
 "Optional content membership dictionary -- a :data:`dictionary` object "
 "which can be used like an :data:`OCG`: it has a visibility state. The "
@@ -478,7 +478,7 @@ msgstr ""
 "オプショナルコンテンツメンバーシップ辞書（OCMD） - :data:`OCG` "
 "のように使用できる辞書オブジェクトで、表示状態を持ちます。OCMDの表示は計算されます：これはOCGの1つ以上の状態を使用してブール値を生成する論理式です。式の結果はON（true）またはOFF（false）として解釈されます。"
 
-#: ../../glossary.rst:174 b8561578150246cc911d8496bb4f3cb2
+#: ../../glossary.rst:174 522b5dde5e3b49df8ab57178f4d58ed1
 msgid ""
 "Some frequent character combinations are represented by their own special"
 " glyphs in more advanced fonts. Typical examples are \"fi\", \"fl\", "
@@ -490,17 +490,16 @@ msgstr ""
 "一部の頻繁な文字の組み合わせは、より高度なフォントでは固有の特別なグリフで表されます。典型的な例には「fi」、「fl」、「ffi」、「ffl」などがあります。これらの複合体はリガチャと呼ばれます。PyMuPDFのテキスト抽出では、対応するユニコードを変更せずに返すオプションがあり、またリガチャをその構成要素に分割することもできます：「fi」"
 " ==> 「f」+「i」など。"
 
-#: ../../footer.rst:71 68552d3eff904afd8a14b070333f9caa
+#: ../../footer.rst:60 04c382aafad34653bc0f596f100e3271
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 c094ce4ab8df4a67933404eb35e2f388
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 #~ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
+
+#~ msgid "Discord logo"
 #~ msgstr ""
 

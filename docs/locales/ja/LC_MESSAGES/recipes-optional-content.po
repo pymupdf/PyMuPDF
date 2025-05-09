@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,44 +19,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 9b03d906f059438a8d4e73f31748793d
+#: ../../header.rst:-1 b9adf564010b470a971c6291f3680a9f
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 713d4e288b334e23aa0c0ed010062e7e
+#: ../../header.rst:-1 4f641f2c45c0425a8a232bd594ce5a8e
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 aea7af956060401ca9485a04a1ad109c
+#: ../../header.rst:-1 9aa457bbf5a14960b09296e9b2e285cc
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../recipes-optional-content.rst:7 b3ad8bc27ad74d238e5f19ae94116dda
+#: ../../recipes-optional-content.rst:7 f386f73d902d4f638a7820107f09b953
 msgid "Optional Content Support"
 msgstr "オプションコンテンツのサポート"
 
-#: ../../recipes-optional-content.rst:9 226e513cb3c5486490d4ea47a4102225
+#: ../../recipes-optional-content.rst:9 fcfec01c6f83417597feed152e9cf82e
 msgid ""
 "This document explains PyMuPDF's support of the PDF concept **\"Optional "
 "Content\"**."
 msgstr "この文書では、PyMuPDFにおけるPDFコンセプト **「オプションコンテンツ」** のサポートについて説明します。"
 
-#: ../../recipes-optional-content.rst:12 58206aac0517488ebed6281d9a565c66
+#: ../../recipes-optional-content.rst:12 3f7db4b17b0c4708ba190ca50f3cf65f
 msgid "Introduction: The Optional Content Concept"
 msgstr "はじめに：オプションコンテンツのコンセプト"
 
-#: ../../recipes-optional-content.rst:13 07ca7b08b3f84c0da67546e1220e879e
+#: ../../recipes-optional-content.rst:13 1a20a0429dbd4d22b3e438897b87f6ec
 msgid ""
 "*Optional Content* in PDF is a way to show or hide parts of a document "
 "based on certain conditions: Parameters that can be set to ON or to OFF "
 "when using a supporting PDF consumer (viewer), or programmatically."
 msgstr "PDFのオプションコンテンツは、特定の条件に基づいてドキュメントの一部を表示または非表示にする方法です。これは、サポートするPDFコンシューマ（ビューア）を使用する際にONまたはOFFに設定できるパラメータ、またはプログラムを使用して行います。"
 
-#: ../../recipes-optional-content.rst:15 a8f96db1295840fa992baa91416b6b56
+#: ../../recipes-optional-content.rst:15 aaecb435f0b74040bb7788f47b75ef27
 msgid ""
 "This capability is useful in items such as CAD drawings, layered artwork,"
 " maps, and multi-language documents. Typical uses include showing or "
@@ -67,20 +67,20 @@ msgid ""
 "document on screen as opposed to printing it."
 msgstr "この機能は、CAD図面、レイヤー化されたアートワーク、地図、多言語ドキュメントなどのアイテムで有用です。一般的な用途には、地理的な地図、技術デバイス、建築設計などの複雑なベクトルグラフィックの詳細の表示または非表示、異なるズームレベル間の自動切り替えなどが含まれます。他の用途としては、画面上でドキュメントを表示する際と印刷する際で自動的に異なる詳細レベルを表示することが考えられます。"
 
-#: ../../recipes-optional-content.rst:17 25edca963cd74418938d39c423b1b3df
+#: ../../recipes-optional-content.rst:17 f07e3ad64d7846e98be13b841e104284
 msgid ""
 "Special PDF objects, so-called **Optional Content Groups** (OCGs) are "
 "used to define these different *layers* of content."
 msgstr "特別なPDFオブジェクトである「オプションコンテンツグループ（OCG）」を使用して、これらの異なるコンテンツのレイヤーを定義します。"
 
-#: ../../recipes-optional-content.rst:19 a1e36b3f3c2b4ec0b37dfe8a64eeb66e
+#: ../../recipes-optional-content.rst:19 8e40a4dd32264311b329d5ef6d1b3feb
 msgid ""
 "Assigning an OCG to a \"normal\" PDF object (like a text or an image) "
 "causes that object to be visible or hidden, depending on the current "
 "state of the assigned OCG."
 msgstr "「通常の」PDFオブジェクト（テキストや画像など）にOCGを割り当てると、そのオブジェクトは割り当てられたOCGの現在の状態に応じて表示または非表示になります。"
 
-#: ../../recipes-optional-content.rst:21 ac0982f31e394d8b9e31dda7f7645671
+#: ../../recipes-optional-content.rst:21 55f0e10ade9d4f99abf06a67d6897563
 msgid ""
 "To ease definition of the overall configuration of a PDF's Optional "
 "Content, OCGs can be organized in higher level groupings, called **OC "
@@ -91,21 +91,21 @@ msgid ""
 "the document."
 msgstr "PDFのオプションコンテンツの全体的な構成を簡単に定義するために、OCGは高レベルのグループ化である「OC構成」に組織化できます。各構成は、OCGの望ましい初期表示状態とともに、OCGのコレクションです。これらの構成のいずれかを選択する（PDFビューアまたはプログラムを介して）と、ドキュメント全体で影響を受けるすべてのPDFオブジェクトの表示状態が対応するように変更されます。"
 
-#: ../../recipes-optional-content.rst:23 129b2d662dfa4509a024496f73d2cdf5
+#: ../../recipes-optional-content.rst:23 335985a556c34d438df38487d6cae48b
 msgid "Except for the default one, OC Configurations are optional."
 msgstr "デフォルト以外のOC構成はオプションです。"
 
-#: ../../recipes-optional-content.rst:25 56909c5539cd48ab835f0a69371e6f11
+#: ../../recipes-optional-content.rst:25 fccc4cf720904ea79e6efd0b6034ca87
 msgid ""
 "For more explanations and additional background please refer to PDF "
 "specification manuals."
 msgstr "詳細な説明や追加の背景情報については、PDF仕様マニュアルを参照してください。"
 
-#: ../../recipes-optional-content.rst:28 b1cd203478d240b983607933daf81165
+#: ../../recipes-optional-content.rst:28 c00fd4817a4b47efbf6a64bfa9134f7e
 msgid "PyMuPDF Support for PDF Optional Content"
 msgstr "PDFオプショナルコンテンツのPyMuPDFサポート"
 
-#: ../../recipes-optional-content.rst:29 55a12777ad574819ac4afb00a4a25fd4
+#: ../../recipes-optional-content.rst:29 58da3cf082224fbab5a10febc9e9918c
 msgid ""
 "PyMuPDF offers full support for viewing, defining, changing and deleting "
 "Option Content Groups, Configurations, maintaining the assignment of OCGs"
@@ -113,24 +113,24 @@ msgid ""
 "and the visibility states of each single OCG."
 msgstr "PyMuPDFは、オプショナルコンテンツグループや構成の表示、定義、変更、削除、OCGのPDFオブジェクトへの割り当ての維持、OC構成間のプログラムによる切り替えや各単一OCGの可視性状態のサポートを完全に提供します。"
 
-#: ../../recipes-optional-content.rst:32 a3ef9165812247f98d485ef1bdda83ad
+#: ../../recipes-optional-content.rst:32 150d36f9de0441a599f6371982441f3d
 msgid "How to Add Optional Content"
 msgstr "オプショナルコンテンツの追加方法"
 
-#: ../../recipes-optional-content.rst:33 6c26ea2afbfa4db1a302cb2d8ef9decc
+#: ../../recipes-optional-content.rst:33 73887253f5d24ae7ba64f723a91eaf07
 msgid ""
 "This is as simple as adding an Optional Content Group, OCG, to a PDF: "
 ":meth:`Document.add_ocg`."
 msgstr "これは、PDFにオプショナルコンテンツグループ（OCG）を追加するだけの簡単な手順です：:meth:`Document.add_ocg`。"
 
-#: ../../recipes-optional-content.rst:35 f14487602af447599533a2915c331dd7
+#: ../../recipes-optional-content.rst:35 bc0c989ada934a9a9e91392eed44e3c6
 msgid ""
 "If previously the PDF had no OC support at all, the required setup (like "
 "defining the default OC Configuration) will be done at this point "
 "automatically."
 msgstr "以前にPDFがまったくOCサポートを持っていなかった場合、必要なセットアップ（デフォルトのOC構成の定義など）は自動的に行われます。"
 
-#: ../../recipes-optional-content.rst:37 bd5cb9b9b8a547b68b41a13ad8a30ba3
+#: ../../recipes-optional-content.rst:37 cdfece8bcb5842e8a95237834b218484
 msgid ""
 "The method returns an :data:`xref` of the created OCG. Use this xref to "
 "associate (mark) any PDF object with it, that you want to make dependent "
@@ -140,7 +140,7 @@ msgstr ""
 "このメソッドは、作成されたOCGの :data:`xref` "
 "を返します。このxrefを使用して、このOCGの状態に依存するようにする任意のPDFオブジェクトを関連付け（マーク）します。例えば、ページに画像を挿入し、次のようにxrefを参照できます::"
 
-#: ../../recipes-optional-content.rst:41 5627c49fe5164e3f9c13e94199b7a713
+#: ../../recipes-optional-content.rst:41 6ffb9b4bd14d4579967827abb6fab656
 msgid ""
 "If you want to put an **existing** image under the control of an OCG, you"
 " must first find out the image's xref number (called `img_xref` here) and"
@@ -153,40 +153,40 @@ msgstr ""
 "`doc.set_oc(img_xref, xref)` "
 "を行う必要があります。これにより、OCGの状態が「ON」または「OFF」の場合、画像はドキュメント全体で（非）表示になります。また、このメソッドで異なるOCGを割り当てることもできます。"
 
-#: ../../recipes-optional-content.rst:43 8bdd0550e6f44ca1b26cd7bc144f9ba5
+#: ../../recipes-optional-content.rst:43 57ddbd4662c64c7da80144e82353dd65
 msgid "To **remove** an OCG from an image, do `doc.set_oc(img_xref, 0)`."
 msgstr "画像からOCGを削除するには、 `doc.set_oc(img_xref, 0)` を行います。"
 
-#: ../../recipes-optional-content.rst:45 fdd9ff2041064cf1896e01be1b5f2a33
+#: ../../recipes-optional-content.rst:45 7cf89450ea9246beaa5cc79c376ec93c
 msgid ""
 "One single OCG can be assigned to multiple PDF objects to control their "
 "visibility."
 msgstr "1つのOCGは複数のPDFオブジェクトに割り当てて、それらの可視性を制御することができます。"
 
-#: ../../recipes-optional-content.rst:48 e1cab4d5f43940368d8c55bfdbe10380
+#: ../../recipes-optional-content.rst:48 7410b55143ef4843a28d68ebad34fd9a
 msgid "How to Define Complex Optional Content Conditions"
 msgstr "複雑なオプショナルコンテンツ条件の定義方法"
 
-#: ../../recipes-optional-content.rst:50 e2fd02f35edd4bd8b42ab1fed4e90740
+#: ../../recipes-optional-content.rst:50 896d39eb29204989ade197882ff6a5ce
 msgid ""
 "Sophisticated logical conditions can be established to address complex "
 "visibility needs."
 msgstr "複雑な可視性のニーズに対応するために、洗練された論理条件を設定することができます。"
 
-#: ../../recipes-optional-content.rst:52 e83cb9e615b94b7c924572051093aeb0
+#: ../../recipes-optional-content.rst:52 a5c986cc1555410ebbc392e3476e93fe
 msgid ""
 "For example, you might want to create a multi-language document, so the "
 "user may switch between languages as required."
 msgstr "例えば、ユーザーが必要に応じて言語を切り替えることができるような多言語ドキュメントを作成したいかもしれません。"
 
-#: ../../recipes-optional-content.rst:54 34ee0d97669e4415aad8b19810bb8ec8
+#: ../../recipes-optional-content.rst:54 48cadb3f29334ff5aa265acd08dfdc06
 msgid "Please have a look at `this Jupyter Notebook`_ and execute it as desired."
 msgstr ""
 "`この Jupyter Notebook <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/jupyter-notebooks/optional-content.ipynb>`_  "
 "をご覧いただき、必要に応じて実行してみてください。"
 
-#: ../../recipes-optional-content.rst:56 88cdfc1fb0684f73b4b694e766735346
+#: ../../recipes-optional-content.rst:56 49114e4ceda7440399518471d7dc8eb7
 msgid ""
 "Certainly, your requirements may even be more complex and involve "
 "multiple OCGs with ON/OFF states that are connected by some kind of "
@@ -194,17 +194,16 @@ msgid ""
 "possible and how to plan your next steps."
 msgstr "もちろん、あなたの要件はさらに複雑で、論理的な関係で接続された複数のON/OFF状態を持つ複数のOCGが関与する可能性がありますが、これは可能なことと次のステップを計画する方法を示すものとなるでしょう。"
 
-#: ../../footer.rst:71 63ff2bdb2c954d89ad210cfc5dfa508a
+#: ../../footer.rst:60 067fc234c31f4747987f53713303219a
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 cf74658ef1814622ac4ffb7f9f589b1c
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 #~ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
+
+#~ msgid "Discord logo"
 #~ msgstr ""
 

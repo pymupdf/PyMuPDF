@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-01 16:48+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 56f684c8509f440f8763f76c64d62cab
+#: ../../header.rst:-1 0f9441fa95204b209542b6195fa33e94
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 41d31ae777ea47d5a7472ed30feb1dbb
+#: ../../header.rst:-1 b494c998c5e441c78282bc408dffff8c
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 c61d6c020b9c4db0b2335c5d57697d3d
+#: ../../header.rst:-1 6067a6dd9e5242e4b0ce1d3b3ce3b293
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../znames.rst:7 7dde67597b46443d9a6fcac4edccd5b8
+#: ../../znames.rst:7 873beb2a37544c07b1a5e70eca5650fe
 msgid "Deprecated Names"
 msgstr "非推奨の名前"
 
-#: ../../znames.rst:9 de85276ae1e941299782ebd8ef58d1ef
+#: ../../znames.rst:9 78ca6b2b094c43dab0f3efb7a1340a0f
 msgid ""
 "The original naming convention for methods and properties has been "
 "\"camelCase\". Since its creation around 2013, a tremendous increase of "
@@ -49,14 +49,14 @@ msgid ""
 "guess."
 msgstr "メソッドやプロパティの元々の命名規則は「camelCase」でした。その創造以来、PyMuPDFでの機能の著しい増加がありました。それに伴い、クラス、メソッド、プロパティも対応するように増加しました。多くの場合、これにより直感に反した、論理的でなく見栄えのしない名前が生まれ、覚えたり推測したりが難しくなりました。"
 
-#: ../../znames.rst:11 3144ee3b25884e81a555ce5fee11a487
+#: ../../znames.rst:11 96fde94d6cb6460bb374c4c18ab3c5f2
 msgid ""
 "A few versions ago, I therefore decided to shift gears and switch to a "
 "\"snake_cased\" naming standard. This was a major effort, which needed a "
 "step-wise approach. I think am done with it now (version 1.18.14)."
 msgstr "数バージョン前、私はゆえに、段階的なアプローチが必要な大規模な取り組みであったにもかかわらず、「snake_cased」の命名規則に切り替えることを決定しました。これは大きな努力が必要でした。今はそれが完了したと思っています（バージョン1.18.14）。"
 
-#: ../../znames.rst:14 3f9d9f7355804bc2bde84498e0d40278
+#: ../../znames.rst:14 f1aba321b49d4a50b23fd84d5435c403
 msgid ""
 "The following list maps deprecated names to their new versions. For "
 "example, property `pageCount` became `page_count` in the :ref:`Document` "
@@ -68,13 +68,13 @@ msgstr ""
 "となりました。また、より明らかでない名前の変更もあります。例えば、メソッドである `getPNGdata` は :ref:`Pixmap` "
 "クラス内で `tobytes` という名前に変更されました。"
 
-#: ../../znames.rst:16 1a72a22997b744bea7f12b233c6040db
+#: ../../znames.rst:16 da72cacf26b1418ebcdd799307695e7f
 msgid ""
 "Names of classes (camel case) and package-wide constants (the majority is"
 " upper case) remain untouched."
 msgstr "クラスの名前（キャメルケース）やパッケージ全体の定数（大部分は大文字）については、触れずに残ります。"
 
-#: ../../znames.rst:18 e2f2f25d0545459788e7b392dd506f4d
+#: ../../znames.rst:18 8caf5f400d46465da41396c978125459
 msgid ""
 "Old names will remain available as deprecated aliases through MuPDF "
 "version 1.19.0 and **be removed** in the version that follows it - "
@@ -83,7 +83,7 @@ msgstr ""
 "古い名前は、MuPDFバージョン1.19.0まで非推奨のエイリアスとして利用可能であり、その後のバージョン（おそらくバージョン1.20.0ですが、これは上流の決定（MuPDF）に依存します）で"
 " **削除されます** 。"
 
-#: ../../znames.rst:20 de6071f94dd04dc9a402935ff7859881
+#: ../../znames.rst:20 196848a51a5e49d58753a2b5715c07b8
 msgid ""
 "Starting with version 1.19.0, we will issue deprecation warnings on "
 "`sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' "
@@ -94,7 +94,7 @@ msgstr ""
 "`Deprecation: 'newPage'はクラス 'Document'からv1.19.0以降で削除されました - 'new_page'` "
 "を使用してください。非推奨のプロパティを使用した場合、このタイプの警告は発生しません。"
 
-#: ../../znames.rst:22 b9cd42a979c245cd89124929acd4fd73
+#: ../../znames.rst:22 fd326a4ad3c94bfb8d5f9569d40f630d
 msgid ""
 "Starting immediately, all deprecated objects (methods and properties) "
 "will show a copy of the original's docstring, **prefixed** with the "
@@ -103,7 +103,7 @@ msgstr ""
 "直ちに、すべての非推奨のオブジェクト（メソッドとプロパティ）は、元のドキュメント文字列のコピーが表示され、その前に非推奨のメッセージが "
 "**付加されます** 。例："
 
-#: ../../znames.rst:39 c23dcd7e32934976ad64724b88fc73a1
+#: ../../znames.rst:39 7ba1507fe4c94e149d0b1642bd1f770f
 msgid ""
 "There is a utility script `alias-changer.py <https://github.com/pymupdf"
 "/PyMuPDF-Utilities/tree/master/alias-changer.py>`_ which can be used to "
@@ -116,13 +116,9 @@ msgstr ""
 "Utilities/tree/master/alias-changer.py>` "
 "があり、スクリプト内で大量の名前変更を行うために使用できます。単一のファイルまたはフォルダを引数として受け入れます。フォルダが指定された場合、そのフォルダ内のすべてのPythonファイルおよびそのサブフォルダのファイルが変更されます。必要に応じて、スクリプトのバックアップを取ることもできます。"
 
-#: ../../footer.rst:60 905d62566092434d9b5e28b70c6d7d50
+#: ../../footer.rst:60 317892866ae648e99963bb6a51525df6
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 b6ba33a0686a4632b501b212526a69f5
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 #~ msgstr ""
@@ -786,5 +782,8 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid ":index:`xrefStreamRaw` -- :meth:`Document.xref_stream_raw`"
+#~ msgstr ""
+
+#~ msgid "Discord logo"
 #~ msgstr ""
 
