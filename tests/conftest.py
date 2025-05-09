@@ -1,5 +1,6 @@
 import os
 import platform
+import sys
 
 import pymupdf
 
@@ -46,6 +47,8 @@ def wrap(*args, **kwargs):
     
     # Run the test.
     rep = yield
+    
+    sys.stdout.flush()
     
     # Test has run; check it did not create any MuPDF warnings etc.
     wt = pymupdf.TOOLS.mupdf_warnings()
