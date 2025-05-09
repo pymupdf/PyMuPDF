@@ -164,7 +164,7 @@ Example: To join the following files
 
 and store the result as **output.pdf** enter this command:
 
-*pymupdf join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 file3.pdf,,5-N*
+``pymupdf join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 file3.pdf,,5-N``
 
 
 Low Level Information

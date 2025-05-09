@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.24.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-06 22:50+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -18,27 +18,26 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 76caea474c7b4143970f1b1ab2515bc1
+#: ../../header.rst:-1 4009185189884afa815f06437219b17a
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 9aabd0408684421999890baa0c2f59c5
+#: ../../header.rst:-1 0945b3eedd774aa1bf2ed67c92baa34e
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 620d8625e9374ac695590ccee38ce7e4
+#: ../../header.rst:-1 5438d71f4a5f445c9c4929c4169009b8
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../footer.rst:71 53aa60c4120c4df68c355c3f55c29796
+#: ../../footer.rst:60 8482813d3d6a47a39130184e645552b4
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 ff06c32ab4194672a5d612ddb8c35e86
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 

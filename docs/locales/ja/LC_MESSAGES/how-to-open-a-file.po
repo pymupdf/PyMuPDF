@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-11 21:42+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,47 +19,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 fbce46a08b3942268c5a88496a569b7d
+#: ../../header.rst:-1 cac88fdfe639485b93df6094e0c3030e
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 e70d4b2976654a16bee5417ccbf2a6f0
+#: ../../header.rst:-1 9510201d07b04c55a3114ceb4b285f81
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 dcf5c4bd9f534825847cfa69076d3868
+#: ../../header.rst:-1 f2821506806f4e1f858415f54f224785
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../how-to-open-a-file.rst:7 b56aef1cb94941268ffcaf474302c628
+#: ../../how-to-open-a-file.rst:7 58b4044b498b4fa98a7e544066d6548c
 msgid "Opening Files"
 msgstr "ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:15 558a099e442a4dc98d8bce5206b46aff
+#: ../../how-to-open-a-file.rst:15 cae84881472c4a128e9b260c5de512f1
 msgid "Supported File Types"
 msgstr "サポートされているファイルタイプ"
 
-#: ../../how-to-open-a-file.rst:17 a0feccd35f4844af94fc03974d746b36
+#: ../../how-to-open-a-file.rst:17 6696fc63a01c47ffa19215b2f6d2a5b4
 msgid "|PyMuPDF| can open files other than just |PDF|."
 msgstr "|PyMuPDF| は |PDF| 以外のファイルも開くことができます。"
 
-#: ../../how-to-open-a-file.rst:19 a93f5ede769d467ea2eea80bac592492
+#: ../../how-to-open-a-file.rst:19 52efb4e7a74844d7b47e10f1f9677f7f
 msgid "The following file types are supported:"
 msgstr "|PyMuPDF| は以下のファイルタイプをサポートしています："
 
-#: ../../how-to-open-a-file.rst:26 aa587344bb504cb3b2bff50ad143091d
+#: ../../how-to-open-a-file.rst:26 fb0e540bc4eb4ac4b815230c9fe94127
 msgid "How to Open a File"
 msgstr "ファイルを開く方法"
 
-#: ../../how-to-open-a-file.rst:28 abedd5d5fe494b67bf7e404490f3bd67
+#: ../../how-to-open-a-file.rst:28 8de724b91b61477183bf37f2a0ecd140
 msgid "To open a file, do the following:"
 msgstr "ファイルを開くには、次の手順を実行します。"
 
-#: ../../how-to-open-a-file.rst:35 1e9319f3d234491abe36ee148ed0e392
+#: ../../how-to-open-a-file.rst:35 ca2f4e8e9264476f8f8a228742e663fa
 msgid ""
 "The above creates a :ref:`Document`. The instruction `doc = "
 "pymupdf.Document(\"a.pdf\")` does exactly the same. So, `open` is just a "
@@ -67,21 +67,21 @@ msgid ""
 "chapter."
 msgstr ""
 
-#: ../../how-to-open-a-file.rst:39 e3a9d80ac30b4da2914cbd51a25d43bc
+#: ../../how-to-open-a-file.rst:39 fb423287318a40b0a8079a8b86254936
 msgid "Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`"
 msgstr "拡張子の異なるファイルを開く"
 
-#: ../../how-to-open-a-file.rst:41 9a51769cdc044639b6f2cf8134aaa943
+#: ../../how-to-open-a-file.rst:41 23a14ae19b7643cd9324eb33cc30b516
 msgid ""
 "If you have a document with a wrong file extension for its type, you can "
 "still correctly open it."
 msgstr "拡張子がファイルタイプと異なっていても、正しく開くことができます。"
 
-#: ../../how-to-open-a-file.rst:43 de37ef08eed44cac81a6fe6a6e1f148c
+#: ../../how-to-open-a-file.rst:43 bcddf79a279b4b23b9c0c3c02a02d0ae
 msgid "Assume that *\"some.file\"* is actually an **XPS**. Open it like so:"
 msgstr "例えば *\"some.file\"* が実際には **XPS** ファイルの場合は、以下のようにして開きます："
 
-#: ../../how-to-open-a-file.rst:53 945beb3967e14907ac758fc6bebee7a6
+#: ../../how-to-open-a-file.rst:53 a05b58c6b9ed4edab534e2127dc4dd90
 msgid ""
 "|PyMuPDF| itself does not try to determine the file type from the file "
 "contents. **You** are responsible for supplying the file type information"
@@ -97,7 +97,7 @@ msgstr ""
 "パラメーターを通じて明示的にファイルタイプの情報を提供する責任があります。また、詳細な説明については :ref:`Document` "
 "の章を参照してください。"
 
-#: ../../how-to-open-a-file.rst:55 ade379abea354b938901a31a9170b81d
+#: ../../how-to-open-a-file.rst:55 01594b5d61fd4877bc9bbe0b8a5d8de8
 msgid ""
 "If |PyMuPDF| encounters a file with an unknown / missing extension, it "
 "will try to open it as a |PDF|. So in these cases there is no need for "
@@ -109,34 +109,34 @@ msgstr ""
 "は不明なファイルや拡張子のないファイルはPDFとして開きます。このため、これらの場合は追加の情報は必要ありません。同様に、メモリ上のドキュメントの場合は、`doc=pymupdf.open(stream=mem_area)`"
 " と指定するだけでPDFドキュメントとして開くことができます。"
 
-#: ../../how-to-open-a-file.rst:57 0e6a53672ddc413192ab00e03d7e1f02
+#: ../../how-to-open-a-file.rst:57 213861827ccf4095a7e7ec7f44323741
 msgid ""
 "If you attempt to open an unsupported file then |PyMuPDF| will throw a "
 "file data error."
 msgstr "サポートされていないファイルを開こうとした場合、PyMuPDFはファイルデータエラーをスローします。"
 
-#: ../../how-to-open-a-file.rst:66 3d7344330a17461786c429099908ae4f
+#: ../../how-to-open-a-file.rst:66 9408ee2e906e44feb3f19fde7131eee3
 #, fuzzy
 msgid "Opening Remote Files"
 msgstr "ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:69 c00fbde0eead4bbc8c695aef57ff6222
+#: ../../how-to-open-a-file.rst:69 3c01cd03b6fd45c4bd767057e34ab038
 msgid ""
 "For remote files on a server (i.e. non-local files), you will need to "
 "*stream* the file data to |PyMuPDF|."
 msgstr ""
 
-#: ../../how-to-open-a-file.rst:71 f989297813a24c91a1f62a6cec117fd7
+#: ../../how-to-open-a-file.rst:71 b8988a2a5afc458592ac62ac241e9557
 msgid ""
 "For example use the `requests "
 "<https://requests.readthedocs.io/en/latest/>`_ library as follows:"
 msgstr ""
 
-#: ../../how-to-open-a-file.rst:84 f6a2ad2300144fe7a4ac46ad06b385ec
+#: ../../how-to-open-a-file.rst:84 3afd63c1a9de47f2b54f07057b1bda6b
 msgid "Opening Files from Cloud Services"
 msgstr ""
 
-#: ../../how-to-open-a-file.rst:86 e4a309b083dd41079127a98f13164f13
+#: ../../how-to-open-a-file.rst:86 cb885344d7a6494290518e5ac9e98541
 msgid ""
 "For further examples which deal with files held on typical cloud services"
 " please see these `Cloud Interactions code snippets "
@@ -144,11 +144,45 @@ msgid ""
 "interactions>`_."
 msgstr ""
 
-#: ../../how-to-open-a-file.rst:95 579329a84c3e44609f34b54ee6f05d94
+#: ../../how-to-open-a-file.rst:94 1869089fe979430ba11b6a880eed5e13
+#, fuzzy
+msgid "Opening Django Files"
+msgstr "C# ファイルを開く"
+
+#: ../../how-to-open-a-file.rst:96 aee62dcd16f3444bbef1ae267e49fbb1
+msgid ""
+"Django implements a `File Storage API "
+"<https://docs.djangoproject.com/en/5.1/ref/files/storage/>`_ to store "
+"files. The default is the `FileSystemStorage "
+"<https://docs.djangoproject.com/en/5.1/ref/files/storage/#the-"
+"filesystemstorage-class>`_, but the `django-storages <https://django-"
+"storages.readthedocs.io/en/latest/index.html>`_ library provides a number"
+" of other storage backends."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:98 dfc6c49ca4114ccc98d1b314f2891bd5
+msgid ""
+"You can open the file, move the contents into memory, then pass the "
+"contents to |PyMuPDF| as a stream."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:113 9076a6c2f6f74a4fa882b9e2f66ab944
+msgid "Please note that if the file you open is large, you may run out of memory."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:115 3d79799d3f0a497ba8648550cd0ab745
+msgid ""
+"The File Storage API works well if you're using different storage "
+"backends in different environments. If you're only using the "
+"`FileSystemStorage`, you can simply use the `obj.file.name` to open the "
+"file directly with |PyMuPDF| as shown in an earlier example."
+msgstr ""
+
+#: ../../how-to-open-a-file.rst:123 85288abbd82c4edc9fb1dfee730d152d
 msgid "Opening Files as Text"
 msgstr "ファイルをテキストとして開く"
 
-#: ../../how-to-open-a-file.rst:98 ad7c9c7973e4460197d2a893ce69a874
+#: ../../how-to-open-a-file.rst:126 6aa9839fd5d84413a0ce8f6e17824b60
 msgid ""
 "|PyMuPDF| has the capability to open any plain text file as a document. "
 "In order to do this you should provide the `filetype` parameter for the "
@@ -157,7 +191,7 @@ msgstr ""
 "|PyMuPDF| には、プレーン テキスト ファイルをドキュメントとして開く機能があります。 これを行うには、`pymupdf.open` "
 "関数の `filetype` パラメータを「txt」として指定する必要があります。"
 
-#: ../../how-to-open-a-file.rst:105 7795059e827d49ceb6635695796163f1
+#: ../../how-to-open-a-file.rst:133 72d20b3c2e33457aacb836fbe07acbf0
 msgid ""
 "In this way you are able to open a variety of file types and perform the "
 "typical **non-PDF** specific features like text searching, text "
@@ -169,27 +203,27 @@ msgstr ""
 "に固有ではない一般的な機能を実行できます。 明らかに、txt コンテンツをレンダリングしたら、 |PDF| として保存したり、他の |PDF| "
 "ファイルと結合したりすることは問題ありません。"
 
-#: ../../how-to-open-a-file.rst:109 02063bce85b54d24912efd14aa588c2a
+#: ../../how-to-open-a-file.rst:137 9b981eb61d194ca0b2ef17f23500da44
 msgid "Examples"
 msgstr "例"
 
-#: ../../how-to-open-a-file.rst:113 ec04324cadf04ba6a66048352054a372
+#: ../../how-to-open-a-file.rst:141 3ac6d963ae5b402e94a3ad37e0fb12c9
 msgid "Opening a `C#` file"
 msgstr "C# ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:122 8c74bd78aa9c4b8bac6165130e1745e5
+#: ../../how-to-open-a-file.rst:150 ff93dac3de6a4cb8bbb0076a69e1b632
 msgid "Opening an ``XML`` file"
 msgstr "XML ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:130 280150242f3c4a128892d557a0dfa804
+#: ../../how-to-open-a-file.rst:158 72a973937e15458f9a0fc4e9ae43e9ea
 msgid "Opening a `JSON` file"
 msgstr "JSON ファイルを開く"
 
-#: ../../how-to-open-a-file.rst:137 d417e97402044280b518fd9fb2c07337
+#: ../../how-to-open-a-file.rst:165 accacc140af14ec2998e5ca54b8909bb
 msgid "And so on!"
 msgstr "等々！"
 
-#: ../../how-to-open-a-file.rst:139 541ec11b9a0e4adca731889451252b94
+#: ../../how-to-open-a-file.rst:167 b47b21b5806a489b9807e5cb979132f7
 msgid ""
 "As you can imagine many text based file formats can be *very simply "
 "opened* and *interpreted* by |PyMuPDF|. This can make data analysis and "
@@ -199,11 +233,10 @@ msgstr ""
 "ご想像のとおり、多くのテキスト ベースのファイル形式は、|PyMuPDF| によって非常に簡単に開いて解釈できます。 "
 "これにより、これまで利用できなかった広範囲のファイルのデータ分析と抽出が突然可能になります。"
 
-#: ../../footer.rst:60 c1b2b8f11f1d45709966853696300e96
+#: ../../footer.rst:60 c565e48ba51e43cbb1e960403a67a689
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 63045bd2522645b08af805f3b9b46b6e
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 

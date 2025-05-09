@@ -8,7 +8,9 @@ Annot
 
 |pdf_only_class|
 
-Quote from the :ref:`AdobeManual`: "An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard."
+Quote from the :ref:`AdobeManual`:
+
+   *"An annotation associates an object such as a note, sound, or movie with a location on a page of a PDF document, or provides a way to interact with the user by means of the mouse and keyboard."*
 
 There is a parent-child relationship between an annotation and its page. If the page object becomes unusable (closed document, any document structure change, etc.), then so does every of its existing annotation objects -- an exception is raised saying that the object is "orphaned", whenever an annotation property or method is accessed.
 
@@ -78,10 +80,10 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg int dpi: (new in v1.19.2) desired resolution in dots per inch. If not `None`, the matrix parameter is ignored.
 
-      :arg colorspace: a colorspace to be used for image creation. Default is *pymupdf.csRGB*.
+      :arg colorspace: a colorspace to be used for image creation. Default is ``pymupdf.csRGB``.
       :type colorspace: :ref:`Colorspace`
 
-      :arg bool alpha: whether to include transparency information. Default is *False*.
+      :arg bool alpha: whether to include transparency information. Default is ``False``.
 
       :rtype: :ref:`Pixmap`
 
@@ -89,7 +91,7 @@ There is a parent-child relationship between an annotation and its page. If the 
          
          * If the annotation has just been created or modified, you should :meth:`Document.reload_page` the page first via `page = doc.reload_page(page)`.
 
-         * The pixmap will have *"premultiplied"* pixels if `alpha=True`. To learn about some background, e.g. look for "Premultiplied alpha" `here <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
+         * The pixmap will have *"premultiplied"* pixels if `alpha=True`. To learn about some background, e.g. look for "Premultiplied alpha" `in this online glossary <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
 
 
    .. index::
@@ -155,7 +157,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       * Changed in version 1.16.10
 
-      Changes annotation properties. These include dates, contents, subject and author (title). Changes for *name* and *id* will be ignored. The update happens selectively: To leave a property unchanged, set it to *None*. To delete existing data, use an empty string.
+      Changes annotation properties. These include dates, contents, subject and author (title). Changes for *name* and *id* will be ignored. The update happens selectively: To leave a property unchanged, set it to ``None``. To delete existing data, use an empty string.
 
       :arg dict info: a dictionary compatible with the *info* property (see below). All entries must be strings. If this argument is not a dictionary, the other arguments are used instead -- else they are ignored.
       :arg str content: *(new in v1.16.10)* see description in :attr:`info`.
@@ -237,7 +239,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       The annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations.
 
       :rtype: str
-      :returns: the blend mode or *None*.
+      :returns: the blend mode or ``None``.
 
 
    .. method:: set_blendmode(blendmode)
@@ -357,7 +359,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg sequence,float fill_color: the fill color.
 
-      :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, *False* must be specified even if the annotation was created with *False*.
+      :arg bool cross_out: *(new in v1.17.2)* add two diagonal lines to the annotation rectangle. 'Redact' annotations only. If not desired, ``False`` must be specified even if the annotation was created with ``False``.
 
       :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
@@ -373,7 +375,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       Basic information of the annot's attached file.
 
       :rtype: dict
-      :returns: a dictionary with keys *filename*, *ufilename*, *desc* (description), *size* (uncompressed file size), *length* (compressed length) for FileAttachment annot types, else *None*.
+      :returns: a dictionary with keys *filename*, *ufilename*, *desc* (description), *size* (uncompressed file size), *length* (compressed length) for FileAttachment annot types, else ``None``.
 
    .. method:: get_file()
 
@@ -484,7 +486,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. attribute:: line_ends
 
-      A pair of integers specifying start and end symbol of annotations types 'FreeText', 'Line', 'PolyLine', and 'Polygon'. *None* if not applicable. For possible values and descriptions in this list, see the :ref:`AdobeManual`, table 1.76 on page 400.
+      A pair of integers specifying start and end symbol of annotations types 'FreeText', 'Line', 'PolyLine', and 'Polygon'. ``None`` if not applicable. For possible values and descriptions in this list, see the :ref:`AdobeManual`, table 1.76 on page 400.
 
       :rtype: tuple
 

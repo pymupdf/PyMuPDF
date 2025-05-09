@@ -27,10 +27,10 @@ The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/Py
 
 .. _pdf2docx_conversion:
 
-Do you need **PDF** to **DOCX** conversion?
+Do you need |PDF| to **DOCX** conversion?
 --------------------------------------------------
 
-We recommend the pdf2docx_ library which uses **PyMuPDF** and the **python-docx** library to provide simple document conversion from **PDF** to **DOCX** format.
+We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-docx** library to provide simple document conversion from |PDF| to **DOCX** format.
 
 
 

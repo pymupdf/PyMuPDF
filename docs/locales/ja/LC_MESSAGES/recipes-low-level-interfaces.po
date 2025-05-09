@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 63a8868f6bef45f4b9ee572281ebfe04
+#: ../../header.rst:-1 7f129fba564145f8954ab3f7e226f0ec
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 8aaab44ecce44e0099842f63630e99c3
+#: ../../header.rst:-1 c67d240759fd40d187a0308599adeca9
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 5482b2e50c4d4769a2cf18d70e23b32f
+#: ../../header.rst:-1 076a135f5e7c4cc5bd9192d710ce8cdb
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../recipes-low-level-interfaces.rst:7 5469707b07014cf496b9c72889f5afe5
+#: ../../recipes-low-level-interfaces.rst:7 4f7ca622e5254dcb820080c8ec29fe16
 msgid "Low-Level Interfaces"
 msgstr "低レベルインターフェース"
 
-#: ../../recipes-low-level-interfaces.rst:10 1004b2d12dcf40a9a9b21306fa310bb6
+#: ../../recipes-low-level-interfaces.rst:10 1fea1e3b7f2f4f31a3c902bf61e962c9
 msgid ""
 "Numerous methods are available to access and manipulate PDF files on a "
 "fairly low level. Admittedly, a clear distinction between \"low level\" "
@@ -47,7 +47,7 @@ msgid ""
 "personal taste."
 msgstr "PDFファイルにアクセスして操作するための多くのメソッドが低レベルで利用可能です。正直なところ、「低レベル」機能と「通常」機能の明確な区別は常にできるわけではなく、個人の好みによるところもあります。"
 
-#: ../../recipes-low-level-interfaces.rst:12 092206e1c51d4b3b9f06bb1688adab61
+#: ../../recipes-low-level-interfaces.rst:12 1de25fa4e10d4576a94ca8b7096618bd
 msgid ""
 "It also may happen, that functionality previously deemed low-level is "
 "later on assessed as being part of the normal interface. This has "
@@ -57,18 +57,18 @@ msgstr ""
 "また、以前は低レベルと考えられていた機能が後に通常のインターフェースの一部として評価されることもあります。例えば、バージョン1.14.0ではクラス"
 " :ref:`Tools` についてそのようなことが起きており、現在では「Classes」のセクションで見つけることができます。"
 
-#: ../../recipes-low-level-interfaces.rst:14 5d0506fb02a84df4b377ada36b204e7a
+#: ../../recipes-low-level-interfaces.rst:14 1007d8a4ff5c4147805c1dc892b9b29c
 msgid ""
 "It is a matter of documentation only in which chapter of the "
 "documentation you find what you are looking for. Everything is available "
 "and always via the same interface."
 msgstr "何を探しているかに関しては、ドキュメントのどのセクションにあるかはドキュメンテーションのみの問題です。すべての情報は同じインターフェースを介して常に利用可能です。"
 
-#: ../../recipes-low-level-interfaces.rst:19 6af40282994c469bbfda640d3395f1cf
+#: ../../recipes-low-level-interfaces.rst:19 f087f3a96eec4b1a9dd86d6e8a3cffd7
 msgid "How to Iterate through the :data:`xref` Table"
 msgstr ":data:`xref` テーブルのイテレーション方法"
 
-#: ../../recipes-low-level-interfaces.rst:20 052c71493a6e43aba1e87845e0d77155
+#: ../../recipes-low-level-interfaces.rst:20 0027f20fcd894b3f921d205dbf3c6fbb
 msgid ""
 "A PDF's :data:`xref` table is a list of all objects defined in the file. "
 "This table may easily contain many thousands of entries -- the manual "
@@ -81,26 +81,26 @@ msgstr ""
 ":ref:`AdobeManual` "
 "マニュアルには127,000のオブジェクトが含まれています。テーブルのエントリ「0」は予約されており、触れてはいけません"
 
-#: ../../recipes-low-level-interfaces.rst:32 f3c1348ad2d34cd8babc0eb28c7e4a32
+#: ../../recipes-low-level-interfaces.rst:32 bf35a4cef5db4592ba20e8879d737aff
 msgid "This produces the following output::"
 msgstr "これにより、以下の出力が生成されます::"
 
-#: ../../recipes-low-level-interfaces.rst:72 d9e8a84e3421464e99dff496884cb2b0
+#: ../../recipes-low-level-interfaces.rst:72 b83975ea49a84c1a8993fd6918a32c64
 msgid "A PDF object definition is an ordinary ASCII string."
 msgstr "PDFオブジェクトの定義は通常のASCII文字列です。"
 
-#: ../../recipes-low-level-interfaces.rst:77 994ce17a00e840fb8b05195b16a8d4fc
+#: ../../recipes-low-level-interfaces.rst:77 2cab525052174e5889a8b5eeea539330
 msgid "How to Handle Object Streams"
 msgstr "オブジェクトストリームの処理方法"
 
-#: ../../recipes-low-level-interfaces.rst:78 0baeb83b0abd47d0b29848fa1b5772a0
+#: ../../recipes-low-level-interfaces.rst:78 658c13e1cc6947b09fc237301c2bc678
 msgid ""
 "Some object types contain additional data apart from their object "
 "definition. Examples are images, fonts, embedded files or commands "
 "describing the appearance of a page."
 msgstr "オブジェクトストリームの処理方法一部のオブジェクトタイプには、オブジェクト定義以外に追加のデータが含まれています。例として、画像、フォント、埋め込みファイル、またはページの外観を記述するコマンドが挙げられます。"
 
-#: ../../recipes-low-level-interfaces.rst:80 a2d7878bb0874d468e245aa36747dcdf
+#: ../../recipes-low-level-interfaces.rst:80 2796bcc0f1ed4c599541dd675171586e
 msgid ""
 "Objects of these types are called \"stream objects\". PyMuPDF allows "
 "reading an object's stream via method :meth:`Document.xref_stream` with "
@@ -112,13 +112,13 @@ msgstr ""
 "を引数としてオブジェクトのストリームを読み取ることができます。また、:meth:`Document.update_stream` "
 "を使用して、ストリームの変更されたバージョンを書き戻すことも可能です。"
 
-#: ../../recipes-low-level-interfaces.rst:82 9013aa1daeb740e48f3a6a542573599b
+#: ../../recipes-low-level-interfaces.rst:82 3771d4779f8f40dba59160b01c9ee9cf
 msgid ""
 "Assume that the following snippet wants to read all streams of a PDF for "
 "whatever reason::"
 msgstr "次のスニペットが、PDFのすべてのストリームを読み取るためのものであると仮定します::"
 
-#: ../../recipes-low-level-interfaces.rst:91 7b3d55e06b37453b97cfb9f09a3fd688
+#: ../../recipes-low-level-interfaces.rst:91 9c27d6d70d6b40fba9999600e789863f
 msgid ""
 ":meth:`Document.xref_stream` automatically returns a stream decompressed "
 "as a bytes object -- and :meth:`Document.update_stream` automatically "
@@ -128,11 +128,11 @@ msgstr ""
 "は自動的にバイトオブジェクトとして展開されたストリームを返し、:meth:`Document.update_stream` "
 "は必要に応じて自動的に圧縮されます。"
 
-#: ../../recipes-low-level-interfaces.rst:96 8343ff4670604b67b5d6b0ea475f2287
+#: ../../recipes-low-level-interfaces.rst:96 8090153b26c14df4a507877668bc7624
 msgid "How to Handle Page Contents"
 msgstr "ページ内容の処理方法"
 
-#: ../../recipes-low-level-interfaces.rst:97 5a9610e848844fd689962d831a8c9e19
+#: ../../recipes-low-level-interfaces.rst:97 848d7acefeb245dc8af34902fe0aff24
 msgid ""
 "A PDF page can have zero or multiple :data:`contents` objects. These are "
 "stream objects describing **what** appears **where** and **how** on a "
@@ -144,13 +144,13 @@ msgstr ""
 "オブジェクトが存在できます。これらは、ページ上に何がどこにどのように表示されるかを記述するストリームオブジェクト（テキストや画像など）です。これらは、:ref:`AdobeManual`"
 " のページ643の「付録A - オペレーターサマリー」などで説明されている特別なミニ言語で記述されています。"
 
-#: ../../recipes-low-level-interfaces.rst:99 4735935ea59649119988a1b17a868a65
+#: ../../recipes-low-level-interfaces.rst:99 4188f5c77de44ced870411c31528cec5
 msgid ""
 "Every PDF reader application must be able to interpret the contents "
 "syntax to reproduce the intended appearance of the page."
 msgstr "すべてのPDFリーダーアプリケーションは、コンテンツの構文を解釈してページの意図した表示を再現できる必要があります。"
 
-#: ../../recipes-low-level-interfaces.rst:101 cd92df1fc6484da889a7ff0ffb224c87
+#: ../../recipes-low-level-interfaces.rst:101 1f87bc0453d24082b53750397e2d3f74
 msgid ""
 "If multiple :data:`contents` objects are provided, they must be "
 "interpreted in the specified sequence in exactly the same way as if they "
@@ -159,13 +159,13 @@ msgstr ""
 "複数の :data:`contents` "
 "オブジェクトが提供される場合、それらは複数のコンテンツを連結した場合とまったく同じ方法で、指定された順序で解釈される必要があります。"
 
-#: ../../recipes-low-level-interfaces.rst:103 5005dc7b3e104df59ea260ba42b8a88a
+#: ../../recipes-low-level-interfaces.rst:103 c8df9beb4ec84255a6972a53be5fca52
 msgid ""
 "There are good technical arguments for having multiple :data:`contents` "
 "objects:"
 msgstr "複数の :data:`contents` オブジェクトを持つメリットには、次のような良い技術的理由があります："
 
-#: ../../recipes-low-level-interfaces.rst:105 e8f5f7b6e4db4126bb54c53951c9f698
+#: ../../recipes-low-level-interfaces.rst:105 98cc88c334df4c1ebefdc905e195d627
 msgid ""
 "It is a lot easier and faster to just add new :data:`contents` objects "
 "than maintaining a single big one (which entails reading, decompressing, "
@@ -174,7 +174,7 @@ msgstr ""
 "新しい :data:`contents` "
 "オブジェクトを追加するだけで、単一の大きなコンテンツオブジェクトを維持するよりもはるかに簡単で高速です（各変更のたびに読み取り、展開、変更、再圧縮、書き直しが必要です）。"
 
-#: ../../recipes-low-level-interfaces.rst:106 ab9767bef4ee46a2af8bfce074156c85
+#: ../../recipes-low-level-interfaces.rst:106 f2458f2703db48d58afa2677cb1a6f0b
 msgid ""
 "When working with incremental updates, a modified big :data:`contents` "
 "object will bloat the update delta and can thus easily negate the "
@@ -183,7 +183,7 @@ msgstr ""
 "増分更新を使用する場合、修正された大きな :data:`contents` "
 "オブジェクトは更新デルタを膨らませ、増分保存の効率を簡単に打ち消す可能性があります。"
 
-#: ../../recipes-low-level-interfaces.rst:108 8cb5dd1a2e014d478f0c366c11200ec9
+#: ../../recipes-low-level-interfaces.rst:108 774608ae29314d87af2590cc55b0b96a
 msgid ""
 "For example, PyMuPDF adds new, small :data:`contents` objects in methods "
 ":meth:`Page.insert_image`, :meth:`Page.show_pdf_page` and the "
@@ -192,7 +192,7 @@ msgstr ""
 "例えば、PyMuPDFは :meth:`Page.insert_image` 、 :meth:`Page.show_pdf_page` 、および"
 "  :ref:`Shape` メソッドで新しい小さな :data:`contents` オブジェクトを追加します。"
 
-#: ../../recipes-low-level-interfaces.rst:110 d27156d317da44c2b4a2367fd66cec03
+#: ../../recipes-low-level-interfaces.rst:110 5cc4b562e7f643678dec3abbd5c901af
 msgid ""
 "However, there are also situations when a **single** :data:`contents` "
 "object is beneficial: it is easier to interpret and more compressible "
@@ -201,11 +201,11 @@ msgstr ""
 "ただし、単一の :data:`contents` "
 "オブジェクトが有益な状況もあります。それは複数の小さなオブジェクトよりも解釈が容易で、圧縮が効果的です。"
 
-#: ../../recipes-low-level-interfaces.rst:112 4d1dc640c85e4c938b5f58e3cda7b64c
+#: ../../recipes-low-level-interfaces.rst:112 f8d8be1710d74bb9b417dc9948c862c9
 msgid "Here are two ways of combining multiple contents of a page::"
 msgstr "以下は、ページの複数のコンテンツを組み合わせる2つの方法です："
 
-#: ../../recipes-low-level-interfaces.rst:124 183742e468cd4480a19d2027f1694962
+#: ../../recipes-low-level-interfaces.rst:124 0016b0cc7db9493c9b5bfecfdd25e99c
 msgid ""
 "The clean function :meth:`Page.clean_contents` does a lot more than just "
 "glueing :data:`contents` objects: it also corrects and optimizes the PDF "
@@ -215,18 +215,18 @@ msgstr ""
 ":meth:`Page.clean_contents` は、:data:`contents` "
 "オブジェクトを結合するだけでなく、ページのPDFオペレータ構文を修正し最適化し、ページのオブジェクト定義との整合性を保つためにも役立ちます。"
 
-#: ../../recipes-low-level-interfaces.rst:129 366f5499d555455daff3743400fce7a8
+#: ../../recipes-low-level-interfaces.rst:129 8fd84d6a4af441adb8fcf1c77aa5b0bd
 msgid "How to Access the PDF Catalog"
 msgstr "PDFカタログへのアクセス方法"
 
-#: ../../recipes-low-level-interfaces.rst:130 49f29ed4723a4265af1fe760ee7d0fa6
+#: ../../recipes-low-level-interfaces.rst:130 2a2e41fa0c34401ea22c6f2ed40a89e7
 msgid ""
 "This is a central (\"root\") object of a PDF. It serves as a starting "
 "point to reach important other objects and it also contains some global "
 "options for the PDF::"
 msgstr "これはPDFの中心的な（\"ルート\"）オブジェクトです。これは重要な他のオブジェクトに到達するための出発点として機能し、PDFのいくつかのグローバルオプションも含まれています::"
 
-#: ../../recipes-low-level-interfaces.rst:146 4175b46f917a4fadbe8db944277a2754
+#: ../../recipes-low-level-interfaces.rst:146 5b118633d9a341a1a95aed016917f5d2
 msgid ""
 "Indentation, line breaks and comments are inserted here for clarification"
 " purposes only and will not normally appear. For more information on the "
@@ -235,11 +235,11 @@ msgstr ""
 "字下げ、改行、コメントは説明のために挿入されており、通常は表示されません。PDFカタログの詳細については、 :ref:`AdobeManual` "
 "のページ71のセクション7.7.2を参照してください。"
 
-#: ../../recipes-low-level-interfaces.rst:151 e2ce3096ee024ae1ab39de4201687cbf
+#: ../../recipes-low-level-interfaces.rst:151 f6b9f5c2736444a09a44be0af1efd3ef
 msgid "How to Access the PDF File Trailer"
 msgstr "PDFファイルトレーラーへのアクセス方法"
 
-#: ../../recipes-low-level-interfaces.rst:152 9af2da489f3449a0b3dc6056f2f6add2
+#: ../../recipes-low-level-interfaces.rst:152 4cb33f7607ff4b7da3a368b706d7f85d
 msgid ""
 "The trailer of a PDF file is a :data:`dictionary` located towards the end"
 " of the file. It contains special objects, and pointers to important "
@@ -249,93 +249,93 @@ msgstr ""
 "です。特別なオブジェクトと、重要な他の情報へのポインタが含まれています。:ref:`AdobeManual` を参照してください（p. "
 "42）。以下に概要を示します："
 
-#: ../../recipes-low-level-interfaces.rst:155 f23b6ade9996435f9e897dacb1eec32b
+#: ../../recipes-low-level-interfaces.rst:155 6a08c29e38b14b4f8780edbf2bbd57ed
 msgid "**Key**"
 msgstr "**キー**"
 
-#: ../../recipes-low-level-interfaces.rst:155 30e18c3fe3fa4f3ebd15b650f3c5989f
+#: ../../recipes-low-level-interfaces.rst:155 58913ef5bc0e42449995f9ddc470a9b6
 msgid "**Type**"
 msgstr "**タイプ**"
 
-#: ../../recipes-low-level-interfaces.rst:155 4ec5dc5a209d49ec880c0d9c3f738aeb
+#: ../../recipes-low-level-interfaces.rst:155 6bd41f1c095b4146a4be333408ae4d28
 msgid "**Value**"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:157 ce32370dd8254323a8b07257ace281ce
+#: ../../recipes-low-level-interfaces.rst:157 4f3f1be3c87948899e54efc916c7ef18
 msgid "Size"
 msgstr "**値**"
 
 #: ../../recipes-low-level-interfaces.rst:157
 #: ../../recipes-low-level-interfaces.rst:158
-#: ../../recipes-low-level-interfaces.rst:163 0164b7c32c7c496e9ddb11c66f072fab
-#: 2329ec313371427eafb23790c32331a1 ad7152e1ad2d420499c31ae3e31fac5f
+#: ../../recipes-low-level-interfaces.rst:163 81a6a91f16444f15bdeeaaf278f1bcd1
+#: 8682c7b530344453ade63634c104ed4f f11a36ccb1b94cd3ae600b685375afff
 msgid "int"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:157 cba1202e0b734b40bd253ceacd38e41d
+#: ../../recipes-low-level-interfaces.rst:157 c285913e7e4943f9867315f2d6712e7f
 msgid "Number of entries in the cross-reference table + 1."
 msgstr "クロスリファレンステーブル内のエントリ数 + 1 の数値。"
 
-#: ../../recipes-low-level-interfaces.rst:158 68e9d905f0c9412788a94f619b8bf07a
+#: ../../recipes-low-level-interfaces.rst:158 c49bb116e66c4fca9cdeb500ae675247
 msgid "Prev"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:158 2167f565d0f944389939731d1592a9b3
+#: ../../recipes-low-level-interfaces.rst:158 28fbdab151c14d60acbe435e09d03829
 msgid "Offset to previous :data:`xref` section (indicates incremental updates)."
 msgstr "前の :data:`xref` セクションへのオフセット（増分更新を示す）。"
 
-#: ../../recipes-low-level-interfaces.rst:159 54b3be93a19248ada386d4012591c29f
+#: ../../recipes-low-level-interfaces.rst:159 96893c3d42a943ffaa753c2af598ddda
 msgid "Root"
 msgstr ""
 
 #: ../../recipes-low-level-interfaces.rst:159
 #: ../../recipes-low-level-interfaces.rst:160
-#: ../../recipes-low-level-interfaces.rst:161 ba6bd016b4674de2bfce8a38f2219dd3
-#: c7be4fe456df4e09a359217454f29034 ca4b0b2123cb43d2a2643a9cfc1a6b6e
+#: ../../recipes-low-level-interfaces.rst:161 17e32472677349bfa94d61bc793d8475
+#: 2d049d53c6cd4ae8a2bc07f1cbcf53bb ce33dca31774448c9bdd1e213de5d090
 msgid "dictionary"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:159 61c2d28a680c4022b261f4e2e73a5e61
+#: ../../recipes-low-level-interfaces.rst:159 fecd0772f75c49fdb36a4962c490461e
 msgid "(indirect) Pointer to the catalog. See previous section."
 msgstr "(間接的) カタログへのポインタ。前のセクションを参照してください。"
 
-#: ../../recipes-low-level-interfaces.rst:160 e0b4409514534c5cb02fd977faa52ec5
+#: ../../recipes-low-level-interfaces.rst:160 b7b167190b0149ce9bdd9ef671d03ae2
 msgid "Encrypt"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:160 0e650d431ed1424783c80f93e003e7a7
+#: ../../recipes-low-level-interfaces.rst:160 aa8f56b6637c4a7ca41846fa1ebf6eca
 msgid "Pointer to encryption object (encrypted files only)."
 msgstr "(暗号化されたファイルのみ) 暗号化オブジェクトへのポインタ。"
 
-#: ../../recipes-low-level-interfaces.rst:161 8016ab62c6bc447d922b3c56d8c3d90c
+#: ../../recipes-low-level-interfaces.rst:161 d9be1827baa242068f64cd1307f9bd58
 msgid "Info"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:161 6092e87b69c04042835dc281faa79d2b
+#: ../../recipes-low-level-interfaces.rst:161 597be1c0e13342c694e56f1faf8dcca5
 msgid "(indirect) Pointer to information (metadata)."
 msgstr "(間接的) 情報（メタデータ）へのポインタ。"
 
-#: ../../recipes-low-level-interfaces.rst:162 debae3020d4e47ab95bcc23b5a5ad090
+#: ../../recipes-low-level-interfaces.rst:162 66abcc5c41b044d7ba24bef4374f4cba
 msgid "ID"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:162 adb84671ebc24c58a6ac01a63eb9bda0
+#: ../../recipes-low-level-interfaces.rst:162 e6d762fa8f38487992b7f2ddc8737388
 msgid "array"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:162 38d767d0ca5e44f49a8a406b1a458782
+#: ../../recipes-low-level-interfaces.rst:162 ae4de832cc2c4e1cb9943cb9a61596da
 msgid "File identifier consisting of two byte strings."
 msgstr "2つのバイト文字列からなるファイル識別子。"
 
-#: ../../recipes-low-level-interfaces.rst:163 294d96c38c3348c2984e3ab1e272dc42
+#: ../../recipes-low-level-interfaces.rst:163 fe39430132414ae0b7367e63724369e0
 msgid "XRefStm"
 msgstr ""
 
-#: ../../recipes-low-level-interfaces.rst:163 21ce0a49a25e46c4bb82f922122ff6b1
+#: ../../recipes-low-level-interfaces.rst:163 2f5419e850a744d790f2b70a0e221c5a
 msgid "Offset of a cross-reference stream. See :ref:`AdobeManual` p. 49."
 msgstr "クロスリファレンスストリームのオフセット。:ref:`AdobeManual` を参照してください（p. 49）。"
 
-#: ../../recipes-low-level-interfaces.rst:166 f6c3f81e67494a568199406ea4116bc8
+#: ../../recipes-low-level-interfaces.rst:166 f658e5b17a384d9c90104cba97aa85ff
 msgid ""
 "Access this information via PyMuPDF with :meth:`Document.pdf_trailer` or,"
 " equivalently, via :meth:`Document.xref_object` using -1 instead of a "
@@ -345,11 +345,11 @@ msgstr ""
 ":meth:`Document.xref_object` を使用して -1 の代わりに有効な :data:`xref` "
 "番号を指定することでアクセスします。"
 
-#: ../../recipes-low-level-interfaces.rst:187 59e6de55e02e40579de87e5e4c87bf79
+#: ../../recipes-low-level-interfaces.rst:187 98759bbd8d114604a80fbf742832adba
 msgid "How to Access XML Metadata"
 msgstr "XMLメタデータへのアクセス方法"
 
-#: ../../recipes-low-level-interfaces.rst:188 ce578d62a3204783b36b76209ed1ba61
+#: ../../recipes-low-level-interfaces.rst:188 a4c560abb05646a6b21fccc292008ea0
 msgid ""
 "A PDF may contain XML metadata in addition to the standard metadata "
 "format. In fact, most PDF viewer or modification software adds this type "
@@ -358,7 +358,7 @@ msgstr ""
 "PDFには、標準のメタデータ形式に加えてXMLメタデータが含まれている場合があります。実際、ほとんどのPDFビューアや編集ソフトウェアは、PDFを保存する際に（Adobe、Nitro"
 " PDF、PDF-XChangeなど）この種の情報を追加します。"
 
-#: ../../recipes-low-level-interfaces.rst:190 6bed09c843ab4c86aae70559f4c31d5b
+#: ../../recipes-low-level-interfaces.rst:190 a02f8f95ed834b4386f05f01b7baf217
 msgid ""
 "PyMuPDF has no way to **interpret or change** this information directly, "
 "because it contains no XML features. XML metadata is however stored as a "
@@ -368,18 +368,18 @@ msgstr ""
 "しかし、PyMuPDFはXMLの機能を持たないため、この情報を直接解釈または変更する方法はありません。ただし、XMLメタデータは "
 ":data:`stream` オブジェクトとして格納されているため、適切なソフトウェアで読み取り、変更し、書き戻すことができます。"
 
-#: ../../recipes-low-level-interfaces.rst:202 2dbf783c4298416483b50a5f4dd44a29
+#: ../../recipes-low-level-interfaces.rst:202 763734a1837d4847a3c820225381f4cb
 msgid ""
 "Using some XML package, the XML data can be interpreted and / or modified"
 " and then stored back. The following also works, if the PDF previously "
 "had no XML metadata::"
 msgstr "あるXMLパッケージを使用して、XMLデータを解釈および/または変更し、それを保存し直すことができます。次の方法もPDFに以前にXMLメタデータがない場合にも機能します::"
 
-#: ../../recipes-low-level-interfaces.rst:213 be580459d9da4d85be4830be960b1e66
+#: ../../recipes-low-level-interfaces.rst:213 b484e4babb6b4821a2d4ca50b936f40b
 msgid "How to Extend PDF Metadata"
 msgstr "PDFメタデータの拡張方法"
 
-#: ../../recipes-low-level-interfaces.rst:214 395ed5f286874fee95e957045ba496f8
+#: ../../recipes-low-level-interfaces.rst:214 bd8ade0701494f0aa8d64389ba8c01db
 msgid ""
 "Attribute :attr:`Document.metadata` is designed so it works for all "
 ":ref:`supported document types<Supported_File_Types>` in the same way: it"
@@ -392,7 +392,7 @@ msgstr ""
 "ドキュメントタイプで同じ方法で機能するように設計されています。これは、固定されたキーと値のセットを持つPython辞書です。同様に、:meth:`Document.set_metadata`"
 " は標準のキーのみを受け入れます。"
 
-#: ../../recipes-low-level-interfaces.rst:216 d194027973a24f01909d1077aeceb4f1
+#: ../../recipes-low-level-interfaces.rst:216 2ed9e5740749448898a94bedd85fa94f
 msgid ""
 "However, PDFs may contain items not accessible like this. Also, there may"
 " be reasons to store additional information, like copyrights. Here is a "
@@ -400,17 +400,17 @@ msgid ""
 "functions."
 msgstr "しかし、PDFにはこのようにアクセスできない項目が含まれている場合があります。また、著作権などの追加情報を保存する理由もあるかもしれません。以下は、PyMuPDFの低レベル関数を使用して任意のメタデータ項目を処理する方法です。"
 
-#: ../../recipes-low-level-interfaces.rst:218 3f9071b549ff4b5cb34bb9cf8bee6f32
+#: ../../recipes-low-level-interfaces.rst:218 f2e1b634d30a481da6cb600b52f2dccc
 msgid "As an example, look at this standard metadata output of some PDF::"
 msgstr "例として、次のPDFの標準メタデータ出力をご覧ください::"
 
-#: ../../recipes-low-level-interfaces.rst:237 af64f51b62094843932e633ae98a5bcd
+#: ../../recipes-low-level-interfaces.rst:237 ae127729cd53409cb04f9ebc390699c4
 msgid ""
 "Use the following code to see **all items** stored in the metadata "
 "object::"
 msgstr "以下のコードを使用して、メタデータオブジェクトに保存されているすべてのアイテムを表示します::"
 
-#: ../../recipes-low-level-interfaces.rst:265 d4e71d727e7e4a7ea7a6c25096fff0c5
+#: ../../recipes-low-level-interfaces.rst:265 f219d010f8094f62934815b489d0dc25
 msgid ""
 "*Vice versa*, you can also **store private metadata items** in a PDF. It "
 "is your responsibility to make sure that these items conform to PDF "
@@ -420,7 +420,7 @@ msgstr ""
 "逆に、PDFにはプライベートなメタデータアイテムを保存することもできます。これらのアイテムがPDF仕様に準拠していることを確認する責任はあなたにあります。特に、これらは（Unicode）文字列である必要があります。詳細や注意事項については、Adobe"
 " PDFリファレンスのセクション14.3（p. 548）を参照してください::"
 
-#: ../../recipes-low-level-interfaces.rst:287 844b6019e266476795f5fb74b998296d
+#: ../../recipes-low-level-interfaces.rst:287 2dc3761486a541f6821711dfd609da05
 msgid ""
 "To delete selected keys, use `doc.xref_set_key(xref, \"mykey\", "
 "\"null\")`. As explained in the next section, string \"null\" is the PDF "
@@ -431,27 +431,27 @@ msgstr ""
 "を使用します。次のセクションで説明されているように、文字列 `\"null\"` はPDFのバージョンでPythonの `None` "
 "に相当します。その値のキーは指定されていないものとして扱われ、ガベージコレクションで物理的に削除されます。"
 
-#: ../../recipes-low-level-interfaces.rst:292 deec01299b97487487e5a2076fa0d753
+#: ../../recipes-low-level-interfaces.rst:292 b8e1f01138dd4a638ffd1e3689508d1c
 msgid "How to Read and Update PDF Objects"
 msgstr "PDFオブジェクトの読み取りと更新方法"
 
-#: ../../recipes-low-level-interfaces.rst:297 7945b7d092de4fa19a1b7c9032a04941
+#: ../../recipes-low-level-interfaces.rst:297 c7c33727bafc478ca88a1cdae0ec859b
 msgid ""
 "There also exist granular, elegant ways to access and manipulate selected"
 " PDF :data:`dictionary` keys."
 msgstr "選択したPDF :data:`dictionary` キーにアクセスし、操作するための粒状で洗練された方法も存在します。"
 
-#: ../../recipes-low-level-interfaces.rst:299 23a9cc8afbaa49a2bfb050748263eed1
+#: ../../recipes-low-level-interfaces.rst:299 04aa0e1d70b944b3a904ea382f4f0c30
 msgid ""
 ":meth:`Document.xref_get_keys` returns the PDF keys of the object at "
 ":data:`xref`::"
 msgstr ":meth:`Document.xref_get_keys` は、:data:`xref` のオブジェクトのPDFキーを返します::"
 
-#: ../../recipes-low-level-interfaces.rst:308 a108c8a1d6f443b681b6a37f88436406
+#: ../../recipes-low-level-interfaces.rst:308 ec3415a9ffc54434860c48bc58bd55d9
 msgid "Compare with the full object definition::"
 msgstr "完全なオブジェクト定義と比較してください::"
 
-#: ../../recipes-low-level-interfaces.rst:319 7adcf0961c22433facd2cf311493db37
+#: ../../recipes-low-level-interfaces.rst:319 4ee823aae30f4627b0f7c02f4267bfdc
 msgid ""
 "Single keys can also be accessed directly via "
 ":meth:`Document.xref_get_key`. The value **always is a string** together "
@@ -460,11 +460,11 @@ msgstr ""
 "単一のキーは、 :meth:`Document.xref_get_key`  "
 "を介して直接アクセスすることもできます。値は常に文字列であり、それを解釈するのに役立つタイプ情報が含まれています::"
 
-#: ../../recipes-low-level-interfaces.rst:324 a4054bdb6cb24bcaa741f2fc6c9cc400
+#: ../../recipes-low-level-interfaces.rst:324 5b603693f93c4e03a5111618579b46ce
 msgid "Here is a full listing of the above page keys::"
 msgstr "以下は、上記のページキーの完全な一覧です::"
 
-#: ../../recipes-low-level-interfaces.rst:335 477e974832a045859f315df36aa5399a
+#: ../../recipes-low-level-interfaces.rst:335 f13dcde484e24d32bc88ea9b8cf371dd
 msgid ""
 "An undefined key inquiry returns `('null', 'null')` -- PDF object type "
 "`null` corresponds to `None` in Python. Similar for the booleans `true` "
@@ -473,7 +473,7 @@ msgstr ""
 "未定義のキーの問い合わせは、`('null', 'null')` を返します - PDFオブジェクトタイプ `null` はPythonの "
 "`None` に対応します。 `true` および `false` も同様です。"
 
-#: ../../recipes-low-level-interfaces.rst:336 48eb141c0fbb43dca8d3321f2031e3a9
+#: ../../recipes-low-level-interfaces.rst:336 14eee493b6bb4c06b2afcbdade3ca9e7
 msgid ""
 "Let us add a new key to the page definition that sets its rotation to 90 "
 "degrees (you are aware that there actually exists "
@@ -482,7 +482,7 @@ msgstr ""
 "ページ定義に新しいキーを追加して、その回転角を90度に設定しましょう（実際には :meth:`Page.set_rotation` "
 "が存在することを知っているかと思いますが、そうですか？）::"
 
-#: ../../recipes-low-level-interfaces.rst:351 e54b55eb5b844fd6809377b401eb6e23
+#: ../../recipes-low-level-interfaces.rst:351 b9ecea1e87e7421faea4ae09003de94f
 msgid ""
 "This method can also be used to remove a key from the :data:`xref` "
 "dictionary by setting its value to `null`: The following will remove the "
@@ -500,7 +500,7 @@ msgstr ""
 "は定義上配列であるため、`doc.xref_set_key(page.xref, \"Annots\", \"[]\")` "
 "という文で空の配列を設定すると、同じ操作が実行されます。"
 
-#: ../../recipes-low-level-interfaces.rst:353 a6bd791e5a1d48f290034c6717015882
+#: ../../recipes-low-level-interfaces.rst:353 25ee5ad120ca43a7af7fb238b8ee91cd
 msgid ""
 "PDF dictionaries can be hierarchically nested. In the following page "
 "object definition both, `Font` and `XObject` are subdictionaries of "
@@ -509,7 +509,7 @@ msgstr ""
 "PDF辞書は階層的に入れ子にすることができます。次のページオブジェクト定義では、`Font` と `XObject` は両方とも "
 "`Resources` のサブディクショナリです::"
 
-#: ../../recipes-low-level-interfaces.rst:373 005991161f204758af114dd5caf052e2
+#: ../../recipes-low-level-interfaces.rst:373 166311ecb59d42579d5324506515d2e5
 msgid ""
 "The above situation **is supported** by methods "
 ":meth:`Document.xref_set_key` and :meth:`Document.xref_get_key`: use a "
@@ -521,19 +521,19 @@ msgstr ""
 " によってサポートされています。必要なキーを指すために、パスのような表記法を使用します。たとえば、上記の `Im1` "
 "キーの値を取得するには、キー引数にその上位の辞書の完全なチェーン `\"Resources/XObject/Im1\"` を指定します::"
 
-#: ../../recipes-low-level-interfaces.rst:378 f28a06c6b85243cea0dabba7e49727c0
+#: ../../recipes-low-level-interfaces.rst:378 decc969788824b2f905d28ed9ea37c97
 msgid ""
 "The path notation can also be used to **directly set a value**: use the "
 "following to let `Im1` point to a different object::"
 msgstr "パス表記法は、値を直接設定するためにも使用できます。以下を使用して、`Im1` を異なるオブジェクトを指すように設定します::"
 
-#: ../../recipes-low-level-interfaces.rst:399 cdcd486a31d44f26a5f8f8a39f18c510
+#: ../../recipes-low-level-interfaces.rst:399 8134074039144ebca0e928b428cf7ad4
 msgid ""
 "Be aware, that **no semantic checks** whatsoever will take place here: if"
 " the PDF has no xref 9999, it won't be detected at this point."
 msgstr "ここでは、何の意味的なチェックも行われないことに注意してください。PDFにxref 9999が存在しない場合、この段階では検出されません。"
 
-#: ../../recipes-low-level-interfaces.rst:401 a6d263d50df343cb87b91aec50b8ca0d
+#: ../../recipes-low-level-interfaces.rst:401 d717c7f21a174300a90bb992653ab939
 msgid ""
 "If a key does not exist, it will be created by setting its value. "
 "Moreover, if any intermediate keys do not exist either, they will also be"
@@ -544,7 +544,7 @@ msgstr ""
 "キーが存在しない場合、その値を設定することで新しく作成されます。さらに、中間のキーが存在しない場合も、必要に応じて自動的に作成されます。次の例では、既存の辞書"
 " `A` の下にいくつかの階層下に配列 `D` を作成しています。中間の辞書 `B` と `C` も自動的に作成されます::"
 
-#: ../../recipes-low-level-interfaces.rst:421 3e180e3945e54e8eb3b41628aefe32be
+#: ../../recipes-low-level-interfaces.rst:421 79d1fc2866c6405e852e7bc1d59c5f72
 msgid ""
 "When setting key values, basic **PDF syntax checking** will be done by "
 "MuPDF. For example, new keys can only be created **below a dictionary**. "
@@ -554,7 +554,7 @@ msgstr ""
 "キーの値を設定する際には、MuPDFによって基本的なPDF構文のチェックが行われます。たとえば、新しいキーは辞書の下にのみ作成できます。次の例では、以前に作成された配列"
 " `D` の下に新しい文字列アイテム `E` を作成しようとしています："
 
-#: ../../recipes-low-level-interfaces.rst:429 8899f206d5d04b1c869d1d83dad7f5a8
+#: ../../recipes-low-level-interfaces.rst:429 891aef9e0fe9425881312a1752d59e9f
 msgid ""
 "It is also **not possible**, to create a key if some higher level key is "
 "an **\"indirect\"** object, i.e. an xref. In other words, xrefs can only "
@@ -562,24 +562,23 @@ msgid ""
 "them::"
 msgstr "同様に、上位のキーが「間接」オブジェクト、つまりxrefである場合、キーを作成することはできません。言い換えれば、xrefは直接的に変更できるが、それを参照する他のオブジェクトを通じて暗黙的に変更することはできません::"
 
-#: ../../recipes-low-level-interfaces.rst:442 efce2eb5bdee4d0498f00794e3a56002
+#: ../../recipes-low-level-interfaces.rst:442 cb6c84fd491f4c3eaab967eb4ab22326
 msgid ""
 "These are expert functions! There are no validations as to whether valid "
 "PDF objects, xrefs, etc. are specified. As with other low-level methods "
 "there is the risk to render the PDF, or parts of it unusable."
 msgstr "これらは専門家向けの機能です！有効なPDFオブジェクトやxrefなどが指定されているかどうかの検証はありません。他の低レベルメソッドと同様に、PDF全体またはその一部を利用不能にする可能性があるため注意が必要です。"
 
-#: ../../footer.rst:71 cdf205382ec14cb19365f0266e6b7928
+#: ../../footer.rst:60 4695c17edec440ea85382cf6f78ad072
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 fa716300f7a946aea2a9dc2a8da8b731
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 #~ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
+
+#~ msgid "Discord logo"
 #~ msgstr ""
 

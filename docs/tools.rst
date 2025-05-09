@@ -65,7 +65,7 @@ This class is a collection of utility methods and attributes, mainly around memo
       :arg bool on: if omitted or `None`, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If `True`, :meth:`Page.search_for` and :meth:`Page.get_text` methods return character, span, line or block bboxes that have a height of *font size*. If `False` (standard setting when PyMuPDF is imported), bbox height will be based on font properties and normally equal *line height*.
 
       :rtype: bool
-      :returns: *True* or *False*.
+      :returns: ``True`` or ``False``.
 
       .. note:: Text extraction options "xml", "xhtml" and "html", which directly wrap MuPDF code, are not influenced by this.
 
@@ -78,7 +78,7 @@ This class is a collection of utility methods and attributes, mainly around memo
       :arg bool on: if omitted / `None`, the current setting is returned. Arguments evaluating to `True` or `False` set a global variable. If `True`, options "dict", "json", "rawdict" and "rawjson" will return e.g. `"NOHSJV+Calibri-Light"`, otherwise only `"Calibri-Light"` (the default). The setting remains in effect until changed again.
 
       :rtype: bool
-      :returns: *True* or *False*.
+      :returns: ``True`` or ``False``.
 
       .. note:: Except mentioned above, no other text extraction variants are influenced by this. This is especially true for the options "xml", "xhtml" and "html", which are based on MuPDF code. They extract the font name `"Calibri-Light"`, or even just the **family** name -- `Calibri` in this example.
 
@@ -92,7 +92,7 @@ This class is a collection of utility methods and attributes, mainly around memo
       :arg bool on: if omitted or `None`, the current setting is returned. For other values the *bool()* function is applied to set a global variable. If `True`, PyMuPDF will not try to access the resp. font properties and use values `ascender=0.8` and `descender=-0.2` instead.
 
       :rtype: bool
-      :returns: *True* or *False*.
+      :returns: ``True`` or ``False``.
 
 
    .. method:: store_shrink(percent)
@@ -137,11 +137,11 @@ This class is a collection of utility methods and attributes, mainly around memo
       :arg value:
       * If `None`, the current setting is left unchanged.
       * Otherwise changes the current setting to `bool(value)`;
-        if *True*, future MuPDF errors will be shown as :ref:`Messages`.
+        if ``True``, future MuPDF errors will be shown as :ref:`Messages`.
       * Regardless of this setting, MuPDF errors will always be stored in the warnings store.
-      * Upon import of |PyMuPDF| this value is *True*.
+      * Upon import of |PyMuPDF| this value is ``True``.
 
-      :returns: The current setting as *True* or *False*.
+      :returns: The current setting as ``True`` or ``False``.
 
       * New in version 1.16.8
 
@@ -153,11 +153,11 @@ This class is a collection of utility methods and attributes, mainly around memo
       :arg value:
       * If `None`, the current setting is left unchanged.
       * Otherwise changes the current setting to `bool(value)`;
-        if *True*, future MuPDF warnings will be shown as :ref:`Messages`.
+        if ``True``, future MuPDF warnings will be shown as :ref:`Messages`.
       * Regardless of this setting, MuPDF warnings will always be stored in the warnings store.
-      * Upon import of |PyMuPDF| this value is *True*.
+      * Upon import of |PyMuPDF| this value is ``True``.
 
-      :returns: The current setting as *True* or *False*.
+      :returns: The current setting as ``True`` or ``False``.
 
       * New in version 1.16.8
 
@@ -238,13 +238,13 @@ This class is a collection of utility methods and attributes, mainly around memo
 
    .. attribute:: store_maxsize
 
-      Maximum storables cache size in bytes. **PyMuPDF** is generated with a value of 268'435'456 (256 MB, the default value), which you should therefore always see here. If this value is zero, then an "unlimited" growth is permitted.
+      Maximum storables cache size in bytes. |PyMuPDF| is generated with a value of 268'435'456 (256 MB, the default value), which you should therefore always see here. If this value is zero, then an "unlimited" growth is permitted.
 
       :rtype: int
 
    .. attribute:: store_size
 
-      Current storables cache size in bytes. This value may change (and will usually increase) with every use of a **PyMuPDF** function. It will (automatically) decrease only when :attr:`Tools.store_maxsize` is going to be exceeded: in this case, **MuPDF** will evict low-usage objects until the value is again in range.
+      Current storables cache size in bytes. This value may change (and will usually increase) with every use of a |PyMuPDF| function. It will (automatically) decrease only when :attr:`Tools.store_maxsize` is going to be exceeded: in this case, |MuPDF| will evict low-usage objects until the value is again in range.
 
       :rtype: int
 

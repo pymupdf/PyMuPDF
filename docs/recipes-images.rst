@@ -215,7 +215,7 @@ Some images in PDFs are accompanied by **image masks**. In their simplest form, 
 
 Whether an image does have such a mask can be recognized in one of two ways in PyMuPDF:
 
-1. An item of :meth:`Document.get_page_images` has the general format `(xref, smask, ...)`, where *xref* is the image's :data:`xref` and *smask*, if positive, then it is the :data:`xref` of a mask.
+1. An item of :meth:`Document.get_page_images` has the general format `(xref, smask, ...)`, where :data:`xref` is the image's :data:`xref` and *smask*, if positive, then it is the :data:`xref` of a mask.
 2. The (dictionary) results of :meth:`Document.extract_image` have a key *"smask"*, which also contains any mask's :data:`xref` if positive.
 
 If *smask == 0* then the image encountered via :data:`xref` can be processed as it is.
@@ -393,7 +393,7 @@ The general scheme is just the following two lines::
 
 1. The **input** argument of *pymupdf.Pixmap(arg)* can be a file or a bytes / io.BytesIO object containing an image.
 2. Instead of an output **file**, you can also create a bytes object via *pix.tobytes("yyy")* and pass this around.
-3. As a matter of course, input and output formats must be compatible in terms of colorspace and transparency. The *Pixmap* class has batteries included if adjustments are needed.
+3. As a matter of course, input and output formats must be compatible in terms of colorspace and transparency. The ``Pixmap`` class has batteries included if adjustments are needed.
 
 .. note::
         **Convert JPEG to Photoshop**::

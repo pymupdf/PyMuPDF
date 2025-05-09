@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.24.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-06 22:50+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -18,39 +18,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header-404.rst:-1 a6f30f9ef5464d349f5fdabbb8741927
+#: ../../header-404.rst:-1 7d1db678351e48a589812b0fc43a3c6e
 msgid "Artifex"
 msgstr ""
 
-#: ../../header-404.rst:-1 78c8644ffa434937b986c8c5111ff0c7
+#: ../../header-404.rst:-1 1240b3bfde8e4c75af72a7add2aa6ece
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header-404.rst:-1 ddd49518b56b4d249e215d7a61fb7447
+#: ../../header-404.rst:-1 e9db42018d9749a3a1b1fcd7d2ffbad7
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr ""
 
-#: ../../404.rst:4 35b725124b6d4317ae091e2ae1221f28
+#: ../../404.rst:4 47500cd0e1e4472092d58a3f1eb0de05
 msgid "404!"
 msgstr ""
 
-#: ../../404.rst:7 f4ca6e0bb82f4262b343eb38a550aef7
+#: ../../404.rst:7 00f23d61373848a99a4874c470e1479a
 msgid "**This page is not available.**"
 msgstr "**このページは利用できません。**"
 
-#: ../../404.rst:10 fa09ea54fa304d9d98c54ed8252476bb
+#: ../../404.rst:10 108326f9c443411e998790ba1e98be35
 msgid "Please use the menu or search to find what you are looking for."
 msgstr "メニューまたは検索を使用して、お探しのものを見つけてください。"
 
-#: ../../footer.rst:71 b4323a61d74e4c6fa8f71f222b8366e1
+#: ../../footer.rst:60 eab1290efc024ba1b73c0d32ce382104
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 cf79ccc8d3c14094822a8f63711e6804
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 

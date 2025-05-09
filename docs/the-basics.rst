@@ -217,7 +217,7 @@ With :meth:`Document.insert_file` you can invoke the method to merge :ref:`suppo
 Working with Coordinates
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-There is one *mathematical term* that you should feel comfortable with when using **PyMuPDF** -  **"coordinates"**. Please have a quick look at the :ref:`Coordinates` section to understand the coordinate system to help you with positioning objects and understand your document space.
+There is one *mathematical term* that you should feel comfortable with when using |PyMuPDF| -  **"coordinates"**. Please have a quick look at the :ref:`Coordinates` section to understand the coordinate system to help you with positioning objects and understand your document space.
 
 
 
@@ -998,7 +998,7 @@ Annotations (:ref:`Annot`) on pages can be retrieved with the `page.annots()` me
 
 .. _The_Basics_Redacting:
 
-Redacting content from a **PDF**
+Redacting content from a |PDF|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Redactions are special types of annotations which can be marked onto a document page to denote an area on the page which should be securely removed. After marking an area with a rectangle then this area will be marked for *redaction*, once the redaction is *applied* then the content is securely removed.
@@ -1062,7 +1062,7 @@ Another example could be redacting an area of a page, but not to redact any line
 
 .. warning::
 
-    Once a redacted version of a document is saved then the redacted content in the **PDF** is *irretrievable*. Thus, a redacted area in a document removes text and graphics completely from that area.
+    Once a redacted version of a document is saved then the redacted content in the |PDF| is *irretrievable*. Thus, a redacted area in a document removes text and graphics completely from that area.
 
 
 .. note::
@@ -1087,7 +1087,7 @@ Another example could be redacting an area of a page, but not to redact any line
 Converting PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We recommend the pdf2docx_ library which uses **PyMuPDF** and the **python-docx** library to provide simple document conversion from **PDF** to **DOCX** format.
+We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-docx** library to provide simple document conversion from |PDF| to **DOCX** format.
 
 
 

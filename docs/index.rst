@@ -19,7 +19,7 @@
 Welcome to |PyMuPDF|
 ================================
 
-|PyMuPDF| is a high-performance **Python** library for data extraction, analysis, conversion & manipulation of **PDF** (and other) documents.
+|PyMuPDF| is a high-performance **Python** library for data extraction, analysis, conversion & manipulation of |PDF| (and other) documents.
 
 |PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 

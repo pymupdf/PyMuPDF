@@ -7,7 +7,7 @@
 PyMuPDF4LLM
 ===========================================================================
 
-|PyMuPDF4LLM| is aimed to make it easier to extract **PDF** content in the format you need for **LLM** & **RAG** environments. It supports :ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex document output <extracting_as_llamaindex>`.
+|PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in the format you need for **LLM** & **RAG** environments. It supports :ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex document output <extracting_as_llamaindex>`.
 
 .. important::
 

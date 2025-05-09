@@ -316,7 +316,7 @@
         <div class="about-graph-x-axis speed">
             <div class="segment"><i id="transP17">fastest</i></div>
             <div class="segment">&#8592;</div>
-            <div class="segment"><i id="transP18"slowest</i></div>
+            <div class="segment"><i id="transP18">slowest</i></div>
         </div>
 
     </div>

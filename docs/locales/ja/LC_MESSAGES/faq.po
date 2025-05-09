@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.24.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-05-06 22:50+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -18,43 +18,42 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 430dee7b70cb4dfba12ff8ce07188fd4
+#: ../../header.rst:-1 fc37bbaea9e645f2a1934950c4d360aa
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 9dafa464c2864c2f9d36b67a0c0aa4ec
+#: ../../header.rst:-1 3e2f00868cab4dc9b3f9c47206f4e0e1
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 f4cbd02631b44fc8aa8616c6ca375830
+#: ../../header.rst:-1 dc5cbb9888564cd2904f297d4612db6a
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../faq.rst:7 28110ac6e55e4f5f90f83c155167d628
+#: ../../faq.rst:7 34a4b295156e4a8b80a33df4e0d989fe
 msgid "FAQ"
 msgstr ""
 
-#: ../../faq.rst:9 beec3c4152da4bcb936eae88ecec3a3d
+#: ../../faq.rst:9 42099b86e20e4e99a1843a506f01916e
 msgid "A collection of recipes in “How-To” format for using PyMuPDF."
 msgstr ""
 
-#: ../../faq.rst:12 f9b28c8299d74d039993f485b5457a00
+#: ../../faq.rst:12 b75419af6b7a47d9900bf518ab5e1ad3
 msgid "Please see:"
 msgstr ""
 
-#: ../../faq.rst:14 6c1a79aa095e403f9e9c1e94330c5e68
+#: ../../faq.rst:14 478d3b75ae384ae8b14fb10fdd9b39fc
 msgid ":ref:`Recipes: Table of Contents<RecipesTOC>`"
 msgstr ""
 
-#: ../../footer.rst:71 33bbb07f58ec4d2b80e83f8678b4ddb8
+#: ../../footer.rst:60 ebceb100878042a6ade4b6d7432a599e
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../footer.rst:-1 4a60814fe4e246d6bf8f43de8222dfc5
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Discord logo"
+#~ msgstr ""
 

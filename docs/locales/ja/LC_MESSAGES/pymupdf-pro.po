@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.24.10\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-09-11 21:42+0100\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ja\n"
@@ -19,145 +19,198 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 15aba27bd5b4410f9ed3284add02bb65
+#: ../../header.rst:-1 0dfe01c73aa0450484e10fe2c161a22f
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 e97c5db839914515b9d2c81eac3cb5bd
+#: ../../header.rst:-1 b4ed4e93bf294eb098966f465bc797c5
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 bd5b2f9d28f3431fbd798a9b502d9930
+#: ../../header.rst:-1 ec46200e47134602a82ee60a1118c156
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:9 934904753b0a4da3b2cb52b94cc445ee
+#: ../../pymupdf-pro.rst:9 26812dee4da947c7918d490500c2067c
 msgid "PyMuPDF Pro"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:12 beb1ff0a04e54f6b91ac55a647c1fe94
-msgid "Enhance |PyMuPDF| capability with **Office** document support."
+#: ../../pymupdf-pro.rst:12 aa17b9e367774bb89e40e6d34d5ec0fe
+msgid "|PyMuPDF Pro| is a set of *commercial extensions* for |PyMuPDF|."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:14 120a77e0c6d14cfcb01ca3cb6ef502ae
+#: ../../pymupdf-pro.rst:14 11f22babd0e94a46b70d2de6efd179bc
 msgid ""
-"|PyMuPDF Pro| offers all the features of |PyMuPDF|, plus enhanced "
-"functionality to support **Office** documents."
+"Enhance |PyMuPDF| capability with **Office** document support & "
+"**RAG/LLM** integrations."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:16 f979155e501148108b1877d9e23fc066
-msgid "Load, parse and extract text data from **Office** files"
+#: ../../pymupdf-pro.rst:16 38e3e965f4184ecc965744d00c2568d5
+msgid ""
+"Enables Office document handling, including ``doc``, ``docx``, ``hwp``, "
+"``hwpx``, ``ppt``, ``pptx``, ``xls``, ``xlsx``, and others."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:17 8446b19235b041f4bf59687b707f0488
-msgid "Ablility to render **Office** files"
+#: ../../pymupdf-pro.rst:17 0a12a5f74ed941a9be6cef8798aa2cbd
+msgid "Supports text and table extraction, document conversion and more."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:21 7005cb49f9be4fddb9c6f304fdb749a4
+#: ../../pymupdf-pro.rst:18 49a700600f224867985cf301867199d8
+msgid "Includes the commercial version of |PyMuPDF4LLM|."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:20 9450c9107df04fe5bc38e0324bf54c01
+msgid ""
+"To enquire about obtaining a commercial license, then `use this contact "
+"page <https://artifex.com/contact/>`_."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:25 1321bc95b45541b48337e44f78b58020
+msgid ""
+"A licensed version of |PyMuPDF Pro| also gives you a licensed version of "
+"|PyMuPDF4LLM|. If you are interested in using the |PyMuPDF4LLM| package "
+"you should install it separately."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:29 f655cf9fdd1f48dd9e890f8c5aef653f
+msgid "Platform support"
+msgstr ""
+
+#: ../../pymupdf-pro.rst:31 367befe5f1a34b7fb9665758548f6448
+msgid "Available for these platforms only:"
+msgstr ""
+
+#: ../../pymupdf-pro.rst:33 a256db349f5242a38297eda82fd9ee71
+msgid "Windows x86_64."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:34 9e2ffb09f61f430f9594a418d1ee8ab0
+msgid "Linux x86_64 (glibc)."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:35 97423a8756fc40408f80993fce6a1fc6
+msgid "MacOS x86_64."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:36 1a59aca2bbc44194b2dde06a89fac54f
+msgid "MacOS arm64."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:40 0abf65ed31ca4a949b4b81e0bb521522
 msgid "Office file support"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:23 3a3c03f47a1f40c0b56d047be39bdda6
+#: ../../pymupdf-pro.rst:42 b8f3023035f74b3dacbf2e3210f2c12f
 msgid ""
 "In addition to the `standard file types supported by PyMuPDF "
 "<Supported_File_Types>`, |PyMuPDF Pro| supports:"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:28 d883ec88c7b64f75ad3135c29e877afc
+#: ../../pymupdf-pro.rst:47 45349c74355f48c0abf3ae8f486843a6
 msgid "**DOC/DOCX**"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:29 69fa3fa20679492e9dade69fa7b002d7
+#: ../../pymupdf-pro.rst:48 777b729313244ad298c7b6d5bb49c369
 msgid "**XLS/XLSX**"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:30 5975308d2b56417f9f7cfb737d36768f
+#: ../../pymupdf-pro.rst:49 371c1c089e4c475caf8acc946169b878
 msgid "**PPT/PPTX**"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:31 0e6321974a6443698318a1b3f95bb0cb
+#: ../../pymupdf-pro.rst:50 d6ec7208ebdc4049815db59e7ec6641e
 msgid "**HWP/HWPX**"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:48 e653422e7a0f4260a4af9880fcac6129
+#: ../../pymupdf-pro.rst:67 097b80f124fa49fd92bab9375f53b975
 msgid "Usage"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:51 092bb3dadc6543d383f6fb4a26d49ba0
+#: ../../pymupdf-pro.rst:70 f5c7cbdc4f62456199de7159bd404d58
 msgid "Installation"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:53 088dd18e950b42ab8616f7595ffc36a1
+#: ../../pymupdf-pro.rst:72 dabefb8cfac54dabb7e1859dbc4578ed
 msgid "Install via pip with:"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:61 0524afe84c4a4185b769d26c2269d41b
+#: ../../pymupdf-pro.rst:80 47d8f70087754faa8e60ff7f7e0d1b2a
 msgid "Loading an **Office** document"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:63 ea52fe5b89264ec79fb531f0d302d694
+#: ../../pymupdf-pro.rst:82 f5cf1df845294870b35e718fadf85b1f
 msgid ""
 "Import |PyMuPDF Pro| and you can then reference **Office** documents "
 "directly, e.g.:"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:74 16152e68593e4e4b89cb632e7e07eb4b
+#: ../../pymupdf-pro.rst:93 470f5d9c683947b2b97f3e90e42f8a5d
 msgid ""
 "All standard |PyMuPDF| functionality is exposed as expected - |PyMuPDF "
 "Pro| handles the extended **Office** file types"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:77 2c4fb3206a3b430096156a8757b92132
+#: ../../pymupdf-pro.rst:96 72c50a703f314197b00a1d336392d8dc
 msgid ""
 "From then on you can work with document pages just as you would do "
 "normally, but with respect to the `restrictions "
 "<PyMuPDFPro_Restrictions>`."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:83 2bb4d3d764ec42c4ad23e4f109c90176
+#: ../../pymupdf-pro.rst:100 5b447b0138f849efa8d4cb7a1cfd910b
+msgid "Converting an **Office** document to |PDF|"
+msgstr ""
+
+#: ../../pymupdf-pro.rst:102 b8e5b07700944b9da32ae37ca9175e00
+msgid ""
+"The following code snippet can convert your **Office** document to |PDF| "
+"format:"
+msgstr ""
+
+#: ../../pymupdf-pro.rst:120 26c5a530a9a54f56bc28027850958f25
 msgid "Restrictions"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:86 0973bccb9928417aaf8bdff4af44f3cd
+#: ../../pymupdf-pro.rst:123 2391a063f21c4de092b0beca7b94377e
 msgid ""
 "|PyMuPDF Pro| functionality is restricted without a license key as "
 "follows:"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:88 c94500b884d14e78b74f84333a171c55
+#: ../../pymupdf-pro.rst:125 1e6b67342d31405ab0f72646252650df
 msgid "**Only the first 3 pages of any document will be available.**"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:90 14a031b937104968b429c77c71ac3ff3
+#: ../../pymupdf-pro.rst:127 c176b676614c4507959f495c339a3e71
 msgid ""
 "To unlock full functionality you should `obtain a trial key "
 "<https://pymupdf.io/try-pro/>`_."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:96 8f7b8eac61fc4182bbe91c4f8b3cdf2e
+#: ../../pymupdf-pro.rst:133 9a01dcbd3af143b6bad7400a98e6b69d
 msgid "Trial keys"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:98 eb4bda75979d4231b4212d5313e2cf24
+#: ../../pymupdf-pro.rst:135 89e312aa37bd4b749727cd14913e2e70
 msgid ""
 "To obtain a license key `please fill out the form on this page "
 "<https://pymupdf.io/try-pro/>`_. You will then have the trial key "
 "emailled to the address you submitted."
 msgstr ""
 
-#: ../../pymupdf-pro.rst:102 4bfe2709db104527ae2559d14d26bd29
+#: ../../pymupdf-pro.rst:139 371fa0ea70f44d9e8e6e9155a631426f
 msgid "Using a key"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:105 d9bcb667b5264ae898636ae8dbb2bb3d
+#: ../../pymupdf-pro.rst:142 25f50e294ef5429e86781bea1e1b1e29
 msgid "Initialize |PyMuPDF Pro| with a key as follows:"
 msgstr ""
 
-#: ../../pymupdf-pro.rst:113 aa672485148041dab38483e1c382cac3
+#: ../../pymupdf-pro.rst:150 b01044f9b9f34927892044fa1c007b7f
 msgid ""
 "This will allow you to evaluate the product for a limited time. If you "
 "want to use |PyMuPDF Pro| after this time you should then `enquire about "
@@ -165,11 +218,59 @@ msgid ""
 "pro/>`_."
 msgstr ""
 
-#: ../../footer.rst:60 fd03c6fb57854b028b47bd07e141d4cd
+#: ../../pymupdf-pro.rst:154 fcfee54b997f4b5a8368464ac33e8568
+msgid "Fonts"
+msgstr ""
+
+#: ../../pymupdf-pro.rst:156 c22971d466c14a31aeb4f6e851c88144
+msgid ""
+"By default `pymupdf.pro.unlock()` searches for all installed font "
+"directories."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:158 c388a7575cdf4d709d86899170008a23
+msgid "This can be controlled with keyword-only args:"
+msgstr ""
+
+#: ../../pymupdf-pro.rst:160 9c1f44585d134e12bb9b74ce4a83121b
+msgid ""
+"`fontpath`: specific font directories, either as a list/tuple or "
+"`os.sep`-separated string. If None (the default), we use "
+"`os.environ['PYMUPDFPRO_FONT_PATH']` if set."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:162 ae8654a3d7f14d329aa5caf0f2ccde78
+msgid ""
+"`fontpath_auto`: Whether to append system font directories. If None (the "
+"default) we use true if `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` is '1'."
+" If true we append all system font directories."
+msgstr ""
+
+#: ../../pymupdf-pro.rst:166 28aa600bf1164c318f946da4d23619db
+msgid ""
+"Function `pymupdf.pro.get_fontpath()` returns a tuple of all font "
+"directories used by `unlock()`."
+msgstr ""
+
+#: ../../footer.rst:60 fdcd80e27b7c41f882a85b921e2ee500
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
 
-#: ../../footer.rst:-1 78493c6dfb794dbca9deed2c063a5c8e
-msgid "Discord logo"
-msgstr ""
+#~ msgid "Enhance |PyMuPDF| capability with **Office** document support."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "|PyMuPDF Pro| offers all the features"
+#~ " of |PyMuPDF|, plus enhanced functionality"
+#~ " to support **Office** documents."
+#~ msgstr ""
+
+#~ msgid "Load, parse and extract text data from **Office** files"
+#~ msgstr ""
+
+#~ msgid "Ablility to render **Office** files"
+#~ msgstr ""
+
+#~ msgid "Discord logo"
+#~ msgstr ""
 

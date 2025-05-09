@@ -41,7 +41,7 @@ msgstr ""
 
 #: ../../intro.rst:15 12aec34e36c34e14a32ebeecf2c16431
 msgid ""
-"**PyMuPDF** is a Python binding for `MuPDF <https://www.mupdf.com/>`_ --"
+"|PyMuPDF| is a Python binding for `MuPDF <https://www.mupdf.com/>`_ --"
 "  a lightweight PDF, XPS, and E-book viewer, renderer, and toolkit, which"
 " is maintained and developed by Artifex Software, Inc"
 msgstr ""
@@ -186,9 +186,9 @@ msgstr ""
 
 #: ../../version.rst:5 d0267645ce504840843677d4a3060147
 msgid ""
-"The major and minor versions of **PyMuPDF** and **MuPDF** will always be "
+"The major and minor versions of |PyMuPDF| and |MuPDF| will always be "
 "the same. Only the third qualifier (patch level) may deviate from that of"
-" **MuPDF**."
+" |MuPDF|."
 msgstr ""
 
 #: ../../version.rst:7 f26be46a33a04d54965c32772883e3ab

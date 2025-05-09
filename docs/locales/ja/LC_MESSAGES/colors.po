@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-03-05 14:46+0000\n"
+"POT-Creation-Date: 2025-04-17 15:00+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 da174f1e5a4f45a1ba5721662af06e3d
+#: ../../header.rst:-1 35fb650a253a4f3b8498a5be6524cf11
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 ece443183ab64d7ca1518085ffb4677b
+#: ../../header.rst:-1 82dc5bc568734b99a2d2f57e0a4da5d0
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 a3f73a734d71409e8ad66dec06e27981
+#: ../../header.rst:-1 546a16c6fc534b38a0db66fe761c1c61
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../colors.rst:7 325d2185ec754fdaab22afe08eda9511
+#: ../../colors.rst:7 248d0e17c78b4f6fa1b57235e07bb572
 msgid "Color Database"
 msgstr "カラーデータベース"
 
-#: ../../colors.rst:8 35fb2edf7c6743e2928bc9bcb89419da
+#: ../../colors.rst:8 866762e2283b43a5a605f529de6310df
 msgid ""
 "Since the introduction of methods involving colors (like "
 ":meth:`Page.draw_circle`), a requirement may be to have access to "
@@ -48,7 +48,7 @@ msgstr ""
 ":meth:`Page.draw_circle`) "
 "のような色を含むメソッドが導入されて以来、事前定義された色にアクセスする必要があるかもしれません。）"
 
-#: ../../colors.rst:10 73a9051271e54660bed3d1038dfeea3f
+#: ../../colors.rst:10 03afc088d6e34acc9076fc34915e9064
 msgid ""
 "The fabulous GUI package `wxPython <https://wxpython.org/>`_ has a "
 "database of over 540 predefined RGB colors, which are given more or less "
@@ -59,7 +59,7 @@ msgstr ""
 "素晴らしいGUIパッケージ `wxPython <https://wxpython.org/>`_ "
 "には、記憶しやすい名前が与えられた540以上の事前定義されたRGBカラーのデータベースがあります。その中には「green」や「blue」のような標準的な名前だけでなく、「turquoise」や「skyblue」、「gray」の100のシェードなどが含まれています（50だけでなく…）。"
 
-#: ../../colors.rst:12 474c1f05f3ee4027840d7137e563557a
+#: ../../colors.rst:12 7ff92a944ea44490b292556c69b2273b
 msgid ""
 "We have taken the liberty to copy this database (a list of tuples) "
 "modified into PyMuPDF and make its colors available as PDF compatible "
@@ -71,21 +71,21 @@ msgstr ""
 " 255, 255, 255)は(1, 1, 1)として返され、これは *直接色* や *塗りつぶし* "
 "のパラメータとして使用できます。また、「wHiTe」といった大小文字の組み合わせも受け入れます。"
 
-#: ../../colors.rst:15 fa8615fbed014a96afc4b6445b5c63f6
+#: ../../colors.rst:15 e54f7361ac594e49854f711406c08592
 msgid "Function *getColor()*"
 msgstr "関数 *getColor()* "
 
-#: ../../colors.rst:16 5586d63c620b479a9de9959057416f0e
+#: ../../colors.rst:16 2f1966c2184a4746af35dea0735b144d
 msgid ""
 "As the color database may not be needed very often, one additional import"
 " statement seems acceptable to get access to it::"
 msgstr "カラーデータベースはあまり頻繁に必要ないかもしれないため、アクセスするために1つの追加のインポート文は受け入れられると思われます。"
 
-#: ../../colors.rst:41 428baa5642dc47319be1f85c5b9fe540
+#: ../../colors.rst:41 7d1b6378ac6440948098bc91a988cb05
 msgid "Printing the Color Database"
 msgstr "カラーデータベースの印刷"
 
-#: ../../colors.rst:42 0e36f21290204777979dc4d9c2ac8de6
+#: ../../colors.rst:42 a5973aca56984f88bf0fe7e9e3c52644
 msgid ""
 "If you want to actually see how the many available colors look like, use "
 "scripts `print by RGB <https://github.com/pymupdf/PyMuPDF-"
@@ -105,17 +105,16 @@ msgstr ""
 "、ソート基準としてHue-Saturation-"
 "Valueを使用するものの2つの違いだけです。以下は、これらのファイルがどのように見えるかのスクリーンプリントです。"
 
-#: ../../footer.rst:71 88f79dd2f9d14259b59d07b1e462d52b
+#: ../../footer.rst:60 d448c701ca134c668840e68d45395229
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
-
-#: ../../footer.rst:-1 cfaae52605ae4a7680ee9c25e0b927f0
-msgid "Discord logo"
-msgstr ""
 
 #~ msgid "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 #~ msgstr ""
 
 #~ msgid "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
+#~ msgstr ""
+
+#~ msgid "Discord logo"
 #~ msgstr ""
 

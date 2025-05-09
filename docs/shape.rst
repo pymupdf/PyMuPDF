@@ -256,12 +256,12 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       The method also supports **morphing the compound drawing** using :ref:`Point` *fixpoint* and :ref:`matrix` *matrix*.
 
-      :arg sequence morph: morph the text or the compound drawing around some arbitrary :ref:`Point` *fixpoint* by applying :ref:`Matrix` *matrix* to it. This implies that *fixpoint* is a **fixed point** of this operation: it will not change its position. Default is no morphing (*None*). The matrix can contain any values in its first 4 components, *matrix.e == matrix.f == 0* must be true, however. This means that any combination of scaling, shearing, rotating, flipping, etc. is possible, but translations are not.
+      :arg sequence morph: morph the text or the compound drawing around some arbitrary :ref:`Point` *fixpoint* by applying :ref:`Matrix` *matrix* to it. This implies that *fixpoint* is a **fixed point** of this operation: it will not change its position. Default is no morphing (``None``). The matrix can contain any values in its first 4 components, *matrix.e == matrix.f == 0* must be true, however. This means that any combination of scaling, shearing, rotating, flipping, etc. is possible, but translations are not.
 
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors. Value < 0 or > 1 will be ignored. Default is 1 (intransparent).
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent).
 
-      :arg bool even_odd: request the **"even-odd rule"** for filling operations. Default is *False*, so that the **"nonzero winding number rule"** is used. These rules are alternative methods to apply the fill color where areas overlap. Only with fairly complex shapes a different behavior is to be expected with these rules. For an in-depth explanation, see :ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the difference.
+      :arg bool even_odd: request the **"even-odd rule"** for filling operations. Default is ``False``, so that the **"nonzero winding number rule"** is used. These rules are alternative methods to apply the fill color where areas overlap. Only with fairly complex shapes a different behavior is to be expected with these rules. For an in-depth explanation, see :ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the difference.
 
       :arg int oc: *(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or :data:`OCMD` to make this drawing conditionally displayable.
 
@@ -422,7 +422,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. attribute:: rect
 
-      Rectangle surrounding drawings. This attribute is at your disposal and may be changed at any time. Its value is set to *None* when a shape is created or committed. Every *draw** method, and :meth:`Shape.insert_textbox` update this property (i.e. **enlarge** the rectangle as needed). **Morphing** operations, however (:meth:`Shape.finish`, :meth:`Shape.insert_textbox`) are ignored.
+      Rectangle surrounding drawings. This attribute is at your disposal and may be changed at any time. Its value is set to ``None`` when a shape is created or committed. Every *draw** method, and :meth:`Shape.insert_textbox` update this property (i.e. **enlarge** the rectangle as needed). **Morphing** operations, however (:meth:`Shape.finish`, :meth:`Shape.insert_textbox`) are ignored.
 
       A typical use of this attribute would be setting :attr:`Page.cropbox_position` to this value, when you are creating shapes for later or external use. If you have not manipulated the attribute yourself, it should reflect a rectangle that contains all drawings so far.
 
@@ -443,7 +443,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
    .. attribute:: lastPoint
 
-      For reference only: the current point of the drawing path. It is *None* at *Shape* creation and after each *finish()* and *commit()*.
+      For reference only: the current point of the drawing path. It is ``None`` at *Shape* creation and after each *finish()* and *commit()*.
 
       :type: :ref:`Point`
 
@@ -559,7 +559,7 @@ Common Parameters
 
   Causes lines to be drawn dashed. The general format is `"[n m] p"` of (up to) 3 floats denoting pixel lengths. ``n`` is the dash length, ``m`` (optional) is the subsequent gap length, and ``p`` (the "phase" - **required**, even if 0!) specifies how many pixels should be skipped before the dashing starts. If ``m`` is omitted, it defaults to ``n``.
   
-  A continuous line (no dashes) is drawn with `"[] 0"` or *None* or `""`. Examples:
+  A continuous line (no dashes) is drawn with `"[] 0"` or ``None`` or `""`. Examples:
   
   * Specifying `"[3 4] 0"` means dashes of 3 and gaps of 4 pixels following each other.
   * `"[3 3] 0"` and `"[3] 0"` do the same thing.
@@ -648,7 +648,7 @@ Common Parameters
 
 **morph** (*sequence*)
 
-  Causes "morphing" of either a shape, created by the *draw*()* methods, or the text inserted by page methods *insert_textbox()* / *insert_text()*. If not *None*, it must be a pair *(fixpoint, matrix)*, where *fixpoint* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The matrix can be anything except translations, i.e. *matrix.e == matrix.f == 0* must be true. The point is used as a fixed point for the matrix operation. For example, if *matrix* is a rotation or scaling, then *fixpoint* is its center. Similarly, if *matrix* is a left-right or up-down flip, then the mirroring axis will be the vertical, respectively horizontal line going through *fixpoint*, etc.
+  Causes "morphing" of either a shape, created by the *draw*()* methods, or the text inserted by page methods *insert_textbox()* / *insert_text()*. If not ``None``, it must be a pair *(fixpoint, matrix)*, where *fixpoint* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The matrix can be anything except translations, i.e. *matrix.e == matrix.f == 0* must be true. The point is used as a fixed point for the matrix operation. For example, if *matrix* is a rotation or scaling, then *fixpoint* is its center. Similarly, if *matrix* is a left-right or up-down flip, then the mirroring axis will be the vertical, respectively horizontal line going through *fixpoint*, etc.
 
   .. note:: Several methods contain checks whether the to be inserted items will actually fit into the page (like :meth:`Shape.insert_text`, or :meth:`Shape.draw_rect`). For the result of a morphing operation there is however no such guaranty: this is entirely the programmer's responsibility.
 

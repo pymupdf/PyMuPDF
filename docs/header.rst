@@ -17,6 +17,9 @@
 
     <div style="width:100%; text-align:right"><b>This class is for PDF only.</b></div>
 
+
+.. names of common things
+
 .. |PyMuPDF| raw:: html
 
     <cite>PyMuPDF</cite>
@@ -36,6 +39,18 @@
 .. |Markdown| raw:: html
 
     <cite>Markdown</cite>
+
+.. |MuPDF| raw:: html
+
+    <cite>MuPDF</cite>
+
+.. |PDF| raw:: html
+
+    <cite>PDF</cite>
+
+.. |AGPL| raw:: html
+
+    <cite>AGPL</cite>
 
 .. raw:: html
 
