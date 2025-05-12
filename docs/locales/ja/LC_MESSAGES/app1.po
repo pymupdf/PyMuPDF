@@ -523,7 +523,6 @@ msgid ""
 msgstr "画像を含む出力バリアントを使用する際に画像に興味がない場合、必ず該当するビットをオフに設定してください。これにより、パフォーマンスが向上し、スペース要件が大幅に削減されます。"
 
 #: ../../app1.rst:304 4babe75226f64adeb13494c473d77bda
-#, fuzzy
 msgid "To show the effect of `TEXT_INHIBIT_SPACES` have a look at this example::"
 msgstr "`TEXT_INHIBIT_SPACES`  の効果を示すために、この例をご覧ください："
 

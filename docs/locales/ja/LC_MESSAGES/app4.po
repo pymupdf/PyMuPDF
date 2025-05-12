@@ -425,7 +425,7 @@ msgid ""
 "website.pdf** and **sample-50-MB-pdf-file.pdf** are graphics oriented. "
 "Other files are a mix of both."
 msgstr ""
-"**adobe.pdf** と **pymupdf.pdf** は明らかにテキスト志向です。artifex-website.pdf と "
+"**adobe.pdf** と **pymupdf.pdf** は明らかにテキスト志向です。 **artifex-website.pdf** と "
 "**sample-50-MB-pdf-file.pdf** はグラフィックス志向です。その他のファイルは両方のミックスです。"
 
 #: ../../app4.rst:131 cae4cecbbc174e919e8030a349897d8b

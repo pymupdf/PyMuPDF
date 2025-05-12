@@ -41,24 +41,22 @@ msgstr "チュートリアル"
 
 #: ../../tutorial.rst:12 79164895cbdb4876ab62b8a34848f031
 msgid ""
-"This tutorial will show you the use of |PyMuPDF|, :title:`MuPDF` in "
-":title:`Python`, step by step."
+"This tutorial will show you the use of |PyMuPDF|, |MuPDF| in "
+"Python, step by step."
 msgstr "このチュートリアルでは、PythonでのPyMuPDF、MuPDFのステップバイステップの使用方法を紹介します。"
 
 #: ../../tutorial.rst:14 f3586dfb42924abab88898f06f38cbcd
 msgid ""
-"Because :title:`MuPDF` supports not only PDF, but also XPS, OpenXPS, CBZ,"
-" CBR, FB2 and EPUB formats, so does PyMuPDF [#f1]_. Nevertheless, for the"
+"Because |MuPDF| supports not only PDF, but also XPS, OpenXPS, CBZ,"
+" CBR, FB2 and EPUB formats, so does |PyMuPDF| [#f1]_. Nevertheless, for the"
 " sake of brevity we will only talk about PDF files. At places where "
 "indeed only PDF files are supported, this will be mentioned explicitly."
 msgstr "MuPDFはPDFだけでなく、XPS、OpenXPS、CBZ、CBR、FB2、EPUB形式もサポートしており、PyMuPDFも同様です[1]。ただし、簡潔さのために、ここではPDFファイルについてのみ話を進めます。本当にPDFファイルのみがサポートされている場所では、明示的にその旨を記述します。"
 
 #: ../../tutorial.rst:16 e30cf64f80944d90ba7ccfbb03a3a9c1
 msgid ""
-"In addition to this introduction, please do visit PyMuPDF's `Youtube "
-"Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the "
-"following in the form of Youtube \"Shorts\" and longer videos."
-msgstr ""
+"In addition to this introduction, please do visit PyMuPDF's `YouTube Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the following in the form of YouTube \"Shorts\" and longer videos."
+msgstr "このイントロダクションに加えて、ぜひ `PyMuPDF の YouTube <https://www.youtube.com/@PyMuPDF>`_  チャンネル もご覧ください。以下の内容の多くが、YouTubeの「ショート動画」や長編動画の形式で紹介されています。"
 
 #: ../../tutorial.rst:19 071e51fe96454d0bbe2eb32b51f301b3
 msgid "Importing the Bindings"
@@ -438,7 +436,7 @@ msgstr "以下の例は、ページの内容をラスター画像として作成
 
 #: ../../tutorial.rst:167 5d490b2d2071456590b70ad02b2040a3
 msgid ""
-"*pix* is a :ref:`Pixmap` object which (in this case) contains an **RGB** "
+"``pix`` is a :ref:`Pixmap` object which (in this case) contains an **RGB** "
 "image of the page, ready to be used for many purposes. Method "
 ":meth:`Page.get_pixmap` offers lots of variations for controlling the "
 "image: resolution / DPI, colorspace (e.g. to produce a grayscale image or"
@@ -455,10 +453,10 @@ msgstr ""
 #: ../../tutorial.rst:169 d83c8c8ecf374c119c71005bd91511c7
 msgid ""
 "A :ref:`Pixmap` contains a number of methods and attributes which are "
-"referenced below. Among them are the integers *width*, *height* (each in "
-"pixels) and *stride* (number of bytes of one horizontal image line). "
-"Attribute *samples* represents a rectangular area of bytes representing "
-"the image data (a Python *bytes* object)."
+"referenced below. Among them are the integers ``width``, ``height`` (each in "
+"pixels) and ``stride`` (number of bytes of one horizontal image line). "
+"Attribute ``samples`` represents a rectangular area of bytes representing "
+"the image data (a Python ``bytes`` object)."
 msgstr ""
 ":ref:`Pixmap` "
 "には、以下で参照されるいくつかのメソッドと属性が含まれています。その中には、ピクセル単位の整数である幅、高さ（それぞれピクセル単位）および "
@@ -617,11 +615,11 @@ msgstr ""
 "画像は含まれませんが、各テキスト文字までの完全な位置とフォント情報を含みます。XMLモジュールを使用して解釈することができます。"
 
 #: ../../tutorial.rst:256 38ebfd1e60f2470db255fe5ce90e60cb
-#, fuzzy
+
 msgid ""
 "To give you an idea about the output of these alternatives, we did text "
 "example extracts. See :ref:`Appendix1`."
-msgstr "これらの代替方法の出力のイメージを示すために、テキストの例抽出を行いました。:ref:`Appendix2` を参照してください"
+msgstr "これらの代替方法の出力のイメージを示すために、テキストの例抽出を行いました。:ref:`Appendix1` を参照してください"
 
 #: ../../tutorial.rst:259 570661af75b040a2ab647ae2c7ed0b06
 msgid "Searching for Text"
@@ -964,7 +962,7 @@ msgstr "前述のように、 :meth:`Document.save` は常にドキュメント�
 #: ../../tutorial.rst:377 3884d37d66e24f51a21bf2c8d54682a0
 msgid ""
 "You can write changes back to the **original PDF** by specifying option "
-"*incremental=True*. This process is (usually) **extremely fast**, since "
+"``incremental=True``. This process is (usually) **extremely fast**, since "
 "changes are **appended to the original file** without completely "
 "rewriting it."
 msgstr ""
@@ -1131,8 +1129,8 @@ msgstr "オブジェクト、ストリーム、xrefなどの用語の詳細に�
 
 #: ../../tutorial.rst:399 dc0df99a528d4978997189a285ab567f
 msgid ""
-"For example, *mutool clean -ggggz file.pdf* yields excellent compression "
-"results. It corresponds to *doc.save(filename, garbage=4, deflate=True)*."
+"For example, ``mutool clean -ggggz file.pdf`` yields excellent compression "
+"results. It corresponds to ``doc.save(filename, garbage=4, deflate=True)``."
 msgstr ""
 "例えば、 `mutool clean -ggggz file.pdf`  は優れた圧縮結果をもたらします。これは "
 "`doc.save(filename, garbage=4, deflate=True)` に対応しています。"

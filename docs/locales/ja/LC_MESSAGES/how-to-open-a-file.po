@@ -225,10 +225,7 @@ msgstr "等々！"
 
 #: ../../how-to-open-a-file.rst:167 b47b21b5806a489b9807e5cb979132f7
 msgid ""
-"As you can imagine many text based file formats can be *very simply "
-"opened* and *interpreted* by |PyMuPDF|. This can make data analysis and "
-"extraction for a wide range of previously unavailable files suddenly "
-"possible."
+"As you can imagine many text based file formats can be *very simply opened* and *interpreted* by |PyMuPDF|. This can make data analysis and extraction for a wide range of previously unavailable files possible."
 msgstr ""
 "ご想像のとおり、多くのテキスト ベースのファイル形式は、|PyMuPDF| によって非常に簡単に開いて解釈できます。 "
 "これにより、これまで利用できなかった広範囲のファイルのデータ分析と抽出が突然可能になります。"

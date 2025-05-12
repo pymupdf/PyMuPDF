@@ -55,7 +55,7 @@ A set of eight files is used for the performance testing. With each file we have
      - **KB/page**
      - **Textsize/page**
      - **Notes**
-   * - `adobe.pdf`_
+   * - `adobe.pdf`
      - 32,472,771
      - 1,310
      - 794
@@ -63,7 +63,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 24
      - 1,942
      - linearized, many links / bookmarks
-   * - `artifex-website.pdf`_
+   * - `artifex-website.pdf`
      - 31,570,732
      - 47
      - 46
@@ -71,7 +71,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 656
      - 3,538
      - graphics oriented
-   * - `db-systems.pdf`_
+   * - `db-systems.pdf`
      - 29,326,355
      - 1,241
      - 0
@@ -79,7 +79,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 23
      - 2,142
      -
-   * - `fontforge.pdf`_
+   * - `fontforge.pdf`
      - 8,222,384
      - 214
      - 31
@@ -87,7 +87,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 38
      - 1,058
      - mix of text & graphics
-   * - `pandas.pdf`_
+   * - `pandas.pdf`
      - 10,585,962
      - 3,071
      - 536
@@ -95,7 +95,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 3
      - 1,539
      - many pages
-   * - `pymupdf.pdf`_
+   * - `pymupdf.pdf`
      - 6,805,176
      - 478
      - 276
@@ -103,7 +103,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 14
      - 1,937
      - text oriented
-   * - `pythonbook.pdf`_
+   * - `pythonbook.pdf`
      - 9,983,856
      - 669
      - 198
@@ -111,7 +111,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 15
      - 1,929
      -
-   * - `sample-50-MB-pdf-file.pdf`_
+   * - `sample-50-MB-pdf-file.pdf`
      - 52,521,850
      - 1
      - 0

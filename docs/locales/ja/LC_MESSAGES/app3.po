@@ -150,7 +150,7 @@ msgstr "Adobe PDFリファレンス"
 #: ../../app3.rst:116 f437d3bd70b8474d9c453efcf4fde51e
 msgid ""
 "This PDF Reference manual published by Adobe is frequently quoted "
-"throughout this documentation. It can be viewed and downloaded from `here"
+"throughout this documentation. It can be viewed and downloaded from `opensource.adobe.com"
 " <https://opensource.adobe.com/dc-acrobat-sdk-"
 "docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_."
 msgstr ""
@@ -257,12 +257,9 @@ msgstr ""
 "*array.array()* "
 
 #: ../../app3.rst:163 1b2a7bd2869c448db2997c66e5c8ede9
-msgid ""
-":ref:`Quad` is a Python sequence object as well and has a length of 4. "
-"Its items however are :data:`point_like` -- not numbers. Therefore, the "
-"above remarks do not apply."
+msgid ":ref:`Quad` is a Python sequence object as well and has a length of 4. Its items however are :data:`point_like` -- not numbers. Therefore, the above remarks do not apply."
 msgstr ""
-" :ref:`Quad` もPythonのシーケンスオブジェクトであり、長さが4です。ただし、そのアイテムは数値ではなく "
+":ref:`Quad` もPythonのシーケンスオブジェクトであり、長さが4です。ただし、そのアイテムは数値ではなく "
 ":data:`point_like` です。したがって、上記の注釈は適用されません。"
 
 #: ../../app3.rst:170 94e21a5bc8ee4477a04441d5c30d724d
@@ -702,7 +699,7 @@ msgid "Example output for an **unrecoverable error**:"
 msgstr ""
 
 #: ../../app3.rst:378 77eea1b26e664197b0bb4bcaf68a0f7b
-#, fuzzy
+
 msgid "Coordinates"
 msgstr "脚注"
 

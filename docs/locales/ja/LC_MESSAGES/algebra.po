@@ -75,7 +75,7 @@ msgid ""
 msgstr "演算子は2つのオブジェクトを含むバイナリ演算子または単項演算子になります。"
 
 #: ../../algebra.rst:22 ff83ad4ef4924a928f7fe7c91f007de7
-#, fuzzy
+
 msgid ""
 "The resulting type of **binary** operations is either a **new object of "
 "the left operand's class,** a bool or (for dot products) a float."
@@ -88,7 +88,7 @@ msgid ""
 msgstr "単項演算の結果は、同じクラスの新しいオブジェクト、bool型、またはfloat型のいずれかです。"
 
 #: ../../algebra.rst:26 a1336f1afec74044ada260ccd870436a
-#, fuzzy
+
 msgid ""
 "The binary operators `+, -, *, /` are defined for all classes. They "
 "*roughly* do what you would expect -- **except, that the second operand "
@@ -113,7 +113,7 @@ msgstr ""
 " 、 :data:`rect_like` 、 :data:`quad_like` 、または :data:`matrix_like` と呼びます。"
 
 #: ../../algebra.rst:31 d93daa3887f04faead0f46a53b4c2a9a
-#, fuzzy
+
 msgid ""
 "Rectangles support **additional binary** operations: **intersection** "
 "(operator `\"&\"`), **union** (operator `\"|\"`) and **containment** "
@@ -126,7 +126,7 @@ msgid ""
 "binary operator then the expression `a °= b` is always valid and the same"
 " as `a = a ° b`. Therefore, be careful and do **not** do `p1 *= p2` for "
 "two points, because thereafter \"p1\" is a **float**."
-msgstr ""
+msgstr "バイナリ演算子は「インプレース演算」を完全にサポートしています。つまり、"°"がバイナリ演算子である場合、式 ``a °= b`` は常に有効であり、 ``a = a ° b`` と同じです。したがって、2つの点に対して ``p1 *= p2`` を行わないように注意してください。なぜなら、その後「p1」は浮動小数点数になってしまうからです。"
 
 #: ../../algebra.rst:37 b197551ac91841fba96a5406efd0e076
 msgid "Unary Operations"
@@ -199,14 +199,14 @@ msgid ""
 "These are expressions like `a ° b` where \"°\" is any of the operators "
 "`+, -, *, /`. Also binary operations are expressions of the form `a == b`"
 " and `b in a`."
-msgstr ""
+msgstr "これらは ``a ° b`` のような式であり、ここで「°」は ``+``, ``-``, ``*``, ``/`` などの演算子のいずれかです。また、バイナリ演算には ``a == b`` や ``b in a`` のような形式の式も含まれます。"
 
 #: ../../algebra.rst:55 347337c08b6e49ba8133b876c65de703
 msgid ""
 "If \"b\" is a number, then the respective operation is executed for each "
 "component of \"a\". Otherwise, if \"b\" is **not a number,** then the "
 "following happens:"
-msgstr ""
+msgstr "もし「b」が数値である場合、それぞれの演算は「a」の各コンポーネントに対して実行されます。一方、「b」が数値ではない場合、以下のことが起こります："
 
 #: ../../algebra.rst:61 882647f50a3548ada51850492e59336c
 msgid "a+b, a-b"
@@ -221,7 +221,7 @@ msgid "a*m, a/m"
 msgstr ""
 
 #: ../../algebra.rst:62 7d3849829e3b4508827663e012314f30
-#, fuzzy
+
 msgid ""
 "\"a\" can be a point, rectangle or matrix and \"m\" is a "
 ":data:`matrix_like`. *\"a/m\"* is treated as *\"a*~m\"* (see note below "
@@ -239,7 +239,7 @@ msgstr ""
 
 #: ../../algebra.rst:67 55f9b0922451482484ef7fe2110fefb7
 msgid "returns the **vector dot product** for a point \"a\" and point-like \"b\"."
-msgstr ""
+msgstr "点「a」と点のような「b」に対して、ベクトルの内積を返します。"
 
 #: ../../algebra.rst:68 2c02e64b04dd47a89a57341e5557c6f4
 msgid "a&b"
@@ -385,7 +385,7 @@ msgstr "以下は、点 `p1` と点 `p2` を結ぶ直線の中点を求めます
 msgid ""
 "Compute the **vector dot product** of two points. You can compute the "
 "**cosine of angles** and check orthogonality."
-msgstr ""
+msgstr "2つの点のベクトル内積を計算します。これにより、角度のコサインを計算したり、直交性を確認したりすることができます。"
 
 #: ../../algebra.rst:149 05936628739f4f5392d49359e0f8860d
 msgid "Manipulation with \"like\" Objects"
