@@ -140,7 +140,7 @@ msgstr ":meth:`Document.make_bookmark` によって作成されたもの。"
 
 #: ../../document.rst:33 401b0220462942d0a1dfee34da205ed0
 msgid "PDF only: make annotations / fields permanent content"
-msgstr ""
+msgstr "PDFのみ：注釈やフォームフィールドを永続的なコンテンツに変換します"
 
 #: ../../document.rst:34 dd50f99a786e41ebbd68cd9fb8ca64c1
 msgid ":meth:`Document.can_save_incrementally`"
@@ -684,7 +684,6 @@ msgid ":meth:`Document.resolve_names`"
 msgstr ""
 
 #: ../../document.rst:101 e77f3de589b548a1a2ea07c794ac264d
-#, fuzzy
 msgid "PDF only: Convert destination names into a Python dict"
 msgstr "PDFのみ: ページの目的地名をPythonの辞書に変換します"
 
@@ -1205,23 +1204,23 @@ msgstr ""
 
 #: ../../document.rst:190 0fe87d9dfe03401083c99ff847b81951
 msgid ""
-"may used together with *height* as an alternative to *rect* to specify "
+"may used together with ``height`` as an alternative to ``rect`` to specify "
 "layout information."
-msgstr "レイアウト情報を指定するための *rect* の代替として、*height* と一緒に使用できます。"
+msgstr "レイアウト情報を指定するための ``rect`` の代替として、 ``height``  と一緒に使用できます。"
 
 #: ../../document.rst:192 f416d1dd95eb4a53a918ba5ba81f5216
 msgid ""
-"may used together with *width* as an alternative to *rect* to specify "
+"may used together with ``width`` as an alternative to ``rect`` to specify "
 "layout information."
-msgstr "レイアウト情報を指定するための *rect* の代替として、*width* と一緒に使用できます。"
+msgstr "レイアウト情報を指定するための ``rect`` の代替として、 ``width`` と一緒に使用できます。"
 
 #: ../../document.rst:194 dd1d7138ed3e4c2d9eaa21674b14f35b
 msgid ""
 "the default :data:`fontsize` for reflowable document types. This "
-"parameter is ignored if none of the parameters *rect* or *width* and "
-"*height* are specified. Will be used to calculate the page layout."
+"parameter is ignored if none of the parameters ``rect`` or ``width`` and "
+"``height`` are specified. Will be used to calculate the page layout."
 msgstr ""
-"可変ページドキュメントタイプのデフォルト :data:`fontsize`。*rect* または *width* と *height* "
+"可変ページドキュメントタイプのデフォルト :data:`fontsize`。 ``rect`` または ``width`` と ``height`` "
 "のいずれのパラメータも指定されていない場合、このパラメータは無視されます。ページレイアウトを計算するために使用されます。"
 
 #: ../../document.rst 45cc1324293c427382027b70b78e7c0b
@@ -1350,17 +1349,14 @@ msgstr "可能なフォームの概要、注： `open` は `Document` の同義�
 msgid ""
 "Raster images with a wrong (but supported) file extension **are no "
 "problem**. MuPDF will determine the correct image type when file "
-"**content** is actually accessed and will process it without complaint. "
-"So `pymupdf.open(\"file.jpg\")` will work even for a PNG image."
+"**content** is actually accessed and will process it without complaint."
 msgstr ""
 "サポートされているが正しくないファイル拡張子を持つラスター画像は **問題ありません** 。MuPDFは、ファイルの実際の **内容**  "
-"がアクセスされると正しい画像タイプを判断し、何もクレームをつけずに処理します。したがって、 "
-"`pymupdf.open(\"file.jpg\")` はPNG画像でも機能します。"
+"がアクセスされると正しい画像タイプを判断し、何もクレームをつけずに処理します。"
 
 #: ../../document.rst:230 0241155cc4cd4ae4af4e0094c55ac867
 msgid ""
-"The Document class can be also be used as a **context manager**. On exit,"
-" the document will automatically be closed."
+"The Document class can be also be used as a **context manager**. Exiting the content manager will close the document automatically."
 msgstr "Document クラスは **コンテキストマネージャ** としても使用できます。終了時に、ドキュメントは自動的に閉じられます。"
 
 #: ../../document.rst:246 ../../document.rst:256 ../../document.rst:316
@@ -1503,11 +1499,11 @@ msgstr "これをデフォルト構成にします。"
 #: ../../document.rst:294 02c3213ae6284cf7ade2a43256e7984e
 msgid ""
 "Activates the ON / OFF states of OCGs as defined in the identified layer."
-" If *as_default=True*, then additionally all layers, including the "
+" If ``as_default=True``, then additionally all layers, including the "
 "standard one, are merged and the result is written back to the standard "
 "layer, and **all optional layers are deleted**."
 msgstr ""
-"識別されたレイヤーで定義されたOCGのON / OFFの状態をアクティブにします。 *as_default=True* "
+"識別されたレイヤーで定義されたOCGのON / OFFの状態をアクティブにします。 ``as_default=True`` "
 "の場合、追加で、標準のレイヤーを含むすべてのレイヤーがマージされ、結果が標準レイヤーに書き込まれ、 "
 "**すべてのオプションレイヤーが削除されます** 。"
 
@@ -4429,13 +4425,13 @@ msgid "PDF only: Insert an empty page."
 msgstr "PDFのみ：空のページを挿入します。"
 
 #: ../../document.rst:1385 b7256473ae514578be3947849b44db62
-#, fuzzy
+
 msgid ""
 "page number in front of which the new page should be inserted. Must be in"
 " `1 < pno <= page_count`. Special values -1 and *doc.page_count* insert "
 "**after** the last page."
 msgstr ""
-"新しいページを挿入する前のページ番号。*1 < pno <= page_count* である必要があります。特別な値-1および "
+"新しいページを挿入する前のページ番号。`1 < pno <= page_count` である必要があります。特別な値-1および "
 "*doc.page_count* は最後のページの後に挿入します。"
 
 #: ../../document.rst:1387 0f646751e84c4800909811f615b97ee4
@@ -4927,62 +4923,62 @@ msgid "a dictionary with the following keys:"
 msgstr "以下のキーを持つ辞書:"
 
 #: ../../document.rst:1582 fbac45b6fb9b45b696291bbb6e40d275
-#, fuzzy
+
 msgid "``name`` -- (*str*) name under which this entry is stored"
-msgstr "*name* – (*str*) このエントリが格納されている名前"
+msgstr "``name`` – (*str*) このエントリが格納されている名前"
 
 #: ../../document.rst:1583 ac7cdd97593b4a499b8c7d804c6f4014
-#, fuzzy
+
 msgid "``filename`` -- (*str*) filename"
-msgstr "*filename* – (*str*) ファイル名"
+msgstr "``filename`` – (*str*) ファイル名"
 
 #: ../../document.rst:1584 935d57ba0d7349c192ccf39791ae5335
-#, fuzzy
+
 msgid "``ufilename`` -- (*unicode*) filename"
-msgstr "*ufilename* – (*unicode*) Unicode ファイル名"
+msgstr "``ufilename`` – (*unicode*) Unicode ファイル名"
 
 #: ../../document.rst:1585 9c68a90a51b1456f84258a5c564f1934
-#, fuzzy
+
 msgid "``description`` -- (*str*) description"
-msgstr "*desc* – (*str*) 説明"
+msgstr "``description`` – (*str*) 説明"
 
 #: ../../document.rst:1586 7e7ddf34d9a1459c8c1de5dc8202df7b
-#, fuzzy
+
 msgid "``size`` -- (*int*) original file size"
-msgstr "*size* – (*int*) 元のファイルサイズ"
+msgstr "``size`` – (*int*) 元のファイルサイズ"
 
 #: ../../document.rst:1587 fb9eddcb3d474795a2468d79481a7f8f
-#, fuzzy
+
 msgid "``length`` -- (*int*) compressed file length"
-msgstr "*length* – (*int*) 圧縮ファイルの長さ"
+msgstr "``length`` – (*int*) 圧縮ファイルの長さ"
 
 #: ../../document.rst:1588 3b6add56ce56412b80dd09077ed06529
-#, fuzzy
+
 msgid "``creationDate`` -- (*str*) date-time of item creation in PDF format"
-msgstr "*creationDate* – *(v1.18.13 で新規)* (*str*) PDF 形式のアイテム作成の日時"
+msgstr "``creationDate`` – (*str*) PDF 形式のアイテム作成の日時"
 
 #: ../../document.rst:1589 0fb6cb02dc664e4580cc745eece83618
-#, fuzzy
+
 msgid "``modDate`` -- (*str*) date-time of last change in PDF format"
-msgstr "*modDate* – *(v1.18.13 で新規)* (*str*) PDF 形式の最終変更の日時"
+msgstr "``modDate`` – (*str*) PDF 形式の最終変更の日時"
 
 #: ../../document.rst:1590 1ed3eec819544ad88fe1e48742f08be5
-#, fuzzy
+
 msgid ""
 "``collection`` -- (*int*) :data:`xref` of the associated PDF portfolio "
 "item if any, else zero."
 msgstr ""
-"*collection* – *(v1.18.13 で新規)* (*int*) 関連する PDF ポートフォリオアイテムの "
+"``collection`` – (*int*) 関連する PDF ポートフォリオアイテムの "
 ":data:`xref`（あれば）、それ以外はゼロ。"
 
 #: ../../document.rst:1591 b50b9a70e5b24a5097b61c6c20e91bd6
-#, fuzzy
+
 msgid ""
 "``checksum`` -- (*str*) a hashcode of the stored file content as a "
 "hexadecimal string. Should be MD5 according to PDF specifications, but be"
 " prepared to see other hashing algorithms."
 msgstr ""
-"*checksum* – *(v1.18.13 で新規)* (*str*) "
+"``checksum`` – (*str*) "
 "16進数の文字列として格納されたファイルコンテンツのハッシュコード。PDF 仕様に従えば MD5 "
 "であるべきですが、他のハッシュアルゴリズムも見る可能性があるので、準備しておいてください。"
 
@@ -5275,9 +5271,9 @@ msgstr ""
 
 #: ../../document.rst:1726 2b605267f77649968b69d698aeead973
 msgid ""
-"an optional list of top-level keys in *target*, that should not be "
+"an optional list of top-level keys in ``target``, that should not be "
 "removed in preparation of the copy process."
-msgstr "*ターゲット* 内のトップレベルのキーを削除する準備段階で削除しない、オプションのキーリスト。"
+msgstr "``target`` 内のトップレベルのキーを削除する準備段階で削除しない、オプションのキーリスト。"
 
 #: ../../document.rst:1730 f9a0573da15e4f609a6b4dafb0c6f191
 msgid "This method has much in common with Python's *dict* method `copy()`."
@@ -5290,23 +5286,22 @@ msgstr "両方の xref 番号は既存の辞書を表す必要があります。
 #: ../../document.rst:1732 d76070ec87284eeba9402138be67ac92
 msgid ""
 "Before data is copied from *source*, all *target* dictionary keys are "
-"deleted. You can specify exceptions from this in the *keep* list. If "
+"deleted. You can specify exceptions from this in the ``keep`` list. If "
 "*source* however has a same-named key, its value will still replace the "
 "target."
 msgstr ""
-"データがソースからコピーされる前に、すべての *ターゲット* 辞書のキーが削除されます。この削除からの例外を *keep* "
+"データがソースからコピーされる前に、すべての *ターゲット* 辞書のキーが削除されます。この削除からの例外を ``keep`` "
 "リストで指定できます。ただし、*ソース* に同じ名前のキーがある場合、その値はターゲットに置き換えられます。"
 
 #: ../../document.rst:1733 eb592c11643040f8bacae8d7ff2aa6b0
 msgid ""
-"If *source* is a :data:`stream` object, then these data will also be "
-"copied over, and *target* will be converted to a stream object."
-msgstr "*ソース* がストリームオブジェクトの場合、これらのデータもコピーされ、*ターゲット* はストリームオブジェクトに変換されます。"
+"If ``source`` is a :data:`stream` object, then these data will also be copied over, and ``target`` will be converted to a stream object."
+msgstr "``source`` が ``stream`` オブジェクトである場合、そのデータもコピーされ、``target`` は ``stream`` オブジェクトに変換されます。"
 
 #: ../../document.rst:1734 6e76189531f4460496c74073c0e2105f
 msgid ""
 "A typical use case is to replace or remove an existing image without "
-"using redaction annotations. Example scripts can be seen `here "
+"using redaction annotations. Example scripts can be seen `in this PyMuPDF Utilities example "
 "<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples"
 "/replace-image>`_."
 msgstr ""

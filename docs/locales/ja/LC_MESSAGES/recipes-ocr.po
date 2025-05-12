@@ -48,13 +48,12 @@ msgstr ""
 "クラスを介して）および文書ページの両方に使用できます。"
 
 #: ../../recipes-ocr.rst:21 51aed55192864e8e92dfdbae828d1b05
-#, fuzzy
+
 msgid ""
 "The feature is currently based on Tesseract-OCR which must be installed "
 "as a separate application -- see the :ref:`installation_ocr`."
 msgstr ""
-"この機能は現在、Tesseract-"
-"OCRに基づいており、別途アプリケーションとしてインストールする必要があります。インストール手順は、インストールチャプターを参照してください。"
+"この機能は現在、 :ref:`installation_ocr` に基づいており、別途アプリケーションとしてインストールする必要があります。インストール手順は、インストールチャプターを参照してください。"
 
 #: ../../recipes-ocr.rst:24 b1216080a3f54b3c8f76397e1abb6bfb
 msgid "How to OCR an Image"

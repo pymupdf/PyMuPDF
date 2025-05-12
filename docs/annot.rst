@@ -365,7 +365,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: bool
 
-      This method is the only way to change the colors of a FreeText annotation. You cannot use `:meth:Annot.set_colors` for this purpose. But be aware that for rich-text annotations, the text color is never changed. The text color is set by the *text_color* entry of the *info* dictionary. This is a limitation of MuPDF and not a bug.
+      This method is the only way to change the colors of a FreeText annotation. You cannot use :meth:`Annot.set_colors` for this purpose. But be aware that for rich-text annotations, the text color is never changed. The text color is set by the ``text_color`` entry of the ``info`` dictionary. This is a limitation of |MuPDF| and not a bug.
 
       .. caution:: Using this method inside a :meth:`Page.annots` loop is **not recommended!** This is because most annotation updates require the owning page to be reloaded -- which cannot be done inside this loop. Please use the example coding pattern given in the documentation of this generator.
 

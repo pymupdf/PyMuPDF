@@ -56,7 +56,7 @@ msgstr ""
 msgid ""
 "Annotations can **only** be inserted in |PDF| pages - other document "
 "types do not support annotation insertion."
-msgstr "⚠️"
+msgstr "注釈は PDF ページにのみ 挿入可能です。他のドキュメント形式では、注釈の挿入はサポートされていません。"
 
 #: ../../recipes-annotations.rst:18 ba516eb1a56945e5a9bac7e9fa24fed1
 msgid ""
@@ -81,7 +81,6 @@ msgid "How to Use FreeText"
 msgstr "FreeTextの使用方法"
 
 #: ../../recipes-annotations.rst:37 e91fc84e2d79457190b40cbf621719b3
-#, fuzzy
 msgid ""
 "This script shows a couple of basic ways to deal with 'FreeText' "
 "annotations:"

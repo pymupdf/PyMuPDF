@@ -88,8 +88,8 @@ msgstr "TextPageオブジェクト"
 msgid ""
 "control the way how text is parsed into the text page. Currently 3 "
 "options can be coded into this parameter, see :ref:`TextPreserve`. To set"
-" these options use something like *flags=0 | TEXT_PRESERVE_LIGATURES | "
-"...*."
+" these options use something like ``flags=0 | TEXT_PRESERVE_LIGATURES | "
+"...``."
 msgstr "テキストがテキストページに解析される方法を制御するフラグです"
 
 #: ../../footer.rst:60 ade0e54ff3ee44398c800affaa5a276f

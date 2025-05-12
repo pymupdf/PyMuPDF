@@ -156,14 +156,14 @@ msgstr ""
 "で、このアイテムが見つかる/取得できるメンバー名である必要があります。"
 
 #: ../../archive-class.rst:45 6cefb5b8a5ae4538b432a671e5624634
-#, fuzzy
+
 msgid ""
 "a tuple `(data, name)`: This will add a single-member sub-archive with "
 "the member name ``name``. ``data`` may be a Python binary object or a "
 "local file name (in which case its binary file content is used). Use this"
 " format if you need to specify `path`."
 msgstr ""
-"タプル`(data, name)`: これはメンバー名 `name` を持つ単一のメンバーサブアーカイブを追加します。`data` "
+"タプル `(data, name)` : これはメンバー名 ``name`` を持つ単一のメンバーサブアーカイブを追加します。 ``data`` "
 "はPythonバイナリオブジェクトまたはローカルファイル名である可能性があります（その場合、バイナリファイルのコンテンツが使用されます）。`path`"
 " を指定する必要がある場合は、このフォーマットを使用してください。"
 
