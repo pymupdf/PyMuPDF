@@ -182,7 +182,10 @@ def test_2979():
 
     wt = pymupdf.TOOLS.mupdf_warnings()
     if pymupdf.mupdf_version_tuple >= (1, 26, 0):
-        assert wt == 'bogus font ascent/descent values (3117 / -2463)\n... repeated 2 times...'
+        assert (
+            wt
+            == "bogus font ascent/descent values (3117 / -2463)\n... repeated 2 times..."
+        )
     else:
         assert not wt
 
@@ -294,12 +297,53 @@ def test_markdown():
     text = (
         "|Header1|Header2|Header3|\n"
         "|---|---|---|\n"
-        "|Col11 Col12|Col21 Col22|Col31 Col32 Col33|\n"
-        "|Col13|Col23|Col34 Col35|\n"
+        "|Col11<br>Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
+        "|Col13|Col23|Col34<br>Col35|\n"
         "|Col14|Col24|Col36|\n"
-        "|Col15|Col25 Col26||\n\n"
+        "|Col15|Col25<br>Col26||\n\n"
     )
     assert tab.to_markdown() == text
+
+
+def test_paths_param():
+    """Confirm acceptance of supplied vector graphics list."""
+    filename = os.path.join(scriptdir, "resources", "strict-yes-no.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    tabs = page.find_tables(paths=[])  # will cause all tables are missed
+    assert tabs.tables == []
+
+
+def test_boxes_param():
+    """Confirm acceptance of supplied boxes list."""
+    filename = os.path.join(scriptdir, "resources", "small-table.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    paths = page.get_drawings()
+    box0 = page.cluster_drawings(drawings=paths)[0]
+    boxes = [box0]
+    words = page.get_text("words")
+    x_vals = [w[0] - 5 for w in words if w[4] in ("min", "max", "avg")]
+    for x in x_vals:
+        r = +box0
+        r.x1 = x
+        boxes.append(r)
+
+    y_vals = sorted(set([round(w[3]) for w in words]))
+    for y in y_vals[:-1]:  # skip last one to avoid empty row
+        r = +box0
+        r.y1 = y
+        boxes.append(r)
+
+    tabs = page.find_tables(paths=[], add_boxes=boxes)
+    tab = tabs.tables[0]
+    assert tab.extract() == [
+        ["Boiling Points °C", "min", "max", "avg"],
+        ["Noble gases", "-269", "-62", "-170.5"],
+        ["Nonmetals", "-253", "4827", "414.1"],
+        ["Metalloids", "335", "3900", "741.5"],
+        ["Metals", "357", ">5000", "2755.9"],
+    ]
 
 
 def test_dotted_grid():
@@ -317,43 +361,65 @@ def test_dotted_grid():
 
 
 def test_4017():
-    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4017.pdf')
+    path = os.path.normpath(f"{__file__}/../../tests/resources/test_4017.pdf")
     with pymupdf.open(path) as document:
         page = document[0]
-        
+
         tables = page.find_tables(add_lines=None)
         print(f"{len(tables.tables)=}.")
         tables_text = list()
         for i, table in enumerate(tables):
-            print(f'## {i=}.')
+            print(f"## {i=}.")
             t = table.extract()
             for tt in t:
-                print(f'    {tt}')
-        
+                print(f"    {tt}")
+
         # 2024-11-29: expect current incorrect output for last two tables.
-        
+
         expected_a = [
-                ['Class A/B Overcollateralization', '131.44%', '>=', '122.60%', '', 'PASS'],
-                [None, None, None, None, None, 'PASS'],
-                ['Class D Overcollateralization', '112.24%', '>=', '106.40%', '', 'PASS'],
-                [None, None, None, None, None, 'PASS'],
-                ['Event of Default', '156.08%', '>=', '102.50%', '', 'PASS'],
-                [None, None, None, None, None, 'PASS'],
-                ['Class A/B Interest Coverage', 'N/A', '>=', '120.00%', '', 'N/A'],
-                [None, None, None, None, None, 'N/A'],
-                ['Class D Interest Coverage', 'N/A', '>=', '105.00%', '', 'N/A'],
-                ]
+            ["Class A/B Overcollateralization", "131.44%", ">=", "122.60%", "", "PASS"],
+            [None, None, None, None, None, "PASS"],
+            ["Class D Overcollateralization", "112.24%", ">=", "106.40%", "", "PASS"],
+            [None, None, None, None, None, "PASS"],
+            ["Event of Default", "156.08%", ">=", "102.50%", "", "PASS"],
+            [None, None, None, None, None, "PASS"],
+            ["Class A/B Interest Coverage", "N/A", ">=", "120.00%", "", "N/A"],
+            [None, None, None, None, None, "N/A"],
+            ["Class D Interest Coverage", "N/A", ">=", "105.00%", "", "N/A"],
+        ]
         assert tables[-2].extract() == expected_a
-                
+
         expected_b = [
-                ["Moody's Maximum Rating Factor Test", '2,577', '<=', '3,250', '', 'PASS', '2,581'],
-                [None, None, None, None, None, 'PASS', None],
-                ['Minimum Floating Spread', '3.5006%', '>=', '2.0000%', '', 'PASS', '3.4871%'],
-                [None, None, None, None, None, 'PASS', None],
-                ['Minimum Weighted Average S&P Recovery\nRate Test', '40.50%', '>=', '40.00%', '', 'PASS', '40.40%'],
-                [None, None, None, None, None, 'PASS', None],
-                ['Weighted Average Life', '4.83', '<=', '9.00', '', 'PASS', '4.92'],
-                ]
+            [
+                "Moody's Maximum Rating Factor Test",
+                "2,577",
+                "<=",
+                "3,250",
+                "",
+                "PASS",
+                "2,581",
+            ],
+            [None, None, None, None, None, "PASS", None],
+            [
+                "Minimum Floating Spread",
+                "3.5006%",
+                ">=",
+                "2.0000%",
+                "",
+                "PASS",
+                "3.4871%",
+            ],
+            [None, None, None, None, None, "PASS", None],
+            [
+                "Minimum Weighted Average S&P Recovery\nRate Test",
+                "40.50%",
+                ">=",
+                "40.00%",
+                "",
+                "PASS",
+                "40.40%",
+            ],
+            [None, None, None, None, None, "PASS", None],
+            ["Weighted Average Life", "4.83", "<=", "9.00", "", "PASS", "4.92"],
+        ]
         assert tables[-1].extract() == expected_b
-                
-        
