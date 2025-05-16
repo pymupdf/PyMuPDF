@@ -1,0 +1,62 @@
+# Run scripts/test.py directly on multiple Github servers.  Instead of
+# specifying individual inputs, we support a single string input which is used
+# for the command line directly.
+#
+# This ensures we behave exactly like scripts/test.py, without confusion caused
+# by having to translate between differing APIs.
+
+name: Tests
+
+on:
+  #schedule:
+  #  - cron: '47 4 * * *'
+  #pull_request:
+  #  branches: [main]
+  workflow_dispatch:
+    inputs:
+      args:
+        type: string
+        default: ''
+        description: 'Arguments to pass to scripts/test.py'
+
+jobs:
+
+  test:
+    name: Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2019, macos-13, macos-14]
+
+      # Avoid cancelling of all runs after a single failure.
+      fail-fast: false
+
+    steps:
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # https://github.com/pypa/cibuildwheel/issues/2114
+      # https://cibuildwheel.pypa.io/en/stable/faq/#emulation
+      #
+      - name: Set up QEMU
+        if: runner.os == 'Linux' && runner.arch == 'X64'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: all
+      
+      - name: test
+        env:
+          PYMUPDF_test_args: ${{inputs.args}}
+        run:
+          python scripts/test.py -a PYMUPDF_test_args
+      
+      # Upload generated wheels, to be accessible from github Actions page.
+      #
+      - uses: actions/upload-artifact@v4
+        with:
+          path: ./wheelhouse/pymupdf*.whl
+          name: artifact-${{ matrix.os }}
