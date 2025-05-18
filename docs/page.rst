@@ -451,7 +451,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg bool final_filter: If `True` (default), the method will to remove rectangles having width or height smaller than the respective tolerance value. If `False` no such filtering is done.
 
-   .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None, add_lines=None)
+   .. method:: find_tables(clip=None, strategy=None, vertical_strategy=None, horizontal_strategy=None, vertical_lines=None, horizontal_lines=None, snap_tolerance=None, snap_x_tolerance=None, snap_y_tolerance=None, join_tolerance=None, join_x_tolerance=None, join_y_tolerance=None, edge_min_length=3, min_words_vertical=3, min_words_horizontal=1, intersection_tolerance=None, intersection_x_tolerance=None, intersection_y_tolerance=None, text_tolerance=None, text_x_tolerance=None, text_y_tolerance=None, add_lines=None, add_boxes=None, paths=None)
 
       Find tables on the page and return an object with related information. Typically, the default values of the many parameters will be sufficient. Adjustments should ever only be needed in corner case situations.
 
@@ -485,7 +485,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg float text_tolerance: Characters will be combined into words only if their distance is no larger than this value (points). Default is 3. Instead of this value, separate values can be specified for the dimensions using `text_x_tolerance` and `text_y_tolerance`.
 
-      :arg tuple,list add_lines: Specify a list of "lines" (i.e. pairs of :data:`point_like` objects) as **additional**, "virtual" vector graphics. These lines may help with table and / or cell detection and will not otherwise influence the detection strategy. Especially, in contrast to parameters `horizontal_lines` and `vertical_lines`, they will not prevent detecting rows or columns in other ways. These lines will be treated exactly like "real" vector graphics in terms of joining, snapping, intersectiing, minimum length and containment in the `clip` rectangle. Similarly, lines not parallel to any of the coordinate axes will be ignored.
+      :arg tuple,list add_lines: Specify a list of "lines" (i.e. pairs of :data:`point_like` objects) as **additional**, "virtual" vector graphics. These lines may help with table and / or cell detection and will not otherwise influence the detection strategy. Especially, in contrast to parameters `horizontal_lines` and `vertical_lines`, they will not prevent detecting rows or columns in other ways. These lines will be treated exactly like "real" vector graphics in terms of joining, snapping, intersecting, minimum length and containment in the `clip` rectangle. Similarly, lines not parallel to any of the coordinate axes will be ignored.
+
+      :arg tuple,list add_boxes: Specify a list of rectangles (:data:`rect_like` objects) as **additional**, "virtual" vector graphics. These rectangles may help with table and / or cell detection and will not otherwise influence the detection strategy. Especially, in contrast to parameters `horizontal_lines` and `vertical_lines`, they will not prevent detecting rows or columns in other ways. These rectangles will be treated exactly like "real" vector graphics in terms of joining, snapping, intersecting, minimum length and containment in the `clip` rectangle.
+
+      :arg list paths: list of vector graphics in the format as returned be :meth:`Page.get_drawings`. Using this parameter will prevent the method to extract vector graphics itself. This is useful if the vector graphics are already available. This can save execution time significantly.
 
       .. image:: images/img-findtables.*
 
@@ -500,7 +504,7 @@ In a nutshell, this is what you can do with PyMuPDF:
            * ``bbox``: the bounding box of the table as a tuple `(x0, y0, x1, y1)`.
            * ``cells``: bounding boxes of the table's cells (list of tuples). A cell may also be `None`.
            * ``extract()``: this method returns the text content of each table cell as a list of list of strings.
-           * ``to_markdown()``: this method returns the table as a **string in markdown format** (compatible to Github). Supporting viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye.
+           * ``to_markdown()``: this method returns the table as a **string in markdown format** (compatible to Github). Markdown viewers can render the string as a table. This output is optimized for **small token** sizes, which is especially beneficial for LLM/RAG feeds. Pandas DataFrames (see method `to_pandas()` below) offer an equivalent markdown table output which however is better readable for the human eye. Any line breaks (`\n`) in cells are replaced by HTML line breaks tags `<br>`.
            * `to_pandas()`: this method returns the table as a `pandas <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_. DataFrames are very versatile objects allowing a plethora of table manipulation methods and outputs to almost 20 well-known formats, among them Excel files, CSV, JSON, markdown-formatted tables and more. `DataFrame.to_markdown()` generates a Github-compatible markdown format optimized for human readability. This method however requires the package `tabulate <https://pypi.org/project/tabulate/>`_ to be installed in addition to pandas itself.
            * ``header``: a `TableHeader` object containing header information of the table.
            * ``col_count``: an integer containing the number of table columns.
@@ -2333,6 +2337,42 @@ This is an overview of homologous methods on the :ref:`Document` and on the :ref
 ====================================== =====================================
 
 The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
+
+
+.. class:: TableFinder
+
+   An object always returned by :meth:`Page.find_tables`. Attributes of interest:
+
+   ... attribute:: tables
+
+      A list of :ref:`Table` objects, each of which represents a table found on the page. Empty list if no table found.
+
+   ... attribute:: page
+
+      A reference to the :ref:`Page` object.
+
+
+.. class:: Table
+
+   An object representing a table found on the page. Attributes of interest:
+
+   .. attribute:: bbox
+
+      The bounding box of the table given as a tuple `(x0, y0, x1, y1)`. This is the rectangle that contains all cells of the table.   
+
+   
+
+   .. attribute:: cells
+
+
+
+.. class:: TableHeader
+
+.. class:: TableRow
+
+
+
+
 
 .. note::
 
