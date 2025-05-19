@@ -7173,6 +7173,51 @@ class Widget:
 
         self._checker()  # any field_type specific checks
 
+    def _sync_flags(self):
+        """Propagate the field flags.
+
+        If this widget has a "/Parent", set its field flags and that of all
+        its /Kids widgets to the value of the current widget.
+        Only possible for widgets existing in the PDF.
+
+        Returns True or False.
+        """
+        if not self.xref:
+            return False  # no xref: widget not in the PDF
+        doc = self.parent.parent  # the owning document
+        assert doc
+        pdf = _as_pdf_document(doc)
+        # load underlying PDF object
+        pdf_widget = mupdf.pdf_load_object(pdf, self.xref)
+        Parent = mupdf.pdf_dict_get(pdf_widget, PDF_NAME("Parent"))
+        if not Parent.pdf_is_dict():
+            return False  # no /Parent: nothing to do
+
+        # put the field flags value into the parent field flags:
+        Parent.pdf_dict_put_int(PDF_NAME("Ff"), self.field_flags)
+
+        # also put that value into all kids of the Parent
+        kids = Parent.pdf_dict_get(PDF_NAME("Kids"))
+        if not kids.pdf_is_array():
+            message("warning: malformed PDF, Parent has no Kids array")
+            return False  # no /Kids: should never happen!
+
+        for i in range(kids.pdf_array_len()):  # walk through all kids
+            # access kid widget, and do some precautionary checks
+            kid = kids.pdf_array_get(i)
+            if not kid.pdf_is_dict():
+                continue
+            xref = kid.pdf_to_num()  # get xref of the kid
+            if xref == self.xref:  # skip self widget
+                continue
+            subtype = kid.pdf_dict_get(PDF_NAME("Subtype"))
+            if not subtype.pdf_to_name() == "Widget":
+                continue
+            # put the field flags value into the kid field flags:
+            kid.pdf_dict_put_int(PDF_NAME("Ff"), self.field_flags)
+
+        return True  # all done
+
     def button_states(self):
         """Return the on/off state names for button widgets.
 
@@ -7252,9 +7297,8 @@ class Widget:
         """
         TOOLS._reset_widget(self._annot)
 
-    def update(self):
-        """Reflect Python object in the PDF.
-        """
+    def update(self, sync_flags=False):
+        """Reflect Python object in the PDF."""
         self._validate()
 
         self._adjust_font()  # ensure valid text_font name
@@ -7280,6 +7324,8 @@ class Widget:
         # finally update the widget
         TOOLS._save_widget(self._annot, self)
         self._text_da = ""
+        if sync_flags:
+            self._sync_flags()  # propagate field flags to parent and kids
 
 
 from . import _extra
