@@ -53,9 +53,11 @@ Like annotations, widgets live on PDF pages. Similar to annotations, the first w
          True
 
 
-    .. method:: update
+    .. method:: update(sync_flags=False)
 
-       After any changes to a widget, this method **must be used** to store them in the PDF [#f1]_.
+       After any changes to a widget, this **method must be used** to reflect changes in the PDF [#f1]_.
+
+       :arg bool sync_flags: if ``True``, the widget's :attr:`Widget.field_flags` are copied to the ``Parent`` object (if present) and all widgets named in its ``Kids`` array. This provides a convenient way to -- for example -- set all instances of the widget to read-only, no matter on which page they may occur [#f2]_.
 
     .. method:: reset
 
@@ -247,11 +249,13 @@ PyMuPDF supports the creation and update of many, but not all widget types.
 * check box (`PDF_WIDGET_TYPE_CHECKBOX`)
 * combo box (`PDF_WIDGET_TYPE_COMBOBOX`)
 * list box (`PDF_WIDGET_TYPE_LISTBOX`)
-* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently support the **creation** of groups of (interconnected) radio buttons, where setting one automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. However: consistently selecting (or unselecting) a radio button is supported. This includes correctly setting the value maintained in the owning button group. Selecting a radio button may be done by either assigning `True` or `field.on_state()` to the field value. **De-selecting** the button should be done assigning `False`.
-* signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only**.
+* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently support the **creation** of groups of (interconnected) radio buttons, where setting one button automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. However: consistently selecting (or unselecting) a radio button is supported. This includes correctly setting the value maintained in the owning button group. Selecting a radio button may be done by either assigning `True` or `field.on_state()` to the field value. **De-selecting** the button should be done assigning `False`.
+* signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or creation of signatures.
 
 .. rubric:: Footnotes
 
 .. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do `page = doc.reload_page(page)`.
+
+.. [#f2] Among other purposes, ``Parent`` objects are also used to facilitate multiple occurrences of a field (on the same or on different pages). The ``Kids`` array in this ``Parent`` object contains the cross references of all widgets that are "copies" of the same field. Whenever the field value of any "kid" widget is changed, all the other kids are immediately updated too. This is a very efficient way to handle multiple copies of the same field, e.g. for filling out forms. This simultaneous update only happens for :attr:`Widget.field value`. The new parameter ``sync_flags`` extends this to :attr:`Widget.field_flags`. This cannot be automated in the same way as for the field value to allow for more flexibility.
 
 .. include:: footer.rst
