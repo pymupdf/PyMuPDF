@@ -21,6 +21,7 @@ import io
 import os
 import platform
 import re
+import shlex
 import shutil
 import site
 import subprocess
@@ -654,12 +655,12 @@ class Package:
             z.writestr(f'{dist_info_dir}/RECORD', record.get(f'{dist_info_dir}/RECORD'))
 
         st = os.stat(path)
-        log1( f'Have created wheel size={st.st_size}: {path}')
+        log1( f'Have created wheel size={st.st_size:,}: {path}')
         if g_verbose >= 2:
             with zipfile.ZipFile(path, compression=self.wheel_compression) as z:
                 log2(f'Contents are:')
                 for zi in sorted(z.infolist(), key=lambda z: z.filename):
-                    log2(f'    {zi.file_size: 10d} {zi.filename}')
+                    log2(f'    {zi.file_size: 10,d} {zi.filename}')
 
         return os.path.basename(path)
 
@@ -1901,6 +1902,105 @@ def git_items( directory, submodules=False):
     return ret
 
 
+def git_get(
+        remote,
+        local,
+        *,
+        branch=None,
+        depth=1,
+        env_extra=None,
+        tag=None,
+        update=True,
+        submodules=True,
+        ):
+    '''
+    Ensures that <local> is a git checkout (at either <tag>, or <branch> HEAD)
+    of a remote repository.
+    
+    Exactly one of <branch> and <tag> must be specified.
+    
+    Args:
+        remote:
+            Remote git repostitory, for example
+            'https://github.com/ArtifexSoftware/mupdf.git'.
+        local:
+            Local directory. If <local>/.git exists, we attempt to run `git
+            update` in it.
+        branch:
+            Branch to use.
+        depth:
+            Depth of local checkout when cloning and fetching, or None.
+        env_extra:
+            Dict of extra name=value environment variables to use whenever we
+            run git.
+        tag:
+            Tag to use.
+        update:
+            If false we do not update existing repository. Might be useful if
+            testing without network access.
+        submodules:
+            If true, we clone with `--recursive --shallow-submodules` and run
+            `git submodule update --init --recursive` before returning.
+    '''
+    log0(f'{remote=} {local=} {branch=} {tag=}')
+    assert (branch and not tag) or (not branch and tag), f'Must specify exactly one of <branch> and <tag>.'
+    
+    depth_arg = f' --depth {depth}' if depth else ''
+    
+    def do_update():
+        # This seems to pull in the entire repository.
+        log0(f'do_update(): attempting to update {local=}.')
+        # Remove any local changes.
+        run(f'cd {local} && git checkout .', env_extra=env_extra)
+        if tag:
+            # `-u` avoids `fatal: Refusing to fetch into current branch`.
+            # Using '+' and `revs/tags/` prefix seems to avoid errors like:
+            #   error: cannot update ref 'refs/heads/v3.16.44':
+            #   trying to write non-commit object
+            #   06c4ae5fe39a03b37a25a8b95214d9f8f8a867b8 to branch
+            #   'refs/heads/v3.16.44'
+            #
+            run(f'cd {local} && git fetch -fuv{depth_arg} {remote} +refs/tags/{tag}:refs/tags/{tag}', env_extra=env_extra)
+            run(f'cd {local} && git checkout {tag}', env_extra=env_extra)
+        if branch:
+            # `-u` avoids `fatal: Refusing to fetch into current branch`.
+            run(f'cd {local} && git fetch -fuv{depth_arg} {remote} {branch}:{branch}', env_extra=env_extra)
+            run(f'cd {local} && git checkout {branch}', env_extra=env_extra)
+    
+    do_clone = True
+    if os.path.isdir(f'{local}/.git'):
+        if update:
+            # Try to update existing checkout.
+            try:
+                do_update()
+                do_clone = False
+            except Exception as e:
+                log0(f'Failed to update existing checkout {local}: {e}')
+        else:
+            do_clone = False
+    
+    if do_clone:
+        # No existing git checkout, so do a fresh clone.
+        #_fs_remove(local)
+        log0(f'Cloning to: {local}')
+        command = f'git clone --config core.longpaths=true{depth_arg}'
+        if submodules:
+            command += f' --recursive --shallow-submodules'
+        if branch:
+            command += f' -b {branch}'
+        if tag:
+            command += f' -b {tag}'
+        command += f' {remote} {local}'
+        run(command, env_extra=env_extra)
+        do_update()
+    
+    if submodules:
+        run(f'cd {local} && git submodule update --init --recursive', env_extra=env_extra)
+
+    # Show sha of checkout.
+    run( f'cd {local} && git show --pretty=oneline|head -n 1', check=False)
+    
+
 def run(
         command,
         *,
@@ -1951,9 +2051,14 @@ def run(
         env = os.environ.copy()
         env.update(env_extra)
     lines = _command_lines( command)
-    nl = '\n'
     if verbose:
-        log1( f'Running: {nl.join(lines)}', caller=caller+1)
+        text = f'Running:'
+        if env_extra:
+            for k in sorted(env_extra.keys()):
+                text += f' {k}={shlex.quote(env_extra[k])}'
+        nl = '\n'
+        text += f' {nl.join(lines)}'
+        log1(text, caller=caller+1)
     sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
     cp = subprocess.run(
@@ -1989,6 +2094,39 @@ def linux():
 
 def openbsd():
     return platform.system() == 'OpenBSD'
+
+
+def show_system():
+    '''
+    Show useful information about the system plus argv and environ.
+    '''
+    def log(text):
+        log0(text, caller=3)
+    
+    #log(f'{__file__=}')
+    #log(f'{__name__=}')
+    log(f'{os.getcwd()=}')
+    log(f'{platform.machine()=}')
+    log(f'{platform.platform()=}')
+    log(f'{platform.python_version()=}')
+    log(f'{platform.system()=}')
+    log(f'{platform.uname()=}')
+    log(f'{sys.executable=}')
+    log(f'{sys.version=}')
+    log(f'{sys.version_info=}')
+    log(f'{list(sys.version_info)=}')
+    
+    log(f'CPU bits: {cpu_bits()}')
+    
+    log(f'sys.argv ({len(sys.argv)}):')
+    for i, arg in enumerate(sys.argv):
+        log(f'    {i}: {arg!r}')
+    
+    log(f'os.environ ({len(os.environ)}):')
+    for k in sorted( os.environ.keys()):
+        v = os.environ[ k]
+        log( f'    {k}: {v!r}')
+
 
 class PythonFlags:
     '''
@@ -2162,6 +2300,10 @@ def _command_lines( command):
         if line.strip():
             lines.append(line.rstrip())
     return lines
+
+
+def cpu_bits():
+    return int.bit_length(sys.maxsize+1)
 
 
 def _cpu_name():
@@ -2418,7 +2560,7 @@ def log2(text='', caller=1):
 
 def _log(text, level, caller):
     '''
-    Logs lines with prefix.
+    Logs lines with prefix, if <level> is lower than <g_verbose>.
     '''
     if level <= g_verbose:
         fr = inspect.stack(context=0)[caller]
@@ -2443,49 +2585,6 @@ def relpath(path, start=None):
             return os.path.abspath(path)
     else:
         return os.path.relpath(path, start)
-
-
-def number_sep( s):
-    '''
-    Simple number formatter, adds commas in-between thousands. `s` can be a
-    number or a string. Returns a string.
-
-    >>> number_sep(1)
-    '1'
-    >>> number_sep(12)
-    '12'
-    >>> number_sep(123)
-    '123'
-    >>> number_sep(1234)
-    '1,234'
-    >>> number_sep(12345)
-    '12,345'
-    >>> number_sep(123456)
-    '123,456'
-    >>> number_sep(1234567)
-    '1,234,567'
-    >>> number_sep(-131072)
-    '-131,072'
-    '''
-    if not isinstance( s, str):
-        s = str( s)
-    ret = ''
-    if s.startswith('-'):
-        ret += '-'
-        s = s[1:]
-    c = s.find( '.')
-    if c==-1:   c = len(s)
-    end = s.find('e')
-    if end == -1:   end = s.find('E')
-    if end == -1:   end = len(s)
-    for i in range( end):
-        ret += s[i]
-        if i<c-1 and (c-i-1)%3==0:
-            ret += ','
-        elif i>c and i<end-1 and (i-c)%3==0:
-            ret += ','
-    ret += s[end:]
-    return ret
 
 
 def _so_suffix(use_so_versioning=True):
@@ -2618,4 +2717,52 @@ class _Record:
         ret = self.text
         if record_path:
             ret += f'{record_path},,\n'
+        return ret
+
+
+class NewFiles:
+    '''
+    Detects new/modified/updated files matching a glob pattern. Useful for
+    detecting wheels created by pip or cubuildwheel etc.
+    '''
+    def __init__(self, glob_pattern):
+        # Find current matches of <glob_pattern>.
+        self.glob_pattern = glob_pattern
+        self.items0 = self._items()
+    def get(self):
+        '''
+        Returns list of new matches of <glob_pattern> - paths of files that
+        were not present previously, or have different mtimes or have different
+        contents.
+        '''
+        ret = list()
+        items = self._items()
+        for path, id_ in items.items():
+            id0 = self.items0.get(path)
+            if id0 != id_:
+                #mtime0, hash0 = id0
+                #mtime1, hash1 = id_
+                #log0(f'New/modified file {path=}.')
+                #log0(f'    {mtime0=} {"==" if mtime0==mtime1 else "!="} {mtime1=}.')
+                #log0(f'    {hash0=} {"==" if hash0==hash1 else "!="} {hash1=}.')
+                ret.append(path)
+        return ret
+    def get_one(self):
+        '''
+        Returns new match of <glob_pattern>, asserting that there is exactly
+        one.
+        '''
+        ret = self.get()
+        assert len(ret) == 1, f'{len(ret)=}'
+        return ret[0]
+    def _file_id(self, path):
+        mtime = os.stat(path).st_mtime
+        with open(path, 'rb') as f:
+            hash_ = hashlib.file_digest(f, hashlib.md5).digest()
+        return mtime, hash_
+    def _items(self):
+        ret = dict()
+        for path in glob.glob(self.glob_pattern):
+            if os.path.isfile(path):
+                ret[path] = self._file_id(path)
         return ret
