@@ -1305,7 +1305,7 @@ For details on **embedded files** refer to Appendix 3.
      pair: join_duplicates; Document.insert_pdf
      pair: show_progress; Document.insert_pdf
 
-  .. method:: insert_pdf(docsrc, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, widgets=True, join_duplicates=False, show_progress=0, final=1)
+  .. method:: insert_pdf(docsrc, *, from_page=-1, to_page=-1, start_at=-1, rotate=-1, links=True, annots=True, widgets=True, join_duplicates=False, show_progress=0, final=1)
 
     PDF only: Copy the page range **[from_page, to_page]** (including both) of PDF document *docsrc* into the current one. Inserts will start with page number *start_at*. Value -1 indicates default values. All pages thus copied will be rotated as specified. Links, annotations and widgets can be excluded in the target, see below. All page numbers are 0-based.
 
