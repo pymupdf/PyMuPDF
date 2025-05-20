@@ -550,3 +550,32 @@ def test_4423():
             assert not ee, f'Received unexpected exception: {e}'
             wt = pymupdf.TOOLS.mupdf_warnings()
             assert wt == 'format error: cannot find object in xref (56 0 R)\nformat error: cannot find object in xref (68 0 R)'
+
+
+def test_4445():
+    print()
+    # Test case is large so we download it instead of having it in PyMuPDF
+    # git. We put it in `cache/` directory do it is not removed by `git clean`
+    # (unless `-d` is specified).
+    import util
+    path = util.download(
+            'https://github.com/user-attachments/files/19738242/ss.pdf',
+            'test_4445.pdf',
+            size=2671185,
+            )
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap()
+        print(f'{pixmap.width=}')
+        print(f'{pixmap.height=}')
+        if pymupdf.mupdf_version_tuple >= (1, 26):
+            assert (pixmap.width, pixmap.height) == (792, 612)
+        else:
+            assert (pixmap.width, pixmap.height) == (612, 792)
+        if 0:
+            path_pixmap = f'{path}.png'
+            pixmap.save(path_pixmap)
+            print(f'Have created {path_pixmap=}')
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    print(f'{wt=}')
+    assert wt == 'broken xref subsection, proceeding anyway.\nTrailer Size is off-by-one. Ignoring.'
