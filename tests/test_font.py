@@ -1,8 +1,14 @@
 """
 Tests for the Font class.
 """
-import pymupdf
 import os
+import platform
+import pymupdf
+import subprocess
+import textwrap
+
+import util
+
 
 def test_font1():
     text = "PyMuPDF"
@@ -218,3 +224,98 @@ def test_3887():
         print(f'Have saved to: {path_pixmap=}')
         assert set(output)==set(text)
 
+
+def test_4457():
+    print()
+    files = (
+            ('https://arxiv.org/pdf/2504.13180', 'test_4457_a.pdf', None, 4),
+            ('https://arxiv.org/pdf/2504.13181', 'test_4457_b.pdf', None, 9),
+            )
+    for url, name, size, rms_after_max in files:
+        path = util.download(url, name, size)
+        
+        with pymupdf.open(path) as document:
+            page = document[0]
+            
+            pixmap = document[0].get_pixmap()
+            path_pixmap = f'{path}.png'
+            pixmap.save(path_pixmap)
+            print(f'Have created: {path_pixmap=}')
+            
+            text = page.get_text()
+            path_before = f'{path}.before.pdf'
+            path_after = f'{path}.after.pdf'
+            document.ez_save(path_before, garbage=4)
+            print(f'Have created {path_before=}')
+            
+            document.subset_fonts()
+            document.ez_save(path_after, garbage=4)
+            print(f'Have created {path_after=}')
+        
+        with pymupdf.open(path_before) as document:
+            text_before = document[0].get_text()
+            pixmap_before = document[0].get_pixmap()
+            path_pixmap_before = f'{path_before}.png'
+            pixmap_before.save(path_pixmap_before)
+            print(f'Have created: {path_pixmap_before=}')
+        
+        with pymupdf.open(path_after) as document:
+            text_after = document[0].get_text()
+            pixmap_after = document[0].get_pixmap()
+            path_pixmap_after = f'{path_after}.png'
+            pixmap_after.save(path_pixmap_after)
+            print(f'Have created: {path_pixmap_after=}')
+        
+        import gentle_compare
+        rms_before = gentle_compare.pixmaps_rms(pixmap, pixmap_before)
+        rms_after = gentle_compare.pixmaps_rms(pixmap, pixmap_after)
+        print(f'{rms_before=}')
+        print(f'{rms_after=}')
+        
+        # Create .png file showing differences between <path> and <path_after>.
+        path_pixmap_after_diff = f'{path_after}.diff.png'
+        pixmap_after_diff = gentle_compare.pixmaps_diff(pixmap, pixmap_after)
+        pixmap_after_diff.save(path_pixmap_after_diff)
+        print(f'Have created: {path_pixmap_after_diff}')
+        
+        # Extract text from <path>, <path_before> and <path_after> and write to
+        # files so we can show differences with `diff`.
+        path_text = os.path.normpath(f'{__file__}/../../tests/test_4457.txt')
+        path_text_before = f'{path_text}.before.txt'
+        path_text_after = f'{path_text}.after.txt'
+        with open(path_text, 'w', encoding='utf8') as f:
+            f.write(text)
+        with open(path_text_before, 'w', encoding='utf8') as f:
+            f.write(text_before)
+        with open(path_text_after, 'w', encoding='utf8') as f:
+            f.write(text_after)
+        
+        # Can't write text to stdout on Windows because of encoding errors.
+        if platform.system() != 'Windows':
+            print(f'text:\n{textwrap.indent(text, "    ")}')
+            print(f'text_before:\n{textwrap.indent(text_before, "    ")}')
+            print(f'text_after:\n{textwrap.indent(text_after, "    ")}')
+            print(f'{path_text=}')
+            print(f'{path_text_before=}')
+            print(f'{path_text_after=}')
+        
+            command = f'diff -u {path_text} {path_text_before}'
+            print(f'Running: {command}', flush=1)
+            subprocess.run(command, shell=1)
+            
+            command = f'diff -u {path_text} {path_text_after}'
+            print(f'Running: {command}', flush=1)
+            subprocess.run(command, shell=1)
+        
+        assert text_before == text
+        assert rms_before == 0
+        
+        # As of 2025-05-20 there are some differences in some characters, e.g.
+        # the non-ascii characters in `Philipp Krahenbuhl`.
+        # See <path_pixmap> and <path_pixmap_after>.
+        assert rms_after < rms_after_max
+    
+    # Avoid test failure caused by mupdf warnings.
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    print(f'{wt=}')
+    assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 5 times...'
