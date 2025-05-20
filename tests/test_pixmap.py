@@ -522,3 +522,31 @@ def test_4435():
         print(f'Called page.get_pixmap().', flush=1)
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
+
+
+def test_4423():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4423.pdf')
+    with pymupdf.open(path) as document:
+        path2 = f'{path}.pdf'
+        ee = None
+        try:
+            document.save(
+                    path2, 
+                    garbage=4,
+                    expand=1,
+                    deflate=True,
+                    pretty=True,
+                    no_new_id=True,
+                    )
+        except Exception as e:
+            print(f'Exception: {e}')
+            ee = e
+        
+        if (1, 25, 5) <= pymupdf.mupdf_version_tuple < (1, 26):
+            assert ee, f'Did not receive the expected exception.'
+            wt = pymupdf.TOOLS.mupdf_warnings()
+            assert wt == 'dropping unclosed output'
+        else:
+            assert not ee, f'Received unexpected exception: {e}'
+            wt = pymupdf.TOOLS.mupdf_warnings()
+            assert wt == 'format error: cannot find object in xref (56 0 R)\nformat error: cannot find object in xref (68 0 R)'
