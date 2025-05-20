@@ -510,3 +510,15 @@ def test_4336():
     
     if cc_old:
         assert cc == cc_old
+
+
+def test_4435():
+    print(f'{pymupdf.version=}')
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4435.pdf')
+    with pymupdf.open(path) as document:
+        page = document[2]
+        print(f'Calling page.get_pixmap().', flush=1)
+        pixmap = page.get_pixmap(alpha=False, dpi=120)
+        print(f'Called page.get_pixmap().', flush=1)
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
