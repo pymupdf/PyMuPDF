@@ -780,3 +780,35 @@ def test_extendable_textpage():
         
         path3 = os.path.normpath(f'{__file__}/../../tests/test_extendable_textpage3.pdf')
         document.save(path3)
+
+
+def test_4363():
+    print()
+    print(f'{pymupdf.version=}')
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4363.pdf')
+    n = 0
+    texts = list()
+    with pymupdf.open(path) as document:
+        assert len(document) == 1
+        page = document[0]
+        t = page.search_for('tour')
+        print(f'{t=}')
+        n += len(t)
+        text = page.get_text()
+        texts.append(text)
+    print(f'{n=}')
+    print(f'{len(texts)=}')
+    text = texts[0]
+    print('text:')
+    print(f'{text=}')
+    text_expected = (
+            'Deal Roadshow SiteTour\n'
+            'We know your process. We know your standard.\n'
+            'Professional Site Tour Video Productions for the Capital Markets.\n'
+            '1\n'
+            )
+    if text != text_expected:
+        print(f'Expected:\n    {text_expected!r}')
+        print(f'Found:\n    {text!r}')
+        assert 0
+    

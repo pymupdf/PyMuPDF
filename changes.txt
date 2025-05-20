@@ -2,15 +2,17 @@ Change Log
 ==========
 
 
-**Changes in version 1.25.6 ()**
+**Changes in version 1.26.0 ()**
+
+* Use MuPDF-1.26.0.
 
 * Fixed issues:
 
-  * **Fixed** `4404 <https://github.com/pymupdf/PyMuPDF/issues/4404>`_: 
-  * **Fixed** `4439 <https://github.com/pymupdf/PyMuPDF/issues/4439>`_: 
-  * **Fixed** `4412 <https://github.com/pymupdf/PyMuPDF/issues/4412>`_: 
-  * **Fixed** `4324 <https://github.com/pymupdf/PyMuPDF/issues/4324>`_: 
-  * **Fixed** `4447 <https://github.com/pymupdf/PyMuPDF/issues/4447>`_: 
+  * **Fixed** `4324 <https://github.com/pymupdf/PyMuPDF/issues/4324>`_: cluster_drawings() fails to cluster horizontal and vertical thin lines
+  * **Fixed** `4404 <https://github.com/pymupdf/PyMuPDF/issues/4404>`_: IndexError in page.get_links()
+  * **Fixed** `4412 <https://github.com/pymupdf/PyMuPDF/issues/4412>`_: Regression? Spurious error? in insert_pdf in v1.25.4
+  * **Fixed** `4439 <https://github.com/pymupdf/PyMuPDF/issues/4439>`_: New Xml class from data does not work - bug in code
+  * **Fixed** `4447 <https://github.com/pymupdf/PyMuPDF/issues/4447>`_: Stroke color of annotations cannot be correctly set
 
 * Other:
 
