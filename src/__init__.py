@@ -375,7 +375,7 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.25.5"
+pymupdf_version = "1.26.0"
 mupdf_version = mupdf.FZ_VERSION
 pymupdf_date = "2025-03-31 00:00:01"
 
@@ -5809,7 +5809,7 @@ class Document:
         pdf = _as_pdf_document(self)
         xreflen = mupdf.pdf_xref_len(pdf)
         if not _INRANGE(xref, 1, xreflen-1):
-            RAISEPY("bad xref", MSG_BAD_XREF, PyExc_ValueError)
+            RAISEPY("bad xref", MSG_BAD_XREF)
         ENSURE_OPERATION(pdf)
         # create new object with passed-in string
         new_obj = JM_pdf_obj_from_str(pdf, text)

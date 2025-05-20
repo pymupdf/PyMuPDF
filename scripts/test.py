@@ -13,8 +13,8 @@ Examples:
     ./PyMuPDF/scripts/test.py --mupdf 'git:https://git.ghostscript.com/mupdf.git' buildtest
         Build and test with internal checkout of mupdf master.
 
-    ./PyMuPDF/scripts/test.py --mupdf 'git:--branch 1.25.x https://github.com/ArtifexSoftware/mupdf.git' buildtest
-        Build and test using internal checkout of mupdf 1.25.x branch from Github.
+    ./PyMuPDF/scripts/test.py --mupdf 'git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf.git' buildtest
+        Build and test using internal checkout of mupdf 1.26.x branch from Github.
 
 Usage:
     scripts/test.py <options> <command(s)>
