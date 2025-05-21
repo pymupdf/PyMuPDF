@@ -2,9 +2,9 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.0 ()**
+**Changes in version 1.26.0 (2025-05-22)**
 
-* Use MuPDF-1.26.0.
+* Use MuPDF-1.26.1.
 
 * Fixed issues:
 
