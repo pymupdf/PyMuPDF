@@ -9,13 +9,20 @@ Change Log
 * Fixed issues:
 
   * **Fixed** `4324 <https://github.com/pymupdf/PyMuPDF/issues/4324>`_: cluster_drawings() fails to cluster horizontal and vertical thin lines
+  * **Fixed** `4363 <https://github.com/pymupdf/PyMuPDF/issues/4363>`_: Trouble with searching
   * **Fixed** `4404 <https://github.com/pymupdf/PyMuPDF/issues/4404>`_: IndexError in page.get_links()
   * **Fixed** `4412 <https://github.com/pymupdf/PyMuPDF/issues/4412>`_: Regression? Spurious error? in insert_pdf in v1.25.4
+  * **Fixed** `4423 <https://github.com/pymupdf/PyMuPDF/issues/4423>`_: pymupdf.mupdf.FzErrorFormat: code=7: cannot find object in xref error encountered after version 1.25.3
+  * **Fixed** `4435 <https://github.com/pymupdf/PyMuPDF/issues/4435>`_: get_pixmap method stuck on one page
   * **Fixed** `4439 <https://github.com/pymupdf/PyMuPDF/issues/4439>`_: New Xml class from data does not work - bug in code
+  * **Fixed** `4445 <https://github.com/pymupdf/PyMuPDF/issues/4445>`_: Broken XREF table incorrectly repaired
   * **Fixed** `4447 <https://github.com/pymupdf/PyMuPDF/issues/4447>`_: Stroke color of annotations cannot be correctly set
+  * **Fixed** `4479 <https://github.com/pymupdf/PyMuPDF/issues/4479>`_: set_layer_ui_config() toggles all layers rather than just one
+  * **Fixed** `4505 <https://github.com/pymupdf/PyMuPDF/issues/4505>`_: Follow Widget flag values up its parent structure
 
 * Other:
 
+  * Partial fixed for `4457 <https://github.com/pymupdf/PyMuPDF/issues/4457>`_: Wrong characters displayed after font subsetting (w/ native method)
   * Support image stamp annotations.
   * Support recoloring pages.
   * Added example of using Django's file storage API to open files with pymupdf.
