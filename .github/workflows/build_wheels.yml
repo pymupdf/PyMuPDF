@@ -7,7 +7,7 @@ on:
       flavours:
         description: 'If set, we build separate PyMuPDF and PyMuPDFb wheels.'
         type: boolean
-        default: true
+        default: false
       
       sdist:
         type: boolean
