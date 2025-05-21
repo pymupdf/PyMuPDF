@@ -448,7 +448,7 @@ def build( platform_=None, valgrind=False):
                 # Include MuPDF build-time files.
                 flavour += 'd'
             env_set( 'PYMUPDF_SETUP_FLAVOUR', flavour, pass_=1)
-            run( f'cibuildwheel{platform_arg}', env_extra)
+            run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
             run( 'echo after {flavour=}')
             run( 'ls -l wheelhouse')
 
