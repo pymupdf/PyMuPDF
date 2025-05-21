@@ -1834,3 +1834,43 @@ def test_4466():
             pixmap = page.get_pixmap(clip=(0, 0, 10, 10))
             print(f'{pixmap.n=} {pixmap.size=} {pixmap.stride=} {pixmap.width=} {pixmap.height=} {pixmap.x=} {pixmap.y=}', flush=1)
             pixmap.is_unicolor  # Used to crash.
+
+
+def test_4479():
+    # This passes with pymupdf-1.24.14, fails with pymupdf==1.25.*, passes with
+    # pymupdf-1.26.0.
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4479.pdf')
+    with pymupdf.open(path) as document:
+        
+        def show(items):
+            for item in items:
+                print(f'    {repr(item)}')
+        
+        items = document.layer_ui_configs()
+        show(items)
+        assert items == [
+                {'depth': 0, 'locked': 0, 'number': 0, 'on': 1, 'text': 'layer_0', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 1, 'on': 1, 'text': 'layer_1', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 2, 'on': 0, 'text': 'layer_2', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 3, 'on': 1, 'text': 'layer_3', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 4, 'on': 1, 'text': 'layer_4', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 5, 'on': 1, 'text': 'layer_5', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 6, 'on': 1, 'text': 'layer_6', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 7, 'on': 1, 'text': 'layer_7', 'type': 'checkbox'},
+                ]
+        
+        document.set_layer_ui_config(0, pymupdf.PDF_OC_OFF)
+        items = document.layer_ui_configs()
+        show(items)
+        assert items == [
+                {'depth': 0, 'locked': 0, 'number': 0, 'on': 0, 'text': 'layer_0', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 1, 'on': 1, 'text': 'layer_1', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 2, 'on': 0, 'text': 'layer_2', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 3, 'on': 1, 'text': 'layer_3', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 4, 'on': 1, 'text': 'layer_4', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 5, 'on': 1, 'text': 'layer_5', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 6, 'on': 1, 'text': 'layer_6', 'type': 'checkbox'},
+                {'depth': 0, 'locked': 0, 'number': 7, 'on': 1, 'text': 'layer_7', 'type': 'checkbox'},
+                ]
+        
