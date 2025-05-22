@@ -1332,9 +1332,35 @@ class Table:
     def col_count(self) -> int:  # PyMuPDF extension
         return max([len(r.cells) for r in self.rows])
 
-    def extract(self, **kwargs) -> list:
+    def extract(
+        self,
+        *,
+        footnote: str = "none",
+        **kwargs,
+    ) -> list | tuple[list, str | None]:
+        """
+        Extract the table’s text content.
+
+        Parameters
+        ----------
+        footnote : {"none", "last_single_cell"}, optional
+            • "none" (default) – return the table exactly as on page.  
+            • "last_single_cell" – if the final physical row contains exactly
+              one non-empty cell, treat that row as a foot-note: remove it from
+              the table and return its text alongside the table data.
+
+        Other **kwargs are forwarded to `extract_text()`.
+
+        Returns
+        -------
+        list
+            When *footnote="none"* – the table content as a list of rows.  
+        (list, str | None)
+            When *footnote="last_single_cell"* – the table content **and**
+            the extracted foot-note text (or *None* if no foot-note found).
+        """
         chars = CHARS
-        table_arr = []
+        table_arr: list[list[str | None]] = []
 
         def char_in_bbox(char, bbox) -> bool:
             v_mid = (char["top"] + char["bottom"]) / 2
@@ -1344,19 +1370,19 @@ class Table:
                 (h_mid >= x0) and (h_mid < x1) and (v_mid >= top) and (v_mid < bottom)
             )
 
+        # -----------------------------------------
+        #  Build raw rows × columns string matrix
+        # -----------------------------------------
         for row in self.rows:
             arr = []
-            row_chars = [char for char in chars if char_in_bbox(char, row.bbox)]
+            row_chars = [c for c in chars if char_in_bbox(c, row.bbox)]
 
             for cell in row.cells:
                 if cell is None:
                     cell_text = None
                 else:
-                    cell_chars = [
-                        char for char in row_chars if char_in_bbox(char, cell)
-                    ]
-
-                    if len(cell_chars):
+                    cell_chars = [c for c in row_chars if char_in_bbox(c, cell)]
+                    if cell_chars:
                         kwargs["x_shift"] = cell[0]
                         kwargs["y_shift"] = cell[1]
                         if "layout" in kwargs:
@@ -1368,7 +1394,17 @@ class Table:
                 arr.append(cell_text)
             table_arr.append(arr)
 
-        return table_arr
+        # -----------------------------------------
+        #  Optional foot-note post-processing
+        # -----------------------------------------
+        footnote_txt: str | None = None
+        if footnote == "last_single_cell" and table_arr:
+            non_empty = [c for c in table_arr[-1] if c and str(c).strip()]
+            if len(non_empty) == 1:
+                footnote_txt = non_empty[0]
+                table_arr = table_arr[:-1]
+
+        return (table_arr, footnote_txt) if footnote != "none" else table_arr
 
     def to_markdown(self, clean=False, fill_empty=True):
         """Output table content as a string in Github-markdown format.
