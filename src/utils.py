@@ -174,8 +174,6 @@ def show_pdf_page(
     while pno < 0:  # support negative page numbers
         pno += docsrc.page_count
     src_page = docsrc[pno]  # load source page
-    if src_page.get_contents() == []:
-        raise ValueError("nothing to show - source page empty")
 
     tar_rect = rect * ~page.transformation_matrix  # target rect in PDF coordinates
 
