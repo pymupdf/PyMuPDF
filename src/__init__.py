@@ -17240,7 +17240,7 @@ def JM_read_contents(pageref):
     elif contents.m_internal:
         res = mupdf.pdf_load_stream(contents)
     else:
-        res = b""
+        res = mupdf.FzBuffer(0)
     return res
 
 
