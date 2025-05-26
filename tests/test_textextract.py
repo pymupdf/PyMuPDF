@@ -309,6 +309,17 @@ def test_document_text():
         pymupdf._log_items_clear()
 
 
+def test_4524():
+    path = os.path.abspath(f'{__file__}/../../tests/resources/mupdf_explored.pdf')
+    print('')
+    document = pymupdf.Document(path)
+    texts_single = pymupdf.get_text(path, method='single', pages=[1, 3, 5])
+    texts_mp = pymupdf.get_text(path, method='mp', pages=[1, 3, 5])
+    print(f'{len(texts_single)=}')
+    print(f'{len(texts_mp)=}')
+    assert texts_mp == texts_single
+
+
 def test_3594():
     verbose = 0
     print()
