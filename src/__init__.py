@@ -20635,7 +20635,10 @@ def apply_pages(
             initfn(*initfn_args, **initfn_kwargs)
         ret = list()
         document = Document(path)
-        for page in document:
+        if pages is None:
+            pages = range(len(document))
+        for pno in pages:
+            page = document[pno]
             r = pagefn(page, *pagefn_args, **initfn_kwargs)
             ret.append(r)
     
