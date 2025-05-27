@@ -298,3 +298,19 @@ def test_merge_checks2():
 
     assert len(set(names0 + names1)) == len(names2)
     assert kids2 == dup_kids
+
+
+test_4412_path = os.path.normpath(f'{__file__}/../../tests/resources/test_4412.pdf')
+
+def test_4412():
+    # This tests whether a page from a PDF containing widgets found in the wild
+    # can be inserted into a new document with default options (widget=True)
+    # and widget=False.
+    print()
+    for widget in True, False:
+        print(f'{widget=}', flush=1)
+        with pymupdf.open(test_4412_path) as doc, pymupdf.open() as new_doc:
+            buf = io.BytesIO()
+            new_doc.insert_pdf(doc, from_page=1, to_page=1)
+            new_doc.save(buf)
+            assert len(new_doc)==1
