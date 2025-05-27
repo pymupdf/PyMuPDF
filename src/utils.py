@@ -1949,7 +1949,7 @@ def do_widgets(
         parents[xref]["new_xref"] = parent_xref_new
         parents[xref]["new_kids"] = kids_xrefs_new
 
-    for i in src_range:
+    for i in range(len(src_range)):
         # read first copied over page in target
         tar_page = tar[start_at + i]
 
