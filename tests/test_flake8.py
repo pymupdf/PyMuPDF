@@ -10,7 +10,7 @@ def test_flake8():
     Check rebased Python code with flake8.
     '''
     if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running flake8 with classic implementation.')
+        print('Not running flake8 with classic implementation.')
         return
     ignores = (
             'E123', # closing bracket does not match indentation of opening bracket's line
@@ -51,4 +51,4 @@ def test_flake8():
         print(f'test_flake8(): Running: {command}')
         subprocess.run(command, shell=1, check=1)
     run(f'flake8 --ignore={ignores} --statistics {root}/src/__init__.py {root}/src/utils.py {root}/src/table.py')
-    print(f'test_flake8(): flake8 succeeded.')
+    print('test_flake8(): flake8 succeeded.')

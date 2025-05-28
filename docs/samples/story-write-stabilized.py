@@ -46,7 +46,7 @@ def contentfn(positions):
                 ret += f"    <li><a href=\"#{position.id}\">{text}</a>\n"
             else:
                 ret += f"    <li>{text}\n"
-            ret += f"        <ul>\n"
+            ret += "        <ul>\n"
             ret += f"        <li>page={position.page_num}\n"
             ret += f"        <li>depth={position.depth}\n"
             ret += f"        <li>heading={position.heading}\n"
@@ -55,12 +55,12 @@ def contentfn(positions):
             ret += f"        <li>rect={position.rect}\n"
             ret += f"        <li>text={text!r}\n"
             ret += f"        <li>open_close={position.open_close}\n"
-            ret += f"        </ul>\n"
+            ret += "        </ul>\n"
     
     ret += '</ul>\n'
     
     # Main content.
-    ret += textwrap.dedent(f'''
+    ret += textwrap.dedent('''
     
             <h1>First section</h1>
             <p>Contents of first section.

@@ -6,7 +6,7 @@ import os
 def test_2886():
     """Confirm correct insertion of a 'named' link."""
     if not hasattr(pymupdf, "mupdf"):
-        print(f"test_2886(): not running on classic.")
+        print("test_2886(): not running on classic.")
         return
 
     path = os.path.abspath(f"{__file__}/../../tests/resources/cython.pdf")
@@ -39,7 +39,7 @@ def test_2922():
     "nameddest" instead.
     """
     if not hasattr(pymupdf, "mupdf"):
-        print(f"test_2922(): not running on classic.")
+        print("test_2922(): not running on classic.")
         return
 
     path = os.path.abspath(f"{__file__}/../../tests/resources/cython.pdf")
@@ -68,7 +68,7 @@ def test_3301():
     is converted to a URI if not explicitly starting with "file://".
     """
     if not hasattr(pymupdf, "mupdf"):
-        print(f"test_3301(): not running on classic.")
+        print("test_3301(): not running on classic.")
         return
 
     # list of links and their expected link "kind" upon extraction

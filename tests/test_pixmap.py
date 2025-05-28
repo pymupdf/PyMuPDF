@@ -329,7 +329,7 @@ def test_3493():
             stdout=subprocess.PIPE,
             )
     if r.returncode:
-        print(f'test_3493(): Not running test because --system-site-packages venv cannot import gi.')
+        print('test_3493(): Not running test because --system-site-packages venv cannot import gi.')
         return
     gi = r.stdout.strip()
     gi_pythonpath = os.path.abspath(f'{gi}/../..')
@@ -373,7 +373,7 @@ def test_3493():
 def test_3848():
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
         # Takes 40m on Github.
-        print(f'test_3848(): not running on valgrind because very slow.', flush=1)
+        print('test_3848(): not running on valgrind because very slow.', flush=1)
         return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3848.pdf')
     with pymupdf.open(path) as document:
@@ -462,7 +462,7 @@ def test_4155():
         print(f'Received exception: {e}')
         assert 'operation forbidden on released memoryview object' in str(e)
     else:
-        assert 0, f'Did not receive expected exception when using defunct memoryview.'
+        assert 0, 'Did not receive expected exception when using defunct memoryview.'
 
 
 def test_4336():
@@ -492,7 +492,7 @@ def test_4336():
         venv = os.path.normpath(f'{__file__}/../../tests/resources/test_4336_venv')
         command = f'{sys.executable} -m venv {venv}'
         command += f' && . {venv}/bin/activate'
-        command += f' && pip install --force-reinstall pymupdf==1.23.8'
+        command += ' && pip install --force-reinstall pymupdf==1.23.8'
         command += f' && python {path_code}'
         print(f'Running: {command}', flush=1)
         subprocess.run(command, shell=1, check=1)
@@ -517,9 +517,9 @@ def test_4435():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4435.pdf')
     with pymupdf.open(path) as document:
         page = document[2]
-        print(f'Calling page.get_pixmap().', flush=1)
+        print('Calling page.get_pixmap().', flush=1)
         pixmap = page.get_pixmap(alpha=False, dpi=120)
-        print(f'Called page.get_pixmap().', flush=1)
+        print('Called page.get_pixmap().', flush=1)
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
 
@@ -543,7 +543,7 @@ def test_4423():
             ee = e
         
         if (1, 25, 5) <= pymupdf.mupdf_version_tuple < (1, 26):
-            assert ee, f'Did not receive the expected exception.'
+            assert ee, 'Did not receive the expected exception.'
             wt = pymupdf.TOOLS.mupdf_warnings()
             assert wt == 'dropping unclosed output'
         else:

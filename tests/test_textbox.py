@@ -284,5 +284,5 @@ def test_4400():
         page = document.new_page()
         writer = pymupdf.TextWriter(page.rect)
         text = '111111111'
-        print(f'Calling writer.fill_textbox().', flush=1)
+        print('Calling writer.fill_textbox().', flush=1)
         writer.fill_textbox(rect=pymupdf.Rect(0, 0, 100, 20), pos=(80, 0), text=text, fontsize=8)

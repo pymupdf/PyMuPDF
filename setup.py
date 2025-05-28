@@ -220,7 +220,7 @@ def run(command, check=1):
 
 if 1:
     # For debugging.
-    log(f'### Starting.')
+    log('### Starting.')
     log(f'__name__: {__name__!r}')
     log(f'platform.platform(): {platform.platform()!r}')
     log(f'platform.python_version(): {platform.python_version()!r}')
@@ -648,7 +648,7 @@ def build():
                 g_py_limited_api,
                 )
     else:
-        log(f'Not building extension.')
+        log('Not building extension.')
         path_so_leaf = None
     
     # Generate list of (from, to) items to return to pipcl. What we add depends
@@ -824,19 +824,19 @@ def build_mupdf_windows(
             if devenv.startswith( q) and devenv.endswith( q):
                 devenv = devenv[1:-1]
     command += f' -d {windows_build_tail}'
-    command += f' -b'
+    command += ' -b'
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
         command += f' --trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}"'
     command += f' --devenv "{devenv}"'
-    command += f' all'
+    command += ' all'
     if os.environ.get( 'PYMUPDF_SETUP_MUPDF_REBUILD') == '0':
         log( f'PYMUPDF_SETUP_MUPDF_REBUILD is "0" so not building MuPDF; would have run: {command}')
     else:
         log( f'Building MuPDF by running: {command}')
         subprocess.run( command, shell=True, check=True)
-        log( f'Finished building mupdf.')
+        log( 'Finished building mupdf.')
     
     return windows_build_dir
 
@@ -880,14 +880,14 @@ def build_mupdf_unix(
     system MuPDF.
     '''    
     if not mupdf_local:
-        log( f'Using system mupdf.')
+        log( 'Using system mupdf.')
         return None
 
     env = dict()
     if overwrite_config:
         # By predefining TOFU_CJK_EXT here, we don't need to modify
         # MuPDF's include/mupdf/fitz/config.h.
-        log( f'Setting XCFLAGS and XCXXFLAGS to predefine TOFU_CJK_EXT.')
+        log( 'Setting XCFLAGS and XCXXFLAGS to predefine TOFU_CJK_EXT.')
         env_add(env, 'XCFLAGS', '-DTOFU_CJK_EXT')
         env_add(env, 'XCXXFLAGS', '-DTOFU_CJK_EXT')
 
@@ -905,8 +905,8 @@ def build_mupdf_unix(
             # See:
             #   https://github.com/actions/runner-images/blob/main/images/macos/macos-13-Readme.md
             #
-            log(f'Using llvm@15 clang and clang++')
-            cl15 = pipcl.run(f'brew --prefix llvm@15', capture=1)
+            log('Using llvm@15 clang and clang++')
+            cl15 = pipcl.run('brew --prefix llvm@15', capture=1)
             log(f'{cl15=}')
             cl15 = cl15.strip()
             pipcl.run(f'ls -lL {cl15}')
@@ -950,7 +950,7 @@ def build_mupdf_unix(
     # a system limit, not the actual limit of the current shell, and there
     # doesn't seem to be a way to find the current shell's limit.
     #
-    build_prefix = f'PyMuPDF-'
+    build_prefix = 'PyMuPDF-'
     if mupdf_version_tuple >= (1, 26):
         # Avoid link command length problems seen on musllinux.
         build_prefix = ''
@@ -965,16 +965,16 @@ def build_mupdf_unix(
     if msys2:
         # Error in mupdf/scripts/tesseract/endianness.h:
         # #error "I don't know what architecture this is!"
-        log(f'msys2: building MuPDF without tesseract.')
+        log('msys2: building MuPDF without tesseract.')
     elif os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0':
-        log(f'PYMUPDF_SETUP_MUPDF_TESSERACT=0 so building mupdf without tesseract.')
+        log('PYMUPDF_SETUP_MUPDF_TESSERACT=0 so building mupdf without tesseract.')
     else:
         build_prefix += 'tesseract-'
     if (
             linux
             and os.environ.get('PYMUPDF_SETUP_MUPDF_BSYMBOLIC', '1') == '1'
             ):
-        log(f'Appending `bsymbolic-` to MuPDF build path.')
+        log('Appending `bsymbolic-` to MuPDF build path.')
         build_prefix += 'bsymbolic-'
     log(f'{g_py_limited_api=}')
     if g_py_limited_api:
@@ -1004,7 +1004,7 @@ def build_mupdf_unix(
     else:
         log( f'Building MuPDF by running: {command}')
         subprocess.run( command, shell=True, check=True)
-        log( f'Finished building mupdf.')
+        log( 'Finished building mupdf.')
     
     return unix_build_dir
 
@@ -1205,7 +1205,7 @@ def sdist():
         if tgz:
             ret.append((tgz, mupdf_tgz))
     else:
-        log(f'Not including MuPDF .tgz in sdist.')
+        log('Not including MuPDF .tgz in sdist.')
     return ret
 
 
@@ -1246,7 +1246,7 @@ if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     # the required binaries, but pip will still see `requires_dist` set to
     # 'PyMuPDFb', so will also download and build PyMuPDFb's sdist.
     #
-    log(f'Specifying dummy PyMuPDFb wheel.')
+    log('Specifying dummy PyMuPDFb wheel.')
     
     def get_requires_for_build_wheel(config_settings=None):
         return list()
@@ -1357,9 +1357,9 @@ else:
             print(f'Overriding to use {libclang=}.')
             ret.append(libclang)
         elif openbsd:
-            print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
+            print('OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
         elif darwin and platform.machine() == 'arm64':
-            print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
+            print('MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
             ret.append('libclang==16.0.6')
         elif darwin and platform_release_tuple() < (18,):
             # There are still of problems when building on old macos.
@@ -1367,9 +1367,9 @@ else:
         else:
             ret.append('libclang')
         if msys2:
-            print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
+            print('msys2: pip install of swig does not build; assuming `pacman -S swig`.')
         elif openbsd:
-            print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
+            print('OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
         else:
             ret.append( 'swig')
         return ret
@@ -1397,7 +1397,7 @@ if PYMUPDF_SETUP_URL_WHEEL:
                 url += leaf
             log(f'Downloading from {url=} to {out_path_temp=}.')
             urllib.request.urlretrieve(url, out_path_temp)
-        elif url.startswith(f'file://'):
+        elif url.startswith('file://'):
             in_path = url[len('file://'):]
             log(f'{in_path=}')
             if in_path.endswith('/'):

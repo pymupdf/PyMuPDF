@@ -18,10 +18,10 @@ def test_2791():
     Check for memory leaks.
     '''
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
-        print(f'test_2791(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
+        print('test_2791(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
         return
     if platform.system().startswith('MSYS_NT-'):
-        print(f'test_2791(): not running on msys2 - psutil not available.')
+        print('test_2791(): not running on msys2 - psutil not available.')
         return
     #stat_type = 'tracemalloc'
     stat_type = 'psutil'
@@ -68,10 +68,10 @@ def test_2791():
         # Values from psutil indicate larger memory leaks on non-Linux. Don't
         # yet know whether this is because rss is measured differently or a
         # genuine leak is being exposed.
-        print(f'test_2791(): not asserting ratio because not running on Linux.')
+        print('test_2791(): not asserting ratio because not running on Linux.')
     elif not hasattr(pymupdf, 'mupdf'):
         # Classic implementation has unfixed leaks.
-        print(f'test_2791(): not asserting ratio because using classic implementation.')
+        print('test_2791(): not asserting ratio because using classic implementation.')
     elif [int(x) for x in platform.python_version_tuple()[:2]] < [3, 11]:
         print(f'test_2791(): not asserting ratio because python version less than 3.11: {platform.python_version()=}.')
     elif stat_type == 'tracemalloc':
@@ -130,7 +130,7 @@ def show_tracemalloc_diff(snapshot1, snapshot2):
     for stat in top_stats[:10]:
         print(f'    {stat}')
     snapshot_diff = snapshot2.compare_to(snapshot1, key_type='lineno')
-    print(f'snapshot_diff:')
+    print('snapshot_diff:')
     count_diff = 0
     size_diff = 0
     for i, s in enumerate(snapshot_diff):
@@ -143,10 +143,10 @@ def show_tracemalloc_diff(snapshot1, snapshot2):
 
 def test_4125():
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
-        print(f'test_4125(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
+        print('test_4125(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
         return
     if platform.system().startswith('MSYS_NT-'):
-        print(f'test_4125(): not running on msys2 - psutil not available.')
+        print('test_4125(): not running on msys2 - psutil not available.')
         return
     
     print('')
@@ -219,4 +219,4 @@ def test_4125():
         # to vary a lot, which causes spurious test failures. So for at least
         # we don't actually check.
         #
-        print(f'Not checking results because non-Linux behaviour is too variable.')
+        print('Not checking results because non-Linux behaviour is too variable.')

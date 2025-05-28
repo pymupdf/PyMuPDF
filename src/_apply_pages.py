@@ -205,7 +205,7 @@ def _fork(
         if stats:
             t = time.time()
         if verbose:
-            pymupdf.log(f'Sending page numbers.')
+            pymupdf.log('Sending page numbers.')
         for page_num in range(len(pages)):
             queue_down.put(page_num)
         if stats:
@@ -230,7 +230,7 @@ def _fork(
         # send None, which makes workers terminate.
         for i in range(concurrency):
             queue_down.put(None)
-        if verbose: pymupdf.log(f'Closing queues.')
+        if verbose: pymupdf.log('Closing queues.')
         queue_down.close()
 
         if error:

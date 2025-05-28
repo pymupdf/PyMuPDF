@@ -269,7 +269,7 @@ def main(argv):
             assert 0, f'Unrecognised option: {arg=}.'
     
     if arg is None:
-        log(f'No command specified.')
+        log('No command specified.')
         return
     
     commands = list()
@@ -368,7 +368,7 @@ def github_workflow_unimportant():
     GITHUB_EVENT_NAME = os.environ.get('GITHUB_EVENT_NAME')
     GITHUB_REPOSITORY = os.environ.get('GITHUB_REPOSITORY')
     if GITHUB_EVENT_NAME == 'schedule' and GITHUB_REPOSITORY != 'pymupdf/PyMuPDF':
-            log(f'## This is an unimportant Github workflow: a scheduled event, not in the main repository `pymupdf/PyMuPDF`.')
+            log('## This is an unimportant Github workflow: a scheduled event, not in the main repository `pymupdf/PyMuPDF`.')
             log(f'## {GITHUB_EVENT_NAME=}.')
             log(f'## {GITHUB_REPOSITORY=}.')
             return True
@@ -472,7 +472,7 @@ def build_pyodide_wheel(pyodide_build_version=None):
     This runs `pyodide build` inside the PyMuPDF directory, which in turn runs
     setup.py in a Pyodide build environment.
     '''
-    log(f'## Building Pyodide wheel.')
+    log('## Building Pyodide wheel.')
 
     # Our setup.py does not know anything about Pyodide; we set a few
     # required environmental variables here.
@@ -563,7 +563,7 @@ def pyodide_setup(
         # important to remove it here.
         shutil.rmtree('.pyodide-xbuildenv', ignore_errors=1)
     if not os.path.exists(f'{directory}/{dir_emsdk}'):
-        command += f' && echo "### Cloning emsdk.git"'
+        command += ' && echo "### Cloning emsdk.git"'
         command += f' && git clone https://github.com/emscripten-core/emsdk.git {dir_emsdk}'
     command += f' && echo "### Updating checkout {dir_emsdk}"'
     command += f' && (cd {dir_emsdk} && git pull -r)'
@@ -579,8 +579,8 @@ def pyodide_setup(
         command += f' && echo "### Creating venv {venv_pyodide}"'
         command += f' && {python} -m venv {venv_pyodide}'
     command += f' && . {venv_pyodide}/bin/activate'
-    command += f' && echo "### Installing Python packages."'
-    command += f' && python -m pip install --upgrade pip wheel pyodide-build'
+    command += ' && echo "### Installing Python packages."'
+    command += ' && python -m pip install --upgrade pip wheel pyodide-build'
     if pyodide_build_version:
         command += f'=={pyodide_build_version}'
     
@@ -725,9 +725,9 @@ def test(
         if valgrind:
             if packages:
                 log('Installing valgrind.')
-                run(f'sudo apt update')
-                run(f'sudo apt install --upgrade valgrind')
-            run(f'valgrind --version')
+                run('sudo apt update')
+                run('sudo apt install --upgrade valgrind')
+            run('valgrind --version')
         
             log('Running PyMuPDF tests under valgrind.')
             command = (
@@ -776,19 +776,19 @@ def test(
                 with open(p2, 'w', encoding='utf8') as f:
                     f.write(text2)
         
-        log(f'Running tests with tests/run_compound.py and pytest.')
+        log('Running tests with tests/run_compound.py and pytest.')
         run(command, env_extra=env_extra, timeout=timeout)
             
     except subprocess.TimeoutExpired as e:
-         log(f'Timeout when running tests.')
+         log('Timeout when running tests.')
          raise
     finally:
-        log(f'\n'
-                f'[As of 2024-10-10 we get warnings from pytest/Python such as:\n'
-                f'    DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n'
-                f'This seems to be due to Swig\'s handling of Py_LIMITED_API.\n'
-                f'For details see https://github.com/swig/swig/issues/2881.\n'
-                f']'
+        log('\n'
+                '[As of 2024-10-10 we get warnings from pytest/Python such as:\n'
+                '    DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute\n'
+                'This seems to be due to Swig\'s handling of Py_LIMITED_API.\n'
+                'For details see https://github.com/swig/swig/issues/2881.\n'
+                ']'
                 )
         log('\n' + venv_info(pytest_args=f'{pytest_options} {pytest_arg}'))
 

@@ -657,7 +657,7 @@ class Package:
         log1( f'Have created wheel size={st.st_size}: {path}')
         if g_verbose >= 2:
             with zipfile.ZipFile(path, compression=self.wheel_compression) as z:
-                log2(f'Contents are:')
+                log2('Contents are:')
                 for zi in sorted(z.infolist(), key=lambda z: z.filename):
                     log2(f'    {zi.file_size: 10d} {zi.filename}')
 
@@ -737,14 +737,14 @@ class Package:
                     add(from_, to_rel)
 
             if not found_pyproject_toml:
-                log0(f'Warning: no pyproject.toml specified.')
+                log0('Warning: no pyproject.toml specified.')
 
             # Always add a PKG-INFO file.
             add_string(self._metainfo(), 'PKG-INFO')
 
             if self.license:
                 if 'COPYING' in names_in_tar:
-                    log2(f'Not writing .license because file already in sdist: COPYING')
+                    log2('Not writing .license because file already in sdist: COPYING')
                 else:
                     add_string(self.license, 'COPYING')
 
@@ -978,7 +978,7 @@ class Package:
         with open(record_path, 'w') as f:
             f.write(record.get())
 
-        log2(f'Finished.')
+        log2('Finished.')
 
 
     def _argv_dist_info(self, root):
@@ -1269,7 +1269,7 @@ class Package:
                 # This is ok because we write `self.license` into
                 # *.dist-info/COPYING.
                 #
-                log1( f'Omitting license because contains newline(s).')
+                log1( 'Omitting license because contains newline(s).')
                 return
             assert '\n' not in value, f'key={key} value contains newline: {value!r}'
             if key == 'Project-URL':
@@ -2040,7 +2040,7 @@ class PythonFlags:
                     #
                     python_config = None
                     for pc in (
-                            f'python3-config',
+                            'python3-config',
                             f'{sys.executable} {sysconfig.get_config_var("srcdir")}/python-config.py',
                             f'{python_exe}-config',
                             ):
@@ -2054,7 +2054,7 @@ class PythonFlags:
                         log2(f'{e=} from {pc!r}.')
                         if e == 0:
                             python_config = pc
-                    assert python_config, f'Cannot find python-config'
+                    assert python_config, 'Cannot find python-config'
                 else:
                     python_config = f'{python_exe}-config'
             log2(f'Using {python_config=}.')
@@ -2254,7 +2254,7 @@ def run_if( command, out, *prerequisites):
             if cmd is None:
                 doit = 'No previous command stored'
             else:
-                doit = f'Command has changed'
+                doit = 'Command has changed'
                 if 0:
                     doit += f': {cmd!r} => {command!r}'
 

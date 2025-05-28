@@ -103,7 +103,7 @@ springer_html = '''
 def test_fit_springer():
     
     if not hasattr(pymupdf, 'mupdf'):
-        print(f'test_fit_springer(): not running on classic.')
+        print('test_fit_springer(): not running on classic.')
         return
     
     verbose = 0
@@ -178,7 +178,7 @@ def test_write_stabilized_with_links():
                     ret += f'    <li>{text}'
                 ret += f' page={position.page_num}\n'
         ret += '</ul>\n'
-        ret += textwrap.dedent(f'''
+        ret += textwrap.dedent('''
                 <h1>First section</h1>
                 <p>Contents of first section.
                 <ul>

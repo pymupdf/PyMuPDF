@@ -35,7 +35,7 @@ def _test_all():
             if 0:
                 # Curiously this fails in an odd way when testing compound
                 # package with $PYTHONPATH set.
-                print( f'os.environ is:')
+                print( 'os.environ is:')
                 for n, v in os.environ.items():
                     print( f'    {n}: {v!r}')
                 command = f'{sys.executable} {sample}'

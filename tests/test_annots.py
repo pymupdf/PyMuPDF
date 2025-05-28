@@ -422,7 +422,7 @@ def test_3863():
             pixmap.save(path_png)
             # Compare with expected png.
     
-        print(f'Comparing page PNGs with expected PNGs.')
+        print('Comparing page PNGs with expected PNGs.')
         for num, _ in enumerate(document):
             path_png = f'{path_out}.{num}.png'
             path_png_expected = f'{path_in}.pdf.{num}.png'
@@ -469,7 +469,7 @@ def test_parent():
             assert isinstance(e, pymupdf.mupdf.FzErrorArgument), f'Incorrect {type(e)=}.'
         assert str(e) == 'code=4: annotation not bound to any page', f'Incorrect error text {str(e)=}.'
     else:
-        assert 0, f'Failed to get expected exception.'
+        assert 0, 'Failed to get expected exception.'
 
 def test_4047():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4047.pdf')

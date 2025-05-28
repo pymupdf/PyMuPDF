@@ -18,7 +18,7 @@ def test_codespell():
     
     if platform.system() == 'Windows':
         # Git commands seem to fail on Github Windows runners.
-        print(f'test_codespell(): Not running on Widows')
+        print('test_codespell(): Not running on Widows')
         return
         
     root = os.path.abspath(f'{__file__}/../..')
@@ -63,6 +63,6 @@ def test_codespell():
     # Don't print entire command because very long, and will be displayed
     # anyway if there is an error.
     #print(f'test_codespell(): Running: {command}')
-    print(f'Running codespell.')
+    print('Running codespell.')
     subprocess.run(command, shell=1, check=1)
     print('test_codespell(): codespell succeeded.')

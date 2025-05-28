@@ -313,7 +313,7 @@ def build( platform_=None, valgrind=False):
                         ),
                     )
             if env_extra.get('CIBW_ARCHS_LINUX') == '':
-                log(f'Not running cibuildwheel because CIBW_ARCHS_LINUX is empty string.')
+                log('Not running cibuildwheel because CIBW_ARCHS_LINUX is empty string.')
                 return
     
         if platform.system() == 'Windows':
@@ -324,7 +324,7 @@ def build( platform_=None, valgrind=False):
                         ),
                     )
             if env_extra.get('CIBW_ARCHS_WINDOWS') == '':
-                log(f'Not running cibuildwheel because CIBW_ARCHS_WINDOWS is empty string.')
+                log('Not running cibuildwheel because CIBW_ARCHS_WINDOWS is empty string.')
                 return
     
         if platform.system() == 'Darwin':
@@ -336,7 +336,7 @@ def build( platform_=None, valgrind=False):
                         ),
                     )
             if env_extra.get('CIBW_ARCHS_MACOS') == '':
-                log(f'Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
+                log('Not running cibuildwheel because CIBW_ARCHS_MACOS is empty string.')
                 return
     
         def env_pass(name):
@@ -401,7 +401,7 @@ def build( platform_=None, valgrind=False):
             assert CIBW_BUILD_old is not None
             cp = cps.split()[0]
             env_set('CIBW_BUILD', cp)
-            log(f'Building single wheel.')
+            log('Building single wheel.')
             run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
             
             # Fake-build with all python versions, using the wheel we have
@@ -411,7 +411,7 @@ def build( platform_=None, valgrind=False):
             # wheels having extra platform tags (from cibuildwheel's use of
             # auditwheel).
             #
-            env_set('PYMUPDF_SETUP_URL_WHEEL', f'file://wheelhouse/', pass_=True)
+            env_set('PYMUPDF_SETUP_URL_WHEEL', 'file://wheelhouse/', pass_=True)
             
             set_cibuild_test()
             env_set('CIBW_BUILD', CIBW_BUILD_old)
@@ -425,15 +425,15 @@ def build( platform_=None, valgrind=False):
             env_set('CIBW_REPAIR_WHEEL_COMMAND', '')
             
             if platform.system() == 'Linux' and env_extra.get('CIBW_ARCHS_LINUX') == 'aarch64':
-                log(f'Testing all Python versions on linux-aarch64 is too slow and is killed by github after 6h.')
-                log(f'Testing on restricted python versions using wheels in wheelhouse/.')
+                log('Testing all Python versions on linux-aarch64 is too slow and is killed by github after 6h.')
+                log('Testing on restricted python versions using wheels in wheelhouse/.')
                 # Testing only on first and last python versions.
                 cp1 = cps.split()[0]
                 cp2 = cps.split()[-1]
                 cp = cp1 if cp1 == cp2 else f'{cp1} {cp2}'
                 env_set('CIBW_BUILD', cp)
             else:
-                log(f'Testing on all python versions using wheels in wheelhouse/.')
+                log('Testing on all python versions using wheels in wheelhouse/.')
             run( f'cibuildwheel{platform_arg}', env_extra=env_extra)
             
         elif inputs_flavours:
@@ -475,7 +475,7 @@ def build( platform_=None, valgrind=False):
             # careful to avoid incompatible wheels, e.g. 32 vs 64-bit wheels
             # coexist during Windows builds.
             #
-            env_set('CIBW_BEFORE_TEST', f'python scripts/gh_release.py pip_install wheelhouse/pymupdfb')
+            env_set('CIBW_BEFORE_TEST', 'python scripts/gh_release.py pip_install wheelhouse/pymupdfb')
         
             set_cibuild_test()
         
@@ -526,10 +526,10 @@ def venv( command=None, packages=None, quick=False, system_site_packages=False):
         # explicit `pip install swig psutil`.
         system_site_packages = True
         #ssp = ' --system-site-packages'
-        log(f'OpenBSD: libclang not available from pypi.org.')
-        log(f'OpenBSD: system package `py3-llvm` must be installed.')
-        log(f'OpenBSD: creating venv with --system-site-packages.')
-        log(f'OpenBSD: `pip install .../PyMuPDF` must be preceded by install of swig etc.')
+        log('OpenBSD: libclang not available from pypi.org.')
+        log('OpenBSD: system package `py3-llvm` must be installed.')
+        log('OpenBSD: creating venv with --system-site-packages.')
+        log('OpenBSD: `pip install .../PyMuPDF` must be preceded by install of swig etc.')
     ssp = ' --system-site-packages' if system_site_packages else ''
     if quick and os.path.isdir(venv_name):
         log(f'{quick=}: Not creating venv because directory already exists: {venv_name}')
@@ -564,9 +564,9 @@ def test( project, package, valgrind):
     run(f'pip install {test_packages}')
     if valgrind:
         log('Installing valgrind.')
-        run(f'sudo apt update')
-        run(f'sudo apt install valgrind')
-        run(f'valgrind --version')
+        run('sudo apt update')
+        run('sudo apt install valgrind')
+        run('valgrind --version')
         
         log('Running PyMuPDF tests under valgrind.')
         # We ignore memory leaks.

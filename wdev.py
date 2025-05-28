@@ -89,7 +89,7 @@ class WindowsVS:
             # We use r'...' for regex strings because an extra level of escaping is
             # required for backslashes.
             #
-            regex = rf'^C:\\Program Files.*\\Microsoft Visual Studio\\([^\\]+)\\([^\\]+)'
+            regex = r'^C:\\Program Files.*\\Microsoft Visual Studio\\([^\\]+)\\([^\\]+)'
             m = re.match( regex, directory)
             assert m, f'No match: {regex=} {directory=}'
             year2 = m.group(1)
@@ -167,7 +167,7 @@ class WindowsVS:
             self.year = year
             self.cpu = cpu
         except Exception as e:
-            raise Exception( f'Unable to find Visual Studio') from e
+            raise Exception( 'Unable to find Visual Studio') from e
 
     def description_ml( self, indent=''):
         '''

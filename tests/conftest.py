@@ -53,7 +53,7 @@ def wrap(*args, **kwargs):
     # Test has run; check it did not create any MuPDF warnings etc.
     wt = pymupdf.TOOLS.mupdf_warnings()
     if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not checking mupdf_warnings on classic.')
+        print('Not checking mupdf_warnings on classic.')
     else:
         assert not wt, f'Warnings text not empty: {wt=}'
     
@@ -70,12 +70,12 @@ def wrap(*args, **kwargs):
         open_fds_after, open_fds_after_l = get_fds()
         if open_fds_after != open_fds_before:
             import textwrap
-            print(f'Test has changed process fds:')
+            print('Test has changed process fds:')
             print(f'    {open_fds_before=}')
             print(f'     {open_fds_after=}')
-            print(f'open_fds_before_l:')
+            print('open_fds_before_l:')
             print(textwrap.indent(open_fds_before_l, '    '))
-            print(f'open_fds_after_l:')
+            print('open_fds_after_l:')
             print(textwrap.indent(open_fds_after_l, '    '))
             #assert 0
     

@@ -29,7 +29,7 @@ def test_simple_toc():
 def test_full_toc():
     if not hasattr(pymupdf, "mupdf"):
         # Classic implementation does not have fix for this test.
-        print(f"Not running test_full_toc on classic implementation.")
+        print("Not running test_full_toc on classic implementation.")
         return
     expected_path = f"{scriptdir}/resources/full_toc.txt"
     expected = pathlib.Path(expected_path).read_bytes()
@@ -109,7 +109,7 @@ def test_2788():
     '''
     if not hasattr(pymupdf, 'mupdf'):
         # Classic implementation does not have fix for this test.
-        print(f'Not running test_2788 on classic implementation.')
+        print('Not running test_2788 on classic implementation.')
         return
     path = os.path.abspath(f'{__file__}/../../tests/resources/test_2788.pdf')        
     document = pymupdf.open(path)

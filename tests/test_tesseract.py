@@ -29,7 +29,7 @@ def test_tesseract():
             # 2023-12-12: For some reason the SWIG catch code only catches
             # the exception as FzErrorBase.
             e_expected_type = pymupdf.mupdf.FzErrorBase
-            print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
+            print('OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
         else:
             e_expected_type = pymupdf.mupdf.FzErrorLibrary
     else:
@@ -39,13 +39,13 @@ def test_tesseract():
     tessdata_prefix = os.environ.get('TESSDATA_PREFIX')
     if tessdata_prefix:
         tp = page.get_textpage_ocr(full=True)
-        print(f'test_tesseract(): page.get_textpage_ocr() succeeded')
+        print('test_tesseract(): page.get_textpage_ocr() succeeded')
     else:
         try:
             tp = page.get_textpage_ocr(full=True, tessdata='/foo/bar')
         except Exception as e:
             e_text = str(e)
-            print(f'Received exception as expected.')
+            print('Received exception as expected.')
             print(f'{type(e)=}')
             print(f'{e_text=}')
             assert e_text == e_expected, f'Unexpected exception: {e_text!r}'

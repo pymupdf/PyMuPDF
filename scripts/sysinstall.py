@@ -123,10 +123,10 @@ def main():
         log(f'{os.environ.get("PYMUDF_SCRIPTS_SYSINSTALL_ARGS_POST")=}')
         log(f'{sys.argv=}')
         log(f'{sysconfig.get_path("platlib")=}')
-        run_command(f'python -V', check=0)
-        run_command(f'python3 -V', check=0)
-        run_command(f'sudo python -V', check=0)
-        run_command(f'sudo python3 -V', check=0)
+        run_command('python -V', check=0)
+        run_command('python3 -V', check=0)
+        run_command('sudo python -V', check=0)
+        run_command('sudo python3 -V', check=0)
         run_command(f'sudo PATH={os.environ["PATH"]} python -V', check=0)
         run_command(f'sudo PATH={os.environ["PATH"]} python3 -V', check=0)
     
@@ -215,12 +215,12 @@ def main():
         # Install required system packages. We assume a Debian package system.
         #
         log('## Install system packages required by MuPDF.')
-        run(f'sudo apt update')
+        run('sudo apt update')
         run(f'sudo apt install {" ".join(g_sys_packages)}')
         # Ubuntu-22.04 has freeglut3-dev, not libglut-dev.
-        run(f'sudo apt install libglut-dev | sudo apt install freeglut3-dev')
+        run('sudo apt install libglut-dev | sudo apt install freeglut3-dev')
         if tesseract5:
-            log(f'## Force installation of libtesseract-dev version 5.')
+            log('## Force installation of libtesseract-dev version 5.')
             # https://stackoverflow.com/questions/76834972/how-can-i-run-pytesseract-python-library-in-ubuntu-22-04
             #
             run('sudo apt install -y software-properties-common')
@@ -244,20 +244,20 @@ def main():
     command += f' -j {multiprocessing.cpu_count()}'
     #command += f' EXE_LDFLAGS=-Wl,--trace' # Makes linker generate diagnostics as it runs.
     command += f' DESTDIR={root}'
-    command += f' HAVE_LEPTONICA=yes'
-    command += f' HAVE_TESSERACT=yes'
-    command += f' USE_SYSTEM_LIBS=yes'
+    command += ' HAVE_LEPTONICA=yes'
+    command += ' HAVE_TESSERACT=yes'
+    command += ' USE_SYSTEM_LIBS=yes'
     # We need latest zxingcpp so system version not ok.
-    command += f' USE_SYSTEM_ZXINGCPP=no'
-    command += f' barcode=yes'
+    command += ' USE_SYSTEM_ZXINGCPP=no'
+    command += ' barcode=yes'
     command += f' VENV_FLAG={"--venv" if pip == "venv" else ""}'
     if mupdf_so_mode:
         command += f' SO_INSTALL_MODE={mupdf_so_mode}'
-    command += f' build_prefix=system-libs-'
+    command += ' build_prefix=system-libs-'
     command += f' prefix={prefix}'
-    command += f' verbose=yes'
-    command += f' install-shared-python'
-    command += f' INSTALL_MODE=755'
+    command += ' verbose=yes'
+    command += ' install-shared-python'
+    command += ' INSTALL_MODE=755'
     run( command)
     
     # Build+install PyMuPDF.
@@ -272,13 +272,13 @@ def main():
     env += f'CFLAGS="{compile_flags}" '
     env += f'CXXFLAGS="{compile_flags}" '
     env += f'LDFLAGS="-L {root}/{prefix}/lib" '
-    env += f'PYMUPDF_SETUP_MUPDF_BUILD= '       # Use system MuPDF.
+    env += 'PYMUPDF_SETUP_MUPDF_BUILD= '       # Use system MuPDF.
     if use_installer:
-        log(f'## Building wheel.')
+        log('## Building wheel.')
         if pip == 'venv':
             venv_name = 'venv-pymupdf-sysinstall'
-        run(f'pwd')
-        run(f'rm dist/* || true')
+        run('pwd')
+        run('rm dist/* || true')
         if pip == 'venv':
             run(f'{sys.executable} -m venv {venv_name}')
             run(f'. {venv_name}/bin/activate && pip install --upgrade pip')
@@ -286,14 +286,14 @@ def main():
             run(f'{env} {venv_name}/bin/python -m pip wheel -vv -w dist {os.path.abspath(pymupdf_dir)}')
         elif pip == 'sudo':
             #run(f'sudo pip install --upgrade pip') # Breaks on Github see: https://github.com/pypa/get-pip/issues/226.
-            run(f'sudo pip install installer')
+            run('sudo pip install installer')
             run(f'{env} pip wheel -vv -w dist {os.path.abspath(pymupdf_dir)}')
         else:
             log(f'Not installing "installer" because {pip=}.')
-        wheel = glob.glob(f'dist/*')
+        wheel = glob.glob('dist/*')
         assert len(wheel) == 1, f'{wheel=}'
         wheel = wheel[0]
-        log(f'## Installing wheel using `installer`.')
+        log('## Installing wheel using `installer`.')
         pv = '.'.join(platform.python_version_tuple()[:2])
         p = f'{root_prefix}/lib/python{pv}'
         # `python -m installer` fails to overwrite existing files.
@@ -352,7 +352,7 @@ def main():
         run(f'{sys.executable} -m venv {test_venv}')
         # Install required packages.
         command = f'. {test_venv}/bin/activate'
-        command += f' && pip install --upgrade pip'
+        command += ' && pip install --upgrade pip'
         command += f' && pip install --upgrade {gh_release.test_packages}'
         run(command)
     elif pip == 'sudo':
@@ -374,7 +374,7 @@ def main():
     command += f' {pymupdf_dir}/scripts/test.py'
     if gdb:
         command += ' --gdb 1'
-    command += f' -v 0'
+    command += ' -v 0'
     if pytest_name is None:
         excluded_tests = (
                 'test_color_count',

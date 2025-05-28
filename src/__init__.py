@@ -273,7 +273,7 @@ def message(text=''):
 
 def exception_info():
     import traceback
-    log(f'exception_info:')
+    log('exception_info:')
     log(traceback.format_exc())
 
 
@@ -456,7 +456,7 @@ def _as_fz_document(document):
     elif isinstance(document, mupdf.PdfDocument):
         return document.super()
     elif document is None:
-        assert 0, f'document is None'
+        assert 0, 'document is None'
     else:
         assert 0, f'Unrecognised {type(document)=}'
 
@@ -479,7 +479,7 @@ def _as_pdf_document(document, required=True):
             assert ret.m_internal
         return ret
     elif document is None:
-        assert 0, f'document is None'
+        assert 0, 'document is None'
     else:
         assert 0, f'Unrecognised {type(document)=}'
 
@@ -494,7 +494,7 @@ def _as_fz_page(page):
     elif isinstance(page, mupdf.FzPage):
         return page
     elif page is None:
-        assert 0, f'page is None'
+        assert 0, 'page is None'
     else:
         assert 0, f'Unrecognised {type(page)=}'
 
@@ -514,7 +514,7 @@ def _as_pdf_page(page, required=True):
             assert ret.m_internal
         return ret
     elif page is None:
-        assert 0, f'page is None'
+        assert 0, 'page is None'
     else:
         assert 0, f'Unrecognised {type(page)=}'
 
@@ -2449,7 +2449,7 @@ class Xml:
     
     def set_bgcolor(self, color):
         """Set background color via CSS style"""
-        text = f"background-color: %s" % self.color_text(color)
+        text = f"background-color: {self.color_text(color)}"
         self.add_style(text)  # does not work on span level
         return self
 
@@ -2465,7 +2465,7 @@ class Xml:
 
     def set_color(self, color):
         """Set text color via CSS style"""
-        text = f"color: %s" % self.color_text(color)
+        text = f"color: {self.color_text(color)}"
         self.append_styled_span(text)
         return self
 
@@ -3489,7 +3489,7 @@ class Document:
         """Make an array page number -> page object."""
         if self.is_closed:
             raise ValueError("document closed")
-        assert 0, f'_make_page_map() is no-op'
+        assert 0, '_make_page_map() is no-op'
 
     def _move_copy_page(self, pno, nb, before, copy):
         """Move or copy a PDF page reference."""
@@ -7451,7 +7451,7 @@ def _make_PdfFilterOptions(
                 self.sopts = sopts
             def filter(self, ctx, doc, chain, struct_parents, transform, options):
                 if 0:
-                    log(f'sanitize filter.filter():')
+                    log('sanitize filter.filter():')
                     log(f'    {self=}')
                     log(f'    {ctx=}')
                     log(f'    {doc=}')
@@ -12114,9 +12114,9 @@ class Story:
                     # Make link from `position_from`'s rect to top-left of
                     # `position_to`'s rect.
                     if 0:
-                        log(f"add_pdf_links(): making link from:")
+                        log("add_pdf_links(): making link from:")
                         log(f"add_pdf_links():    {position_from}")
-                        log(f"add_pdf_links(): to:")
+                        log("add_pdf_links(): to:")
                         log(f"add_pdf_links():    {position_to}")
                     link["kind"] = LINK_GOTO
                     x0, y0, x1, y1 = position_to.rect
@@ -12389,7 +12389,7 @@ class Story:
             if state.pmax is not None:
                 if state.last_p != state.pmax:
                     if verbose:
-                        log(f'Calling update() with pmax, because was overwritten by later calls.')
+                        log('Calling update() with pmax, because was overwritten by later calls.')
                     big_enough = update(state.pmax)
                     assert big_enough
                 result = state.pmax_result
@@ -12412,7 +12412,7 @@ class Story:
                 big_enough = False
                 result = Story.FitResult(parameter=parameter, numcalls=state.numcalls)
                 if verbose:
-                    log(f'update(): not calling self.place() because rect is empty.')
+                    log('update(): not calling self.place() because rect is empty.')
             else:
                 more, filled = self.place(rect)
                 state.numcalls += 1
@@ -12449,7 +12449,7 @@ class Story:
             
         if state.pmin is None:
             # Find an initial finite pmin value.
-            if verbose: log(f'finding pmin.')
+            if verbose: log('finding pmin.')
             parameter = opposite(state.pmax, -1)
             while 1:
                 if not update(parameter):
@@ -12462,7 +12462,7 @@ class Story:
         
         if state.pmax is None:
             # Find an initial finite pmax value.
-            if verbose: log(f'finding pmax.')
+            if verbose: log('finding pmax.')
             parameter = opposite(state.pmin, +1)
             while 1:
                 if update(parameter):
@@ -15714,7 +15714,7 @@ def JM_get_fontbuffer(doc, xref):
         obj = mupdf.pdf_dict_get(o, PDF_NAME('FontDescriptor'))
 
     if not obj.m_internal:
-        message(f"invalid font - FontDescriptor missing")
+        message("invalid font - FontDescriptor missing")
         return
 
     o = obj
@@ -16419,7 +16419,7 @@ def JM_make_annot_DA(annot, ncol, col, fontname, fontsize):
     # string directly in Python.
     buf = ''
     if ncol < 1:
-        buf += f'0 g '
+        buf += '0 g '
     elif ncol == 1:
         buf += f'{col[0]:g} g '
     elif ncol == 2:
@@ -19049,7 +19049,7 @@ class Walker(mupdf.FzPathWalker2):
 
     def moveto(self, ctx, x, y):   # trace_moveto().
         if 0 and isinstance(self.dev.pathdict, dict):
-            log(f'self.dev.pathdict:')
+            log('self.dev.pathdict:')
             for n, v in self.dev.pathdict.items():
                 log( '    {type(n)=} {len(n)=} {n!r} {n}: {v!r}: {v}')
 
@@ -20385,21 +20385,21 @@ def pdfobj_string(o, prefix=''):
     elif mupdf.pdf_is_embedded_file(o):
         ret += f'embedded_file: {o.embedded_file_name()}\n'
     elif mupdf.pdf_is_indirect(o):
-        ret += f'indirect: ...\n'
+        ret += 'indirect: ...\n'
     elif mupdf.pdf_is_int(o):
         ret += f'int: {mupdf.pdf_to_int(o)}\n'
     elif mupdf.pdf_is_jpx_image(o):
-        ret += f'jpx_image:\n'
+        ret += 'jpx_image:\n'
     elif mupdf.pdf_is_name(o):
         ret += f'name: {mupdf.pdf_to_name(o)}\n'
     elif o.pdf_is_null:
-        ret += f'null\n'
+        ret += 'null\n'
     #elif o.pdf_is_number:
     #    ret += f'number\n'
     elif o.pdf_is_real:
         ret += f'real: {o.pdf_to_real()}\n'
     elif mupdf.pdf_is_stream(o):
-        ret += f'stream\n'
+        ret += 'stream\n'
     elif mupdf.pdf_is_string(o):
         ret += f'string: {mupdf.pdf_to_string(o)}\n'
     else:

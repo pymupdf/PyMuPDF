@@ -5576,7 +5576,7 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
     repl_fontnames(doc)  # populate font information
     if not font_buffers:  # nothing found to do
         if verbose:
-            pymupdf.message(f'No fonts to subset.')
+            pymupdf.message('No fonts to subset.')
         return 0
 
     old_fontsize = 0

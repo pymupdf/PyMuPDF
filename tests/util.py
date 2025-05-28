@@ -16,7 +16,7 @@ def download(url, name, size=None):
         print(f'Using existing file {path=}.')
     else:
         print(f'Downloading from {url=}.')
-        subprocess.run(f'pip install -U requests', check=1, shell=1)
+        subprocess.run('pip install -U requests', check=1, shell=1)
         import requests
         r = requests.get(url, path, timeout=10)
         r.raise_for_status()

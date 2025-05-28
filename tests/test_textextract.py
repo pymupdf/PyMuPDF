@@ -551,7 +551,7 @@ def test_4179():
         # Looks like Python code doesn't behave same as C++, probably because
         # of the code not being correct for Python's native unicode strings.
         #
-        print(f'test_4179(): Not running with PYMUPDF_USE_EXTRA=0 because known to fail.')
+        print('test_4179(): Not running with PYMUPDF_USE_EXTRA=0 because known to fail.')
         return
     # We check that using TEXT_ACCURATE_BBOXES gives the correct boxes. But
     # this also requires that we disable PyMuPDF quad corrections.
@@ -736,18 +736,18 @@ def test_extendable_textpage():
         text_page = pymupdf.TextPage(stext_page)
         
         # Read text from stext_page using text_page.extractDICT().
-        print(f'Using text_page.extractDICT().')
+        print('Using text_page.extractDICT().')
         print(f'{text_page.this.m_internal.mediabox=}')
         d = text_page.extractDICT(sort=True)
         y0_prev = None
         pno = 0
         ydelta = 0
         for block in d['blocks']:
-            print(f'block')
+            print('block')
             for line in block['lines']:
-                print(f'    line')
+                print('    line')
                 for span in line['spans']:
-                    print(f'        span')
+                    print('        span')
                     bbox = span['bbox']
                     x0, y0, x1, y1 = bbox
                     dy = y0 - y0_prev if y0_prev else 0
@@ -762,21 +762,21 @@ def test_extendable_textpage():
         
         print('\n\n\n\n')
         
-        print(f'Using text_page.extractText()')
+        print('Using text_page.extractText()')
         text = text_page.extractText(True)
         print(f'{text}')
         
         print('\n\n\n\n')
-        print(f'Using extractBLOCKS')
+        print('Using extractBLOCKS')
         text = list()
         for x0, y0, x1, y1, line, no, type_ in text_page.extractBLOCKS():
-            print(f'block:')
+            print('block:')
             print(f'    bbox={x0, y0, x1, y1} {no=}')
             print(f'    {line=}')
             text.append(line)
         
         print("\n\n\n")
-        print(f'extractBLOCKS joined by newlines:')
+        print('extractBLOCKS joined by newlines:')
         print('\n'.join(text))
         
         # This checks that lines before/after pages break are treated as a

@@ -373,27 +373,27 @@ def test_2108():
     if 1:
         # Verbose info.
         print(f'test_2108(): text is:\n{text}')
-        print(f'')
+        print('')
         print(f'test_2108(): repr(text) is:\n{text!r}')
-        print(f'')
+        print('')
         print(f'test_2108(): repr(text.encode("utf8")) is:\n{text.encode("utf8")!r}')
-        print(f'')
+        print('')
         print(f'test_2108(): text_expected is:\n{text_expected}')
-        print(f'')
+        print('')
         print(f'test_2108(): repr(text_expected) is:\n{text_expected!r}')
-        print(f'')
+        print('')
         print(f'test_2108(): repr(text_expected.encode("utf8")) is:\n{text_expected.encode("utf8")!r}')
 
         ok1 = (text == text_expected)
         ok2 = (text.encode("utf8") == text_expected.encode("utf8"))
         ok3 = (repr(text.encode("utf8")) == repr(text_expected.encode("utf8")))
 
-        print(f'')
+        print('')
         print(f'ok1={ok1}')
         print(f'ok2={ok2}')
         print(f'ok3={ok3}')
 
-        print(f'')
+        print('')
 
     print(f'{pymupdf.mupdf_version_tuple=}')
     if pymupdf.mupdf_version_tuple >= (1, 21, 2):
@@ -501,12 +501,12 @@ def test_2093():
 
 
 def test_2182():
-    print(f'test_2182() started')
+    print('test_2182() started')
     doc = pymupdf.open(f'{scriptdir}/resources/test2182.pdf')
     page = doc[0]
     for annot in page.annots():
         print(annot)
-    print(f'test_2182() finished')
+    print('test_2182() finished')
 
 
 def test_2246():
@@ -734,7 +734,7 @@ def test_2710():
     assert_rects_approx_eq(page.mediabox, pymupdf.Rect(0.0, 0.0, 595.3200073242188, 841.9199829101562))
     print(f'test_2710(): {pymupdf.mupdf_version_tuple=}')
     # 2023-11-05: Currently broken in mupdf master.
-    print(f'test_2710(): Not Checking page.rect and rect.')
+    print('test_2710(): Not Checking page.rect and rect.')
     rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
         wt = pymupdf.TOOLS.mupdf_warnings()
@@ -976,7 +976,7 @@ def test_3112_set_xml_metadata():
 
 def test_archive_3126():
     if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running because known to fail with classic.')
+        print('Not running because known to fail with classic.')
         return
     p = os.path.abspath(f'{__file__}/../../tests/resources')
     p = pathlib.Path(p)
@@ -984,7 +984,7 @@ def test_archive_3126():
     
 def test_3140():
     if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running test_3140 on classic, because Page.insert_htmlbox() not available.')
+        print('Not running test_3140 on classic, because Page.insert_htmlbox() not available.')
         return
     css2 = ''
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
@@ -1022,14 +1022,14 @@ def test_cli():
         print('test_cli(): Not running on classic because of fitz_old.')
         return
     import subprocess
-    subprocess.run(f'pymupdf -h', shell=1, check=1)
+    subprocess.run('pymupdf -h', shell=1, check=1)
 
 
 def check_lines(expected_regexes, actual):
     '''
     Checks lines in <actual> match regexes in <expected_regexes>.
     '''
-    print(f'check_lines():', flush=1)
+    print('check_lines():', flush=1)
     print(f'{expected_regexes=}', flush=1)
     print(f'{actual=}', flush=1)
     def str_to_list(s):
@@ -1063,7 +1063,7 @@ def test_cli_out():
     import subprocess
     log_prefix = None
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
-        log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
+        log_prefix = '.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
     def check(
             expect_out,
@@ -1084,7 +1084,7 @@ def test_cli_out():
             env['PYMUPDF_MESSAGE'] = message
         env = os.environ | env
         print(f'Running with {env=}: pymupdf internal', flush=1)
-        cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
+        cp = subprocess.run('pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
         
         if verbose:
             #print(f'{cp.stdout=}.', flush=1)
@@ -1095,7 +1095,7 @@ def test_cli_out():
         check_lines(expect_err, cp.stderr)
     
     #
-    print(f'Checking default, all output to stdout.')
+    print('Checking default, all output to stdout.')
     check(
             [
                 log_prefix,
@@ -1107,11 +1107,11 @@ def test_cli_out():
     
     #
     if platform.system() != 'Windows':
-        print(f'Checking redirection of everything to /dev/null.')
+        print('Checking redirection of everything to /dev/null.')
         check('', '', 'path:/dev/null', 'path:/dev/null')
     
     #
-    print(f'Checking redirection to files.')
+    print('Checking redirection to files.')
     path_out = os.path.abspath(f'{__file__}/../../tests/test_cli_out.out')
     path_err = os.path.abspath(f'{__file__}/../../tests/test_cli_out.err')
     check('', '', f'path:{path_out}', f'path:{path_err}')
@@ -1124,7 +1124,7 @@ def test_cli_out():
     check_lines([log_prefix, '.+This is from PyMuPDF log[(][)][.]'], err)
     
     #
-    print(f'Checking redirection to fds.')
+    print('Checking redirection to fds.')
     check(
             [
                 'This is from PyMuPDF message[(][)][.]',
@@ -1144,12 +1144,12 @@ def test_use_python_logging():
     '''
     log_prefix = None
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
-        log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
+        log_prefix = '.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
-    if os.path.basename(__file__).startswith(f'test_fitz_'):
+    if os.path.basename(__file__).startswith('test_fitz_'):
         # Do nothing, because command `pymupdf` outputs diagnostics containing
         # `pymupdf` which are not renamed to `fitz`, which breaks our checking.
-        print(f'Not testing with fitz alias.')
+        print('Not testing with fitz alias.')
         return
     
     def check(
@@ -1177,7 +1177,7 @@ def test_use_python_logging():
         check_lines(regexes_stdout, cp.stdout)
         check_lines(regexes_stderr, cp.stderr)
     
-    print(f'## Basic use of `logging` sends output to stderr instead of default stdout.')
+    print('## Basic use of `logging` sends output to stderr instead of default stdout.')
     check(
             '''
             import pymupdf
@@ -1199,7 +1199,7 @@ def test_use_python_logging():
             ],
             )
     
-    print(f'## Calling logging.basicConfig() makes logging output contain <LEVEL>:<name> prefixes.')
+    print('## Calling logging.basicConfig() makes logging output contain <LEVEL>:<name> prefixes.')
     check(
             '''
             import pymupdf
@@ -1221,7 +1221,7 @@ def test_use_python_logging():
             ],
             )
     
-    print(f'## Setting PYMUPDF_USE_PYTHON_LOGGING=1 makes PyMuPDF use logging on startup.')
+    print('## Setting PYMUPDF_USE_PYTHON_LOGGING=1 makes PyMuPDF use logging on startup.')
     check(
             '''
             import pymupdf
@@ -1240,7 +1240,7 @@ def test_use_python_logging():
                     ),
             )
     
-    print(f'## Pass explicit logger to pymupdf.use_python_logging() with logging.basicConfig().')
+    print('## Pass explicit logger to pymupdf.use_python_logging() with logging.basicConfig().')
     check(
             '''
             import pymupdf
@@ -1264,7 +1264,7 @@ def test_use_python_logging():
             ],
             )
     
-    print(f'## Check pymupdf.set_messages() pylogging_level args.')
+    print('## Check pymupdf.set_messages() pylogging_level args.')
     check(
             '''
             import pymupdf
@@ -1288,7 +1288,7 @@ def test_use_python_logging():
             ],
             )
     
-    print(f'## Check messages() with sys.stdout=None.')
+    print('## Check messages() with sys.stdout=None.')
     check(
             '''
             import sys
@@ -1426,7 +1426,7 @@ def test_open2():
     with different filenames/magic values.
     '''
     if platform.system() == 'Windows':
-        print(f'test_open2(): not running on Windows because `git ls-files` known fail on Github Windows runners.')
+        print('test_open2(): not running on Windows because `git ls-files` known fail on Github Windows runners.')
         return
     
     root = os.path.normpath(f'{__file__}/../..')
@@ -1443,7 +1443,7 @@ def test_open2():
     finally:
         del sys.path[0]
     paths = pipcl.git_items(f'{root}/tests/resources')
-    paths = fnmatch.filter(paths, f'test_open2.*')
+    paths = fnmatch.filter(paths, 'test_open2.*')
     paths = [f'tests/resources/{i}' for i in paths]
     
     # Get list of extensions of input files.
@@ -1460,7 +1460,7 @@ def test_open2():
         Return fz_lookup_metadata(document, 'format') or [ERROR].
         '''
         if e:
-            return f'[error]'
+            return '[error]'
         else:
             try:
                 return pymupdf.mupdf.fz_lookup_metadata2(document, 'format')
@@ -1520,12 +1520,12 @@ def test_open2():
     # Create html table.
     path_html = os.path.normpath(f'{__file__}/../../tests/test_open2.html')
     with open(path_html, 'w') as f:
-        f.write(f'<html>\n')
-        f.write(f'<body>\n')
+        f.write('<html>\n')
+        f.write('<body>\n')
         f.write(f'<p>{time.strftime("%F-%T")}\n')
-        f.write(f'<table border="1" style="border-collapse:collapse" cellpadding="4">\n')
+        f.write('<table border="1" style="border-collapse:collapse" cellpadding="4">\n')
         f.write(f'<tr><td></td><th colspan="{len(extensions)}">Extension/magic')
-        f.write(f'<tr><th style="border-bottom: 4px solid black; border-right: 4px solid black;">Data file</th>')
+        f.write('<tr><th style="border-bottom: 4px solid black; border-right: 4px solid black;">Data file</th>')
         for ext in extensions:
             f.write(f'<th style="border-bottom: 4px solid black;">{ext}</th>')
         f.write('\n')
@@ -1545,9 +1545,9 @@ def test_open2():
                     f.write(f'<td>file: {b1}{text_file}{b2}<br>')
                     f.write(f'stream: {b1}{text_stream}{b2}</td>')
             f.write('</tr>\n')
-        f.write(f'</table>\n')
-        f.write(f'/<body>\n')
-        f.write(f'</html>\n')
+        f.write('</table>\n')
+        f.write('/<body>\n')
+        f.write('</html>\n')
     print(f'Have created: {path_html}')
     
     path_out = os.path.normpath(f'{__file__}/../../tests/test_open2.json')
@@ -1558,7 +1558,7 @@ def test_open2():
         with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
             results_expected = json.load(f)
         if results != results_expected:
-            print(f'results != results_expected:')
+            print('results != results_expected:')
             def show(r, name):
                 text = json.dumps(r, indent=4, sort_keys=1)
                 print(f'{name}:')
@@ -1666,7 +1666,7 @@ def test_3450():
     # On a mac-mini, PyMuPDF-1.24.8 takes 60s, PyMuPDF-1.24.9 takes 4s.
     #
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
-        print(f'test_3450(): not running on valgrind because very slow.', flush=1)
+        print('test_3450(): not running on valgrind because very slow.', flush=1)
         return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3450.pdf')
     pdf = pymupdf.open(path)
@@ -1684,7 +1684,7 @@ def test_3859():
         name2 = f'PDF_{name}'
         v = getattr(pymupdf.mupdf, name2)
         print(f'{name=} {name2=} {v=} {type(v)=}')
-        assert type(v)==pymupdf.mupdf.PdfObj, f'`v` is not a pymupdf.mupdf.PdfObj.'
+        assert type(v)==pymupdf.mupdf.PdfObj, '`v` is not a pymupdf.mupdf.PdfObj.'
 
 def test_3905():
     data = b'A,B,C,D\r\n1,2,1,2\r\n2,2,1,2\r\n'

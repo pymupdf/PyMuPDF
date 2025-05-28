@@ -8,7 +8,7 @@ import textwrap
 def test_pylint():
     
     if not hasattr(pymupdf, 'mupdf'):
-        print(f'test_pylint(): Not running with classic implementation.')
+        print('test_pylint(): Not running with classic implementation.')
         return
     
     ignores = ''
