@@ -8099,7 +8099,7 @@ class Page:
         if do_have_imask:
             # `fz_compressed_buffer` is reference counted and
             # `mupdf.fz_new_image_from_compressed_buffer2()`
-            # is povided as a Swig-friendly wrapper for
+            # is provided as a Swig-friendly wrapper for
             # `fz_new_image_from_compressed_buffer()`, so we can do things
             # straightfowardly.
             #
@@ -19739,7 +19739,7 @@ def get_highlight_selection(page, start: point_like =None, stop: point_like =Non
 
     Notes:
         The default of 'start' is top-left of 'clip'. The default of 'stop'
-        is bottom-reight of 'clip'.
+        is bottom-right of 'clip'.
 
     Args:
         start: start point_like

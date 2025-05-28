@@ -579,7 +579,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
             values: (list) y-coordinates of rows.
             value: (int) lookup for this value (y-origin of char).
         Returns:
-            y-ccordinate of appropriate line for value.
+            y-coordinate of appropriate line for value.
         """
         i = bisect.bisect_right(values, value)
         if i:
@@ -743,7 +743,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
     chars.sort(key=lambda c: c[1])
 
     # populate the lines with their char info
-    lines = {}  # key: y1-ccordinate, value: char list
+    lines = {}  # key: y1-coordinate, value: char list
     for c in chars:
         _, _, oy, _ = c
         y = find_line_index(rows, oy)  # y-coord of the right line

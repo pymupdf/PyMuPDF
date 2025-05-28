@@ -752,7 +752,7 @@ def env_add(env, name, value, sep=' ', prepend=False, verbose=False):
     '''
     v = env.get(name)
     if verbose:
-        log(f'Initally: {name}={v!r}')
+        log(f'Initially: {name}={v!r}')
     if v is None:
         v = os.environ.get(name)
     if v is None:

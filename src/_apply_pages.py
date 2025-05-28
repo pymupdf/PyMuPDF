@@ -250,4 +250,4 @@ def _fork(
             if verbose:
                 pymupdf.log(f'{pid=} => {e=}')
         if stats:
-            _stats_write(t, 'Join all child proceses')
+            _stats_write(t, 'Join all child processes')
