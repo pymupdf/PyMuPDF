@@ -5334,6 +5334,93 @@ class Document:
         pno = mupdf.fz_page_number_from_location(self.this, loc)
         return pno, xp, yp
 
+    def rewrite_images(
+        self,
+        dpi_threshold=None,
+        dpi_target=0,
+        quality=0,
+        lossy=True,
+        lossless=True,
+        bitonal=True,
+        color=True,
+        gray=True,
+        set_to_gray=False,
+        options=None,
+    ):
+        """Rewrite images in a PDF document.
+
+        The typical use case is to reduce the size of the PDF by recompressing
+        images. Default parameters will convert all images to JPEG where
+        possible, using the specified resolutions and quality. Exclude
+        undesired images by setting parameters to False.
+        Args:
+            dpi_threshold: look at images with a larger DPI only.
+            dpi_target: change eligible images to this DPI.
+            quality: Quality of the recompressed images (0-100).
+            lossy: process lossy image types (e.g. JPEG).
+            lossless: process lossless image types (e.g. PNG).
+            bitonal: process black-and-white images (e.g. FAX)
+            color: process colored images.
+            gray: process gray images.
+            set_to_gray: whether to change the PDF to gray at process start.
+            options: (PdfImageRewriterOptions) Custom options for image
+                    rewriting (optional). Expert use only. If provided, other
+                    parameters are ignored, except set_to_gray.
+        """
+        quality_str = str(quality)
+        if not dpi_threshold:
+            dpi_threshold = dpi_target = 0
+        if dpi_target > 0 and dpi_target >= dpi_threshold:
+            raise ValueError("{dpi_target=} must be less than {dpi_threshold=}")
+        template_opts = mupdf.PdfImageRewriterOptions()
+        dir1 = set(dir(template_opts))  # for checking that only existing options are set
+        if not options:
+            opts = mupdf.PdfImageRewriterOptions()
+            if bitonal:
+                opts.bitonal_image_recompress_method = mupdf.FZ_RECOMPRESS_FAX
+                opts.bitonal_image_subsample_method = mupdf.FZ_SUBSAMPLE_AVERAGE
+                opts.bitonal_image_subsample_to = dpi_target
+                opts.bitonal_image_recompress_quality = quality_str
+                opts.bitonal_image_subsample_threshold = dpi_threshold
+            if color:
+                if lossless:
+                    opts.color_lossless_image_recompress_method = mupdf.FZ_RECOMPRESS_JPEG
+                    opts.color_lossless_image_subsample_method = mupdf.FZ_SUBSAMPLE_AVERAGE
+                    opts.color_lossless_image_subsample_to = dpi_target
+                    opts.color_lossless_image_subsample_threshold = dpi_threshold
+                    opts.color_lossless_image_recompress_quality = quality_str
+                if lossy:
+                    opts.color_lossy_image_recompress_method = mupdf.FZ_RECOMPRESS_JPEG
+                    opts.color_lossy_image_subsample_method = mupdf.FZ_SUBSAMPLE_AVERAGE
+                    opts.color_lossy_image_subsample_threshold = dpi_threshold
+                    opts.color_lossy_image_subsample_to = dpi_target
+                    opts.color_lossy_image_recompress_quality = quality_str
+            if gray:
+                if lossless:
+                    opts.gray_lossless_image_recompress_method = mupdf.FZ_RECOMPRESS_JPEG
+                    opts.gray_lossless_image_subsample_method = mupdf.FZ_SUBSAMPLE_AVERAGE
+                    opts.gray_lossless_image_subsample_to = dpi_target
+                    opts.gray_lossless_image_subsample_threshold = dpi_threshold
+                    opts.gray_lossless_image_recompress_quality = quality_str
+                if lossy:
+                    opts.gray_lossy_image_recompress_method = mupdf.FZ_RECOMPRESS_JPEG
+                    opts.gray_lossy_image_subsample_method = mupdf.FZ_SUBSAMPLE_AVERAGE
+                    opts.gray_lossy_image_subsample_threshold = dpi_threshold
+                    opts.gray_lossy_image_subsample_to = dpi_target
+                    opts.gray_lossy_image_recompress_quality = quality_str
+        else:
+            opts = options
+
+        dir2 = set(dir(opts))  # checking that only possible options were used
+        invalid_options = dir2 - dir1
+        if invalid_options:
+            raise ValueError(f"Invalid options: {invalid_options}")
+
+        if set_to_gray:
+            self.recolor(1)
+        pdf = _as_pdf_document(self)
+        mupdf.pdf_rewrite_images(pdf, opts)
+
     def recolor(self, components=1):
         """Change the color component count on all pages.
 
@@ -13447,6 +13534,18 @@ JM_mupdf_warnings_store = []
 JM_mupdf_show_errors = 1
 JM_mupdf_show_warnings = 0
 
+
+# ------------------------------------------------------------------------------
+# Image recompression constants
+# ------------------------------------------------------------------------------
+FZ_RECOMPRESS_NEVER = mupdf.FZ_RECOMPRESS_NEVER
+FZ_RECOMPRESS_SAME = mupdf.FZ_RECOMPRESS_SAME
+FZ_RECOMPRESS_LOSSLESS = mupdf.FZ_RECOMPRESS_LOSSLESS
+FZ_RECOMPRESS_JPEG = mupdf.FZ_RECOMPRESS_JPEG
+FZ_RECOMPRESS_J2K = mupdf.FZ_RECOMPRESS_J2K
+FZ_RECOMPRESS_FAX = mupdf.FZ_RECOMPRESS_FAX
+FZ_SUBSAMPLE_AVERAGE = mupdf.FZ_SUBSAMPLE_AVERAGE
+FZ_SUBSAMPLE_BICUBIC = mupdf.FZ_SUBSAMPLE_BICUBIC
 
 # ------------------------------------------------------------------------------
 # Various PDF Optional Content Flags
