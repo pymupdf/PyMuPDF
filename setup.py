@@ -194,6 +194,7 @@ import stat
 import subprocess
 import sys
 import tarfile
+import traceback
 import urllib.request
 import zipfile
 
@@ -221,21 +222,7 @@ def run(command, check=1):
 if 1:
     # For debugging.
     log(f'### Starting.')
-    log(f'__name__: {__name__!r}')
-    log(f'platform.platform(): {platform.platform()!r}')
-    log(f'platform.python_version(): {platform.python_version()!r}')
-    log(f'sys.executable: {sys.executable!r}')
-    log(f'CPU bits: {32 if sys.maxsize == 2**31 - 1 else 64} {sys.maxsize=}')
-    log(f'__file__: {__file__!r}')
-    log(f'os.getcwd(): {os.getcwd()!r}')
-    log(f'getconf ARG_MAX: {pipcl.run("getconf ARG_MAX", capture=1, check=0, verbose=0)!r}')
-    log(f'sys.argv ({len(sys.argv)}):')
-    for i, arg in enumerate(sys.argv):
-        log(f'    {i}: {arg!r}')
-    log(f'os.environ ({len(os.environ)}):')
-    for k in sorted( os.environ.keys()):
-        v = os.environ[ k]
-        log( f'    {k}: {v!r}')
+    pipcl.show_system()
 
 
 PYMUPDF_SETUP_FLAVOUR = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'pbd')
@@ -802,7 +789,18 @@ def build_mupdf_windows(
     #log( f'Building mupdf.')
     devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
     if not devenv:
-        vs = pipcl.wdev.WindowsVS()
+        try:
+            # Prefer VS-2019 as that is what MuPDF's project/solution files are
+            # written for.
+            log(f'Looking for Visual Studio 2019.')
+            vs = pipcl.wdev.WindowsVS(year=2019)
+        except Exception as e:
+            log(f'Failed to find VS-2019:\n'
+                    f'{textwrap.indent(traceback.format_exc(), "    ")}'
+                    )
+            log(f'Looking for any Visual Studio.')
+            vs = pipcl.wdev.WindowsVS()
+        log(f'vs:\n{vs.description_ml("    ")}')
         devenv = vs.devenv
     if not devenv:
         devenv = 'devenv.com'
@@ -1229,15 +1227,15 @@ classifier = [
 #
 
 # PyMuPDF version.
-version_p = '1.26.0'
+version_p = '1.26.1'
+
+version_mupdf = '1.26.2'
 
 # PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
 # (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
 # (2024-10-03) we no longer use PyMuPDFb wheels so this is actually unused.
 #
-version_b = '1.26.0'
-
-version_mupdf = '1.26.1'
+version_b = '1.26.1'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     

@@ -32,7 +32,9 @@ Change Log
   * Added runtime assert that that PyMuPDF and MuPDF were built with compatible
     NDEBUG settings (related to `4390 <https://github.com/pymupdf/PyMuPDF/issues/4390>`_).
   * Simplified handling of filename/filetype when opening documents.
-
+  * Removed PDF linearization support.
+    * Calls to `Document.save()` with `linear` set to true will now raise an exception.
+    * See https://artifex.com/blog/mupdf-removes-linearisation for more information.
 
 **Changes in version 1.25.5 (2025-03-31)**
 

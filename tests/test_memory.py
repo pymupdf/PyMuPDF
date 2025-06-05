@@ -178,9 +178,9 @@ def test_4125():
         drss = rss - state.prev
         state.prev = rss
         print(f'test_4125():'
-                f' rss={pipcl.number_sep(rss)}'
-                f' rss-rss0={pipcl.number_sep(rss-state.rsss[0])}'
-                f' drss={pipcl.number_sep(drss)}'
+                f' {rss=:,}'
+                f' rss-rss0={rss-state.rsss[0]:,}'
+                f' drss={drss:,}'
                 f'.'
                 )
     
