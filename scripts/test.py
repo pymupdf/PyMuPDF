@@ -917,7 +917,7 @@ def test(
         for test_name in test_names:
             pytest_arg += f' {pymupdf_dir_rel}/{test_name}'
     else:
-        pytest_arg += f' {pymupdf_dir_rel}'
+        pytest_arg += f' {pymupdf_dir_rel}/tests'
     python = gh_release.relpath(sys.executable)
     log('Running tests with tests/run_compound.py and pytest.')
     
