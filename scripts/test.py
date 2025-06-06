@@ -952,7 +952,7 @@ def test(
         command += (
                     f' valgrind'
                     f' --suppressions={pymupdf_dir_abs}/valgrind.supp'
-                    f' --trace-children=yes'
+                    f' --trace-children=no'
                     f' --num-callers=20'
                     f' --error-exitcode=100'
                     f' --errors-for-leak-kinds=none'
@@ -964,7 +964,7 @@ def test(
         command = (
                 f' valgrind'
                 f' --tool=helgrind'
-                f' --trace-children=yes'
+                f' --trace-children=no'
                 f' --num-callers=20'
                 f' --error-exitcode=100'
                 f' --fullpath-after='
