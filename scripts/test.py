@@ -144,6 +144,9 @@ Command line args:
         [This simply sSets $PYMUPDF_SETUP_PY_LIMITED_API, which is used by
         PyMuPDF/setup.py.]
     
+    --show-args:
+        Show sys.argv and exit. For debugging.
+    
     --sync-paths
         Do not run anything, instead write required files/directories/checkouts
         to stdout, one per line. This is to help with automated running on
@@ -278,6 +281,7 @@ def main(argv):
     pyodide_build_version = None
     pytest_options = ''
     pytest_prefix = None
+    show_args = False
     show_help = False
     sync_paths = False
     system_site_packages = False
@@ -388,6 +392,8 @@ def main(argv):
             assert _value in ('0', '1'), f'`-s` must be followed by `0` or `1`, not {_value=}.'
             env_extra['PYMUPDF_SETUP_PY_LIMITED_API'] = _value
         
+        elif arg == '--show-args':
+            show_args = 1
         elif arg == '--sync-paths':
             sync_paths = True
         
@@ -437,6 +443,12 @@ def main(argv):
 
     if show_help:
         print(__doc__)
+        return
+    
+    if show_args:
+        print(f'sys.argv ({len(sys.argv)}):')
+        for arg in sys.argv:
+            print(f'    {arg!r}')
         return
     
     if os_names:
