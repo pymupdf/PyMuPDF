@@ -2,6 +2,24 @@ Change Log
 ==========
 
 
+**Changes in version 1.26.1 ()**
+
+* Use MuPDF-1.26.2.
+
+* Fixed issues:
+
+  * **Fixed** `4520 <https://github.com/pymupdf/PyMuPDF/issues/4520>`_: show_pdf_page does not like empty pages created by new_page
+  * **Fixed** `4524 <https://github.com/pymupdf/PyMuPDF/issues/4524>`_: fitz.get_text ignores 'pages' kwarg
+  * **Fixed** `4412 <https://github.com/pymupdf/PyMuPDF/issues/4412>`_: Regression? Spurious error? in insert_pdf in v1.25.4
+
+* Other:
+
+  * Partial fix for `4503 <https://github.com/pymupdf/PyMuPDF/issues/4503>`_: Undetected character styles
+  * New method `Document.rewrite_images()`, useful for reducing file size, changing image formats, or converting color spaces.
+  * `Page.get_text()`: restrict positional args to match docs.
+  * Removed bogus definition of class `Shape`.
+
+
 **Changes in version 1.26.0 (2025-05-22)**
 
 * Use MuPDF-1.26.1.
