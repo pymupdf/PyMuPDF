@@ -1711,9 +1711,14 @@ def test_3624():
         print(f'Saving to {path_png=}.')
         pixmap.save(path_png)
         rms = gentle_compare.pixmaps_rms(path_png_expected, path_png)
+        print(f'{rms=}')
         # We get small differences in sysinstall tests, where some thirdparty
         # libraries can differ.
-        assert rms < 1
+        if rms > 1:
+            pixmap_diff = gentle_compare.pixmaps_diff(path_png_expected, path_png)
+            path_png_diff = os.path.normpath(f'{__file__}/../../tests/test_3624_diff.png')
+            pixmap_diff.save(path_png_diff)
+            assert 0, f'{rms=}'
 
 
 def test_4043():
