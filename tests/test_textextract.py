@@ -823,3 +823,30 @@ def test_4363():
         print(f'Found:\n    {text!r}')
         assert 0
     
+
+def test_4546():
+    # This issue will not be fixed (in mupdf) because the test input is faulty.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4546.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        text = page.get_text()[:200]
+    
+    # We can't actually test with 1.23.5 because it uses `fitz.` not `pymupdf.`.
+    expected_1_23_5 = b'JOB No.: \nShipper (complete name and address) \xe5\x8f\x91\xe8\xb4\xa7\xe4\xba\xba(\xe5\x90\x8d\xe7\xa7\xb0\xe5\x8f\x8a\xe5\x9c\xb0\n\xe5\x9d\x80) \nSINORICH TRANSPORT LIMITED\nADD:7C,WEST BLDG.,ZHONGQU\nMANSION,211 ZHONGSHAN\nRD. SHANTOU,515041 CN\nTEL:0754-88570001 FAX:0754-88572709\nS/O No. '.decode()
+    
+    # This output is different from expected_1_23_5.
+    expected_mupdf_1_26_1 = b'JOB No.: Shipper (complete name and address) \xe5\x8f\x91\xe8\xb4\xa7\xe4\xba\xba(\xe5\x90\x8d\xe7\xa7\xb0\xe5\x8f\x8a\xe5\x9c\xb0\xe5\x9d\x80)  Tel:                                  Fax: \n \nS/O No. \xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95\xe5\x8f\xb7\xe7\xa0\x81     \nSINORICH TRANSPORT LIMITED \nSHIPPING ORDER \n\xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95 \n \xe5\xb8\x82\xe5\x9c\xba\xe9\x83\xa8: \n88570009 \n88577019 \n88'.decode()
+    
+    print(f'expected_1_23_5\n{textwrap.indent(expected_1_23_5, "    ")}')
+    print(f'expected_mupdf_1_26_1\n{textwrap.indent(expected_mupdf_1_26_1, "    ")}')
+        
+    print(f'{pymupdf.version=}')
+    print(f'text is:\n{textwrap.indent(text, "    ")}')
+    print(f'{text=}')
+    print(f'{text.encode()=}')
+    
+    if pymupdf.mupdf_version_tuple >= (1, 26, 1):
+        assert text == expected_mupdf_1_26_1
+    else:
+        print(f'No expected output for {pymupdf.mupdf_version_tuple=}')
