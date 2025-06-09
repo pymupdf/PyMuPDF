@@ -19424,18 +19424,24 @@ def util_make_rect( *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None)
             arg = args[0]
             if isinstance( arg, (list, tuple)) and len( arg) == 2:
                 p1, p2 = arg
-                return *p1, *p2
+                ret = *p1, *p2
+                assert len(ret) == 4
+                return ret
             if isinstance( arg, (list, tuple)) and len( arg) == 3:
                 a, b, c = arg
                 a = make_tuple(a)
                 b = make_tuple(b)
                 c = make_tuple(c)
                 ret = *a, *b, *c
+                assert len(ret) == 4
                 return ret
-            arg = make_tuple( arg)
-            return arg
+            ret = make_tuple( arg)
+            assert len(ret) == 4, f'{arg=} {ret=}'
+            return ret
         elif len(args) == 2:
-            return get_xy( args[0]) + get_xy( args[1])
+            ret = get_xy( args[0]) + get_xy( args[1])
+            assert len(ret) == 4
+            return ret
         elif len(args) == 3:
             x0, y0 = get_xy( args[0])
             if (x0, y0) != (None, None):
