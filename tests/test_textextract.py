@@ -850,3 +850,55 @@ def test_4546():
         assert text == expected_mupdf_1_26_1
     else:
         print(f'No expected output for {pymupdf.mupdf_version_tuple=}')
+
+
+def test_4503():
+    # Check detection of strikeout text. Behaviour is improved with
+    # mupdf>=1.26.2, but not perfect.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4503.pdf')
+    span_0 = None
+    text_0 = None
+    print()
+    print(f'{pymupdf.mupdf_version_tuple=}')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        # Specify TEXT_COLLECT_STYLES so we collect char_flags, which contains
+        # FZ_STEXT_STRIKEOUT etc.
+        #
+        text = page.get_text('rawdict', flags=pymupdf.TEXTFLAGS_RAWDICT | pymupdf.TEXT_COLLECT_STYLES)
+        for i, block in enumerate(text['blocks']):
+            print(f'block {i}:')
+            for j, line in enumerate(block['lines']):
+                print(f'    line {j}:')
+                for k, span in enumerate(line['spans']):
+                    text = ''
+                    for char in span['chars']:
+                        text += char['c']
+                    print(f'        span {k}: {span["flags"]=:#x} {span["char_flags"]=:#x}: {text!r}')
+                    if 'the right to request the state to review' in text:
+                        span_0 = span
+                        text_0 = text
+    assert span_0
+    #print(f'{span_0=}')
+    print(f'{span_0["flags"]=:#x}')
+    print(f'{span_0["char_flags"]=:#x}')
+    print(f'{text_0=}')
+    strikeout = span_0['char_flags'] & pymupdf.mupdf.FZ_STEXT_STRIKEOUT
+    print(f'{strikeout=}')
+    
+    if pymupdf.mupdf_version_tuple >= (1, 26, 2):
+        # 2025-06-09: This is still incorrect - the span should include the
+        # following text 'and, if appropriate,'. It looks like following spans
+        # are:
+        #   strikeout=0: 'and, '
+        #   strikeout=1: 'if '
+        #   strikeout=0: 'appropri' 
+        #   strikeout=1: 'ate,'
+        #
+        assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
+        assert text_0 == 'the right to request the state to review '
+    else:
+        # Expecting the bug.
+        assert not strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be unset in {span_0["char_flags"]=:#x}.'
+        assert text_0 == 'notice the right to request the state to review and, if appropriate,'
