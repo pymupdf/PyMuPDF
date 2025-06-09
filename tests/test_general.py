@@ -19,6 +19,7 @@ import subprocess
 import sys
 import textwrap
 import time
+import util
 
 import gentle_compare
 
@@ -1874,3 +1875,17 @@ def test_4479():
                 {'depth': 0, 'locked': 0, 'number': 7, 'on': 1, 'text': 'layer_7', 'type': 'checkbox'},
                 ]
         
+
+def test_4533():
+    if 1:
+        print(f'test_4533(): doing nothing because known to segv.')
+        return
+    path = util.download(
+            'https://github.com/user-attachments/files/20497146/NineData_user_manual_V3.0.5.pdf',
+            'test_4533.pdf',
+            size=16864501,
+            )
+    print(f'Opening {path=}.', flush=1)
+    with pymupdf.open(path) as document:
+        print(f'Have opened {path=}.', flush=1)
+        print(f'{len(document)=}', flush=1)
