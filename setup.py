@@ -575,6 +575,12 @@ freebsd = sys.platform.startswith( 'freebsd')
 darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 msys2 = platform.system().startswith('MSYS_NT-')
+
+if os.environ.get('PYODIDE') == '1':
+    if os.environ.get('OS') != 'pyodide':
+        log('PYODIDE=1, setting OS=pyodide.')
+        os.environ['OS'] = 'pyodide'
+
 pyodide = os.environ.get('OS') == 'pyodide'
 
 
