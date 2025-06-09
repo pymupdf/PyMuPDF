@@ -91,6 +91,7 @@ Command line args:
     --help
     -h
         Show help.
+    
     -i <implementations>
         Set PyMuPDF implementations to test.
         <implementations> must contain only these individual characters:
@@ -109,7 +110,6 @@ Command line args:
         specified PyMuPDF will download its default mupdf .tgz.]
     
     -M 0|1
-    
     --build-mupdf 0|1
         Whether to rebuild mupdf when we build PyMuPDF. Default is 1.
     
@@ -233,8 +233,6 @@ Environment:
         Is prepended to command line args.
 '''
 
-import gh_release
-
 import glob
 import os
 import platform
@@ -252,6 +250,13 @@ try:
     import pipcl
 finally:
     del sys.path[0]
+
+try:
+    sys.path.insert(0, f'{pymupdf_dir_abs}/scripts')
+    import gh_release
+finally:
+    del sys.path[0]
+
 
 pymupdf_dir = pipcl.relpath(pymupdf_dir_abs)
 
@@ -491,7 +496,7 @@ def main(argv):
             cibuildwheel(env_extra, cibw_name, cibw_pyodide)
         
         elif command.startswith('install.'):
-            name = command.lstrip('install.')
+            name = command[len('install.'):]
             run(f'pip install --force-reinstall {name}')
             have_installed = True
         
