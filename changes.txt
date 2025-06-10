@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.1 ()**
+**Changes in version 1.26.1**
 
 * Use MuPDF-1.26.2.
 
@@ -18,6 +18,9 @@ Change Log
   * New method `Document.rewrite_images()`, useful for reducing file size, changing image formats, or converting color spaces.
   * `Page.get_text()`: restrict positional args to match docs.
   * Removed bogus definition of class `Shape`.
+  * Removed release date from module, docs and changelog.
+    * `pymupdf.pymupdf_date` and `pymupdf.VersionDate` are now both None.
+    * They will be removed in a future release.
 
 
 **Changes in version 1.26.0 (2025-05-22)**

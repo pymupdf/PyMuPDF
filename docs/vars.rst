@@ -77,10 +77,8 @@ Constants
 
 .. py:data:: pymupdf_date
 
-    ISO timestamp *YYYY-MM-DD HH:MM:SS* when these bindings were built.
-
-    :type: string
-
+    Disabled (set to None) in 1.26.1.
+    
 .. py:data:: version
 
     (pymupdf_version, mupdf_version, timestamp) -- combined version information where `timestamp` is the generation point in time formatted as "YYYYMMDDhhmmss".
@@ -97,7 +95,7 @@ Constants
 
 .. py:data:: VersionDate
 
-    Legacy equivalent to `mupdf_version`.
+    Disabled (set to None) in 1.26.1.
 
 
 .. _PermissionCodes:

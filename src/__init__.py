@@ -375,9 +375,9 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.26.0"
+pymupdf_version = "1.26.1"
 mupdf_version = mupdf.FZ_VERSION
-pymupdf_date = "2025-05-22 00:00:01"
+pymupdf_date = None
 
 # Versions as tuples; useful when comparing versions.
 #
@@ -389,11 +389,10 @@ assert mupdf_version_tuple == (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, m
 
 # Legacy version information.
 #
-pymupdf_date2 = pymupdf_date.replace('-', '').replace(' ', '').replace(':', '')
-version = (pymupdf_version, mupdf_version, pymupdf_date2)
+version = (pymupdf_version, mupdf_version, None)
 VersionFitz = mupdf_version
 VersionBind = pymupdf_version
-VersionDate = pymupdf_date
+VersionDate = None
 
 
 # String formatting.
