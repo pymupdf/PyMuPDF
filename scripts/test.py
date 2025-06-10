@@ -64,6 +64,10 @@ Command line args:
         its own new venv to build PyMuPDF. Otherwise we force pip to use the
         current venv.
     
+    --cibw-archs-linux <archs>
+        Set CIBW_ARCHS_LINUX, e.g. to `auto64 aarch64`. Default is `auto64` so
+        this allows control over whether to build linux-aarch64 wheels.
+    
     --cibw-name <cibw_name>
         Name to use when installing cibuildwheel, e.g.:
             --cibw-name cibuildwheel==3.0.0b1
@@ -75,8 +79,19 @@ Command line args:
          ...` fails with:
             emcc: error: binary: No such file or directory ("binary" was expected to be an input file, based on the commandline arguments provided)
     
+    --cibw-release-1
+        Set up so that `cibw` builds all wheels except linux-aarch64, and sdist
+        if on Linux.
+    
+    --cibw-release-2
+        Set up so that `cibw` builds only linux-aarch64 wheel.
+    
     -d
         Equivalent to `-b debug`.
+    
+    --dummy
+        Sets PYMUPDF_SETUP_DUMMY=1 which makes setup.py build a dummy wheel
+        with no content. For internal testing only.
     
     -e <name>=<value>
         Add to environment used in build and test commands. Can be specified
@@ -201,11 +216,6 @@ Commands:
         
         If CIBW_ARCHS is unset we set $CIBW_ARCHS_WINDOWS, $CIBW_ARCHS_MACOS
         and $CIBW_ARCHS_LINUX to auto64 if they are unset.
-        
-        Additionally, if running on Github ($GITHUB_ACTIONS=true) and
-        $CIBW_ARCHS_LINUX is unset, we set $CIBW_ARCHS_LINUX to 'auto64
-        aarch64' so that we build for aarch64 using emulation. This is required
-        as of 2025-05-23 because there is no native aarch64 host available.
     
     install <pymupdf>
         Install with `pip install --force-reinstall <pymupdf>`.
@@ -269,10 +279,6 @@ def main(argv):
     if github_workflow_unimportant():
         return
     
-    if len(argv) == 1:
-        show_help()
-        return
-    
     build_isolation = None
     cibw_name = 'cibuildwheel'
     cibw_pyodide = None
@@ -286,6 +292,7 @@ def main(argv):
     pyodide_build_version = None
     pytest_options = ''
     pytest_prefix = None
+    cibw_sdist = None
     show_args = False
     show_help = False
     sync_paths = False
@@ -330,6 +337,20 @@ def main(argv):
         elif arg == '--build-isolation':
             build_isolation = int(next(args))
         
+        elif arg == '--cibw-release-1':
+            cibw_sdist = True
+            env_extra['CIBW_ARCHS_LINUX'] = 'auto64'
+            env_extra['CIBW_ARCHS_MACOS'] = 'auto64'
+            env_extra['CIBW_ARCHS_WINDOWS'] = 'auto'    # win32 and win64.
+            env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux*aarch64*'
+        
+        elif arg == '--cibw-release-2':
+            env_extra['CIBW_ARCHS_LINUX'] = 'aarch64'
+            os_names = ['linux']
+        
+        elif arg == '--cibw-archs-linux':
+            env_extra['CIBW_ARCHS_LINUX'] = next(args)
+            
         elif arg == '--cibw-name':
             cibw_name = next(args)
         
@@ -338,6 +359,10 @@ def main(argv):
         
         elif arg == '-d':
             env_extra['PYMUPDF_SETUP_MUPDF_BUILD_TYPE'] = 'debug'
+        
+        elif arg == '--dummy':
+            env_extra['PYMUPDF_SETUP_DUMMY'] = '1'
+            env_extra['CIBW_TEST_COMMAND'] = ''
         
         elif arg == '-e':
             _nv = next(args)
@@ -493,7 +518,7 @@ def main(argv):
         
         elif command == 'cibw':
             # Build wheel(s) with cibuildwheel.
-            cibuildwheel(env_extra, cibw_name, cibw_pyodide)
+            cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist)
         
         elif command.startswith('install.'):
             name = command[len('install.'):]
@@ -629,27 +654,33 @@ def build(
         run(f'pip install{build_isolation_text} -v --force-reinstall {pymupdf_dir_abs}', env_extra=env_extra)
 
 
-def cibuildwheel(env_extra, cibw_name, cibw_pyodide):
+def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist):
+    
+    if cibw_sdist and platform.system() == 'Linux':
+        log(f'Building sdist.')
+        run(f'cd {pymupdf_dir_abs} && {sys.executable} setup.py -d wheelhouse sdist', env_extra=env_extra)
+        sdists = glob.glob(f'{pymupdf_dir_abs}/wheelhouse/pymupdf-*.tar.gz')
+        log(f'{sdists=}')
+        assert sdists
+    
     run(f'pip install --upgrade {cibw_name}')
 
     # Some general flags.
-    env_extra['CIBW_BUILD_VERBOSITY'] = '1'
-    env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux* *-win32 *-aarch64'
+    if 'CIBW_BUILD_VERBOSITY' not in env_extra:
+        env_extra['CIBW_BUILD_VERBOSITY'] = '1'
+    if 'CIBW_SKIP' not in env_extra:
+        env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux* *-win32 *-aarch64'
 
     # Set what wheels to build, if not already specified.
-    if os.environ.get('CIBW_ARCHS') is None:
-        if os.environ.get('CIBW_ARCHS_WINDOWS') is None:
+    if 'CIBW_ARCHS' not in env_extra:
+        if 'CIBW_ARCHS_WINDOWS' not in env_extra:
             env_extra['CIBW_ARCHS_WINDOWS'] = 'auto64'
 
-        if os.environ.get('CIBW_ARCHS_MACOS') is None:
+        if 'CIBW_ARCHS_MACOS' not in env_extra:
             env_extra['CIBW_ARCHS_MACOS'] = 'auto64'
 
-        if os.environ.get('CIBW_ARCHS_LINUX') is None:
+        if 'CIBW_ARCHS_LINUX' not in env_extra:
             env_extra['CIBW_ARCHS_LINUX'] = 'auto64'
-            if os.environ.get('GITHUB_ACTIONS') == 'true':
-                # Special case to use emulation/cross-compilation of
-                # aarch64 on Linux.
-                env_extra['CIBW_ARCHS_LINUX'] += ' aarch64'
 
     # Tell cibuildwheel not to use `auditwheel` on Linux and MacOS,
     # because it cannot cope with us deliberately having required
@@ -664,7 +695,8 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide):
     env_extra['CIBW_REPAIR_WHEEL_COMMAND_MACOS'] = ''
 
     # Tell cibuildwheel how to test PyMuPDF.
-    env_extra['CIBW_TEST_COMMAND'] = f'python {{project}}/scripts/test.py test'
+    if 'CIBW_TEST_COMMAND' not in env_extra:
+        env_extra['CIBW_TEST_COMMAND'] = f'python {{project}}/scripts/test.py test'
 
     # Specify python versions.
     CIBW_BUILD = env_extra.get('CIBW_BUILD')
@@ -910,11 +942,8 @@ def test(
         return
     
     pymupdf_dir_rel = gh_release.relpath(pymupdf_dir)
-    if pytest_options is None:
-        if valgrind:
-            pytest_options = '-s -vv'
-        else:
-            pytest_options = ''
+    if not pytest_options and pytest_prefix == 'valgrind':
+        pytest_options = '-sv'
     if pytest_k:
         pytest_options += f' -k {shlex.quote(pytest_k)}'
     pytest_arg = ''
