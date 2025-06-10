@@ -420,8 +420,8 @@ def test_2238():
         wt_expected += 'trying to repair broken xref\n'
         wt_expected += 'repairing PDF document'
         assert wt == wt_expected, f'{wt=}'
-    first_page = doc.load_page(0).get_text('text', pymupdf.INFINITE_RECT())
-    last_page = doc.load_page(-1).get_text('text', pymupdf.INFINITE_RECT())
+    first_page = doc.load_page(0).get_text('text', clip=pymupdf.INFINITE_RECT())
+    last_page = doc.load_page(-1).get_text('text', clip=pymupdf.INFINITE_RECT())
 
     print(f'first_page={first_page!r}')
     print(f'last_page={last_page!r}')
