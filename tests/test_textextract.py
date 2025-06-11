@@ -887,7 +887,10 @@ def test_4503():
     strikeout = span_0['char_flags'] & pymupdf.mupdf.FZ_STEXT_STRIKEOUT
     print(f'{strikeout=}')
     
-    if pymupdf.mupdf_version_tuple >= (1, 26, 2):
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
+        assert text_0 == 'the right to request the state to review and, if appropriate,'
+    elif pymupdf.mupdf_version_tuple >= (1, 26, 2):
         # 2025-06-09: This is still incorrect - the span should include the
         # following text 'and, if appropriate,'. It looks like following spans
         # are:
