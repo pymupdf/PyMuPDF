@@ -423,3 +423,13 @@ def test_4017():
             ["Weighted Average Life", "4.83", "<=", "9.00", "", "PASS", "4.92"],
         ]
         assert tables[-1].extract() == expected_b
+
+
+def test_md_styles():
+    """Test output of table with MD-styled cells."""
+    filename = os.path.join(scriptdir, "resources", "test-styled-table.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    tabs = page.find_tables()[0]
+    text = """|Column 1|Column 2|Column 3|\n|---|---|---|\n|Zelle (0,0)|**Bold (0,1)**|Zelle (0,2)|\n|~~Strikeout (1,0), Zeile 1~~<br>~~Hier kommt Zeile 2.~~|Zelle (1,1)|~~Strikeout (1,2)~~|\n|**`Bold-monospaced`**<br>**`(2,0)`**|_Italic (2,1)_|**_Bold-italic_**<br>**_(2,2)_**|\n|Zelle (3,0)|~~**Bold-strikeout**~~<br>~~**(3,1)**~~|Zelle (3,2)|\n\n"""
+    assert tabs.to_markdown() == text

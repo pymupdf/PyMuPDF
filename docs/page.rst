@@ -331,7 +331,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
 
 
-      .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED|2, text=PDF_REDACT_TEXT_REMOVE|0)
+   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED|2, text=PDF_REDACT_TEXT_REMOVE|0)
 
       **PDF only**: Remove all **content** contained in any redaction rectangle on the page.
 
@@ -2338,18 +2338,28 @@ This is an overview of homologous methods on the :ref:`Document` and on the :ref
 
 The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 
+.. note::
+
+   Most document methods (left column) exist for convenience reasons, and are just wrappers for: *Document[pno].<page method>*. So they **load and discard the page** on each execution.
+
+   However, the first two methods work differently. They only need a page's object definition statement - the page itself will **not** be loaded. So e.g. :meth:`Page.get_fonts` is a wrapper the other way round and defined as follows: *page.get_fonts == page.parent.get_page_fonts(page.number)*.
+
 
 .. class:: TableFinder
 
    An object always returned by :meth:`Page.find_tables`. Attributes of interest:
 
-   ... attribute:: tables
+   .. attribute:: tables
 
-      A list of :ref:`Table` objects, each of which represents a table found on the page. Empty list if no table found.
+      A list of `Table` objects, each of which represents a table found on the page. Empty list if no table found.
 
-   ... attribute:: page
+   .. attribute:: page
 
-      A reference to the :ref:`Page` object.
+      A reference (weakref proxy) to the owning :ref:`Page` object.
+
+   .. attribute:: cells
+
+      A list of tuples `(x0, y0, x1, y1)` representing the bounding boxes of all table cells (in any tables) found on the page. Note that cells may also be ``None`` objects, which are created to enforce a complete rows x columns structure for the affected table.
 
 
 .. class:: Table
@@ -2360,25 +2370,85 @@ The page number "pno" is a 0-based integer `-∞ < pno < page_count`.
 
       The bounding box of the table given as a tuple `(x0, y0, x1, y1)`. This is the rectangle that contains all cells of the table.   
 
-   
-
    .. attribute:: cells
 
+      A list of tuples `(x0, y0, x1, y1)` representing the bounding boxes of the cells in the table. Note that cells may also be ``None`` objects, which will happen to prevent gaps in a rows x columns structure.
+
+   .. attribute:: rows
+
+      A list of :ref:`TableRow` objects, each of which represents a row in the table. The order of rows is the same as in the original table. If the table has no rows, this will be an empty list.
+
+   .. attribute:: col_count
+
+      The number of columns in the table (integer).
+
+   .. attribute:: row_count
+
+      The number of rows in the table (integer).
+
+   .. method:: extract
+
+      Returns a (row-major) list of lists representing the plain text of the table cells. Each sublist contains the text of one row, and each item in that sublist is the text of one cell in that row. So, `Table.extract()[i][j]` will return the text of the cell in row ``i`` and column ``j``. If a cell is empty, the corresponding item will be an empty string. If the corresponding boundary box is ``None``, the item will also be ``None``.
+
+   .. method:: to_markdown(clean=False, fill_empty=True)
+
+      Returns a string in `GitHub Markdown format <https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/organizing-information-with-tables>`_ representing the table. The string will contain a header line with column names, followed by a separator line, and then the rows of the table. The text of each cell will be enclosed in pipe characters `|`, and each row will be separated by a newline character `\n`. **Line breaks inside a cell** are being replaced by the HTML `<br>` tag. Bold, italic, mono-spaced and strikethrough text will be styled according to the corresponding Markdown syntax.
+
+      - Bold text will be enclosed in double asterisks ``"**"``.
+
+      - Italic text will be enclosed in single underscore ``"_"``.
+
+      - Mono-spaced text will be enclosed in backticks ``"`"``.
+
+      - Strikethrough text will be enclosed in double tildes ``"~~"``.
+      
+      :arg bool clean: if ``True``, any hyphen "-" in the text is replaced by a ``"&#45;"`` character.
+      
+      :arg bool fill_empty: if ``True``, empty cells will be filled with a copy of neighboring cells in an effort to indicate potential column and row spans.
+
+         * For each row and starting with index 1, the cell content will be replaced with the content of its left neighbor if it is ``None``.
+
+         * For each column and starting with index 1, the cell content will be replaced with the content of its upper neighbor if it is ``None``.
+
+
+   .. method:: to_pandas()
+
+      Returns a `pandas.DataFrame <https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html>`_ representing the table. The DataFrame offers a plethora of functions, among them conversion to 20+ file formats (CSV, markdown, JSON, Excel, HD5 etc.). Where necessary, the table can be refined in multiple ways (e.g. deleting empty rows or columns) and mutliple DataFrames can be joined.
 
 
 .. class:: TableHeader
 
+   .. attribute:: names
+
+      A list of strings representing the column names of the `Table`. This is usually the text content of the top row cells, but may instead be content identified above the detected table. The respective situation is encoded in the following attribute.
+
+   .. attribute:: is_external
+
+      Whether the header is part of the originally detected table (``False``) or was identified above the table (``True``). If ``True``, the header is not part of the table, but is used to identify the columns in the table. In this case, the header text will be used as column names in the extracted data.
+
+   .. attribute:: bbox
+
+      The bounding box of the header given as a tuple `(x0, y0, x1, y1)`. This is the rectangle that contains all cells of the header. If the header is not part of the table, this will be the rectangle that contains all cells of the header text, otherwise it is equal of the top row's boundary box.
+
+   .. attribute:: cells
+
+      A list of tuples of boundary boxes `(x0, y0, x1, y1)` of the cells in the header. Note that cells may also be ``None``, which will happen to prevent any gaps in a rows x columns structure. If the header is not part of the table, this will be the bounding boxes of the header text.
+
+
 .. class:: TableRow
 
+   An object defining a row in a `Table` found on the page. Attributes of interest:
+
+   .. attribute:: bbox
+
+      The bounding box of the row given as a tuple `(x0, y0, x1, y1)`. This is the rectangle that contains all cells of the row.
+
+   .. attribute:: cells
+
+      A list of tuples of boundary boxes `(x0, y0, x1, y1)` of the cells in this row. Note that cells may also be ``None`` objects, which will happen to prevent gaps in a rows x columns structure.
 
 
 
-
-.. note::
-
-   Most document methods (left column) exist for convenience reasons, and are just wrappers for: *Document[pno].<page method>*. So they **load and discard the page** on each execution.
-
-   However, the first two methods work differently. They only need a page's object definition statement - the page itself will **not** be loaded. So e.g. :meth:`Page.get_fonts` is a wrapper the other way round and defined as follows: *page.get_fonts == page.parent.get_page_fonts(page.number)*.
 
 .. rubric:: Footnotes
 
