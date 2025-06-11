@@ -43,6 +43,9 @@ Environmental variables:
         Location of devenv.com on Windows. If unset we search for it - see
         wdev.py. if that fails we use just 'devenv.com'.
 
+    PYMUPDF_SETUP_DUMMY
+        If 1, we build dummy sdist and wheel with no files.
+    
     PYMUPDF_SETUP_FLAVOUR
         Control building of separate wheels for PyMuPDF.
         
@@ -247,6 +250,10 @@ else:
 
 PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
 log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
+
+PYMUPDF_SETUP_DUMMY = os.environ.get('PYMUPDF_SETUP_DUMMY')
+log(f'{PYMUPDF_SETUP_DUMMY=}')
+
 
 def _fs_remove(path):
     '''
@@ -588,6 +595,10 @@ def build():
     '''
     pipcl.py `build_fn()` callback.
     '''
+    if PYMUPDF_SETUP_DUMMY == '1':
+        log(f'{PYMUPDF_SETUP_DUMMY=} Building dummy wheel with no files.')
+        return list()
+    
     # Download MuPDF.
     #
     mupdf_local, mupdf_location = get_mupdf()
@@ -1175,6 +1186,8 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
 
 def sdist():
     ret = list()
+    if PYMUPDF_SETUP_DUMMY == '1':
+        return ret
     
     if PYMUPDF_SETUP_FLAVOUR == 'b':
         # Create a minimal sdist that will build/install a dummy PyMuPDFb.
