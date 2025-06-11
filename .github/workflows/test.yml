@@ -58,5 +58,7 @@ jobs:
       #
       - uses: actions/upload-artifact@v4
         with:
-          path: ./wheelhouse/pymupdf*.whl
+          path: |
+              wheelhouse/pymupdf*.whl
+              wheelhouse/pymupdf*.tar.gz
           name: artifact-${{ matrix.os }}
