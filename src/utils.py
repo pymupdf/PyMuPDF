@@ -900,6 +900,7 @@ def get_image_rects(page: pymupdf.Page, name, transform=False) -> list:
 def get_text(
     page: pymupdf.Page,
     option: str = "text",
+    *,
     clip: rect_like = None,
     flags: OptInt = None,
     textpage: pymupdf.TextPage = None,

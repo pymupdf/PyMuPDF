@@ -82,6 +82,20 @@ def main():
     
     for i in implementations:
         log(f'run_compound.py: {i=}')
+        
+        cpu_bits = int.bit_length(sys.maxsize+1)
+        log(f'{os.getcwd()=}')
+        log(f'{platform.machine()=}')
+        log(f'{platform.platform()=}')
+        log(f'{platform.python_version()=}')
+        log(f'{platform.system()=}')
+        log(f'{platform.uname()=}')
+        log(f'{sys.executable=}')
+        log(f'{sys.version=}')
+        log(f'{sys.version_info=}')
+        log(f'{list(sys.version_info)=}')
+        log(f'{cpu_bits=}')
+        
         timeout = None
         if endtime:
             timeout = max(0, endtime - time.time())

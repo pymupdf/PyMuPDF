@@ -19,6 +19,7 @@ import subprocess
 import sys
 import textwrap
 import time
+import util
 
 import gentle_compare
 
@@ -419,8 +420,8 @@ def test_2238():
         wt_expected += 'trying to repair broken xref\n'
         wt_expected += 'repairing PDF document'
         assert wt == wt_expected, f'{wt=}'
-    first_page = doc.load_page(0).get_text('text', pymupdf.INFINITE_RECT())
-    last_page = doc.load_page(-1).get_text('text', pymupdf.INFINITE_RECT())
+    first_page = doc.load_page(0).get_text('text', clip=pymupdf.INFINITE_RECT())
+    last_page = doc.load_page(-1).get_text('text', clip=pymupdf.INFINITE_RECT())
 
     print(f'first_page={first_page!r}')
     print(f'last_page={last_page!r}')
@@ -1710,9 +1711,14 @@ def test_3624():
         print(f'Saving to {path_png=}.')
         pixmap.save(path_png)
         rms = gentle_compare.pixmaps_rms(path_png_expected, path_png)
+        print(f'{rms=}')
         # We get small differences in sysinstall tests, where some thirdparty
         # libraries can differ.
-        assert rms < 1
+        if rms > 1:
+            pixmap_diff = gentle_compare.pixmaps_diff(path_png_expected, path_png)
+            path_png_diff = os.path.normpath(f'{__file__}/../../tests/test_3624_diff.png')
+            pixmap_diff.save(path_png_diff)
+            assert 0, f'{rms=}'
 
 
 def test_4043():
@@ -1874,3 +1880,17 @@ def test_4479():
                 {'depth': 0, 'locked': 0, 'number': 7, 'on': 1, 'text': 'layer_7', 'type': 'checkbox'},
                 ]
         
+
+def test_4533():
+    if 1:
+        print(f'test_4533(): doing nothing because known to segv.')
+        return
+    path = util.download(
+            'https://github.com/user-attachments/files/20497146/NineData_user_manual_V3.0.5.pdf',
+            'test_4533.pdf',
+            size=16864501,
+            )
+    print(f'Opening {path=}.', flush=1)
+    with pymupdf.open(path) as document:
+        print(f'Have opened {path=}.', flush=1)
+        print(f'{len(document)=}', flush=1)

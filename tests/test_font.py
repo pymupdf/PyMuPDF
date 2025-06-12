@@ -68,7 +68,12 @@ def test_2608():
         with open(os.path.abspath(f'{__file__}/../../tests/test_2608_out'), 'wb') as f:
             f.write(text.encode('utf8'))
         path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_2608_expected')
-        with open(path_expected, 'rb') as f:
+        path_expected_1_26 = os.path.normpath(f'{__file__}/../../tests/resources/test_2608_expected_1.26')
+        if pymupdf.mupdf_version_tuple >= (1, 27):
+            path_expected2 = path_expected
+        else:
+            path_expected2 = path_expected_1_26
+        with open(path_expected2, 'rb') as f:
             expected = f.read().decode('utf8')
         # Github windows x32 seems to insert \r characters; maybe something to
         # do with the Python installation's line endings settings.

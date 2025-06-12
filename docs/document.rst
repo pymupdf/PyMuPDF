@@ -96,6 +96,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.pdf_catalog`            PDF only: :data:`xref` of catalog (root)
 :meth:`Document.pdf_trailer`            PDF only: trailer source
 :meth:`Document.prev_location`          return (chapter, pno) of preceding page
+:meth:`Document.rewrite_images`         PDF only: rewrite / extra compression for images
 :meth:`Document.recolor`                PDF only: execute :meth:`Page.recolor` for all pages
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.resolve_names`          PDF only: Convert destination names into a Python dict
@@ -592,9 +593,82 @@ For details on **embedded files** refer to Appendix 3.
      To maintain a consistent API, for document types not supporting a chapter structure (like PDFs), :attr:`Document.chapter_count` is 1, and pages can also be loaded via tuples *(0, pno)*. See this [#f3]_ footnote for comments on performance improvements.
 
 
+  .. method:: rewrite_images(dpi_threshold=None, dpi_target=0, quality=0, lossy=True, lossless=True, bitonal=True, color=True, gray=True, set_to_gray=False, options=None)
+
+    PDF only: Walk through all images and rewrite them according to the specified parameters. This is useful for reducing file size, changing image formats, or converting color spaces.
+
+    The typical usage is extra compression of images for significantly reducing the file size of the PDF. When setting quality and the dpi parameters to positive values and accepting defaults for the rest, the following will happen:
+
+    * Lossy and lossless images will be rewritten as JPEG images (FZ_RECOMPRESS_JPEG) as far as technically possible.
+
+    * Bitonal (monochrome) images will be rewritten in FAX format (FZ_RECOMPRESS_FAX).
+
+    * Subsampling method is **FZ_SUBSAMPLE_AVERAGE** (see below).
+
+    :arg int dpi_target: target DPI value for the resampled images. Ignored if `dpi_threshold` is `None`, otherwise must be less than `dpi_threshold` and positive.
+
+    :arg int dpi_threshold: If None (the default) no resampling takes place. Otherwise images with a DPI value larger than this will be resampled to `dpi_target` (which must be less than `dpi_threshold`).
+
+    :arg int quality: desired target JPEG quality, a value between 0 and 100. 0 means no quality change, 100 means best quality.
+
+    :arg bool lossy: include lossy image types (e.g. JPEG).
+
+    :arg bool lossless: include lossless image types (e.g. PNG).
+
+    :arg bool bitonal: include black-and-white images (e.g. FAX).
+
+    :arg bool color: include colored images.
+
+    :arg bool gray: include grayscale images.
+
+    :arg bool set_to_gray: if True, the PDF will be converted to grayscale by executing :meth:`Document.recolor` before all image processing. Please note that this will also change text and vector graphics to grayscale -- not just the images.
+
+    :arg dict options: This parameter is intended for expert users. Except ``set_to_gray``, all other parameters are ignored. It must be an object prepared in the following way: ``options = pymupdf.mupdf.PdfImageRewriterOptions()``. Then attributes of this object can be set to achieve fine-grained control. Following are the adjustable attributes of the ``options`` object and their default (do nothing) values.
+
+    ::
+  
+      options.bitonal_image_recompress_method = FZ_RECOMPRESS_NEVER
+      options.bitonal_image_recompress_quality = None
+      options.bitonal_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+      options.bitonal_image_subsample_threshold = 0
+      options.bitonal_image_subsample_to = 0
+      options.color_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
+      options.color_lossless_image_recompress_quality = None
+      options.color_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+      options.color_lossless_image_subsample_threshold = 0
+      options.color_lossless_image_subsample_to = 0
+      options.color_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
+      options.color_lossy_image_recompress_quality = None
+      options.color_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+      options.color_lossy_image_subsample_threshold = 0
+      options.color_lossy_image_subsample_to = 0
+      options.gray_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
+      options.gray_lossless_image_recompress_quality = None
+      options.gray_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+      options.gray_lossless_image_subsample_threshold = 0
+      options.gray_lossless_image_subsample_to = 0
+      options.gray_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
+      options.gray_lossy_image_recompress_quality = None
+      options.gray_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+      options.gray_lossy_image_subsample_threshold = 0
+      options.gray_lossy_image_subsample_to = 0
+
+    The ``*_recompress_method`` attributes may be one of the values **FZ_RECOMPRESS_NEVER (0), FZ_RECOMPRESS_SAME (1), FZ_RECOMPRESS_LOSSLESS (2), FZ_RECOMPRESS_JPEG (3), FZ_RECOMPRESS_J2K (4), FZ_RECOMPRESS_FAX (5)**. Value FZ_RECOMPRESS_NEVER will skip this image type altogether and FZ_RECOMPRESS_SAME will not change the type. The other values will execute type conversions (as far as technically possible).
+    
+    The ``*_quality`` values are strings of integers from "0" to "100" or ``None``.
+    
+    The ``*_subsample_method`` attributes are either **FZ_SUBSAMPLE_AVERAGE (0)** or **FZ_SUBSAMPLE_BICUBIC (1)** and refer to how a pixel value is derived from its neighboring pixels during subsampling. For some background see `this Wikipedia article about bicubic interpolation <https://en.wikipedia.org/wiki/Bicubic_interpolation>`_.
+    
+    Attributes ``*_subsample_threshold`` excludes images from subsampling which have a lower DPI. Participating images will be subsampled to the DPI values given by the ``*_subsample_to`` values. Values of 0 mean that no subsampling will take place.
+    
+    The ``*_subsample_threshold`` values should be chosen notably larger than the ``*_subsample_to`` values to ensure that there are enough size savings. After all, every subsampling inevitably incurs quality losses.
+    
+    An example for a good choice is ``threshold=100`` and ``to=72``.
+
+
   .. method:: recolor(components=1)
 
-    PDF only: Change the color component counts for all object types text, image and vector graphics for all pages.
+    PDF only: Change the color component counts for all object types text, images and vector graphics for all pages.
 
     :arg int components: desired color space indicated by the number of color components: 1 = DeviceGRAY, 3 = DeviceRGB, 4 = DeviceCMYK.
 

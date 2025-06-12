@@ -823,3 +823,85 @@ def test_4363():
         print(f'Found:\n    {text!r}')
         assert 0
     
+
+def test_4546():
+    # This issue will not be fixed (in mupdf) because the test input is faulty.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4546.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        text = page.get_text()[:200]
+    
+    # We can't actually test with 1.23.5 because it uses `fitz.` not `pymupdf.`.
+    expected_1_23_5 = b'JOB No.: \nShipper (complete name and address) \xe5\x8f\x91\xe8\xb4\xa7\xe4\xba\xba(\xe5\x90\x8d\xe7\xa7\xb0\xe5\x8f\x8a\xe5\x9c\xb0\n\xe5\x9d\x80) \nSINORICH TRANSPORT LIMITED\nADD:7C,WEST BLDG.,ZHONGQU\nMANSION,211 ZHONGSHAN\nRD. SHANTOU,515041 CN\nTEL:0754-88570001 FAX:0754-88572709\nS/O No. '.decode()
+    
+    # This output is different from expected_1_23_5.
+    expected_mupdf_1_26_1 = b'JOB No.: Shipper (complete name and address) \xe5\x8f\x91\xe8\xb4\xa7\xe4\xba\xba(\xe5\x90\x8d\xe7\xa7\xb0\xe5\x8f\x8a\xe5\x9c\xb0\xe5\x9d\x80)  Tel:                                  Fax: \n \nS/O No. \xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95\xe5\x8f\xb7\xe7\xa0\x81     \nSINORICH TRANSPORT LIMITED \nSHIPPING ORDER \n\xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95 \n \xe5\xb8\x82\xe5\x9c\xba\xe9\x83\xa8: \n88570009 \n88577019 \n88'.decode()
+    
+    print(f'expected_1_23_5\n{textwrap.indent(expected_1_23_5, "    ")}')
+    print(f'expected_mupdf_1_26_1\n{textwrap.indent(expected_mupdf_1_26_1, "    ")}')
+        
+    print(f'{pymupdf.version=}')
+    print(f'text is:\n{textwrap.indent(text, "    ")}')
+    print(f'{text=}')
+    print(f'{text.encode()=}')
+    
+    if pymupdf.mupdf_version_tuple >= (1, 26, 1):
+        assert text == expected_mupdf_1_26_1
+    else:
+        print(f'No expected output for {pymupdf.mupdf_version_tuple=}')
+
+
+def test_4503():
+    # Check detection of strikeout text. Behaviour is improved with
+    # mupdf>=1.26.2, but not perfect.
+    #
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4503.pdf')
+    span_0 = None
+    text_0 = None
+    print()
+    print(f'{pymupdf.mupdf_version_tuple=}')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        # Specify TEXT_COLLECT_STYLES so we collect char_flags, which contains
+        # FZ_STEXT_STRIKEOUT etc.
+        #
+        text = page.get_text('rawdict', flags=pymupdf.TEXTFLAGS_RAWDICT | pymupdf.TEXT_COLLECT_STYLES)
+        for i, block in enumerate(text['blocks']):
+            print(f'block {i}:')
+            for j, line in enumerate(block['lines']):
+                print(f'    line {j}:')
+                for k, span in enumerate(line['spans']):
+                    text = ''
+                    for char in span['chars']:
+                        text += char['c']
+                    print(f'        span {k}: {span["flags"]=:#x} {span["char_flags"]=:#x}: {text!r}')
+                    if 'the right to request the state to review' in text:
+                        span_0 = span
+                        text_0 = text
+    assert span_0
+    #print(f'{span_0=}')
+    print(f'{span_0["flags"]=:#x}')
+    print(f'{span_0["char_flags"]=:#x}')
+    print(f'{text_0=}')
+    strikeout = span_0['char_flags'] & pymupdf.mupdf.FZ_STEXT_STRIKEOUT
+    print(f'{strikeout=}')
+    
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
+        assert text_0 == 'the right to request the state to review and, if appropriate,'
+    elif pymupdf.mupdf_version_tuple >= (1, 26, 2):
+        # 2025-06-09: This is still incorrect - the span should include the
+        # following text 'and, if appropriate,'. It looks like following spans
+        # are:
+        #   strikeout=0: 'and, '
+        #   strikeout=1: 'if '
+        #   strikeout=0: 'appropri' 
+        #   strikeout=1: 'ate,'
+        #
+        assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
+        assert text_0 == 'the right to request the state to review '
+    else:
+        # Expecting the bug.
+        assert not strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be unset in {span_0["char_flags"]=:#x}.'
+        assert text_0 == 'notice the right to request the state to review and, if appropriate,'
