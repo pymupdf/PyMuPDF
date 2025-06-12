@@ -346,6 +346,9 @@ def main(argv):
         
         elif arg == '--cibw-release-2':
             env_extra['CIBW_ARCHS_LINUX'] = 'aarch64'
+            # Testing only first and last python versions because otherwise
+            # Github times out after 6h.
+            env_extra['CIBW_BUILD'] = 'cp39* cp313*'
             os_names = ['linux']
         
         elif arg == '--cibw-archs-linux':
