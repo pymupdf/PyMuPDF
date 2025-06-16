@@ -2437,7 +2437,7 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
    .. method:: to_markdown(clean=False, fill_empty=True)
 
-      Extracts table data into a list.
+      Extracts table data into Markdown text format.
 
 
       :arg bool clean: If ``True`` then markdown syntax is removed from cell content.
