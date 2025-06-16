@@ -2373,6 +2373,8 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
       A reference to the :ref:`Page` object.
 
+      :type: :ref:`Page`
+
 
 .. class:: Table
 
@@ -2381,9 +2383,9 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
    .. attribute:: page
 
-      A description of the page instance for the table.
+      A back-reference to the owning page.
 
-      :type: `string`
+      :type: :ref:`Page`
 
    .. attribute:: cells
 
@@ -2394,14 +2396,14 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
    .. attribute:: header
 
-      A `TableHeader` object if detected.
+      A `TableHeader` object.
 
       :type: `TableHeader`
 
 
    .. attribute:: bbox
 
-      The bounding box of the table given as a tuple `(x0, y0, x1, y1)`. This is the rectangle that contains all cells of the table.   
+      The bounding box of all cells of the table header.
 
 
       :type: :ref:`Rect`
@@ -2431,7 +2433,7 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
    .. method:: extract()
 
-      Extracts table data into a list.
+      Extracts table cell text data into a list.
 
       :type: list
 
@@ -2462,7 +2464,7 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
    .. attribute:: bbox
 
-      The bounding box of the table given as a tuple `(x0, y0, x1, y1)`. This is the rectangle that contains all cells of the table.
+      The bounding box of the union of cells belonging to the table header, given as a tuple (x0, y0, x1, y1). This rectangle contains all table header cells.
 
       :type:`Rect`
 
