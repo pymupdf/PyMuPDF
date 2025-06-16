@@ -2466,7 +2466,7 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
       The bounding box of the union of cells belonging to the table header, given as a tuple (x0, y0, x1, y1). This rectangle contains all table header cells.
 
-      :type:`Rect`
+      :type: :ref:`Rect`
 
    .. attribute:: cells
 
