@@ -3930,9 +3930,10 @@ class Document:
                 numbers = tuple(range(f, t + 1))
             else:
                 r = args[0]
-                if type(r) not in (int, range, list, tuple):
-                    raise ValueError("need int or sequence if one argument")
-                numbers = tuple(r)
+                if type(r) is int:
+                    numbers = (r,)
+                else:
+                    numbers = tuple(r)
 
         numbers = list(map(int, set(numbers)))  # ensure unique integers
         if numbers == []:
@@ -11401,13 +11402,17 @@ class Rect:
 
     def intersects(self, x):
         """Check if intersection with rectangle x is not empty."""
-        r1 = Rect(x)
-        if self.is_empty or self.is_infinite or r1.is_empty or r1.is_infinite:
-            return False
-        r = Rect(self)
-        if r.intersect(r1).is_empty:
-            return False
-        return True
+        rect2 = Rect(x)
+        return (1
+                and not self.is_empty
+                and not self.is_infinite
+                and not rect2.is_empty
+                and not rect2.is_infinite
+                and self.x0 < rect2.x1
+                and rect2.x0 < self.x1
+                and self.y0 < rect2.y1
+                and rect2.y0 < self.y1
+               )
 
     @property
     def is_empty(self):
