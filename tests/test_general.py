@@ -1894,3 +1894,16 @@ def test_4533():
     with pymupdf.open(path) as document:
         print(f'Have opened {path=}.', flush=1)
         print(f'{len(document)=}', flush=1)
+
+
+def test_4564():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4564.pdf')
+    print()
+    with pymupdf.open(path) as document:
+        for key in sorted(document.metadata.keys()):
+            value = document.metadata[key]
+            print(f'{key}: {value!r}')
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert document.metadata['producer'] == 'Adobe PSL 1.3e for Canon\x00'
+    else:
+        assert document.metadata['producer'] == 'Adobe PSL 1.3e for Canon\udcc0\udc80'
