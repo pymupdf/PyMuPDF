@@ -20978,6 +20978,7 @@ Page.search_for             = utils.search_for
 Page.show_pdf_page          = utils.show_pdf_page
 Page.update_link            = utils.update_link
 Page.write_text             = utils.write_text
+Shape                       = utils.Shape
 from .table import find_tables
 
 Page.find_tables = find_tables
