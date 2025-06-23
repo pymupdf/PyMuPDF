@@ -140,7 +140,6 @@ def extract_cells(textpage, cell, markdown=False):
             or block_bbox[3] < cell[1]
         ):
             continue  # skip block outside cell
-        line_count = len(block["lines"])
         for line in block["lines"]:
             lbbox = line["bbox"]
             if (
