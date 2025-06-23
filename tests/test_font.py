@@ -233,8 +233,8 @@ def test_3887():
 def test_4457():
     print()
     files = (
-            ('https://arxiv.org/pdf/2504.13180', 'test_4457_a.pdf', None, 4),
-            ('https://arxiv.org/pdf/2504.13181', 'test_4457_b.pdf', None, 9),
+            ('https://github.com/user-attachments/files/20862923/test_4457_a.pdf', 'test_4457_a.pdf', None, 4),
+            ('https://github.com/user-attachments/files/20862922/test_4457_b.pdf', 'test_4457_b.pdf', None, 9),
             )
     for url, name, size, rms_after_max in files:
         path = util.download(url, name, size)
