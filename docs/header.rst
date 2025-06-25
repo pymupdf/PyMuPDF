@@ -132,7 +132,7 @@
             </a>
         </div>
         <div class="forumLink" style="display:flex;align-items:baseline;margin-top: -5px;margin-left:10px;">
-            <div id="forumCTAText"></div><a id="winking-cow-link" style="font-weight: bold;" href="https://forum.pymupdf.com">Try our forum! <img alt="MuPDF Forum link logo" id="winking-cow-image" src="/_static/forum-logo.gif" width=38px height=auto /></a>
+            <div id="forumCTAText"></div><a id="winking-cow-link" style="font-weight: bold;" href="https://forum.pymupdf.com">Try our forum! <img alt="MuPDF Forum link logo" id="winking-cow-image" src="https://pymupdf.readthedocs.io/en/latest/_static/forum-logo.gif" width=38px height=auto /></a>
         </div>
     </div>
 
@@ -165,11 +165,11 @@
         const img = document.getElementById('winking-cow-image');
 
         link.addEventListener('mouseenter', function() {
-            img.src = '/_static/forum-logo-wink.png';
+            img.src = 'https://pymupdf.readthedocs.io/en/latest/_static/forum-logo-wink.png';
         });
 
         link.addEventListener('mouseleave', function() {
-            img.src = '/_static/forum-logo.gif';
+            img.src = 'https://pymupdf.readthedocs.io/en/latest/_static/forum-logo.gif';
         });
 
     </script>
