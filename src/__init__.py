@@ -12723,6 +12723,10 @@ class IRect:
     def height(self):
         return max(0, self.y1 - self.y0)
 
+    def contains(self, x):
+        """Check if x is in the rectangle."""
+        return self.__contains__(x)
+
     def include_point(self, p):
         """Extend rectangle to include point p."""
         rect = self.rect.include_point(p)
