@@ -1,3 +1,4 @@
+import copy
 import os
 import platform
 import sys
@@ -45,6 +46,17 @@ def wrap(*args, **kwargs):
     
     JM_annot_id_stem = pymupdf.JM_annot_id_stem
     
+    def get_members(a):
+        ret = dict()
+        for n in dir(a):
+            if not n.startswith('_'):
+                v = getattr(a, n)
+                ret[n] = v
+        return ret
+        
+    # Allow post-test checking that pymupdf._globals has not changed.
+    _globals_pre = get_members(pymupdf._globals)
+    
     # Run the test.
     rep = yield
     
@@ -58,6 +70,11 @@ def wrap(*args, **kwargs):
         assert not wt, f'Warnings text not empty: {wt=}'
     
     assert not pymupdf.TOOLS.set_small_glyph_heights()
+    
+    _globals_post = get_members(pymupdf._globals)
+    if _globals_post != _globals_pre:
+        print(f'Test has changed pymupdf._globals from {_globals_pre=} to {_globals_post=}')
+        assert 0
     
     log_items = pymupdf._log_items()
     assert not log_items, f'log() was called; {len(log_items)=}.'
@@ -84,3 +101,22 @@ def wrap(*args, **kwargs):
     if next_fd_after != next_fd_before:
         print(f'Test has leaked fds, {next_fd_before=} {next_fd_after=}. {args=} {kwargs=}.')
         #assert 0, f'Test has leaked fds, {next_fd_before=} {next_fd_after=}. {args=} {kwargs=}.'
+    
+    if 0:
+        # This code can be useful to track down test failures caused by other
+        # tests modifying global state.
+        #
+        # We run a particular test menually after each test returns.
+        sys.path.insert(0, os.path.dirname(__file__))
+        try:
+            import test_tables
+        finally:
+            del sys.path[0]
+        print(f'### Calling test_tables.test_md_styles().')
+        try:
+            test_tables.test_md_styles()
+        except Exception as e:
+            print(f'### test_tables.test_md_styles() failed: {e}')
+            raise
+        else:
+            print(f'### test_tables.test_md_styles() passed.')
