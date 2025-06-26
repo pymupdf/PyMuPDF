@@ -139,25 +139,28 @@ def test_mupdf_subset_fonts2():
 
 def test_3677():
     pymupdf.TOOLS.set_subset_fontnames(True)
-    path = os.path.abspath(f'{__file__}/../../tests/resources/test_3677.pdf')
-    font_names_expected = [
-            'BCDEEE+Aptos',
-            'BCDFEE+Aptos',
-            'BCDGEE+Calibri-Light',
-            'BCDHEE+Calibri-Light',
-            ]
-    font_names = list()
-    with pymupdf.open(path) as document:
-        for page in document:
-             for block in page.get_text('dict')['blocks']:
-                    if block['type'] == 0:
-                        if 'lines' in block.keys():
-                            for line in block['lines']:
-                                for span in line['spans']:
-                                    font_name=span['font']
-                                    print(font_name)
-                                    font_names.append(font_name)
-    assert font_names == font_names_expected, f'{font_names=}'
+    try:
+        path = os.path.abspath(f'{__file__}/../../tests/resources/test_3677.pdf')
+        font_names_expected = [
+                'BCDEEE+Aptos',
+                'BCDFEE+Aptos',
+                'BCDGEE+Calibri-Light',
+                'BCDHEE+Calibri-Light',
+                ]
+        font_names = list()
+        with pymupdf.open(path) as document:
+            for page in document:
+                 for block in page.get_text('dict')['blocks']:
+                        if block['type'] == 0:
+                            if 'lines' in block.keys():
+                                for line in block['lines']:
+                                    for span in line['spans']:
+                                        font_name=span['font']
+                                        print(font_name)
+                                        font_names.append(font_name)
+        assert font_names == font_names_expected, f'{font_names=}'
+    finally:
+        pymupdf.TOOLS.set_subset_fontnames(False)
 
 
 def test_3933():
