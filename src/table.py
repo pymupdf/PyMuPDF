@@ -89,18 +89,129 @@ from . import (
     Matrix,
     TEXTFLAGS_TEXT,
     TEXT_FONT_BOLD,
+    TEXT_FONT_ITALIC,
+    TEXT_FONT_MONOSPACED,
     TEXT_FONT_SUPERSCRIPT,
+    TEXT_COLLECT_STYLES,
     TOOLS,
     EMPTY_RECT,
     sRGB_to_pdf,
     Point,
     message,
+    mupdf,
 )
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
 TEXTPAGE = None
+TEXT_BOLD = mupdf.FZ_STEXT_BOLD
+TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
+FLAGS = TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES
+
 white_spaces = set(string.whitespace)  # for checking white space only cells
+
+
+def extract_cells(textpage, cell, markdown=False):
+    """Extract text from a rect-like 'cell' as plain or MD style text.
+
+    This function should ultimately be used to extract text from a table cell.
+    Markdown output will only work correctly if extraction flag bit
+    TEXT_COLLECT_STYLES is set.
+
+    Args:
+        textpage: A PyMuPDF TextPage object. Must have been created with
+            TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES.
+        cell: A tuple (x0, y0, x1, y1) defining the cell's bbox.
+        markdown: If True, return text formatted for Markdown.
+
+    Returns:
+        A string with the text extracted from the cell.
+    """
+    text = ""
+    for block in textpage.extractRAWDICT()["blocks"]:
+        if block["type"] != 0:
+            continue
+        block_bbox = block["bbox"]
+        if (
+            0
+            or block_bbox[0] > cell[2]
+            or block_bbox[2] < cell[0]
+            or block_bbox[1] > cell[3]
+            or block_bbox[3] < cell[1]
+        ):
+            continue  # skip block outside cell
+        for line in block["lines"]:
+            lbbox = line["bbox"]
+            if (
+                0
+                or lbbox[0] > cell[2]
+                or lbbox[2] < cell[0]
+                or lbbox[1] > cell[3]
+                or lbbox[3] < cell[1]
+            ):
+                continue  # skip line outside cell
+
+            if text:  # must be a new line in the cell
+                text += "<br>" if markdown else "\n"
+
+            # strikeout detection only works with horizontal text
+            horizontal = line["dir"] == (0, 1) or line["dir"] == (1, 0)
+
+            for span in line["spans"]:
+                sbbox = span["bbox"]
+                if (
+                    0
+                    or sbbox[0] > cell[2]
+                    or sbbox[2] < cell[0]
+                    or sbbox[1] > cell[3]
+                    or sbbox[3] < cell[1]
+                ):
+                    continue  # skip spans outside cell
+
+                # only include chars with more than 50% bbox overlap
+                span_text = ""
+                for char in span["chars"]:
+                    bbox = Rect(char["bbox"])
+                    if abs(bbox & cell) > 0.5 * abs(bbox):
+                        span_text += char["c"]
+
+                if not span_text:
+                    continue  # skip empty span
+
+                if not markdown:  # no MD styling
+                    text += span_text
+                    continue
+
+                prefix = ""
+                suffix = ""
+                if horizontal and span["char_flags"] & TEXT_STRIKEOUT:
+                    prefix += "~~"
+                    suffix = "~~" + suffix
+                if span["char_flags"] & TEXT_BOLD:
+                    prefix += "**"
+                    suffix = "**" + suffix
+                if span["flags"] & TEXT_FONT_ITALIC:
+                    prefix += "_"
+                    suffix = "_" + suffix
+                if span["flags"] & TEXT_FONT_MONOSPACED:
+                    prefix += "`"
+                    suffix = "`" + suffix
+
+                if len(span["chars"]) > 2:
+                    span_text = span_text.rstrip()
+
+                # if span continues previous styling: extend cell text
+                if (ls := len(suffix)) and text.endswith(suffix):
+                    text = text[:-ls] + span_text + suffix
+                else:  # append the span with new styling
+                    if not span_text.strip():
+                        text += " "
+                    else:
+                        text += prefix + span_text + suffix
+
+    return text.strip()
+
+
 # -------------------------------------------------------------------
 # End of PyMuPDF interface code
 # -------------------------------------------------------------------
@@ -1382,7 +1493,18 @@ class Table:
         output = "|"
         rows = self.row_count
         cols = self.col_count
-        cells = self.extract()[:]  # make local copy of table text content
+
+        # cell coordinates
+        cell_boxes = [[c for c in r.cells] for r in self.rows]
+
+        # cell text strings
+        cells = [[None for i in range(cols)] for j in range(rows)]
+        for i, row in enumerate(cell_boxes):
+            for j, cell in enumerate(row):
+                if cell is not None:
+                    cells[i][j] = extract_cells(
+                        TEXTPAGE, cell_boxes[i][j], markdown=True
+                    )
 
         if fill_empty:  # fill "None" cells where possible
 
@@ -1420,7 +1542,8 @@ class Table:
             for i, cell in enumerate(row):
                 # replace None cells with empty string
                 # use HTML line break tag
-                cell = "" if not cell else cell.replace("\n", "<br>")
+                if cell is None:
+                    cell = ""
                 if clean:  # remove sensitive syntax
                     cell = html.escape(cell.replace("-", "&#45;"))
                 line += cell + "|"
@@ -1944,7 +2067,7 @@ def make_chars(page, clip=None):
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    TEXTPAGE = page.get_textpage(clip=clip, flags=TEXTFLAGS_TEXT)
+    TEXTPAGE = page.get_textpage(clip=clip, flags=FLAGS)
     blocks = page.get_text("rawdict", textpage=TEXTPAGE)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:

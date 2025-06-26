@@ -139,25 +139,28 @@ def test_mupdf_subset_fonts2():
 
 def test_3677():
     pymupdf.TOOLS.set_subset_fontnames(True)
-    path = os.path.abspath(f'{__file__}/../../tests/resources/test_3677.pdf')
-    font_names_expected = [
-            'BCDEEE+Aptos',
-            'BCDFEE+Aptos',
-            'BCDGEE+Calibri-Light',
-            'BCDHEE+Calibri-Light',
-            ]
-    font_names = list()
-    with pymupdf.open(path) as document:
-        for page in document:
-             for block in page.get_text('dict')['blocks']:
-                    if block['type'] == 0:
-                        if 'lines' in block.keys():
-                            for line in block['lines']:
-                                for span in line['spans']:
-                                    font_name=span['font']
-                                    print(font_name)
-                                    font_names.append(font_name)
-    assert font_names == font_names_expected, f'{font_names=}'
+    try:
+        path = os.path.abspath(f'{__file__}/../../tests/resources/test_3677.pdf')
+        font_names_expected = [
+                'BCDEEE+Aptos',
+                'BCDFEE+Aptos',
+                'BCDGEE+Calibri-Light',
+                'BCDHEE+Calibri-Light',
+                ]
+        font_names = list()
+        with pymupdf.open(path) as document:
+            for page in document:
+                 for block in page.get_text('dict')['blocks']:
+                        if block['type'] == 0:
+                            if 'lines' in block.keys():
+                                for line in block['lines']:
+                                    for span in line['spans']:
+                                        font_name=span['font']
+                                        print(font_name)
+                                        font_names.append(font_name)
+        assert font_names == font_names_expected, f'{font_names=}'
+    finally:
+        pymupdf.TOOLS.set_subset_fontnames(False)
 
 
 def test_3933():
@@ -233,8 +236,8 @@ def test_3887():
 def test_4457():
     print()
     files = (
-            ('https://arxiv.org/pdf/2504.13180', 'test_4457_a.pdf', None, 4),
-            ('https://arxiv.org/pdf/2504.13181', 'test_4457_b.pdf', None, 9),
+            ('https://github.com/user-attachments/files/20862923/test_4457_a.pdf', 'test_4457_a.pdf', None, 4),
+            ('https://github.com/user-attachments/files/20862922/test_4457_b.pdf', 'test_4457_b.pdf', None, 9),
             )
     for url, name, size, rms_after_max in files:
         path = util.download(url, name, size)
