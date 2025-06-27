@@ -1,8 +1,10 @@
 import os
 import io
 from pprint import pprint
-import pymupdf
+import textwrap
 import pickle
+
+import pymupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "chinese-tables.pdf")
@@ -294,15 +296,29 @@ def test_markdown():
     doc = pymupdf.open(filename)
     page = doc[0]
     tab = page.find_tables(strategy="lines_strict")[0]
-    text = (
-        "|Header1|Header2|Header3|\n"
-        "|---|---|---|\n"
-        "|Col11<br>Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
-        "|Col13|Col23|Col34<br>Col35|\n"
-        "|Col14|Col24|Col36|\n"
-        "|Col15|Col25<br>Col26||\n\n"
-    )
-    assert tab.to_markdown() == text
+    if pymupdf.mupdf_version_tuple < (1, 27):
+        md_expected = textwrap.dedent('''
+                |Header1|Header2|Header3|
+                |---|---|---|
+                |Col11<br>Col12|~~Col21~~<br>~~Col22~~|Col31<br>Col32<br>Col33|
+                |Col13|~~Col23~~|Col34<br>Col35|
+                |Col14|~~Col24~~|Col36|
+                |Col15|~~Col25~~<br>~~Col26~~||
+                
+                ''').lstrip()
+    else:
+        md_expected = (
+            "|Header1|Header2|Header3|\n"
+            "|---|---|---|\n"
+            "|Col11<br>Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
+            "|Col13|Col23|Col34<br>Col35|\n"
+            "|Col14|Col24|Col36|\n"
+            "|Col15|Col25<br>Col26||\n\n"
+        )
+
+
+    md = tab.to_markdown()
+    assert md == md_expected, f'Incorrect md:\n{textwrap.indent(md, "    ")}'
 
 
 def test_paths_param():
