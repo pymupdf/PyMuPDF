@@ -887,7 +887,7 @@ def test_4503():
     strikeout = span_0['char_flags'] & pymupdf.mupdf.FZ_STEXT_STRIKEOUT
     print(f'{strikeout=}')
     
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 26, 3):
         assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
         assert text_0 == 'the right to request the state to review and, if appropriate,'
     elif pymupdf.mupdf_version_tuple >= (1, 26, 2):

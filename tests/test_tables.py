@@ -296,7 +296,7 @@ def test_markdown():
     doc = pymupdf.open(filename)
     page = doc[0]
     tab = page.find_tables(strategy="lines_strict")[0]
-    if pymupdf.mupdf_version_tuple < (1, 27):
+    if pymupdf.mupdf_version_tuple < (1, 26, 3):
         md_expected = textwrap.dedent('''
                 |Header1|Header2|Header3|
                 |---|---|---|
