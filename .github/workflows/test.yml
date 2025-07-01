@@ -26,7 +26,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2019, macos-13, macos-14]
+        os: [ubuntu-latest, windows-2022, macos-13, macos-14]
 
       # Avoid cancelling of all runs after a single failure.
       fail-fast: false
