@@ -66,7 +66,10 @@ def test_2753():
             )
     
     assert len(doc_before) == 2
-    assert len(doc_after) == 2
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert len(doc_after) == 3
+    else:
+        assert len(doc_after) == 2
 
 # codespell:ignore-begin
 springer_html = '''
