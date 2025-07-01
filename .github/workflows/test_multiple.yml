@@ -1,0 +1,39 @@
+# Run scripts/test.py on multiple OS's (Windows, Linux, MacOS x64, MacOS arm64)
+# and with multiple specifications of MuPDF (PyMuPDF's hard-coded default,
+# master branch, release branch).
+
+name: multiple
+
+on:
+  workflow_dispatch:
+    inputs:
+      args:
+        type: string
+        default: ''
+        description: 'Arguments to pass to scripts/test.py'
+  schedule:
+    - cron: '13 6 * * *'
+
+jobs:
+
+  multiple:
+    name: multiple
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-2022, macos-13, macos-14]
+        args: [
+            '',
+            '-m "git:--branch master https://github.com/ArtifexSoftware/mupdf"', 
+            '-m "git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf"',
+            ]
+      fail-fast: false
+    
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - name: multiple
+        env:
+          PYMUPDF_test_args: ${{inputs.args}}
+        run:
+          python scripts/test.py ${{matrix.args}} wheel test -a PYMUPDF_test_args
