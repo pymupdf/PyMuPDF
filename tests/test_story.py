@@ -38,7 +38,7 @@ def test_story():
 def test_2753():
     
     def rectfn(rect_num, filled):
-        return pymupdf.Rect(0, 0, 200, 200), pymupdf.Rect(50, 50, 100, 100), None
+        return pymupdf.Rect(0, 0, 200, 200), pymupdf.Rect(50, 50, 100, 150), None
     
     def make_pdf(html, path_out):
         story = pymupdf.Story(html=html)
@@ -65,6 +65,9 @@ def test_2753():
             os.path.abspath(f'{__file__}/../../tests/test_2753-out-after.pdf'),
             )
     
+    path = os.path.normpath(f'{__file__}/../../tests/test_2753_out')
+    doc_before.save(f'{path}_before.pdf')
+    doc_after.save(f'{path}_after.pdf')
     assert len(doc_before) == 2
     assert len(doc_after) == 2
 
