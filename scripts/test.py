@@ -1128,10 +1128,14 @@ def venv_run(args, path, recreate=True):
     if recreate or not os.path.isdir(path):
         run(f'{sys.executable} -m venv {path}')
     if platform.system() == 'Windows':
-        command = f'{path}\\Scripts\\activate'
+        command = f'{path}\\Scripts\\activate && python'
+        # shlex not reliable on Windows.
+        # Use crude quoting with "...". Seems to work.
+        for arg in args:
+            assert '"' not in arg
+            command += f' "{arg}"'
     else:
-        command = f'. {path}/bin/activate'
-    command += f' && python {shlex.join(args)}'
+        command = f'. {path}/bin/activate && python {shlex.join(args)}'
     e = run(command, check=0)
     return e
 
