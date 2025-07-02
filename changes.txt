@@ -2,7 +2,24 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.1**
+**Changes in version 1.26.2**
+
+* Use MuPDF-1.26.3.
+
+* Fixed issues:
+
+  * **Fixed** `4462 <https://github.com/pymupdf/PyMuPDF/issues/4462>`_: delete_pages() does not accept a single int
+  * **Fixed** `4527 <https://github.com/pymupdf/PyMuPDF/issues/4527>`_: Rect.intersects() is much slower than necessary
+  * **Fixed** `4564 <https://github.com/pymupdf/PyMuPDF/issues/4564>`_: Possible encoding issue in PDF metadata
+  * **Fixed** `4575 <https://github.com/pymupdf/PyMuPDF/issues/4575>`_: Bug with IRect contains method
+
+* Other:
+
+  * Class Shape is now available as pymupdf.Shape.
+  * Added table cell markdown support.
+
+
+**Changes in version 1.26.1 (2025-06-11)**
 
 * Use MuPDF-1.26.2.
 
