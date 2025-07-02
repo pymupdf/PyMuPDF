@@ -10,7 +10,7 @@ on:
       args:
         type: string
         default: ''
-        description: 'Arguments to pass to scripts/test.py'
+        description: 'Additional arguments to scripts/test.py'
   schedule:
     - cron: '13 6 * * *'
 
