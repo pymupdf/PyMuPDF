@@ -158,7 +158,7 @@ A ``Font`` object also contains useful general information, like the font bbox, 
          >>> font = pymupdf.Font("math")
          >>> vuc = font.valid_codepoints()
          >>> for i in vuc:
-               print("%04X %s (%s)" % (i, chr(i), font.unicode_to_glyph_name(i)))
+         >>>     print(f"{i:04X} {chr(i)} ({font.unicode_to_glyph_name(i)})")
          0000
          000D   (CR)
          0020   (space)

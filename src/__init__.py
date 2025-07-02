@@ -590,7 +590,7 @@ class Annot:
 
     def __repr__(self):
         parent = getattr(self, 'parent', '<>')
-        return "'%s' annotation on %s" % (self.type[1], str(parent))
+        return f"'{self.type[1]}' annotation on {parent}"
 
     def __str__(self):
         return self.__repr__()
@@ -1398,7 +1398,7 @@ class Annot:
             doc.xref_set_key(self.xref, "C", s)
 
         if fill and self.type[0] not in fill_annots:
-            message("Warning: fill color ignored for annot type '%s'." % self.type[1])
+            message(f"Warning: fill color ignored for annot type '{self.type[1]}'.")
             return
         if fill in ([], ()):
             doc.xref_set_key(self.xref, "IC", "[]")
@@ -2474,7 +2474,6 @@ class Xml:
     
     def set_align(self, align):
         """Set text alignment via CSS style"""
-        text = "text-align: %s"
         if isinstance( align, str):
             t = align
         elif align == TEXT_ALIGN_LEFT:
@@ -2487,8 +2486,7 @@ class Xml:
             t = "justify"
         else:
             raise ValueError(f"Unrecognised {align=}")
-        text = text % t
-        self.add_style(text)
+        self.add_style(f"text-align: {t}")
         return self
 
     def set_attribute( self, key, value):
@@ -2497,8 +2495,7 @@ class Xml:
     
     def set_bgcolor(self, color):
         """Set background color via CSS style"""
-        text = f"background-color: %s" % self.color_text(color)
-        self.add_style(text)  # does not work on span level
+        self.add_style(f'background-color: {self.color_text(color)}')  # does not work on span level
         return self
 
     def set_bold(self, val=True):
@@ -2507,26 +2504,22 @@ class Xml:
             val="bold"
         else:
             val="normal"
-        text = "font-weight: %s" % val
-        self.append_styled_span(text)
+        self.append_styled_span(f"font-weight: {val}")
         return self
 
     def set_color(self, color):
         """Set text color via CSS style"""
-        text = f"color: %s" % self.color_text(color)
-        self.append_styled_span(text)
+        self.append_styled_span(f"color: {self.color_text(color)}")
         return self
 
     def set_columns(self, cols):
         """Set number of text columns via CSS style"""
-        text = f"columns: {cols}"
-        self.append_styled_span(text)
+        self.append_styled_span(f"columns: {cols}")
         return self
 
     def set_font(self, font):
         """Set font-family name via CSS style"""
-        text = "font-family: %s" % font
-        self.append_styled_span(text)
+        self.append_styled_span(f"font-family: {font}")
         return self
 
     def set_fontsize(self, fontsize):
@@ -2554,50 +2547,42 @@ class Xml:
             val="italic"
         else:
             val="normal"
-        text = "font-style: %s" % val
-        self.append_styled_span(text)
+        self.append_styled_span(f"font-style: {val}")
         return self
 
     def set_leading(self, leading):
         """Set inter-line spacing value via CSS style - block-level only."""
-        text = f"-mupdf-leading: {leading}"
-        self.add_style(text)
+        self.add_style(f"-mupdf-leading: {leading}")
         return self
 
     def set_letter_spacing(self, spacing):
         """Set inter-letter spacing value via CSS style"""
-        text = f"letter-spacing: {spacing}"
-        self.append_styled_span(text)
+        self.append_styled_span(f"letter-spacing: {spacing}")
         return self
 
     def set_lineheight(self, lineheight):
         """Set line height name via CSS style - block-level only."""
-        text = f"line-height: {lineheight}"
-        self.add_style(text)
+        self.add_style(f"line-height: {lineheight}")
         return self
 
     def set_margins(self, val):
         """Set margin values via CSS style"""
-        text = "margins: %s" % val
-        self.append_styled_span(text)
+        self.append_styled_span(f"margins: {val}")
         return self
 
     def set_opacity(self, opacity):
         """Set opacity via CSS style"""
-        text = f"opacity: {opacity}"
-        self.append_styled_span(text)
+        self.append_styled_span(f"opacity: {opacity}")
         return self
 
     def set_pagebreak_after(self):
         """Insert a page break after this node."""
-        text = "page-break-after: always"
-        self.add_style(text)
+        self.add_style("page-break-after: always")
         return self
 
     def set_pagebreak_before(self):
         """Insert a page break before this node."""
-        text = "page-break-before: always"
-        self.add_style(text)
+        self.add_style("page-break-before: always")
         return self
 
     def set_properties(
@@ -2678,19 +2663,16 @@ class Xml:
 
     def set_text_indent(self, indent):
         """Set text indentation name via CSS style - block-level only."""
-        text = f"text-indent: {indent}"
-        self.add_style(text)
+        self.add_style(f"text-indent: {indent}")
         return self
 
     def set_underline(self, val="underline"):
-        text = "text-decoration: %s" % val
-        self.append_styled_span(text)
+        self.append_styled_span(f"text-decoration: {val}")
         return self
 
     def set_word_spacing(self, spacing):
         """Set inter-word spacing value via CSS style"""
-        text = f"word-spacing: {spacing}"
-        self.append_styled_span(text)
+        self.append_styled_span(f"word-spacing: {spacing}")
         return self
 
     def span_bottom(self):
@@ -2748,7 +2730,7 @@ class Colorspace:
 
     def __repr__(self):
         x = ("", "GRAY", "", "RGB", "CMYK")[self.n]
-        return "Colorspace(CS_%s) - %s" % (x, self.name)
+        return f"Colorspace(CS_{x}) - {self.name}"
 
     def _name(self):
         return mupdf.fz_colorspace_name(self.this)
@@ -3068,12 +3050,12 @@ class Document:
         return self.page_count
 
     def __repr__(self) -> str:
-        m = "closed " if self.is_closed else ""
+        is_closed = "closed " if self.is_closed else ""
         if self.stream is None:
             if self.name == "":
-                return m + "Document(<new PDF, doc# %i>)" % self._graft_id
-            return m + "Document('%s')" % (self.name,)
-        return m + "Document('%s', <memory, doc# %i>)" % (self.name, self._graft_id)
+                return f"{is_closed}Document(<new PDF, doc# {self._graft_id:d}>)"
+            return f"{is_closed}Document('{self.name}')"
+        return f"{is_closed}Document('{self.name}', <memory, doc# {self._graft_id:d}>)"
 
     def _addFormFont(self, name, font):
         """Add new form font."""
@@ -3613,13 +3595,12 @@ class Document:
 
     def _embeddedFileIndex(self, item: typing.Union[int, str]) -> int:
         filenames = self.embfile_names()
-        msg = "'%s' not in EmbeddedFiles array." % str(item)
         if item in filenames:
             idx = filenames.index(item)
         elif item in range(len(filenames)):
             idx = item
         else:
-            raise ValueError(msg)
+            raise ValueError(f"'{item}' not in EmbeddedFiles array.")
         return idx
 
     def _embfile_add(self, name, buffer_, filename=None, ufilename=None, desc=None):
@@ -3860,7 +3841,7 @@ class Document:
             else:
                 buf = JM_get_fontbuffer(pdf, xref)
                 if not buf.m_internal:
-                    raise Exception("font at xref %d is not supported" % xref)
+                    raise Exception(f"font at xref {xref:d} is not supported")
 
                 font = mupdf.fz_new_font_from_buffer(None, buf, idx, 0)
         wlist = []
@@ -4110,7 +4091,7 @@ class Document:
 
         xref = self.pdf_catalog()
         text = self.xref_object(xref, compressed=True)
-        text = text.replace("/Nums[]", "/Nums[%s]" % labels)
+        text = text.replace("/Nums[]", f"/Nums[{labels}]")
         self.update_object(xref, text)
 
     def _update_toc_item(self, xref, action=None, title=None, flags=0, collapse=None, color=None):
@@ -4458,10 +4439,8 @@ class Document:
             desc: (str) the description.
         """
         filenames = self.embfile_names()
-        msg = "Name '%s' already exists." % str(name)
         if name in filenames:
-            raise ValueError(msg)
-
+            raise ValueError(f"Name '{name}' already exists.")
         if filename is None:
             filename = name
         if ufilename is None:
@@ -5479,7 +5458,7 @@ class Document:
             outname = os.path.basename(self.name)
             if not outname:
                 outname = "memory PDF"
-            message("Inserting '%s' at '%s'" % (inname, outname))
+            message(f"Inserting '{inname}' at '{outname}'")
 
         # retrieve / make a Graftmap to avoid duplicate objects
         #log( 'insert_pdf(): Graftmaps')
@@ -6828,31 +6807,31 @@ class Document:
                 raise ValueError("bad type: 'on'")
             s = set(on).difference(ocgs)
             if s != set():
-                raise ValueError("bad OCGs in 'on': %s" % s)
+                raise ValueError(f"bad OCGs in 'on': {s}")
 
         if off:
             if type(off) not in (list, tuple):
                 raise ValueError("bad type: 'off'")
             s = set(off).difference(ocgs)
             if s != set():
-                raise ValueError("bad OCGs in 'off': %s" % s)
+                raise ValueError(f"bad OCGs in 'off': {s}")
 
         if locked:
             if type(locked) not in (list, tuple):
                 raise ValueError("bad type: 'locked'")
             s = set(locked).difference(ocgs)
             if s != set():
-                raise ValueError("bad OCGs in 'locked': %s" % s)
+                raise ValueError(f"bad OCGs in 'locked': {s}")
 
         if rbgroups:
             if type(rbgroups) not in (list, tuple):
                 raise ValueError("bad type: 'rbgroups'")
             for x in rbgroups:
                 if not type(x) in (list, tuple):
-                    raise ValueError("bad RBGroup '%s'" % x)
+                    raise ValueError(f"bad RBGroup '{x}'")
                 s = set(x).difference(ocgs)
                 if s != set():
-                    raise ValueError("bad OCGs in RBGroup: %s" % s)
+                    raise ValueError(f"bad OCGs in RBGroup: {s}")
 
         if basestate:
             basestate = str(basestate).upper()
@@ -7956,14 +7935,14 @@ class Document:
         text = None
         if mupdf.pdf_is_indirect(subobj):
             type = "xref"
-            text = "%i 0 R" % mupdf.pdf_to_num(subobj)
+            text = f"{mupdf.pdf_to_num(subobj):d} 0 R"
         elif mupdf.pdf_is_array(subobj):
             type = "array"
         elif mupdf.pdf_is_dict(subobj):
             type = "dict"
         elif mupdf.pdf_is_int(subobj):
             type = "int"
-            text = "%i" % mupdf.pdf_to_int(subobj)
+            text = f"{mupdf.pdf_to_int(subobj):d}"
         elif mupdf.pdf_is_real(subobj):
             type = "float"
         elif mupdf.pdf_is_null(subobj):
@@ -7977,7 +7956,7 @@ class Document:
                 text = "false"
         elif mupdf.pdf_is_name(subobj):
             type = "name"
-            text = "/%s" % mupdf.pdf_to_name(subobj)
+            text = f"/{mupdf.pdf_to_name(subobj)}"
         elif mupdf.pdf_is_string(subobj):
             type = "string"
             text = JM_UnicodeFromStr(mupdf.pdf_to_text_string(subobj))
@@ -8261,7 +8240,7 @@ class Font:
         self.this = font
 
     def __repr__(self):
-        return "Font('%s')" % self.name
+        return f"Font('{self.name}')"
 
     @property
     def ascender(self):
@@ -9069,10 +9048,7 @@ class Widget:
         self.xref = 0  # annot value
 
     def __repr__(self):
-        #return "'%s' widget on %s" % (self.field_type_string, str(self.parent))
-        # No self.parent.
         return f'Widget:(field_type={self.field_type_string} script={self.script})'
-        return "'%s' widget" % (self.field_type_string)
 
     def _adjust_font(self):
         """Ensure text_font is from our list and correctly spelled.
@@ -9533,13 +9509,6 @@ class Page:
 
     def __repr__(self):
         return self.__str__()
-        CheckParent(self)
-        x = self.parent.name
-        if self.parent.stream is not None:
-            x = "<memory, doc# %i>" % (self.parent._graft_id,)
-        if x == "":
-            x = "<new PDF, doc# %i>" % self.parent._graft_id
-        return "page %s of %s" % (self.number, x)
 
     def __str__(self):
         #CheckParent(self)
@@ -9548,14 +9517,16 @@ class Page:
             number = self.this.m_internal.super.number
         else:
             number = self.this.m_internal.number
-        ret = f'page {number}'
+
         if parent:
             x = self.parent.name
             if self.parent.stream is not None:
-                x = "<memory, doc# %i>" % (self.parent._graft_id,)
+                x = "memory"
             if x == "":
-                x = "<new PDF, doc# %i>" % self.parent._graft_id
-            ret += f' of {x}'
+                x = "new PDF"
+            ret = f'page {number} of <{x}, doc# {self.parent._graft_id:d}>'
+        else:
+            ret = f'page {number}'
         return ret
 
     def _add_caret_annot(self, point):
@@ -9900,7 +9871,7 @@ class Page:
             txtpy = linklist[i]
             text = JM_StrAsChar(txtpy)
             if not text:
-                message("skipping bad link / annot item %i." % i)
+                message(f"skipping bad link / annot item {i:d}.")
                 continue
             try:
                 annot = mupdf.pdf_add_object( page.doc(), JM_pdf_obj_from_str( page.doc(), text))
@@ -9908,7 +9879,7 @@ class Page:
                 mupdf.pdf_array_push( annots, ind_obj)
             except Exception:
                 if g_exceptions_verbose:    exception_info()
-                message("skipping bad link / annot item %i.\n" % i)
+                message(f"skipping bad link / annot item {i:d}.\n")
 
     def _addWidget(self, field_type, field_name):
         page = self._pdf_page()
@@ -9980,10 +9951,10 @@ class Page:
         if oc in props.keys():
             return props[oc]
         i = 0
-        mc = "MC%i" % i
+        mc = f"MC{i:d}"
         while mc in props.values():
             i += 1
-            mc = "MC%i" % i
+            mc = f"MC{i:d}"
         self._set_resource_property(mc, oc)
         #log( 'returning {mc=}')
         return mc
@@ -10255,7 +10226,7 @@ class Page:
         tca = int(round(max(ca, 0) * 100))
         if tca >= 100:
             tca = 99
-        gstate = "fitzca%02i%02i" % (tCA, tca)
+        gstate = f"fitzca{tCA:02d}{tca:02d}"
 
         if not gstate:
             return
@@ -12080,7 +12051,7 @@ class Page:
             elif imglist == []:
                 raise ValueError('bad image name')
             else:
-                raise ValueError("found multiple images named '%s'." % name)
+                raise ValueError(f"found multiple images named '{name}'.")
         xref = item[-1]
         if xref != 0 or transform:
             try:
@@ -12971,7 +12942,7 @@ class Page:
             raise ValueError("bad xref")
         if not doc.xref_is_stream(xref):
             raise ValueError("xref is no stream")
-        doc.xref_set_key(self.xref, "Contents", "%i 0 R" % xref)
+        doc.xref_set_key(self.xref, "Contents", f"{xref:d} 0 R")
 
     def set_cropbox(self, rect):
         """Set the CropBox. Will also change Page.rect."""
@@ -13555,11 +13526,13 @@ class Pixmap:
         return self.size
 
     def __repr__(self):
-        if not type(self) is Pixmap: return
+        if not type(self) is Pixmap:
+            return
+        colorspace = "none"
         if self.colorspace:
-            return "Pixmap(%s, %s, %s)" % (self.colorspace.this.m_internal.name, self.irect, self.alpha)
-        else:
-            return "Pixmap(%s, %s, %s)" % ('None', self.irect, self.alpha)
+            colorspace = self.colorspace.this.m_internal.name
+
+        return f"Pixmap({colorspace}, {self.irect}, {self.alpha})"
 
     def _tobytes(self, format_, jpg_quality):
         '''
@@ -13900,7 +13873,7 @@ class Pixmap:
         if idx is None:
             raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
         if self.alpha and idx in (2, 6, 7):
-            raise ValueError("'%s' cannot have alpha" % output)
+            raise ValueError(f"'{output}' cannot have alpha")
         if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
             raise ValueError(f"unsupported colorspace for '{output}'")
         if idx == 7:
@@ -16803,7 +16776,7 @@ class TextWriter:
                 if mupdf_cppyy:
                     import cppyy
                     log( f'Unsupported font {cppyy.gbl.mupdf_font_name(font.this.m_internal)=}')
-            raise ValueError("Unsupported font '%s'." % font.name)
+            raise ValueError(f"Unsupported font '{font.name}'.")
         if right_to_left:
             text = self.clean_rtl(text)
             text = "".join(reversed(text))
@@ -17179,7 +17152,7 @@ class TextWriter:
 
         optcont = page._get_optional_content(oc)
         if optcont is not None:
-            bdc = "/OC /%s BDC" % optcont
+            bdc = f"/OC /{optcont} BDC"
             emc = "EMC"
         else:
             bdc = emc = ""
@@ -17209,11 +17182,11 @@ class TextWriter:
                 continue
             if line == "BT":
                 new_cont_lines.append(line)
-                new_cont_lines.append("%i Tr" % render_mode)
+                new_cont_lines.append(f"{render_mode:d} Tr")
                 continue
             if line.endswith(" gs"):
                 alp = int(line.split()[0][4:]) + max_alp
-                line = "/Alp%i gs" % alp
+                line = f"/Alp{alp:d} gs"
             elif line.endswith(" Tf"):
                 temp = line.split()
                 fsize = float(temp[1])
@@ -17223,7 +17196,7 @@ class TextWriter:
                     w = 1
                 new_cont_lines.append(_format_g(w) + " w")
                 font = int(temp[0][2:]) + max_font
-                line = " ".join(["/F%i" % font] + temp[1:])
+                line = " ".join([f"/F{font:d}"] + temp[1:])
             elif line.endswith(" rg"):
                 new_cont_lines.append(line.replace("rg", "RG"))
             elif line.endswith(" g"):
@@ -18757,9 +18730,9 @@ def make_escape(ch):
     elif 0xd800 <= ch <= 0xdfff:  # orphaned surrogate
         return "\\ufffd"
     elif ch <= 0xffff:
-        return "\\u%04x" % ch
+        return f"\\u{ch:04x}"
     else:
-        return "\\U%08x" % ch
+        return f"\\U{ch:08x}"
 
 
 def JM_append_rune(buff, ch):
@@ -19647,7 +19620,7 @@ def JM_get_annot_by_xref(page, xref):
             break
         annot = mupdf.pdf_next_annot( annot)
     if not found:
-        raise Exception("xref %d is not an annot of this page" % xref)
+        raise Exception(f"xref {xref:d} is not an annot of this page")
     return annot
 
 
@@ -19671,7 +19644,7 @@ def JM_get_annot_by_name(page, name):
             break
         annot = mupdf.pdf_next_annot(annot)
     if not found:
-        raise Exception("'%s' is not an annot of this page" % name)
+        raise Exception(f"'{name}' is not an annot of this page")
     return annot
 
 
@@ -21630,8 +21603,8 @@ def JM_set_object_value(obj, key, value):
     objstr = JM_EscapeStrFromBuffer(res)
 
     # replace 'eyecatcher' by desired 'value'
-    nullval = "/%s(%s)" % ( skey, eyecatcher)
-    newval = "/%s %s" % (skey, value)
+    nullval = f"/{skey}({eyecatcher})"
+    newval = f"/{skey} {value}"
     newstr = objstr.replace(nullval, newval, 1)
 
     # make PDF object from resulting string
@@ -22317,18 +22290,18 @@ def getTJstr(text: str, glyphs: typing.Union[list, tuple, None], simple: bool, o
 
     if simple:  # each char or its glyph is coded as a 2-byte hex
         if glyphs is None:  # not Symbol, not ZapfDingbats: use char code
-            otxt = "".join(["%02x" % ord(c) if ord(c) < 256 else "b7" for c in text])
+            otxt = "".join([f"{ord(c):02x}" if ord(c) < 256 else "b7" for c in text])
         else:  # Symbol or ZapfDingbats: use glyphs
             otxt = "".join(
-                ["%02x" % glyphs[ord(c)][0] if ord(c) < 256 else "b7" for c in text]
+                [f"{glyphs[ord(c)][0]:02x}" if ord(c) < 256 else "b7" for c in text]
             )
         return "[<" + otxt + ">]"
 
     # non-simple fonts: each char or its glyph is coded as 4-byte hex
     if ordering < 0:  # not a CJK font: use the glyphs
-        otxt = "".join(["%04x" % glyphs[ord(c)][0] for c in text])
+        otxt = "".join([f"{glyphs[ord(c)][0]:04x}" for c in text])
     else:  # CJK: use the char codes
-        otxt = "".join(["%04x" % ord(c) for c in text])
+        otxt = "".join([f"{ord(c):04x}" for c in text])
 
     return "[<" + otxt + ">]"
 
@@ -22366,7 +22339,7 @@ def get_pdf_str(s: str) -> str:
             continue
 
         if oc > 127:  # beyond ASCII
-            r += "\\%03o" % oc
+            r += f"\\{oc:03o}"
             continue
 
         # now the white spaces
@@ -22564,7 +22537,7 @@ def get_text_length(text: str, fontname: str ="helv", fontsize: float =11, encod
     ):
         return len(text) * fontsize
 
-    raise ValueError("Font '%s' is unsupported" % fontname)
+    raise ValueError(f"Font '{fontname}' is unsupported")
 
 
 def image_profile(img: ByteString) -> dict:
@@ -23657,12 +23630,10 @@ def ConversionHeader(i: str, filename: OptStr ="unknown"):
             <body>
             """)
 
-    xml = textwrap.dedent("""
+    xml = textwrap.dedent(f"""
             <?xml version="1.0"?>
-            <document name="%s">
-            """
-            % filename
-            )
+            <document name="{filename}">
+            """)
 
     xhtml = textwrap.dedent("""
             <?xml version="1.0"?>
@@ -23679,7 +23650,7 @@ def ConversionHeader(i: str, filename: OptStr ="unknown"):
             """)
 
     text = ""
-    json = '{"document": "%s", "pages": [\n' % filename
+    json = f'{{"document": "{filename}", "pages": [\n'
     if t == "html":
         r = html
     elif t == "json":
@@ -24551,7 +24522,7 @@ def repair_mono_font(page: "Page", font: "Font") -> None:
     width = int(round((font.glyph_advance(32) * 1000)))
     for xref in xrefs:
         if not TOOLS.set_font_width(doc, xref, width):
-            log("Cannot set width for '%s' in xref %i" % (font.name, xref))
+            log(f"Cannot set width for '{font.name}' in xref {xref:d}")
 
 
 def sRGB_to_pdf(srgb: int) -> tuple:
@@ -24978,8 +24949,8 @@ class TOOLS:
         M = R if lr else L
         top = (M + (0, -d/2.)) * im
         bot = (M + (0, d/2.)) * im
-        ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
-        ap += "%f %f l\n" % (bot.x, bot.y)
+        ap = f"\nq\n{opacity}{top.x:f} {top.y:f} m\n"
+        ap += f"{bot.x:f} {bot.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + "s\nQ\n"
         return ap
@@ -25011,9 +24982,9 @@ class TOOLS:
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
-        ap += "%f %f l\n" % (p2.x, p2.y)
-        ap += "%f %f l\n" % (p3.x, p3.y)
+        ap = f"\nq\n{opacity}{p1.x:f} {p1.y:f} m\n"
+        ap += f"{p2.x:f} {p2.y:f} l\n"
+        ap += f"{p3.x:f} {p3.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -25029,13 +25000,13 @@ class TOOLS:
         r = Rect(M, M) + (-d, -d, d, d)         # the square
         # the square makes line longer by (2*shift - 1)*width
         p = (r.tl + (r.bl - r.tl) * 0.5) * im
-        ap = "q\n%s%f %f m\n" % (opacity, p.x, p.y)
+        ap = f"q\n{opacity}{p.x:f} {p.y:f} m\n"
         p = (r.tl + (r.tr - r.tl) * 0.5) * im
-        ap += "%f %f l\n"   % (p.x, p.y)
+        ap += f"{p.x:f} {p.y:f} l\n"
         p = (r.tr + (r.br - r.tr) * 0.5) * im
-        ap += "%f %f l\n"   % (p.x, p.y)
+        ap += f"{p.x:f} {p.y:f} l\n"
         p = (r.br + (r.bl - r.br) * 0.5) * im
-        ap += "%f %f l\n"   % (p.x, p.y)
+        ap += f"{p.x:f} {p.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -25053,9 +25024,9 @@ class TOOLS:
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
-        ap += "%f %f l\n" % (p2.x, p2.y)
-        ap += "%f %f l\n" % (p3.x, p3.y)
+        ap = f"\nq\n{opacity}{p1.x:f} {p1.y:f} m\n"
+        ap += f"{p2.x:f} {p2.y:f} l\n"
+        ap += f"{p3.x:f} {p3.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + "S\nQ\n"
         return ap
@@ -25073,9 +25044,9 @@ class TOOLS:
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
-        ap += "%f %f l\n" % (p2.x, p2.y)
-        ap += "%f %f l\n" % (p3.x, p3.y)
+        ap = f"\nq\n{opacity}{p1.x:f} {p1.y:f} m\n"
+        ap += f"{p2.x:f} {p2.y:f} l\n"
+        ap += f"{p3.x:f} {p3.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -25093,9 +25064,9 @@ class TOOLS:
         p1 *= im
         p2 *= im
         p3 *= im
-        ap = "\nq\n%s%f %f m\n" % (opacity, p1.x, p1.y)
-        ap += "%f %f l\n" % (p2.x, p2.y)
-        ap += "%f %f l\n" % (p3.x, p3.y)
+        ap = f"\nq\n{opacity}{p1.x:f} {p1.y:f} m\n"
+        ap += f"{p2.x:f} {p2.y:f} l\n"
+        ap += f"{p3.x:f} {p3.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + fcol + "S\nQ\n"
         return ap
@@ -25110,8 +25081,8 @@ class TOOLS:
         r = Rect(M.x - rw, M.y - 2 * w, M.x + rw, M.y + 2 * w)
         top = r.tl * im
         bot = r.br * im
-        ap = "\nq\n%s%f %f m\n" % (opacity, top.x, top.y)
-        ap += "%f %f l\n" % (bot.x, bot.y)
+        ap = f"\nq\n{opacity}{top.x:f} {top.y:f} m\n"
+        ap += f"{bot.x:f} {bot.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + "s\nQ\n"
         return ap
@@ -25127,13 +25098,13 @@ class TOOLS:
         r = Rect(M, M) + (-d, -d, d, d)         # the square
         # the square makes line longer by (2*shift - 1)*width
         p = r.tl * im
-        ap = "q\n%s%f %f m\n" % (opacity, p.x, p.y)
+        ap = f"q\n{opacity}{p.x:f} {p.y:f} m\n"
         p = r.tr * im
-        ap += "%f %f l\n"   % (p.x, p.y)
+        ap += f"{p.x:f} {p.y:f} l\n"
         p = r.br * im
-        ap += "%f %f l\n"   % (p.x, p.y)
+        ap += f"{p.x:f} {p.y:f} l\n"
         p = r.bl * im
-        ap += "%f %f l\n"   % (p.x, p.y)
+        ap += f"{p.x:f} {p.y:f} l\n"
         ap += _format_g(w) + " w\n"
         ap += scol + fcol + "b\nQ\n"
         return ap
@@ -25143,8 +25114,7 @@ class TOOLS:
         """Return /AP string defining an oval within a 4-polygon provided as points
         """
         def bezier(p, q, r):
-            f = "%f %f %f %f %f %f c\n"
-            return f % (p.x, p.y, q.x, q.y, r.x, r.y)
+            return f"{p.x:f} {p.y:f} {q.x:f} {q.y:f} {r.x:f} {r.y:f} c\n"
 
         kappa = 0.55228474983              # magic number
         ml = p1 + (p4 - p1) * 0.5          # middle points ...
@@ -25160,7 +25130,7 @@ class TOOLS:
         ul1 = mu + (p4 - mu) * kappa
         ul2 = ml + (p4 - ml) * kappa
         # now draw, starting from middle point of left side
-        ap = "%f %f m\n" % (ml.x, ml.y)
+        ap = f"{ml.x:f} {ml.y:f} m\n"
         ap += bezier(ol1, ol2, mo)
         ap += bezier(or1, or2, mr)
         ap += bezier(ur1, ur2, mu)
