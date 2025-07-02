@@ -93,12 +93,11 @@ This is the responsibility of the PDF creator (software or a human). For example
 
     doc = pymupdf.open("some.pdf")
     header = "Header"  # text in header
-    footer = "Page %i of %i"  # text in footer
     for page in doc:
         page.insert_text((50, 50), header)  # insert header
         page.insert_text(  # insert footer 50 points above page bottom
             (50, page.rect.height - 50),
-            footer % (page.number + 1, doc.page_count),
+            f"Page {page.number + 1} of {doc.page_count}", # text in footer
         )
 
 The text sequence extracted from a page modified in this way will look like this:
@@ -166,7 +165,7 @@ But you also have other options::
  text = sys.argv[2]  # search string
  doc = pymupdf.open(fname)
 
- print("underlining words containing '%s' in document '%s'" % (word, doc.name))
+ print(f"underlining words containing '{word}' in document '{doc.name}'")
 
  new_doc = False  # indicator if anything found at all
 
@@ -174,7 +173,7 @@ But you also have other options::
      found = mark_word(page, text)  # mark the page's words
      if found:  # if anything found ...
          new_doc = True
-         print("found '%s' %i times on page %i" % (text, found, page.number + 1))
+         print(f"found '{text}' {found} times on page {page.number + 1}")
 
  if new_doc:
      doc.save("marked-" + doc.name)
@@ -329,7 +328,7 @@ Output some text lines on a page::
                          fontsize = 11,  # the default font size
                          rotate = 0,  # also available: 90, 180, 270
                          )
-    print("%i lines printed on page %i." % (rc, page.number))
+    print(f"{rc} lines printed on page {page.number}.")
 
     doc.save("text.pdf")
 
