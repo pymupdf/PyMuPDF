@@ -1246,15 +1246,15 @@ classifier = [
 #
 
 # PyMuPDF version.
-version_p = '1.26.1'
+version_p = '1.26.2'
 
-version_mupdf = '1.26.2'
+version_mupdf = '1.26.3'
 
 # PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
 # (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
 # (2024-10-03) we no longer use PyMuPDFb wheels so this is actually unused.
 #
-version_b = '1.26.1'
+version_b = '1.26.2'
 
 if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
     
