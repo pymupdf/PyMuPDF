@@ -1,10 +1,15 @@
-name: Test quick
+name: test_quick
 
 on:
   pull_request:
     branches: [main]
     
   workflow_dispatch:
+    inputs:
+      args:
+        type: string
+        default: ''
+        description: 'Additional arguments to scripts/test.py'
 
 jobs:
 
@@ -21,20 +26,10 @@ jobs:
       fail-fast: false
 
     steps:
-
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      
       - name: test_quick
-
         env:
-            inputs_PYMUPDF_SETUP_MUPDF_BUILD: "git:--recursive --depth 1 --shallow-submodules --branch master https://github.com/ArtifexSoftware/mupdf.git"
-            inputs_flavours: "0"
-            inputs_sdist: "0"
-            inputs_wheels_cps: "cp312*"
-            inputs_wheels_default: "0"
-            inputs_wheels_linux_auto: "1"
-            inputs_wheels_macos_auto: "1"
-            inputs_wheels_windows_auto: "1"
+          PYMUPDF_test_args: ${{inputs.args}}
         run:
-          python scripts/gh_release.py
+          python scripts/test.py build test -a PYMUPDF_test_args
