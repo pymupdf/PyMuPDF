@@ -228,7 +228,7 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> import pymupdf
         >>> with pymupdf.open(...) as doc:
-                for page in doc: print("page %i" % page.number)
+                for page in doc: print(f"page {page.number}")
         page 0
         page 1
         page 2
@@ -2254,10 +2254,10 @@ Other Examples
          xref = img[0]                  # xref number
          pix = pymupdf.Pixmap(doc, xref)   # make pixmap from image
          if pix.n - pix.alpha < 4:      # can be saved as PNG
-             pix.save("p%s-%s.png" % (i, xref))
+             pix.save(f"p{i}-{xref}.png")
          else:                          # CMYK: must convert first
              pix0 = pymupdf.Pixmap(pymupdf.csRGB, pix)
-             pix0.save("p%s-%s.png" % (i, xref))
+             pix0.save(f"p{i}-{xref}.png")
              pix0 = None                # free Pixmap resources
          pix = None                     # free Pixmap resources
 

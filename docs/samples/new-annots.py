@@ -45,8 +45,7 @@ t1 = u"têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
 def print_descr(annot):
     """Print a short description to the right of each annot rect."""
     annot.parent.insert_text(
-        annot.rect.br + (10, -5), "%s annotation" % annot.type[1], color=red
-    )
+        annot.rect.br + (10, -5), f"{annot.type[1]} annotation", color=red)
 
 
 doc = pymupdf.open()
@@ -166,4 +165,4 @@ rc = page.insert_textbox(
 annot = page.add_redact_annot(r)
 print_descr(annot)
 
-doc.save(__file__.replace(".py", "-%i.pdf" % page.rotation), deflate=True)
+doc.save(__file__.replace(".py", f"-{page.rotation:d}.pdf"), deflate=True)

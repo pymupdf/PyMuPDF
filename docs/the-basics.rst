@@ -109,7 +109,7 @@ To extract all the images from a |PDF| file, do the following:
             if pix.n - pix.alpha > 3: # CMYK: convert to RGB first
                 pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
 
-            pix.save("page_%s-image_%s.png" % (page_index, image_index)) # save the image as png
+            pix.save(f"page_{page_index}-image_{image_index}.png") # save the image as png
             pix = None
 
 

@@ -32,11 +32,9 @@ for b in blocks:  # iterate through the text blocks
     for l in b["lines"]:  # iterate through the text lines
         for s in l["spans"]:  # iterate through the text spans
             print("")
-            font_properties = "Font: '%s' (%s), size %g, color #%06x" % (
-                s["font"],  # font name
-                flags_decomposer(s["flags"]),  # readable font flags
-                s["size"],  # font size
-                s["color"],  # font color
-            )
-            print("Text: '%s'" % s["text"])  # simple print of text
-            print(font_properties)
+            s_font = s['font']
+            s_flags = flags_decomposer(s['flags'])
+            s_size = s['size']
+            s_color = s['color']
+            print(f"Text: '{s['text']}'")  # simple print of text
+            print(f"Font: '{s_font}' ({s_flags}), size {s_size}, color #{s_color:06x}")

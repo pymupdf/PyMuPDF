@@ -174,7 +174,7 @@ Saving the Page Image in a File
 -----------------------------------
 We can simply store the image in a PNG file::
 
-    pix.save("page-%i.png" % page.number)
+    pix.save(f"page-{page.number}.png")
 
 Displaying the Image in GUIs
 -------------------------------------------

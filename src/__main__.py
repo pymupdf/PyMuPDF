@@ -15,7 +15,7 @@ from typing import Dict, List, Set
 from . import pymupdf
 
 def mycenter(x):
-    return (" %s " % x).center(75, "-")
+    return (f" {x} ").center(75, "-")
 
 
 def recoverpix(doc, item):
@@ -41,7 +41,7 @@ def recoverpix(doc, item):
     - pix2 must consist of 1 byte per pixel
     """
     if not (pix1.irect == pix2.irect and pix1.alpha == pix2.alpha == 0 and pix2.n == 1):
-        pymupdf.message("Warning: unsupported /SMask %i for %i:" % (s, x))
+        pymupdf.message(f"Warning: unsupported /SMask {s} for {x}:")
         pymupdf.message(pix2)
         pix2 = None
         return getimage(pix1)  # return the pixmap as is
@@ -67,9 +67,12 @@ def open_file(filename, password, show=False, pdf=True):
         if not rc:
             sys.exit("authentication unsuccessful")
         if show is True:
-            pymupdf.message("authenticated as %s" % "owner" if rc > 2 else "user")
+            auth_level = "user"
+            if rc > 2:
+                auth_level = "owner"
+            pymupdf.message(f"authenticated as {auth_level}")
     else:
-        sys.exit("'%s' requires a password" % doc.name)
+        sys.exit(f"'{doc.name}' requires a password")
     return doc
 
 
@@ -77,7 +80,7 @@ def print_dict(item):
     """Print a Python dictionary."""
     l = max([len(k) for k in item.keys()]) + 1
     for k, v in item.items():
-        msg = "%s: %s" % (k.rjust(l), v)
+        msg = f"{k.rjust(l)}: {v}"
         pymupdf.message(msg)
 
 
@@ -87,7 +90,7 @@ def print_xref(doc, xref):
     Simulate the PDF source in "pretty" format.
     For a stream also print its size.
     """
-    pymupdf.message("%i 0 obj" % xref)
+    pymupdf.message(f"{xref:d} 0 obj")
     xref_str = doc.xref_object(xref)
     pymupdf.message(xref_str)
     if doc.xref_is_stream(xref):
@@ -99,7 +102,7 @@ def print_xref(doc, xref):
                 size = "unknown"
         except Exception:
             size = "unknown"
-        pymupdf.message("stream\n...%s bytes" % size)
+        pymupdf.message(f"stream\n...{size} bytes")
         pymupdf.message("endstream")
     pymupdf.message("endobj")
 
@@ -127,17 +130,17 @@ def get_list(rlist, limit, what="page"):
             if 1 <= i < limit:
                 out_list.append(int(item))
             else:
-                sys.exit("bad %s specification at item %i" % (what, n))
+                sys.exit(f"bad {what} specification at item {n:d}")
             continue
         try:  # this must be a range now, and all of the following must work:
             i1, i2 = item.split("-")  # will fail if not 2 items produced
             i1 = int(i1)  # will fail on non-integers
             i2 = int(i2)
         except Exception:
-            sys.exit("bad %s range specification at item %i" % (what, n))
+            sys.exit(f"bad {what} range specification at item {n:d}")
 
         if not (1 <= i1 < limit and 1 <= i2 < limit):
-            sys.exit("bad %s range specification at item %i" % (what, n))
+            sys.exit(f"bad {what} range specification at item {n:d}")
 
         if i1 == i2:  # just in case: a range of equal numbers
             out_list.append(i1)
@@ -175,13 +178,13 @@ def show(args):
     n = doc.is_form_pdf
     if n > 0:
         s = doc.get_sigflags()
-        pymupdf.message(
-            "document contains %i root form fields and is %ssigned"
-            % (n, "not " if s != 3 else "")
-        )
+        sign_str = ""
+        if s != 3:
+            sign_str = "not "
+        pymupdf.message(f"document contains {n} root form fields and is {sign_str}signed")
     n = doc.embfile_count()
     if n > 0:
-        pymupdf.message("document contains %i embedded files" % n)
+        pymupdf.message(f"document contains {n:d} embedded files")
     pymupdf.message()
     if args.catalog:
         pymupdf.message(mycenter("PDF catalog"))
@@ -204,7 +207,7 @@ def show(args):
         for pno in pagel:
             n = pno - 1
             xref = doc.page_xref(n)
-            pymupdf.message("Page %i:" % pno)
+            pymupdf.message(f"Page {pno:d}:")
             print_xref(doc, xref)
             pymupdf.message()
     if args.trailer:
@@ -301,7 +304,7 @@ def embedded_copy(args):
         sys.exit("nothing to copy")
     intersect = names & set(doc.embfile_names())  # any equal name already in target?
     if intersect:
-        sys.exit("following names already exist in receiving PDF: %s" % str(intersect))
+        sys.exit(f"following names already exist in receiving PDF: {str(intersect)}")
 
     for item in names:
         info = src.embfile_info(item)
@@ -313,7 +316,7 @@ def embedded_copy(args):
             ufilename=info["ufilename"],
             desc=info["desc"],
         )
-        pymupdf.message("copied entry '%s' from '%s'" % (item, src.name))
+        pymupdf.message(f"copied entry '{item}' from '{src.name}'")
     src.close()
     if args.output and args.output != args.input:
         doc.save(args.output, garbage=3)
@@ -352,7 +355,7 @@ def embedded_get(args):
     filename = args.output if args.output else d["filename"]
     with open(filename, "wb") as output:
         output.write(stream)
-    pymupdf.message("saved entry '%s' as '%s'" % (args.name, filename))
+    pymupdf.message(f"saved entry '{args.name}' as '{filename}'")
     doc.close()
 
 
@@ -366,12 +369,12 @@ def embedded_add(args):
 
     try:
         doc.embfile_del(args.name)
-        sys.exit("entry '%s' already exists" % args.name)
+        sys.exit(f"entry '{args.name}' already exists")
     except Exception:
         pass
 
     if not os.path.exists(args.path) or not os.path.isfile(args.path):
-        sys.exit("no such file '%s'" % args.path)
+        sys.exit(f"no such file '{args.path}'")
     with open(args.path, "rb") as f:
         stream = f.read()
     filename = args.path
@@ -401,7 +404,7 @@ def embedded_upd(args):
     try:
         doc.embfile_info(args.name)
     except Exception:
-        sys.exit("no such embedded file '%s'" % args.name)
+        sys.exit(f"no such embedded file '{args.name}'")
 
     if (
         args.path is not None
@@ -446,24 +449,25 @@ def embedded_list(args):
     names = doc.embfile_names()
     if args.name is not None:
         if args.name not in names:
-            sys.exit("no such embedded file '%s'" % args.name)
+            sys.exit(f"no such embedded file '{args.name}'")
         else:
             pymupdf.message()
-            pymupdf.message(
-                "printing 1 of %i embedded file%s:"
-                % (len(names), "s" if len(names) > 1 else "")
-            )
+            plural = ""
+            if len(names) > 1:
+                plural = "s"
+            pymupdf.message(f"printing 1 of {len(names):d} embedded file{plural}:")
             pymupdf.message()
             print_dict(doc.embfile_info(args.name))
             pymupdf.message()
             return
     if not names:
-        pymupdf.message("'%s' contains no embedded files" % doc.name)
+        pymupdf.message(f"'{doc.name}' contains no embedded files")
         return
+
     if len(names) > 1:
-        msg = "'%s' contains the following %i embedded files" % (doc.name, len(names))
+        msg = f"'{doc.name}' contains the following {len(names):d} embedded files"
     else:
-        msg = "'%s' contains the following embedded file" % doc.name
+        msg = f"'{doc.name}' contains the following embedded file"
     pymupdf.message(msg)
     pymupdf.message()
     for name in names:
@@ -492,7 +496,7 @@ def extract_objects(args):
     else:
         out_dir = args.output
         if not (os.path.exists(out_dir) and os.path.isdir(out_dir)):
-            sys.exit("output directory %s does not exist" % out_dir)
+            sys.exit(f"output directory {out_dir} does not exist")
 
     font_xrefs = set()  # already saved fonts
     image_xrefs = set()  # already saved images
@@ -523,11 +527,11 @@ def extract_objects(args):
                     if type(pix) is dict:
                         ext = pix["ext"]
                         imgdata = pix["image"]
-                        outname = os.path.join(out_dir, "img-%i.%s" % (xref, ext))
+                        outname = os.path.join(out_dir, f"img-{xref:d}.{ext}")
                         with open(outname, "wb") as outfile:
                             outfile.write(imgdata)
                     else:
-                        outname = os.path.join(out_dir, "img-%i.png" % xref)
+                        outname = os.path.join(out_dir, f"img-{xref:d}.png")
                         pix2 = (
                             pix
                             if pix.colorspace.n < 4
@@ -536,9 +540,9 @@ def extract_objects(args):
                         pix2.save(outname)
 
     if args.fonts:
-        pymupdf.message("saved %i fonts to '%s'" % (len(font_xrefs), out_dir))
+        pymupdf.message(f"saved {len(font_xrefs):d} fonts to '{out_dir}'")
     if args.images:
-        pymupdf.message("saved %i images to '%s'" % (len(image_xrefs), out_dir))
+        pymupdf.message(f"saved {len(image_xrefs):d} images to '{out_dir}'")
     doc.close()
 
 
@@ -584,7 +588,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         i = bisect.bisect_right(values, value)
         if i:
             return values[i - 1]
-        raise RuntimeError("Line for %g not found in %s" % (value, values))
+        raise RuntimeError(f"Line for {value:g} not found in {values}")
 
     # --------------------------------------------------------------------
     def curate_rows(rows: Set[int], GRID) -> List:
@@ -690,7 +694,7 @@ def page_layout(page, textout, GRID, fontsize, noformfeed, skip_empty, flags):
         old_x1 = 0  # end coordinate of last char
         old_ox = 0  # x-origin of last char
         if minslot <= pymupdf.EPSILON:
-            raise RuntimeError("program error: minslot too small = %g" % minslot)
+            raise RuntimeError(f"program error: minslot too small = {minslot:g}")
 
         for c in lchars:  # loop over characters
             char, ox, _, cwidth = c
