@@ -2,7 +2,7 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.3**
+**Changes in version 1.26.3 (2025-07-02)**
 
 * Use MuPDF-1.26.3.
 
