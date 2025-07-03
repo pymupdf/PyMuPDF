@@ -763,7 +763,7 @@ Yet others are handy, general-purpose utilities.
            try:
                return sum([widthlist[ord(c)] for c in text]) * fontsize
            except IndexError:
-               raise ValueError:("max. code point found: %i, increase limit" % ord(max(text)))
+               raise ValueError:(f"max. code point found: {ord(max(text))}, increase limit")
 
 -----
 

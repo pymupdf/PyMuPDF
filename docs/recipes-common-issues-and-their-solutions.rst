@@ -86,7 +86,7 @@ It features maintaining any metadata, table of contents and links contained in t
         raise SystemExit("need PyMuPDF v1.14.0+")
     fn = sys.argv[1]
 
-    print("Converting '%s' to '%s.pdf'" % (fn, fn))
+    print(f"Converting '{fn}' to '{fn}.pdf'")
 
     doc = pymupdf.open(fn)
 
@@ -123,7 +123,7 @@ It features maintaining any metadata, table of contents and links contained in t
     pdf.save(fn + ".pdf", garbage=4, deflate=True)
     # say how many named links we skipped
     if link_cnti > 0:
-        print("Skipped %i named links of a total of %i in input." % (link_skip, link_cnti))
+        print(f"Skipped {link_skip} named links of a total of {link_cnti} in input.")
 
 
 

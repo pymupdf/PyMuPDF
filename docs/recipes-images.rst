@@ -24,7 +24,7 @@ The script works as a command line tool which expects the filename being supplie
     doc = pymupdf.open(fname)  # open document
     for page in doc:  # iterate through the pages
         pix = page.get_pixmap()  # render page to an image
-        pix.save("page-%i.png" % page.number)  # store image as a PNG
+        pix.save(f"page-{page.number}.png")  # store image as a PNG
 
 The script directory will now contain PNG image files named *page-0.png*, *page-1.png*, etc. Pictures have the dimension of their pages with width and height rounded to integers, e.g. 595 x 842 pixels for an A4 portrait sized page. They will have a resolution of 96 dpi in x and y dimension and have no transparency. You can change all that -- for how to do this, read the next sections.
 
@@ -525,8 +525,8 @@ This script creates an approximate image of it as a PNG, by going down to one-pi
     t1 = time.perf_counter()
     pm.save("sierpinski-punch.png")
     t2 = time.perf_counter()
-    print ("%g sec to create / fill the pixmap" % round(t1-t0,3))
-    print ("%g sec to save the image" % round(t2-t1,3))
+    print ("{round(t1-t0,3)} sec to create / fill the pixmap")
+    print ("{round(t2-t1,3)} sec to save the image")
 
 The result should look something like this:
 
