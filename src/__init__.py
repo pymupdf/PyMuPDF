@@ -3931,7 +3931,7 @@ class Document:
             else:
                 r = args[0]
                 if type(r) is int:
-                    numbers = (r,)
+                    return self.delete_page(r)
                 else:
                     numbers = tuple(r)
 
