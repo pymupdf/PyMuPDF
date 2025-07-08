@@ -1480,7 +1480,7 @@ For details on **embedded files** refer to Appendix 3.
 
   .. method:: delete_page(pno=-1)
 
-    PDF only: Delete a page given by its 0-based number in `-∞ < pno < page_count - 1`.
+    PDF only: Delete a page given by its 0-based number in `-∞ < pno < page_count`.
 
     * Changed in v1.18.14: support Python's `del` statement.
 
