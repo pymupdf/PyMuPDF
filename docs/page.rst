@@ -62,6 +62,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.annot_xrefs`           PDF only: a list of annotation (and widget) xrefs
 :meth:`Page.annots`                return a generator over the annots on the page
 :meth:`Page.apply_redactions`      PDF only: process the redactions of the page
+:meth:`Page.clip_to_rect`          PDF only: remove page content outside a rectangle
 :meth:`Page.bound`                 rectangle of the page
 :meth:`Page.cluster_drawings`      PDF only: bounding boxes of vector graphics
 :meth:`Page.delete_annot`          PDF only: delete an annotation
@@ -1960,6 +1961,16 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int components: The desired count of color components. Must be one of 1, 3 or 4, which results in color spaces DeviceGray, DeviceRGB or DeviceCMYK respectively. The method affects text, images and vector graphics. For instance, with the default value 1, a page will be converted to grayscale. If a page is already grayscale, the method will not cause visible changes -- independent of the value of ``components``.
 
       These changes are **permanent** and cannot be reverted.
+
+   .. method:: clip_to_rect(rect)
+
+      PDF only: Permanently remove page content outside the given rectangle. This is similar to :meth:`Page.set_cropbox`, but the page's rectangle will not be changed, only the content outside the rectangle will be removed.
+
+      :arg rect_like rect: The rectangle to clip to. Must be finite and its intersection with the page must not be empty.
+
+      The method works best for text: All text on the page will be removed (decided by single character) that has no intersection with the rectangle. For vector graphics, the method will remove all paths that have no intersection with the rectangle. For images, the method will remove all images that have no intersection with the rectangle. Vectors and images **having** an intersection with the rectangle, will be kept in their entirety.
+
+      The method roughly has the same effect as if four redactions had been applied that cover the rectangle's outside.
 
    .. method:: remove_rotation()
 

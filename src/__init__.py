@@ -8754,6 +8754,16 @@ class Page:
         ropts = mupdf.PdfRecolorOptions(ropt)
         mupdf.pdf_recolor_page(pdfdoc, self.number, ropts)
 
+    def clip_to_rect(self, rect):
+        """Clip away page content outside the rectangle."""
+        clip = Rect(rect)
+        if clip.is_infinite or (clip & self.rect).is_empty:
+            raise ValueError("rect must not be infinite or empty")
+        clip *= self.transformation_matrix
+        pdfpage = _as_pdf_page(self)
+        pclip = JM_rect_from_py(clip)
+        mupdf.pdf_clip_page(pdfpage, pclip)
+
     @property
     def artbox(self):
         """The ArtBox"""
