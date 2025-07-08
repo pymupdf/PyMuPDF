@@ -3865,28 +3865,7 @@ class Document:
     def delete_page(self, pno: int =-1):
         """ Delete one page from a PDF.
         """
-        if not self.is_pdf:
-            raise ValueError("is no PDF")
-        if self.is_closed:
-            raise ValueError("document closed")
-
-        page_count = self.page_count
-        while pno < 0:
-            pno += page_count
-
-        if pno >= page_count:
-            raise ValueError("bad page number(s)")
-
-        # remove TOC bookmarks pointing to deleted page
-        toc = self.get_toc()
-        ol_xrefs = self.get_outline_xrefs()
-        for i, item in enumerate(toc):
-            if item[2] == pno + 1:
-                self._remove_toc_item(ol_xrefs[i])
-
-        self._remove_links_to(frozenset((pno,)))
-        self._delete_page(pno)
-        self._reset_page_refs()
+        return self.delete_pages(pno)
 
     def delete_pages(self, *args, **kw):
         """Delete pages from a PDF.
@@ -3896,6 +3875,7 @@ class Document:
             specify the first/last page to delete.
             Or a list/tuple/range object, which can contain arbitrary
             page numbers.
+            Or a single integer page number.
         """
         if not self.is_pdf:
             raise ValueError("is no PDF")
@@ -3928,12 +3908,13 @@ class Document:
                 if not f <= t < page_count:
                     raise ValueError("bad page number(s)")
                 numbers = tuple(range(f, t + 1))
+            elif isinstance(args[0], int):
+                pno = args[0]
+                while pno < 0:
+                    pno += page_count
+                numbers = (pno,)
             else:
-                r = args[0]
-                if type(r) is int:
-                    return self.delete_page(r)
-                else:
-                    numbers = tuple(r)
+                numbers = tuple(args[0])
 
         numbers = list(map(int, set(numbers)))  # ensure unique integers
         if numbers == []:
