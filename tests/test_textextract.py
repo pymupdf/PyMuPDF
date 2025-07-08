@@ -374,8 +374,9 @@ def test_3705():
     
     assert texts1 == texts0
 
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
+    if pymupdf.mupdf_version_tuple < (1, 27):
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
 
 def test_3650():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3650.pdf')
