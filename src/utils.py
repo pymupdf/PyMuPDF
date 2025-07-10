@@ -341,7 +341,7 @@ def insert_image(
             raise ValueError("bad filename")
 
     if filename and not os.path.exists(filename):
-        raise FileNotFoundError("No such file: '%s'" % filename)
+        raise FileNotFoundError(f"No such file: '{filename}'")
     elif stream and type(stream) not in (bytes, bytearray, io.BytesIO):
         raise ValueError("stream must be bytes-like / BytesIO")
     elif pixmap and type(pixmap) is not pymupdf.Pixmap:
@@ -1402,8 +1402,7 @@ def set_metadata(doc: pymupdf.Document, m: dict = None) -> None:
     valid_keys = set(keymap.keys())
     diff_set = set(m.keys()).difference(valid_keys)
     if diff_set != set():
-        msg = "bad dict key(s): %s" % diff_set
-        raise ValueError(msg)
+        raise ValueError(f"bad dict key(s): {diff_set}")
 
     t, temp = doc.xref_get_key(-1, "Info")
     if t != "xref":
@@ -1417,7 +1416,7 @@ def set_metadata(doc: pymupdf.Document, m: dict = None) -> None:
     if info_xref == 0:  # no prev metadata: get new xref
         info_xref = doc.get_new_xref()
         doc.update_object(info_xref, "<<>>")  # fill it with empty object
-        doc.xref_set_key(-1, "Info", "%i 0 R" % info_xref)
+        doc.xref_set_key(-1, "Info", f"{info_xref:d} 0 R")
     elif m == {}:  # remove existing metadata
         doc.xref_set_key(-1, "Info", "null")
         doc.init_doc()
@@ -1528,13 +1527,13 @@ def set_toc(
         t1 = toc[i]
         t2 = toc[i + 1]
         if not -1 <= t1[2] <= page_count:
-            raise ValueError("row %i: page number out of range" % i)
+            raise ValueError(f"row {i:d}: page number out of range")
         if (type(t2) not in (list, tuple)) or len(t2) not in (3, 4):
-            raise ValueError("bad row %i" % (i + 1))
+            raise ValueError(f"bad row {i + 1:d}")
         if (type(t2[0]) is not int) or t2[0] < 1:
-            raise ValueError("bad hierarchy level in row %i" % (i + 1))
+            raise ValueError(f"bad hierarchy level in row {i + 1:d}")
         if t2[0] > t1[0] + 1:
-            raise ValueError("bad hierarchy level in row %i" % (i + 1))
+            raise ValueError(f"bad hierarchy level in row {i + 1:d}")
     # no formal errors in toc --------------------------------------------------
 
     # --------------------------------------------------------------------------
@@ -1623,46 +1622,23 @@ def set_toc(
     for i, ol in enumerate(olitems):
         txt = "<<"
         if ol["count"] != 0:
-            txt += "/Count %i" % ol["count"]
+            txt += f"/Count {ol['count']:d}"
         try:
             txt += ol["dest"]
         except Exception:
             # Verbose in PyMuPDF/tests.
             if g_exceptions_verbose >= 2:   pymupdf.exception_info()
             pass
-        try:
-            if ol["first"] > -1:
-                txt += "/First %i 0 R" % xref[ol["first"]]
-        except Exception:
-            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
-            pass
-        try:
-            if ol["last"] > -1:
-                txt += "/Last %i 0 R" % xref[ol["last"]]
-        except Exception:
-            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
-            pass
-        try:
-            if ol["next"] > -1:
-                txt += "/Next %i 0 R" % xref[ol["next"]]
-        except Exception:
-            # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
-            pass
-        try:
-            if ol["parent"] > -1:
-                txt += "/Parent %i 0 R" % xref[ol["parent"]]
-        except Exception:
-            # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
-            pass
-        try:
-            if ol["prev"] > -1:
-                txt += "/Prev %i 0 R" % xref[ol["prev"]]
-        except Exception:
-            # Verbose in PyMuPDF/tests.
-            if g_exceptions_verbose >= 2:   pymupdf.exception_info()
-            pass
+        name_key_pairs = {"first": "First", "last": "Last", "next": "Next", "parent": "Parent", "prev": "Prev"}
+        for name, pdf_key in name_key_pairs.items():
+            try:
+                if ol[name] > -1:
+                    txt += f"/{pdf_key} {xref[ol[name]]:d} 0 R"
+            except Exception:
+                if g_exceptions_verbose >= 2:
+                    pymupdf.exception_info()
+                pass
+
         try:
             txt += "/Title" + ol["title"]
         except Exception:
@@ -1673,7 +1649,7 @@ def set_toc(
         if ol.get("color") and len(ol["color"]) == 3:
             txt += f"/C[ {_format_g(tuple(ol['color']))}]"
         if ol.get("flags", 0) > 0:
-            txt += "/F %i" % ol["flags"]
+            txt += f"/F {ol['flags']:d}"
 
         if i == 0:  # special: this is the outline root
             txt += "/Type/Outlines"  # so add the /Type entry
@@ -2208,7 +2184,7 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
                 break
             i += 1
     # add /NM key to object definition
-    annot = annot.replace("/Link", "/Link/NM(%s)" % name)
+    annot = annot.replace("/Link", f"/Link/NM({name})")
     return annot
 
 
@@ -3673,7 +3649,7 @@ class Shape:
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
-            bdc = "/OC /%s BDC\n" % optcont
+            bdc = f"/OC /{optcont} BDC\n"
             emc = "EMC\n"
         else:
             bdc = emc = ""
@@ -3682,11 +3658,11 @@ class Shape:
         if alpha is None:
             alpha = ""
         else:
-            alpha = "/%s gs\n" % alpha
+            alpha = f"/{alpha} gs\n"
         nres = templ1(bdc, alpha, cm, left, top, fname, fontsize)
 
         if render_mode > 0:
-            nres += "%i Tr " % render_mode
+            nres += f"{render_mode:d} Tr "
             nres += _format_g(border_width * fontsize) + " w "
             if miter_limit is not None:
                 nres += _format_g(miter_limit) + " M "
@@ -3713,7 +3689,7 @@ class Shape:
             space -= lheight
             nlines += 1
 
-        nres += "\nET\n%sQ\n" % emc
+        nres += f"\nET\n{emc}Q\n"
 
         # =========================================================================
         #   end of text insertion
@@ -3781,7 +3757,7 @@ class Shape:
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
-            bdc = "/OC /%s BDC\n" % optcont
+            bdc = f"/OC /{optcont} BDC\n"
             emc = "EMC\n"
         else:
             bdc = emc = ""
@@ -3791,7 +3767,7 @@ class Shape:
         if alpha is None:
             alpha = ""
         else:
-            alpha = "/%s gs\n" % alpha
+            alpha = f"/{alpha} gs\n"
 
         if rotate % 90 != 0:
             raise ValueError("rotate must be multiple of 90")
@@ -3989,7 +3965,7 @@ class Shape:
         more = abs(more)
         if more < pymupdf.EPSILON:
             more = 0  # don't bother with epsilons
-        nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
+        nres = f"\nq\n{bdc}{alpha}BT\n{cm}" # initialize output buffer
         templ = lambda a, b, c, d: f"1 0 0 1 {_format_g((a, b))} Tm /{c} {_format_g(d)} Tf "
         # center, right, justify: output each line with its own specifics
         text_t = text.splitlines()  # split text in lines again
@@ -4029,7 +4005,7 @@ class Shape:
             nres += templ(left, top, fname, fontsize)
 
             if render_mode > 0:
-                nres += "%i Tr " % render_mode
+                nres += f"{render_mode:d} Tr "
                 nres += _format_g(border_width * fontsize) + " w "
                 if miter_limit is not None:
                     nres += _format_g(miter_limit) + " M "
@@ -4041,9 +4017,9 @@ class Shape:
                 nres += color_str
             if fill is not None:
                 nres += fill_str
-            nres += "%sTJ\n" % pymupdf.getTJstr(t, tj_glyphs, simple, ordering)
+            nres += f"{pymupdf.getTJstr(t, tj_glyphs, simple, ordering)}TJ\n"
 
-        nres += "ET\n%sQ\n" % emc
+        nres += f"ET\n{emc}Q\n"
 
         self.text_cont += nres
         self.updateRect(rect)
@@ -4085,25 +4061,25 @@ class Shape:
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
-            self.draw_cont = "/OC /%s BDC\n" % optcont + self.draw_cont
+            self.draw_cont = f"/OC /{optcont} BDC\n" + self.draw_cont
             emc = "EMC\n"
         else:
             emc = ""
 
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
         if alpha is not None:
-            self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
+            self.draw_cont = f"/{alpha} gs\n" + self.draw_cont
 
         if width != 1 and width != 0:
             self.draw_cont += _format_g(width) + " w\n"
 
         if lineCap != 0:
-            self.draw_cont = "%i J\n" % lineCap + self.draw_cont
+            self.draw_cont = f"{lineCap:d} J\n" + self.draw_cont
         if lineJoin != 0:
-            self.draw_cont = "%i j\n" % lineJoin + self.draw_cont
+            self.draw_cont = f"{lineJoin:d} j\n" + self.draw_cont
 
         if dashes not in (None, "", "[] 0"):
-            self.draw_cont = "%s d\n" % dashes + self.draw_cont
+            self.draw_cont = f"{dashes} d\n" + self.draw_cont
 
         if closePath:
             self.draw_cont += "h\n"
@@ -4410,8 +4386,7 @@ def scrub(
         xref_limit = doc.xref_length()
     for xref in range(1, xref_limit):
         if not doc.xref_object(xref):
-            msg = "bad xref %i - clean PDF before scrubbing" % xref
-            raise ValueError(msg)
+            raise ValueError(f"bad xref {xref:d} - clean PDF before scrubbing")
         if javascript and doc.xref_get_key(xref, "S")[1] == "/JavaScript":
             # a /JavaScript action object
             obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript
@@ -4635,11 +4610,11 @@ def fill_textbox(
     # -------------------------------------------------------------------------
     nlines = len(new_lines)
     if nlines > max_lines:
-        msg = "Only fitting %i of %i lines." % (max_lines, nlines)
+        msg = f"Only fitting {max_lines:d} of {nlines:d} lines."
         if warn is None:
             pass
         elif warn:
-            pymupdf.message("Warning: " + msg)
+            pymupdf.message(f"Warning: {msg}")
         else:
             raise ValueError(msg)
 
@@ -4687,7 +4662,7 @@ def get_oc(doc: pymupdf.Document, xref: int) -> int:
         raise ValueError("document close or encrypted")
     t, name = doc.xref_get_key(xref, "Subtype")
     if t != "name" or name not in ("/Image", "/Form"):
-        raise ValueError("bad object type at xref %i" % xref)
+        raise ValueError(f"bad object type at xref {xref}")
     t, oc = doc.xref_get_key(xref, "OC")
     if t != "xref":
         return 0
@@ -4706,15 +4681,15 @@ def set_oc(doc: pymupdf.Document, xref: int, oc: int) -> None:
         raise ValueError("document close or encrypted")
     t, name = doc.xref_get_key(xref, "Subtype")
     if t != "name" or name not in ("/Image", "/Form"):
-        raise ValueError("bad object type at xref %i" % xref)
+        raise ValueError(f"bad object type at xref {xref}")
     if oc > 0:
         t, name = doc.xref_get_key(oc, "Type")
         if t != "name" or name not in ("/OCG", "/OCMD"):
-            raise ValueError("bad object type at xref %i" % oc)
+            raise ValueError(f"bad object type at xref {oc:d}")
     if oc == 0 and "OC" in doc.xref_get_keys(xref):
         doc.xref_set_key(xref, "OC", "null")
         return None
-    doc.xref_set_key(xref, "OC", "%i 0 R" % oc)
+    doc.xref_set_key(xref, "OC", f"{oc:d} 0 R")
     return None
 
 
@@ -4741,19 +4716,19 @@ def set_ocmd(
 
     def ve_maker(ve):
         if type(ve) not in (list, tuple) or len(ve) < 2:
-            raise ValueError("bad 've' format: %s" % ve)
+            raise ValueError(f"bad 've' format: {ve}")
         if ve[0].lower() not in ("and", "or", "not"):
-            raise ValueError("bad operand: %s" % ve[0])
+            raise ValueError(f"bad operand: {ve[0]}")
         if ve[0].lower() == "not" and len(ve) != 2:
-            raise ValueError("bad 've' format: %s" % ve)
-        item = "[/%s" % ve[0].title()
+            raise ValueError(f"bad 've' format: {ve}")
+        item = f"[/{ve[0].title()}"
         for x in ve[1:]:
             if type(x) is int:
                 if x not in all_ocgs:
-                    raise ValueError("bad OCG %i" % x)
-                item += " %i 0 R" % x
+                    raise ValueError(f"bad OCG {x}")
+                item += f" {x} 0 R"
             else:
-                item += " %s" % ve_maker(x)
+                item += f" {ve_maker(x)}"
         item += "]"
         return item
 
@@ -4762,9 +4737,9 @@ def set_ocmd(
     if ocgs and type(ocgs) in (list, tuple):  # some OCGs are provided
         s = set(ocgs).difference(all_ocgs)  # contains illegal xrefs
         if s != set():
-            msg = "bad OCGs: %s" % s
+            msg = f"bad OCGs: {s}"
             raise ValueError(msg)
-        text += "/OCGs[" + " ".join(map(lambda x: "%i 0 R" % x, ocgs)) + "]"
+        text += f"/OCGs[{' '.join([f'{x:d} 0 R' for x in ocgs])}]"
 
     if policy:
         policy = str(policy).lower()
@@ -4775,11 +4750,11 @@ def set_ocmd(
             "alloff": "AllOff",
         }
         if policy not in ("anyon", "allon", "anyoff", "alloff"):
-            raise ValueError("bad policy: %s" % policy)
-        text += "/P/%s" % pols[policy]
+            raise ValueError(f"bad policy: {policy}")
+        text += f"/P/{pols[policy]}"
 
     if ve:
-        text += "/VE%s" % ve_maker(ve)
+        text += f"/VE{ve_maker(ve)}"
 
     text += ">>"
 
@@ -5077,15 +5052,16 @@ def set_page_labels(doc, labels):
         Returns:
             PDF label rule string wrapped in "<<", ">>".
         """
-        s = "%i<<" % label["startpage"]
-        if label.get("prefix", "") != "":
-            s += "/P(%s)" % label["prefix"]
-        if label.get("style", "") != "":
-            s += "/S/%s" % label["style"]
-        if label.get("firstpagenum", 1) > 1:
-            s += "/St %i" % label["firstpagenum"]
-        s += ">>"
-        return s
+        pref_part = ""
+        if (val := label.get("prefix", "")) != "":
+            pref_part = f"/P({val})"
+        styl_part = ""
+        if (val := label.get("style", "")) != "":
+            styl_part = f"/S/{val}"
+        page_part = ""
+        if (val := label.get("firstpagenum", 1)) > 1:
+            page_part = f"/St {val}"
+        return f"{label["startpage"]}<<{pref_part}{styl_part}{page_part}>>"
 
     def create_nums(labels):
         """Return concatenated string of all labels rules.
@@ -5462,13 +5438,13 @@ def subset_fonts(doc: pymupdf.Document, verbose: bool = False, fallback: bool = 
                     gid_set.add(189)
                     unc_list = list(gid_set)
                     for unc in unc_list:
-                        unc_file.write("%i\n" % unc)
+                        unc_file.write(f"{unc:d}\n")
                 else:
                     args.append(f"--unicodes-file={uncfile_path}")
                     unc_set.add(255)
                     unc_list = list(unc_set)
                     for unc in unc_list:
-                        unc_file.write("%04x\n" % unc)
+                        unc_file.write(f"{unc:04x}\n")
 
             # store fontbuffer as a file
             with open(oldfont_path, "wb") as fontfile:
