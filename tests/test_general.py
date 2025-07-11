@@ -811,7 +811,7 @@ def test_2957_1():
     page.apply_redactions()
 
     # reload page to finalize updates
-    page = doc.reload_page(page)
+    #page = doc.reload_page(page)
 
     # the two string must retain their positions (except rounding errors)
     rects1 = page.search_for("6e9f73dfb4384a2b8af6ebba")

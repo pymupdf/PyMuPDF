@@ -5232,35 +5232,8 @@ class Document:
 
     def reload_page(self, page: Page) -> Page:
         """Make a fresh copy of a page."""
-        old_annots = {}  # copy annot references to here
         pno = page.number  # save the page number
-        for k, v in page._annot_refs.items():  # save the annot dictionary
-            old_annots[k] = v
-        
-        # When we call `self.load_page()` below, it will end up in
-        # fz_load_chapter_page(), which will return any matching page in the
-        # document's list of non-ref-counted loaded pages, instead of actually
-        # reloading the page.
-        #
-        # We want to assert that we have actually reloaded the fz_page, and not
-        # simply returned the same `fz_page*` pointer from the document's list
-        # of non-ref-counted loaded pages.
-        #
-        # So we first remove our reference to the `fz_page*`. This will
-        # decrement .refs, and if .refs was 1, this is guaranteed to free the
-        # `fz_page*` and remove it from the document's list if it was there. So
-        # we are guaranteed that our returned `fz_page*` is from a genuine
-        # reload, even if it happens to reuse the original block of memory.
-        #
-        # However if the original .refs is greater than one, there must be
-        # other references to the `fz_page` somewhere, and we require that
-        # these other references are not keeping the page in the document's
-        # list.  We check that we are returning a newly loaded page by
-        # asserting that our returned `fz_page*` is different from the original
-        # `fz_page*` - the original was not freed, so a new `fz_page` cannot
-        # reuse the same block of memory.
-        #
-        
+        page.refresh()  # synchronize links & annotations
         refs_old = page.this.m_internal.refs
         m_internal_old = page.this.m_internal_value()
         
@@ -5269,24 +5242,6 @@ class Document:
         page = None
         TOOLS.store_shrink(100)
         page = self.load_page(pno)  # reload the page
-
-        # copy annot refs over to the new dictionary
-        #page_proxy = weakref.proxy(page)
-        for k, v in old_annots.items():
-            annot = old_annots[k]
-            #annot.parent = page_proxy  # refresh parent to new page
-            page._annot_refs[k] = annot
-        if refs_old == 1:
-            # We know that `page.this = None` will have decremented the ref
-            # count to zero so we are guaranteed that the new `fz_page` is a
-            # new page even if it happens to have reused the same block of
-            # memory.
-            pass
-        else:
-            # Check that the new `fz_page*` is different from the original.
-            m_internal_new = page.this.m_internal_value()
-            assert m_internal_new != m_internal_old, \
-                    f'{refs_old=} {m_internal_old=:#x} {m_internal_new=:#x}'
         return page
 
     def resolve_link(self, uri=None, chapters=0):
@@ -9742,10 +9697,8 @@ class Page:
     def refresh(self):
         """Refresh page after link/annot/widget updates."""
         CheckParent(self)
-        doc = self.parent
-        page = doc.reload_page(self)
-        # fixme this looks wrong.
-        self.this = page
+        pdf_page = _as_pdf_page(self)
+        mupdf.pdf_sync_page(pdf_page)
 
     @property
     def rotation(self):

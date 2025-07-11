@@ -151,7 +151,6 @@ def test_stamp():
     annot_xref = annot.xref
     page.load_annot(annot_id)
     page.load_annot(annot_xref)
-    page = doc.reload_page(page)
 
 
 def test_image_stamp():

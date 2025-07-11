@@ -20,8 +20,6 @@ def test_2886():
     # insert this link in an arbitrary page & rect
     page = doc[-1]
     page.insert_link(link)
-    # need this to update the internal MuPDF annotations array
-    page = doc.reload_page(page)
 
     # our new link must be the last in the following list
     links = page.get_links()

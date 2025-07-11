@@ -44,7 +44,7 @@ def test_707727():
     page = doc[0]
     pix0 = page.get_pixmap()
     page.clean_contents(sanitize=True)
-    page = doc.reload_page(page)  # required to prevent re-use
+    # page = doc.reload_page(page)  # required to prevent re-use
     pix1 = page.get_pixmap()
     rms = gentle_compare.pixmaps_rms(pix0, pix1)
     print(f'{rms=}', flush=1)
