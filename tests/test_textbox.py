@@ -184,7 +184,6 @@ def test_htmlbox1():
         spare_height, scale = page.insert_htmlbox(rect, text, rotate=rot, scale_low=0)
         assert spare_height == 0
         assert 0 < scale < 1
-        page = doc.reload_page(page)
         link = page.get_links()[0]  # extracts the links on the page
 
         assert link["uri"] == "https://www.artifex.com"
