@@ -807,12 +807,11 @@ def build_mupdf_windows(
     devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
     if not devenv:
         try:
-            # Prefer VS-2019 as that is what MuPDF's project/solution files are
-            # written for.
-            log(f'Looking for Visual Studio 2019.')
-            vs = pipcl.wdev.WindowsVS(year=2019)
+            # Prefer VS-2022 as that is what Github provide in windows-2022.
+            log(f'Looking for Visual Studio 2022.')
+            vs = pipcl.wdev.WindowsVS(year=2022)
         except Exception as e:
-            log(f'Failed to find VS-2019:\n'
+            log(f'Failed to find VS-2022:\n'
                     f'{textwrap.indent(traceback.format_exc(), "    ")}'
                     )
             log(f'Looking for any Visual Studio.')
