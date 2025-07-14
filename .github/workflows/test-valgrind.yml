@@ -24,4 +24,4 @@ jobs:
       - uses: actions/setup-python@v5
       - name: valgrind
         run:
-          python scripts/test.py ${{matrix.args}} -P 1 --valgrind 1 build test
+          python scripts/test.py ${{matrix.args}} -P 1 -T valgrind build test
