@@ -609,7 +609,7 @@ def test_2596():
     pix1 = page.get_pixmap()
     assert pix1.samples == pix0.samples
     rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
+    if pymupdf.mupdf_version_tuple < (1, 27):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'too many indirections (possible indirection cycle involving 24 0 R)'
 
