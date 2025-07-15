@@ -28,13 +28,17 @@ def gentle_compare(w0, w1):
     return True
 
 
-def rms(a, b):
+def rms(a, b, verbose=None, out_prefix=''):
     '''
     Returns RMS diff of raw bytes of two sequences.
     '''
+    if verbose is True:
+        verbose = 100000
     assert len(a) == len(b)
     e = 0
-    for aa, bb in zip(a, b):
+    for i, (aa, bb) in enumerate(zip(a, b)):
+        if verbose and (i % verbose == 0):
+            print(f'{out_prefix}rms(): {i=} {e=} {aa=} {aa=}.')
         e += (aa - bb) ** 2
     rms = math.sqrt(e / len(a))
     return rms
@@ -58,14 +62,9 @@ def pixmaps_rms(a, b, out_prefix=''):
     a_mv = a.samples_mv
     b_mv = b.samples_mv
     assert len(a_mv) == len(b_mv)
-    e = 0
-    for i, (a_byte, b_byte) in enumerate(zip(a_mv, b_mv)):
-        if i % 100000 == 0:
-            print(f'{out_prefix}compare_pixmaps(): {i=} {e=} {a_byte=} {b_byte=}.')
-        e += (a_byte - b_byte) ** 2
-    rms = math.sqrt(e / len(a_mv))
-    print(f'{out_prefix}compare_pixmaps(): {e=} {rms=}.')
-    return rms
+    ret = rms(a_mv, b_mv, verbose=True, out_prefix=out_prefix)
+    print(f'{out_prefix}pixmaps_rms(): {ret=}.')
+    return ret
 
 
 def pixmaps_diff(a, b, out_prefix=''):
