@@ -107,12 +107,15 @@ Command line args:
     -h
         Show help.
     
-    -i <implementations>
+    -I <implementations>
         Set PyMuPDF implementations to test.
         <implementations> must contain only these individual characters:
              'r' - rebased.
              'R' - rebased without optimisations.
             Default is 'r'. Also see `PyMuPDF:tests/run_compound.py`.
+    
+    -i <install_version>
+        Set version installed by the 'install' command.
     
     -k <expression>
         Specify which test(s) to run; passed straight through to pytest's `-k`.
@@ -298,6 +301,7 @@ def main(argv):
     commands = list()
     env_extra = dict()
     implementations = 'r'
+    install_version = None
     mupdf_sync = None
     os_names = list()
     system_packages = False
@@ -393,6 +397,9 @@ def main(argv):
             show_help = True
         
         elif arg == '-i':
+            install_version = next(args)
+        
+        elif arg == '-I':
             implementations = next(args)
         
         elif arg == '-k':
@@ -459,15 +466,11 @@ def main(argv):
             venv = int(next(args))
             assert venv in (0, 1, 2), f'Invalid {venv=} should be 0, 1 or 2.'
         
-        elif arg in ('build', 'cibw', 'pyodide', 'test', 'wheel'):
+        elif arg in ('build', 'cibw', 'install', 'pyodide', 'test', 'wheel'):
             commands.append(arg)
         
         elif arg == 'buildtest':
             commands += ['build', 'test']
-        
-        elif arg == 'install':
-            _pymupdf = next(args)
-            commands.append(f'{arg}.{_pymupdf}')
         
         else:
             assert 0, f'Unrecognised option/command: {arg=}.'
@@ -530,9 +533,13 @@ def main(argv):
             # Build wheel(s) with cibuildwheel.
             cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist)
         
-        elif command.startswith('install.'):
-            name = command[len('install.'):]
-            run(f'pip install --force-reinstall {name}')
+        elif command == 'install':
+            p = 'pymupdf'
+            if install_version:
+                if not install_version.startswith(('==', '>=', '>')):
+                    p = f'{p}=='
+                p = f'{p}{install_version}'
+            run(f'pip install --force-reinstall {p}')
             have_installed = True
         
         elif command == 'test':
