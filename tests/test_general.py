@@ -1907,3 +1907,9 @@ def test_4564():
         assert document.metadata['producer'] == 'Adobe PSL 1.3e for Canon\x00'
     else:
         assert document.metadata['producer'] == 'Adobe PSL 1.3e for Canon\udcc0\udc80'
+
+
+def test_4496():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4496.hwpx')
+    with pymupdf.open(path) as document:
+        print(document.page_count)
