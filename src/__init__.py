@@ -17802,6 +17802,14 @@ def get_tessdata(tessdata=None):
     # Try to locate the tesseract-ocr installation.
     
     import subprocess
+    
+    cp = subprocess.run('tesseract --list-langs', shell=1, capture_output=1, check=0, text=True)
+    if cp.returncode == 0:
+        m = re.search('List of available languages in "(.+)"', cp.stdout)
+        if m:
+            tessdata = m.group(1)
+            return tessdata
+    
     # Windows systems:
     if sys.platform == "win32":
         cp = subprocess.run("where tesseract", shell=1, capture_output=1, check=0, text=True)
@@ -17816,20 +17824,27 @@ def get_tessdata(tessdata=None):
             raise RuntimeError("No tessdata specified and Tesseract installation has no {tessdata} folder")
 
     # Unix-like systems:
-    cp = subprocess.run("whereis tesseract-ocr", shell=1, capture_output=1, check=0, text=True)
-    response = cp.stdout.strip().split()
-    if cp.returncode or len(response) != 2:  # if not 2 tokens: no tesseract-ocr
-        raise RuntimeError("No tessdata specified and Tesseract is not installed")
-
-    # search tessdata in folder structure
-    dirname = response[1]  # contains tesseract-ocr installation folder
-    pattern = f"{dirname}/*/tessdata"
-    tessdatas = glob.glob(pattern)
-    tessdatas.sort()
-    if tessdatas:
-        return tessdatas[-1]
+    attempts = list()
+    for path in 'tesseract-ocr', 'tesseract':
+        cp = subprocess.run(f'whereis {path}', shell=1, capture_output=1, check=0, text=True)
+        if cp.returncode == 0:
+            response = cp.stdout.strip().split()
+            if len(response) == 2:
+                # search tessdata in folder structure
+                dirname = response[1]  # contains tesseract-ocr installation folder
+                pattern = f"{dirname}/*/tessdata"
+                attempts.append(pattern)
+                tessdatas = glob.glob(pattern)
+                tessdatas.sort()
+                if tessdatas:
+                    return tessdatas[-1]
+    if attempts:
+        text = 'No tessdata specified and no match for:\n'
+        for attempt in attempts:
+            text += f'    {attempt}'
+        raise RuntimeError(text)
     else:
-        raise RuntimeError("No tessdata specified and Tesseract installation has no {pattern} folder.")
+        raise RuntimeError('No tessdata specified and Tesseract is not installed')
 
 
 def css_for_pymupdf_font(
