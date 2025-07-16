@@ -2244,6 +2244,7 @@ def insert_link(page: pymupdf.Page, lnk: dict, mark: bool = True) -> None:
     if annot == "":
         raise ValueError("link kind not supported")
     page._addAnnot_FromString((annot,))
+    page.refresh()
 
 
 def insert_textbox(
@@ -2494,6 +2495,8 @@ def insert_htmlbox(
         link["from"] *= mat
         page.insert_link(link)
 
+    # ensure any new links are available
+    page.refresh()
     return spare_height, scale
 
 
@@ -4271,6 +4274,7 @@ def apply_redactions(
                 )
                 fsize -= 0.5  # reduce font if unsuccessful
     shape.commit()  # append new contents object
+    page.refresh()  # synchronize links and annotations
     return True
 
 
