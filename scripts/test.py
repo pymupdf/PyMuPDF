@@ -977,6 +977,20 @@ def test(
     python = gh_release.relpath(sys.executable)
     log('Running tests with tests/run_compound.py and pytest.')
     
+    PYODIDE_ROOT = os.environ.get('PYODIDE_ROOT')
+    if PYODIDE_ROOT is not None:
+        log(f'Not installing test packages because {PYODIDE_ROOT=}.')
+        command = f'{pytest_options} {pytest_arg}'
+        args = shlex.split(command)
+        print(f'{PYODIDE_ROOT=} so calling pytest.main(args).')
+        print(f'{command=}')
+        print(f'args are ({len(args)}):')
+        for arg in args:
+            print(f'    {arg!r}')
+        import pytest
+        pytest.main(args)
+        return
+    
     if venv == 2:
         run(f'pip install --upgrade {gh_release.test_packages}')
     else:
@@ -1065,7 +1079,7 @@ def test(
     try:
         log(f'Running tests with tests/run_compound.py and pytest.')
         run(command, env_extra=env_extra, timeout=test_timeout)
-            
+        
     except subprocess.TimeoutExpired as e:
          log(f'Timeout when running tests.')
          raise
