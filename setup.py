@@ -1291,7 +1291,7 @@ else:
         readme_d = f.read()
 
     tag_python = None
-    requires_dist = None,
+    requires_dist = list()
     entry_points = None
     
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
@@ -1300,7 +1300,7 @@ else:
         readme = readme_p
         summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
         if 'b' not in PYMUPDF_SETUP_FLAVOUR:
-            requires_dist = f'PyMuPDFb =={version_b}'
+            requires_dist.append(f'PyMuPDFb =={version_b}')
         # Create a `pymupdf` command.
         entry_points = textwrap.dedent('''
                 [console_scripts]
@@ -1320,6 +1320,10 @@ else:
         tag_python = 'py3'
     else:
         assert 0, f'Unrecognised {PYMUPDF_SETUP_FLAVOUR=}.'
+    
+    if os.environ.get('PYODIDE_ROOT'):
+        # We can't pip install pytest on pyodide, so specify it here.
+        requires_dist.append('pytest')
 
     p = pipcl.Package(
             name,
