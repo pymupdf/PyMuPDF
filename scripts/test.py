@@ -78,6 +78,9 @@ Command line args:
          2025-05-27: this fails when building mupdf C API - `ld -r -b binary
          ...` fails with:
             emcc: error: binary: No such file or directory ("binary" was expected to be an input file, based on the commandline arguments provided)
+
+    --cibw-pyodide-version <cibw_pyodide_version>
+        Override default Pyodide version to use with `cibuildwheel` command.
     
     --cibw-release-1
         Set up so that `cibw` builds all wheels except linux-aarch64, and sdist
@@ -167,8 +170,9 @@ Command line args:
         inside C++ pybind. Requires `sudo apt install pybind11-dev` or similar.
     
     --pyodide-build-version <version>
-        Version of Python package pyodide-build; if None (the default) we use
-        latest available version.
+        Version of Python package pyodide-build to use with `pyodide` command.
+        
+        If None (the default) `pyodide` uses the latest available version.
         2025-02-13: pyodide_build_version='0.29.3' works.
     
     -s 0 | 1
@@ -296,8 +300,9 @@ def main(argv):
         return
     
     build_isolation = None
-    cibw_name = 'cibuildwheel'
+    cibw_name = None
     cibw_pyodide = None
+    cibw_pyodide_version = None
     commands = list()
     env_extra = dict()
     implementations = 'r'
@@ -353,6 +358,9 @@ def main(argv):
         
         elif arg == '--build-isolation':
             build_isolation = int(next(args))
+        
+        elif arg == '--cibw-pyodide-version':
+            cibw_pyodide_version = next(args)
         
         elif arg == '--cibw-release-1':
             cibw_sdist = True
@@ -531,7 +539,17 @@ def main(argv):
         
         elif command == 'cibw':
             # Build wheel(s) with cibuildwheel.
-            cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist)
+            if cibw_pyodide and env_extra.get('CIBW_BUILD') is None:
+                CIBW_BUILD = 'cp313*'
+                env_extra['CIBW_BUILD'] = CIBW_BUILD
+                log(f'Defaulting to {CIBW_BUILD=} for Pyodide.')
+            cibuildwheel(
+                    env_extra,
+                    cibw_name or 'cibuildwheel',
+                    cibw_pyodide,
+                    cibw_pyodide_version or '0.28.0',
+                    cibw_sdist,
+                    )
         
         elif command == 'install':
             p = 'pymupdf'
@@ -671,7 +689,7 @@ def build(
         run(f'pip install{build_isolation_text} -v --force-reinstall {pymupdf_dir_abs}', env_extra=env_extra)
 
 
-def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist):
+def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_sdist):
     
     if cibw_sdist and platform.system() == 'Linux':
         log(f'Building sdist.')
@@ -727,6 +745,17 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist):
             v = platform.python_version_tuple()[:2]
             log(f'{v=}')
             CIBW_BUILD = f'cp{"".join(v)}*'
+    
+    cibw_pyodide_args = ''
+    if cibw_pyodide:
+        cibw_pyodide_args = ' --platform pyodide'
+        env_extra['HAVE_LIBCRYPTO'] = 'no'
+        env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
+    if cibw_pyodide_version:
+        # 2025-07-21: there is no --pyodide-version option so we set
+        # CIBW_PYODIDE_VERSION.
+        env_extra['CIBW_PYODIDE_VERSION'] = cibw_pyodide_version
+        env_extra['CIBW_ENABLE'] = 'pyodide-prerelease'
 
     # Pass all the environment variables we have set, to Linux
     # docker. Note that this will miss any settings in the original
@@ -735,18 +764,17 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist):
 
     # Build for lowest (assumed first) Python version.
     #
-    cibw_pyodide_arg = ' --platform pyodide' if cibw_pyodide else ''
     CIBW_BUILD_0 = CIBW_BUILD.split()[0]
     log(f'Building for first Python version {CIBW_BUILD_0}.')
     env_extra['CIBW_BUILD'] = CIBW_BUILD_0
-    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_arg}', env_extra=env_extra)
+    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
 
     # Tell cibuildwheel to build and test all specified Python versions; it
     # will notice that the wheel we built above supports all versions of
     # Python, so will not actually do any builds here.
     #
     env_extra['CIBW_BUILD'] = CIBW_BUILD
-    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_arg}', env_extra=env_extra)
+    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
     run(f'ls -ld {pymupdf_dir}/wheelhouse/*')
         
 
@@ -972,6 +1000,20 @@ def test(
     python = gh_release.relpath(sys.executable)
     log('Running tests with tests/run_compound.py and pytest.')
     
+    PYODIDE_ROOT = os.environ.get('PYODIDE_ROOT')
+    if PYODIDE_ROOT is not None:
+        log(f'Not installing test packages because {PYODIDE_ROOT=}.')
+        command = f'{pytest_options} {pytest_arg} -s'
+        args = shlex.split(command)
+        print(f'{PYODIDE_ROOT=} so calling pytest.main(args).')
+        print(f'{command=}')
+        print(f'args are ({len(args)}):')
+        for arg in args:
+            print(f'    {arg!r}')
+        import pytest
+        pytest.main(args)
+        return
+    
     if venv == 2:
         run(f'pip install --upgrade {gh_release.test_packages}')
     else:
@@ -1060,7 +1102,7 @@ def test(
     try:
         log(f'Running tests with tests/run_compound.py and pytest.')
         run(command, env_extra=env_extra, timeout=test_timeout)
-            
+        
     except subprocess.TimeoutExpired as e:
          log(f'Timeout when running tests.')
          raise
