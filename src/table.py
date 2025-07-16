@@ -2471,7 +2471,10 @@ def page_rotation_reset(page, xref, rot, mediabox):
 
 def find_tables(
     page,
+    *, # ← forces keyword use
     clip=None,
+    header_margin: float = 0,
+    footer_margin: float = 0,
     vertical_strategy: str = "lines",
     horizontal_strategy: str = "lines",
     vertical_lines: list = None,
@@ -2499,6 +2502,10 @@ def find_tables(
     global CHARS, EDGES
     CHARS = []
     EDGES = []
+    if clip is None and (header_margin or footer_margin):
+        clip = Rect(page.rect)
+        clip.y0 += header_margin
+        clip.y1 -= footer_margin
     old_small = bool(TOOLS.set_small_glyph_heights())  # save old value
     TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
     if page.rotation != 0:
