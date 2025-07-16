@@ -583,13 +583,16 @@ darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 msys2 = platform.system().startswith('MSYS_NT-')
 
+pyodide_flags = '-fwasm-exceptions'
+
 if os.environ.get('PYODIDE') == '1':
     if os.environ.get('OS') != 'pyodide':
         log('PYODIDE=1, setting OS=pyodide.')
         os.environ['OS'] = 'pyodide'
+        os.environ['XCFLAGS'] = pyodide_flags
+        os.environ['XCXXFLAGS'] = pyodide_flags
 
 pyodide = os.environ.get('OS') == 'pyodide'
-
 
 def build():
     '''
@@ -1180,6 +1183,10 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         if cxxflags:
             compiler_extra += f' {cxxflags}'
 
+    if pyodide:
+        compiler_extra += f' {pyodide_flags}'
+        linker_extra += f' {pyodide_flags}'
+        
     return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
 
 
@@ -1291,7 +1298,7 @@ else:
         readme_d = f.read()
 
     tag_python = None
-    requires_dist = None,
+    requires_dist = list()
     entry_points = None
     
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
@@ -1300,7 +1307,7 @@ else:
         readme = readme_p
         summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
         if 'b' not in PYMUPDF_SETUP_FLAVOUR:
-            requires_dist = f'PyMuPDFb =={version_b}'
+            requires_dist.append(f'PyMuPDFb =={version_b}')
         # Create a `pymupdf` command.
         entry_points = textwrap.dedent('''
                 [console_scripts]
@@ -1320,6 +1327,10 @@ else:
         tag_python = 'py3'
     else:
         assert 0, f'Unrecognised {PYMUPDF_SETUP_FLAVOUR=}.'
+    
+    if os.environ.get('PYODIDE_ROOT'):
+        # We can't pip install pytest on pyodide, so specify it here.
+        requires_dist.append('pytest')
 
     p = pipcl.Package(
             name,
