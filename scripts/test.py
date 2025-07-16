@@ -727,6 +727,12 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist):
             v = platform.python_version_tuple()[:2]
             log(f'{v=}')
             CIBW_BUILD = f'cp{"".join(v)}*'
+    
+    cibw_pyodide_arg = ''
+    if cibw_pyodide:
+        cibw_pyodide_arg = ' --platform pyodide'
+        env_extra['HAVE_LIBCRYPTO'] = 'no'
+        env_extra['PYMUPDF_SETUP_MUPDF_TESSERACT'] = '0'
 
     # Pass all the environment variables we have set, to Linux
     # docker. Note that this will miss any settings in the original
@@ -735,7 +741,6 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_sdist):
 
     # Build for lowest (assumed first) Python version.
     #
-    cibw_pyodide_arg = ' --platform pyodide' if cibw_pyodide else ''
     CIBW_BUILD_0 = CIBW_BUILD.split()[0]
     log(f'Building for first Python version {CIBW_BUILD_0}.')
     env_extra['CIBW_BUILD'] = CIBW_BUILD_0
