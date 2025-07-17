@@ -980,7 +980,7 @@ def test(
     PYODIDE_ROOT = os.environ.get('PYODIDE_ROOT')
     if PYODIDE_ROOT is not None:
         log(f'Not installing test packages because {PYODIDE_ROOT=}.')
-        command = f'{pytest_options} {pytest_arg}'
+        command = f'{pytest_options} {pytest_arg} -s'
         args = shlex.split(command)
         print(f'{PYODIDE_ROOT=} so calling pytest.main(args).')
         print(f'{command=}')

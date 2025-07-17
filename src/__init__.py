@@ -29,6 +29,10 @@ import zipfile
 
 from . import extra
 
+print(f'Calling extra.dummy()', flush=1)
+extra.dummy()
+print(f'Called extra.dummy()', flush=1)
+
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -2879,6 +2883,8 @@ class Document:
         # We temporarily set JM_mupdf_show_errors=0 while we are constructing,
         # then restore its original value in a `finally:` block.
         #
+        #log(f'Calling extra.dummy()')
+        #extra.dummy()
         global JM_mupdf_show_errors
         JM_mupdf_show_errors_old = JM_mupdf_show_errors
         JM_mupdf_show_errors = 0
@@ -3291,7 +3297,8 @@ class Document:
         if not n:
             return
         if n != m:
-            raise IndexError( "internal error finding outline xrefs")
+            log(f'raising IndexError: internal error finding outline xrefs {len(xrefs)=} {len(items)=}')
+            raise IndexError(f'internal error finding outline xrefs {len(xrefs)=} {len(items)=}.')
 
         # update all TOC item dictionaries
         for i in range(n):

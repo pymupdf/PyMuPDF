@@ -921,6 +921,7 @@ static int dict_setitemstr_drop(PyObject* dict, const char* key, PyObject* value
 
 static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
 {
+    throw std::runtime_error("Document_extend_toc_items(): Deliberate error");
     PyObject* item=nullptr;
     PyObject* itemdict=nullptr;
     PyObject* xrefs=nullptr;
@@ -959,6 +960,8 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
         
         if (n != m)
         {
+            printf("### throwing runtime_error: internal error finding outline xrefs\n");
+            fflush(stdout);
             throw std::runtime_error("internal error finding outline xrefs");
         }
 
@@ -1022,8 +1025,10 @@ static void Document_extend_toc_items(mupdf::PdfDocument& pdf, PyObject* items)
         }
         end:;
     }
-    catch (std::exception&)
+    catch (std::exception& e)
     {
+        printf("rethrowing exception: %s\n", e.what());
+        throw;
     }
     Py_CLEAR(xrefs);
     Py_CLEAR(bold);
@@ -4152,6 +4157,21 @@ PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip)
     return rc;
 }
 
+void dummy()
+{
+    try
+    {
+        printf("dummy(): Throwing deliberate error\n");
+        fflush(stdout);
+        throw std::runtime_error("dummy(): deliberate error");
+    }
+    catch (std::exception& e)
+    {
+        printf("dummy(): ignoring exception: %s\n", e.what());
+        fflush(stdout);
+    }
+}
+
 %}
 
 /* Declarations for functions defined above. */
@@ -4283,3 +4303,5 @@ alpha, and we copy the non-alpha bytes. If +1 <src> must not have alpha and
 void pixmap_copy(fz_pixmap* pm, const fz_pixmap* src, int n);
 
 PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip);
+
+void dummy();

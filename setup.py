@@ -583,13 +583,17 @@ darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 msys2 = platform.system().startswith('MSYS_NT-')
 
+pyodide_flags = '-fwasm-exceptions -sSUPPORT_LONGJMP=wasm'
+
 if os.environ.get('PYODIDE') == '1':
     if os.environ.get('OS') != 'pyodide':
         log('PYODIDE=1, setting OS=pyodide.')
         os.environ['OS'] = 'pyodide'
+        #flags = '-fwasm-exceptions -sSUPPORT_LONGJMP=wasm'
+        os.environ['XCFLAGS'] = pyodide_flags
+        os.environ['XCXXFLAGS'] = pyodide_flags
 
 pyodide = os.environ.get('OS') == 'pyodide'
-
 
 def build():
     '''
@@ -1180,6 +1184,10 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         if cxxflags:
             compiler_extra += f' {cxxflags}'
 
+    if pyodide:
+        compiler_extra += f' {pyodide_flags}'
+        linker_extra += f' {pyodide_flags}'
+        
     return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
 
 
