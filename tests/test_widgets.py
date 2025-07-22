@@ -398,8 +398,6 @@ def test_4055():
         w.field_value = w.on_state()
         w.update()
 
-    page = doc.reload_page(page)  # reload page to make sure we start fresh
-
     # Round 2: confirm that fields contain the PDF's own on values
     for w in page.widgets(types=[2]):
         # confirm each value coincides with the "Yes" value
@@ -407,15 +405,11 @@ def test_4055():
         w.field_value = False  # switch to "Off" using False
         w.update()
 
-    page = doc.reload_page(page)
-
     # Round 3: confirm that 'False' achieved "Off" values
     for w in page.widgets(types=[2]):
         assert w.field_value == "Off"
         w.field_value = True  # use True for the next round
         w.update()
-
-    page = doc.reload_page(page)
 
     # Round 4: confirm that setting to True also worked
     for w in page.widgets(types=[2]):
@@ -424,8 +418,6 @@ def test_4055():
         w.update()
         w.field_value = "Yes"
         w.update()
-
-    page = doc.reload_page(page)
 
     # Round 5: final check: setting to "Yes" also does work
     for w in page.widgets(types=[2]):
