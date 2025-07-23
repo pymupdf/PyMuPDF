@@ -1923,6 +1923,10 @@ def git_get(
         remote:
             Remote git repostitory, for example
             'https://github.com/ArtifexSoftware/mupdf.git'.
+            
+            If starts with 'git:', <branch> and <tag> should be None and <remote> should
+            match:
+                git:--branch|--tag <branch_or_tag> <remote>
         local:
             Local directory. If <local>/.git exists, we attempt to run `git
             update` in it.
@@ -1943,6 +1947,21 @@ def git_get(
             `git submodule update --init --recursive` before returning.
     '''
     log0(f'{remote=} {local=} {branch=} {tag=}')
+    if remote.startswith('git:'):
+        assert not branch
+        assert not tag
+        args = shlex.split(remote[len('git:'):])
+        if len(args) == 3:
+            if args[0] == '--branch':
+                branch = args[1]
+            elif args[0] == '--tag':
+                tag = args[1]
+            else:
+                assert 0, f'Expected `git:--branch|--tag <branch_or_tag> <remote>` but {remote=}.'
+            remote = args[2]
+        else:
+            assert 0, f'Expected `git:--branch|--tag <branch_or_tag> <remote>` but {remote=}.'
+        
     assert (branch and not tag) or (not branch and tag), f'Must specify exactly one of <branch> and <tag>.'
     
     depth_arg = f' --depth {depth}' if depth else ''
