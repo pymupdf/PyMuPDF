@@ -89,7 +89,8 @@ def main():
         log(f'{platform.platform()=}')
         log(f'{platform.python_version()=}')
         log(f'{platform.system()=}')
-        log(f'{platform.uname()=}')
+        if sys.implementation.name != 'graalpy':
+            log(f'{platform.uname()=}')
         log(f'{sys.executable=}')
         log(f'{sys.version=}')
         log(f'{sys.version_info=}')
