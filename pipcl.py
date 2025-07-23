@@ -11,9 +11,14 @@ a SWIG extension, but we also give access to the located compiler/linker so
 that a `setup.py` script can take over the details itself.
 
 Run doctests with: `python -m doctest pipcl.py`
+
+For Graal we require that PIPCL_GRAAL_PYTHON is set to non-graal Python (we
+build for non-graal except with Graal Python's include paths and library
+directory).
 '''
 
 import base64
+import codecs
 import glob
 import hashlib
 import inspect
@@ -572,6 +577,11 @@ class Package:
 
         self.wheel_compression = wheel_compression
         self.wheel_compresslevel = wheel_compresslevel
+        
+        # If true and we are building for graal, we set PIPCL_PYTHON_CONFIG to
+        # a command that will print includes/libs from graal_py's sysconfig.
+        #
+        self.graal_legacy_python_config = True
 
 
     def build_wheel(self,
@@ -591,6 +601,59 @@ class Package:
                 f' config_settings={config_settings!r}'
                 f' metadata_directory={metadata_directory!r}'
                 )
+
+        if sys.implementation.name == 'graalpy':
+            # We build for Graal by building a native Python wheel with Graal
+            # Python's include paths and library directory. We then rename the
+            # wheel to contain graal's tag etc.
+            #
+            log0(f'### Graal build: deferring to cpython.')
+            python_native = os.environ.get('PIPCL_GRAAL_PYTHON')
+            assert python_native, f'Graal build requires that PIPCL_GRAAL_PYTHON is set.'
+            env_extra = dict(
+                    PIPCL_SYSCONFIG_PATH_include = sysconfig.get_path('include'),
+                    PIPCL_SYSCONFIG_PATH_platinclude = sysconfig.get_path('platinclude'),
+                    PIPCL_SYSCONFIG_CONFIG_VAR_LIBDIR = sysconfig.get_config_var('LIBDIR'),
+                    )
+            # Tell native build to run pipcl.py itself to get python-config
+            # information about include paths etc.
+            if self.graal_legacy_python_config:
+                env_extra['PIPCL_PYTHON_CONFIG'] = f'{python_native} {os.path.abspath(__file__)} --graal-legacy-python-config'
+            
+            # Create venv.
+            venv_name = os.environ.get('PIPCL_GRAAL_NATIVE_VENV')
+            if venv_name:
+                log1(f'Graal using pre-existing {venv_name=}')
+            else:
+                venv_name = 'venv-pipcl-graal-native'
+                run(f'{shlex.quote(python_native)} -m venv {venv_name}')
+                log1(f'Graal using {venv_name=}')
+            
+            newfiles = NewFiles(f'{wheel_directory}/*.whl')
+            run(
+                    f'. {venv_name}/bin/activate && python setup.py --dist-dir {shlex.quote(wheel_directory)} bdist_wheel',
+                    env_extra = env_extra,
+                    prefix = f'pipcl.py graal {python_native}: ',
+                    )
+            wheel = newfiles.get_one()
+            wheel_leaf = os.path.basename(wheel)
+            python_major_minor = run(f'{shlex.quote(python_native)} -c "import platform; import sys; sys.stdout.write(str().join(platform.python_version_tuple()[:2]))"', capture=1)
+            cpabi = f'cp{python_major_minor}-abi3'
+            assert cpabi in wheel_leaf, f'Expected wheel to be for {cpabi=}, but {wheel=}.'
+            graalpy_ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
+            log1(f'{graalpy_ext_suffix=}')
+            m = re.match(r'\.graalpy(\d+[^\-]*)-(\d+)', graalpy_ext_suffix)
+            gpver = m[1]
+            cpver = m[2]
+            graalpy_wheel_tag = f'graalpy{cpver}-graalpy{gpver}_{cpver}_native'
+            name = wheel_leaf.replace(cpabi, graalpy_wheel_tag)
+            destination = f'{wheel_directory}/{name}'
+            log0(f'### Graal build: copying {wheel=} to {destination=}')
+            # Copying results in two wheels which appears to confuse pip, showing:
+            #   Found multiple .whl files; unspecified behaviour. Will call build_wheel.
+            os.rename(wheel, destination)
+            log1(f'Returning {name=}.')
+            return name
 
         wheel_name = self.wheel_name()
         path = f'{wheel_directory}/{wheel_name}'
@@ -1402,7 +1465,7 @@ def build_extension(
         debug=False,
         compiler_extra='',
         linker_extra='',
-        swig='swig',
+        swig=None,
         cpp=True,
         prerequisites_swig=None,
         prerequisites_compile=None,
@@ -1453,7 +1516,7 @@ def build_extension(
         linker_extra:
             Extra linker flags. Can be None.
         swig:
-            Base swig command.
+            Swig command; if false we use 'swig'.
         cpp:
             If true we tell SWIG to generate C++ code instead of C.
         prerequisites_swig:
@@ -1503,6 +1566,8 @@ def build_extension(
         linker_extra = ''
     if builddir is None:
         builddir = outdir
+    if not swig:
+        swig = 'swig'
     includes_text = _flags( includes, '-I')
     defines_text = _flags( defines, '-D')
     libpaths_text = _flags( libpaths, '/LIBPATH:', '"') if windows() else _flags( libpaths, '-L')
@@ -1912,37 +1977,78 @@ def git_get(
         tag=None,
         update=True,
         submodules=True,
+        default_remote=None,
         ):
     '''
     Ensures that <local> is a git checkout (at either <tag>, or <branch> HEAD)
     of a remote repository.
     
-    Exactly one of <branch> and <tag> must be specified.
+    Exactly one of <branch> and <tag> must be specified, or <remote> must start
+    with 'git:' and match the syntax described below.
     
     Args:
         remote:
             Remote git repostitory, for example
             'https://github.com/ArtifexSoftware/mupdf.git'.
+            
+            If starts with 'git:', the remaining text should be a command-line
+            style string containing some or all of these args:
+                --branch <branch>
+                --tag <tag>
+                <remote>
+            These overrides <branch>, <tag> and <default_remote>.
+            
+            For example these all clone/update/branch master of https://foo.bar/qwerty.git to local
+            checkout 'foo-local':
+            
+                git_get('https://foo.bar/qwerty.git', 'foo-local', branch='master')
+                git_get('git:--branch master https://foo.bar/qwerty.git', 'foo-local')
+                git_get('git:--branch master', 'foo-local', default_remote='https://foo.bar/qwerty.git')
+                git_get('git:', 'foo-local', branch='master', default_remote='https://foo.bar/qwerty.git')
+            
         local:
             Local directory. If <local>/.git exists, we attempt to run `git
             update` in it.
         branch:
-            Branch to use.
+            Branch to use. Is used as default if remote starts with 'git:'.
         depth:
             Depth of local checkout when cloning and fetching, or None.
         env_extra:
             Dict of extra name=value environment variables to use whenever we
             run git.
         tag:
-            Tag to use.
+            Tag to use. Is used as default if remote starts with 'git:'.
         update:
             If false we do not update existing repository. Might be useful if
             testing without network access.
         submodules:
             If true, we clone with `--recursive --shallow-submodules` and run
             `git submodule update --init --recursive` before returning.
+        default_remote:
+            The remote URL if <remote> starts with 'git:' but does not specify
+            the remote URL.
     '''
     log0(f'{remote=} {local=} {branch=} {tag=}')
+    if remote.startswith('git:'):
+        remote0 = remote
+        args = iter(shlex.split(remote0[len('git:'):]))
+        remote = default_remote
+        while 1:
+            try:
+                arg = next(args)
+            except StopIteration:
+                break
+            if arg == '--branch':
+                branch = next(args)
+                tag = None
+            elif arg == '--tag':
+                tag == next(args)
+                branch = None
+            else:
+                remote = next(args)
+        assert remote, f'{default_remote=} and no remote specified in remote={remote0!r}.'
+        assert branch or tag, f'{branch=} {tag=} and no branch/tag specified in remote={remote0!r}.'
+        
     assert (branch and not tag) or (not branch and tag), f'Must specify exactly one of <branch> and <tag>.'
     
     depth_arg = f' --depth {depth}' if depth else ''
@@ -2007,9 +2113,11 @@ def run(
         capture=False,
         check=1,
         verbose=1,
+        env=None,
         env_extra=None,
         timeout=None,
         caller=1,
+        prefix=None,
         ):
     '''
     Runs a command using `subprocess.run()`.
@@ -2032,12 +2140,22 @@ def run(
             command's returncode in our return value.
         verbose:
             If true we show the command.
+        env:
+            None or dict to use instead of <os.environ>.
         env_extra:
-            None or dict to add to environ.
+            None or dict to add to <os.environ> or <env>.
         timeout:
             If not None, timeout in seconds; passed directly to
             subprocess.run(). Note that on MacOS subprocess.run() seems to
             leave processes running if timeout expires.
+        prefix:
+            String prefix for each line of output.
+
+            If true:
+            * We run command with stdout=subprocess.PIPE and
+              stderr=subprocess.STDOUT, repetaedly reading the command's output
+              and writing it to stdout with <prefix>.
+            * We do not support <timeout>, which must be None.
     Returns:
         check capture   Return
         --------------------------
@@ -2046,9 +2164,11 @@ def run(
           true  false   None or raise exception
           true   true   output or raise exception
     '''
-    env = None
+    if env is None:
+        env = os.environ
+        if env_extra:
+            env = env.copy()
     if env_extra:
-        env = os.environ.copy()
         env.update(env_extra)
     lines = _command_lines( command)
     if verbose:
@@ -2061,16 +2181,59 @@ def run(
         log1(text, caller=caller+1)
     sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
-    cp = subprocess.run(
-            command2,
-            shell=True,
-            stdout=subprocess.PIPE if capture else None,
-            stderr=subprocess.STDOUT if capture else None,
-            check=check,
-            encoding='utf8',
-            env=env,
-            timeout=timeout,
-            )
+    
+    if prefix:
+        assert not timeout, f'Timeout not supported with prefix.'
+        child = subprocess.Popen(
+                command2,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                encoding='utf8',
+                env=env,
+                )
+        if capture:
+            capture_text = ''
+        decoder = codecs.getincrementaldecoder('utf8')('replace')
+        line_start = True
+        while 1:
+            raw = os.read( child.stdout.fileno(), 10000)
+            text = decoder.decode(raw, final=not raw)
+            if text:
+                if capture:
+                    capture_text += text
+                lines = text.split('\n')
+                for i, line in enumerate(lines):
+                    if line_start:
+                        sys.stdout.write(prefix)
+                        line_start = False
+                    sys.stdout.write(line)
+                    if i < len(lines) - 1:
+                        sys.stdout.write('\n')
+                        line_start = True
+                sys.stdout.flush()
+            if not raw:
+                break
+        if not line_start:
+            sys.stdout.write('\n')
+        e = child.wait()
+        if check and e:
+            raise subprocess.CalledProcessError(e, command2, capture_text if capture else None)
+        if check:
+            return capture_text if capture else None
+        else:
+            return (e, capture_text) if capture else e
+    else:
+        cp = subprocess.run(
+                command2,
+                shell=True,
+                stdout=subprocess.PIPE if capture else None,
+                stderr=subprocess.STDOUT if capture else None,
+                check=check,
+                encoding='utf8',
+                env=env,
+                timeout=timeout,
+                )
     if check:
         return cp.stdout if capture else None
     else:
@@ -2108,9 +2271,11 @@ def show_system():
     log(f'{os.getcwd()=}')
     log(f'{platform.machine()=}')
     log(f'{platform.platform()=}')
+    log(f'{platform.python_implementation()=}')
     log(f'{platform.python_version()=}')
     log(f'{platform.system()=}')
-    log(f'{platform.uname()=}')
+    if sys.implementation.name != 'graalpy':
+        log(f'{platform.uname()=}')
     log(f'{sys.executable=}')
     log(f'{sys.version=}')
     log(f'{sys.version_info=}')
@@ -2143,8 +2308,23 @@ class PythonFlags:
             String containing linker flags for library paths.
     '''
     def __init__(self):
+        
+        # Experimental detection of python flags from sysconfig.*() instead of
+        # python-config command.
+        includes_, ldflags_ = sysconfig_python_flags()
+      
+        if pyodide():
+            _include_dir = os.environ[ 'PYO3_CROSS_INCLUDE_DIR']
+            _lib_dir = os.environ[ 'PYO3_CROSS_LIB_DIR']
+            self.includes = f'-I {_include_dir}'
+            self.ldflags = f'-L {_lib_dir}'
 
-        if windows():
+        elif 0:
+
+            self.includes = includes_
+            self.ldflags = ldflags_
+        
+        elif windows():
             wp = wdev.WindowsPython()
             self.includes = f'/I"{wp.include}"'
             self.ldflags = f'/LIBPATH:"{wp.libs}"'
@@ -2213,8 +2393,10 @@ class PythonFlags:
                     log2(f'### Have removed `-lcrypt` from ldflags: {self.ldflags!r} -> {ldflags2!r}')
                     self.ldflags = ldflags2
 
-        log2(f'{self.includes=}')
-        log2(f'{self.ldflags=}')
+        log1(f'{self.includes=}')
+        log1(f'    {includes_=}')
+        log1(f'{self.ldflags=}')
+        log1(f'    {ldflags_=}')
 
 
 def macos_add_cross_flags(command):
@@ -2766,3 +2948,101 @@ class NewFiles:
             if os.path.isfile(path):
                 ret[path] = self._file_id(path)
         return ret
+
+
+def swig_get(swig, quick, swig_local='pipcl-swig-git'):
+    '''
+    Returns <swig> or a new swig binary.
+    
+    If <swig> is true and starts with 'git:' (not Windows), the remaining text
+    is passed to git_get() and we clone/update/build swig, and return the built
+    binary. We default to the main swig repository, branch master, so for
+    example 'git:' will return the latest swig from branch master.
+    
+    Otherwise we simply return <swig>.
+    
+    Args:
+        swig:
+            If starts with 'git:', passed as <remote> arg to git_remote().
+        quick:
+            If true, we do not update/build local checkout if the binary is
+            already present.
+        swig_local:
+            path to use for checkout.
+    '''
+    if swig and swig.startswith('git:'):
+        assert platform.system() != 'Windows'
+        swig_local = os.path.abspath(swig_local)
+        swig_binary = f'{swig_local}/install/bin/swig'
+        if quick and os.path.isfile(swig_binary):
+            log1(f'{quick=} and {swig_binary=} already exists, so not downloading/building.')
+        else:
+            # Clone swig.
+            git_get(
+                    swig,
+                    swig_local,
+                    default_remote='https://github.com/swig/swig.git',
+                    branch='master',
+                    )
+            # Build swig.
+            run(f'cd {swig_local} && ./autogen.sh && ./configure --prefix={swig_local}/install && make && make install')
+        assert os.path.isfile(swig_binary)
+        return swig_binary
+    else:
+        return swig
+
+
+def _show_dict(d):
+    ret = ''
+    for n in sorted(d.keys()):
+        v = d[n]
+        ret += f'    {n}: {v!r}\n'
+    return ret
+
+def show_sysconfig():
+    '''
+    Shows contents of sysconfig.get_paths() and sysconfig.get_config_vars() dicts.
+    '''
+    import sysconfig
+    paths = sysconfig.get_paths()
+    log0(f'show_sysconfig().')
+    log0(f'sysconfig.get_paths():\n{_show_dict(sysconfig.get_paths())}')
+    log0(f'sysconfig.get_config_vars():\n{_show_dict(sysconfig.get_config_vars())}')
+
+
+def sysconfig_python_flags():
+    '''
+    Returns include paths and library directory for Python.
+    
+    Uses sysconfig.*(), overridden by environment variables
+    PIPCL_SYSCONFIG_PATH_include, PIPCL_SYSCONFIG_PATH_platinclude and
+    PIPCL_SYSCONFIG_CONFIG_VAR_LIBDIR if set.
+    '''
+    include1_ = os.environ.get('PIPCL_SYSCONFIG_PATH_include') or sysconfig.get_path('include')
+    include2_ = os.environ.get('PIPCL_SYSCONFIG_PATH_platinclude') or sysconfig.get_path('platinclude')
+    ldflags_ = os.environ.get('PIPCL_SYSCONFIG_CONFIG_VAR_LIBDIR') or sysconfig.get_config_var('LIBDIR')
+
+    includes_ = [include1_]
+    if include2_ != include1_:
+        includes_.append(include2)
+    if windows():
+        includes_ = [f'/I"{i}"' for i in includes_]
+        ldflags_ = f'/LIBPATH:"{ldflags_}"'
+    else:
+        includes_ = [f'-I {i}' for i in includes_]
+        ldflags_ = f'-L {ldflags_}'
+    includes_ = ' '.join(includes_)
+    return includes_, ldflags_
+
+
+if __name__ == '__main__':
+    # Internal-only limited command line support, used if
+    # graal_legacy_python_config is true.
+    #
+    includes, ldflags = sysconfig_python_flags()
+    if sys.argv[1:] == ['--graal-legacy-python-config', '--includes']:
+        print(includes)
+    elif sys.argv[1:] == ['--graal-legacy-python-config', '--ldflags']:
+        print(ldflags)
+    else:
+        assert 0, f'Expected `--graal-legacy-python-config --includes|--ldflags` but {sys.argv=}'
