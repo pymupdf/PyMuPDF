@@ -80,7 +80,8 @@ Command line args:
             emcc: error: binary: No such file or directory ("binary" was expected to be an input file, based on the commandline arguments provided)
 
     --cibw-pyodide-version <cibw_pyodide_version>
-        Override default Pyodide version to use with `cibuildwheel` command.
+        Override default Pyodide version to use with `cibuildwheel` command. If
+        empty string with use cibuildwheel's default.
     
     --cibw-release-1
         Set up so that `cibw` builds all wheels except linux-aarch64, and sdist
@@ -105,6 +106,17 @@ Command line args:
     
     --gdb 0|1
         Run tests under gdb. Requires user interaction.
+    
+    --graal
+        Use graal - run inside a Graal VM instead of a Python venv.
+        
+        As of 2025-08-04 we:
+        * Clone the latest pyenv and build it.
+        * Use pyenv to install graalpy.
+        * Use graalpy to create venv.
+        
+        [After the first time, suggest `-v 1` to avoid delay from
+        updating/building pyenv and recreating the graal venv.]
     
     --help
     -h
@@ -143,6 +155,8 @@ Command line args:
             -m "git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf.git"
             -m :1.26.x
             
+    --mupdf-clean 0|1
+        If 1 we do a clean MuPDF build.
     
     -M 0|1
     --build-mupdf 0|1
@@ -191,6 +205,25 @@ Command line args:
     --system-site-packages 0|1
         If 1, use `--system-site-packages` when creating venv. Defaults is 0.
     
+    --swig <swig>
+        Use <swig> instead of the `swig` command.
+        
+        Unix only:
+            Clone/update/build swig from a git repository using 'git:' prefix.
+        
+            We default to https://github.com/swig/swig.git branch master, so these
+            are all equivalent:
+
+                --swig 'git:--branch master https://github.com/swig/swig.git'
+                --swig 'git:--branch master'
+                --swig git:
+    
+    --swig-quick 0|1
+        If 1 and `--swig` starts with 'git:', we do not update/build swig if
+        already present.
+        
+        See description of PYMUPDF_SETUP_SWIG_QUICK in setup.py.
+    
     -t <names>
         Pytest test names, comma-separated. Should be relative to PyMuPDF
         directory. For example:
@@ -208,12 +241,14 @@ Command line args:
             helgrind
             vagrind
     
-    -v 0|1|2
+    -v <venv>
+        venv is:
         0 - do not use a venv.
         1 - Use venv. If it already exists, we assume the existing directory
             was created by us earlier and is a valid venv containing all
             necessary packages; this saves a little time.
-        2 - Use venv
+        2 - Use venv.
+        3 - Use venv but delete it first if it already exists.
         The default is 2.
     
 Commands:
@@ -268,6 +303,7 @@ import os
 import platform
 import re
 import shlex
+import shutil
 import subprocess
 import sys
 import textwrap
@@ -305,6 +341,7 @@ def main(argv):
     cibw_pyodide_version = None
     commands = list()
     env_extra = dict()
+    graal = False
     implementations = 'r'
     install_version = None
     mupdf_sync = None
@@ -319,6 +356,8 @@ def main(argv):
     show_help = False
     sync_paths = False
     system_site_packages = False
+    swig = None
+    swig_quick = None
     test_fitz = False
     test_names = list()
     test_timeout = None
@@ -401,6 +440,9 @@ def main(argv):
         elif arg == '-f':
             test_fitz = int(next(args))
         
+        elif arg == '--graal':
+            graal = True
+        
         elif arg in ('-h', '--help'):
             show_help = True
         
@@ -427,6 +469,9 @@ def main(argv):
                 assert os.path.isdir(_mupdf), f'Not a directory: {_mupdf=}'
                 os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = os.path.abspath(_mupdf)
                 mupdf_sync = _mupdf
+        
+        elif arg == '--mupdf-clean':
+                env_extra['PYMUPDF_SETUP_MUPDF_CLEAN']=next(args)
         
         elif arg in ('-M', '--build-mupdf'):
             env_extra['PYMUPDF_SETUP_MUPDF_REBUILD'] = next(args)
@@ -459,6 +504,12 @@ def main(argv):
         elif arg == '--system-site-packages':
             system_site_packages = int(next(args))
         
+        elif arg == '--swig':
+            swig = next(args)
+        
+        elif arg == '--swig-quick':
+            swig_quick = int(next(args))
+        
         elif arg == '-t':
             test_names += next(args).split(',')
         
@@ -472,7 +523,7 @@ def main(argv):
         
         elif arg == '-v':
             venv = int(next(args))
-            assert venv in (0, 1, 2), f'Invalid {venv=} should be 0, 1 or 2.'
+            assert venv in (0, 1, 2, 3), f'Invalid {venv=} should be 0, 1, 2 or 3.'
         
         elif arg in ('build', 'cibw', 'install', 'pyodide', 'test', 'wheel'):
             commands.append(arg)
@@ -511,20 +562,50 @@ def main(argv):
         if venv:
             # Rerun ourselves inside a venv if not already in a venv.
             if not venv_in():
-                e = venv_run(
-                        sys.argv,
-                        f'venv-pymupdf-{platform.python_version()}-{int.bit_length(sys.maxsize+1)}',
-                        recreate=(venv==2),
-                        )
+                if graal:
+                    # 2025-07-24: We need the latest pyenv.
+                    graalpy = 'graalpy-24.2.1'
+                    venv_name = f'venv-pymupdf-{graalpy}'
+                    pyenv_dir = f'{pymupdf_dir_abs}/pyenv-git'
+                    os.environ['PYENV_ROOT'] = pyenv_dir
+                    os.environ['PATH'] = f'{pyenv_dir}/bin:{os.environ["PATH"]}'
+                    os.environ['PIPCL_GRAAL_PYTHON'] = sys.executable
+                    
+                    if venv >= 3:
+                        shutil.rmtree(venv_name, ignore_errors=1)
+                    if venv == 1 and os.path.exists(pyenv_dir) and os.path.exists(venv_name):
+                        log(f'{venv=} and {venv_name=} already exists so not building pyenv or creating venv.')
+                    else:
+                        pipcl.git_get('https://github.com/pyenv/pyenv.git', pyenv_dir, branch='master')
+                        run(f'cd {pyenv_dir} && src/configure && make -C src')
+                        run(f'which pyenv')
+                        run(f'pyenv install -v -s {graalpy}')
+                        run(f'{pyenv_dir}/versions/{graalpy}/bin/graalpy -m venv {venv_name}')
+                    e = run(f'. {venv_name}/bin/activate && python {shlex.join(sys.argv)}',
+                            check=False,
+                            )
+                else:
+                    venv_name = f'venv-pymupdf-{platform.python_version()}-{int.bit_length(sys.maxsize+1)}'
+                    e = venv_run(
+                            sys.argv,
+                            venv_name,
+                            recreate=(venv>=2),
+                            clean=(venv>=3),
+                            )
                 sys.exit(e)
     else:
         log(f'Warning, no commands specified so nothing to do.')
+    
+    # Clone/update/build swig if specified.
+    swig_binary = pipcl.swig_get(swig, swig_quick)
+    if swig_binary:
+        os.environ['PYMUPDF_SETUP_SWIG'] = swig_binary
     
     # Handle commands.
     #
     have_installed = False
     for command in commands:
-        
+        log(f'### {command=}.')
         if 0:
             pass
         
@@ -540,14 +621,17 @@ def main(argv):
         elif command == 'cibw':
             # Build wheel(s) with cibuildwheel.
             if cibw_pyodide and env_extra.get('CIBW_BUILD') is None:
-                CIBW_BUILD = 'cp313*'
+                assert 0, f'Need a Python version for Pyodide.'
+                CIBW_BUILD = 'cp312*'
                 env_extra['CIBW_BUILD'] = CIBW_BUILD
                 log(f'Defaulting to {CIBW_BUILD=} for Pyodide.')
+            #if cibw_pyodide_version == None:
+            #    cibw_pyodide_version = '0.28.0'
             cibuildwheel(
                     env_extra,
                     cibw_name or 'cibuildwheel',
                     cibw_pyodide,
-                    cibw_pyodide_version or '0.28.0',
+                    cibw_pyodide_version,
                     cibw_sdist,
                     )
         
@@ -698,7 +782,7 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_
         log(f'{sdists=}')
         assert sdists
     
-    run(f'pip install --upgrade {cibw_name}')
+    run(f'pip install --upgrade --force-reinstall {cibw_name}')
 
     # Some general flags.
     if 'CIBW_BUILD_VERBOSITY' not in env_extra:
@@ -1014,7 +1098,7 @@ def test(
         pytest.main(args)
         return
     
-    if venv == 2:
+    if venv >= 2:
         run(f'pip install --upgrade {gh_release.test_packages}')
     else:
         log(f'{venv=}: Not installing test packages: {gh_release.test_packages}')
@@ -1166,7 +1250,7 @@ def venv_in(path=None):
         return sys.prefix != sys.base_prefix
 
 
-def venv_run(args, path, recreate=True):
+def venv_run(args, path, recreate=True, clean=False):
     '''
     Runs command inside venv and returns termination code.
     
@@ -1180,7 +1264,13 @@ def venv_run(args, path, recreate=True):
             already exists. This avoids a delay in the common case where <path>
             is already set up, but fails if <path> exists but does not contain
             a valid venv.
+        clean:
+            If true we first delete <path>.
     '''
+    if clean:
+        log(f'Removing any existing venv {path}.')
+        assert path.startswith('venv-')
+        shutil.rmtree(path, ignore_errors=1)
     if recreate or not os.path.isdir(path):
         run(f'{sys.executable} -m venv {path}')
     if platform.system() == 'Windows':
