@@ -107,6 +107,12 @@ Command line args:
     --gdb 0|1
         Run tests under gdb. Requires user interaction.
     
+    --graal
+        Use graal.
+        
+        [After the first time, suggest `-v 1` to avoid delay from
+        updating/building pyenv and recreating the graal venv.]
+    
     --help
     -h
         Show help.
@@ -196,6 +202,13 @@ Command line args:
     
     --swig <swig>
         Use <swig> instead of the `swig` command.
+        
+        Unix only: can automatically build swig from a git repository, for
+        example:
+        
+            --swig 'git:--branch master https://github.com/swig/swig.git'
+        
+        See description of PYMUPDF_SETUP_SWIG in setup.py.
     
     -t <names>
         Pytest test names, comma-separated. Should be relative to PyMuPDF
@@ -214,7 +227,8 @@ Command line args:
             helgrind
             vagrind
     
-    -v 0|1|2
+    -v <venv>
+        venv is:
         0 - do not use a venv.
         1 - Use venv. If it already exists, we assume the existing directory
             was created by us earlier and is a valid venv containing all
@@ -313,6 +327,7 @@ def main(argv):
     cibw_pyodide_version = None
     commands = list()
     env_extra = dict()
+    graal = False
     implementations = 'r'
     install_version = None
     mupdf_sync = None
@@ -410,6 +425,9 @@ def main(argv):
         elif arg == '-f':
             test_fitz = int(next(args))
         
+        elif arg == '--graal':
+            graal = True
+        
         elif arg in ('-h', '--help'):
             show_help = True
         
@@ -488,7 +506,7 @@ def main(argv):
         
         elif arg == '-v':
             venv = int(next(args))
-            assert venv in (0, 1, 2), f'Invalid {venv=} should be 0, 1 or 2.'
+            assert venv in (0, 1, 2, 3), f'Invalid {venv=} should be 0, 1, 2 or 3.'
         
         elif arg in ('build', 'cibw', 'install', 'pyodide', 'test', 'wheel'):
             commands.append(arg)
@@ -527,12 +545,34 @@ def main(argv):
         if venv:
             # Rerun ourselves inside a venv if not already in a venv.
             if not venv_in():
-                e = venv_run(
-                        sys.argv,
-                        f'venv-pymupdf-{platform.python_version()}-{int.bit_length(sys.maxsize+1)}',
-                        recreate=(venv>=2),
-                        clean=(venv>=3),
-                        )
+                if graal:
+                    # 2025-07-24: We need the latest pyenv.
+                    graalpy = 'graalpy-24.2.1'
+                    venv_name = f'venv-pymupdf-{graalpy}'
+                    pyenv_dir = f'{pymupdf_dir_abs}/pyenv-git'
+                    os.environ['PYENV_ROOT'] = pyenv_dir
+                    os.environ['PATH'] = f'{pyenv_dir}/bin:{os.environ["PATH"]}'
+                    
+                    if venv == 1 and os.path.exists(pyenv_dir) and os.path.exists(venv_name):
+                        log(f'{venv=} and {venv_name=} already exists so not building pyenv or creating venv.')
+                    else:
+                        pipcl.git_get('https://github.com/pyenv/pyenv.git', pyenv_dir, branch='master')
+                        run(f'cd {pyenv_dir} && src/configure && make -C src')
+                        run(f'which pyenv')
+                        run(f'pyenv install -v -s {graalpy}')
+                        if venv >= 3:
+                            shutil.rmtree(f'venv-pymupdf-{graalpy}', ignore_errors=1)
+                        run(f'{pyenv_dir}/versions/{graalpy}/bin/graalpy -m venv venv-pymupdf-{graalpy}')
+                    e = run(f'. venv-pymupdf-{graalpy}/bin/activate && python {shlex.join(sys.argv)}',
+                            check=False,
+                            )
+                else:
+                    e = venv_run(
+                            sys.argv,
+                            f'venv-pymupdf-{platform.python_version()}-{int.bit_length(sys.maxsize+1)}',
+                            recreate=(venv>=2),
+                            clean=(venv>=3),
+                            )
                 sys.exit(e)
     else:
         log(f'Warning, no commands specified so nothing to do.')
@@ -541,7 +581,7 @@ def main(argv):
     #
     have_installed = False
     for command in commands:
-        
+        log(f'### {command=}.')
         if 0:
             pass
         
@@ -1034,7 +1074,7 @@ def test(
         pytest.main(args)
         return
     
-    if venv == 2:
+    if venv >= 2:
         run(f'pip install --upgrade {gh_release.test_packages}')
     else:
         log(f'{venv=}: Not installing test packages: {gh_release.test_packages}')
