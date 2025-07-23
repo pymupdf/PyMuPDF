@@ -176,6 +176,9 @@ Environmental variables:
         
         Any other prefix is an error.
 
+    PYMUPDF_SETUP_SWIG
+        If set, we use this instead of `swig`.
+    
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
 
@@ -204,22 +207,9 @@ import zipfile
 import pipcl
 
 
-_log_prefix = None
-def log( text):
-    global _log_prefix
-    if not _log_prefix:
-        # This typically sets _log_prefix to `PyMuPDF/setup.py`.
-        p = os.path.abspath( __file__)
-        p, p1 = os.path.split( p)
-        p, p0 = os.path.split( p)
-        _log_prefix = os.path.join( p0, p1)
-    print(f'{_log_prefix}: {text}', file=sys.stdout)
-    sys.stdout.flush()
+log = pipcl.log0
 
-
-def run(command, check=1):
-    log(f'Running: {command}')
-    return subprocess.run( command, shell=1, check=check)
+run = pipcl.run
 
 
 if 1:
@@ -254,6 +244,7 @@ log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
 PYMUPDF_SETUP_DUMMY = os.environ.get('PYMUPDF_SETUP_DUMMY')
 log(f'{PYMUPDF_SETUP_DUMMY=}')
 
+PYMUPDF_SETUP_SWIG = os.environ.get('PYMUPDF_SETUP_SWIG')
 
 def _fs_remove(path):
     '''
@@ -478,7 +469,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
         local_dir = 'mupdf-git'
         
         # Try to update existing checkout.
-        e = run(f'cd {local_dir} && git pull && git submodule update --init', check=False).returncode
+        e = run(f'cd {local_dir} && git pull && git submodule update --init', check=False)
         if e:
             # No existing git checkout, so do a fresh clone.
             _fs_remove(local_dir)
@@ -598,6 +589,8 @@ def build():
     '''
     pipcl.py `build_fn()` callback.
     '''
+    #pipcl.show_sysconfig()
+    
     if PYMUPDF_SETUP_DUMMY == '1':
         log(f'{PYMUPDF_SETUP_DUMMY=} Building dummy wheel with no files.')
         return list()
@@ -642,6 +635,7 @@ def build():
                     g_py_limited_api,
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
                     PYMUPDF_SETUP_MUPDF_TRACE_IF,
+                    PYMUPDF_SETUP_SWIG,
                     )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
@@ -884,6 +878,7 @@ def build_mupdf_unix(
         g_py_limited_api,
         PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
         PYMUPDF_SETUP_MUPDF_TRACE_IF,
+        PYMUPDF_SETUP_SWIG,
         ):
     '''
     Builds MuPDF.
@@ -997,13 +992,20 @@ def build_mupdf_unix(
     if g_py_limited_api:
         build_prefix += f'Py_LIMITED_API_{pipcl.current_py_limited_api()}-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
+    PYMUPDF_SETUP_MUPDF_CLEAN = os.environ.get('PYMUPDF_SETUP_MUPDF_CLEAN')
+    if PYMUPDF_SETUP_MUPDF_CLEAN == '1':
+        log(f'{PYMUPDF_SETUP_MUPDF_CLEAN=}, deleting {unix_build_dir=}.')
+        shutil.rmtree(unix_build_dir, ignore_errors=1)
     # We need MuPDF's Python bindings, so we build MuPDF with
     # `mupdf/scripts/mupdfwrap.py` instead of running `make`.
     #
     command = f'cd {mupdf_local} &&'
     for n, v in env.items():
         command += f' {n}={shlex.quote(v)}'
-    command += f' {sys.executable} ./scripts/mupdfwrap.py -d build/{build_prefix}{build_type} -b'
+    command += f' {sys.executable} ./scripts/mupdfwrap.py'
+    if PYMUPDF_SETUP_SWIG:
+        command += f' --swig {shlex.quote(PYMUPDF_SETUP_SWIG)}'
+    command += f' -d build/{build_prefix}{build_type} -b'
     #command += f' --m-target libs'
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
@@ -1103,6 +1105,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
             prerequisites_compile = f'{mupdf_local}/include',
             prerequisites_link = libraries,
             py_limited_api = g_py_limited_api,
+            swig = PYMUPDF_SETUP_SWIG,
             )
     
     return path_so_leaf
