@@ -375,6 +375,9 @@ def test_3848():
         # Takes 40m on Github.
         print(f'test_3848(): not running on valgrind because very slow.', flush=1)
         return
+    if platform.python_implementation() == 'GraalVM':
+        print(f'test_3848(): Not running because slow on GraalVM.')
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3848.pdf')
     with pymupdf.open(path) as document:
         for i in range(len(document)):
