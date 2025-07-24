@@ -7,8 +7,10 @@ import pymupdf
 
 import pytest
 
+PYMUPDF_PYTEST_RESUME = os.environ.get('PYMUPDF_PYTEST_RESUME')
+
 @pytest.fixture(autouse=True)
-def wrap(*args, **kwargs):
+def wrap(request):
     '''
     Check that tests return with empty MuPDF warnings buffer. For example this
     detects failure to call fz_close_output() before fz_drop_output(), which
@@ -17,6 +19,16 @@ def wrap(*args, **kwargs):
     As of 2024-09-12 we also detect whether tests leave fds open; but for now
     do not fail tests, because many tests need fixing.
     '''
+    global PYMUPDF_PYTEST_RESUME
+    if PYMUPDF_PYTEST_RESUME:
+        # Skip all tests until we reach a matching name.
+        if PYMUPDF_PYTEST_RESUME == request.function.__name__:
+            print(f'### {PYMUPDF_PYTEST_RESUME=}: resuming at {request.function.__name__=}.')
+            PYMUPDF_PYTEST_RESUME = None
+        else:
+            print(f'### {PYMUPDF_PYTEST_RESUME=}: Skipping {request.function.__name__=}.')
+            return
+    
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert not wt, f'{wt=}'
     assert not pymupdf.TOOLS.set_small_glyph_heights()
@@ -99,7 +111,7 @@ def wrap(*args, **kwargs):
     next_fd_after = os.open(__file__, os.O_RDONLY)
     os.close(next_fd_after)
     if next_fd_after != next_fd_before:
-        print(f'Test has leaked fds, {next_fd_before=} {next_fd_after=}. {args=} {kwargs=}.')
+        print(f'Test has leaked fds, {next_fd_before=} {next_fd_after=}.')
         #assert 0, f'Test has leaked fds, {next_fd_before=} {next_fd_after=}. {args=} {kwargs=}.'
     
     if 0:

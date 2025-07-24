@@ -71,3 +71,11 @@ having been built with PyMuPDF's customized configuration, ``fitz/_config.h``.
 
 One can skip this particular test by adding ``-k 'not test_textbox3'`` to the
 pytest command line.
+
+
+## Resuming at a particular test.
+
+To skip tests before a particular test, set PYMUPDF_PYTEST_RESUME to the name
+of the function.
+
+For example PYMUPDF_PYTEST_RESUME=test_haslinks.
