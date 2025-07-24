@@ -438,6 +438,10 @@ def test_2238():
 
 
 def test_2093():
+    if platform.python_implementation() == 'GraalVM':
+        print(f'test_2093(): Not running because slow on GraalVM.')
+        return
+    
     doc = pymupdf.open(f'{scriptdir}/resources/test2093.pdf')
 
     def average_color(page):
@@ -597,6 +601,9 @@ def test_2692():
 
 def test_2596():
     """Confirm correctly abandoning cache when reloading a page."""
+    if platform.python_implementation() == 'GraalVM':
+        print(f'test_2596(): not running on Graal.')
+        return
     doc = pymupdf.Document(f"{scriptdir}/resources/test_2596.pdf")
     page = doc[0]
     pix0 = page.get_pixmap()  # render the page

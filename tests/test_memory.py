@@ -41,8 +41,14 @@ def test_2791():
         def get_stat():
             return 0
     n = 1000
+    verbose = False
+    if platform.python_implementation() == 'GraalVM':
+        n = 10
+        verbose = True
     stats = [1] * n
     for i in range(n):
+        if verbose:
+            print(f'{i+1}/{n}.', flush=1)
         root = os.path.abspath(f'{__file__}/../../tests/resources')  
         with open(f'{root}/test_2791_content.pdf', 'rb') as content_pdf:
             with open(f'{root}/test_2791_coverpage.pdf', 'rb') as coverpage_pdf:

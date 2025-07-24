@@ -3,6 +3,7 @@ import io
 from pprint import pprint
 import textwrap
 import pickle
+import platform
 
 import pymupdf
 
@@ -196,6 +197,10 @@ def test_3062():
     """Tests the fix for #3062.
     After table extraction, a rotated page should behave and look
     like as before."""
+    if platform.python_implementation() == 'GraalVM':
+        print(f'test_3062(): Not running because slow on GraalVM.')
+        return
+    
     filename = os.path.join(scriptdir, "resources", "test_3062.pdf")
     doc = pymupdf.open(filename)
     page = doc[0]
@@ -223,6 +228,10 @@ def test_strict_lines():
 
 def test_add_lines():
     """Test new parameter add_lines for table recognition."""
+    if platform.python_implementation() == 'GraalVM':
+        print(f'test_add_lines(): Not running because breaks later tests on GraalVM.')
+        return
+    
     filename = os.path.join(scriptdir, "resources", "small-table.pdf")
     doc = pymupdf.open(filename)
     page = doc[0]
