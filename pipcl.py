@@ -2127,6 +2127,7 @@ def show_system():
     log(f'{os.getcwd()=}')
     log(f'{platform.machine()=}')
     log(f'{platform.platform()=}')
+    log(f'{platform.python_implementation()=}')
     log(f'{platform.python_version()=}')
     log(f'{platform.system()=}')
     if sys.implementation.name != 'graalpy':
