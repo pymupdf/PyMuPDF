@@ -1493,5 +1493,49 @@ else:
 build_sdist = p.build_sdist
 
 
+if sys.implementation.name == "graalpy":
+    import os
+    import re
+    import subprocess
+    import shutil
+    import sysconfig
+    from pathlib import Path
+
+    def build_wheel(wheel_directory, config_settings=None, metadata_directory=None):
+        log(f'### graalpy build_wheel().')
+        wheel_directory = Path(wheel_directory).absolute()
+        sdir = Path(__file__).absolute().parent
+        cpythonname = os.environ.get("CPYTHON_EXE", "/usr/bin/python3.11")
+        cpython = shutil.which(cpythonname) or cpythonname
+        if not os.path.exists(cpython):
+            raise RuntimeError(f"{cpythonname} must be available on the PATH for cross-compilation")
+        env = os.environ.copy()
+        env["PIPCL_PYTHON_CONFIG"] = str(sdir / "graalpy-config")
+        env["PYMUPDF_SETUP_PY_LIMITED_API"] = "1"
+        log(f'### {env["PIPCL_PYTHON_CONFIG"]=}')
+        newfiles = pipcl.NewFiles(f'{sdir}/dist/*.whl')
+        subprocess.run(
+            [cpython, "setup.py", "bdist_wheel"],
+            env=env,
+            cwd=sdir,
+            check=True,
+        )
+        wheel = newfiles.get_one()
+        wheel_leaf = os.path.basename(wheel)
+        cpabi = "cp3"
+        cpabi += subprocess.check_output([cpython, "-c", "import sys;print(sys.implementation.version.minor)"], text=True).strip()
+        cpabi += "-abi3"
+        assert cpabi in wheel_leaf, f"Expected wheel to be for {cpabi}, got {wheel=}"
+        graalpy_ext_suffix = sysconfig.get_config_var("EXT_SUFFIX")
+        m = re.match(r"\.graalpy(\d+[^\-]*)-(\d+)", sysconfig.get_config_var("EXT_SUFFIX"))
+        gpver = m[1]
+        cpver = m[2]
+        graalpy_wheel_tag = f"graalpy{cpver}-graalpy{gpver}_{cpver}_native"
+        name = wheel_leaf.replace(cpabi, graalpy_wheel_tag)
+        log(f'Copying {wheel!r} to {wheel_directory/name!r}')
+        shutil.copyfile(wheel, wheel_directory / name)
+        return str(name)
+
+
 if __name__ == '__main__':
     p.handle_argv(sys.argv)
