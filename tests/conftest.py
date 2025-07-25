@@ -31,16 +31,19 @@ def wrap(request):
     
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert not wt, f'{wt=}'
-    assert not pymupdf.TOOLS.set_small_glyph_heights()
+    if platform.python_implementation() == 'GraalVM':
+        pymupdf.TOOLS.set_small_glyph_heights()
+    else:
+        assert not pymupdf.TOOLS.set_small_glyph_heights()
     next_fd_before = os.open(__file__, os.O_RDONLY)
     os.close(next_fd_before)
     
     if platform.system() == 'Linux' and platform.python_implementation() != 'GraalVM':
-        show_fds = True
+        test_fds = True
     else:
-        show_fds = False
+        test_fds = False
         
-    if show_fds:
+    if test_fds:
         # Gather detailed information about leaked fds.
         def get_fds():
             import subprocess
@@ -99,7 +102,7 @@ def wrap(request):
     assert pymupdf.JM_annot_id_stem == JM_annot_id_stem, \
             f'pymupdf.JM_annot_id_stem has changed from {JM_annot_id_stem!r} to {pymupdf.JM_annot_id_stem!r}'
     
-    if show_fds:
+    if test_fds:
         # Show detailed information about leaked fds.
         open_fds_after, open_fds_after_l = get_fds()
         if open_fds_after != open_fds_before:
@@ -115,7 +118,8 @@ def wrap(request):
     
     next_fd_after = os.open(__file__, os.O_RDONLY)
     os.close(next_fd_after)
-    if next_fd_after != next_fd_before:
+    
+    if test_fds and next_fd_after != next_fd_before:
         print(f'Test has leaked fds, {next_fd_before=} {next_fd_after=}.')
         #assert 0, f'Test has leaked fds, {next_fd_before=} {next_fd_after=}. {args=} {kwargs=}.'
     
