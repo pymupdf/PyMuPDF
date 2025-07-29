@@ -10785,7 +10785,7 @@ class Pixmap:
 
 del Point
 class Point:
-
+    __slots__ = ("x", "y")
     def __abs__(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
 
@@ -10972,7 +10972,7 @@ class Point:
 
 
 class Quad:
-
+    __slots__ = ("ul", "ur", "ll", "lr")
     def __abs__(self):
         if self.is_empty:
             return 0.0
@@ -11036,6 +11036,7 @@ class Quad:
         None.
     
         '''
+
         if not args:
             self.ul = self.ur = self.ll = self.lr = Point()
         elif len(args) > 4:
@@ -11204,7 +11205,7 @@ class Quad:
 
 
 class Rect:
-    
+    __slots__ = ("x0", "y0", "x1", "y1")
     def __abs__(self):
         if self.is_empty or self.is_infinite:
             return 0.0
@@ -12647,7 +12648,7 @@ class IRect:
     IRect(top-left, bottom-right) - 2 points
     IRect(sequ) - new from sequence or rect-like
     """
-
+    __slots__ = ("x0", "y0", "x1", "y1")
     def __add__(self, p):
         return Rect.__add__(self, p).round()
 
