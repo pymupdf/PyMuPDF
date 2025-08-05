@@ -13,23 +13,34 @@ on:
 
 jobs:
 
-  test_quick:
-    name: Test quick
+  master:
+    name: mupdf master
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # We test on just Ubuntu with MuPDF master.
-        #
         os: [ubuntu-latest]
-
-      # Avoid cancelling of all cibuildwheel runs after a single failure.
       fail-fast: false
-
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
-      - name: test_quick
+      - name: mupdf master
         env:
           PYMUPDF_test_args: ${{inputs.args}}
         run:
-          python scripts/test.py build test -a PYMUPDF_test_args
+          python scripts/test.py build test -m 'git:--branch master https://github.com/ArtifexSoftware/mupdf.git' -a PYMUPDF_test_args
+
+  release:
+    name: mupdf release
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+      - name: mupdf release
+        env:
+          PYMUPDF_test_args: ${{inputs.args}}
+        run:
+          python scripts/test.py build test -m 'git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf.git' -a PYMUPDF_test_args
