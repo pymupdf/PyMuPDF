@@ -758,6 +758,11 @@ def build_mupdf_unix( mupdf_local, env, build_type):
         env_add(env, 'XCFLAGS', archflags)
         env_add(env, 'XLIBS', archflags)
 
+    # Add compiler flags to handle C23 compatibility issues on macOS
+    if darwin:
+        env_add(env, 'XCFLAGS', '-Wno-deprecated-non-prototype -Wno-error=deprecated-non-prototype')
+        env_add(env, 'XCXXFLAGS', '-Wno-deprecated-non-prototype -Wno-error=deprecated-non-prototype')
+
     # We specify a build directory path containing 'pymupdf' so that we
     # coexist with non-PyMuPDF builds (because PyMuPDF builds have a
     # different config.h).
