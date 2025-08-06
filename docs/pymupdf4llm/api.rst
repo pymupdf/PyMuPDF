@@ -16,11 +16,42 @@ The |PyMuPDF4LLM| API
 
     Prints the version of the library.
 
-.. method:: to_markdown(doc: pymupdf.Document | str, *, pages: list | range | None = None, hdr_info: Any = None, write_images: bool = False, embed_images: bool = False, ignore_images: bool = False, ignore_graphics: bool = False, dpi: int = 150, filename=None, image_path="", image_format="png", image_size_limit=0.05, force_text=True, margins=0, page_chunks: bool = False, page_width: float = 612, page_height: float = None, table_strategy="lines_strict", graphics_limit: int = None, ignore_code: bool = False, extract_words: bool = False, show_progress: bool = False, use_glyphs=False) -> str | list[dict]
+.. method:: to_markdown(doc: pymupdf.Document | str, *,
+        detect_bg_color: bool = True, 
+        dpi: int = 150, 
+        embed_images: bool = False, 
+        extract_words: bool = False, 
+        filename: str | None = None, 
+        fontsize_limit: float = 3,
+        force_text: bool = True, 
+        graphics_limit: int = None, 
+        hdr_info: Any = None, 
+        ignore_alpha: bool = False,
+        ignore_code: bool = False, 
+        ignore_graphics: bool = False, 
+        ignore_images: bool = False, 
+        image_format: str = "png", 
+        image_path: str = "", 
+        image_size_limit: float = 0.05, 
+        margins: int = 0, 
+        page_chunks: bool = False, 
+        page_height: float = None, 
+        page_separators: bool = False,
+        page_width: float = 612, 
+        pages: list | range | None = None,
+        show_progress: bool = False, 
+        table_strategy: str = "lines_strict", 
+        use_glyphs: bool = False
+        write_images: bool = False,
+        ) -> str | list[dict]
 
     Read the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that there exists **support for building page chunks** from the |Markdown|  text.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| Document (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| Document.
+
+    :arg bool detect_bg_color: does a simple check for the general background color of the pages (default is ``True``). If any text or vector has this color it will be ignored. May increase detection accuracy.
+
+    :arg bool ignore_alpha: if ``True`` includes text even when completely transparent. Default is ``False``: transparent text will be ignored which usually increases detection accuracy.
 
     :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted all pages are processed.
 
@@ -32,9 +63,9 @@ The |PyMuPDF4LLM| API
 
     :arg bool ignore_images: (New in v.0.0.20) Disregard images on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time.
 
-    :arg bool ignore_graphics: (New in v.0.0.20) Disregard vector graphics on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time. Vector graphics are still used for table detection.
+    :arg bool ignore_graphics: (New in v.0.0.20) Disregard vector graphics on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time. This automatically prevents table detection.
 
-    :arg float image_size_limit: this must be a positive value less than 1. Images are ignored if `width / page.rect.width <= image_size_limit` or `height / page.rect.height <= image_size_limit`. For instance, the default value 0.05 means that to be considered for inclusion, an image's width and height must be larger than 5% of the page's width and height, respectively.
+    :arg float image_size_limit: this must be a ``0 <= value < 1``. Images are ignored if `width / page.rect.width <= image_size_limit` or `height / page.rect.height <= image_size_limit`. For instance, the default value 0.05 means that to be considered for inclusion, an image's width and height must be larger than 5% of the page's width and height, respectively.
 
     :arg int dpi: specify the desired image resolution in dots per inch. Relevant only if `write_images=True`. Default value is 150.
 
@@ -66,6 +97,8 @@ The |PyMuPDF4LLM| API
 
         - **"words"** - if `extract_words=True` was used. This is a list of tuples `(x0, y0, x1, y1, "wordstring", bno, lno, wno)` as delivered by `page.get_text("words")`. The **sequence** of these tuples however is the same as produced in the markdown text string and thus honors multi-column text. This is also true for text in tables: words are extracted in the sequence of table row cells.
 
+    :arg bool page_separators: if ``True`` inserts a string ``--- end of page=n ---`` at the end of each page output. Intended for debugging purposes. The page number if 0-based. The separator string is wrapped with line breaks. Default is ``False``.
+    
     :arg str filename: (New in v.0.0.19) Overwrites or sets the desired image file name of written images. Useful when the document is provided as a memory object (which has no inherent file name).
     
     :arg float page_width: specify a desired page width. This is ignored for documents with a fixed page width like PDF, XPS etc. **Reflowable** documents however, like e-books, office [#f2]_ or text files have no fixed page dimensions and by default are assumed to have Letter format width (612) and an **"infinite"** page height. This means that the **full document is treated as one large page.**
@@ -85,7 +118,7 @@ The |PyMuPDF4LLM| API
         Processing input.pdf...
         [====================                    ] (148/291)
 
-    :arg bool use_glyphs: (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself.
+    :arg bool use_glyphs: (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value.
     
     :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries.
 
