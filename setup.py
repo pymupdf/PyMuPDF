@@ -731,7 +731,17 @@ def build():
                         add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
     
     # Add a .py file containing location of MuPDF.
-    text = f"mupdf_location='{mupdf_location}'\n"
+    try:
+        sha, comment, diff, branch = git_info(g_root)
+    except Exception as e:
+        log(f'Failed to get git information: {e}')
+        sha, comment, diff, branch = (None, None, None, None)
+    text = ''
+    text += f'mupdf_location = {mupdf_location!r}\n'
+    text += f'pymupdf_version = {version_p!r}\n'
+    text += f'pymupdf_git_sha = {sha!r}\n'
+    text += f'pymupdf_git_diff = {diff!r}\n'
+    text += f'pymupdf_git_branch = {branch!r}\n'
     add('p', text.encode(), f'{to_dir}/_build.py')
     
     # Add single README file.

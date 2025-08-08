@@ -375,8 +375,18 @@ def _int_rc(text):
 
 # Basic version information.
 #
-pymupdf_version = "1.26.3"
+# (We use `noqa F401` to avoid flake8 errors such as `F401
+# '._build.mupdf_location' imported but unused`.
+#
+from ._build import mupdf_location      # noqa F401
+from ._build import pymupdf_git_branch  # noqa F401
+from ._build import pymupdf_git_diff    # noqa F401
+from ._build import pymupdf_git_sha     # noqa F401
+from ._build import pymupdf_version     # noqa F401
+
 mupdf_version = mupdf.FZ_VERSION
+
+# Removed in PyMuPDF-1.26.1.
 pymupdf_date = None
 
 # Versions as tuples; useful when comparing versions.
