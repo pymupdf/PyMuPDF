@@ -2045,7 +2045,7 @@ def git_get(
                 tag == next(args)
                 branch = None
             else:
-                remote = next(args)
+                remote = arg
         assert remote, f'{default_remote=} and no remote specified in remote={remote0!r}.'
         assert branch or tag, f'{branch=} {tag=} and no branch/tag specified in remote={remote0!r}.'
         
@@ -2940,7 +2940,10 @@ class NewFiles:
     def _file_id(self, path):
         mtime = os.stat(path).st_mtime
         with open(path, 'rb') as f:
-            hash_ = hashlib.file_digest(f, hashlib.md5).digest()
+            content = f.read()
+            hash_ = hashlib.md5(content).digest()
+            # With python >= 3.11 we can do:
+            #hash_ = hashlib.file_digest(f, hashlib.md5).digest()
         return mtime, hash_
     def _items(self):
         ret = dict()
