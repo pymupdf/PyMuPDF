@@ -1946,3 +1946,17 @@ def test_4496():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4496.hwpx')
     with pymupdf.open(path) as document:
         print(document.page_count)
+
+
+def test_gitinfo():
+    # This doesn't really test very much, but can be useful to see the current
+    # values.
+    print('')
+    print(f'test_4496():')
+    print(f'{pymupdf.mupdf_location=}')
+    print(f'{pymupdf.mupdf_version=}')
+    print(f'{pymupdf.pymupdf_git_branch=}')
+    print(f'{pymupdf.pymupdf_git_sha=}')
+    print(f'{pymupdf.pymupdf_version=}')
+    print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
+    
