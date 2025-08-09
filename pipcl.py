@@ -3027,7 +3027,7 @@ def sysconfig_python_flags():
 
     includes_ = [include1_]
     if include2_ != include1_:
-        includes_.append(include2)
+        includes_.append(include2_)
     if windows():
         includes_ = [f'/I"{i}"' for i in includes_]
         ldflags_ = f'/LIBPATH:"{ldflags_}"'
