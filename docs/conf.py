@@ -49,16 +49,8 @@ copyright = "2015-" + str(thisday.year) + ", Artifex"
 # built documents.
 #
 # The full version, including alpha/beta/rc tags.
-_path = os.path.abspath(f'{__file__}/../../src/__init__.py')
-with open(_path) as f:
-    for line in f:
-        match = re.search('pymupdf_version = "([0-9][.][0-9]+[.][0-9]+(rc[0-9]+)?)"', line)
-        if match:
-            release = match.group(1)
-            print(f'{__file__}: setting version from {_path}: {release}')
-            break
-    else:
-        raise Exception(f'Failed to find `VersionBind = ...` in {_path}')
+from _build import pymupdf_version as release  # noqa F401
+print(f'{__file__}: setting version from _build.py: {release}')
 
 # The short X.Y version
 version = release

@@ -743,6 +743,8 @@ def build():
     text += f'pymupdf_git_diff = {diff!r}\n'
     text += f'pymupdf_git_branch = {branch!r}\n'
     add('p', text.encode(), f'{to_dir}/_build.py')
+    with open('docs/_build.py', 'w') as f:
+        f.write(text)
     
     # Add single README file.
     if 'p' in PYMUPDF_SETUP_FLAVOUR:

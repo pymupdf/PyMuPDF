@@ -5,3 +5,4 @@
 build/
 demo/README.rst
 docs/build
+docs/_build.py
