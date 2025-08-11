@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version **
+
+* Fixed issues:
+
+* Other:
+  
+  * Add `Page.clip_to_rect()`.
+  * Improved search for Tesseract data.
+  * Retrospectively mark #4496 as fixed in 1.26.1.
+  * Document.insert_pdf(): Ignore erroneous widgets.
+  * Added experimental support for Graal.
+
+
 **Changes in version 1.26.3 (2025-07-02)**
 
 * Use MuPDF-1.26.3.
