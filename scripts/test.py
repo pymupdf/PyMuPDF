@@ -81,7 +81,7 @@ Command line args:
 
     --cibw-pyodide-version <cibw_pyodide_version>
         Override default Pyodide version to use with `cibuildwheel` command. If
-        empty string with use cibuildwheel's default.
+        empty string we use cibuildwheel's default.
     
     --cibw-release-1
         Set up so that `cibw` builds all wheels except linux-aarch64, and sdist
