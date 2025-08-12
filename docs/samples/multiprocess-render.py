@@ -58,7 +58,7 @@ def render_page(vector):
         pix = page.get_pixmap(alpha=False, matrix=mat)
         # store away the result somewhere ...
         # pix.save("p-%i.png" % i)
-    print("Processed page numbers %i through %i" % (seg_from, seg_to - 1))
+    print(f"Processed page numbers {seg_from} through {seg_to - 1}")
 
 
 if __name__ == "__main__":
@@ -69,10 +69,10 @@ if __name__ == "__main__":
 
     # make vectors of arguments for the processes
     vectors = [(i, cpu, filename, mat) for i in range(cpu)]
-    print("Starting %i processes for '%s'." % (cpu, filename))
+    print(f"Starting {cpu} processes for '{filename}'.")
 
     pool = Pool()  # make pool of 'cpu_count()' processes
     pool.map(render_page, vectors, 1)  # start processes passing each a vector
 
     t1 = mytime()  # stop the timer
-    print("Total time %g seconds" % round(t1 - t0, 2))
+    print(f"Total time {round(t1 - t0, 2):g} seconds")
