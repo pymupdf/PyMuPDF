@@ -18836,6 +18836,7 @@ class JM_new_bbox_device_Device(mupdf.FzDevice2):
         super().__init__()
         self.result = result
         self.layers = layers
+        self.layer_name = ""
         self.use_virtual_fill_path()
         self.use_virtual_stroke_path()
         self.use_virtual_fill_text()
