@@ -6686,7 +6686,7 @@ class Link:
 
 
 class Matrix:
-
+    __slots__ = ("a", "b", "c", "d", "e", "f", )
     def __abs__(self):
         return math.sqrt(sum([c*c for c in self]))
 
