@@ -1200,6 +1200,10 @@ class Package:
                 assert command is None, 'Two commands specified: {command} and {arg}.'
                 command = arg
 
+            elif arg in ('windows-vs', 'windows-python', 'show-sysconfig'):
+                assert command is None, 'Two commands specified: {command} and {arg}.'
+                command = arg
+
             elif arg == '--all':                                opt_all = True
             elif arg == '--compile':                            pass
             elif arg == '--dist-dir' or arg == '-d':            opt_dist_dir = args.next()
@@ -1212,12 +1216,6 @@ class Package:
             elif arg == '--single-version-externally-managed':  pass
             elif arg == '--verbose' or arg == '-v':             g_verbose += 1
 
-            elif arg == 'windows-vs':
-                command = arg
-                break
-            elif arg == 'windows-python':
-                command = arg
-                break
             else:
                raise Exception(f'Unrecognised arg: {arg}')
 
@@ -1268,6 +1266,39 @@ class Package:
             vs = wdev.WindowsVS(year=year, grade=grade, version=version)
             print(f'Visual Studio is:\n{vs.description_ml("    ")}')
 
+        elif command == 'show-sysconfig':
+            show_sysconfig()
+            for mod in platform, sys:
+                log0(f'{mod.__name__}:')
+                for n in dir(mod):
+                    if n.startswith('_'):
+                        continue
+                    log0(f'{mod.__name__}.{n}')
+                    if mod is platform and n == 'uname':
+                        continue
+                    if mod is platform and n == 'pdb':
+                        continue
+                    if mod is sys and n in ('breakpointhook', 'exit'):
+                        # We don't want to call these.
+                        continue
+                    v = getattr(mod, n)
+                    if callable(v):
+                        try:
+                            v = v()
+                        except Exception:
+                            pass
+                        else:
+                            #print(f'{n=}', flush=1)
+                            try:
+                                print(f'    {mod.__name__}.{n}()={v!r}')
+                            except Exception:
+                                print(f'    Failed to print value of {mod.__name__}.{n}().')
+                    else:
+                        try:
+                            print(f'    {mod.__name__}.{n}={v!r}')
+                        except Exception:
+                            print(f'    Failed to print value of {mod.__name__}.{n}.')
+        
         else:
             assert 0, f'Unrecognised command: {command}'
 
@@ -1926,6 +1957,34 @@ def base_linker(vs=None, pythonflags=None, cpp=False, use_env=True):
         linker = 'c++' if cpp else 'cc'
     linker = macos_add_cross_flags( linker)
     return linker, pythonflags
+
+
+def git_info( directory):
+    '''
+    Returns `(sha, comment, diff, branch)`, all items are str or None if not
+    available.
+
+    directory:
+        Root of git checkout.
+    '''
+    sha, comment, diff, branch = None, None, None, None
+    e, out = run(
+            f'cd {directory} && (PAGER= git show --pretty=oneline|head -n 1 && git diff)',
+            capture=1,
+            check=0
+            )
+    if not e:
+        sha, _ = out.split(' ', 1)
+        comment, diff = _.split('\n', 1)
+    e, out = run(
+            f'cd {directory} && git rev-parse --abbrev-ref HEAD',
+            capture=1,
+            check=0
+            )
+    if not e:
+        branch = out.strip()
+    log(f'git_info(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
+    return sha, comment, diff, branch
 
 
 def git_items( directory, submodules=False):
@@ -2976,19 +3035,41 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
     if swig and swig.startswith('git:'):
         assert platform.system() != 'Windows'
         swig_local = os.path.abspath(swig_local)
-        swig_binary = f'{swig_local}/install/bin/swig'
+        # Note that {swig_local}/install/bin/swig doesn't work on MacoS because
+        # {swig_local}/INSTALL is a file and the fs is case-insensitive.
+        swig_binary = f'{swig_local}/install-dir/bin/swig'
         if quick and os.path.isfile(swig_binary):
             log1(f'{quick=} and {swig_binary=} already exists, so not downloading/building.')
         else:
             # Clone swig.
+            swig_env_extra = None
             git_get(
                     swig,
                     swig_local,
                     default_remote='https://github.com/swig/swig.git',
                     branch='master',
                     )
+            if darwin():
+                run(f'brew install automake')
+                run(f'brew install pcre2')
+                # Default bison doesn't work, and Brew's bison is not added to $PATH.
+                #
+                # > bison is keg-only, which means it was not symlinked into /opt/homebrew,
+                # > because macOS already provides this software and installing another version in
+                # > parallel can cause all kinds of trouble.
+                # > 
+                # > If you need to have bison first in your PATH, run:
+                # >   echo 'export PATH="/opt/homebrew/opt/bison/bin:$PATH"' >> ~/.zshrc
+                #
+                run(f'brew install bison')
+                PATH = os.environ['PATH']
+                PATH = f'/opt/homebrew/opt/bison/bin:{PATH}'
+                swig_env_extra = dict(PATH=PATH)
             # Build swig.
-            run(f'cd {swig_local} && ./autogen.sh && ./configure --prefix={swig_local}/install && make && make install')
+            run(f'cd {swig_local} && ./autogen.sh', env_extra=swig_env_extra)
+            run(f'cd {swig_local} && ./configure --prefix={swig_local}/install-dir', env_extra=swig_env_extra)
+            run(f'cd {swig_local} && make', env_extra=swig_env_extra)
+            run(f'cd {swig_local} && make install', env_extra=swig_env_extra)
         assert os.path.isfile(swig_binary)
         return swig_binary
     else:
