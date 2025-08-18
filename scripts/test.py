@@ -217,6 +217,8 @@ Command line args:
                 --swig 'git:--branch master https://github.com/swig/swig.git'
                 --swig 'git:--branch master'
                 --swig git:
+            
+            2025-08-18: This fixes building with py_limited_api on python-3.13.
     
     --swig-quick 0|1
         If 1 and `--swig` starts with 'git:', we do not update/build swig if
