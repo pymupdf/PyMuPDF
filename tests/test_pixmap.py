@@ -582,3 +582,21 @@ def test_4445():
     wt = pymupdf.TOOLS.mupdf_warnings()
     print(f'{wt=}')
     assert wt == 'broken xref subsection, proceeding anyway.\nTrailer Size is off-by-one. Ignoring.'
+
+
+def test_3806():
+    print()
+    print(f'{pymupdf.mupdf_version=}')
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3806.pdf')
+    path_png_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3806-expected.png')
+    path_png = os.path.normpath(f'{__file__}/../../tests/test_3806.png')
+    
+    with pymupdf.open(path) as document:
+        pixmap = document[0].get_pixmap()
+        pixmap.save(path_png)
+        rms = gentle_compare.pixmaps_rms(path_png_expected, pixmap)
+        print(f'{rms=}')
+        if pymupdf.mupdf_version_tuple >= (1, 27):
+            assert rms < 0.1
+        else:
+            assert rms > 50
