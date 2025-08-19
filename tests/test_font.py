@@ -239,7 +239,7 @@ def test_4457():
             ('https://github.com/user-attachments/files/20862923/test_4457_a.pdf', 'test_4457_a.pdf', None, 4),
             ('https://github.com/user-attachments/files/20862922/test_4457_b.pdf', 'test_4457_b.pdf', None, 9),
             )
-    for url, name, size, rms_after_max in files:
+    for url, name, size, rms_old_after_max in files:
         path = util.download(url, name, size)
         
         with pymupdf.open(path) as document:
@@ -318,10 +318,13 @@ def test_4457():
         assert text_before == text
         assert rms_before == 0
         
-        # As of 2025-05-20 there are some differences in some characters, e.g.
-        # the non-ascii characters in `Philipp Krahenbuhl`.
-        # See <path_pixmap> and <path_pixmap_after>.
-        assert rms_after < rms_after_max
+        if pymupdf.mupdf_version_tuple >= (1, 27):
+            assert rms_after == 0
+        else:
+            # As of 2025-05-20 there are some differences in some characters,
+            # e.g. the non-ascii characters in `Philipp Krahenbuhl`.  See
+            # <path_pixmap> and <path_pixmap_after>.
+            assert abs(rms_after - rms_old_after_max) < 2
     
     # Avoid test failure caused by mupdf warnings.
     wt = pymupdf.TOOLS.mupdf_warnings()
