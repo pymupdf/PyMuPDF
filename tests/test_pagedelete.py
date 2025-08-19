@@ -91,3 +91,25 @@ def test_3150():
     doc = pymupdf.open(filename)
     doc.select(pages)
     assert doc.page_count == len(pages)
+
+
+def test_4462():
+    path0 = os.path.normpath(f'{__file__}/../../tests/resources/test_4462_0.pdf')
+    path1 = os.path.normpath(f'{__file__}/../../tests/resources/test_4462_1.pdf')
+    path2 = os.path.normpath(f'{__file__}/../../tests/resources/test_4462_2.pdf')
+    with pymupdf.open() as document:
+        document.new_page()
+        document.new_page()
+        document.new_page()
+        document.new_page()
+        document.save(path0)
+    with pymupdf.open(path0) as document:
+        assert len(document) == 4
+        document.delete_page(-1)
+        document.save(path1)
+    with pymupdf.open(path1) as document:
+        assert len(document) == 3
+        document.delete_pages(-1)
+        document.save(path2)
+    with pymupdf.open(path2) as document:
+        assert len(document) == 2
