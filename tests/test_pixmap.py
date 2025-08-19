@@ -600,3 +600,31 @@ def test_3806():
             assert rms < 0.1
         else:
             assert rms > 50
+
+
+def test_4388():
+    print()
+    path_BOZ1 = os.path.normpath(f'{__file__}/../../tests/resources/test_4388_BOZ1.pdf')
+    path_BUL1 = os.path.normpath(f'{__file__}/../../tests/resources/test_4388_BUL1.pdf')
+    path_correct = os.path.normpath(f'{__file__}/../../tests/resources/test_4388_BUL1.pdf.correct.png')
+    path_test = os.path.normpath(f'{__file__}/../../tests/resources/test_4388_BUL1.pdf.test.png')
+    
+    with pymupdf.open(path_BUL1) as bul:
+        pixmap_correct = bul.load_page(0).get_pixmap()
+        pixmap_correct.save(path_correct)
+    
+    pymupdf.TOOLS.store_shrink(100)
+    
+    with pymupdf.open(path_BOZ1) as boz:
+        boz.load_page(0).get_pixmap()
+
+    with pymupdf.open(path_BUL1) as bul:
+        pixmap_test = bul.load_page(0).get_pixmap()
+        pixmap_test.save(path_test)
+
+    rms = gentle_compare.pixmaps_rms(pixmap_correct, pixmap_test)
+    print(f'{rms=}')
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert rms == 0
+    else:
+        assert rms >= 10
