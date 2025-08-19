@@ -895,7 +895,7 @@ def test_4546():
 
 def test_4503():
     # Check detection of strikeout text. Behaviour is improved with
-    # mupdf>=1.26.2, but not perfect.
+    # mupdf>=1.26.2, and fixed with mupdf>=1.26.3.
     #
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4503.pdf')
     span_0 = None
