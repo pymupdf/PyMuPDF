@@ -2010,3 +2010,44 @@ def test_4639():
     with pymupdf.open(path) as document:
         page = document[-1]
         page.get_bboxlog(layers=True)
+
+
+def test_4590():
+
+    # Create test PDF.
+    path = os.path.normpath(f'{__file__}/../../tests/test_4590.pdf')
+    with pymupdf.open() as document:
+        page = document.new_page()
+        
+        # Add some text
+        text = 'This PDF contains a file attachment annotation.'
+        page.insert_text((72, 72), text, fontsize=12)
+
+        # Create a sample file.
+        path_sample = os.path.normpath(f'{__file__}/../../tests/test_4590_annotation_sample.txt')
+        with open(path_sample, 'w') as f:
+            f.write('This is a sample attachment file.')
+
+        # Read file as bytes
+        with open(path_sample, 'rb') as f:
+            sample = f.read()
+
+        # Define annotation position (rect or point)
+        annot_pos = pymupdf.Rect(72, 100, 92, 120)  # PushPin icon rectangle
+
+        # Add the file attachment annotation
+        page.add_file_annot(
+                point = annot_pos,
+                buffer_ = sample,
+                filename = 'sample.txt',
+                ufilename = 'sample.txt',
+                desc = 'A test attachment file.',
+                icon = 'PushPin',
+                )
+
+        # Save the PDF
+        document.save(path)
+    
+    # Check pymupdf.Document.scrub() works.
+    with pymupdf.open(path) as document:
+        document.scrub()
