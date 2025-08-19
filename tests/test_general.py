@@ -1960,3 +1960,42 @@ def test_gitinfo():
     print(f'{pymupdf.pymupdf_version=}')
     print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
     
+
+def test_4392():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/test_4392.py')
+    with open(path, 'w') as f:
+        f.write('import pymupdf\n')
+    
+    command = f'pytest {path}'
+    print(f'Running: {command}', flush=1)
+    e1 = subprocess.run(command, shell=1, check=0).returncode
+    print(f'{e1=}')
+    
+    command = f'pytest -Werror {path}'
+    print(f'Running: {command}', flush=1)
+    e2 = subprocess.run(command, shell=1, check=0).returncode
+    print(f'{e2=}')
+    
+    command = f'{sys.executable} -Werror -c "import pymupdf"'
+    print(f'Running: {command}', flush=1)
+    e3 = subprocess.run(command, shell=1, check=0).returncode
+    print(f'{e3=}')
+    
+    print(f'{e1=} {e2=} {e3=}')
+    
+    print(f'{pymupdf.swig_version=}')
+    print(f'{pymupdf.swig_version_tuple=}')
+    
+    assert e1 == 5
+    if pymupdf.swig_version_tuple >= (4, 4):
+        assert e2 == 5
+        assert e3 == 0
+    else:
+        # We get SEGV's etc with older swig.
+        if platform.system() == 'Linux':
+            assert (e2, e3) == (139, 139)
+        elif platform.system() == 'Darwin':
+            assert (e2, e3) == (-11, -11)
+        elif platform.system() == 'Windows':
+            assert (e2, e3) == (0xc0000005, 0xc0000005)
