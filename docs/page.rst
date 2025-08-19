@@ -246,7 +246,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
-   .. method:: add_file_annot(pos, buffer, filename, ufilename=None, desc=None, icon="PushPin")
+   .. method:: add_file_annot(point, buffer_, filename, ufilename=None, desc=None, icon="PushPin")
 
       PDF only: Add a file attachment annotation with a "PushPin" icon at the specified location.
 
