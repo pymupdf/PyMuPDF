@@ -1915,18 +1915,22 @@ def test_4479():
         
 
 def test_4533():
-    if 1:
-        print(f'test_4533(): doing nothing because known to segv.')
-        return
+    print()
     path = util.download(
             'https://github.com/user-attachments/files/20497146/NineData_user_manual_V3.0.5.pdf',
             'test_4533.pdf',
             size=16864501,
             )
-    print(f'Opening {path=}.', flush=1)
-    with pymupdf.open(path) as document:
-        print(f'Have opened {path=}.', flush=1)
-        print(f'{len(document)=}', flush=1)
+    # This bug is a segv so we run the test in a child process.
+    command = f'{sys.executable} -c "import pymupdf; document = pymupdf.open({path!r}); print(len(document))"'
+    print(f'Running: {command}')
+    cp = subprocess.run(command, shell=1, check=0)
+    e = cp.returncode
+    print(f'{e=}')
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert e == 0
+    else:
+        assert e != 0
 
 
 def test_4564():
