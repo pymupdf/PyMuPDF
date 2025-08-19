@@ -2003,3 +2003,10 @@ def test_4392():
             assert (e2, e3) == (-11, -11)
         elif platform.system() == 'Windows':
             assert (e2, e3) == (0xc0000005, 0xc0000005)
+
+
+def test_4639():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4639.pdf')
+    with pymupdf.open(path) as document:
+        page = document[-1]
+        page.get_bboxlog(layers=True)
