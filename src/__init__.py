@@ -383,6 +383,8 @@ from ._build import pymupdf_git_branch  # noqa F401
 from ._build import pymupdf_git_diff    # noqa F401
 from ._build import pymupdf_git_sha     # noqa F401
 from ._build import pymupdf_version     # noqa F401
+from ._build import swig_version        # noqa F401
+from ._build import swig_version_tuple  # noqa F401
 
 mupdf_version = mupdf.FZ_VERSION
 
