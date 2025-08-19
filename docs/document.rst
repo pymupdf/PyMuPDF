@@ -1448,7 +1448,7 @@ For details on **embedded files** refer to Appendix 3.
 
     PDF only: Insert an empty page.
 
-    :arg int pno: page number in front of which the new page should be inserted. Must be in `1 < pno <= page_count`. Special values -1 and *doc.page_count* insert **after** the last page.
+    :arg int pno: page number index (zero-indexed) at which to insert page. Special values -1 and *doc.page_count* insert **after** the last page.
 
     :arg float width: page width.
     :arg float height: page height.
@@ -1468,7 +1468,7 @@ For details on **embedded files** refer to Appendix 3.
 
     PDF only: Insert a new page and insert some text. Convenience function which combines :meth:`Document.new_page` and (parts of) :meth:`Page.insert_text`.
 
-    :arg int pno: page number (0-based) **in front of which** to insert. Must be in `range(-1, doc.page_count + 1)`. Special values -1 and `doc.page_count` insert **after** the last page.
+    :arg int pno: page number index (zero-indexed) at which to insert page. Special values -1 and `doc.page_count` insert **after** the last page.
 
         Changed in v1.14.12
            This is now a positional parameter
