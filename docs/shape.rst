@@ -345,7 +345,7 @@ Several draw methods can be executed in a row and each one of them will contribu
 
       :arg float lineheight: a factor to override the line height calculated from font properties. If not `None`, a line height of `fontsize * lineheight` will be used.
 
-         :arg int expandtabs: controls handling of tab characters ``\t`` using the `string.expandtabs()` method **per each line**.
+      :arg int expandtabs: controls handling of tab characters ``\t`` using the `string.expandtabs()` method **per each line**.
 
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors. Negative values and values > 1 will be ignored. Default is 1 (intransparent).
       :arg float fill_opacity: *(new in v1.18.1)* set transparency for fill colors. Default is 1 (intransparent). Use this value to control transparency of the text color. Stroke opacity **only** affects the border line of characters.
