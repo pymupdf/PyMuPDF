@@ -314,3 +314,22 @@ def test_4412():
             new_doc.insert_pdf(doc, from_page=1, to_page=1)
             new_doc.save(buf)
             assert len(new_doc)==1
+
+
+def test_4571():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4571.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/resources/test_4571_out.pdf')
+    with pymupdf.open() as newdocument:
+        with pymupdf.open(path) as document:
+            newdocument.insert_pdf(document)
+        newdocument.save(path_out, garbage=4, clean=False)
+        print(f'Have saved to: {path_out=}')
+    with open(path_out, 'rb') as f:
+        content = f.read()
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        # Correct.
+        assert b'<</Type/Pages/Count 6/Kids[4 0 R 6 0 R 12 0 R 13 0 R 14 0 R 15 0 R]>>' in content
+    else:
+        # Incorrect.
+        assert b'<</Type/Pages/Count 6/Kids[4 0 R 6 0 R 12 0 R 4 0 R 6 0 R 12 0 R]>>' in content
+    
