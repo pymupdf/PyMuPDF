@@ -2385,7 +2385,7 @@ def insert_htmlbox(
     oc=0,
     opacity=1,
     overlay=True,
-) -> float:
+) -> tuple:
     """Insert text with optional HTML tags and stylings into a rectangle.
 
     Args:
@@ -2448,16 +2448,21 @@ def insert_htmlbox(
     if not fit.big_enough:  # there was no fit
         return (-1, scale_low)
 
-    filled = fit.filled
-    scale = 1 / fit.parameter  # shrink factor
+    filled = pymupdf.Rect(fit.filled)
+    # final adjustment if filled rect is wider than fit rect
+    if filled.width > fit.rect.width:
+        h = filled.width / fit.rect.width * fit.rect.height
+        fit.rect.x1 = filled.x1
+        fit.rect.y1 = h
+        fit.parameter = fit.rect.x1 / temp_rect.x1
 
-    spare_height = fit.rect.y1 - filled[3]  # unused room at rectangle bottom
-    # Note: due to MuPDF's logic this may be negative even for successful fits.
-    if scale != 1 or spare_height < 0:  # if scaling occurred, set spare_height to 0
+    scale = 1 / fit.parameter
+    spare_height = max((fit.rect.y1 - filled.y1) / fit.parameter, 0)
+    if scale != 1:  # if scaling occurred, set spare_height to 0
         spare_height = 0
 
     def rect_function(*args):
-        return fit.rect, fit.rect, pymupdf.Identity
+        return fit.rect, fit.rect, None
 
     # draw story on temp PDF page
     doc = story.write_with_links(rect_function)
@@ -2477,7 +2482,7 @@ def insert_htmlbox(
     # -------------------------------------------------------------------------
     # re-insert links in target rect (show_pdf_page cannot copy annotations)
     # -------------------------------------------------------------------------
-    # scaled center point of fit.rect
+    # scaled center point of fit rect
     mp1 = (fit.rect.tl + fit.rect.br) / 2 * scale
 
     # center point of target rect
