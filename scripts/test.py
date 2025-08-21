@@ -137,8 +137,8 @@ Command line args:
         For example `-k test_3354`.
     
     -m <location> | --mupdf <location>
-        Location of local mupdf/ directory or 'git:...' to be used
-        when building PyMuPDF.
+        Location of mupdf as local directory or remote git, to be used when
+        building PyMuPDF.
         
         This sets environment variable PYMUPDF_SETUP_MUPDF_BUILD, which is used
         by PyMuPDF/setup.py. If not specified PyMuPDF will download its default
@@ -176,7 +176,7 @@ Command line args:
     
     -P 0|1
         If 1, automatically install required system packages such as
-        Valgrind. Default is 0.
+        Valgrind. Default is 1 if running as Github action, otherwise 0.
     
     --pybind 0|1
         Experimental, for investigating
@@ -348,7 +348,7 @@ def main(argv):
     install_version = None
     mupdf_sync = None
     os_names = list()
-    system_packages = False
+    system_packages = True if os.environ.get('GITHUB_ACTIONS') == 'true' else False
     pybind = False
     pyodide_build_version = None
     pytest_options = ''
@@ -463,7 +463,7 @@ def main(argv):
                 _mupdf = None
             elif _mupdf.startswith(':'):
                 _branch = _mupdf[1:]
-                _mupdf = 'git:--branch {_branch} https://github.com/ArtifexSoftware/mupdf.git'
+                _mupdf = f'git:--branch {_branch} https://github.com/ArtifexSoftware/mupdf.git'
                 os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = _mupdf
             elif _mupdf.startswith('git:') or '://' in _mupdf:
                 os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = _mupdf
