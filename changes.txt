@@ -2,22 +2,22 @@ Change Log
 ==========
 
 
-**Changes in version **
+**Changes in version 1.26.4 **
+
+* Use MuPDF-1.26.6.
 
 * Fixed issues:
 
-  * **Fixed** `4462 <https://github.com/pymupdf/PyMuPDF/issues/4462>`_: delete_pages() does not accept a single int
-  * **Fixed** `4565 <https://github.com/pymupdf/PyMuPDF/issues/4565>`_: MacOS uses Tesseract and not Tesseract-OCR
-  * **Fixed** `4590 <https://github.com/pymupdf/PyMuPDF/issues/4590>`_: TypeError in utils.py scrub(): annot.update_file(buffer=...) is invalid
-  * **Fixed** `4614 <https://github.com/pymupdf/PyMuPDF/issues/4614>`_: Intercept bad widgets when inserting to another PDF
-  * **Fixed** `4639 <https://github.com/pymupdf/PyMuPDF/issues/4639>`_: pymupdf.mupdf.FzErrorGeneric: code=1: Director error: <class 'AttributeError'>: 'JM_new_bbox_device_Device' object has no attribute 'layer_name'
-
-* Fixed issues when built with MuPDF master:
   * **Fixed** `3806 <https://github.com/pymupdf/PyMuPDF/issues/3806>`_: pdf to image rendering ignore optional content offs
   * **Fixed** `4388 <https://github.com/pymupdf/PyMuPDF/issues/4388>`_: Incorrect PixMap from page due to cached data from other PDF
   * **Fixed** `4457 <https://github.com/pymupdf/PyMuPDF/issues/4457>`_: Wrong characters displayed after font subsetting (w/ native method)
+  * **Fixed** `4462 <https://github.com/pymupdf/PyMuPDF/issues/4462>`_: delete_pages() does not accept a single int
   * **Fixed** `4533 <https://github.com/pymupdf/PyMuPDF/issues/4533>`_: Open PDF error segmentation fault
+  * **Fixed** `4565 <https://github.com/pymupdf/PyMuPDF/issues/4565>`_: MacOS uses Tesseract and not Tesseract-OCR
   * **Fixed** `4571 <https://github.com/pymupdf/PyMuPDF/issues/4571>`_: Broken merged pdfs.
+  * **Fixed** `4590 <https://github.com/pymupdf/PyMuPDF/issues/4590>`_: TypeError in utils.py scrub(): annot.update_file(buffer=...) is invalid
+  * **Fixed** `4614 <https://github.com/pymupdf/PyMuPDF/issues/4614>`_: Intercept bad widgets when inserting to another PDF
+  * **Fixed** `4639 <https://github.com/pymupdf/PyMuPDF/issues/4639>`_: pymupdf.mupdf.FzErrorGeneric: code=1: Director error: <class 'AttributeError'>: 'JM_new_bbox_device_Device' object has no attribute 'layer_name'
 
 * Other:
   
