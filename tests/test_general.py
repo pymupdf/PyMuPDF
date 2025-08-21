@@ -1927,7 +1927,7 @@ def test_4533():
     cp = subprocess.run(command, shell=1, check=0)
     e = cp.returncode
     print(f'{e=}')
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 26, 6):
         assert e == 0
     else:
         assert e != 0

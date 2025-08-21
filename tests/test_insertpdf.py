@@ -326,7 +326,7 @@ def test_4571():
         print(f'Have saved to: {path_out=}')
     with open(path_out, 'rb') as f:
         content = f.read()
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 26, 6):
         # Correct.
         assert b'<</Type/Pages/Count 6/Kids[4 0 R 6 0 R 12 0 R 13 0 R 14 0 R 15 0 R]>>' in content
     else:
