@@ -318,7 +318,7 @@ def test_4457():
         assert text_before == text
         assert rms_before == 0
         
-        if pymupdf.mupdf_version_tuple >= (1, 27):
+        if pymupdf.mupdf_version_tuple >= (1, 26, 6):
             assert rms_after == 0
         else:
             # As of 2025-05-20 there are some differences in some characters,
