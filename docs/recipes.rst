@@ -10,6 +10,11 @@
 
    how-to-open-a-file.rst
 
+----
+
+.. toctree::
+
+   converting-files.rst
 
 ----
 
@@ -18,20 +23,17 @@
 
    recipes-text.rst
 
-
 ----
 
 .. toctree::
 
    recipes-images.rst
 
-
 ----
 
 .. toctree::
 
    recipes-annotations.rst
-
 
 ----
 
