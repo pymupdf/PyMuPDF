@@ -11,14 +11,51 @@ Opening Files
 
 .. _Supported_File_Types:
 
+
 Supported File Types
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+|
+
+PyMuPDF
+"""""""""
 
 |PyMuPDF| can open files other than just |PDF|.
 
 The following file types are supported:
 
 .. include:: supported-files-table.rst
+
+
+----
+
+
+PyMuPDF Pro
+"""""""""""""""
+
+|PyMuPDF Pro| can open Office files.
+
+The following file types are supported:
+
+.. list-table::
+   :header-rows: 1
+
+   * - **DOC/DOCX**
+     - **XLS/XLSX**
+     - **PPT/PPTX**
+     - **HWP/HWPX**
+   * - .. image:: images/icons/icon-docx.svg
+          :width: 40
+          :height: 40
+     - .. image:: images/icons/icon-xlsx.svg
+          :width: 40
+          :height: 40
+     - .. image:: images/icons/icon-pptx.svg
+          :width: 40
+          :height: 40
+     - .. image:: images/icons/icon-hangul.svg
+          :width: 40
+          :height: 40
 
 
 
