@@ -4,7 +4,7 @@
 
 Examples:
 
-    ./PyMuPDF/scripts/test.py --m mupdf build test
+    ./PyMuPDF/scripts/test.py -m mupdf build test
         Build and test with pre-existing local mupdf/ checkout.
 
     ./PyMuPDF/scripts/test.py build test
@@ -13,9 +13,12 @@ Examples:
     ./PyMuPDF/scripts/test.py -m 'git:https://git.ghostscript.com/mupdf.git' build test
         Build and test with internal checkout of MuPDF master.
 
-    ./PyMuPDF/scripts/test.py -m 'git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf.git' build test
+    ./PyMuPDF/scripts/test.py -m ':1.26.x' build test
         Build and test using internal checkout of mupdf 1.26.x branch from
         Github.
+
+    ./PyMuPDF/scripts/test.py install test -i 1.26.3 -k test_2596
+        Install pymupdf-1.26.3 from pupi.org and test only test_2596.
 
 Usage:
 
@@ -31,7 +34,7 @@ Usage:
 Other:
 
 * If we are not already running inside a Python venv, we automatically create a
-  venv and re-run ourselves inside it.
+  venv and re-run ourselves inside it (also see the -v option).
 * Build/wheel/install commands always install into the venv.
 * Tests use whatever PyMuPDF/MuPDF is currently installed in the venv.
 * We run tests with pytest.
@@ -55,6 +58,7 @@ Command line args:
         `setup.py`.]
     
     --build-flavour <build_flavour>
+        [Obsolete.]
         Combination of 'p', 'b', 'd'. See ../setup.py's description of
         PYMUPDF_SETUP_FLAVOUR. Default is 'pbd', i.e. self-contained PyMuPDF
         wheels including MuPDF build-time files.
@@ -71,10 +75,11 @@ Command line args:
     --cibw-name <cibw_name>
         Name to use when installing cibuildwheel, e.g.:
             --cibw-name cibuildwheel==3.0.0b1
+            --cibw-name git+https://github.com/pypa/cibuildwheel
         Default is `cibuildwheel`, i.e. the current release.
     
     --cibw-pyodide 0|1
-         Experimental, make `cibuild` command build a pyodide wheel.
+         Experimental, make `cibw` command build a pyodide wheel.
          2025-05-27: this fails when building mupdf C API - `ld -r -b binary
          ...` fails with:
             emcc: error: binary: No such file or directory ("binary" was expected to be an input file, based on the commandline arguments provided)
@@ -90,6 +95,47 @@ Command line args:
     --cibw-release-2
         Set up so that `cibw` builds only linux-aarch64 wheel.
     
+    --cibw-test-project 0|1
+         If 1, command `cibw` will use a minimal test project instead of the
+         PyMuPDF directory itself.
+         
+         The test project uses setjmp/longjmp and C++ throw/catch.
+         
+         The test checks for current behaviour, so with `--cibw-pyodide 1` it
+         succeeds if the cibw command fails with the expected error message.
+         
+         2025-08-22:
+            Builds ok on Linux.
+            
+            Fails at runtime with --cibw-pyodide 1:
+            
+                With compile/link flags ``:
+                    (+45.0s): remote.py:233:main: jules-devuan: Pyodide has suffered a fatal error. Please report this to the Pyodide maintainers.
+                    (+45.1s): remote.py:233:main: jules-devuan: Stack (most recent call first):
+                    (+45.1s): remote.py:233:main: jules-devuan:   File "/tmp/cibw-run-h_pfo0wf/cp312-pyodide_wasm32/venv-test/lib/python3.12/site-packages/foo/__init__.py", line 63 in bar
+                    (+45.1s): remote.py:233:main: jules-devuan:   File "<string>The cause of the fatal error was:
+                    (+45.1s): remote.py:233:main: jules-devuan: CppException std::runtime_error: deliberate exception
+                    (+45.1s): remote.py:233:main: jules-devuan:     at convertCppException (/home/jules/.cache/cibuildwheel/pyodide-build-0.30.7/0.27.7/xbuildenv/pyodide-root/dist/pyodide.asm.js:10:48959)
+                    (+45.1s): remote.py:233:main: jules-devuan:     at API.fatal_error (/home/jules/.cache/cibuildwheel/pyodide-build-0.30.7/0.27.7/xbuildenv/pyodide-root/dist/pyodide.asm.js:10:49253)
+                    (+45.1s): remote.py:233:main: jules-devuan:     at main (file:///home/jules/.cache/cibuildwheel/pyodide-build-0.30.7/0.27.7/xbuildenv/pyodide-root/dist/python_cli_entry.mjs:149:13) {
+                    (+45.1s): remote.py:233:main: jules-devuan:   ty: 'std::runtime_error',
+                    (+45.1s): remote.py:233:main: jules-devuan:   pyodide_fatal_error: true
+                    (+45.1s): remote.py:233:main: jules-devuan: }
+                    (+45.1s): remote.py:233:main: jules-devuan: ", line 1 in <module>
+                    (+45.1s): remote.py:233:main: jules-devuan: CppException std::runtime_error: deliberate exception
+                    (+45.1s): remote.py:233:main: jules-devuan:     at convertCppException (/home/jules/.cache/cibuildwheel/pyodide-build-0.30.7/0.27.7/xbuildenv/pyodide-root/dist/pyodide.asm.js:10:48959)
+                    (+45.1s): remote.py:233:main: jules-devuan:     at API.fatal_error (/home/jules/.cache/cibuildwheel/pyodide-build-0.30.7/0.27.7/xbuildenv/pyodide-root/dist/pyodide.asm.js:10:49253)
+                    (+45.1s): remote.py:233:main: jules-devuan:     at main (file:///home/jules/.cache/cibuildwheel/pyodide-build-0.30.7/0.27.7/xbuildenv/pyodide-root/dist/python_cli_entry.mjs:149:13) {
+                    (+45.1s): remote.py:233:main: jules-devuan:   ty: 'std::runtime_error',
+                    (+45.1s): remote.py:233:main: jules-devuan:   pyodide_fatal_error: true
+                    (+45.1s): remote.py:233:main: jules-devuan: }
+
+                With compile/link flags `-fwasm-exceptions`:
+                    [LinkError: WebAssembly.instantiate(): Import #60 module="env" function="__c_longjmp": tag import requires a WebAssembly.Tag]
+
+                With compile/link flags `-fwasm-exceptions -sSUPPORT_LONGJMP=wasm`:
+                    [LinkError: WebAssembly.instantiate(): Import #60 module="env" function="__c_longjmp": tag import requires a WebAssembly.Tag]
+
     -d
         Equivalent to `-b debug`.
     
@@ -341,6 +387,7 @@ def main(argv):
     cibw_name = None
     cibw_pyodide = None
     cibw_pyodide_version = None
+    cibw_test_project = None
     commands = list()
     env_extra = dict()
     graal = False
@@ -424,7 +471,10 @@ def main(argv):
             cibw_name = next(args)
         
         elif arg == '--cibw-pyodide':
-            cibw_pyodide = next(args)
+            cibw_pyodide = int(next(args))
+        
+        elif arg == '--cibw-test-project':
+            cibw_test_project = int(next(args))
         
         elif arg == '-d':
             env_extra['PYMUPDF_SETUP_MUPDF_BUILD_TYPE'] = 'debug'
@@ -622,19 +672,13 @@ def main(argv):
         
         elif command == 'cibw':
             # Build wheel(s) with cibuildwheel.
-            if cibw_pyodide and env_extra.get('CIBW_BUILD') is None:
-                assert 0, f'Need a Python version for Pyodide.'
-                CIBW_BUILD = 'cp312*'
-                env_extra['CIBW_BUILD'] = CIBW_BUILD
-                log(f'Defaulting to {CIBW_BUILD=} for Pyodide.')
-            #if cibw_pyodide_version == None:
-            #    cibw_pyodide_version = '0.28.0'
             cibuildwheel(
                     env_extra,
                     cibw_name or 'cibuildwheel',
                     cibw_pyodide,
                     cibw_pyodide_version,
                     cibw_sdist,
+                    cibw_test_project,
                     )
         
         elif command == 'install':
@@ -775,7 +819,14 @@ def build(
         run(f'pip install{build_isolation_text} -v --force-reinstall {pymupdf_dir_abs}', env_extra=env_extra)
 
 
-def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_sdist):
+def cibuildwheel(
+        env_extra,
+        cibw_name,
+        cibw_pyodide,
+        cibw_pyodide_version,
+        cibw_sdist,
+        cibw_test_project,
+        ):
     
     if cibw_sdist and platform.system() == 'Linux':
         log(f'Building sdist.')
@@ -823,7 +874,9 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_
     CIBW_BUILD = env_extra.get('CIBW_BUILD')
     log(f'{CIBW_BUILD=}')
     if CIBW_BUILD is None:
-        if os.environ.get('GITHUB_ACTIONS') == 'true':
+        if cibw_pyodide:
+            CIBW_BUILD = 'cp312*'
+        elif os.environ.get('GITHUB_ACTIONS') == 'true':
             # Build/test all supported Python versions.
             CIBW_BUILD = 'cp39* cp310* cp311* cp312* cp313*'
         else:
@@ -831,6 +884,7 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_
             v = platform.python_version_tuple()[:2]
             log(f'{v=}')
             CIBW_BUILD = f'cp{"".join(v)}*'
+        log(f'Defaulting to {CIBW_BUILD=}.')
     
     cibw_pyodide_args = ''
     if cibw_pyodide:
@@ -847,7 +901,11 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_
     # docker. Note that this will miss any settings in the original
     # environment.
     env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = ' '.join(sorted(env_extra.keys()))
-
+    
+    if cibw_test_project:
+        cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
+        return
+    
     # Build for lowest (assumed first) Python version.
     #
     CIBW_BUILD_0 = CIBW_BUILD.split()[0]
@@ -862,6 +920,109 @@ def cibuildwheel(env_extra, cibw_name, cibw_pyodide, cibw_pyodide_version, cibw_
     env_extra['CIBW_BUILD'] = CIBW_BUILD
     run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
     run(f'ls -ld {pymupdf_dir}/wheelhouse/*')
+
+
+def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args):
+    testdir = f'{pymupdf_dir_abs}/cibw_test'
+    shutil.rmtree(testdir, ignore_errors=1)
+    os.mkdir(testdir)
+    with open(f'{testdir}/setup.py', 'w') as f:
+        f.write(textwrap.dedent(f'''
+                import shutil
+                import sys
+                import pipcl
+
+                def build():
+                    so_leaf = pipcl.build_extension(
+                            name = 'foo',
+                            path_i = 'foo.i',
+                            outdir = 'build',
+                            compiler_extra = {'-fwasm-exceptions -sSUPPORT_LONGJMP=wasm' if cibw_pyodide else ''!r},
+                            linker_extra = {'-fwasm-exceptions -sSUPPORT_LONGJMP=wasm' if cibw_pyodide else ''!r},
+                            )
+                    return [
+                            ('build/foo.py', 'foo/__init__.py'),
+                            (f'build/{{so_leaf}}', f'foo/'),
+                            ]
+
+                p = pipcl.Package(
+                        name = 'foo',
+                        version = '1.2.3',
+                        fn_build = build,
+                        )
+
+                build_wheel = p.build_wheel
+                build_sdist = p.build_sdist
+                # Handle old-style setup.py command-line usage:
+                if __name__ == '__main__':
+                    p.handle_argv(sys.argv)
+                '''))
+    with open(f'{testdir}/foo.i', 'w') as f:
+        f.write(textwrap.dedent('''
+                %{
+                #include <setjmp.h>
+                #include <stdio.h>
+                #include <string.h>
+                #include <stdexcept>
+
+                static sigjmp_buf jmpbuf;
+                static int bar0(const char* text)
+                {
+                    printf("bar(): text: %s\\\\n", text);
+                    int len = (int) strlen(text);
+                    printf("bar(): len=%i\\\\n", len);
+                    //printf("calling longjmp().\\n");
+                    //longjmp(jmpbuf, 1);
+                    fflush(stdout);
+                    return len;
+                }
+                int bar1(const char* text)
+                {
+                    int ret = 0;
+                    /*if (setjmp(jmpbuf) == 0)
+                    {
+                        ret = bar0(text);
+                    }
+                    else
+                    {
+                        printf("setjmp() returned non-zero.\\n");
+                        throw std::runtime_error("deliberate exception");
+                    }*/
+                    throw std::runtime_error("deliberate exception");
+                    return ret;
+                }
+                int bar(const char* text)
+                {
+                    int ret = 0;
+                    try
+                    {
+                        ret = bar1(text);
+                    }
+                    catch(std::exception& e)
+                    {
+                        printf("Received exception: %s\\n", e.what());
+                    }
+                    return ret;
+                }
+                %}
+                int bar(const char* text);
+                '''))
+    shutil.copy2(f'{pymupdf_dir_abs}/pipcl.py', f'{testdir}/pipcl.py')
+    shutil.copy2(f'{pymupdf_dir_abs}/wdev.py', f'{testdir}/wdev.py')
+
+    env_extra['CIBW_BUILD'] = CIBW_BUILD
+    env_extra['CIBW_TEST_COMMAND'] = f'python -c "import foo; foo.bar(\\"some text\\")"'
+    
+    if cibw_pyodide:
+        # Expect failure.
+        e, text = run(f'cd {testdir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra, capture=1, check=0)
+        log(f'{e=}')
+        log(f'text is:\n{textwrap.indent(text, "    ")}')
+        assert e
+        assert 'module="env" function="__c_longjmp": tag import requires a WebAssembly.Tag' in text
+    else:
+        run(f'cd {testdir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
+        run(f'ls -ld {testdir}/wheelhouse/*')
         
 
 def build_pyodide_wheel(pyodide_build_version=None):
