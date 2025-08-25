@@ -1997,12 +1997,12 @@ def test_4392():
         assert e3 == 0
     else:
         # We get SEGV's etc with older swig.
-        if platform.system() == 'Linux':
-            assert (e2, e3) == (139, 139)
-        elif platform.system() == 'Darwin':
-            assert (e2, e3) == (-11, -11)
-        elif platform.system() == 'Windows':
+        if platform.system() == 'Windows':
             assert (e2, e3) == (0xc0000005, 0xc0000005)
+        else:
+            # On plain linux we get (139, 139). On manylinux we get (-11,
+            # -11). On MacOS we get (-11, -11).
+            assert (e2, e3) == (139, 139) or (e2, e3) == (-11, -11)
 
 
 def test_4639():
