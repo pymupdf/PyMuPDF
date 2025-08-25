@@ -176,7 +176,13 @@ Command line args:
             Default is 'r'. Also see `PyMuPDF:tests/run_compound.py`.
     
     -i <install_version>
-        Set version installed by the 'install' command.
+        Controls behaviour of `install` command:
+        
+        * If <install_version> ends with `.whl` we use `pip install
+          <install_version>`.
+        * If <install_version> starts with == or >= or >, we use `pip install
+          pymupdf<install_version>`.
+        * Otherwise we use `pip install pymupdf==<install_version>`.
     
     -k <expression>
         Specify which test(s) to run; passed straight through to pytest's `-k`.
@@ -684,9 +690,12 @@ def main(argv):
         elif command == 'install':
             p = 'pymupdf'
             if install_version:
-                if not install_version.startswith(('==', '>=', '>')):
-                    p = f'{p}=='
-                p = f'{p}{install_version}'
+                if install_version.endswith('.whl'):
+                    p = install_version
+                elif install_version.startswith(('==', '>=', '>')):
+                    p = f'{p}{install_version}'
+                else:
+                    p = f'{p}=={install_version}'
             run(f'pip install --force-reinstall {p}')
             have_installed = True
         
