@@ -6687,6 +6687,7 @@ class Link:
 
 class Matrix:
     __slots__ = ("a", "b", "c", "d", "e", "f", )
+
     def __abs__(self):
         return math.sqrt(sum([c*c for c in self]))
 
@@ -6929,6 +6930,7 @@ class Matrix:
 
 class IdentityMatrix(Matrix):
     """Identity matrix [1, 0, 0, 1, 0, 0]"""
+    __slots__ = ("a", "b", "c", "d", "e", "f", )
 
     def __hash__(self):
         return hash((1,0,0,1,0,0))
@@ -6939,13 +6941,13 @@ class IdentityMatrix(Matrix):
     def __repr__(self):
         return "IdentityMatrix(1.0, 0.0, 0.0, 1.0, 0.0, 0.0)"
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value: float):
         if name in "ad":
-            self.__dict__[name] = 1.0
+            object.__setattr__(self, name, 1.0)
         elif name in "bcef":
-            self.__dict__[name] = 0.0
+            object.__setattr__(self, name, 0.0)
         else:
-            self.__dict__[name] = value
+            raise ValueError(f"Expected one of 'abcdef', got {name} = {value}")
 
     def checkargs(*args):
         raise NotImplementedError("Identity is readonly")
@@ -10786,6 +10788,7 @@ class Pixmap:
 del Point
 class Point:
     __slots__ = ("x", "y")
+
     def __abs__(self):
         return math.sqrt(self.x * self.x + self.y * self.y)
 
@@ -10973,6 +10976,7 @@ class Point:
 
 class Quad:
     __slots__ = ("ul", "ur", "ll", "lr")
+
     def __abs__(self):
         if self.is_empty:
             return 0.0
@@ -11206,6 +11210,7 @@ class Quad:
 
 class Rect:
     __slots__ = ("x0", "y0", "x1", "y1")
+
     def __abs__(self):
         if self.is_empty or self.is_infinite:
             return 0.0
@@ -12649,6 +12654,7 @@ class IRect:
     IRect(sequ) - new from sequence or rect-like
     """
     __slots__ = ("x0", "y0", "x1", "y1")
+
     def __add__(self, p):
         return Rect.__add__(self, p).round()
 
