@@ -10641,6 +10641,117 @@ class Page:
             annot._yielded=True
             yield annot
 
+    def apply_redactions(
+            page: typing.Self,
+            images: int = 2,
+            graphics: int = 1,
+            text: int = 0,
+            ) -> bool:
+        """Apply the redaction annotations of the page.
+
+        Args:
+            page: the PDF page.
+            images:
+                  0 - ignore images
+                  1 - remove all overlapping images
+                  2 - blank out overlapping image parts
+                  3 - remove image unless invisible
+            graphics:
+                  0 - ignore graphics
+                  1 - remove graphics if contained in rectangle
+                  2 - remove all overlapping graphics
+            text:
+                  0 - remove text
+                  1 - ignore text
+        """
+
+        def center_rect(annot_rect, new_text, font, fsize):
+            """Calculate minimal sub-rectangle for the overlay text.
+
+            Notes:
+                Because 'insert_textbox' supports no vertical text centering,
+                we calculate an approximate number of lines here and return a
+                sub-rect with smaller height, which should still be sufficient.
+            Args:
+                annot_rect: the annotation rectangle
+                new_text: the text to insert.
+                font: the fontname. Must be one of the CJK or Base-14 set, else
+                    the rectangle is returned unchanged.
+                fsize: the fontsize
+            Returns:
+                A rectangle to use instead of the annot rectangle.
+            """
+            if not new_text or annot_rect.width <= EPSILON:
+                return annot_rect
+            try:
+                text_width = get_text_length(new_text, font, fsize)
+            except (ValueError, mupdf.FzErrorBase):  # unsupported font
+                if g_exceptions_verbose:
+                    exception_info()
+                return annot_rect
+            line_height = fsize * 1.2
+            limit = annot_rect.width
+            h = math.ceil(text_width / limit) * line_height  # estimate rect height
+            if h >= annot_rect.height:
+                return annot_rect
+            r = annot_rect
+            y = (annot_rect.tl.y + annot_rect.bl.y - h) * 0.5
+            r.y0 = y
+            return r
+
+        CheckParent(page)
+        doc = page.parent
+        if doc.is_encrypted or doc.is_closed:
+            raise ValueError("document closed or encrypted")
+        if not doc.is_pdf:
+            raise ValueError("is no PDF")
+
+        redact_annots = []  # storage of annot values
+        for annot in page.annots(
+            types=(mupdf.PDF_ANNOT_REDACT,)  # pylint: disable=no-member
+        ):
+            # loop redactions
+            redact_annots.append(annot._get_redact_values())  # save annot values
+
+        if redact_annots == []:  # any redactions on this page?
+            return False  # no redactions
+
+        rc = page._apply_redactions(text, images, graphics)  # call MuPDF
+        if not rc:  # should not happen really
+            raise ValueError("Error applying redactions.")
+
+        # now write replacement text in old redact rectangles
+        shape = page.new_shape()
+        for redact in redact_annots:
+            annot_rect = redact["rect"]
+            fill = redact["fill"]
+            if fill:
+                shape.draw_rect(annot_rect)  # colorize the rect background
+                shape.finish(fill=fill, color=fill)
+            if "text" in redact.keys():  # if we also have text
+                new_text = redact["text"]
+                align = redact.get("align", 0)
+                fname = redact["fontname"]
+                fsize = redact["fontsize"]
+                color = redact["text_color"]
+                # try finding vertical centered sub-rect
+                trect = center_rect(annot_rect, new_text, fname, fsize)
+
+                rc = -1
+                while rc < 0 and fsize >= 4:  # while not enough room
+                    # (re-) try insertion
+                    rc = shape.insert_textbox(
+                        trect,
+                        new_text,
+                        fontname=fname,
+                        fontsize=fsize,
+                        color=color,
+                        align=align,
+                    )
+                    fsize -= 0.5  # reduce font if unsuccessful
+        shape.commit()  # append new contents object
+        return True
+
     def recolor(self, components=1):
         """Convert colorspaces of objects on the page.
         
@@ -10749,6 +10860,19 @@ class Page:
         annot._erase()
         return val
 
+    def delete_image(page: typing.Self, xref: int):
+        """Delete the image referred to by xef.
+
+        Actually replaces by a small transparent Pixmap using method Page.replace_image.
+
+        Args:
+            xref: xref of the image to delete.
+        """
+        # make a small 100% transparent pixmap (of just any dimension)
+        pix = Pixmap(csGRAY, (0, 0, 1, 1), 1)
+        pix.clear_with()  # clear all samples bytes to 0x00
+        page.replace_image(xref, pixmap=pix)
+
     def delete_link(self, linkdict):
         """Delete a Link."""
         CheckParent(self)
@@ -10793,6 +10917,20 @@ class Page:
 
         return finished()
 
+    def delete_widget(page: typing.Self, widget: Widget) -> Widget:
+        """Delete widget from page and return the next one."""
+        CheckParent(page)
+        annot = getattr(widget, "_annot", None)
+        if annot is None:
+            raise ValueError("bad type: widget")
+        nextwidget = widget.next
+        page.delete_annot(annot)
+        widget._annot.parent = None
+        keylist = list(widget.__dict__.keys())
+        for key in keylist:
+            del widget.__dict__[key]
+        return nextwidget
+
     @property
     def derotation_matrix(self) -> Matrix:
         """Reflects page de-rotation."""
@@ -10802,6 +10940,408 @@ class Page:
         if not pdfpage.m_internal:
             return Matrix(mupdf.FzRect(mupdf.FzRect.UNIT))
         return Matrix(JM_derotate_page_matrix(pdfpage))
+
+    def draw_bezier(
+            page: typing.Self,
+            p1: point_like,
+            p2: point_like,
+            p3: point_like,
+            p4: point_like,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            width: float = 1,
+            morph: OptStr = None,
+            closePath: bool = False,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a general cubic Bezier curve from p1 to p4 using control points p2 and p3."""
+        img = page.new_shape()
+        Q = img.draw_bezier(Point(p1), Point(p2), Point(p3), Point(p4))
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                closePath=closePath,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_circle(
+            page: typing.Self,
+            center: point_like,
+            radius: float,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            morph: OptSeq = None,
+            dashes: OptStr = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a circle given its center and radius."""
+        img = page.new_shape()
+        Q = img.draw_circle(Point(center), radius)
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+        return Q
+
+    def draw_curve(
+            page: typing.Self,
+            p1: point_like,
+            p2: point_like,
+            p3: point_like,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            width: float = 1,
+            morph: OptSeq = None,
+            closePath: bool = False,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a special Bezier curve from p1 to p3, generating control points on lines p1 to p2 and p2 to p3."""
+        img = page.new_shape()
+        Q = img.draw_curve(Point(p1), Point(p2), Point(p3))
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                closePath=closePath,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_line(
+            page: typing.Self,
+            p1: point_like,
+            p2: point_like,
+            color: OptSeq = (0,),
+            dashes: OptStr = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            morph: OptSeq = None,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc=0,
+            ) -> Point:
+        """Draw a line from point p1 to point p2."""
+        img = page.new_shape()
+        p = img.draw_line(Point(p1), Point(p2))
+        img.finish(
+                color=color,
+                dashes=dashes,
+                width=width,
+                closePath=False,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return p
+
+    def draw_oval(
+            page: typing.Self,
+            rect: typing.Union[rect_like, quad_like],
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            morph: OptSeq = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw an oval given its containing rectangle or quad."""
+        img = page.new_shape()
+        Q = img.draw_oval(rect)
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_polyline(
+            page: typing.Self,
+            points: list,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            width: float = 1,
+            morph: OptSeq = None,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            closePath: bool = False,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw multiple connected line segments."""
+        img = page.new_shape()
+        Q = img.draw_polyline(points)
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                closePath=closePath,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_quad(
+            page: typing.Self,
+            quad: quad_like,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            morph: OptSeq = None,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a quadrilateral."""
+        img = page.new_shape()
+        Q = img.draw_quad(Quad(quad))
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_rect(
+            page: typing.Self,
+            rect: rect_like,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            morph: OptSeq = None,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            radius=None,
+            ) -> Point:
+        '''
+        Draw a rectangle. See Shape class method for details.
+        '''
+        img = page.new_shape()
+        Q = img.draw_rect(Rect(rect), radius=radius)
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_sector(
+            page: typing.Self,
+            center: point_like,
+            point: point_like,
+            beta: float,
+            color: OptSeq = (0,),
+            fill: OptSeq = None,
+            dashes: OptStr = None,
+            fullSector: bool = True,
+            morph: OptSeq = None,
+            width: float = 1,
+            closePath: bool = False,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a circle sector given circle center, one arc end point and the angle of the arc.
+
+        Parameters:
+            center -- center of circle
+            point -- arc end point
+            beta -- angle of arc (degrees)
+            fullSector -- connect arc ends with center
+        """
+        img = page.new_shape()
+        Q = img.draw_sector(Point(center), Point(point), beta, fullSector=fullSector)
+        img.finish(
+                color=color,
+                fill=fill,
+                dashes=dashes,
+                width=width,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                closePath=closePath,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return Q
+
+    def draw_squiggle(
+            page: typing.Self,
+            p1: point_like,
+            p2: point_like,
+            breadth: float = 2,
+            color: OptSeq = (0,),
+            dashes: OptStr = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            morph: OptSeq = None,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a squiggly line from point p1 to point p2."""
+        img = page.new_shape()
+        p = img.draw_squiggle(Point(p1), Point(p2), breadth=breadth)
+        img.finish(
+                color=color,
+                dashes=dashes,
+                width=width,
+                closePath=False,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return p
+
+    def draw_zigzag(
+            page: typing.Self,
+            p1: point_like,
+            p2: point_like,
+            breadth: float = 2,
+            color: OptSeq = (0,),
+            dashes: OptStr = None,
+            width: float = 1,
+            lineCap: int = 0,
+            lineJoin: int = 0,
+            overlay: bool = True,
+            morph: OptSeq = None,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> Point:
+        """Draw a zigzag line from point p1 to point p2."""
+        img = page.new_shape()
+        p = img.draw_zigzag(Point(p1), Point(p2), breadth=breadth)
+        img.finish(
+                color=color,
+                dashes=dashes,
+                width=width,
+                closePath=False,
+                lineCap=lineCap,
+                lineJoin=lineJoin,
+                morph=morph,
+                stroke_opacity=stroke_opacity,
+                fill_opacity=fill_opacity,
+                oc=oc,
+                )
+        img.commit(overlay)
+
+        return p
 
     def extend_textpage(self, tpage, flags=0, matrix=None):
         page = self.this
@@ -11125,6 +11665,168 @@ class Page:
             val = None
             return paths
 
+    def get_image_info(
+            page: typing.Self,
+            hashes: bool = False,
+            xrefs: bool = False
+            ) -> list:
+        """Extract image information only from a pymupdf.TextPage.
+
+        Args:
+            hashes: (bool) include MD5 hash for each image.
+            xrefs: (bool) try to find the xref for each image. Sets hashes to true.
+        """
+        doc = page.parent
+        if xrefs and doc.is_pdf:
+            hashes = True
+        if not doc.is_pdf:
+            xrefs = False
+        imginfo = getattr(page, "_image_info", None)
+        if imginfo and not xrefs:
+            return imginfo
+        if not imginfo:
+            tp = page.get_textpage(flags=TEXT_PRESERVE_IMAGES)
+            imginfo = tp.extractIMGINFO(hashes=hashes)
+            del tp
+            if hashes:
+                page._image_info = imginfo
+        if not xrefs or not doc.is_pdf:
+            return imginfo
+        imglist = page.get_images()
+        digests = {}
+        for item in imglist:
+            xref = item[0]
+            pix = Pixmap(doc, xref)
+            digests[pix.digest] = xref
+            del pix
+        for i in range(len(imginfo)):
+            item = imginfo[i]
+            xref = digests.get(item["digest"], 0)
+            item["xref"] = xref
+            imginfo[i] = item
+        return imginfo
+
+    def get_image_rects(page: typing.Self, name, transform=False) -> list:
+        """Return list of image positions on a page.
+
+        Args:
+            name: (str, list, int) image identification. May be reference name, an
+                  item of the page's image list or an xref.
+            transform: (bool) whether to also return the transformation matrix.
+        Returns:
+            A list of pymupdf.Rect objects or tuples of (pymupdf.Rect, pymupdf.Matrix)
+            for all image locations on the page.
+        """
+        if type(name) in (list, tuple):
+            xref = name[0]
+        elif type(name) is int:
+            xref = name
+        else:
+            imglist = [i for i in page.get_images() if i[7] == name]
+            if imglist == []:
+                raise ValueError("bad image name")
+            elif len(imglist) != 1:
+                raise ValueError("multiple image names found")
+            xref = imglist[0][0]
+        pix = Pixmap(page.parent, xref)  # make pixmap of the image to compute MD5
+        digest = pix.digest
+        del pix
+        infos = page.get_image_info(hashes=True)
+        if not transform:
+            bboxes = [Rect(im["bbox"]) for im in infos if im["digest"] == digest]
+        else:
+            bboxes = [
+                (Rect(im["bbox"]), Matrix(im["transform"]))
+                for im in infos
+                if im["digest"] == digest
+            ]
+        return bboxes
+
+    def get_label(page):
+        """Return the label for this PDF page.
+
+        Args:
+            page: page object.
+        Returns:
+            The label (str) of the page. Errors return an empty string.
+        """
+        # Jorj McKie, 2021-01-06
+
+        labels = page.parent._get_page_labels()
+        if not labels:
+            return ""
+        labels.sort()
+        return utils.get_label_pno(page.number, labels)
+
+    def get_links(page: typing.Self) -> list:
+        """Create a list of all links contained in a PDF page.
+
+        Notes:
+            see PyMuPDF ducmentation for details.
+        """
+
+        CheckParent(page)
+        ln = page.first_link
+        links = []
+        while ln:
+            nl = utils.getLinkDict(ln, page.parent)
+            links.append(nl)
+            ln = ln.next
+        if links != [] and page.parent.is_pdf:
+            linkxrefs = [x for x in
+                    #page.annot_xrefs()
+                    JM_get_annot_xref_list2(page)
+                    if x[1] == mupdf.PDF_ANNOT_LINK  # pylint: disable=no-member
+                    ]
+            if len(linkxrefs) == len(links):
+                for i in range(len(linkxrefs)):
+                    links[i]["xref"] = linkxrefs[i][0]
+                    links[i]["id"] = linkxrefs[i][2]
+        return links
+
+    def get_pixmap(
+                page: typing.Self,
+                *,
+                matrix: matrix_like=Identity,
+                dpi=None,
+                colorspace: Colorspace=None,
+                clip: rect_like=None,
+                alpha: bool=False,
+                annots: bool=True,
+                ) -> 'Pixmap':
+        """Create pixmap of page.
+
+        Keyword args:
+            matrix: Matrix for transformation (default: Identity).
+            dpi: desired dots per inch. If given, matrix is ignored.
+            colorspace: (str/Colorspace) cmyk, rgb, gray - case ignored, default csRGB.
+            clip: (irect-like) restrict rendering to this area.
+            alpha: (bool) whether to include alpha channel
+            annots: (bool) whether to also render annotations
+        """
+        if colorspace is None:
+            colorspace = csRGB
+        if dpi:
+            zoom = dpi / 72
+            matrix = Matrix(zoom, zoom)
+
+        if type(colorspace) is str:
+            if colorspace.upper() == "GRAY":
+                colorspace = csGRAY
+            elif colorspace.upper() == "CMYK":
+                colorspace = csCMYK
+            else:
+                colorspace = csRGB
+        if colorspace.n not in (1, 3, 4):
+            raise ValueError("unsupported colorspace")
+
+        dl = page.get_displaylist(annots=annots)
+        pix = dl.get_pixmap(matrix=matrix, colorspace=colorspace, alpha=alpha, clip=clip)
+        dl = None
+        if dpi:
+            pix.set_dpi(dpi, dpi)
+        return pix
+
     def remove_rotation(self):
         """Set page rotation to 0 while maintaining visual appearance."""
         rot = self.rotation  # normalized rotation value
@@ -11410,6 +12112,21 @@ class Page:
             del tp
         return rc
 
+    def get_text(self, *args, **kwargs):
+        return utils.get_text(self, *args, **kwargs)
+
+    def get_text_blocks(self, *args, **kwargs):
+        return utils.get_text_blocks(self, *args, **kwargs)
+    
+    def get_text_selection(self, *args, **kwargs):
+        return utils.get_text_selection(self, *args, **kwargs)
+    
+    def get_text_words(self, *args, **kwargs):
+        return utils.get_text_words(self, *args, **kwargs)
+    
+    def get_textpage_ocr(self, *args, **kwargs):
+        return utils.get_textpage_ocr(self, *args, **kwargs)
+    
     def get_textpage(self, clip: rect_like = None, flags: int = 0, matrix=None) -> "TextPage":
         CheckParent(self)
         if matrix is None:
@@ -11535,6 +12252,386 @@ class Page:
         doc.get_char_widths(xref, fontdict=fontdict)
         return xref
 
+    def insert_htmlbox(
+        page,
+        rect,
+        text,
+        *,
+        css=None,
+        scale_low=0,
+        archive=None,
+        rotate=0,
+        oc=0,
+        opacity=1,
+        overlay=True,
+    ) -> float:
+        """Insert text with optional HTML tags and stylings into a rectangle.
+
+        Args:
+            rect: (rect-like) rectangle into which the text should be placed.
+            text: (str) text with optional HTML tags and stylings.
+            css: (str) CSS styling commands.
+            scale_low: (float) force-fit content by scaling it down. Must be in
+                range [0, 1]. If 1, no scaling will take place. If 0, arbitrary
+                down-scaling is acceptable. A value of 0.1 would mean that content
+                may be scaled down by at most 90%.
+            archive: Archive object pointing to locations of used fonts or images
+            rotate: (int) rotate the text in the box by a multiple of 90 degrees.
+            oc: (int) the xref of an OCG / OCMD (Optional Content).
+            opacity: (float) set opacity of inserted content.
+            overlay: (bool) put text on top of page content.
+        Returns:
+            A tuple of floats (spare_height, scale).
+            spare_height: -1 if content did not fit, else >= 0. It is the height of the
+                   unused (still available) rectangle stripe. Positive only if
+                   scale_min = 1 (no down scaling).
+            scale: downscaling factor, 0 < scale <= 1. Set to 0 if spare_height = -1 (no fit).
+        """
+
+        # normalize rotation angle
+        if not rotate % 90 == 0:
+            raise ValueError("bad rotation angle")
+        while rotate < 0:
+            rotate += 360
+        while rotate >= 360:
+            rotate -= 360
+
+        if not 0 <= scale_low <= 1:
+            raise ValueError("'scale_low' must be in [0, 1]")
+
+        if css is None:
+            css = ""
+
+        rect = Rect(rect)
+        if rotate in (90, 270):
+            temp_rect = Rect(0, 0, rect.height, rect.width)
+        else:
+            temp_rect = Rect(0, 0, rect.width, rect.height)
+
+        # use a small border by default
+        mycss = "body {margin:1px;}" + css  # append user CSS
+
+        # either make a story, or accept a given one
+        if isinstance(text, str):  # if a string, convert to a Story
+            story = Story(html=text, user_css=mycss, archive=archive)
+        elif isinstance(text, Story):
+            story = text
+        else:
+            raise ValueError("'text' must be a string or a Story")
+        # ----------------------------------------------------------------
+        # Find a scaling factor that lets our story fit in
+        # ----------------------------------------------------------------
+        scale_max = None if scale_low == 0 else 1 / scale_low
+
+        fit = story.fit_scale(temp_rect, scale_min=1, scale_max=scale_max)
+        if not fit.big_enough:  # there was no fit
+            return (-1, scale_low)
+
+        filled = fit.filled
+        scale = 1 / fit.parameter  # shrink factor
+
+        spare_height = fit.rect.y1 - filled[3]  # unused room at rectangle bottom
+        # Note: due to MuPDF's logic this may be negative even for successful fits.
+        if scale != 1 or spare_height < 0:  # if scaling occurred, set spare_height to 0
+            spare_height = 0
+
+        def rect_function(*args):
+            return fit.rect, fit.rect, Identity
+
+        # draw story on temp PDF page
+        doc = story.write_with_links(rect_function)
+
+        # Insert opacity if requested.
+        # For this, we prepend a command to the /Contents.
+        if 0 <= opacity < 1:
+            tpage = doc[0]  # load page
+            # generate /ExtGstate for the page
+            alp0 = tpage._set_opacity(CA=opacity, ca=opacity)
+            s = f"/{alp0} gs\n"  # generate graphic state command
+            TOOLS._insert_contents(tpage, s.encode(), 0)
+
+        # put result in target page
+        page.show_pdf_page(rect, doc, 0, rotate=rotate, oc=oc, overlay=overlay)
+
+        # -------------------------------------------------------------------------
+        # re-insert links in target rect (show_pdf_page cannot copy annotations)
+        # -------------------------------------------------------------------------
+        # scaled center point of fit.rect
+        mp1 = (fit.rect.tl + fit.rect.br) / 2 * scale
+
+        # center point of target rect
+        mp2 = (rect.tl + rect.br) / 2
+
+        # compute link positioning matrix:
+        # - move center of scaled-down fit.rect to (0,0)
+        # - rotate
+        # - move (0,0) to center of target rect
+        mat = (
+            Matrix(scale, 0, 0, scale, -mp1.x, -mp1.y)
+            * Matrix(-rotate)
+            * Matrix(1, 0, 0, 1, mp2.x, mp2.y)
+        )
+
+        # copy over links
+        for link in doc[0].get_links():
+            link["from"] *= mat
+            page.insert_link(link)
+
+        return spare_height, scale
+
+    def insert_image(
+            page,
+            rect,
+            *,
+            alpha=-1,
+            filename=None,
+            height=0,
+            keep_proportion=True,
+            mask=None,
+            oc=0,
+            overlay=True,
+            pixmap=None,
+            rotate=0,
+            stream=None,
+            width=0,
+            xref=0,
+            ):
+        """Insert an image for display in a rectangle.
+
+        Args:
+            rect: (rect_like) position of image on the page.
+            alpha: (int, optional) set to 0 if image has no transparency.
+            filename: (str, Path, file object) image filename.
+            height: (int)
+            keep_proportion: (bool) keep width / height ratio (default).
+            mask: (bytes, optional) image consisting of alpha values to use.
+            oc: (int) xref of OCG or OCMD to declare as Optional Content.
+            overlay: (bool) put in foreground (default) or background.
+            pixmap: (pymupdf.Pixmap) use this as image.
+            rotate: (int) rotate by 0, 90, 180 or 270 degrees.
+            stream: (bytes) use this as image.
+            width: (int)
+            xref: (int) use this as image.
+
+        'page' and 'rect' are positional, all other parameters are keywords.
+
+        If 'xref' is given, that image is used. Other input options are ignored.
+        Else, exactly one of pixmap, stream or filename must be given.
+
+        'alpha=0' for non-transparent images improves performance significantly.
+        Affects stream and filename only.
+
+        Optimum transparent insertions are possible by using filename / stream in
+        conjunction with a 'mask' image of alpha values.
+
+        Returns:
+            xref (int) of inserted image. Re-use as argument for multiple insertions.
+        """
+        CheckParent(page)
+        doc = page.parent
+        if not doc.is_pdf:
+            raise ValueError("is no PDF")
+
+        if xref == 0 and (bool(filename) + bool(stream) + bool(pixmap) != 1):
+            raise ValueError("xref=0 needs exactly one of filename, pixmap, stream")
+
+        if filename:
+            if type(filename) is str:
+                pass
+            elif hasattr(filename, "absolute"):
+                filename = str(filename)
+            elif hasattr(filename, "name"):
+                filename = filename.name
+            else:
+                raise ValueError("bad filename")
+
+        if filename and not os.path.exists(filename):
+            raise FileNotFoundError("No such file: '%s'" % filename)
+        elif stream and type(stream) not in (bytes, bytearray, io.BytesIO):
+            raise ValueError("stream must be bytes-like / BytesIO")
+        elif pixmap and type(pixmap) is not Pixmap:
+            raise ValueError("pixmap must be a Pixmap")
+        if mask and not (stream or filename):
+            raise ValueError("mask requires stream or filename")
+        if mask and type(mask) not in (bytes, bytearray, io.BytesIO):
+            raise ValueError("mask must be bytes-like / BytesIO")
+        while rotate < 0:
+            rotate += 360
+        while rotate >= 360:
+            rotate -= 360
+        if rotate not in (0, 90, 180, 270):
+            raise ValueError("bad rotate value")
+
+        r = Rect(rect)
+        if r.is_empty or r.is_infinite:
+            raise ValueError("rect must be finite and not empty")
+        clip = r * ~page.transformation_matrix
+
+        # Create a unique image reference name.
+        ilst = [i[7] for i in doc.get_page_images(page.number)]
+        ilst += [i[1] for i in doc.get_page_xobjects(page.number)]
+        ilst += [i[4] for i in doc.get_page_fonts(page.number)]
+        n = "fzImg"  # 'pymupdf image'
+        i = 0
+        _imgname = n + "0"  # first name candidate
+        while _imgname in ilst:
+            i += 1
+            _imgname = n + str(i)  # try new name
+
+        if overlay:
+            page.wrap_contents()  # ensure a balanced graphics state
+        digests = doc.InsertedImages
+        xref, digests = page._insert_image(
+            filename=filename,
+            pixmap=pixmap,
+            stream=stream,
+            imask=mask,
+            clip=clip,
+            overlay=overlay,
+            oc=oc,
+            xref=xref,
+            rotate=rotate,
+            keep_proportion=keep_proportion,
+            width=width,
+            height=height,
+            alpha=alpha,
+            _imgname=_imgname,
+            digests=digests,
+        )
+        if digests is not None:
+            doc.InsertedImages = digests
+
+        return xref
+
+    def insert_link(page: typing.Self, lnk: dict, mark: bool = True) -> None:
+        """Insert a new link for the current page."""
+        CheckParent(page)
+        annot = utils.getLinkText(page, lnk)
+        if annot == "":
+            raise ValueError("link kind not supported")
+        page._addAnnot_FromString((annot,))
+
+    def insert_text(
+            page: typing.Self,
+            point: point_like,
+            text: typing.Union[str, list],
+            *,
+            fontsize: float = 11,
+            lineheight: OptFloat = None,
+            fontname: str = "helv",
+            fontfile: OptStr = None,
+            set_simple: int = 0,
+            encoding: int = 0,
+            color: OptSeq = None,
+            fill: OptSeq = None,
+            border_width: float = 0.05,
+            miter_limit: float = 1,
+            render_mode: int = 0,
+            rotate: int = 0,
+            morph: OptSeq = None,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ):
+
+        img = page.new_shape()
+        rc = img.insert_text(
+            point,
+            text,
+            fontsize=fontsize,
+            lineheight=lineheight,
+            fontname=fontname,
+            fontfile=fontfile,
+            set_simple=set_simple,
+            encoding=encoding,
+            color=color,
+            fill=fill,
+            border_width=border_width,
+            render_mode=render_mode,
+            miter_limit=miter_limit,
+            rotate=rotate,
+            morph=morph,
+            stroke_opacity=stroke_opacity,
+            fill_opacity=fill_opacity,
+            oc=oc,
+        )
+        if rc >= 0:
+            img.commit(overlay)
+        return rc
+
+    def insert_textbox(
+            page: typing.Self,
+            rect: rect_like,
+            buffer: typing.Union[str, list],
+            *,
+            fontname: str = "helv",
+            fontfile: OptStr = None,
+            set_simple: int = 0,
+            encoding: int = 0,
+            fontsize: float = 11,
+            lineheight: OptFloat = None,
+            color: OptSeq = None,
+            fill: OptSeq = None,
+            expandtabs: int = 1,
+            align: int = 0,
+            rotate: int = 0,
+            render_mode: int = 0,
+            miter_limit: float = 1,
+            border_width: float = 0.05,
+            morph: OptSeq = None,
+            overlay: bool = True,
+            stroke_opacity: float = 1,
+            fill_opacity: float = 1,
+            oc: int = 0,
+            ) -> float:
+        """Insert text into a given rectangle.
+
+        Notes:
+            Creates a Shape object, uses its same-named method and commits it.
+        Parameters:
+            rect: (rect-like) area to use for text.
+            buffer: text to be inserted
+            fontname: a Base-14 font, font name or '/name'
+            fontfile: name of a font file
+            fontsize: font size
+            lineheight: overwrite the font property
+            color: RGB color triple
+            expandtabs: handles tabulators with string function
+            align: left, center, right, justified
+            rotate: 0, 90, 180, or 270 degrees
+            morph: morph box with a matrix and a fixpoint
+            overlay: put text in foreground or background
+        Returns:
+            unused or deficit rectangle area (float)
+        """
+        img = page.new_shape()
+        rc = img.insert_textbox(
+            rect,
+            buffer,
+            fontsize=fontsize,
+            lineheight=lineheight,
+            fontname=fontname,
+            fontfile=fontfile,
+            set_simple=set_simple,
+            encoding=encoding,
+            color=color,
+            fill=fill,
+            expandtabs=expandtabs,
+            render_mode=render_mode,
+            miter_limit=miter_limit,
+            border_width=border_width,
+            align=align,
+            rotate=rotate,
+            morph=morph,
+            stroke_opacity=stroke_opacity,
+            fill_opacity=fill_opacity,
+            oc=oc,
+        )
+        if rc >= 0:
+            img.commit(overlay)
+        return rc
+
     @property
     def is_wrapped(self):
         """Check if /Contents is in a balanced graphics state."""
@@ -11647,6 +12744,9 @@ class Page:
     def mediabox_size(self):
         return Point(self.mediabox.x1, self.mediabox.y1)
 
+    def new_shape(self):
+        return utils.Shape(self)
+
     #@property
     #def parent( self):
     #    assert self._parent
@@ -11665,6 +12765,44 @@ class Page:
         page = doc.reload_page(self)
         # fixme this looks wrong.
         self.this = page
+
+    def replace_image(
+            page: typing.Self,
+            xref: int,
+            *,
+            filename=None,
+            pixmap=None,
+            stream=None,
+            ):
+        """Replace the image referred to by xref.
+
+        Replace the image by changing the object definition stored under xref. This
+        will leave the pages appearance instructions intact, so the new image is
+        being displayed with the same bbox, rotation etc.
+        By providing a small fully transparent image, an effect as if the image had
+        been deleted can be achieved.
+        A typical use may include replacing large images by a smaller version,
+        e.g. with a lower resolution or graylevel instead of colored.
+
+        Args:
+            xref: the xref of the image to replace.
+            filename, pixmap, stream: exactly one of these must be provided. The
+                meaning being the same as in Page.insert_image.
+        """
+        doc = page.parent  # the owning document
+        if not doc.xref_is_image(xref):
+            raise ValueError("xref not an image")  # insert new image anywhere in page
+        if bool(filename) + bool(stream) + bool(pixmap) != 1:
+            raise ValueError("Exactly one of filename/stream/pixmap must be given")
+        new_xref = page.insert_image(
+            page.rect, filename=filename, stream=stream, pixmap=pixmap
+        )
+        doc.xref_copy(new_xref, xref)  # copy over new to old
+        last_contents_xref = page.get_contents()[-1]
+        # new image insertion has created a new /Contents source,
+        # which we will set to spaces now
+        doc.update_stream(last_contents_xref, b" ")
+        page._image_info = None  # clear cache of extracted image information
 
     @property
     def rotation(self):
@@ -11686,6 +12824,47 @@ class Page:
         """
         CheckParent(self)
         mupdf.fz_run_page(self.this, dw.device, JM_matrix_from_py(m), mupdf.FzCookie())
+
+    def search_for(
+            page,
+            text,
+            *,
+            clip=None,
+            quads=False,
+            flags=None,
+            textpage=None,
+            ) -> list:
+        """Search for a string on a page.
+
+        Args:
+            text: string to be searched for
+            clip: restrict search to this rectangle
+            quads: (bool) return quads instead of rectangles
+            flags: bit switches, default: join hyphened words
+            textpage: a pre-created pymupdf.TextPage
+        Returns:
+            a list of rectangles or quads, each containing one occurrence.
+        """
+        if flags is None:
+            flags=(0
+                | TEXT_DEHYPHENATE
+                | TEXT_PRESERVE_WHITESPACE
+                | TEXT_PRESERVE_LIGATURES
+                | TEXT_MEDIABOX_CLIP
+                )
+        if clip is not None:
+            clip = Rect(clip)
+
+        CheckParent(page)
+        tp = textpage
+        if tp is None:
+            tp = page.get_textpage(clip=clip, flags=flags)  # create pymupdf.TextPage
+        elif getattr(tp, "parent") != page:
+            raise ValueError("not a textpage of this page")
+        rlist = tp.search(text, quads=quads)
+        if textpage is None:
+            del tp
+        return rlist
 
     def set_artbox(self, rect):
         """Set the ArtBox."""
@@ -11754,6 +12933,130 @@ class Page:
         """Set the TrimBox."""
         return self._set_pagebox("TrimBox", rect)
 
+    def show_pdf_page(
+            page,
+            rect,
+            docsrc,
+            pno=0,
+            keep_proportion=True,
+            overlay=True,
+            oc=0,
+            rotate=0,
+            clip=None,
+            ) -> int:
+        """Show page number 'pno' of PDF 'docsrc' in rectangle 'rect'.
+
+        Args:
+            rect: (rect-like) where to place the source image
+            docsrc: (document) source PDF
+            pno: (int) source page number
+            keep_proportion: (bool) do not change width-height-ratio
+            overlay: (bool) put in foreground
+            oc: (xref) make visibility dependent on this OCG / OCMD (which must be defined in the target PDF)
+            rotate: (int) degrees (multiple of 90)
+            clip: (rect-like) part of source page rectangle
+        Returns:
+            xref of inserted object (for reuse)
+        """
+        def calc_matrix(sr, tr, keep=True, rotate=0):
+            """Calculate transformation matrix from source to target rect.
+
+            Notes:
+                The product of four matrices in this sequence: (1) translate correct
+                source corner to origin, (2) rotate, (3) scale, (4) translate to
+                target's top-left corner.
+            Args:
+                sr: source rect in PDF (!) coordinate system
+                tr: target rect in PDF coordinate system
+                keep: whether to keep source ratio of width to height
+                rotate: rotation angle in degrees
+            Returns:
+                Transformation matrix.
+            """
+            # calc center point of source rect
+            smp = (sr.tl + sr.br) / 2.0
+            # calc center point of target rect
+            tmp = (tr.tl + tr.br) / 2.0
+
+            # m moves to (0, 0), then rotates
+            m = Matrix(1, 0, 0, 1, -smp.x, -smp.y) * Matrix(rotate)
+
+            sr1 = sr * m  # resulting source rect to calculate scale factors
+
+            fw = tr.width / sr1.width  # scale the width
+            fh = tr.height / sr1.height  # scale the height
+            if keep:
+                fw = fh = min(fw, fh)  # take min if keeping aspect ratio
+
+            m *= Matrix(fw, fh)  # concat scale matrix
+            m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
+            return JM_TUPLE(m)
+
+        CheckParent(page)
+        doc = page.parent
+
+        if not doc.is_pdf or not docsrc.is_pdf:
+            raise ValueError("is no PDF")
+
+        if rect.is_empty or rect.is_infinite:
+            raise ValueError("rect must be finite and not empty")
+
+        while pno < 0:  # support negative page numbers
+            pno += docsrc.page_count
+        src_page = docsrc[pno]  # load source page
+
+        tar_rect = rect * ~page.transformation_matrix  # target rect in PDF coordinates
+
+        src_rect = src_page.rect if not clip else src_page.rect & clip  # source rect
+        if src_rect.is_empty or src_rect.is_infinite:
+            raise ValueError("clip must be finite and not empty")
+        src_rect = src_rect * ~src_page.transformation_matrix  # ... in PDF coord
+
+        matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
+
+        # list of existing /Form /XObjects
+        ilst = [i[1] for i in doc.get_page_xobjects(page.number)]
+        ilst += [i[7] for i in doc.get_page_images(page.number)]
+        ilst += [i[4] for i in doc.get_page_fonts(page.number)]
+
+        # create a name not in that list
+        n = "fzFrm"
+        i = 0
+        _imgname = n + "0"
+        while _imgname in ilst:
+            i += 1
+            _imgname = n + str(i)
+
+        isrc = docsrc._graft_id  # used as key for graftmaps
+        if doc._graft_id == isrc:
+            raise ValueError("source document must not equal target")
+
+        # retrieve / make Graftmap for source PDF
+        gmap = doc.Graftmaps.get(isrc, None)
+        if gmap is None:
+            gmap = Graftmap(doc)
+            doc.Graftmaps[isrc] = gmap
+
+        # take note of generated xref for automatic reuse
+        pno_id = (isrc, pno)  # id of docsrc[pno]
+        xref = doc.ShownPages.get(pno_id, 0)
+
+        if overlay:
+            page.wrap_contents()  # ensure a balanced graphics state
+        xref = page._show_pdf_page(
+            src_page,
+            overlay=overlay,
+            matrix=matrix,
+            xref=xref,
+            oc=oc,
+            clip=src_rect,
+            graftmap=gmap,
+            _imgname=_imgname,
+        )
+        doc.ShownPages[pno_id] = xref
+
+        return xref
+
     @property
     def transformation_matrix(self):
         """Page transformation matrix."""
@@ -11782,6 +13085,15 @@ class Page:
         mb = self.mediabox
         return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
 
+    def update_link(page: typing.Self, lnk: dict) -> None:
+        """Update a link on the current page."""
+        CheckParent(page)
+        annot = utils.getLinkText(page, lnk)
+        if annot == "":
+            raise ValueError("link kind not supported")
+
+        page.parent.update_object(lnk["xref"], annot, page=page)
+
     def widgets(self, types=None):
         """ Generator over the widgets of a page.
 
@@ -11808,6 +13120,57 @@ class Page:
         if pop > 0:  # append required pop commands
             append = b"\nQ" * pop + b"\n"
             TOOLS._insert_contents(self, append, True)
+
+    def write_text(
+            page: typing.Self,
+            rect=None,
+            writers=None,
+            overlay=True,
+            color=None,
+            opacity=None,
+            keep_proportion=True,
+            rotate=0,
+            oc=0,
+            ) -> None:
+        """Write the text of one or more pymupdf.TextWriter objects.
+
+        Args:
+            rect: target rectangle. If None, the union of the text writers is used.
+            writers: one or more pymupdf.TextWriter objects.
+            overlay: put in foreground or background.
+            keep_proportion: maintain aspect ratio of rectangle sides.
+            rotate: arbitrary rotation angle.
+            oc: the xref of an optional content object
+        """
+        assert isinstance(page, Page)
+        if not writers:
+            raise ValueError("need at least one pymupdf.TextWriter")
+        if type(writers) is TextWriter:
+            if rotate == 0 and rect is None:
+                writers.write_text(page, opacity=opacity, color=color, overlay=overlay)
+                return None
+            else:
+                writers = (writers,)
+        clip = writers[0].text_rect
+        textdoc = Document()
+        tpage = textdoc.new_page(width=page.rect.width, height=page.rect.height)
+        for writer in writers:
+            clip |= writer.text_rect
+            writer.write_text(tpage, opacity=opacity, color=color)
+        if rect is None:
+            rect = clip
+        page.show_pdf_page(
+            rect,
+            textdoc,
+            0,
+            overlay=overlay,
+            keep_proportion=keep_proportion,
+            rotate=rotate,
+            clip=clip,
+            oc=oc,
+        )
+        textdoc = None
+        tpage = None
 
     @property
     def xref(self):
@@ -14421,6 +15784,232 @@ class TextWriter:
 
         text = " ".join(words)
         return text
+
+    def fill_textbox(
+            writer: typing.Self,
+            rect: rect_like,
+            text: typing.Union[str, list],
+            pos: point_like = None,
+            font: typing.Optional[Font] = None,
+            fontsize: float = 11,
+            lineheight: OptFloat = None,
+            align: int = 0,
+            warn: bool = None,
+            right_to_left: bool = False,
+            small_caps: bool = False,
+            ) -> tuple:
+        """Fill a rectangle with text.
+
+        Args:
+            writer: pymupdf.TextWriter object (= "self")
+            rect: rect-like to receive the text.
+            text: string or list/tuple of strings.
+            pos: point-like start position of first word.
+            font: pymupdf.Font object (default pymupdf.Font('helv')).
+            fontsize: the fontsize.
+            lineheight: overwrite the font property
+            align: (int) 0 = left, 1 = center, 2 = right, 3 = justify
+            warn: (bool) text overflow action: none, warn, or exception
+            right_to_left: (bool) indicate right-to-left language.
+        """
+        rect = Rect(rect)
+        if rect.is_empty:
+            raise ValueError("fill rect must not empty.")
+        if type(font) is not Font:
+            font = Font("helv")
+
+        def textlen(x):
+            """Return length of a string."""
+            return font.text_length(
+                x, fontsize=fontsize, small_caps=small_caps
+            )  # abbreviation
+
+        def char_lengths(x):
+            """Return list of single character lengths for a string."""
+            return font.char_lengths(x, fontsize=fontsize, small_caps=small_caps)
+
+        def append_this(pos, text):
+            ret = writer.append(
+                    pos, text, font=font, fontsize=fontsize, small_caps=small_caps
+                    )
+            return ret
+
+        tolerance = fontsize * 0.2  # extra distance to left border
+        space_len = textlen(" ")
+        std_width = rect.width - tolerance
+        std_start = rect.x0 + tolerance
+
+        def norm_words(width, words):
+            """Cut any word in pieces no longer than 'width'."""
+            nwords = []
+            word_lengths = []
+            for w in words:
+                wl_lst = char_lengths(w)
+                wl = sum(wl_lst)
+                if wl <= width:  # nothing to do - copy over
+                    nwords.append(w)
+                    word_lengths.append(wl)
+                    continue
+
+                # word longer than rect width - split it in parts
+                n = len(wl_lst)
+                while n > 0:
+                    wl = sum(wl_lst[:n])
+                    if wl <= width:
+                        nwords.append(w[:n])
+                        word_lengths.append(wl)
+                        w = w[n:]
+                        wl_lst = wl_lst[n:]
+                        n = len(wl_lst)
+                    else:
+                        n -= 1
+            return nwords, word_lengths
+
+        def output_justify(start, line):
+            """Justified output of a line."""
+            # ignore leading / trailing / multiple spaces
+            words = [w for w in line.split(" ") if w != ""]
+            nwords = len(words)
+            if nwords == 0:
+                return
+            if nwords == 1:  # single word cannot be justified
+                append_this(start, words[0])
+                return
+            tl = sum([textlen(w) for w in words])  # total word lengths
+            gaps = nwords - 1  # number of word gaps
+            gapl = (std_width - tl) / gaps  # width of each gap
+            for w in words:
+                _, lp = append_this(start, w)  # output one word
+                start.x = lp.x + gapl  # next start at word end plus gap
+            return
+
+        asc = font.ascender
+        dsc = font.descender
+        if not lineheight:
+            if asc - dsc <= 1:
+                lheight = 1.2
+            else:
+                lheight = asc - dsc
+        else:
+            lheight = lineheight
+
+        LINEHEIGHT = fontsize * lheight  # effective line height
+        width = std_width  # available horizontal space
+
+        # starting point of text
+        if pos is not None:
+            pos = Point(pos)
+        else:  # default is just below rect top-left
+            pos = rect.tl + (tolerance, fontsize * asc)
+        if pos not in rect:
+            raise ValueError("Text must start in rectangle.")
+
+        # calculate displacement factor for alignment
+        if align == TEXT_ALIGN_CENTER:
+            factor = 0.5
+        elif align == TEXT_ALIGN_RIGHT:
+            factor = 1.0
+        else:
+            factor = 0
+
+        # split in lines if just a string was given
+        if type(text) is str:
+            textlines = text.splitlines()
+        else:
+            textlines = []
+            for line in text:
+                textlines.extend(line.splitlines())
+
+        max_lines = int((rect.y1 - pos.y) / LINEHEIGHT) + 1
+
+        new_lines = []  # the final list of textbox lines
+        no_justify = []  # no justify for these line numbers
+        for i, line in enumerate(textlines):
+            if line in ("", " "):
+                new_lines.append((line, space_len))
+                width = rect.width - tolerance
+                no_justify.append((len(new_lines) - 1))
+                continue
+            if i == 0:
+                width = rect.x1 - pos.x
+            else:
+                width = rect.width - tolerance
+
+            if right_to_left:  # reverses Arabic / Hebrew text front to back
+                line = writer.clean_rtl(line)
+            tl = textlen(line)
+            if tl <= width:  # line short enough
+                new_lines.append((line, tl))
+                no_justify.append((len(new_lines) - 1))
+                continue
+
+            # we need to split the line in fitting parts
+            words = line.split(" ")  # the words in the line
+
+            # cut in parts any words that are longer than rect width
+            words, word_lengths = norm_words(width, words)
+
+            n = len(words)
+            while True:
+                line0 = " ".join(words[:n])
+                wl = sum(word_lengths[:n]) + space_len * (n - 1)
+                if wl <= width:
+                    new_lines.append((line0, wl))
+                    words = words[n:]
+                    word_lengths = word_lengths[n:]
+                    n = len(words)
+                    line0 = None
+                else:
+                    n -= 1
+
+                if len(words) == 0:
+                    break
+                assert n
+
+        # -------------------------------------------------------------------------
+        # List of lines created. Each item is (text, tl), where 'tl' is the PDF
+        # output length (float) and 'text' is the text. Except for justified text,
+        # this is output-ready.
+        # -------------------------------------------------------------------------
+        nlines = len(new_lines)
+        if nlines > max_lines:
+            msg = "Only fitting %i of %i lines." % (max_lines, nlines)
+            if warn is None:
+                pass
+            elif warn:
+                message("Warning: " + msg)
+            else:
+                raise ValueError(msg)
+
+        start = Point()
+        no_justify += [len(new_lines) - 1]  # no justifying of last line
+        for i in range(max_lines):
+            try:
+                line, tl = new_lines.pop(0)
+            except IndexError:
+                if g_exceptions_verbose >= 2:   exception_info()
+                break
+
+            if right_to_left:  # Arabic, Hebrew
+                line = "".join(reversed(line))
+
+            if i == 0:  # may have different start for first line
+                start = pos
+
+            if align == TEXT_ALIGN_JUSTIFY and i not in no_justify and tl < std_width:
+                output_justify(start, line)
+                start.x = std_start
+                start.y += LINEHEIGHT
+                continue
+
+            if i > 0 or pos.x == std_start:  # left, center, right alignments
+                start.x += (width - tl) * factor
+
+            append_this(start, line)
+            start.x = std_start
+            start.y += LINEHEIGHT
+
+        return new_lines  # return non-written lines
 
     def write_text(self, page, color=None, opacity=-1, overlay=1, morph=None, matrix=None, render_mode=0, oc=0):
         """Write the text to a PDF page having the TextWriter's page size.
@@ -22855,48 +24444,10 @@ recover_line_quad           = utils.recover_line_quad
 recover_quad                = utils.recover_quad
 recover_span_quad           = utils.recover_span_quad
 
-Page.apply_redactions       = utils.apply_redactions
-Page.delete_image           = utils.delete_image
-Page.delete_widget          = utils.delete_widget
-Page.draw_bezier            = utils.draw_bezier
-Page.draw_circle            = utils.draw_circle
-Page.draw_curve             = utils.draw_curve
-Page.draw_line              = utils.draw_line
-Page.draw_oval              = utils.draw_oval
-Page.draw_polyline          = utils.draw_polyline
-Page.draw_quad              = utils.draw_quad
-Page.draw_rect              = utils.draw_rect
-Page.draw_sector            = utils.draw_sector
-Page.draw_squiggle          = utils.draw_squiggle
-Page.draw_zigzag            = utils.draw_zigzag
-Page.get_image_info         = utils.get_image_info
-Page.get_image_rects        = utils.get_image_rects
-Page.get_label              = utils.get_label
-Page.get_links              = utils.get_links
-Page.get_pixmap             = utils.get_pixmap
-Page.get_text               = utils.get_text
-Page.get_text_blocks        = utils.get_text_blocks
-Page.get_text_selection     = utils.get_text_selection
-Page.get_text_words         = utils.get_text_words
-Page.get_textbox            = utils.get_textbox
-Page.get_textpage_ocr       = utils.get_textpage_ocr
-Page.insert_image           = utils.insert_image
-Page.insert_link            = utils.insert_link
-Page.insert_text            = utils.insert_text
-Page.insert_textbox         = utils.insert_textbox
-Page.insert_htmlbox         = utils.insert_htmlbox
-Page.new_shape              = lambda x: utils.Shape(x)
-Page.replace_image          = utils.replace_image
-Page.search_for             = utils.search_for
-Page.show_pdf_page          = utils.show_pdf_page
-Page.update_link            = utils.update_link
-Page.write_text             = utils.write_text
 Shape                       = utils.Shape
+
 from .table import find_tables
-
 Page.find_tables = find_tables
-
-TextWriter.fill_textbox     = utils.fill_textbox
 
 
 class FitzDeprecation(DeprecationWarning):
