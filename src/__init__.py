@@ -3064,6 +3064,14 @@ class Document:
         v = JM_pdf_obj_from_str( pdf, font)
         mupdf.pdf_dict_put( fonts, k, v)
 
+    def del_toc_item(
+            self,
+            idx: int,
+            ) -> None:
+        """Delete TOC / bookmark item by index."""
+        xref = self.get_outline_xrefs()[idx]
+        self._remove_toc_item(xref)
+
     def _delToC(self):
         """Delete the TOC."""
         if self.is_closed or self.is_encrypted:
@@ -3108,6 +3116,454 @@ class Document:
         if not _INRANGE(xref, 1, mupdf.pdf_xref_len(pdf)-1):
             raise ValueError( MSG_BAD_XREF)
         mupdf.pdf_delete_object(pdf, xref)
+
+    def _do_links(
+            doc1: typing.Self,
+            doc2: typing.Self,
+            from_page: int = -1,
+            to_page: int = -1,
+            start_at: int = -1,
+            ) -> None:
+        """Insert links contained in copied page range into destination PDF.
+
+        Parameter values **must** equal those of method insert_pdf(), which must
+        have been previously executed.
+        """
+        #pymupdf.log( 'utils.do_links()')
+        # --------------------------------------------------------------------------
+        # internal function to create the actual "/Annots" object string
+        # --------------------------------------------------------------------------
+        def cre_annot(lnk, xref_dst, pno_src, ctm):
+            """Create annotation object string for a passed-in link."""
+
+            r = lnk["from"] * ctm  # rect in PDF coordinates
+            rect = _format_g(tuple(r))
+            if lnk["kind"] == LINK_GOTO:
+                txt = annot_skel["goto1"]  # annot_goto
+                idx = pno_src.index(lnk["page"])
+                p = lnk["to"] * ctm  # target point in PDF coordinates
+                annot = txt(xref_dst[idx], p.x, p.y, lnk["zoom"], rect)
+
+            elif lnk["kind"] == LINK_GOTOR:
+                if lnk["page"] >= 0:
+                    txt = annot_skel["gotor1"]  # annot_gotor
+                    pnt = lnk.get("to", Point(0, 0))  # destination point
+                    if type(pnt) is not Point:
+                        pnt = Point(0, 0)
+                    annot = txt(
+                        lnk["page"],
+                        pnt.x,
+                        pnt.y,
+                        lnk["zoom"],
+                        lnk["file"],
+                        lnk["file"],
+                        rect,
+                    )
+                else:
+                    txt = annot_skel["gotor2"]  # annot_gotor_n
+                    to = get_pdf_str(lnk["to"])
+                    to = to[1:-1]
+                    f = lnk["file"]
+                    annot = txt(to, f, rect)
+
+            elif lnk["kind"] == LINK_LAUNCH:
+                txt = annot_skel["launch"]  # annot_launch
+                annot = txt(lnk["file"], lnk["file"], rect)
+
+            elif lnk["kind"] == LINK_URI:
+                txt = annot_skel["uri"]  # annot_uri
+                annot = txt(lnk["uri"], rect)
+
+            else:
+                annot = ""
+
+            return annot
+
+        # --------------------------------------------------------------------------
+
+        # validate & normalize parameters
+        if from_page < 0:
+            fp = 0
+        elif from_page >= doc2.page_count:
+            fp = doc2.page_count - 1
+        else:
+            fp = from_page
+
+        if to_page < 0 or to_page >= doc2.page_count:
+            tp = doc2.page_count - 1
+        else:
+            tp = to_page
+
+        if start_at < 0:
+            raise ValueError("'start_at' must be >= 0")
+        sa = start_at
+
+        incr = 1 if fp <= tp else -1  # page range could be reversed
+
+        # lists of source / destination page numbers
+        pno_src = list(range(fp, tp + incr, incr))
+        pno_dst = [sa + i for i in range(len(pno_src))]
+
+        # lists of source / destination page xrefs
+        xref_src = []
+        xref_dst = []
+        for i in range(len(pno_src)):
+            p_src = pno_src[i]
+            p_dst = pno_dst[i]
+            old_xref = doc2.page_xref(p_src)
+            new_xref = doc1.page_xref(p_dst)
+            xref_src.append(old_xref)
+            xref_dst.append(new_xref)
+
+        # create the links for each copied page in destination PDF
+        for i in range(len(xref_src)):
+            page_src = doc2[pno_src[i]]  # load source page
+            links = page_src.get_links()  # get all its links
+            #log( '{pno_src=}')
+            #log( '{type(page_src)=}')
+            #log( '{page_src=}')
+            #log( '{=i len(links)}')
+            if len(links) == 0:  # no links there
+                page_src = None
+                continue
+            ctm = ~page_src.transformation_matrix  # calc page transformation matrix
+            page_dst = doc1[pno_dst[i]]  # load destination page
+            link_tab = []  # store all link definitions here
+            for l in links:
+                if l["kind"] == LINK_GOTO and (l["page"] not in pno_src):
+                    continue  # GOTO link target not in copied pages
+                annot_text = cre_annot(l, xref_dst, pno_src, ctm)
+                if annot_text:
+                    link_tab.append(annot_text)
+            if link_tab != []:
+                page_dst._addAnnot_FromString( tuple(link_tab))
+        #log( 'utils.do_links() returning.')
+
+    def _do_widgets(
+            tar: typing.Self,
+            src: typing.Self,
+            graftmap,
+            from_page: int = -1,
+            to_page: int = -1,
+            start_at: int = -1,
+            join_duplicates=0,
+            ) -> None:
+        """Insert widgets of copied page range into target PDF.
+
+        Parameter values **must** equal those of method insert_pdf() which
+        must have been previously executed.
+        """
+        if not src.is_form_pdf:  # nothing to do: source PDF has no fields
+            return
+
+        def clean_kid_parents(acro_fields):
+            """ Make sure all kids have correct "Parent" pointers."""
+            for i in range(acro_fields.pdf_array_len()):
+                parent = acro_fields.pdf_array_get(i)
+                kids = parent.pdf_dict_get(PDF_NAME("Kids"))
+                for j in range(kids.pdf_array_len()):
+                    kid = kids.pdf_array_get(j)
+                    kid.pdf_dict_put(PDF_NAME("Parent"), parent)
+
+        def join_widgets(pdf, acro_fields, xref1, xref2, name):
+            """Called for each pair of widgets having the same name.
+
+            Args:
+                pdf: target MuPDF document
+                acro_fields: object Root/AcroForm/Fields
+                xref1, xref2: widget xrefs having same names
+                name: (str) the name
+
+            Result:
+                Defined or updated widget parent that points to both widgets.
+            """
+
+            def re_target(pdf, acro_fields, xref1, kids1, xref2, kids2):
+                """Merge widget in xref2 into "Kids" list of widget xref1.
+
+                Args:
+                    xref1, kids1: target widget and its "Kids" array.
+                    xref2, kids2: source wwidget and its "Kids" array (may be empty).
+                """
+                # make indirect objects from widgets
+                w1_ind = mupdf.pdf_new_indirect(pdf, xref1, 0)
+                w2_ind = mupdf.pdf_new_indirect(pdf, xref2, 0)
+                # find source widget in "Fields" array
+                idx = acro_fields.pdf_array_find(w2_ind)
+                acro_fields.pdf_array_delete(idx)
+
+                if not kids2.pdf_is_array():  # source widget has no kids
+                    widget = mupdf.pdf_load_object(pdf, xref2)
+
+                    # delete name from widget and insert target as parent
+                    widget.pdf_dict_del(PDF_NAME("T"))
+                    widget.pdf_dict_put(PDF_NAME("Parent"), w1_ind)
+
+                    # put in target Kids
+                    kids1.pdf_array_push(w2_ind)
+                else:  # copy source kids to target kids
+                    for i in range(kids2.pdf_array_len()):
+                        kid = kids2.pdf_array_get(i)
+                        kid.pdf_dict_put(PDF_NAME("Parent"), w1_ind)
+                        kid_ind = mupdf.pdf_new_indirect(pdf, kid.pdf_to_num(), 0)
+                        kids1.pdf_array_push(kid_ind)
+
+            def new_target(pdf, acro_fields, xref1, w1, xref2, w2, name):
+                """Make new "Parent" for two widgets with same name.
+
+                Args:
+                    xref1, w1: first widget
+                    xref2, w2: second widget
+                    name: field name
+
+                Result:
+                    Both widgets have no "Kids". We create a new object with the
+                    name and a "Kids" array containing the widgets.
+                    Original widgets must be removed from AcroForm/Fields.
+                """
+                # make new "Parent" object
+                new = mupdf.pdf_new_dict(pdf, 5)
+                new.pdf_dict_put_text_string(PDF_NAME("T"), name)
+                kids = new.pdf_dict_put_array(PDF_NAME("Kids"), 2)
+                new_obj = mupdf.pdf_add_object(pdf, new)
+                new_obj_xref = new_obj.pdf_to_num()
+                new_ind = mupdf.pdf_new_indirect(pdf, new_obj_xref, 0)
+
+                # copy over some required source widget properties
+                ft = w1.pdf_dict_get(PDF_NAME("FT"))
+                w1.pdf_dict_del(PDF_NAME("FT"))
+                new_obj.pdf_dict_put(PDF_NAME("FT"), ft)
+
+                aa = w1.pdf_dict_get(PDF_NAME("AA"))
+                w1.pdf_dict_del(PDF_NAME("AA"))
+                new_obj.pdf_dict_put(PDF_NAME("AA"), aa)
+
+                # remove name field, insert "Parent" field in source widgets
+                w1.pdf_dict_del(PDF_NAME("T"))
+                w1.pdf_dict_put(PDF_NAME("Parent"), new_ind)
+                w2.pdf_dict_del(PDF_NAME("T"))
+                w2.pdf_dict_put(PDF_NAME("Parent"), new_ind)
+
+                # put source widgets in "kids" array
+                ind1 = mupdf.pdf_new_indirect(pdf, xref1, 0)
+                ind2 = mupdf.pdf_new_indirect(pdf, xref2, 0)
+                kids.pdf_array_push(ind1)
+                kids.pdf_array_push(ind2)
+
+                # remove source widgets from "AcroForm/Fields"
+                idx = acro_fields.pdf_array_find(ind1)
+                acro_fields.pdf_array_delete(idx)
+                idx = acro_fields.pdf_array_find(ind2)
+                acro_fields.pdf_array_delete(idx)
+
+                acro_fields.pdf_array_push(new_ind)
+
+            w1 = mupdf.pdf_load_object(pdf, xref1)
+            w2 = mupdf.pdf_load_object(pdf, xref2)
+            kids1 = w1.pdf_dict_get(PDF_NAME("Kids"))
+            kids2 = w2.pdf_dict_get(PDF_NAME("Kids"))
+
+            # check which widget has a suitable "Kids" array
+            if kids1.pdf_is_array():
+                re_target(pdf, acro_fields, xref1, kids1, xref2, kids2)  # pylint: disable=arguments-out-of-order
+            elif kids2.pdf_is_array():
+                re_target(pdf, acro_fields, xref2, kids2, xref1, kids1)  # pylint: disable=arguments-out-of-order
+            else:
+                new_target(pdf, acro_fields, xref1, w1, xref2, w2, name)  # pylint: disable=arguments-out-of-order
+
+        def get_kids(parent, kids_list):
+            """Return xref list of leaf kids for a parent.
+
+            Call with an empty list.
+            """
+            kids = mupdf.pdf_dict_get(parent, PDF_NAME("Kids"))
+            if not kids.pdf_is_array():
+                return kids_list
+            for i in range(kids.pdf_array_len()):
+                kid = kids.pdf_array_get(i)
+                if mupdf.pdf_is_dict(mupdf.pdf_dict_get(kid, PDF_NAME("Kids"))):
+                    kids_list = get_kids(kid, kids_list)
+                else:
+                    kids_list.append(kid.pdf_to_num())
+            return kids_list
+
+        def kids_xrefs(widget):
+            """Get the xref of top "Parent" and the list of leaf widgets."""
+            kids_list = []
+            parent = mupdf.pdf_dict_get(widget, PDF_NAME("Parent"))
+            parent_xref = parent.pdf_to_num()
+            if parent_xref == 0:
+                return parent_xref, kids_list
+            kids_list = get_kids(parent, kids_list)
+            return parent_xref, kids_list
+
+        def deduplicate_names(pdf, acro_fields, join_duplicates=False):
+            """Handle any widget name duplicates caused by the merge."""
+            names = {}  # key is a widget name, value a list of widgets having it.
+
+            # extract all names and widgets in "AcroForm/Fields"
+            for i in range(mupdf.pdf_array_len(acro_fields)):
+                wobject = mupdf.pdf_array_get(acro_fields, i)
+                xref = wobject.pdf_to_num()
+
+                # extract widget name and collect widget(s) using it
+                T = mupdf.pdf_dict_get_text_string(wobject, PDF_NAME("T"))
+                xrefs = names.get(T, [])
+                xrefs.append(xref)
+                names[T] = xrefs
+
+            for name, xrefs in names.items():
+                if len(xrefs) < 2:
+                    continue
+                xref0, xref1 = xrefs[:2]  # only exactly 2 should occur!
+                if join_duplicates:  # combine fields with equal names
+                    join_widgets(pdf, acro_fields, xref0, xref1, name)
+                else:  # make field names unique
+                    newname = name + f" [{xref1}]"  # append this to the name
+                    wobject = mupdf.pdf_load_object(pdf, xref1)
+                    wobject.pdf_dict_put_text_string(PDF_NAME("T"), newname)
+
+            clean_kid_parents(acro_fields)
+
+        def get_acroform(doc):
+            """Retrieve the AcroForm dictionary form a PDF."""
+            pdf = mupdf.pdf_document_from_fz_document(doc)
+            # AcroForm (= central form field info)
+            return mupdf.pdf_dict_getp(mupdf.pdf_trailer(pdf), "Root/AcroForm")
+
+        tarpdf = mupdf.pdf_document_from_fz_document(tar)
+        srcpdf = mupdf.pdf_document_from_fz_document(src)
+
+        if tar.is_form_pdf:
+            # target is a Form PDF, so use it to include source fields
+            acro = get_acroform(tar)
+            # Important arrays in AcroForm
+            acro_fields = acro.pdf_dict_get(PDF_NAME("Fields"))
+            tar_co = acro.pdf_dict_get(PDF_NAME("CO"))
+            if not tar_co.pdf_is_array():
+                tar_co = acro.pdf_dict_put_array(PDF_NAME("CO"), 5)
+        else:
+            # target is no Form PDF, so copy over source AcroForm
+            acro = mupdf.pdf_deep_copy_obj(get_acroform(src))  # make a copy
+
+            # Clear "Fields" and "CO" arrays: will be populated by page fields.
+            # This is required to avoid copying unneeded objects.
+            acro.pdf_dict_del(PDF_NAME("Fields"))
+            acro.pdf_dict_put_array(PDF_NAME("Fields"), 5)
+            acro.pdf_dict_del(PDF_NAME("CO"))
+            acro.pdf_dict_put_array(PDF_NAME("CO"), 5)
+
+            # Enrich AcroForm for copying to target
+            acro_graft = mupdf.pdf_graft_mapped_object(graftmap, acro)
+
+            # Insert AcroForm into target PDF
+            acro_tar = mupdf.pdf_add_object(tarpdf, acro_graft)
+            acro_fields = acro_tar.pdf_dict_get(PDF_NAME("Fields"))
+            tar_co = acro_tar.pdf_dict_get(PDF_NAME("CO"))
+
+            # get its xref and insert it into target catalog
+            tar_xref = acro_tar.pdf_to_num()
+            acro_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+            root = mupdf.pdf_dict_get(mupdf.pdf_trailer(tarpdf), PDF_NAME("Root"))
+            root.pdf_dict_put(PDF_NAME("AcroForm"), acro_tar_ind)
+
+        if from_page <= to_page:
+            src_range = range(from_page, to_page + 1)
+        else:
+            src_range = range(from_page, to_page - 1, -1)
+
+        parents = {}  # information about widget parents
+
+        # remove "P" owning page reference from all widgets of all source pages
+        for i in src_range:
+            src_page = src[i]
+            for xref in [
+                xref
+                for xref, wtype, _ in src_page.annot_xrefs()
+                if wtype == mupdf.PDF_ANNOT_WIDGET  # pylint: disable=no-member
+            ]:
+                w_obj = mupdf.pdf_load_object(srcpdf, xref)
+                w_obj.pdf_dict_del(PDF_NAME("P"))
+
+                # get the widget's parent structure
+                parent_xref, old_kids = kids_xrefs(w_obj)
+                if parent_xref:
+                    parents[parent_xref] = {
+                        "new_xref": 0,
+                        "old_kids": old_kids,
+                        "new_kids": [],
+                    }
+        # Copy over Parent widgets first - they are not page-dependent
+        for xref in parents.keys():  # pylint: disable=consider-using-dict-items
+            parent = mupdf.pdf_load_object(srcpdf, xref)
+            parent_graft = mupdf.pdf_graft_mapped_object(graftmap, parent)
+            parent_tar = mupdf.pdf_add_object(tarpdf, parent_graft)
+            kids_xrefs_new = get_kids(parent_tar, [])
+            parent_xref_new = parent_tar.pdf_to_num()
+            parent_ind = mupdf.pdf_new_indirect(tarpdf, parent_xref_new, 0)
+            acro_fields.pdf_array_push(parent_ind)
+            parents[xref]["new_xref"] = parent_xref_new
+            parents[xref]["new_kids"] = kids_xrefs_new
+
+        for i in range(len(src_range)):
+            # read first copied over page in target
+            tar_page = tar[start_at + i]
+
+            # read the original page in the source PDF
+            src_page = src[src_range[i]]
+
+            # now walk through source page widgets and copy over
+            w_xrefs = [  # widget xrefs of the source page
+                xref
+                for xref, wtype, _ in src_page.annot_xrefs()
+                if wtype == mupdf.PDF_ANNOT_WIDGET  # pylint: disable=no-member
+            ]
+            if not w_xrefs:  # no widgets on this source page
+                continue
+
+            # convert to formal PDF page
+            tar_page_pdf = mupdf.pdf_page_from_fz_page(tar_page)
+
+            # extract annotations array
+            tar_annots = mupdf.pdf_dict_get(tar_page_pdf.obj(), PDF_NAME("Annots"))
+            if not mupdf.pdf_is_array(tar_annots):
+                tar_annots = mupdf.pdf_dict_put_array(
+                    tar_page_pdf.obj(), PDF_NAME("Annots"), 5
+                )
+
+            for xref in w_xrefs:
+                w_obj = mupdf.pdf_load_object(srcpdf, xref)
+
+                # check if field takes part in inter-field validations
+                is_aac = mupdf.pdf_is_dict(mupdf.pdf_dict_getp(w_obj, "AA/C"))
+
+                # check if parent of widget already in target
+                parent_xref = mupdf.pdf_to_num(
+                    w_obj.pdf_dict_get(PDF_NAME("Parent"))
+                )
+                if parent_xref == 0:  # parent not in target yet
+                    try:
+                        w_obj_graft = mupdf.pdf_graft_mapped_object(graftmap, w_obj)
+                    except Exception as e:
+                        message_warning(f"cannot copy widget at {xref=}: {e}")
+                        continue
+                    w_obj_tar = mupdf.pdf_add_object(tarpdf, w_obj_graft)
+                    tar_xref = w_obj_tar.pdf_to_num()
+                    w_obj_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+                    mupdf.pdf_array_push(tar_annots, w_obj_tar_ind)
+                    mupdf.pdf_array_push(acro_fields, w_obj_tar_ind)
+                else:
+                    parent = parents[parent_xref]
+                    idx = parent["old_kids"].index(xref)  # search for xref in parent
+                    tar_xref = parent["new_kids"][idx]
+                    w_obj_tar_ind = mupdf.pdf_new_indirect(tarpdf, tar_xref, 0)
+                    mupdf.pdf_array_push(tar_annots, w_obj_tar_ind)
+
+                # Into "AcroForm/CO" if a computation field.
+                if is_aac:
+                    mupdf.pdf_array_push(tar_co, w_obj_tar_ind)
+
+        deduplicate_names(tarpdf, acro_fields, join_duplicates=join_duplicates)
 
     def _embeddedFileGet(self, idx):
         pdf = _as_pdf_document(self)
@@ -4272,6 +4728,107 @@ class Document:
 
         self._reset_page_refs()
 
+    def get_char_widths(
+            doc: typing.Self,
+            xref: int,
+            limit: int = 256,
+            idx: int = 0,
+            fontdict: OptDict = None,
+            ) -> list:
+        """Get list of glyph information of a font.
+
+        Notes:
+            Must be provided by its XREF number. If we already dealt with the
+            font, it will be recorded in doc.FontInfos. Otherwise we insert an
+            entry there.
+            Finally we return the glyphs for the font. This is a list of
+            (glyph, width) where glyph is an integer controlling the char
+            appearance, and width is a float controlling the char's spacing:
+            width * fontsize is the actual space.
+            For 'simple' fonts, glyph == ord(char) will usually be true.
+            Exceptions are 'Symbol' and 'ZapfDingbats'. We are providing data for these directly here.
+        """
+        fontinfo = CheckFontInfo(doc, xref)
+        if fontinfo is None:  # not recorded yet: create it
+            if fontdict is None:
+                name, ext, stype, asc, dsc = utils._get_font_properties(doc, xref)
+                fontdict = {
+                    "name": name,
+                    "type": stype,
+                    "ext": ext,
+                    "ascender": asc,
+                    "descender": dsc,
+                }
+            else:
+                name = fontdict["name"]
+                ext = fontdict["ext"]
+                stype = fontdict["type"]
+                ordering = fontdict["ordering"]
+                simple = fontdict["simple"]
+
+            if ext == "":
+                raise ValueError("xref is not a font")
+
+            # check for 'simple' fonts
+            if stype in ("Type1", "MMType1", "TrueType"):
+                simple = True
+            else:
+                simple = False
+
+            # check for CJK fonts
+            if name in ("Fangti", "Ming"):
+                ordering = 0
+            elif name in ("Heiti", "Song"):
+                ordering = 1
+            elif name in ("Gothic", "Mincho"):
+                ordering = 2
+            elif name in ("Dotum", "Batang"):
+                ordering = 3
+            else:
+                ordering = -1
+
+            fontdict["simple"] = simple
+
+            if name == "ZapfDingbats":
+                glyphs = zapf_glyphs
+            elif name == "Symbol":
+                glyphs = symbol_glyphs
+            else:
+                glyphs = None
+
+            fontdict["glyphs"] = glyphs
+            fontdict["ordering"] = ordering
+            fontinfo = [xref, fontdict]
+            doc.FontInfos.append(fontinfo)
+        else:
+            fontdict = fontinfo[1]
+            glyphs = fontdict["glyphs"]
+            simple = fontdict["simple"]
+            ordering = fontdict["ordering"]
+
+        if glyphs is None:
+            oldlimit = 0
+        else:
+            oldlimit = len(glyphs)
+
+        mylimit = max(256, limit)
+
+        if mylimit <= oldlimit:
+            return glyphs
+
+        if ordering < 0:  # not a CJK font
+            glyphs = doc._get_char_widths(
+                xref, fontdict["name"], fontdict["ext"], fontdict["ordering"], mylimit, idx
+            )
+        else:  # CJK fonts use char codes and width = 1
+            glyphs = None
+
+        fontdict["glyphs"] = glyphs
+        fontinfo[1] = fontdict
+        UpdateFontInfo(doc, fontinfo)
+
+        return glyphs
+
     def get_layer(self, config=-1):
         """Content of ON, OFF, RBGroups of an OC layer."""
         pdf = _as_pdf_document(self)
@@ -4329,6 +4886,23 @@ class Document:
         xref = mupdf.pdf_create_object(pdf)
         return xref
 
+    def get_oc(doc: typing.Self, xref: int) -> int:
+        """Return optional content object xref for an image or form xobject.
+
+        Args:
+            xref: (int) xref number of an image or form xobject.
+        """
+        if doc.is_closed or doc.is_encrypted:
+            raise ValueError("document close or encrypted")
+        t, name = doc.xref_get_key(xref, "Subtype")
+        if t != "name" or name not in ("/Image", "/Form"):
+            raise ValueError("bad object type at xref %i" % xref)
+        t, oc = doc.xref_get_key(xref, "OC")
+        if t != "xref":
+            return 0
+        rc = int(oc.replace("0 R", ""))
+        return rc
+    
     def get_ocgs(self):
         """Show existing optional content groups."""
         ci = mupdf.pdf_new_name( "CreatorInfo")
@@ -4371,6 +4945,73 @@ class Document:
             temp = xref
             rc[ temp] = item
         return rc
+
+    def get_ocmd(doc: typing.Self, xref: int) -> dict:
+        """Return the definition of an OCMD (optional content membership dictionary).
+
+        Recognizes PDF dict keys /OCGs (PDF array of OCGs), /P (policy string) and
+        /VE (visibility expression, PDF array). Via string manipulation, this
+        info is converted to a Python dictionary with keys "xref", "ocgs", "policy"
+        and "ve" - ready to recycle as input for 'set_ocmd()'.
+        """
+
+        if xref not in range(doc.xref_length()):
+            raise ValueError("bad xref")
+        text = doc.xref_object(xref, compressed=True)
+        if "/Type/OCMD" not in text:
+            raise ValueError("bad object type")
+        textlen = len(text)
+
+        p0 = text.find("/OCGs[")  # look for /OCGs key
+        p1 = text.find("]", p0)
+        if p0 < 0 or p1 < 0:  # no OCGs found
+            ocgs = None
+        else:
+            ocgs = text[p0 + 6 : p1].replace("0 R", " ").split()
+            ocgs = list(map(int, ocgs))
+
+        p0 = text.find("/P/")  # look for /P policy key
+        if p0 < 0:
+            policy = None
+        else:
+            p1 = text.find("ff", p0)
+            if p1 < 0:
+                p1 = text.find("on", p0)
+            if p1 < 0:  # some irregular syntax
+                raise ValueError("bad object at xref")
+            else:
+                policy = text[p0 + 3 : p1 + 2]
+
+        p0 = text.find("/VE[")  # look for /VE visibility expression key
+        if p0 < 0:  # no visibility expression found
+            ve = None
+        else:
+            lp = rp = 0  # find end of /VE by finding last ']'.
+            p1 = p0
+            while lp < 1 or lp != rp:
+                p1 += 1
+                if not p1 < textlen:  # some irregular syntax
+                    raise ValueError("bad object at xref")
+                if text[p1] == "[":
+                    lp += 1
+                if text[p1] == "]":
+                    rp += 1
+            # p1 now positioned at the last "]"
+            ve = text[p0 + 3 : p1 + 1]  # the PDF /VE array
+            ve = (
+                ve.replace("/And", '"and",')
+                .replace("/Not", '"not",')
+                .replace("/Or", '"or",')
+            )
+            ve = ve.replace(" 0 R]", "]").replace(" 0 R", ",").replace("][", "],[")
+            import json
+            try:
+                ve = json.loads(ve)
+            except Exception:
+                exception_info()
+                message(f"bad /VE key: {ve!r}")
+                raise
+        return {"xref": xref, "ocgs": ocgs, "policy": policy, "ve": ve}
 
     def get_outline_xrefs(self):
         """Get list of outline xref numbers."""
@@ -4420,6 +5061,98 @@ class Document:
             return [v[:-1] for v in val]
         return val
 
+    def get_page_labels(self):
+        """Return page label definitions in PDF document.
+
+        Returns:
+            A list of dictionaries with the following format:
+            {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}.
+        """
+        # Jorj McKie, 2021-01-10
+        return [utils.rule_dict(item) for item in self._get_page_labels()]
+
+    def get_page_numbers(doc, label, only_one=False):
+        """Return a list of page numbers with the given label.
+
+        Args:
+            doc: PDF document object (resp. 'self').
+            label: (str) label.
+            only_one: (bool) stop searching after first hit.
+        Returns:
+            List of page numbers having this label.
+        """
+        # Jorj McKie, 2021-01-06
+
+        numbers = []
+        if not label:
+            return numbers
+        labels = doc._get_page_labels()
+        if labels == []:
+            return numbers
+        for i in range(doc.page_count):
+            plabel = utils.get_label_pno(i, labels)
+            if plabel == label:
+                numbers.append(i)
+                if only_one:
+                    break
+        return numbers
+    
+    def get_page_pixmap(
+            doc: typing.Self,
+            pno: int,
+            *,
+            matrix: matrix_like = None,
+            dpi=None,
+            colorspace: Colorspace = None,
+            clip: rect_like = None,
+            alpha: bool = False,
+            annots: bool = True,
+            ) -> 'Pixmap':
+        """Create pixmap of document page by page number.
+
+        Notes:
+            Convenience function calling page.get_pixmap.
+        Args:
+            pno: (int) page number
+            matrix: pymupdf.Matrix for transformation (default: pymupdf.Identity).
+            colorspace: (str,pymupdf.Colorspace) rgb, rgb, gray - case ignored, default csRGB.
+            clip: (irect-like) restrict rendering to this area.
+            alpha: (bool) include alpha channel
+            annots: (bool) also render annotations
+        """
+        if matrix is None:
+            matrix = Identity
+        if colorspace is None:
+            colorspace = csRGB
+        return doc[pno].get_pixmap(
+                matrix=matrix,
+                dpi=dpi, colorspace=colorspace,
+                clip=clip,
+                alpha=alpha,
+                annots=annots
+                )
+    
+    def get_page_text(
+            doc: typing.Self,
+            pno: int,
+            option: str = "text",
+            clip: rect_like = None,
+            flags: OptInt = None,
+            textpage: 'TextPage' = None,
+            sort: bool = False,
+            ) -> typing.Any:
+        """Extract a document page's text by page number.
+
+        Notes:
+            Convenience function calling page.get_text().
+        Args:
+            pno: page number
+            option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
+        Returns:
+            output from page.TextPage().
+        """
+        return doc[pno].get_text(option, clip=clip, flags=flags, sort=sort)
+    
     def get_page_xobjects(self, pno: int) -> list:
         """Retrieve a list of XObjects used on a page.
         """
@@ -4446,6 +5179,60 @@ class Document:
             sigflag = mupdf.pdf_to_int(sigflags)
         return sigflag
 
+    def get_toc(
+            doc: typing.Self,
+            simple: bool = True,
+            ) -> list:
+        """Create a table of contents.
+
+        Args:
+            simple: a bool to control output. Returns a list, where each entry consists of outline level, title, page number and link destination (if simple = False). For details see PyMuPDF's documentation.
+        """
+        def recurse(olItem, liste, lvl):
+            """Recursively follow the outline item chain and record item information in a list."""
+            while olItem and olItem.this.m_internal:
+                if olItem.title:
+                    title = olItem.title
+                else:
+                    title = " "
+
+                if not olItem.is_external:
+                    if olItem.uri:
+                        if olItem.page == -1:
+                            resolve = doc.resolve_link(olItem.uri)
+                            page = resolve[0] + 1
+                        else:
+                            page = olItem.page + 1
+                    else:
+                        page = -1
+                else:
+                    page = -1
+
+                if not simple:
+                    link = utils.getLinkDict(olItem, doc)
+                    liste.append([lvl, title, page, link])
+                else:
+                    liste.append([lvl, title, page])
+
+                if olItem.down:
+                    liste = recurse(olItem.down, liste, lvl + 1)
+                olItem = olItem.next
+            return liste
+
+        # ensure document is open
+        if doc.is_closed:
+            raise ValueError("document closed")
+        doc.init_doc()
+        olItem = doc.outline
+        if not olItem:
+            return []
+        lvl = 1
+        liste = []
+        toc = recurse(olItem, liste, lvl)
+        if doc.is_pdf and not simple:
+            doc._extend_toc_items(toc)
+        return toc
+    
     def get_xml_metadata(self):
         """Get document XML metadata."""
         xml = None
@@ -4463,6 +5250,31 @@ class Document:
             rc = ''
         return rc
 
+    def has_annots(doc: typing.Self) -> bool:
+        """Check whether there are annotations on any page."""
+        if doc.is_closed:
+            raise ValueError("document closed")
+        if not doc.is_pdf:
+            raise ValueError("is no PDF")
+        for i in range(doc.page_count):
+            for item in doc.page_annot_xrefs(i):
+                # pylint: disable=no-member
+                if not (item[1] == mupdf.PDF_ANNOT_LINK or item[1] == mupdf.PDF_ANNOT_WIDGET):  # pylint: disable=no-member
+                    return True
+        return False
+    
+    def has_links(doc: typing.Self) -> bool:
+        """Check whether there are links on any page."""
+        if doc.is_closed:
+            raise ValueError("document closed")
+        if not doc.is_pdf:
+            raise ValueError("is no PDF")
+        for i in range(doc.page_count):
+            for item in doc.page_annot_xrefs(i):
+                if item[1] == mupdf.PDF_ANNOT_LINK:  # pylint: disable=no-member
+                    return True
+        return False
+    
     def init_doc(self):
         if self.is_encrypted:
             raise ValueError("cannot initialize - document still encrypted")
@@ -4528,6 +5340,36 @@ class Document:
                 final=final,
                 )
 
+    def insert_page(
+            doc: typing.Self,
+            pno: int,
+            text: typing.Union[str, list, None] = None,
+            fontsize: float = 11,
+            width: float = 595,
+            height: float = 842,
+            fontname: str = "helv",
+            fontfile: OptStr = None,
+            color: OptSeq = (0,),
+            ) -> int:
+        """Create a new PDF page and insert some text.
+
+        Notes:
+            Function combining pymupdf.Document.new_page() and pymupdf.Page.insert_text().
+            For parameter details see these methods.
+        """
+        page = doc.new_page(pno=pno, width=width, height=height)
+        if not bool(text):
+            return 0
+        rc = page.insert_text(
+            (50, 72),
+            text,
+            fontsize=fontsize,
+            fontname=fontname,
+            fontfile=fontfile,
+            color=color,
+        )
+        return rc
+    
     def insert_pdf(
             self,
             docsrc,
@@ -5028,6 +5870,24 @@ class Document:
         ret = mupdf.fz_needs_password( document)
         return ret
 
+    def new_page(
+            doc: typing.Self,
+            pno: int = -1,
+            width: float = 595,
+            height: float = 842,
+            ) -> Page:
+        """Create and return a new page object.
+
+        Args:
+            pno: (int) insert before this page. Default: after last page.
+            width: (float) page width in points. Default: 595 (ISO A4 width).
+            height: (float) page height in points. Default 842 (ISO A4 height).
+        Returns:
+            A pymupdf.Page object.
+        """
+        doc._newPage(pno, width=width, height=height)
+        return doc[pno]
+    
     def next_location(self, page_id):
         """Get (chapter, page) of next page."""
         if self.is_closed or self.is_encrypted:
@@ -5674,6 +6534,199 @@ class Document:
         """ Save PDF incrementally"""
         return self.save(self.name, incremental=True, encryption=mupdf.PDF_ENCRYPT_KEEP)
 
+    # ------------------------------------------------------------------------------
+    # Remove potentially sensitive data from a PDF. Similar to the Adobe
+    # Acrobat 'sanitize' function
+    # ------------------------------------------------------------------------------
+    def scrub(
+            doc: typing.Self,
+            attached_files: bool = True,
+            clean_pages: bool = True,
+            embedded_files: bool = True,
+            hidden_text: bool = True,
+            javascript: bool = True,
+            metadata: bool = True,
+            redactions: bool = True,
+            redact_images: int = 0,
+            remove_links: bool = True,
+            reset_fields: bool = True,
+            reset_responses: bool = True,
+            thumbnails: bool = True,
+            xml_metadata: bool = True,
+            ) -> None:
+        
+        def remove_hidden(cont_lines):
+            """Remove hidden text from a PDF page.
+
+            Args:
+                cont_lines: list of lines with /Contents content. Should have status
+                    from after page.cleanContents().
+
+            Returns:
+                List of /Contents lines from which hidden text has been removed.
+
+            Notes:
+                The input must have been created after the page's /Contents object(s)
+                have been cleaned with page.cleanContents(). This ensures a standard
+                formatting: one command per line, single spaces between operators.
+                This allows for drastic simplification of this code.
+            """
+            out_lines = []  # will return this
+            in_text = False  # indicate if within BT/ET object
+            suppress = False  # indicate text suppression active
+            make_return = False
+            for line in cont_lines:
+                if line == b"BT":  # start of text object
+                    in_text = True  # switch on
+                    out_lines.append(line)  # output it
+                    continue
+                if line == b"ET":  # end of text object
+                    in_text = False  # switch off
+                    out_lines.append(line)  # output it
+                    continue
+                if line == b"3 Tr":  # text suppression operator
+                    suppress = True  # switch on
+                    make_return = True
+                    continue
+                if line[-2:] == b"Tr" and line[0] != b"3":
+                    suppress = False  # text rendering changed
+                    out_lines.append(line)
+                    continue
+                if line == b"Q":  # unstack command also switches off
+                    suppress = False
+                    out_lines.append(line)
+                    continue
+                if suppress and in_text:  # suppress hidden lines
+                    continue
+                out_lines.append(line)
+            if make_return:
+                return out_lines
+            else:
+                return None
+
+        if not doc.is_pdf:  # only works for PDF
+            raise ValueError("is no PDF")
+        if doc.is_encrypted or doc.is_closed:
+            raise ValueError("closed or encrypted doc")
+
+        if not clean_pages:
+            hidden_text = False
+            redactions = False
+
+        if metadata:
+            doc.set_metadata({})  # remove standard metadata
+
+        for page in doc:
+            if reset_fields:
+                # reset form fields (widgets)
+                for widget in page.widgets():
+                    widget.reset()
+
+            if remove_links:
+                links = page.get_links()  # list of all links on page
+                for link in links:  # remove all links
+                    page.delete_link(link)
+
+            found_redacts = False
+            for annot in page.annots():
+                if annot.type[0] == mupdf.PDF_ANNOT_FILE_ATTACHMENT and attached_files:
+                    annot.update_file(buffer_=b" ")  # set file content to empty
+                if reset_responses:
+                    annot.delete_responses()
+                if annot.type[0] == mupdf.PDF_ANNOT_REDACT:  # pylint: disable=no-member
+                    found_redacts = True
+
+            if redactions and found_redacts:
+                page.apply_redactions(images=redact_images)
+
+            if not (clean_pages or hidden_text):
+                continue  # done with the page
+
+            page.clean_contents()
+            if not page.get_contents():
+                continue
+            if hidden_text:
+                xref = page.get_contents()[0]  # only one b/o cleaning!
+                cont = doc.xref_stream(xref)
+                cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
+                if cont_lines:  # something was actually removed
+                    cont = b"\n".join(cont_lines)
+                    doc.update_stream(xref, cont)  # rewrite the page /Contents
+
+            if thumbnails:  # remove page thumbnails?
+                if doc.xref_get_key(page.xref, "Thumb")[0] != "null":
+                    doc.xref_set_key(page.xref, "Thumb", "null")
+
+        # pages are scrubbed, now perform document-wide scrubbing
+        # remove embedded files
+        if embedded_files:
+            for name in doc.embfile_names():
+                doc.embfile_del(name)
+
+        if xml_metadata:
+            doc.del_xml_metadata()
+        if not (xml_metadata or javascript):
+            xref_limit = 0
+        else:
+            xref_limit = doc.xref_length()
+        for xref in range(1, xref_limit):
+            if not doc.xref_object(xref):
+                msg = "bad xref %i - clean PDF before scrubbing" % xref
+                raise ValueError(msg)
+            if javascript and doc.xref_get_key(xref, "S")[1] == "/JavaScript":
+                # a /JavaScript action object
+                obj = "<</S/JavaScript/JS()>>"  # replace with a null JavaScript
+                doc.update_object(xref, obj)  # update this object
+                continue  # no further handling
+
+            if not xml_metadata:
+                continue
+
+            if doc.xref_get_key(xref, "Type")[1] == "/Metadata":
+                # delete any metadata object directly
+                doc.update_object(xref, "<<>>")
+                doc.update_stream(xref, b"deleted", new=True)
+                continue
+
+            if doc.xref_get_key(xref, "Metadata")[0] != "null":
+                doc.xref_set_key(xref, "Metadata", "null")
+    
+    def search_page_for(
+            doc: typing.Self,
+            pno: int,
+            text: str,
+            quads: bool = False,
+            clip: rect_like = None,
+            flags: int = None,
+            textpage: 'TextPage' = None,
+            ) -> list:
+        """Search for a string on a page.
+
+        Args:
+            pno: page number
+            text: string to be searched for
+            clip: restrict search to this rectangle
+            quads: (bool) return quads instead of rectangles
+            flags: bit switches, default: join hyphened words
+            textpage: reuse a prepared textpage
+        Returns:
+            a list of rectangles or quads, each containing an occurrence.
+        """
+        if flags is None:
+            flags = (0
+                    | TEXT_DEHYPHENATE
+                    | TEXT_PRESERVE_LIGATURES
+                    | TEXT_PRESERVE_WHITESPACE
+                    | TEXT_MEDIABOX_CLIP
+                    )
+        return doc[pno].search_for(
+            text,
+            quads=quads,
+            clip=clip,
+            flags=flags,
+            textpage=textpage,
+        )
+    
     def select(self, pyliste):
         """Build sub-pdf with page numbers in the list."""
         if self.is_closed or self.is_encrypted:
@@ -5818,6 +6871,162 @@ class Document:
         self.xref_set_key(xref, "MarkInfo", pdfdict)
         return True
 
+    def set_metadata(doc: typing.Self, m: dict = None) -> None:
+        """Update the PDF /Info object.
+
+        Args:
+            m: a dictionary like doc.metadata.
+        """
+        if not doc.is_pdf:
+            raise ValueError("is no PDF")
+        if doc.is_closed or doc.is_encrypted:
+            raise ValueError("document closed or encrypted")
+        if m is None:
+            m = {}
+        elif type(m) is not dict:
+            raise ValueError("bad metadata")
+        keymap = {
+            "author": "Author",
+            "producer": "Producer",
+            "creator": "Creator",
+            "title": "Title",
+            "format": None,
+            "encryption": None,
+            "creationDate": "CreationDate",
+            "modDate": "ModDate",
+            "subject": "Subject",
+            "keywords": "Keywords",
+            "trapped": "Trapped",
+        }
+        valid_keys = set(keymap.keys())
+        diff_set = set(m.keys()).difference(valid_keys)
+        if diff_set != set():
+            msg = "bad dict key(s): %s" % diff_set
+            raise ValueError(msg)
+
+        t, temp = doc.xref_get_key(-1, "Info")
+        if t != "xref":
+            info_xref = 0
+        else:
+            info_xref = int(temp.replace("0 R", ""))
+
+        if m == {} and info_xref == 0:  # nothing to do
+            return
+
+        if info_xref == 0:  # no prev metadata: get new xref
+            info_xref = doc.get_new_xref()
+            doc.update_object(info_xref, "<<>>")  # fill it with empty object
+            doc.xref_set_key(-1, "Info", "%i 0 R" % info_xref)
+        elif m == {}:  # remove existing metadata
+            doc.xref_set_key(-1, "Info", "null")
+            doc.init_doc()
+            return
+
+        for key, val in [(k, v) for k, v in m.items() if keymap[k] is not None]:
+            pdf_key = keymap[key]
+            if not bool(val) or val in ("none", "null"):
+                val = "null"
+            else:
+                val = get_pdf_str(val)
+            doc.xref_set_key(info_xref, pdf_key, val)
+        doc.init_doc()
+        return
+
+    def set_oc(doc: typing.Self, xref: int, oc: int) -> None:
+        """Attach optional content object to image or form xobject.
+
+        Args:
+            xref: (int) xref number of an image or form xobject
+            oc: (int) xref number of an OCG or OCMD
+        """
+        if doc.is_closed or doc.is_encrypted:
+            raise ValueError("document close or encrypted")
+        t, name = doc.xref_get_key(xref, "Subtype")
+        if t != "name" or name not in ("/Image", "/Form"):
+            raise ValueError("bad object type at xref %i" % xref)
+        if oc > 0:
+            t, name = doc.xref_get_key(oc, "Type")
+            if t != "name" or name not in ("/OCG", "/OCMD"):
+                raise ValueError("bad object type at xref %i" % oc)
+        if oc == 0 and "OC" in doc.xref_get_keys(xref):
+            doc.xref_set_key(xref, "OC", "null")
+            return None
+        doc.xref_set_key(xref, "OC", "%i 0 R" % oc)
+        return None
+
+    def set_ocmd(
+            doc: typing.Self,
+            xref: int = 0,
+            ocgs: typing.Union[list, None] = None,
+            policy: OptStr = None,
+            ve: typing.Union[list, None] = None,
+            ) -> int:
+        """Create or update an OCMD object in a PDF document.
+
+        Args:
+            xref: (int) 0 for creating a new object, otherwise update existing one.
+            ocgs: (list) OCG xref numbers, which shall be subject to 'policy'.
+            policy: one of 'AllOn', 'AllOff', 'AnyOn', 'AnyOff' (any casing).
+            ve: (list) visibility expression. Use instead of 'ocgs' with 'policy'.
+
+        Returns:
+            Xref of the created or updated OCMD.
+        """
+
+        all_ocgs = set(doc.get_ocgs().keys())
+
+        def ve_maker(ve):
+            if type(ve) not in (list, tuple) or len(ve) < 2:
+                raise ValueError("bad 've' format: %s" % ve)
+            if ve[0].lower() not in ("and", "or", "not"):
+                raise ValueError("bad operand: %s" % ve[0])
+            if ve[0].lower() == "not" and len(ve) != 2:
+                raise ValueError("bad 've' format: %s" % ve)
+            item = "[/%s" % ve[0].title()
+            for x in ve[1:]:
+                if type(x) is int:
+                    if x not in all_ocgs:
+                        raise ValueError("bad OCG %i" % x)
+                    item += " %i 0 R" % x
+                else:
+                    item += " %s" % ve_maker(x)
+            item += "]"
+            return item
+
+        text = "<</Type/OCMD"
+
+        if ocgs and type(ocgs) in (list, tuple):  # some OCGs are provided
+            s = set(ocgs).difference(all_ocgs)  # contains illegal xrefs
+            if s != set():
+                msg = "bad OCGs: %s" % s
+                raise ValueError(msg)
+            text += "/OCGs[" + " ".join(map(lambda x: "%i 0 R" % x, ocgs)) + "]"
+
+        if policy:
+            policy = str(policy).lower()
+            pols = {
+                "anyon": "AnyOn",
+                "allon": "AllOn",
+                "anyoff": "AnyOff",
+                "alloff": "AllOff",
+            }
+            if policy not in ("anyon", "allon", "anyoff", "alloff"):
+                raise ValueError("bad policy: %s" % policy)
+            text += "/P/%s" % pols[policy]
+
+        if ve:
+            text += "/VE%s" % ve_maker(ve)
+
+        text += ">>"
+
+        # make new object or replace old OCMD (check type first)
+        if xref == 0:
+            xref = doc.get_new_xref()
+        elif "/Type/OCMD" not in doc.xref_object(xref, compressed=True):
+            raise ValueError("bad xref or not an OCMD")
+        doc.update_object(xref, text)
+        return xref
+
     def set_pagelayout(self, pagelayout: str):
         """Set the PDF PageLayout value."""
         valid = ("SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "TwoPageLeft", "TwoPageRight")
@@ -5850,6 +7059,349 @@ class Document:
                 return True
         raise ValueError("bad PageMode value")
 
+    def set_page_labels(doc, labels):
+        """Add / replace page label definitions in PDF document.
+
+        Args:
+            doc: PDF document (resp. 'self').
+            labels: list of label dictionaries like:
+            {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int},
+            as returned by get_page_labels().
+        """
+        # William Chapman, 2021-01-06
+
+        def create_label_str(label):
+            """Convert Python label dict to corresponding PDF rule string.
+
+            Args:
+                label: (dict) build rule for the label.
+            Returns:
+                PDF label rule string wrapped in "<<", ">>".
+            """
+            s = "%i<<" % label["startpage"]
+            if label.get("prefix", "") != "":
+                s += "/P(%s)" % label["prefix"]
+            if label.get("style", "") != "":
+                s += "/S/%s" % label["style"]
+            if label.get("firstpagenum", 1) > 1:
+                s += "/St %i" % label["firstpagenum"]
+            s += ">>"
+            return s
+
+        def create_nums(labels):
+            """Return concatenated string of all labels rules.
+
+            Args:
+                labels: (list) dictionaries as created by function 'rule_dict'.
+            Returns:
+                PDF compatible string for page label definitions, ready to be
+                enclosed in PDF array 'Nums[...]'.
+            """
+            labels.sort(key=lambda x: x["startpage"])
+            s = "".join([create_label_str(label) for label in labels])
+            return s
+
+        doc._set_page_labels(create_nums(labels))
+
+    def set_toc(
+            doc: typing.Self,
+            toc: list,
+            collapse: int = 1,
+            ) -> int:
+        """Create new outline tree (table of contents, TOC).
+
+        Args:
+            toc: (list, tuple) each entry must contain level, title, page and
+                optionally top margin on the page. None or '()' remove the TOC.
+            collapse: (int) collapses entries beyond this level. Zero or None
+                shows all entries unfolded.
+        Returns:
+            the number of inserted items, or the number of removed items respectively.
+        """
+        if doc.is_closed or doc.is_encrypted:
+            raise ValueError("document closed or encrypted")
+        if not doc.is_pdf:
+            raise ValueError("is no PDF")
+        if not toc:  # remove all entries
+            return len(doc._delToC())
+
+        # validity checks --------------------------------------------------------
+        if type(toc) not in (list, tuple):
+            raise ValueError("'toc' must be list or tuple")
+        toclen = len(toc)
+        page_count = doc.page_count
+        t0 = toc[0]
+        if type(t0) not in (list, tuple):
+            raise ValueError("items must be sequences of 3 or 4 items")
+        if t0[0] != 1:
+            raise ValueError("hierarchy level of item 0 must be 1")
+        for i in list(range(toclen - 1)):
+            t1 = toc[i]
+            t2 = toc[i + 1]
+            if not -1 <= t1[2] <= page_count:
+                raise ValueError("row %i: page number out of range" % i)
+            if (type(t2) not in (list, tuple)) or len(t2) not in (3, 4):
+                raise ValueError("bad row %i" % (i + 1))
+            if (type(t2[0]) is not int) or t2[0] < 1:
+                raise ValueError("bad hierarchy level in row %i" % (i + 1))
+            if t2[0] > t1[0] + 1:
+                raise ValueError("bad hierarchy level in row %i" % (i + 1))
+        # no formal errors in toc --------------------------------------------------
+
+        # --------------------------------------------------------------------------
+        # make a list of xref numbers, which we can use for our TOC entries
+        # --------------------------------------------------------------------------
+        old_xrefs = doc._delToC()  # del old outlines, get their xref numbers
+
+        # prepare table of xrefs for new bookmarks
+        old_xrefs = []
+        xref = [0] + old_xrefs
+        xref[0] = doc._getOLRootNumber()  # entry zero is outline root xref number
+        if toclen > len(old_xrefs):  # too few old xrefs?
+            for i in range((toclen - len(old_xrefs))):
+                xref.append(doc.get_new_xref())  # acquire new ones
+
+        lvltab = {0: 0}  # to store last entry per hierarchy level
+
+        # ------------------------------------------------------------------------------
+        # contains new outline objects as strings - first one is the outline root
+        # ------------------------------------------------------------------------------
+        olitems = [{"count": 0, "first": -1, "last": -1, "xref": xref[0]}]
+        # ------------------------------------------------------------------------------
+        # build olitems as a list of PDF-like connected dictionaries
+        # ------------------------------------------------------------------------------
+        for i in range(toclen):
+            o = toc[i]
+            lvl = o[0]  # level
+            title = get_pdf_str(o[1])  # title
+            pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
+            page_xref = doc.page_xref(pno)
+            page_height = doc.page_cropbox(pno).height
+            top = Point(72, page_height - 36)
+            dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
+            if o[2] < 0:
+                dest_dict["kind"] = LINK_NONE
+            if len(o) > 3:  # some target is specified
+                if type(o[3]) in (int, float):  # convert a number to a point
+                    dest_dict["to"] = Point(72, page_height - o[3])
+                else:  # if something else, make sure we have a dict
+                    # We make a copy of o[3] to avoid modifying our caller's data.
+                    dest_dict = o[3].copy() if type(o[3]) is dict else dest_dict
+                    if "to" not in dest_dict:  # target point not in dict?
+                        dest_dict["to"] = top  # put default in
+                    else:  # transform target to PDF coordinates
+                        page = doc[pno]
+                        point = Point(dest_dict["to"])
+                        point.y = page.cropbox.height - point.y
+                        point = point * page.rotation_matrix
+                        dest_dict["to"] = (point.x, point.y)
+            d = {}
+            d["first"] = -1
+            d["count"] = 0
+            d["last"] = -1
+            d["prev"] = -1
+            d["next"] = -1
+            d["dest"] = utils.getDestStr(page_xref, dest_dict)
+            d["top"] = dest_dict["to"]
+            d["title"] = title
+            d["parent"] = lvltab[lvl - 1]
+            d["xref"] = xref[i + 1]
+            d["color"] = dest_dict.get("color")
+            d["flags"] = dest_dict.get("italic", 0) + 2 * dest_dict.get("bold", 0)
+            lvltab[lvl] = i + 1
+            parent = olitems[lvltab[lvl - 1]]  # the parent entry
+
+            if (
+                dest_dict.get("collapse") or collapse and lvl > collapse
+            ):  # suppress expansion
+                parent["count"] -= 1  # make /Count negative
+            else:
+                parent["count"] += 1  # positive /Count
+
+            if parent["first"] == -1:
+                parent["first"] = i + 1
+                parent["last"] = i + 1
+            else:
+                d["prev"] = parent["last"]
+                prev = olitems[parent["last"]]
+                prev["next"] = i + 1
+                parent["last"] = i + 1
+            olitems.append(d)
+
+        # ------------------------------------------------------------------------------
+        # now create each outline item as a string and insert it in the PDF
+        # ------------------------------------------------------------------------------
+        for i, ol in enumerate(olitems):
+            txt = "<<"
+            if ol["count"] != 0:
+                txt += "/Count %i" % ol["count"]
+            try:
+                txt += ol["dest"]
+            except Exception:
+                # Verbose in PyMuPDF/tests.
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+            try:
+                if ol["first"] > -1:
+                    txt += "/First %i 0 R" % xref[ol["first"]]
+            except Exception:
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+            try:
+                if ol["last"] > -1:
+                    txt += "/Last %i 0 R" % xref[ol["last"]]
+            except Exception:
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+            try:
+                if ol["next"] > -1:
+                    txt += "/Next %i 0 R" % xref[ol["next"]]
+            except Exception:
+                # Verbose in PyMuPDF/tests.
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+            try:
+                if ol["parent"] > -1:
+                    txt += "/Parent %i 0 R" % xref[ol["parent"]]
+            except Exception:
+                # Verbose in PyMuPDF/tests.
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+            try:
+                if ol["prev"] > -1:
+                    txt += "/Prev %i 0 R" % xref[ol["prev"]]
+            except Exception:
+                # Verbose in PyMuPDF/tests.
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+            try:
+                txt += "/Title" + ol["title"]
+            except Exception:
+                # Verbose in PyMuPDF/tests.
+                if g_exceptions_verbose >= 2:   exception_info()
+                pass
+
+            if ol.get("color") and len(ol["color"]) == 3:
+                txt += f"/C[ {_format_g(tuple(ol['color']))}]"
+            if ol.get("flags", 0) > 0:
+                txt += "/F %i" % ol["flags"]
+
+            if i == 0:  # special: this is the outline root
+                txt += "/Type/Outlines"  # so add the /Type entry
+            txt += ">>"
+            doc.update_object(xref[i], txt)  # insert the PDF object
+
+        doc.init_doc()
+        return toclen
+
+    def set_toc_item(
+            doc: typing.Self,
+            idx: int,
+            dest_dict: OptDict = None,
+            kind: OptInt = None,
+            pno: OptInt = None,
+            uri: OptStr = None,
+            title: OptStr = None,
+            to: point_like = None,
+            filename: OptStr = None,
+            zoom: float = 0,
+            ) -> None:
+        """Update TOC item by index.
+
+        It allows changing the item's title and link destination.
+
+        Args:
+            idx:
+                (int) desired index of the TOC list, as created by get_toc.
+            dest_dict:
+                (dict) destination dictionary as created by get_toc(False).
+                Outrules all other parameters. If None, the remaining parameters
+                are used to make a dest dictionary.
+            kind:
+                (int) kind of link (pymupdf.LINK_GOTO, etc.). If None, then only
+                the title will be updated. If pymupdf.LINK_NONE, the TOC item will
+                be deleted.
+            pno:
+                (int) page number (1-based like in get_toc). Required if
+                pymupdf.LINK_GOTO.
+            uri:
+                (str) the URL, required if pymupdf.LINK_URI.
+            title:
+                (str) the new title. No change if None.
+            to:
+                (point-like) destination on the target page. If omitted, (72, 36)
+                will be used as target coordinates.
+            filename:
+                (str) destination filename, required for pymupdf.LINK_GOTOR and
+                pymupdf.LINK_LAUNCH.
+            name:
+                (str) a destination name for pymupdf.LINK_NAMED.
+            zoom:
+                (float) a zoom factor for the target location (pymupdf.LINK_GOTO).
+        """
+        xref = doc.get_outline_xrefs()[idx]
+        page_xref = 0
+        if type(dest_dict) is dict:
+            if dest_dict["kind"] == LINK_GOTO:
+                pno = dest_dict["page"]
+                page_xref = doc.page_xref(pno)
+                page_height = doc.page_cropbox(pno).height
+                to = dest_dict.get('to', Point(72, 36))
+                to.y = page_height - to.y
+                dest_dict["to"] = to
+            action = utils.getDestStr(page_xref, dest_dict)
+            if not action.startswith("/A"):
+                raise ValueError("bad bookmark dest")
+            color = dest_dict.get("color")
+            if color:
+                color = list(map(float, color))
+                if len(color) != 3 or min(color) < 0 or max(color) > 1:
+                    raise ValueError("bad color value")
+            bold = dest_dict.get("bold", False)
+            italic = dest_dict.get("italic", False)
+            flags = italic + 2 * bold
+            collapse = dest_dict.get("collapse")
+            return doc._update_toc_item(
+                xref,
+                action=action[2:],
+                title=title,
+                color=color,
+                flags=flags,
+                collapse=collapse,
+            )
+
+        if kind == LINK_NONE:  # delete bookmark item
+            return doc.del_toc_item(idx)
+        if kind is None and title is None:  # treat as no-op
+            return None
+        if kind is None:  # only update title text
+            return doc._update_toc_item(xref, action=None, title=title)
+
+        if kind == LINK_GOTO:
+            if pno is None or pno not in range(1, doc.page_count + 1):
+                raise ValueError("bad page number")
+            page_xref = doc.page_xref(pno - 1)
+            page_height = doc.page_cropbox(pno - 1).height
+            if to is None:
+                to = Point(72, page_height - 36)
+            else:
+                to = Point(to)
+                to.y = page_height - to.y
+
+        ddict = {
+            "kind": kind,
+            "to": to,
+            "uri": uri,
+            "page": pno,
+            "file": filename,
+            "zoom": zoom,
+        }
+        action = utils.getDestStr(page_xref, ddict)
+        if action == "" or not action.startswith("/A"):
+            raise ValueError("bad bookmark dest")
+
+        return doc._update_toc_item(xref, action=action[2:], title=title)
+
     def set_xml_metadata(self, metadata):
         """Store XML document level metadata."""
         if self.is_closed or self.is_encrypted:
@@ -5867,6 +7419,318 @@ class Document:
             mupdf.pdf_dict_put( xml, PDF_NAME('Type'), PDF_NAME('Metadata'))
             mupdf.pdf_dict_put( xml, PDF_NAME('Subtype'), PDF_NAME('XML'))
             mupdf.pdf_dict_put( root, PDF_NAME('Metadata'), xml)
+
+    def subset_fonts(doc: typing.Self, verbose: bool = False, fallback: bool = False) -> OptInt:
+        """Build font subsets in a PDF.
+
+        Eligible fonts are potentially replaced by smaller versions. Page text is
+        NOT rewritten and thus should retain properties like being hidden or
+        controlled by optional content.
+
+        This method by default uses MuPDF's own internal feature to create subset
+        fonts. As this is a new function, errors may still occur. In this case,
+        please fall back to using the previous version by using "fallback=True".
+        Fallback mode requires the external package 'fontTools'.
+
+        Args:
+            fallback: use the older deprecated implementation.
+            verbose: only used by fallback mode.
+
+        Returns:
+            The new MuPDF-based code returns None.  The deprecated fallback
+            mode returns 0 if there are no fonts to subset.  Otherwise, it
+            returns the decrease in fontsize (the difference in fontsize),
+            measured in bytes.
+        """
+        # Font binaries: -  "buffer" -> (names, xrefs, (unicodes, glyphs))
+        # An embedded font is uniquely defined by its fontbuffer only. It may have
+        # multiple names and xrefs.
+        # Once the sets of used unicodes and glyphs are known, we compute a
+        # smaller version of the buffer user package fontTools.
+
+        if not fallback:  # by default use MuPDF function
+            pdf = mupdf.pdf_document_from_fz_document(doc)
+            mupdf.pdf_subset_fonts2(pdf, list(range(doc.page_count)))
+            return
+
+        font_buffers = {}
+
+        def get_old_widths(xref):
+            """Retrieve old font '/W' and '/DW' values."""
+            df = doc.xref_get_key(xref, "DescendantFonts")
+            if df[0] != "array":  # only handle xref specifications
+                return None, None
+            df_xref = int(df[1][1:-1].replace("0 R", ""))
+            widths = doc.xref_get_key(df_xref, "W")
+            if widths[0] != "array":  # no widths key found
+                widths = None
+            else:
+                widths = widths[1]
+            dwidths = doc.xref_get_key(df_xref, "DW")
+            if dwidths[0] != "int":
+                dwidths = None
+            else:
+                dwidths = dwidths[1]
+            return widths, dwidths
+
+        def set_old_widths(xref, widths, dwidths):
+            """Restore the old '/W' and '/DW' in subsetted font.
+
+            If either parameter is None or evaluates to False, the corresponding
+            dictionary key will be set to null.
+            """
+            df = doc.xref_get_key(xref, "DescendantFonts")
+            if df[0] != "array":  # only handle xref specs
+                return None
+            df_xref = int(df[1][1:-1].replace("0 R", ""))
+            if (type(widths) is not str or not widths) and doc.xref_get_key(df_xref, "W")[
+                0
+            ] != "null":
+                doc.xref_set_key(df_xref, "W", "null")
+            else:
+                doc.xref_set_key(df_xref, "W", widths)
+            if (type(dwidths) is not str or not dwidths) and doc.xref_get_key(
+                df_xref, "DW"
+            )[0] != "null":
+                doc.xref_set_key(df_xref, "DW", "null")
+            else:
+                doc.xref_set_key(df_xref, "DW", dwidths)
+            return None
+
+        def set_subset_fontname(new_xref):
+            """Generate a name prefix to tag a font as subset.
+
+            We use a random generator to select 6 upper case ASCII characters.
+            The prefixed name must be put in the font xref as the "/BaseFont" value
+            and in the FontDescriptor object as the '/FontName' value.
+            """
+            # The following generates a prefix like 'ABCDEF+'
+            import random
+            import string
+            prefix = "".join(random.choices(tuple(string.ascii_uppercase), k=6)) + "+"
+            font_str = doc.xref_object(new_xref, compressed=True)
+            font_str = font_str.replace("/BaseFont/", "/BaseFont/" + prefix)
+            df = doc.xref_get_key(new_xref, "DescendantFonts")
+            if df[0] == "array":
+                df_xref = int(df[1][1:-1].replace("0 R", ""))
+                fd = doc.xref_get_key(df_xref, "FontDescriptor")
+                if fd[0] == "xref":
+                    fd_xref = int(fd[1].replace("0 R", ""))
+                    fd_str = doc.xref_object(fd_xref, compressed=True)
+                    fd_str = fd_str.replace("/FontName/", "/FontName/" + prefix)
+                    doc.update_object(fd_xref, fd_str)
+            doc.update_object(new_xref, font_str)
+
+        def build_subset(buffer, unc_set, gid_set):
+            """Build font subset using fontTools.
+
+            Args:
+                buffer: (bytes) the font given as a binary buffer.
+                unc_set: (set) required glyph ids.
+            Returns:
+                Either None if subsetting is unsuccessful or the subset font buffer.
+            """
+            try:
+                import fontTools.subset as fts
+            except ImportError:
+                if g_exceptions_verbose:    exception_info()
+                message("This method requires fontTools to be installed.")
+                raise
+            import tempfile
+            with tempfile.TemporaryDirectory() as tmp_dir:
+                oldfont_path = f"{tmp_dir}/oldfont.ttf"
+                newfont_path = f"{tmp_dir}/newfont.ttf"
+                uncfile_path = f"{tmp_dir}/uncfile.txt"
+                args = [
+                    oldfont_path,
+                    "--retain-gids",
+                    f"--output-file={newfont_path}",
+                    "--layout-features=*",
+                    "--passthrough-tables",
+                    "--ignore-missing-glyphs",
+                    "--ignore-missing-unicodes",
+                    "--symbol-cmap",
+                ]
+
+                # store glyph ids or unicodes as file
+                with open(f"{tmp_dir}/uncfile.txt", "w", encoding='utf8') as unc_file:
+                    if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
+                        args.append(f"--gids-file={uncfile_path}")
+                        gid_set.add(189)
+                        unc_list = list(gid_set)
+                        for unc in unc_list:
+                            unc_file.write("%i\n" % unc)
+                    else:
+                        args.append(f"--unicodes-file={uncfile_path}")
+                        unc_set.add(255)
+                        unc_list = list(unc_set)
+                        for unc in unc_list:
+                            unc_file.write("%04x\n" % unc)
+
+                # store fontbuffer as a file
+                with open(oldfont_path, "wb") as fontfile:
+                    fontfile.write(buffer)
+                try:
+                    os.remove(newfont_path)  # remove old file
+                except Exception:
+                    pass
+                try:  # invoke fontTools subsetter
+                    fts.main(args)
+                    font = Font(fontfile=newfont_path)
+                    new_buffer = font.buffer  # subset font binary
+                    if font.glyph_count == 0:  # intercept empty font
+                        new_buffer = None
+                except Exception:
+                    exception_info()
+                    new_buffer = None
+            return new_buffer
+
+        def repl_fontnames(doc):
+            """Populate 'font_buffers'.
+
+            For each font candidate, store its xref and the list of names
+            by which PDF text may refer to it (there may be multiple).
+            """
+
+            def norm_name(name):
+                """Recreate font name that contains PDF hex codes.
+
+                E.g. #20 -> space, chr(32)
+                """
+                while "#" in name:
+                    p = name.find("#")
+                    c = int(name[p + 1 : p + 3], 16)
+                    name = name.replace(name[p : p + 3], chr(c))
+                return name
+
+            def get_fontnames(doc, item):
+                """Return a list of fontnames for an item of page.get_fonts().
+
+                There may be multiple names e.g. for Type0 fonts.
+                """
+                fontname = item[3]
+                names = [fontname]
+                fontname = doc.xref_get_key(item[0], "BaseFont")[1][1:]
+                fontname = norm_name(fontname)
+                if fontname not in names:
+                    names.append(fontname)
+                descendents = doc.xref_get_key(item[0], "DescendantFonts")
+                if descendents[0] != "array":
+                    return names
+                descendents = descendents[1][1:-1]
+                if descendents.endswith(" 0 R"):
+                    xref = int(descendents[:-4])
+                    descendents = doc.xref_object(xref, compressed=True)
+                p1 = descendents.find("/BaseFont")
+                if p1 >= 0:
+                    p2 = descendents.find("/", p1 + 1)
+                    p1 = min(descendents.find("/", p2 + 1), descendents.find(">>", p2 + 1))
+                    fontname = descendents[p2 + 1 : p1]
+                    fontname = norm_name(fontname)
+                    if fontname not in names:
+                        names.append(fontname)
+                return names
+
+            for i in range(doc.page_count):
+                for f in doc.get_page_fonts(i, full=True):
+                    font_xref = f[0]  # font xref
+                    font_ext = f[1]  # font file extension
+                    basename = f[3]  # font basename
+
+                    if font_ext not in (  # skip if not supported by fontTools
+                        "otf",
+                        "ttf",
+                        "woff",
+                        "woff2",
+                    ):
+                        continue
+                    # skip fonts which already are subsets
+                    if len(basename) > 6 and basename[6] == "+":
+                        continue
+
+                    extr = doc.extract_font(font_xref)
+                    fontbuffer = extr[-1]
+                    names = get_fontnames(doc, f)
+                    name_set, xref_set, subsets = font_buffers.get(
+                        fontbuffer, (set(), set(), (set(), set()))
+                    )
+                    xref_set.add(font_xref)
+                    for name in names:
+                        name_set.add(name)
+                    font = Font(fontbuffer=fontbuffer)
+                    name_set.add(font.name)
+                    del font
+                    font_buffers[fontbuffer] = (name_set, xref_set, subsets)
+
+        def find_buffer_by_name(name):
+            for buffer, (name_set, _, _) in font_buffers.items():
+                if name in name_set:
+                    return buffer
+            return None
+
+        # -----------------
+        # main function
+        # -----------------
+        repl_fontnames(doc)  # populate font information
+        if not font_buffers:  # nothing found to do
+            if verbose:
+                message(f'No fonts to subset.')
+            return 0
+
+        old_fontsize = 0
+        new_fontsize = 0
+        for fontbuffer in font_buffers.keys():
+            old_fontsize += len(fontbuffer)
+
+        # Scan page text for usage of subsettable fonts
+        for page in doc:
+            # go through the text and extend set of used glyphs by font
+            # we use a modified MuPDF trace device, which delivers us glyph ids.
+            for span in page.get_texttrace():
+                if type(span) is not dict:  # skip useless information
+                    continue
+                fontname = span["font"][:33]  # fontname for the span
+                buffer = find_buffer_by_name(fontname)
+                if buffer is None:
+                    continue
+                name_set, xref_set, (set_ucs, set_gid) = font_buffers[buffer]
+                for c in span["chars"]:
+                    set_ucs.add(c[0])  # unicode
+                    set_gid.add(c[1])  # glyph id
+                font_buffers[buffer] = (name_set, xref_set, (set_ucs, set_gid))
+
+        # build the font subsets
+        for old_buffer, (name_set, xref_set, subsets) in font_buffers.items():
+            new_buffer = build_subset(old_buffer, subsets[0], subsets[1])
+            fontname = list(name_set)[0]
+            if new_buffer is None or len(new_buffer) >= len(old_buffer):
+                # subset was not created or did not get smaller
+                if verbose:
+                    message(f'Cannot subset {fontname!r}.')
+                continue
+            if verbose:
+                message(f"Built subset of font {fontname!r}.")
+            val = doc._insert_font(fontbuffer=new_buffer)  # store subset font in PDF
+            new_xref = val[0]  # get its xref
+            set_subset_fontname(new_xref)  # tag fontname as subset font
+            font_str = doc.xref_object(  # get its object definition
+                new_xref,
+                compressed=True,
+            )
+            # walk through the original font xrefs and replace each by the subset def
+            for font_xref in xref_set:
+                # we need the original '/W' and '/DW' width values
+                width_table, def_width = get_old_widths(font_xref)
+                # ... and replace original font definition at xref with it
+                doc.update_object(font_xref, font_str)
+                # now copy over old '/W' and '/DW' values
+                if width_table or def_width:
+                    set_old_widths(font_xref, width_table, def_width)
+            # 'new_xref' remains unused in the PDF and must be removed
+            # by garbage collection.
+            new_fontsize += len(new_buffer)
+
+        return old_fontsize - new_fontsize
 
     def switch_layer(self, config, as_default=0):
         """Activate an OC layer."""
@@ -5978,6 +7842,9 @@ class Document:
                 compression_effort=compression_effort,
         )
         return bio.getvalue()
+    
+    def tobytes(self, *args, **kwargs):
+        return self.write(*args, **kwargs)
 
     @property
     def xref(self):
@@ -5985,6 +7852,41 @@ class Document:
         CheckParent(self)
         return self.parent.page_xref(self.number)
 
+    def xref_copy(doc: typing.Self, source: int, target: int, *, keep: list = None) -> None:
+        """Copy a PDF dictionary object to another one given their xref numbers.
+
+        Args:
+            doc: PDF document object
+            source: source xref number
+            target: target xref number, the xref must already exist
+            keep: an optional list of 1st level keys in target that should not be
+                  removed before copying.
+        Notes:
+            This works similar to the copy() method of dictionaries in Python. The
+            source may be a stream object.
+        """
+        if doc.xref_is_stream(source):
+            # read new xref stream, maintaining compression
+            stream = doc.xref_stream_raw(source)
+            doc.update_stream(
+                target,
+                stream,
+                compress=False,  # keeps source compression
+                new=True,  # in case target is no stream
+            )
+
+        # empty the target completely, observe exceptions
+        if keep is None:
+            keep = []
+        for key in doc.xref_get_keys(target):
+            if key in keep:
+                continue
+            doc.xref_set_key(target, key, "null")
+        # copy over all source dict items
+        for key in doc.xref_get_keys(source):
+            item = doc.xref_get_key(source, key)
+            doc.xref_set_key(target, key, item[1])
+    
     def xref_get_key(self, xref, key):
         """Get PDF dict key value of object at 'xref'."""
         pdf = _as_pdf_document(self)
@@ -6201,7 +8103,6 @@ class Document:
     __slots__ = ('this', 'page_count2', 'this_is_pdf', '__dict__')
     
     outline = property(lambda self: self._outline)
-    tobytes = write
     is_stream = xref_is_stream
 
 open = Document
@@ -20943,34 +22844,6 @@ recover_char_quad           = utils.recover_char_quad
 recover_line_quad           = utils.recover_line_quad
 recover_quad                = utils.recover_quad
 recover_span_quad           = utils.recover_span_quad
-
-
-Document._do_links          = utils.do_links
-Document._do_widgets        = utils.do_widgets
-Document.del_toc_item       = utils.del_toc_item
-Document.get_char_widths    = utils.get_char_widths
-Document.get_oc             = utils.get_oc
-Document.get_ocmd           = utils.get_ocmd
-Document.get_page_labels    = utils.get_page_labels
-Document.get_page_numbers   = utils.get_page_numbers
-Document.get_page_pixmap    = utils.get_page_pixmap
-Document.get_page_text      = utils.get_page_text
-Document.get_toc            = utils.get_toc
-Document.has_annots         = utils.has_annots
-Document.has_links          = utils.has_links
-Document.insert_page        = utils.insert_page
-Document.new_page           = utils.new_page
-Document.scrub              = utils.scrub
-Document.search_page_for    = utils.search_page_for
-Document.set_metadata       = utils.set_metadata
-Document.set_oc             = utils.set_oc
-Document.set_ocmd           = utils.set_ocmd
-Document.set_page_labels    = utils.set_page_labels
-Document.set_toc            = utils.set_toc
-Document.set_toc_item       = utils.set_toc_item
-Document.subset_fonts       = utils.subset_fonts
-Document.tobytes            = Document.write
-Document.xref_copy          = utils.xref_copy
 
 IRect.get_area              = utils.get_area
 
