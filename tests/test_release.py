@@ -58,9 +58,8 @@ def test_release_bug_template():
 
 def test_release_changelog_version():
     '''
-    In changes.txt, first mentioned of MuPDF must match setup.version_mupdf.
+    In changes.txt, first item must match setup.version_p.
     '''
-    # In changes.txt, first item must match setup.version_p.
     p = f'{g_root}/changes.txt'
     with open(p) as f:
         text = f.read()
