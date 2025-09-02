@@ -1280,7 +1280,7 @@ classifier = [
 #
 
 # PyMuPDF version.
-version_p = '1.26.4'
+version_p = '1.26.5'
 
 version_mupdf = '1.26.7'
 
