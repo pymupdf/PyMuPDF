@@ -14642,6 +14642,16 @@ class IRect:
         """Check if x is in the rectangle."""
         return self.__contains__(x)
 
+    def get_area(self, *args) -> float:
+        """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
+        if args:
+            unit = args[0]
+        else:
+            unit = "px"
+        u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (2.54, 72.0), "mm": (25.4, 72.0)}
+        f = (u[unit][0] / u[unit][1]) ** 2
+        return f * self.width * self.height
+
     def include_point(self, p):
         """Extend rectangle to include point p."""
         rect = self.rect.include_point(p)
@@ -22845,8 +22855,6 @@ recover_line_quad           = utils.recover_line_quad
 recover_quad                = utils.recover_quad
 recover_span_quad           = utils.recover_span_quad
 
-IRect.get_area              = utils.get_area
-
 Page.apply_redactions       = utils.apply_redactions
 Page.delete_image           = utils.delete_image
 Page.delete_widget          = utils.delete_widget
@@ -22887,8 +22895,6 @@ Shape                       = utils.Shape
 from .table import find_tables
 
 Page.find_tables = find_tables
-
-Rect.get_area               = utils.get_area
 
 TextWriter.fill_textbox     = utils.fill_textbox
 

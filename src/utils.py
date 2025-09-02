@@ -1098,18 +1098,6 @@ def get_links(page: pymupdf.Page) -> list:
     return links
 
 
-def get_area(*args) -> float:
-    """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
-    rect = args[0]
-    if len(args) > 1:
-        unit = args[1]
-    else:
-        unit = "px"
-    u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (2.54, 72.0), "mm": (25.4, 72.0)}
-    f = (u[unit][0] / u[unit][1]) ** 2
-    return f * rect.width * rect.height
-
-
 def getDestStr(xref: int, ddict: dict) -> str:
     """Calculate the PDF action string.
 
