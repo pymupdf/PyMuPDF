@@ -2,6 +2,8 @@ Change Log
 ==========
 
 
+**Changes in version 1.26.5**
+
 **Changes in version 1.26.4**
 
 * Use MuPDF-1.26.7.
