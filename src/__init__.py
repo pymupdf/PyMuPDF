@@ -1035,6 +1035,12 @@ class Annot:
         stream = JM_BinFromBuffer(buf)
         res['stream'] = stream
         return res
+    
+    def get_text(self, *args, **kwargs):
+        return utils.get_text(self, *args, **kwargs)
+
+    def get_textbox(self, *args, **kwargs):
+        return utils.get_textbox(self, *args, **kwargs)
 
     def get_textpage(self, clip=None, flags=0):
         """Make annotation TextPage."""
@@ -20938,8 +20944,6 @@ recover_line_quad           = utils.recover_line_quad
 recover_quad                = utils.recover_quad
 recover_span_quad           = utils.recover_span_quad
 
-Annot.get_text              = utils.get_text
-Annot.get_textbox           = utils.get_textbox
 
 Document._do_links          = utils.do_links
 Document._do_widgets        = utils.do_widgets
