@@ -988,7 +988,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                 int bar1(const char* text)
                 {
                     int ret = 0;
-                    /*if (setjmp(jmpbuf) == 0)
+                    if (setjmp(jmpbuf) == 0)
                     {
                         ret = bar0(text);
                     }
@@ -996,7 +996,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                     {
                         printf("setjmp() returned non-zero.\\n");
                         throw std::runtime_error("deliberate exception");
-                    }*/
+                    }
                     throw std::runtime_error("deliberate exception");
                     return ret;
                 }
@@ -1029,6 +1029,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
         log(f'text is:\n{textwrap.indent(text, "    ")}')
         assert e
         assert 'module="env" function="__c_longjmp": tag import requires a WebAssembly.Tag' in text
+        log(f'Have detected expected exception from Pyodide.')
     else:
         run(f'cd {testdir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
         run(f'ls -ld {testdir}/wheelhouse/*')
