@@ -1,5 +1,3 @@
-%module fitz_extra
-
 %pythoncode %{
 # pylint: disable=all
 %}
