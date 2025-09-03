@@ -785,6 +785,9 @@ def test_2736():
 
 
 def test_subset_fonts():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_subset_fonts(): not running on Pyodide - ValueError: No font code \'ubuntu\' found in pymupdf-fonts.')
+        return
     """Confirm subset_fonts is working."""
     if not hasattr(pymupdf, "mupdf"):
         print("Not testing 'test_subset_fonts' in classic.")
@@ -1026,6 +1029,10 @@ def test_3140():
     os.remove(oldfile)
 
 def test_cli():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_cli(): not running on Pyodide - cannot run child processes.')
+        return
+        
     if not hasattr(pymupdf, 'mupdf'):
         print('test_cli(): Not running on classic because of fitz_old.')
         return
@@ -1063,6 +1070,10 @@ def test_cli_out():
     Check redirection of messages and log diagnostics with environment
     variables PYMUPDF_LOG and PYMUPDF_MESSAGE.
     '''
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_cli_out(): not running on Pyodide - cannot run child processes.')
+        return
+        
     if not hasattr(pymupdf, 'mupdf'):
         print('test_cli(): Not running on classic because of fitz_old.')
         return
@@ -1150,6 +1161,10 @@ def test_use_python_logging():
     '''
     Checks pymupdf.use_python_logging().
     '''
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_cli(): not running on Pyodide - cannot run child processes.')
+        return
+        
     log_prefix = None
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
@@ -1433,6 +1448,10 @@ def test_open2():
     Checks behaviour of fz_open_document() and fz_open_document_with_stream()
     with different filenames/magic values.
     '''
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_open2(): not running on Pyodide - cannot run child processes.')
+        return
+        
     if platform.system() == 'Windows':
         print(f'test_open2(): not running on Windows because `git ls-files` known fail on Github Windows runners.')
         return
@@ -1789,6 +1808,10 @@ def test_4309():
     document.delete_page()
 
 def test_4263():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4263(): not running on Pyodide - cannot run child processes.')
+        return
+        
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4263.pdf')
     path_out = f'{path}.linerarized.pdf'
     command = f'pymupdf clean -linear {path} {path_out}'
@@ -1915,6 +1938,10 @@ def test_4479():
         
 
 def test_4533():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4533(): not running on Pyodide - cannot run child processes.')
+        return
+        
     print()
     path = util.download(
             'https://github.com/user-attachments/files/20497146/NineData_user_manual_V3.0.5.pdf',
@@ -1966,6 +1993,10 @@ def test_gitinfo():
     
 
 def test_4392():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4392(): not running on Pyodide - cannot run child processes.')
+        return
+        
     print()
     path = os.path.normpath(f'{__file__}/../../tests/test_4392.py')
     with open(path, 'w') as f:

@@ -17,6 +17,10 @@ def test_2791():
     '''
     Check for memory leaks.
     '''
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_2791(): not running on Pyodide - No module named \'psutil\'.')
+        return
+        
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
         print(f'test_2791(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
         return
@@ -94,6 +98,10 @@ def test_2791():
 
 
 def test_4090():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4090(): not running on Pyodide - No module named \'psutil\'.')
+        return
+        
     print(f'test_4090(): {os.environ.get("PYTHONMALLOC")=}.')
     import psutil
     process = psutil.Process()
@@ -148,6 +156,10 @@ def show_tracemalloc_diff(snapshot1, snapshot2):
 
 
 def test_4125():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4125(): not running on Pyodide - No module named \'psutil\'.')
+        return
+        
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
         print(f'test_4125(): not running because PYMUPDF_RUNNING_ON_VALGRIND=1.')
         return

@@ -83,6 +83,10 @@ def test_2608():
         assert text == expected
 
 def test_fontarchive():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_fontarchive(): not running on Pyodide - we get ValueError: No font code \'notos\' found in pymupdf-fonts..')
+        return
+        
     import subprocess
     arch = pymupdf.Archive()
     css = pymupdf.css_for_pymupdf_font("notos", archive=arch, name="sans-serif")
@@ -234,6 +238,10 @@ def test_3887():
 
 
 def test_4457():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4457(): not running on Pyodide - cannot run child processes.')
+        return
+        
     print()
     files = (
             ('https://github.com/user-attachments/files/20862923/test_4457_a.pdf', 'test_4457_a.pdf', None, 4),

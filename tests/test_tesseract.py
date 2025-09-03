@@ -15,6 +15,10 @@ def test_tesseract():
     But if TESSDATA_PREFIX is set in the environment, we assert that
     FzPage.get_textpage_ocr() succeeds.
     '''
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_tesseract(): not running on Pyodide - cannot run child processes.')
+        return
+        
     path = os.path.abspath( f'{__file__}/../resources/2.pdf')
     doc = pymupdf.open( path)
     page = doc[5]
@@ -71,6 +75,10 @@ def test_3842b():
     #
     # Note that Tesseract seems to output its own diagnostics.
     #
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_3842b(): not running on Pyodide - cannot run child processes.')
+        return
+        
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3842.pdf')
     with pymupdf.open(path) as document:
         page = document[6]
@@ -91,6 +99,10 @@ def test_3842b():
 
 
 def test_3842():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_3842(): not running on Pyodide - cannot run child processes.')
+        return
+        
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3842.pdf')
     with pymupdf.open(path) as document:
         page = document[6]
