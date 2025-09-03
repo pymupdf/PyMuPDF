@@ -30,7 +30,7 @@ jobs:
       
       - name: pyodide
         run:
-          python scripts/test.py ${{matrix.args}} pyodide
+          python scripts/test.py ${{matrix.args}} --cibw-pyodide 1 cibw
       
       # We do not use upload-artifact@v4 because it fails due to us creating
       # identically-named wheels.
