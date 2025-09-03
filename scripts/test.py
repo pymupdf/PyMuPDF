@@ -792,7 +792,7 @@ def build(
         venv,
         wheel,
         ):
-    print(f'{build_isolation=}')
+    log(f'{build_isolation=}')
     
     if build_isolation is None:
         # On OpenBSD libclang is not available on pypi.org, so we need to force
@@ -884,7 +884,8 @@ def cibuildwheel(
     log(f'{CIBW_BUILD=}')
     if CIBW_BUILD is None:
         if cibw_pyodide:
-            CIBW_BUILD = 'cp312*'
+            # Using python-3.13 fixes problems with MuPDF's setjmp/longjmp.
+            CIBW_BUILD = 'cp313*'
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
             # Build/test all supported Python versions.
             CIBW_BUILD = 'cp39* cp310* cp311* cp312* cp313*'
@@ -939,19 +940,33 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
         f.write(textwrap.dedent(f'''
                 import shutil
                 import sys
+                import os
                 import pipcl
 
                 def build():
+                    
+                    cc_base, _ = pipcl.base_compiler(cpp=True)
+                    ld_base, _ = pipcl.base_linker(cpp=True)
+                    pipcl.run(f'mkdir -p {testdir}/build')
+                    pipcl.run(f'{{cc_base}} -DNDEBUG -fPIC -c -o {testdir}/build/qwerty.o {testdir}/qwerty.cpp')
+                    pipcl.run(f'{{ld_base}} -o {testdir}/build/libqwerty.so {testdir}/build/qwerty.o')
+                    
                     so_leaf = pipcl.build_extension(
                             name = 'foo',
                             path_i = 'foo.i',
                             outdir = 'build',
-                            compiler_extra = {'-fwasm-exceptions -sSUPPORT_LONGJMP=wasm' if cibw_pyodide else ''!r},
-                            linker_extra = {'-fwasm-exceptions -sSUPPORT_LONGJMP=wasm' if cibw_pyodide else ''!r},
+                            libpaths = '{testdir}/build',
+                            libs = ['qwerty'],
                             )
+                    
                     return [
                             ('build/foo.py', 'foo/__init__.py'),
                             (f'build/{{so_leaf}}', f'foo/'),
+                            
+                            # 2025-09-03: formally we put libraries in foo.lib; now it seems
+                            # they need to be at top level in wheel.
+                            #
+                            (f'build/libqwerty.so', f'/'),
                             ]
 
                 p = pipcl.Package(
@@ -973,11 +988,17 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                 #include <stdio.h>
                 #include <string.h>
                 #include <stdexcept>
+                
+                int qwerty(void);
 
                 static sigjmp_buf jmpbuf;
                 static int bar0(const char* text)
                 {
-                    printf("bar(): text: %s\\\\n", text);
+                    printf("bar(): text: %s\\n", text);
+                    
+                    int q = qwerty();
+                    printf("bar(): q=%i\\n", q);
+                    
                     int len = (int) strlen(text);
                     printf("bar(): len=%i\\\\n", len);
                     //printf("calling longjmp().\\n");
@@ -1016,23 +1037,25 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                 %}
                 int bar(const char* text);
                 '''))
+    
+    with open(f'{testdir}/qwerty.cpp', 'w') as f:
+        f.write(textwrap.dedent('''
+                #include <stdio.h>
+                int qwerty(void)
+                {
+                    printf("qwerty()\\n");
+                    return 3;
+                }
+                '''))
+        
     shutil.copy2(f'{pymupdf_dir_abs}/pipcl.py', f'{testdir}/pipcl.py')
     shutil.copy2(f'{pymupdf_dir_abs}/wdev.py', f'{testdir}/wdev.py')
 
     env_extra['CIBW_BUILD'] = CIBW_BUILD
-    env_extra['CIBW_TEST_COMMAND'] = f'python -c "import foo; foo.bar(\\"some text\\")"'
+    env_extra['CIBW_TEST_COMMAND'] = f'pyodide xbuildenv search --all; python -c "import foo; foo.bar(\\"some text\\")"; true'
     
-    if cibw_pyodide:
-        # Expect failure.
-        e, text = run(f'cd {testdir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra, capture=1, check=0)
-        log(f'{e=}')
-        log(f'text is:\n{textwrap.indent(text, "    ")}')
-        assert e
-        assert 'module="env" function="__c_longjmp": tag import requires a WebAssembly.Tag' in text
-        log(f'Have detected expected exception from Pyodide.')
-    else:
-        run(f'cd {testdir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
-        run(f'ls -ld {testdir}/wheelhouse/*')
+    run(f'cd {testdir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
+    run(f'ls -ld {testdir}/wheelhouse/*')
         
 
 def build_pyodide_wheel(pyodide_build_version=None):
@@ -1259,14 +1282,18 @@ def test(
     
     PYODIDE_ROOT = os.environ.get('PYODIDE_ROOT')
     if PYODIDE_ROOT is not None:
+        # We can't install packages with `pip install`; setup.py will have
+        # specified pytest in the wheels's <requires_dist>, so it will be
+        # already installed.
+        #
         log(f'Not installing test packages because {PYODIDE_ROOT=}.')
-        command = f'{pytest_options} {pytest_arg} -s'
+        command = f'{pytest_options} {pytest_arg}'
         args = shlex.split(command)
-        print(f'{PYODIDE_ROOT=} so calling pytest.main(args).')
-        print(f'{command=}')
-        print(f'args are ({len(args)}):')
+        log(f'{PYODIDE_ROOT=} so calling pytest.main(args).')
+        log(f'{command=}')
+        log(f'args are ({len(args)}):')
         for arg in args:
-            print(f'    {arg!r}')
+            log(f'    {arg!r}')
         import pytest
         pytest.main(args)
         return
@@ -1334,7 +1361,7 @@ def test(
 
     # Always start by removing any test_*_fitz.py files.
     for p in glob.glob(f'{pymupdf_dir_rel}/tests/test_*_fitz.py'):
-        print(f'Removing {p=}')
+        log(f'Removing {p=}')
         os.remove(p)
     if test_fitz:
         # Create copies of each test file, modified to use `pymupdf`
@@ -1346,7 +1373,7 @@ def test(
                 continue
             branch, leaf = os.path.split(p)
             p2 = f'{branch}/{leaf[:5]}fitz_{leaf[5:]}'
-            print(f'Converting {p=} to {p2=}.')
+            log(f'Converting {p=} to {p2=}.')
             with open(p, encoding='utf8') as f:
                 text = f.read()
             text2 = re.sub("([^\'])\\bpymupdf\\b", '\\1fitz', text)
