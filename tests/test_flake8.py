@@ -9,6 +9,10 @@ def test_flake8():
     '''
     Check rebased Python code with flake8.
     '''
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_flake8(): not running on Pyodide - cannot run child processes.')
+        return
+        
     if not hasattr(pymupdf, 'mupdf'):
         print(f'Not running flake8 with classic implementation.')
         return

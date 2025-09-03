@@ -5,6 +5,10 @@ import textwrap
 
 
 def test_import():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_import(): not running on Pyodide - cannot run child processes.')
+        return
+        
     root = os.path.abspath(f'{__file__}/../../')
     p = f'{root}/tests/resources_test_import.py'
     with open(p, 'w') as f:

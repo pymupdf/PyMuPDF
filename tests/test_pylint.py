@@ -7,6 +7,10 @@ import textwrap
 
 def test_pylint():
     
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_pylint(): not running on Pyodide - cannot run child processes.')
+        return
+    
     if not hasattr(pymupdf, 'mupdf'):
         print(f'test_pylint(): Not running with classic implementation.')
         return

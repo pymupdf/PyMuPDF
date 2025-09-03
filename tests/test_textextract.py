@@ -263,6 +263,10 @@ def test_3197():
 
 
 def test_document_text():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_document_text(): not running on Pyodide - multiprocessing not available.')
+        return
+        
     import platform
     import time
     
@@ -310,6 +314,9 @@ def test_document_text():
 
 
 def test_4524():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4524(): not running on Pyodide - multiprocessing not available.')
+        return
     path = os.path.abspath(f'{__file__}/../../tests/resources/mupdf_explored.pdf')
     print('')
     document = pymupdf.Document(path)

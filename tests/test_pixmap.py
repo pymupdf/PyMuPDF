@@ -70,7 +70,7 @@ def test_pilsave():
         pix2 = pymupdf.Pixmap(stream)
         assert repr(pix1) == repr(pix2)
     except ModuleNotFoundError:
-        assert platform.system() == 'Windows' and sys.maxsize == 2**31 - 1
+        assert platform.system() in ('Windows', 'Emscripten') and sys.maxsize == 2**31 - 1
 
 
 def test_save(tmpdir):
@@ -556,6 +556,9 @@ def test_4423():
 
 
 def test_4445():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4445(): not running on Pyodide - cannot run child processes.')
+        return
     print()
     # Test case is large so we download it instead of having it in PyMuPDF
     # git. We put it in `cache/` directory do it is not removed by `git clean`
