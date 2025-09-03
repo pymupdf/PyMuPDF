@@ -574,14 +574,10 @@ darwin = sys.platform.startswith( 'darwin')
 windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
 msys2 = platform.system().startswith('MSYS_NT-')
 
-pyodide_flags = '-fwasm-exceptions'
-
 if os.environ.get('PYODIDE') == '1':
     if os.environ.get('OS') != 'pyodide':
         log('PYODIDE=1, setting OS=pyodide.')
         os.environ['OS'] = 'pyodide'
-        os.environ['XCFLAGS'] = pyodide_flags
-        os.environ['XCXXFLAGS'] = pyodide_flags
 
 pyodide = os.environ.get('OS') == 'pyodide'
 
@@ -704,8 +700,8 @@ def build():
             add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
         elif pyodide:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', 'PyMuPDF.libs/')
-            add('b', f'{mupdf_build_dir}/libmupdf.so', 'PyMuPDF.libs/')
+            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', '/')
+            add('b', f'{mupdf_build_dir}/libmupdf.so', '/')
         else:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
@@ -1211,10 +1207,6 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         if cxxflags:
             compiler_extra += f' {cxxflags}'
 
-    if pyodide:
-        compiler_extra += f' {pyodide_flags}'
-        linker_extra += f' {pyodide_flags}'
-        
     return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
 
 
