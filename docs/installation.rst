@@ -265,6 +265,28 @@ not generally supported:
   command line.
 
 
+Official PyMuPDF Linux wheels may not install on older Linux systems
+--------------------------------------------------------------------
+
+Releases of PyMuPDF are incompatible with older Linux systems.
+
+For example as of 2025-09-03, `pip install pymupdf` does not work on some AWS
+Lambda systems - see https://github.com/pymupdf/PyMuPDF/discussions/4631.
+
+This is because official PyMuPDF Linux wheels are built with a version of
+glibc determined by the current Python manylinux environment. These wheels are
+incompatible with Linux systems that have an older glibc.
+
+The official Python manylinux environment is updated periodically to use newer
+glibc versions, so new releases of PyMuPDF become increasingly incompatible
+with older Linux systems.
+
+There is nothing that can be done about this, other than updating older Linux
+systems, or building PyMuPDF locally from source.
+
+For more details, please see: `Python Packaging Authority <https://www.pypa.io>`_.
+
+
 Packaging
 ---------
 
