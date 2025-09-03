@@ -415,8 +415,11 @@ class Package:
                 added.
 
                 `to_` identifies what the file should be called within a wheel
-                or when installing. If `to_` ends with `/`, the leaf of `from_`
-                is appended to it (and `from_` must not be a `bytes`).
+                or when installing. If `to_` is empty or `/` we set it to the
+                leaf of `from_` (`from_` must not be a `bytes`) - i.e. we place
+                the file in the root directory of the wheel; otherwise if
+                `to_` ends with `/` the leaf of `from_` is appended to it (and
+                `from_` must not be a `bytes`).
 
                 Initial `$dist-info/` in `_to` is replaced by
                 `{name}-{version}.dist-info/`; this is useful for license files
@@ -1446,8 +1449,12 @@ class Package:
         `p` is a tuple `(from_, to_)` where `from_` is str/bytes and `to_` is
         str. If `from_` is a bytes it is contents of file to add, otherwise the
         path of an existing file; non-absolute paths are assumed to be relative
-        to `self.root`. If `to_` is empty or ends with `/`, we append the leaf
-        of `from_` (which must be a str).
+        to `self.root`.
+
+        If `to_` is empty or `/` we set it to the leaf of `from_` (which must
+        be a str) - i.e. we place the file in the root directory of the wheel;
+        otherwise if `to_` ends with `/` we append the leaf of `from_` (which
+        must be a str).
 
         If `to_` starts with `$dist-info/`, we replace this with
         `self._dist_info_dir()`.
@@ -1467,7 +1474,9 @@ class Package:
         from_, to_ = p
         assert isinstance(from_, (str, bytes))
         assert isinstance(to_, str)
-        if to_.endswith('/') or to_=='':
+        if to_ == '/' or to_ == '':
+            to_ = os.path.basename(from_)
+        elif to_.endswith('/'):
             to_ += os.path.basename(from_)
         prefix = '$dist-info/'
         if to_.startswith( prefix):
