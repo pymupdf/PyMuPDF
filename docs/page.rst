@@ -1971,6 +1971,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       The method works best for text: All text on the page will be removed (decided by single character) that has no intersection with the rectangle. For vector graphics, the method will remove all paths that have no intersection with the rectangle. For images, the method will remove all images that have no intersection with the rectangle. Vectors and images **having** an intersection with the rectangle, will be kept in their entirety.
 
       The method roughly has the same effect as if four redactions had been applied that cover the rectangle's outside.
+      
+      * New in v1.26.4.
 
    .. method:: remove_rotation()
 
