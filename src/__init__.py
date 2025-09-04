@@ -3118,8 +3118,8 @@ class Document:
         mupdf.pdf_delete_object(pdf, xref)
 
     def _do_links(
-            doc1: typing.Self,
-            doc2: typing.Self,
+            doc1: 'Document',
+            doc2: 'Document',
             from_page: int = -1,
             to_page: int = -1,
             start_at: int = -1,
@@ -3240,8 +3240,8 @@ class Document:
         #log( 'utils.do_links() returning.')
 
     def _do_widgets(
-            tar: typing.Self,
-            src: typing.Self,
+            tar: 'Document',
+            src: 'Document',
             graftmap,
             from_page: int = -1,
             to_page: int = -1,
@@ -4729,7 +4729,7 @@ class Document:
         self._reset_page_refs()
 
     def get_char_widths(
-            doc: typing.Self,
+            doc: 'Document',
             xref: int,
             limit: int = 256,
             idx: int = 0,
@@ -4886,7 +4886,7 @@ class Document:
         xref = mupdf.pdf_create_object(pdf)
         return xref
 
-    def get_oc(doc: typing.Self, xref: int) -> int:
+    def get_oc(doc: 'Document', xref: int) -> int:
         """Return optional content object xref for an image or form xobject.
 
         Args:
@@ -4946,7 +4946,7 @@ class Document:
             rc[ temp] = item
         return rc
 
-    def get_ocmd(doc: typing.Self, xref: int) -> dict:
+    def get_ocmd(doc: 'Document', xref: int) -> dict:
         """Return the definition of an OCMD (optional content membership dictionary).
 
         Recognizes PDF dict keys /OCGs (PDF array of OCGs), /P (policy string) and
@@ -5098,7 +5098,7 @@ class Document:
         return numbers
     
     def get_page_pixmap(
-            doc: typing.Self,
+            doc: 'Document',
             pno: int,
             *,
             matrix: matrix_like = None,
@@ -5133,7 +5133,7 @@ class Document:
                 )
     
     def get_page_text(
-            doc: typing.Self,
+            doc: 'Document',
             pno: int,
             option: str = "text",
             clip: rect_like = None,
@@ -5180,7 +5180,7 @@ class Document:
         return sigflag
 
     def get_toc(
-            doc: typing.Self,
+            doc: 'Document',
             simple: bool = True,
             ) -> list:
         """Create a table of contents.
@@ -5250,7 +5250,7 @@ class Document:
             rc = ''
         return rc
 
-    def has_annots(doc: typing.Self) -> bool:
+    def has_annots(doc: 'Document') -> bool:
         """Check whether there are annotations on any page."""
         if doc.is_closed:
             raise ValueError("document closed")
@@ -5263,7 +5263,7 @@ class Document:
                     return True
         return False
     
-    def has_links(doc: typing.Self) -> bool:
+    def has_links(doc: 'Document') -> bool:
         """Check whether there are links on any page."""
         if doc.is_closed:
             raise ValueError("document closed")
@@ -5341,7 +5341,7 @@ class Document:
                 )
 
     def insert_page(
-            doc: typing.Self,
+            doc: 'Document',
             pno: int,
             text: typing.Union[str, list, None] = None,
             fontsize: float = 11,
@@ -5871,7 +5871,7 @@ class Document:
         return ret
 
     def new_page(
-            doc: typing.Self,
+            doc: 'Document',
             pno: int = -1,
             width: float = 595,
             height: float = 842,
@@ -6539,7 +6539,7 @@ class Document:
     # Acrobat 'sanitize' function
     # ------------------------------------------------------------------------------
     def scrub(
-            doc: typing.Self,
+            doc: 'Document',
             attached_files: bool = True,
             clean_pages: bool = True,
             embedded_files: bool = True,
@@ -6692,7 +6692,7 @@ class Document:
                 doc.xref_set_key(xref, "Metadata", "null")
     
     def search_page_for(
-            doc: typing.Self,
+            doc: 'Document',
             pno: int,
             text: str,
             quads: bool = False,
@@ -6871,7 +6871,7 @@ class Document:
         self.xref_set_key(xref, "MarkInfo", pdfdict)
         return True
 
-    def set_metadata(doc: typing.Self, m: dict = None) -> None:
+    def set_metadata(doc: 'Document', m: dict = None) -> None:
         """Update the PDF /Info object.
 
         Args:
@@ -6932,7 +6932,7 @@ class Document:
         doc.init_doc()
         return
 
-    def set_oc(doc: typing.Self, xref: int, oc: int) -> None:
+    def set_oc(doc: 'Document', xref: int, oc: int) -> None:
         """Attach optional content object to image or form xobject.
 
         Args:
@@ -6955,7 +6955,7 @@ class Document:
         return None
 
     def set_ocmd(
-            doc: typing.Self,
+            doc: 'Document',
             xref: int = 0,
             ocgs: typing.Union[list, None] = None,
             policy: OptStr = None,
@@ -7104,7 +7104,7 @@ class Document:
         doc._set_page_labels(create_nums(labels))
 
     def set_toc(
-            doc: typing.Self,
+            doc: 'Document',
             toc: list,
             collapse: int = 1,
             ) -> int:
@@ -7295,7 +7295,7 @@ class Document:
         return toclen
 
     def set_toc_item(
-            doc: typing.Self,
+            doc: 'Document',
             idx: int,
             dest_dict: OptDict = None,
             kind: OptInt = None,
@@ -7420,7 +7420,7 @@ class Document:
             mupdf.pdf_dict_put( xml, PDF_NAME('Subtype'), PDF_NAME('XML'))
             mupdf.pdf_dict_put( root, PDF_NAME('Metadata'), xml)
 
-    def subset_fonts(doc: typing.Self, verbose: bool = False, fallback: bool = False) -> OptInt:
+    def subset_fonts(doc: 'Document', verbose: bool = False, fallback: bool = False) -> OptInt:
         """Build font subsets in a PDF.
 
         Eligible fonts are potentially replaced by smaller versions. Page text is
@@ -7852,7 +7852,7 @@ class Document:
         CheckParent(self)
         return self.parent.page_xref(self.number)
 
-    def xref_copy(doc: typing.Self, source: int, target: int, *, keep: list = None) -> None:
+    def xref_copy(doc: 'Document', source: int, target: int, *, keep: list = None) -> None:
         """Copy a PDF dictionary object to another one given their xref numbers.
 
         Args:
@@ -10642,7 +10642,7 @@ class Page:
             yield annot
 
     def apply_redactions(
-            page: typing.Self,
+            page: 'Page',
             images: int = 2,
             graphics: int = 1,
             text: int = 0,
@@ -10860,7 +10860,7 @@ class Page:
         annot._erase()
         return val
 
-    def delete_image(page: typing.Self, xref: int):
+    def delete_image(page: 'Page', xref: int):
         """Delete the image referred to by xef.
 
         Actually replaces by a small transparent Pixmap using method Page.replace_image.
@@ -10917,7 +10917,7 @@ class Page:
 
         return finished()
 
-    def delete_widget(page: typing.Self, widget: Widget) -> Widget:
+    def delete_widget(page: 'Page', widget: Widget) -> Widget:
         """Delete widget from page and return the next one."""
         CheckParent(page)
         annot = getattr(widget, "_annot", None)
@@ -10942,7 +10942,7 @@ class Page:
         return Matrix(JM_derotate_page_matrix(pdfpage))
 
     def draw_bezier(
-            page: typing.Self,
+            page: 'Page',
             p1: point_like,
             p2: point_like,
             p3: point_like,
@@ -10981,7 +10981,7 @@ class Page:
         return Q
 
     def draw_circle(
-            page: typing.Self,
+            page: 'Page',
             center: point_like,
             radius: float,
             color: OptSeq = (0,),
@@ -11015,7 +11015,7 @@ class Page:
         return Q
 
     def draw_curve(
-            page: typing.Self,
+            page: 'Page',
             p1: point_like,
             p2: point_like,
             p3: point_like,
@@ -11053,7 +11053,7 @@ class Page:
         return Q
 
     def draw_line(
-            page: typing.Self,
+            page: 'Page',
             p1: point_like,
             p2: point_like,
             color: OptSeq = (0,),
@@ -11087,7 +11087,7 @@ class Page:
         return p
 
     def draw_oval(
-            page: typing.Self,
+            page: 'Page',
             rect: typing.Union[rect_like, quad_like],
             color: OptSeq = (0,),
             fill: OptSeq = None,
@@ -11121,7 +11121,7 @@ class Page:
         return Q
 
     def draw_polyline(
-            page: typing.Self,
+            page: 'Page',
             points: list,
             color: OptSeq = (0,),
             fill: OptSeq = None,
@@ -11157,7 +11157,7 @@ class Page:
         return Q
 
     def draw_quad(
-            page: typing.Self,
+            page: 'Page',
             quad: quad_like,
             color: OptSeq = (0,),
             fill: OptSeq = None,
@@ -11191,7 +11191,7 @@ class Page:
         return Q
 
     def draw_rect(
-            page: typing.Self,
+            page: 'Page',
             rect: rect_like,
             color: OptSeq = (0,),
             fill: OptSeq = None,
@@ -11228,7 +11228,7 @@ class Page:
         return Q
 
     def draw_sector(
-            page: typing.Self,
+            page: 'Page',
             center: point_like,
             point: point_like,
             beta: float,
@@ -11274,7 +11274,7 @@ class Page:
         return Q
 
     def draw_squiggle(
-            page: typing.Self,
+            page: 'Page',
             p1: point_like,
             p2: point_like,
             breadth: float = 2,
@@ -11309,7 +11309,7 @@ class Page:
         return p
 
     def draw_zigzag(
-            page: typing.Self,
+            page: 'Page',
             p1: point_like,
             p2: point_like,
             breadth: float = 2,
@@ -11666,7 +11666,7 @@ class Page:
             return paths
 
     def get_image_info(
-            page: typing.Self,
+            page: 'Page',
             hashes: bool = False,
             xrefs: bool = False
             ) -> list:
@@ -11706,7 +11706,7 @@ class Page:
             imginfo[i] = item
         return imginfo
 
-    def get_image_rects(page: typing.Self, name, transform=False) -> list:
+    def get_image_rects(page: 'Page', name, transform=False) -> list:
         """Return list of image positions on a page.
 
         Args:
@@ -11758,7 +11758,7 @@ class Page:
         labels.sort()
         return utils.get_label_pno(page.number, labels)
 
-    def get_links(page: typing.Self) -> list:
+    def get_links(page: 'Page') -> list:
         """Create a list of all links contained in a PDF page.
 
         Notes:
@@ -11785,7 +11785,7 @@ class Page:
         return links
 
     def get_pixmap(
-                page: typing.Self,
+                page: 'Page',
                 *,
                 matrix: matrix_like=Identity,
                 dpi=None,
@@ -12503,7 +12503,7 @@ class Page:
 
         return xref
 
-    def insert_link(page: typing.Self, lnk: dict, mark: bool = True) -> None:
+    def insert_link(page: 'Page', lnk: dict, mark: bool = True) -> None:
         """Insert a new link for the current page."""
         CheckParent(page)
         annot = utils.getLinkText(page, lnk)
@@ -12512,7 +12512,7 @@ class Page:
         page._addAnnot_FromString((annot,))
 
     def insert_text(
-            page: typing.Self,
+            page: 'Page',
             point: point_like,
             text: typing.Union[str, list],
             *,
@@ -12561,7 +12561,7 @@ class Page:
         return rc
 
     def insert_textbox(
-            page: typing.Self,
+            page: 'Page',
             rect: rect_like,
             buffer: typing.Union[str, list],
             *,
@@ -12767,7 +12767,7 @@ class Page:
         self.this = page
 
     def replace_image(
-            page: typing.Self,
+            page: 'Page',
             xref: int,
             *,
             filename=None,
@@ -13085,7 +13085,7 @@ class Page:
         mb = self.mediabox
         return Rect(rect[0], mb.y1 - rect[3], rect[2], mb.y1 - rect[1])
 
-    def update_link(page: typing.Self, lnk: dict) -> None:
+    def update_link(page: 'Page', lnk: dict) -> None:
         """Update a link on the current page."""
         CheckParent(page)
         annot = utils.getLinkText(page, lnk)
@@ -13122,7 +13122,7 @@ class Page:
             TOOLS._insert_contents(self, append, True)
 
     def write_text(
-            page: typing.Self,
+            page: 'Page',
             rect=None,
             writers=None,
             overlay=True,
@@ -16776,7 +16776,7 @@ class TextWriter:
         return text
 
     def fill_textbox(
-            writer: typing.Self,
+            writer: 'TextWriter',
             rect: rect_like,
             text: typing.Union[str, list],
             pos: point_like = None,
