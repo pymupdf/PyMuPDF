@@ -1548,7 +1548,7 @@ def build_extension(
             A string, or a sequence of library names. Each item is prefixed
             with `-l` on non-Windows.
         optimise:
-            Whether to use compiler optimisations.
+            Whether to use compiler optimisations and define NDEBUG.
         debug:
             Whether to build with debug symbols.
         compiler_extra:
