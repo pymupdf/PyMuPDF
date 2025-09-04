@@ -948,7 +948,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                     cc_base, _ = pipcl.base_compiler(cpp=True)
                     ld_base, _ = pipcl.base_linker(cpp=True)
                     pipcl.run(f'mkdir -p {testdir}/build')
-                    pipcl.run(f'{{cc_base}} -DNDEBUG -fPIC -c -o {testdir}/build/qwerty.o {testdir}/qwerty.cpp')
+                    pipcl.run(f'{{cc_base}} -fPIC -c -o {testdir}/build/qwerty.o {testdir}/qwerty.cpp')
                     pipcl.run(f'{{ld_base}} -o {testdir}/build/libqwerty.so {testdir}/build/qwerty.o')
                     
                     so_leaf = pipcl.build_extension(
@@ -957,6 +957,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                             outdir = 'build',
                             libpaths = '{testdir}/build',
                             libs = ['qwerty'],
+                            optimise = False,
                             )
                     
                     return [
@@ -984,27 +985,29 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
     with open(f'{testdir}/foo.i', 'w') as f:
         f.write(textwrap.dedent('''
                 %{
+                #include <stdexcept>
+                
+                #include <assert.h>
                 #include <setjmp.h>
                 #include <stdio.h>
                 #include <string.h>
-                #include <stdexcept>
                 
                 int qwerty(void);
 
                 static sigjmp_buf jmpbuf;
                 static int bar0(const char* text)
                 {
-                    printf("bar(): text: %s\\n", text);
+                    printf("bar0(): text: %s\\n", text);
                     
                     int q = qwerty();
-                    printf("bar(): q=%i\\n", q);
+                    printf("bar0(): q=%i\\n", q);
                     
                     int len = (int) strlen(text);
-                    printf("bar(): len=%i\\\\n", len);
-                    //printf("calling longjmp().\\n");
-                    //longjmp(jmpbuf, 1);
+                    printf("bar0(): len=%i\\n", len);
+                    printf("bar0(): calling longjmp().\\n");
                     fflush(stdout);
-                    return len;
+                    longjmp(jmpbuf, 1);
+                    assert(0);
                 }
                 int bar1(const char* text)
                 {
@@ -1015,11 +1018,10 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                     }
                     else
                     {
-                        printf("setjmp() returned non-zero.\\n");
+                        printf("bar1(): setjmp() returned non-zero.\\n");
                         throw std::runtime_error("deliberate exception");
                     }
-                    throw std::runtime_error("deliberate exception");
-                    return ret;
+                    assert(0);
                 }
                 int bar(const char* text)
                 {
@@ -1030,7 +1032,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                     }
                     catch(std::exception& e)
                     {
-                        printf("Received exception: %s\\n", e.what());
+                        printf("bar1(): received exception: %s\\n", e.what());
                     }
                     return ret;
                 }
