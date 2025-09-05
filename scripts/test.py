@@ -967,7 +967,7 @@ def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
                             # 2025-09-03: formally we put libraries in foo.lib; now it seems
                             # they need to be at top level in wheel.
                             #
-                            (f'build/libqwerty.so', f'/'),
+                            (f'build/libqwerty.so', f'foo/'),
                             ]
 
                 p = pipcl.Package(

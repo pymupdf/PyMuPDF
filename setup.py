@@ -700,8 +700,8 @@ def build():
             add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
         elif pyodide:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', '/')
-            add('b', f'{mupdf_build_dir}/libmupdf.so', '/')
+            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
+            add('b', f'{mupdf_build_dir}/libmupdf.so', to_dir)
         else:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
