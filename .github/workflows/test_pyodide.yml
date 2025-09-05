@@ -1,6 +1,6 @@
-name: Build Pyodide wheel
+name: Test pyodide
 
-# Builds pyodide wheels.
+# Build and test pyodide wheels using cibuildwheel.
 
 on:
   workflow_dispatch:
@@ -15,8 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        # 2025-09-05: We don't test with default mupdf because mupdf-1.26.7
+        # does not have the required pyodide rpath changes.
         args: [
-            '',
+            # '',
             '-m "git:--branch master https://github.com/ArtifexSoftware/mupdf"', 
             '-m "git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf"',
             ]
