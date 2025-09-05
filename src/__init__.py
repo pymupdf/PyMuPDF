@@ -6646,7 +6646,9 @@ class Document:
             if not page.get_contents():
                 continue
             if hidden_text:
-                xref = page.get_contents()[0]  # only one b/o cleaning!
+                xrefs = page.get_contents()
+                assert len(xrefs) == 1  # only one because of cleaning.
+                xref = xrefs[0]
                 cont = doc.xref_stream(xref)
                 cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
                 if cont_lines:  # something was actually removed
