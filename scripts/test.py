@@ -1297,7 +1297,8 @@ def test(
         for arg in args:
             log(f'    {arg!r}')
         import pytest
-        pytest.main(args)
+        e = pytest.main(args)
+        assert e == 0, f'pytest.main() failed: {e=}'
         return
     
     if venv >= 2:
