@@ -1771,9 +1771,7 @@ def build_extension(
             #
             log0(f'pyodide: PEP-3149 suffix untested, so omitting. {_so_suffix()=}.')
             path_so_leaf = f'_{name}.so'
-            path_so = f'{outdir}/{path_so_leaf}'
-
-            rpath_flag = ''
+            rpath_flag = "-Wl,-rpath,'$ORIGIN'"
         else:
             rpath_flag = "-Wl,-rpath,'$ORIGIN',-z,origin"
         path_so = f'{outdir}/{path_so_leaf}'
