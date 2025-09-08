@@ -15,10 +15,6 @@ def test_tesseract():
     But if TESSDATA_PREFIX is set in the environment, we assert that
     FzPage.get_textpage_ocr() succeeds.
     '''
-    if os.environ.get('PYODIDE_ROOT'):
-        print('test_tesseract(): not running on Pyodide - cannot run child processes.')
-        return
-        
     path = os.path.abspath( f'{__file__}/../resources/2.pdf')
     doc = pymupdf.open( path)
     page = doc[5]
@@ -28,14 +24,18 @@ def test_tesseract():
             tail = 'OCR initialisation failed'
         else:
             tail = 'Tesseract language initialisation failed'
-        e_expected = f'code=3: {tail}'
-        if platform.system() == 'OpenBSD':
-            # 2023-12-12: For some reason the SWIG catch code only catches
-            # the exception as FzErrorBase.
-            e_expected_type = pymupdf.mupdf.FzErrorBase
-            print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
+        if os.environ.get('PYODIDE_ROOT'):
+            e_expected = 'code=6: No OCR support in this build'
+            e_expected_type = pymupdf.mupdf.FzErrorUnsupported
         else:
-            e_expected_type = pymupdf.mupdf.FzErrorLibrary
+            e_expected = f'code=3: {tail}'
+            if platform.system() == 'OpenBSD':
+                # 2023-12-12: For some reason the SWIG catch code only catches
+                # the exception as FzErrorBase.
+                e_expected_type = pymupdf.mupdf.FzErrorBase
+                print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
+            else:
+                e_expected_type = pymupdf.mupdf.FzErrorLibrary
     else:
         # classic.
         e_expected = 'OCR initialisation failed'
