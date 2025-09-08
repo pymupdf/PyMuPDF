@@ -7,6 +7,11 @@ Check text is indeed contained in given rectangle.
 """
 import pymupdf
 
+import gentle_compare
+
+import os
+import textwrap
+
 # codespell:ignore-begin
 text = """Der Kleine Schwertwal (Pseudorca crassidens), auch bekannt als Unechter oder Schwarzer Schwertwal, ist eine Art der Delfine (Delphinidae) und der einzige rezente Vertreter der Gattung Pseudorca.
 
@@ -182,7 +187,9 @@ def test_htmlbox1():
         assert spare_height < 0
         assert scale == 1
         spare_height, scale = page.insert_htmlbox(rect, text, rotate=rot, scale_low=0)
-        assert spare_height == 0
+        page.draw_rect(rect, (1, 0, 0))
+        doc.save(os.path.normpath(f'{__file__}/../../tests/test_htmlbox1.pdf'))
+        assert abs(spare_height - 3.8507) < 0.001
         assert 0 < scale < 1
         page = doc.reload_page(page)
         link = page.get_links()[0]  # extracts the links on the page
@@ -286,3 +293,77 @@ def test_4400():
         text = '111111111'
         print(f'Calling writer.fill_textbox().', flush=1)
         writer.fill_textbox(rect=pymupdf.Rect(0, 0, 100, 20), pos=(80, 0), text=text, fontsize=8)
+
+
+def test_4613():
+    print()
+    text = 3 * 'abcdefghijklmnopqrstuvwxyz\nABCDEFGHIJKLMNOPQRSTUVWXYZ\n'
+    story = pymupdf.Story(text)
+    rect = pymupdf.Rect(10, 10, 100, 100)
+    
+    # Test default operation where we get additional scaling down because of
+    # the long words in our text.
+    print(f'test_4613(): ### Testing default operation.')
+    with pymupdf.open() as doc:
+        page = doc.new_page()
+        spare_height, scale = page.insert_htmlbox(rect, story)
+        print(f'test_4613(): {spare_height=} {scale=}')
+        # The additional down-scaling from the long word widths results in
+        # spare vertical space.
+        page.draw_rect(rect, (1, 0, 0))
+        path = os.path.normpath(f'{__file__}/../../tests/test_4613.pdf')
+        doc.save(path)
+
+        path_pixmap = os.path.normpath(f'{__file__}/../../tests/test_4613.png')
+        path_pixmap_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4613.png')
+        pixmap = page.get_pixmap(dpi=300)
+        pixmap.save(path_pixmap)
+        
+        pixmap_diff = gentle_compare.pixmaps_diff(path_pixmap_expected, pixmap)
+        pixmap_diff.save(os.path.normpath(f'{__file__}/../../tests/test_4613-diff.png'))
+        
+        rms = gentle_compare.pixmaps_rms(pixmap, path_pixmap_expected)
+        print(f'{rms=}')
+        assert rms == 0, f'{rms=}'
+    
+        assert abs(spare_height - 45.7536) < 0.1
+        assert abs(scale - 0.4009) < 0.01
+
+        new_text = page.get_text('text', clip=rect)
+        print(f'test_4613(): new_text:')
+        print(textwrap.indent(new_text, '    '))
+        assert new_text == text
+
+    # Check with _scale_word_width=False - ignore too-wide words.
+    print(f'test_4613(): ### Testing with _scale_word_width=False.')
+    with pymupdf.open() as doc:
+        page = doc.new_page()
+        spare_height, scale = page.insert_htmlbox(rect, story, _scale_word_width=False)
+        print(f'test_4613(): _scale_word_width=False: {spare_height=} {scale=}')
+        # With _scale_word_width=False we allow long words to extend beyond the
+        # rect, so we should have spare_height == 0 and only a small amount of
+        # down-scaling.
+        assert spare_height == 0
+        assert abs(scale - 0.914) < 0.01
+        new_text = page.get_text('text', clip=rect)
+        print(f'test_4613(): new_text:')
+        print(textwrap.indent(new_text, '    '))
+        assert new_text == textwrap.dedent('''
+                abcdefghijklmno
+                ABCDEFGHIJKLM
+                abcdefghijklmno
+                ABCDEFGHIJKLM
+                abcdefghijklmno
+                ABCDEFGHIJKLM
+                ''')[1:]
+        
+
+    # Check that we get no fit if scale_low is not low enough.
+    print(f'test_4613(): ### Testing with scale_low too high to allow a fit.')
+    with pymupdf.open() as doc:
+        page = doc.new_page()
+        scale_low=0.6
+        spare_height, scale = page.insert_htmlbox(rect, story, scale_low=scale_low)
+        print(f'test_4613(): {scale_low=}: {spare_height=} {scale=}')
+        assert spare_height == -1
+        assert scale == scale_low
