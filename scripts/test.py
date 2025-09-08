@@ -927,9 +927,12 @@ def cibuildwheel(
     # will notice that the wheel we built above supports all versions of
     # Python, so will not actually do any builds here.
     #
-    env_extra['CIBW_BUILD'] = CIBW_BUILD
-    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
-    run(f'ls -ld {pymupdf_dir}/wheelhouse/*')
+    # We only do this if there are more than one Python versions. This still
+    # duplicates the testing of the first python version.
+    if len(CIBW_BUILD.split()) > 1:
+        env_extra['CIBW_BUILD'] = CIBW_BUILD
+        run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
+        run(f'ls -ld {pymupdf_dir}/wheelhouse/*')
 
 
 def cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args):
