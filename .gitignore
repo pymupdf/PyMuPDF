@@ -1,7 +1,19 @@
+# Ignore Python bytecode and build artifacts
 *.pyc
 *.so
 *.o
 *.swp
+
 build/
 demo/README.rst
 docs/build
+
+# Ignore files produced during build
+# Ignore mupdf source
+mupdf-*/
+
+# Ignore any tar.gz files
+*.tar.gz
+
+# Ignore test cache
+tests/cache
