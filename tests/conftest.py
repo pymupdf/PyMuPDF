@@ -77,10 +77,24 @@ def wrap(request):
     # Allow post-test checking that pymupdf._globals has not changed.
     _globals_pre = get_members(pymupdf._globals)
     
+    testsfailed_before = request.session.testsfailed
+    
     # Run the test.
     rep = yield
     
     sys.stdout.flush()
+    
+    # This seems the only way for us to tell that a test has failed. In
+    # particular, <rep> is always None. We're implicitly relying on tests not
+    # being run in parallel.
+    #
+    failed = request.session.testsfailed - testsfailed_before
+    assert failed in (0, 1)
+    
+    if failed:
+        # Do not check post-test conditions if the test as failed. This avoids
+        # additional confusing `ERROR` status for failed tests.
+        return
     
     # Test has run; check it did not create any MuPDF warnings etc.
     wt = pymupdf.TOOLS.mupdf_warnings()
