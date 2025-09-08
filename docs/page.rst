@@ -847,14 +847,24 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :returns: A tuple of floats `(spare_height, scale)`.
 
-         - `spare_height`: -1 if content did not fit, else >= 0. It is the height of the unused (still available) rectangle stripe. Positive only if scale = 1 (no down-scaling happened).
-         - `scale`: down-scaling factor, 0 < scale <= 1.
+          - spare_height: The (positive) height of the remaining space in `rect` below the
+            text, or -1 if we failed to fit.
+          - scale: The scaling required; `0 < scale <= 1`. Will be `scale_low`
+            if we failed to fit.
 
-         Please refer to examples in this section of the recipes: :ref:`RecipesText_I_c`.
+      Please refer to examples in this section of the recipes: :ref:`RecipesText_I_c`.
 
       |history_begin|
 
-      * New in v1.23.8; rebased-only.
+      * New in v1.26.5:
+        
+        * do additional scaling to fit long words.
+        *
+          If we succeeded and scaled down, the returned `spare_height` is now
+          generally positive instead of being fixed to zero, because the final
+          rect's height is usually not an exact multiple of the font line
+          height.
+      * New in v1.23.8: rebased-only.
       * New in v1.23.9: `opacity` parameter.
 
       |history_end|
