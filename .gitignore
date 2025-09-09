@@ -1,5 +1,7 @@
 # Ignore Python bytecode and build artifacts
 *.pyc
+
+# Ignore Object files
 *.so
 *.o
 *.swp
