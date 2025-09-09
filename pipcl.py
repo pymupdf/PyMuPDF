@@ -1990,7 +1990,7 @@ def git_info( directory):
             )
     if not e:
         branch = out.strip()
-    log(f'git_info(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
+    log1(f'git_info(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
     return sha, comment, diff, branch
 
 
