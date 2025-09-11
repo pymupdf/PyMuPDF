@@ -2108,7 +2108,7 @@ def git_get(
                 branch = next(args)
                 tag = None
             elif arg == '--tag':
-                tag == next(args)
+                tag = next(args)
                 branch = None
             else:
                 remote = arg
@@ -2123,7 +2123,7 @@ def git_get(
         # This seems to pull in the entire repository.
         log0(f'do_update(): attempting to update {local=}.')
         # Remove any local changes.
-        run(f'cd {local} && git checkout .', env_extra=env_extra)
+        run(f'cd {local} && git reset --hard', env_extra=env_extra)
         if tag:
             # `-u` avoids `fatal: Refusing to fetch into current branch`.
             # Using '+' and `revs/tags/` prefix seems to avoid errors like:
