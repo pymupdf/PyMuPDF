@@ -3070,8 +3070,11 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
                 #
                 run(f'brew install bison')
                 PATH = os.environ['PATH']
-                PATH = f'/opt/homebrew/opt/bison/bin:{PATH}'
+                prefix_bison = run('brew --prefix bison', capture=1).strip()
+                PATH = f'{prefix_bison}/bin:{PATH}'
                 swig_env_extra = dict(PATH=PATH)
+                run(f'which bison')
+                run(f'which bison', env_extra=swig_env_extra)
             # Build swig.
             run(f'cd {swig_local} && ./autogen.sh', env_extra=swig_env_extra)
             run(f'cd {swig_local} && ./configure --prefix={swig_local}/install-dir', env_extra=swig_env_extra)
