@@ -236,7 +236,10 @@ def test_1645():
     pymupdf.TOOLS.set_annot_stem('jorj')
     try:
         path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected.pdf')
+        if pymupdf.mupdf_version_tuple >= (1, 27):
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected-after-1.27.0.pdf')
+        else:
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected.pdf')
         path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
         doc = pymupdf.open(path_in)
         page = doc[0]
