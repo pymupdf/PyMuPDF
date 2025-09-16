@@ -641,15 +641,19 @@ class Package:
             wheel = newfiles.get_one()
             wheel_leaf = os.path.basename(wheel)
             python_major_minor = run(f'{shlex.quote(python_native)} -c "import platform; import sys; sys.stdout.write(str().join(platform.python_version_tuple()[:2]))"', capture=1)
-            cpabi = f'cp{python_major_minor}-abi3'
-            assert cpabi in wheel_leaf, f'Expected wheel to be for {cpabi=}, but {wheel=}.'
+            cpabi_regex = f'cp{python_major_minor}-((abi3)|(none))'
             graalpy_ext_suffix = sysconfig.get_config_var('EXT_SUFFIX')
             log1(f'{graalpy_ext_suffix=}')
             m = re.match(r'\.graalpy(\d+[^\-]*)-(\d+)', graalpy_ext_suffix)
             gpver = m[1]
             cpver = m[2]
             graalpy_wheel_tag = f'graalpy{cpver}-graalpy{gpver}_{cpver}_native'
-            name = wheel_leaf.replace(cpabi, graalpy_wheel_tag)
+            log0(f'{cpabi_regex=}')
+            log0(f'{graalpy_wheel_tag=}')
+            log0(f'{wheel_leaf=}')
+            name = re.sub(cpabi_regex, graalpy_wheel_tag, wheel_leaf)
+            log0(f'{name=}')
+            assert name != wheel_leaf, f'Did not find {cpabi_regex=} in {wheel_leaf=}.'
             destination = f'{wheel_directory}/{name}'
             log0(f'### Graal build: copying {wheel=} to {destination=}')
             # Copying results in two wheels which appears to confuse pip, showing:
@@ -3127,6 +3131,63 @@ def sysconfig_python_flags():
         ldflags_ = f'-L {ldflags_}'
     includes_ = ' '.join(includes_)
     return includes_, ldflags_
+
+
+def venv_in(path=None):
+    '''
+    If path is None, returns true if we are in a venv. Otherwise returns true
+    only if we are in venv <path>.
+    '''
+    if path:
+        return os.path.abspath(sys.prefix) == os.path.abspath(path)
+    else:
+        return sys.prefix != sys.base_prefix
+
+
+def venv_run(args, path, recreate=True, clean=False):
+    '''
+    Runs Python command inside venv and returns termination code.
+    
+    Args:
+        args:
+            List of args or string command.
+        path:
+            Name of venv.
+        recreate:
+            If false we do not run `<sys.executable> -m venv <path>` if <path>
+            already exists. This avoids a delay in the common case where <path>
+            is already set up, but fails if <path> exists but does not contain
+            a valid venv.
+        clean:
+            If true we first delete <path>.
+    '''
+    if clean:
+        log(f'Removing any existing venv {path}.')
+        assert path.startswith('venv-')
+        shutil.rmtree(path, ignore_errors=1)
+    if recreate or not os.path.isdir(path):
+        run(f'{sys.executable} -m venv {path}')
+    
+    if isinstance(args, str):
+        args_string = args
+    elif platform.system() == 'Windows':
+        # shlex not reliable on Windows.
+        # Use crude quoting with "...". Seems to work.
+        args_string = ''
+        for i, arg in enumerate(args):
+            assert '"' not in arg
+            if i:
+                args_string += ' '
+            args_string += f'"{arg}"'
+    else:
+        args_string = shlex.join(args)
+    
+    if platform.system() == 'Windows':
+        command = f'{path}\\Scripts\\activate && python {args_string}'
+    else:
+        command = f'. {path}/bin/activate && python {args_string}'
+    e = run(command, check=0)
+    return e
 
 
 if __name__ == '__main__':
