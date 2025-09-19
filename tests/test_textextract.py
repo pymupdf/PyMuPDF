@@ -339,7 +339,7 @@ def test_3594():
                 print(f'    {line!r}')
             print('='*40)
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple < (1, 27):
+    if pymupdf.mupdf_version_tuple < (1, 26, 9):
         assert not wt
     else:
         assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 2 times...'
@@ -892,7 +892,7 @@ def test_4546():
     expected_mupdf_1_26_1 = b'JOB No.: Shipper (complete name and address) \xe5\x8f\x91\xe8\xb4\xa7\xe4\xba\xba(\xe5\x90\x8d\xe7\xa7\xb0\xe5\x8f\x8a\xe5\x9c\xb0\xe5\x9d\x80)  Tel:                                  Fax: \n \nS/O No. \xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95\xe5\x8f\xb7\xe7\xa0\x81     \nSINORICH TRANSPORT LIMITED \nSHIPPING ORDER \n\xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95 \n \xe5\xb8\x82\xe5\x9c\xba\xe9\x83\xa8: \n88570009 \n88577019 \n88'.decode()
 
     # This output is different from either of the two expected strings.
-    expected_mupdf_1_27_0 = b'JOB No.: \n \nS/O No. \xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95\xe5\x8f\xb7\xe7\xa0\x81   \nSINORICH TRANSPORT LIMITED \nSHIPPING ORDER \n\xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95 \n \xe5\xb8\x82\xe5\x9c\xba\xe9\x83\xa8: \n88570009 \n88577019 \n88572702 \n \xe6\x93\x8d\xe4\xbd\x9c\xe9\x83\xa8: \n88570008 \n88570004 \n \xe6\x96\x87\xe4\xbb\xb6\xe9\x83\xa8: \n88570003\n \nNotify Party(complete name and address, '.decode()
+    expected_mupdf_1_26_9 = b'JOB No.: \n \nS/O No. \xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95\xe5\x8f\xb7\xe7\xa0\x81   \nSINORICH TRANSPORT LIMITED \nSHIPPING ORDER \n\xe6\x89\x98\xe8\xbf\x90\xe5\x8d\x95 \n \xe5\xb8\x82\xe5\x9c\xba\xe9\x83\xa8: \n88570009 \n88577019 \n88572702 \n \xe6\x93\x8d\xe4\xbd\x9c\xe9\x83\xa8: \n88570008 \n88570004 \n \xe6\x96\x87\xe4\xbb\xb6\xe9\x83\xa8: \n88570003\n \nNotify Party(complete name and address, '.decode()
     
     print(f'expected_1_23_5\n{textwrap.indent(expected_1_23_5, "    ")}')
     print(f'expected_mupdf_1_26_1\n{textwrap.indent(expected_mupdf_1_26_1, "    ")}')
@@ -903,8 +903,8 @@ def test_4546():
     print(f'{text.encode()=}')
     
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 27, 0):
-        assert text == expected_mupdf_1_27_0
+    if pymupdf.mupdf_version_tuple >= (1, 26, 9):
+        assert text == expected_mupdf_1_26_9
         assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
     elif pymupdf.mupdf_version_tuple >= (1, 26, 1):
         assert text == expected_mupdf_1_26_1
