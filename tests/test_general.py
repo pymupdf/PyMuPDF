@@ -2082,3 +2082,31 @@ def test_4590():
     # Check pymupdf.Document.scrub() works.
     with pymupdf.open(path) as document:
         document.scrub()
+
+
+def test_4702():
+    path = util.download(
+            'https://github.com/user-attachments/files/22403483/01995b6ca7837b52abaa24e38e8c076d.pdf',
+            'test_4702.pdf',
+            )
+    with pymupdf.open(path) as document:
+        for xref in range(1, document.xref_length()):
+            print(f'{xref=}')
+            try:
+                _ = document.xref_object(xref)
+            except Exception as e1:
+                print(f'{e1=}')
+                try:
+                    document.update_object(xref, "<<>>")
+                except Exception as e2:
+                    print(f'{e2=}')
+                    raise
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'repairing PDF document'
+    
+    with pymupdf.open(path) as document:
+        for xref in range(1, document.xref_length()):
+            print(f'{xref=}')
+            _ = document.xref_object(xref)
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == 'repairing PDF document'
