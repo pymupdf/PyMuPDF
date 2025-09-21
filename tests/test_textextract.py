@@ -339,7 +339,7 @@ def test_3594():
                 print(f'    {line!r}')
             print('='*40)
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple < (1, 27):
+    if pymupdf.mupdf_version_tuple < (1, 26, 8):
         assert not wt
     else:
         assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 2 times...'
@@ -387,12 +387,14 @@ def test_3705():
     assert texts1 == texts0
 
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple < (1, 27):
-        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
-    else:
+    if pymupdf.mupdf_version_tuple >= (1, 27):
         expected = 'format error: No common ancestor in structure tree\nstructure tree broken, assume tree is missing'
         expected = '\n'.join([expected] * 56)
         assert wt == expected
+    elif pymupdf.mupdf_version_tuple >= (1, 26, 8):
+        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 7684 times...'
+    else:
+        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
 
 def test_3650():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3650.pdf')
@@ -903,7 +905,7 @@ def test_4546():
     print(f'{text.encode()=}')
     
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 27, 0):
+    if pymupdf.mupdf_version_tuple >= (1, 26, 8):
         assert text == expected_mupdf_1_27_0
         assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
     elif pymupdf.mupdf_version_tuple >= (1, 26, 1):
