@@ -520,12 +520,12 @@ def main(argv):
             elif _mupdf.startswith(':'):
                 _branch = _mupdf[1:]
                 _mupdf = f'git:--branch {_branch} https://github.com/ArtifexSoftware/mupdf.git'
-                os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = _mupdf
+                env_extra['PYMUPDF_SETUP_MUPDF_BUILD'] = _mupdf
             elif _mupdf.startswith('git:') or '://' in _mupdf:
-                os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = _mupdf
+                env_extra['PYMUPDF_SETUP_MUPDF_BUILD'] = _mupdf
             else:
                 assert os.path.isdir(_mupdf), f'Not a directory: {_mupdf=}'
-                os.environ['PYMUPDF_SETUP_MUPDF_BUILD'] = os.path.abspath(_mupdf)
+                env_extra['PYMUPDF_SETUP_MUPDF_BUILD'] = os.path.abspath(_mupdf)
                 mupdf_sync = _mupdf
         
         elif arg == '--mupdf-clean':
@@ -634,7 +634,7 @@ def main(argv):
                     if venv == 1 and os.path.exists(pyenv_dir) and os.path.exists(venv_name):
                         log(f'{venv=} and {venv_name=} already exists so not building pyenv or creating venv.')
                     else:
-                        pipcl.git_get('https://github.com/pyenv/pyenv.git', pyenv_dir, branch='master')
+                        pipcl.git_get(pyenv_dir, remote='https://github.com/pyenv/pyenv.git', branch='master')
                         run(f'cd {pyenv_dir} && src/configure && make -C src')
                         run(f'which pyenv')
                         run(f'pyenv install -v -s {graalpy}')
@@ -678,6 +678,13 @@ def main(argv):
         
         elif command == 'cibw':
             # Build wheel(s) with cibuildwheel.
+            
+            if platform.system() == 'Linux':
+                PYMUPDF_SETUP_MUPDF_BUILD = env_extra.get('PYMUPDF_SETUP_MUPDF_BUILD')
+                if PYMUPDF_SETUP_MUPDF_BUILD and not PYMUPDF_SETUP_MUPDF_BUILD.startswith('git:'):
+                    assert PYMUPDF_SETUP_MUPDF_BUILD.startswith('/')
+                    env_extra['PYMUPDF_SETUP_MUPDF_BUILD'] = f'/host/{PYMUPDF_SETUP_MUPDF_BUILD}'
+            
             cibuildwheel(
                     env_extra,
                     cibw_name or 'cibuildwheel',
