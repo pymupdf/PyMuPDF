@@ -93,7 +93,7 @@ Environmental variables:
                 If <remote> is omitted we use a default.
                 For example:
                     PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master"
-                Passed as <remote> arg to pipcl.git_get().
+                Passed as <text> arg to pipcl.git_get().
             Otherwise:
                 Location of mupdf directory.
     
@@ -465,7 +465,7 @@ def get_mupdf_internal(out, location=None, local_tgz=None):
         assert os.path.isfile(local_tgz)
     elif location.startswith( 'git:'):
         local_dir = 'mupdf-git'
-        pipcl.git_get(location, local_dir, default_remote='https://github.com/ArtifexSoftware/mupdf.git')
+        pipcl.git_get(local_dir, text=location, remote='https://github.com/ArtifexSoftware/mupdf.git')
         
         # Show sha of checkout.
         run(
