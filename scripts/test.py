@@ -249,9 +249,9 @@ Command line args:
     --show-args:
         Show sys.argv and exit. For debugging.
     
-    --sync-paths
+    --sync-paths <path>
         Do not run anything, instead write required files/directories/checkouts
-        to stdout, one per line. This is to help with automated running on
+        to <path>, one per line. This is to help with automated running on
         remote machines.
     
     --system-site-packages 0|1
@@ -557,7 +557,7 @@ def main(argv):
         elif arg == '--show-args':
             show_args = 1
         elif arg == '--sync-paths':
-            sync_paths = True
+            sync_paths = next(args)
         
         elif arg == '--system-site-packages':
             system_site_packages = int(next(args))
@@ -595,10 +595,11 @@ def main(argv):
     # Handle special args --sync-paths, -h, -v, -o first.
     #
     if sync_paths:
-        # Just print required files, directories and checkouts.
-        print(pymupdf_dir)
-        if mupdf_sync:
-            print(mupdf_sync)
+        # Print required files, directories and checkouts.
+        with open(sync_paths, 'w') as f:
+            print(pymupdf_dir, file=f)
+            if mupdf_sync:
+                print(mupdf_sync, file=f)
         return
 
     if show_help:
