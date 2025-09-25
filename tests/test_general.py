@@ -1989,7 +1989,9 @@ def test_gitinfo():
     print(f'{pymupdf.pymupdf_git_branch=}')
     print(f'{pymupdf.pymupdf_git_sha=}')
     print(f'{pymupdf.pymupdf_version=}')
-    print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
+    print(f'{pymupdf.pymupdf_git_diff=}')
+    if pymupdf.pymupdf_git_diff:
+        print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
     
 
 def test_4392():
@@ -2086,7 +2088,7 @@ def test_4590():
 
 def test_4702():
     if os.environ.get('PYODIDE_ROOT'):
-        # util.download() uses subrocess.
+        # util.download() uses subprocess.
         print('test_4702(): not running on Pyodide - cannot run child processes.')
         return
 
