@@ -2085,6 +2085,11 @@ def test_4590():
 
 
 def test_4702():
+    if os.environ.get('PYODIDE_ROOT'):
+        # util.download() uses subrocess.
+        print('test_4702(): not running on Pyodide - cannot run child processes.')
+        return
+
     path = util.download(
             'https://github.com/user-attachments/files/22403483/01995b6ca7837b52abaa24e38e8c076d.pdf',
             'test_4702.pdf',
