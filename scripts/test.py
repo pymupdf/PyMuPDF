@@ -293,7 +293,7 @@ Command line args:
         Use specified prefix when running pytest, must be one of:
             gdb
             helgrind
-            vagrind
+            valgrind
     
     -v <venv>
         venv is:
