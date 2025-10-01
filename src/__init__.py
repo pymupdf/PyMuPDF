@@ -16607,6 +16607,10 @@ class TextPage:
                             and not mupdf.fz_is_infinite_rect(tp_rect)
                             ):
                         continue
+
+                    if buflen == 0 and ch.m_internal.c == 0x200d:
+                        # ZERO WIDTH JOINER cannot start a word
+                        continue
                     word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
                     this_char_rtl = JM_is_rtl_char(ch.m_internal.c)
                     if word_delimiter or this_char_rtl != last_char_rtl:

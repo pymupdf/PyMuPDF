@@ -3295,7 +3295,11 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                 {
                     continue;
                 }
-
+                // prevent Unicode ZWJ 0x200d to start a word
+                if (buflen == 0 && ch.m_internal->c == 0x200d)
+                {
+                    continue;
+                }
                 int word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
                 int this_char_rtl = JM_is_rtl_char(ch.m_internal->c);
                 if (word_delimiter || this_char_rtl != last_char_rtl)
