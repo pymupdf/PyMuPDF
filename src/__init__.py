@@ -409,6 +409,7 @@ from ._build import pymupdf_git_branch  # noqa F401
 from ._build import pymupdf_git_diff    # noqa F401
 from ._build import pymupdf_git_sha     # noqa F401
 from ._build import pymupdf_version     # noqa F401
+from ._build import pymupdf_version_tuple   # noqa F401
 from ._build import swig_version        # noqa F401
 from ._build import swig_version_tuple  # noqa F401
 
@@ -419,7 +420,6 @@ pymupdf_date = None
 
 # Versions as tuples; useful when comparing versions.
 #
-pymupdf_version_tuple = tuple( [_int_rc(i) for i in pymupdf_version.split('.')])
 mupdf_version_tuple = tuple( [_int_rc(i) for i in mupdf_version.split('.')])
 
 assert mupdf_version_tuple == (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH), \
@@ -16651,6 +16651,10 @@ class TextPage:
                             and not mupdf.fz_is_infinite_rect(tp_rect)
                             ):
                         continue
+
+                    if buflen == 0 and ch.m_internal.c == 0x200d:
+                        # ZERO WIDTH JOINER cannot start a word
+                        continue
                     word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
                     this_char_rtl = JM_is_rtl_char(ch.m_internal.c)
                     if word_delimiter or this_char_rtl != last_char_rtl:
@@ -25494,6 +25498,82 @@ def colors_wx_list():
         red, green, blue: integers in range 0..255.
     '''
     return _wxcolors
+
+
+def _mupdf_devel(make_links=True):
+    '''
+    Allows PyMuPDF installation to be used to compile and link programmes that
+    use the MuPDF C/C++ API.
+    
+    Args:
+        make_links:
+            If true, then on non-windows we also create softlinks to any shared
+            libraries that are supplied with a version suffix; this allows them
+            to be used in a link command.
+
+            For example we create links such as:
+
+            site-packages/pymupdf/
+                libmupdf.so -> libmupdf.so.26.7
+                libmupdfcpp.so -> libmupdfcpp.so.26.7
+    
+    Returns: (mupdf_include, mupdf_lib).
+        mupdf_include:
+            Path of MuPDF include directory within PyMuPDF install.
+        mupdf_lib
+            Path of MuPDF library directory within PyMuPDF install.
+    '''
+    import platform
+    
+    log(f'{mupdf_version=}')
+    
+    p = os.path.normpath(f'{__file__}/..')
+
+    mupdf_include = f'{p}/mupdf-devel/include'
+    
+    if platform.system() == 'Windows':
+        # Separate .lib files are used at build time.
+        mupdf_lib = f'{p}/mupdf-devel/lib'
+    else:
+        # .so files are used for both buildtime and runtime linking.
+        mupdf_lib = p
+    log(f'Within installed PyMuPDF:')
+    log(f'    {mupdf_include=}')
+    log(f'    {mupdf_lib=}')
+
+    assert os.path.isdir(mupdf_include), f'Not a directory: {mupdf_include=}.'
+    assert os.path.isdir(mupdf_lib), f'Not a directory: {mupdf_lib=}.'
+
+    if platform.system() != 'Windows' and make_links:
+        # Make symbolic links within the installed pymupdf module so
+        # that ld can find libmupdf.so etc. This is a bit of a hack, but
+        # necessary because wheels cannot contain symbolic links.
+        #
+        # For example we create `libmupdf.so -> libmupdf.so.24.8`.
+        #
+        # We are careful to only create symlinks for the expected MuPDF
+        # version, in case old .so files from a previous install are still
+        # in place.
+        #
+        log(f'Creating symlinks in {mupdf_lib=} for MuPDF-{mupdf_version} .so files.')
+        regex_suffix = mupdf_version.split('.')[1:3]
+        regex_suffix = '[.]'.join(regex_suffix)
+        mupdf_lib_regex = f'^(lib[^.]+[.]so)[.]{regex_suffix}$'
+        log(f'{mupdf_lib_regex=}.')
+        for leaf in os.listdir(mupdf_lib):
+            m = re.match(mupdf_lib_regex, leaf)
+            if m:
+                pfrom = f'{mupdf_lib}/{m.group(1)}'
+                # os.path.exists() can return false if softlink exists
+                # but points to non-existent file, so we also use
+                # `os.path.islink()`.
+                if os.path.islink(pfrom) or os.path.exists(pfrom):
+                    log(f'Removing existing link {pfrom=}.')
+                    os.remove(pfrom)
+                log(f'Creating symlink: {pfrom} -> {leaf}')
+                os.symlink(leaf, pfrom)
+    
+    return mupdf_include, mupdf_lib
 
 
 # We cannot import utils earlier because it imports this .py file itself and
