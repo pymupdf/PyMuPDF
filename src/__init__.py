@@ -26,9 +26,9 @@ import typing
 import warnings
 import weakref
 import zipfile
-
+import importlib.util
 from . import extra
-
+from . import reading_order
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -277,6 +277,11 @@ def exception_info():
     log(traceback.format_exc())
 
 
+def is_package_available(package_name: str) -> bool:
+    """Check whether a package is available in this Python."""
+    return importlib.util.find_spec(package_name) is not None
+
+
 # PDF names must not contain these characters:
 INVALID_NAME_CHARS = set(string.whitespace + "()<>[]{}/%" + chr(0))
 
@@ -333,6 +338,27 @@ class _Globals:
 
 _globals = _Globals()
 
+
+_recommend_layout = True
+
+def no_recommend_layout():
+    global _recommend_layout
+    _recommend_layout = False    
+
+def _warn_layout_once():
+    msg="""Consider using the pymupdf_layout package for a greatly improved page layout analysis."""
+
+    global _recommend_layout
+    if (
+        1 and 
+        os.getenv("PYMUPDF_SUGGEST_LAYOUT_ANALYZER") != "0" and 
+        not is_package_available("pymupdf_layout") and 
+        _recommend_layout
+    ):
+        print(msg)
+        _recommend_layout = False
+
+_get_layout: typing.Optional[typing.Callable] = None
 
 # Optionally use MuPDF via cppyy bindings; experimental and not tested recently
 # as of 2023-01-20 11:51:40
@@ -10777,6 +10803,21 @@ class Page:
         pclip = JM_rect_from_py(clip)
         mupdf.pdf_clip_page(pdfpage, pclip)
 
+    def get_layout(self, vertical_gap=12):
+        """Try to access layout information."""
+
+        if self.layout_information is not None:
+            # layout information already present
+            return
+
+        if not callable(_get_layout):
+            # no layout information available
+            message("no layout information available")
+            return
+
+        layout_info = _get_layout(self)
+        self.layout_information = reading_order.find_reading_order(layout_info, vertical_gap=vertical_gap)
+
     @property
     def artbox(self):
         """The ArtBox"""
@@ -13201,6 +13242,9 @@ class Page:
         return self.parent.page_xref(self.number)
 
     rect = property(bound, doc="page rectangle")
+
+    # any result of layout analysis is stored here
+    layout_information: typing.Optional[typing.List[tuple]] = None
 
 
 class Pixmap:

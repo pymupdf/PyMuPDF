@@ -80,11 +80,13 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
 import weakref
+import pymupdf
 
+pymupdf.TOOLS.unset_quad_corrections(True)
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
-from . import (
+from pymupdf import (
     Rect,
     Matrix,
     TEXTFLAGS_TEXT,
@@ -93,12 +95,17 @@ from . import (
     TEXT_FONT_MONOSPACED,
     TEXT_FONT_SUPERSCRIPT,
     TEXT_COLLECT_STYLES,
+    TEXT_ACCURATE_BBOXES,
+    TEXT_SEGMENT,
+    TEXT_COLLECT_VECTORS,
+    TEXT_MEDIABOX_CLIP,
     TOOLS,
     EMPTY_RECT,
     sRGB_to_pdf,
     Point,
     message,
     mupdf,
+    extra,
 )
 
 EDGES = []  # vector graphics from PyMuPDF
@@ -106,13 +113,98 @@ CHARS = []  # text characters from PyMuPDF
 TEXTPAGE = None
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
-FLAGS = TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES
-
+FLAGS = TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES | TEXT_ACCURATE_BBOXES | TEXT_MEDIABOX_CLIP
+FLAGS2 = (
+    0 | TEXT_ACCURATE_BBOXES | TEXT_SEGMENT | TEXT_COLLECT_VECTORS | TEXT_MEDIABOX_CLIP
+)
 white_spaces = set(string.whitespace)  # for checking white space only cells
 
 
+def iou(r1, r2):
+    """Compute intersection over union of two rectangles."""
+    ix = max(0, min(r1[2], r2[2]) - max(r1[0], r2[0]))
+    iy = max(0, min(r1[3], r2[3]) - max(r1[1], r2[1]))
+    intersection = ix * iy  # intersection area
+    if not intersection:
+        return 0
+    area1 = (r1[2] - r1[0]) * (r1[3] - r1[1])
+    area2 = (r2[2] - r2[0]) * (r2[3] - r2[1])
+    return intersection / (area1 + area2 - intersection)
+
+
+def intersects_words_h(bbox, y, word_rects) -> bool:
+    """Check whether any of the words in bbox are cut through by
+    horizontal line y.
+    """
+    return any(r.y0 < y < r.y1 for r in word_rects if r in bbox)
+
+
+def get_table_dict_from_rect(textpage, rect):
+    """Extract MuPDF table structure information from a given rectangle."""
+    table_dict = {}
+    extra.make_table_dict(textpage.this.m_internal, table_dict, rect)
+    return table_dict
+
+
+def make_table_from_bbox(textpage, word_rects, rect):
+    """Detect table structure within a given rectangle."""
+    cells = []  # table cells as (x0,y0,x1,y1) tuples
+
+    # calls fz_find_table_within_bounds
+    block = get_table_dict_from_rect(textpage, rect)
+    # No table structure found if not a grid block
+    if block.get("type") != mupdf.FZ_STEXT_BLOCK_GRID:
+        return cells
+    bbox = Rect(block["bbox"])  # resulting table bbox
+
+    # lists of (pos,uncertainty) tuples
+    xpos = sorted(block["xpos"], key=lambda x: x[0])
+    ypos = sorted(block["ypos"], key=lambda y: y[0])
+
+    # maximum uncertainties in x and y directions
+    xmaxu, ymaxu = block["max_uncertain"]
+
+    # Modify ypos to remove uncertain positions, and y positions
+    # that cut through words.
+    nypos = []
+    for y, yunc in ypos:
+        if yunc > 0:  # allow no uncertain y values
+            continue
+        if intersects_words_h(bbox, y, word_rects):
+            continue  # allow no y that cuts through words
+        if nypos and (y - nypos[-1] < 3):
+            nypos[-1] = y  # snap close positions
+        else:
+            nypos.append(y)
+
+    # New max y uncertainty: 35% of remaining y positions.
+    # Omit x positions that intersect too many words, otherwise
+    # only remove x for the affected cells.
+    ymaxu = max(0, round((len(nypos) - 2) * 0.35))
+
+    # Exclude x positions with too high uncertainty
+    # (we allow more uncertainty in x direction)
+    nxpos = [x[0] for x in xpos if x[1] <= ymaxu]
+    if bbox.x1 > nxpos[-1] + 3:
+        nxpos.append(bbox.x1)  # ensure right table border
+
+    # Compose cells from the remaining x and y positions.
+    for i in range(len(nypos) - 1):
+        row_box = Rect(bbox.x0, nypos[i], bbox.x1, nypos[i + 1])
+        # Sub-select words in this row and sort them by left coordinate
+        row_words = sorted([r for r in word_rects if r in row_box], key=lambda r: r.x0)
+        # Sub-select x values that do not cut through words
+        this_xpos = [x for x in nxpos if not any(r.x0 < x < r.x1 for r in row_words)]
+        for j in range(len(this_xpos) - 1):
+            cell = Rect(this_xpos[j], nypos[i], this_xpos[j + 1], nypos[i + 1])
+            if not cell.is_empty:  # valid cell
+                cells.append(tuple(cell))
+    # Add new table to TableFinder tables
+    return cells
+
+
 def extract_cells(textpage, cell, markdown=False):
-    """Extract text from a rect-like 'cell' as plain or MD style text.
+    """Extract text from a rect-like 'cell' as plain or MD styled text.
 
     This function should ultimately be used to extract text from a table cell.
     Markdown output will only work correctly if extraction flag bit
@@ -2496,6 +2588,7 @@ def find_tables(
     add_boxes=None,  # user-specified rectangles
     paths=None,  # accept vector graphics as parameter
 ):
+    pymupdf._warn_layout_once()
     global CHARS, EDGES
     CHARS = []
     EDGES = []
@@ -2543,6 +2636,23 @@ def find_tables(
         "text_x_tolerance": text_x_tolerance,
         "text_y_tolerance": text_y_tolerance,
     }
+
+    page.get_layout()
+
+    if page.layout_information:
+        boxes = [Rect(b[:4]) for b in page.layout_information if b[-1] == "table"]
+    else:
+        boxes = []
+
+    if boxes:  # layout did find some tables
+        settings["vertical_strategy"] = "lines_strict"
+        settings["horizontal_strategy"] = "lines_strict"
+    elif page.layout_information is not None:
+        # layout was executed but found no tables
+        # make sure we exit quickly with an empty TableFinder
+        tbf = TableFinder(page)
+        return tbf
+
     tset = TableSettings.resolve(settings=settings)
     page.table_settings = tset
 
@@ -2555,9 +2665,24 @@ def find_tables(
         add_lines=add_lines,
         add_boxes=add_boxes,
     )  # create lines and curves
-    tables = TableFinder(page, settings=tset)
+
+    tbf = TableFinder(page, settings=tset)
+
+    if boxes:
+        # only keep Finder tables that match a layout box
+        tbf.tables = [
+            tab for tab in tbf.tables if any(iou(tab.bbox, r) >= 0.6 for r in boxes)
+        ]
+    # build the complementary list of layout table boxes
+    my_boxes = [r for r in boxes if all(iou(r, tab.bbox) < 0.6 for tab in tbf.tables)]
+    if my_boxes:
+        word_rects = [Rect(w[:4]) for w in TEXTPAGE.extractWORDS()]
+        tp2 = page.get_textpage(flags=FLAGS2)
+    for rect in my_boxes:
+        cells = make_table_from_bbox(tp2, word_rects, rect)
+        tbf.tables.append(Table(page, cells))
 
     TOOLS.set_small_glyph_heights(old_small)
     if old_xref is not None:
         page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
-    return tables
+    return tbf
