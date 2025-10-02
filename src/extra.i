@@ -3638,6 +3638,47 @@ static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int 
     return;
 }
 
+void make_table_dict(fz_stext_page *tp, PyObject *table_dict, PyObject *bbox)
+{
+    fz_context* ctx = mupdf::internal_context_get();
+    PyObject *pos, *unc;
+    fz_rect bounds = JM_rect_from_py(bbox);
+    Py_ssize_t i = 0;
+    fz_stext_block *block;
+    fz_try(ctx) {
+        block = fz_find_table_within_bounds(ctx, tp, bounds);
+        if (block && block->type == FZ_STEXT_BLOCK_GRID)
+        {
+            DICT_SETITEM_DROP(table_dict, dictkey_type, Py_BuildValue("i", block->type));
+            DICT_SETITEM_DROP(table_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+
+            // Uncertainty max values. x: y-count, y: x-count
+            DICT_SETITEMSTR_DROP(table_dict, "max_uncertain", Py_BuildValue("ii",
+                                                                block->u.b.xs->max_uncertainty,
+                                                                block->u.b.ys->max_uncertainty));
+            // x coordinates with uncertainties
+            pos = PyList_New((size_t) block->u.b.xs->len);
+            for (i = 0; i <  block->u.b.xs->len; i++)
+            {
+                PyList_SetItem(pos, i, Py_BuildValue("fi", block->u.b.xs->list[i].pos,
+                                                           block->u.b.xs->list[i].uncertainty));
+            }
+            DICT_SETITEMSTR_DROP(table_dict, "xpos", pos);
+
+            // y coordinates with uncertainties
+            pos = PyList_New((size_t) block->u.b.ys->len);
+            for (i = 0; i <  block->u.b.ys->len; i++)
+            {
+                PyList_SetItem(pos, i, Py_BuildValue("fi", block->u.b.ys->list[i].pos,
+                                                           block->u.b.ys->list[i].uncertainty));
+            }
+            DICT_SETITEMSTR_DROP(table_dict, "ypos", pos);
+        }
+    }
+    fz_catch(ctx)
+        {;}
+}
+
 void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw)
 {
     fz_context* ctx = mupdf::internal_context_get();
@@ -4270,6 +4311,7 @@ fz_stext_page* page_get_textpage(
         PyObject* matrix
         );
 
+void make_table_dict(fz_stext_page *tp, PyObject *table_dict, PyObject *bbox);
 void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw);
 PyObject *pixmap_pixel(fz_pixmap* pm, int x, int y);
 int pixmap_n(mupdf::FzPixmap& pixmap);
