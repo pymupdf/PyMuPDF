@@ -4,16 +4,25 @@ Change Log
 
 **Changes in version 1.26.5**
 
+* Use MuPDF-1.26.10.
+
 * Fixed issues:
+
+  * **Fixed** `2883 <https://github.com/pymupdf/PyMuPDF/issues/2883>`_: Improve the Python type annotations for fitz_new
+  * **Fixed** `4507 <https://github.com/pymupdf/PyMuPDF/issues/4507>`_: Bugs in pyodide
+  * **Fixed** `4613 <https://github.com/pymupdf/PyMuPDF/issues/4613>`_: Thai and number blocks are not auto-scaled and get wrong hyphen when using in insert_htmlbox
+  * **Fixed** `4700 <https://github.com/pymupdf/PyMuPDF/issues/4700>`_: pymupdf.open() processes .zip file without raising
+  * **Fixed** `4716 <https://github.com/pymupdf/PyMuPDF/issues/4716>`_: Problems with unreadable characters
 
 * Other:
 
-  * Partially address `2883 <https://github.com/pymupdf/PyMuPDF/issues/2883>`_: Improve the Python type annotations for fitz_new
     
-    We now define all class methods explicitly instead of with dynamic assignment.
+  * We now define all class methods explicitly instead of with dynamic assignment; this improves type hints.
   * Removed `pymupdf.utils.Shape` class, was duplicate of `pymupdf.Shape`.
   * Allow use of cibuildwheel to build and test on Pyodide.
+  * Fixed various Pyodide bugs.
   * In documentation, added section about Linux wheels and glibc compatibility.
+  * Improved documentation of pymupdf.open()'s <filetype> arg.
   * Retrospectively mark `4544 <https://github.com/pymupdf/PyMuPDF/issues/4544>`_ as fixed in 1.26.4.
 
 
