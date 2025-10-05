@@ -338,7 +338,7 @@ class _Globals:
 
 _globals = _Globals()
 
-
+_get_layout: typing.Optional[typing.Callable] = None
 _recommend_layout = True
 
 def no_recommend_layout():
@@ -354,11 +354,12 @@ def _warn_layout_once():
         os.getenv("PYMUPDF_SUGGEST_LAYOUT_ANALYZER") != "0" and 
         not is_package_available("pymupdf_layout") and 
         _recommend_layout
+        and not callable(_get_layout)
     ):
         print(msg)
         _recommend_layout = False
 
-_get_layout: typing.Optional[typing.Callable] = None
+
 
 # Optionally use MuPDF via cppyy bindings; experimental and not tested recently
 # as of 2023-01-20 11:51:40
@@ -10803,7 +10804,7 @@ class Page:
         pclip = JM_rect_from_py(clip)
         mupdf.pdf_clip_page(pdfpage, pclip)
 
-    def get_layout(self, vertical_gap=12):
+    def get_layout(self, vertical_gap=12, flags=11):
         """Try to access layout information."""
 
         if self.layout_information is not None:
@@ -10812,10 +10813,9 @@ class Page:
 
         if not callable(_get_layout):
             # no layout information available
-            message("no layout information available")
             return
 
-        layout_info = _get_layout(self)
+        layout_info = _get_layout(self, flags=flags)
         self.layout_information = reading_order.find_reading_order(layout_info, vertical_gap=vertical_gap)
 
     @property
