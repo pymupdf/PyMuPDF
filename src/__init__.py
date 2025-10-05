@@ -10803,7 +10803,7 @@ class Page:
         pclip = JM_rect_from_py(clip)
         mupdf.pdf_clip_page(pdfpage, pclip)
 
-    def get_layout(self, vertical_gap=12):
+    def get_layout(self, vertical_gap=12, flags=11):
         """Try to access layout information."""
 
         if self.layout_information is not None:
@@ -10812,10 +10812,9 @@ class Page:
 
         if not callable(_get_layout):
             # no layout information available
-            message("no layout information available")
             return
 
-        layout_info = _get_layout(self)
+        layout_info = _get_layout(self, flags=flags)
         self.layout_information = reading_order.find_reading_order(layout_info, vertical_gap=vertical_gap)
 
     @property
