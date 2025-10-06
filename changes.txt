@@ -16,7 +16,7 @@ Change Log
 
 * Other:
 
-    
+  * Supported Python versions are now 3.9-3.14.
   * We now define all class methods explicitly instead of with dynamic assignment; this improves type hints.
   * Removed `pymupdf.utils.Shape` class, was duplicate of `pymupdf.Shape`.
   * Allow use of cibuildwheel to build and test on Pyodide.
