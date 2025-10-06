@@ -146,9 +146,8 @@ Notes
     versions, including new Python releases.
   
   *
-    Wheels are tested on all Python versions currently marked as "Supported" on
-    https://devguide.python.org/versions/, currently 3.9, 3.10, 3.11, 3.12 and
-    3.13.
+    Wheels are tested on all Python versions currently marked as "Supported"
+    on https://devguide.python.org/versions/, currently |python_versions|.
 
 *
   Wheels are not available for Python installed with `Chocolatey

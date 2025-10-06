@@ -384,6 +384,19 @@ log = pipcl.log0
 run = pipcl.run
 
 
+# We build and test Python 3.x for x in this range.
+python_versions_minor = range(9, 14+1)
+
+def cibw_cp(*version_minors):
+    '''
+    Returns <version_tuples> in 'cp39*' format.
+    '''
+    ret = list()
+    for version_minor in version_minors:
+        ret.append(f'cp3{version_minor}*')
+    return ' '.join(ret)
+
+
 def main(argv):
 
     if github_workflow_unimportant():
@@ -467,7 +480,8 @@ def main(argv):
             env_extra['CIBW_ARCHS_LINUX'] = 'aarch64'
             # Testing only first and last python versions because otherwise
             # Github times out after 6h.
-            env_extra['CIBW_BUILD'] = 'cp39* cp313*'
+            versions = python_versions_cibw()
+            env_extra['CIBW_BUILD'] = f'{cibw_cp(python_versions_minor[0], python_versions_minor[-1])}'
             os_names = ['linux']
         
         elif arg == '--cibw-archs-linux':
@@ -896,7 +910,7 @@ def cibuildwheel(
             CIBW_BUILD = 'cp313*'
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
             # Build/test all supported Python versions.
-            CIBW_BUILD = 'cp39* cp310* cp311* cp312* cp313*'
+            CIBW_BUILD = cibw_cp(*python_versions_minor)
         else:
             # Build/test current Python only.
             v = platform.python_version_tuple()[:2]
