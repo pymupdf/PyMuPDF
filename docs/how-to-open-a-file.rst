@@ -81,17 +81,9 @@ This component looks at the actual data in the file using a number of heuristics
 
 Here is a list of details about how the file content recognizer works:
 
-* When opening from a file name, use the ``filetype`` parameter if you need to make sure that the created :ref:`Document` is of the expected type. An exception is raised for any mismatch.
+* When opening from a file name, use the ``filetype`` parameter if your file format cannot be determined by content inspection. This is for instance the case for all text files: "txt", "html", "xml" or source files. If the file extension is missing or wrong or the file resides in memory, the ``filetype`` must be used. File formats that can successfully be recognized will be opened even without or wrong extensions, and the ``filetype`` paraneter will be ignored.
 
-* Text files are an exception: they do not contain recognizable internal structures at all. Here, the file extension ".txt" and the ``filetype`` parameter continue to play a role and are used to create a "Tex" document. Correspondingly, text files with other / no extensions, can successfully be opened using `filetype="txt"`.
-
-* Using `filetype="txt"` will treat **any** file as containing plain text when opened from a file name / path -- even when its content is a supported document type.
-
-* When opening from a stream, the file content recognizer will ignore the ``filetype`` parameter entirely for known file types -- even in case of a mismatch or when `filetype="txt"` was specified.
-
-    * Streams with a known file type cannot be opened as plain text.
-    * Specifying ``filetype`` currently only has an effect when no match was found. Then using ``filetype="txt"`` will treat the file as containing plain text.
-
+* Files based on text content do not contain unambiguously recognizable internal structures. This is true for source files (Python, C, etc.) but also HTML, XML and so on. Here, the file extensions and the ``filetype`` parameter continue to play a role and are used to create a "Tex" / "HTML" / ... document. Correspondingly, text files with other / no extensions, can successfully be opened using ``filetype``.
 
 ----------
 

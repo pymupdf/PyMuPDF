@@ -88,11 +88,12 @@ Environmental variables:
             Empty string:
                 Build PyMuPDF with the system MuPDF.
             A string starting with 'git:':
-                Use `git clone` to get a MuPDF checkout. We use the
-                string in the git clone command; it must contain the git
-                URL from which to clone, and can also contain other `git
-                clone` args, for example:
-                    PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
+                We use `git` commands to clone/update a local MuPDF checkout.
+                Should match `git:[--branch <branch>][--tag <tag>][<remote>]`.
+                If <remote> is omitted we use a default.
+                For example:
+                    PYMUPDF_SETUP_MUPDF_BUILD="git:--branch master"
+                Passed as <text> arg to pipcl.git_get().
             Otherwise:
                 Location of mupdf directory.
     
@@ -425,7 +426,7 @@ def git_patch(directory, patch, hard=False):
 
 mupdf_tgz = os.path.abspath( f'{__file__}/../mupdf.tgz')
 
-def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
+def get_mupdf_internal(out, location=None, local_tgz=None):
     '''
     Gets MuPDF as either a .tgz or a local directory.
     
@@ -438,8 +439,6 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
             If starts with 'git:', should be remote git location.
             Otherwise if containing '://' should be URL for .tgz.
             Otherwise should path of local mupdf checkout.
-        sha:
-            If not None and we use git clone, we checkout this sha.
         local_tgz:
             If not None, must be local .tgz file.
     Returns:
@@ -451,7 +450,7 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
             default location.
                 
     '''
-    log(f'get_mupdf_internal(): {out=} {location=} {sha=}')
+    log(f'get_mupdf_internal(): {out=} {location=}')
     assert out in ('dir', 'tgz')
     if location is None:
         location = f'https://mupdf.com/downloads/archive/mupdf-{version_mupdf}-source.tar.gz'
@@ -465,21 +464,15 @@ def get_mupdf_internal(out, location=None, sha=None, local_tgz=None):
     if local_tgz:
         assert os.path.isfile(local_tgz)
     elif location.startswith( 'git:'):
-        location_git = location[4:]
         local_dir = 'mupdf-git'
+        pipcl.git_get(local_dir, text=location, remote='https://github.com/ArtifexSoftware/mupdf.git')
         
-        # Try to update existing checkout.
-        e = run(f'cd {local_dir} && git pull && git submodule update --init', check=False)
-        if e:
-            # No existing git checkout, so do a fresh clone.
-            _fs_remove(local_dir)
-            gitargs = location[4:]
-            run(f'git clone --recursive --depth 1 --shallow-submodules {gitargs} {local_dir}')
-
         # Show sha of checkout.
-        run( f'cd {local_dir} && git show --pretty=oneline|head -n 1', check=False)
-        if sha:
-            run( f'cd {local_dir} && git checkout {sha}')
+        run(
+                f'cd {local_dir} && git show --pretty=oneline|head -n 1',
+                check = False,
+                prefix = 'mupdf git id: ',
+                )
     elif '://' in location:
         # Download .tgz.
         local_tgz = os.path.basename( location)
@@ -744,10 +737,12 @@ def build():
         except Exception:
             return 0
     swig_version_tuple = tuple(int_or_0(i) for i in swig_version.split('.'))
+    version_p_tuple = tuple(int_or_0(i) for i in version_p.split('.'))
     log(f'{swig_version=}')
     text = ''
     text += f'mupdf_location = {mupdf_location!r}\n'
     text += f'pymupdf_version = {version_p!r}\n'
+    text += f'pymupdf_version_tuple = {version_p_tuple!r}\n'
     text += f'pymupdf_git_sha = {sha!r}\n'
     text += f'pymupdf_git_diff = {diff!r}\n'
     text += f'pymupdf_git_branch = {branch!r}\n'
@@ -1274,7 +1269,7 @@ classifier = [
 # PyMuPDF version.
 version_p = '1.26.5'
 
-version_mupdf = '1.26.7'
+version_mupdf = '1.26.10'
 
 # PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
 # (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
@@ -1405,9 +1400,6 @@ else:
             ret.append(libclang)
         elif openbsd:
             print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
-        elif darwin and platform.machine() == 'arm64':
-            print(f'MacOS/arm64: forcing use of libclang 16.0.6 because 18.1.1 known to fail with `clang.cindex.TranslationUnitLoadError: Error parsing translation unit.`')
-            ret.append('libclang==16.0.6')
         elif darwin and platform_release_tuple() < (18,):
             # There are still of problems when building on old macos.
             ret.append('libclang==14.0.6')

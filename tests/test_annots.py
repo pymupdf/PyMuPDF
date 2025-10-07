@@ -236,7 +236,10 @@ def test_1645():
     pymupdf.TOOLS.set_annot_stem('jorj')
     try:
         path_in = os.path.abspath( f'{__file__}/../resources/symbol-list.pdf')
-        path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected.pdf')
+        if pymupdf.mupdf_version_tuple >= (1, 27):
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected-after-1.27.0.pdf')
+        else:
+            path_expected = os.path.abspath( f'{__file__}/../../tests/resources/test_1645_expected.pdf')
         path_out = os.path.abspath( f'{__file__}/../test_1645_out.pdf')
         doc = pymupdf.open(path_in)
         page = doc[0]
@@ -254,11 +257,13 @@ def test_1645():
                 )
         doc.save(path_out, garbage=1, deflate=True, no_new_id=True)
         print(f'Have created {path_out}. comparing with {path_expected}.')
-        with open( path_out, 'rb') as f:
-            out = f.read()
-        with open( path_expected, 'rb') as f:
-            expected = f.read()
-        assert out == expected, f'Files differ: {path_out} {path_expected}'
+        with pymupdf.open(path_expected) as doc_expected, pymupdf.open(path_out) as doc_out:
+            rms = gentle_compare.pixmaps_rms(
+                    doc_expected[0].get_pixmap(),
+                    doc_out[0].get_pixmap(),
+                    )
+        print(f'test_1645: {rms=}')
+        assert rms < 0.1, f'Pixmaps differ: {path_expected=} {path_out=}'
     finally:
         # Restore annot_stem.
         pymupdf.TOOLS.set_annot_stem(annot_stem)

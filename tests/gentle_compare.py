@@ -32,8 +32,6 @@ def rms(a, b, verbose=None, out_prefix=''):
     '''
     Returns RMS diff of raw bytes of two sequences.
     '''
-    if verbose is True:
-        verbose = 100000
     assert len(a) == len(b)
     e = 0
     for i, (aa, bb) in enumerate(zip(a, b)):
@@ -62,7 +60,7 @@ def pixmaps_rms(a, b, out_prefix=''):
     a_mv = a.samples_mv
     b_mv = b.samples_mv
     assert len(a_mv) == len(b_mv)
-    ret = rms(a_mv, b_mv, verbose=True, out_prefix=out_prefix)
+    ret = rms(a_mv, b_mv, out_prefix=out_prefix)
     print(f'{out_prefix}pixmaps_rms(): {ret=}.')
     return ret
 

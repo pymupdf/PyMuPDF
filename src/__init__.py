@@ -383,6 +383,7 @@ from ._build import pymupdf_git_branch  # noqa F401
 from ._build import pymupdf_git_diff    # noqa F401
 from ._build import pymupdf_git_sha     # noqa F401
 from ._build import pymupdf_version     # noqa F401
+from ._build import pymupdf_version_tuple   # noqa F401
 from ._build import swig_version        # noqa F401
 from ._build import swig_version_tuple  # noqa F401
 
@@ -393,7 +394,6 @@ pymupdf_date = None
 
 # Versions as tuples; useful when comparing versions.
 #
-pymupdf_version_tuple = tuple( [_int_rc(i) for i in pymupdf_version.split('.')])
 mupdf_version_tuple = tuple( [_int_rc(i) for i in mupdf_version.split('.')])
 
 assert mupdf_version_tuple == (mupdf.FZ_VERSION_MAJOR, mupdf.FZ_VERSION_MINOR, mupdf.FZ_VERSION_PATCH), \
@@ -4935,7 +4935,11 @@ class Document:
                         o = mupdf.pdf_array_get( intent, j)
                         if mupdf.pdf_is_name( o):
                             intents.append( mupdf.pdf_to_name( o))
-            hidden = mupdf.pdf_is_ocg_hidden( pdf, mupdf.PdfObj(), usage, ocg)
+            if mupdf_version_tuple >= (1, 27):
+                resource_stack = mupdf.PdfResourceStack()
+                hidden = mupdf.pdf_is_ocg_hidden( pdf, resource_stack, usage, ocg)
+            else:
+                hidden = mupdf.pdf_is_ocg_hidden( pdf, mupdf.PdfObj(), usage, ocg)
             item = {
                     "name": name,
                     "intent": intents,
@@ -12266,7 +12270,9 @@ class Page:
         oc=0,
         opacity=1,
         overlay=True,
-    ) -> float:
+        _scale_word_width=True,
+        _verbose=False,
+    ) -> tuple:
         """Insert text with optional HTML tags and stylings into a rectangle.
 
         Args:
@@ -12282,14 +12288,17 @@ class Page:
             oc: (int) the xref of an OCG / OCMD (Optional Content).
             opacity: (float) set opacity of inserted content.
             overlay: (bool) put text on top of page content.
+            _scale_word_width: internal, for testing only.
+            _verbose: internal, for testing only.
         Returns:
             A tuple of floats (spare_height, scale).
-            spare_height: -1 if content did not fit, else >= 0. It is the height of the
-                   unused (still available) rectangle stripe. Positive only if
-                   scale_min = 1 (no down scaling).
-            scale: downscaling factor, 0 < scale <= 1. Set to 0 if spare_height = -1 (no fit).
+            spare_height:
+                The height of the remaining space in <rect> below the
+                text, or -1 if we failed to fit.
+            scale:
+                The scaling required; `0 < scale <= 1`.
+                Will be less than `scale_low` if we failed to fit.
         """
-
         # normalize rotation angle
         if not rotate % 90 == 0:
             raise ValueError("bad rotation angle")
@@ -12320,25 +12329,40 @@ class Page:
             story = text
         else:
             raise ValueError("'text' must be a string or a Story")
+        
         # ----------------------------------------------------------------
-        # Find a scaling factor that lets our story fit in
+        # Find a scaling factor that lets our story fit in. Instead of scaling
+        # the text smaller, we instead look at how much bigger the rect needs
+        # to be to fit the text, then reverse the scaling to get how much we
+        # need to scale down the text.
         # ----------------------------------------------------------------
-        scale_max = None if scale_low == 0 else 1 / scale_low
+        rect_scale_max = None if scale_low == 0 else 1 / scale_low
 
-        fit = story.fit_scale(temp_rect, scale_min=1, scale_max=scale_max)
+        fit = story.fit_scale(
+                temp_rect,
+                scale_min=1,
+                scale_max=rect_scale_max,
+                flags=mupdf.FZ_PLACE_STORY_FLAG_NO_OVERFLOW if _scale_word_width else 0,
+                verbose=_verbose,
+                )
+        
         if not fit.big_enough:  # there was no fit
-            return (-1, scale_low)
+            scale = 1 / fit.parameter
+            return (-1, scale)
 
-        filled = fit.filled
-        scale = 1 / fit.parameter  # shrink factor
-
-        spare_height = fit.rect.y1 - filled[3]  # unused room at rectangle bottom
-        # Note: due to MuPDF's logic this may be negative even for successful fits.
-        if scale != 1 or spare_height < 0:  # if scaling occurred, set spare_height to 0
-            spare_height = 0
+        # fit.filled is a tuple; we convert it in place to a Rect for
+        # convenience. (fit.rect is already a Rect.)
+        fit.filled = Rect(fit.filled)
+        assert (fit.rect.x0, fit.rect.y0) == (0, 0)
+        assert (fit.filled.x0, fit.filled.y0) == (0, 0)
+        
+        scale = 1 / fit.parameter
+        assert scale >= scale_low, f'{scale_low=} {scale=}'
+        
+        spare_height = max((fit.rect.y1 - fit.filled.y1) * scale, 0)
 
         def rect_function(*args):
-            return fit.rect, fit.rect, Identity
+            return fit.rect, fit.rect, None
 
         # draw story on temp PDF page
         doc = story.write_with_links(rect_function)
@@ -15925,10 +15949,13 @@ class Story:
             function( position2)
         mupdf.fz_story_positions( self.this, function2)
 
-    def place( self, where):
+    def place( self, where, flags=0):
+        '''
+        Wrapper for fz_place_story_flags().
+        '''
         where = JM_rect_from_py( where)
         filled = mupdf.FzRect()
-        more = mupdf.fz_place_story( self.this, where, filled)
+        more = mupdf.fz_place_story_flags( self.this, where, filled, flags)
         return more, JM_py_from_rect( filled)
 
     def reset( self):
@@ -16045,7 +16072,9 @@ class Story:
         `big_enough`:
             `True` if the fit succeeded.
         `filled`:
-            From the last call to `Story.place()`.
+            Tuple (x0, y0, x1, y1) from the last call to `Story.place()`. This
+            will be wider than .rect if any single word (which we never split)
+            was too wide for .rect.
         `more`:
             `False` if the fit succeeded.
         `numcalls`:
@@ -16053,7 +16082,7 @@ class Story:
         `parameter`:
             The successful parameter value, or the largest failing value.
         `rect`:
-            The rect created from `parameter`.
+            The pumupdf.Rect created from `parameter`.
         '''
         def __init__(self, big_enough=None, filled=None, more=None, numcalls=None, parameter=None, rect=None):
             self.big_enough = big_enough
@@ -16073,7 +16102,7 @@ class Story:
                     f' rect={self.rect}'
                     )
 
-    def fit(self, fn, pmin=None, pmax=None, delta=0.001, verbose=False):
+    def fit(self, fn, pmin=None, pmax=None, delta=0.001, verbose=False, flags=0):
         '''
         Finds optimal rect that contains the story `self`.
         
@@ -16100,6 +16129,9 @@ class Story:
             Maximum error in returned `parameter`.
         :arg verbose:
             If true we output diagnostics.
+        :arg flags:
+            Passed to mupdf.fz_place_story_flags(). e.g.
+            zero or `mupdf.FZ_PLACE_STORY_FLAG_NO_OVERFLOW`.
         '''
         def log(text):
             assert verbose
@@ -16155,7 +16187,7 @@ class Story:
                 if verbose:
                     log(f'update(): not calling self.place() because rect is empty.')
             else:
-                more, filled = self.place(rect)
+                more, filled = self.place(rect, flags)
                 state.numcalls += 1
                 big_enough = not more
                 result = Story.FitResult(
@@ -16224,12 +16256,12 @@ class Story:
             parameter = (state.pmin + state.pmax) / 2
             update(parameter)
 
-    def fit_scale(self, rect, scale_min=0, scale_max=None, delta=0.001, verbose=False):
+    def fit_scale(self, rect, scale_min=0, scale_max=None, delta=0.001, verbose=False, flags=0):
         '''
         Finds smallest value `scale` in range `scale_min..scale_max` where
         `scale * rect` is large enough to contain the story `self`.
 
-        Returns a `Story.FitResult` instance.
+        Returns a `Story.FitResult` instance with `.parameter` set to `scale`.
 
         :arg width:
             width of rect.
@@ -16244,13 +16276,15 @@ class Story:
             Maximum error in returned scale.
         :arg verbose:
             If true we output diagnostics.
+        :arg flags:
+            Passed to Story.place().
         '''
         x0, y0, x1, y1 = rect
         width = x1 - x0
         height = y1 - y0
         def fn(scale):
             return Rect(x0, y0, x0 + scale*width, y0 + scale*height)
-        return self.fit(fn, scale_min, scale_max, delta, verbose)
+        return self.fit(fn, scale_min, scale_max, delta, verbose, flags)
 
     def fit_height(self, width, height_min=0, height_max=None, origin=(0, 0), delta=0.001, verbose=False):
         '''
@@ -16576,6 +16610,10 @@ class TextPage:
                     if (not JM_rects_overlap(tp_rect, cbbox)
                             and not mupdf.fz_is_infinite_rect(tp_rect)
                             ):
+                        continue
+
+                    if buflen == 0 and ch.m_internal.c == 0x200d:
+                        # ZERO WIDTH JOINER cannot start a word
                         continue
                     word_delimiter = JM_is_word_delimiter(ch.m_internal.c, delimiters)
                     this_char_rtl = JM_is_rtl_char(ch.m_internal.c)
@@ -25420,6 +25458,82 @@ def colors_wx_list():
         red, green, blue: integers in range 0..255.
     '''
     return _wxcolors
+
+
+def _mupdf_devel(make_links=True):
+    '''
+    Allows PyMuPDF installation to be used to compile and link programmes that
+    use the MuPDF C/C++ API.
+    
+    Args:
+        make_links:
+            If true, then on non-windows we also create softlinks to any shared
+            libraries that are supplied with a version suffix; this allows them
+            to be used in a link command.
+
+            For example we create links such as:
+
+            site-packages/pymupdf/
+                libmupdf.so -> libmupdf.so.26.7
+                libmupdfcpp.so -> libmupdfcpp.so.26.7
+    
+    Returns: (mupdf_include, mupdf_lib).
+        mupdf_include:
+            Path of MuPDF include directory within PyMuPDF install.
+        mupdf_lib
+            Path of MuPDF library directory within PyMuPDF install.
+    '''
+    import platform
+    
+    log(f'{mupdf_version=}')
+    
+    p = os.path.normpath(f'{__file__}/..')
+
+    mupdf_include = f'{p}/mupdf-devel/include'
+    
+    if platform.system() == 'Windows':
+        # Separate .lib files are used at build time.
+        mupdf_lib = f'{p}/mupdf-devel/lib'
+    else:
+        # .so files are used for both buildtime and runtime linking.
+        mupdf_lib = p
+    log(f'Within installed PyMuPDF:')
+    log(f'    {mupdf_include=}')
+    log(f'    {mupdf_lib=}')
+
+    assert os.path.isdir(mupdf_include), f'Not a directory: {mupdf_include=}.'
+    assert os.path.isdir(mupdf_lib), f'Not a directory: {mupdf_lib=}.'
+
+    if platform.system() != 'Windows' and make_links:
+        # Make symbolic links within the installed pymupdf module so
+        # that ld can find libmupdf.so etc. This is a bit of a hack, but
+        # necessary because wheels cannot contain symbolic links.
+        #
+        # For example we create `libmupdf.so -> libmupdf.so.24.8`.
+        #
+        # We are careful to only create symlinks for the expected MuPDF
+        # version, in case old .so files from a previous install are still
+        # in place.
+        #
+        log(f'Creating symlinks in {mupdf_lib=} for MuPDF-{mupdf_version} .so files.')
+        regex_suffix = mupdf_version.split('.')[1:3]
+        regex_suffix = '[.]'.join(regex_suffix)
+        mupdf_lib_regex = f'^(lib[^.]+[.]so)[.]{regex_suffix}$'
+        log(f'{mupdf_lib_regex=}.')
+        for leaf in os.listdir(mupdf_lib):
+            m = re.match(mupdf_lib_regex, leaf)
+            if m:
+                pfrom = f'{mupdf_lib}/{m.group(1)}'
+                # os.path.exists() can return false if softlink exists
+                # but points to non-existent file, so we also use
+                # `os.path.islink()`.
+                if os.path.islink(pfrom) or os.path.exists(pfrom):
+                    log(f'Removing existing link {pfrom=}.')
+                    os.remove(pfrom)
+                log(f'Creating symlink: {pfrom} -> {leaf}')
+                os.symlink(leaf, pfrom)
+    
+    return mupdf_include, mupdf_lib
 
 
 # We cannot import utils earlier because it imports this .py file itself and
