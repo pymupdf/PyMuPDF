@@ -95,6 +95,10 @@ Command line args:
     --cibw-release-2
         Set up so that `cibw` builds only linux-aarch64 wheel.
     
+    --cibw-skip-add-defaults 0|1
+        If 1 (the default) we add defaults to CIBW_SKIP such as `pp*` (to
+        exclude pypy) and `cp3??t-*` (to exclude free-threading).
+    
     --cibw-test-project 0|1
          If 1, command `cibw` will use a minimal test project instead of the
          PyMuPDF directory itself.
@@ -406,6 +410,7 @@ def main(argv):
     cibw_name = None
     cibw_pyodide = None
     cibw_pyodide_version = None
+    cibw_skip_add_defaults = True
     cibw_test_project = None
     commands = list()
     env_extra = dict()
@@ -474,7 +479,7 @@ def main(argv):
             env_extra['CIBW_ARCHS_LINUX'] = 'auto64'
             env_extra['CIBW_ARCHS_MACOS'] = 'auto64'
             env_extra['CIBW_ARCHS_WINDOWS'] = 'auto'    # win32 and win64.
-            env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux*aarch64*'
+            env_extra['CIBW_SKIP'] = '*musllinux*aarch64*'
         
         elif arg == '--cibw-release-2':
             env_extra['CIBW_ARCHS_LINUX'] = 'aarch64'
@@ -492,6 +497,9 @@ def main(argv):
         
         elif arg == '--cibw-pyodide':
             cibw_pyodide = int(next(args))
+        
+        elif arg == '--cibw-skip-add-defaults':
+            cibw_skip_add_defaults = int(next(args))
         
         elif arg == '--cibw-test-project':
             cibw_test_project = int(next(args))
@@ -707,6 +715,7 @@ def main(argv):
                     cibw_pyodide_version,
                     cibw_sdist,
                     cibw_test_project,
+                    cibw_skip_add_defaults,
                     )
         
         elif command == 'install':
@@ -857,6 +866,7 @@ def cibuildwheel(
         cibw_pyodide_version,
         cibw_sdist,
         cibw_test_project,
+        cibw_skip_add_defaults,
         ):
     
     if cibw_sdist and platform.system() == 'Linux':
@@ -871,9 +881,19 @@ def cibuildwheel(
     # Some general flags.
     if 'CIBW_BUILD_VERBOSITY' not in env_extra:
         env_extra['CIBW_BUILD_VERBOSITY'] = '1'
-    if 'CIBW_SKIP' not in env_extra:
-        env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux* *-win32 *-aarch64'
-
+    
+    # Add default flags to CIBW_SKIP.
+    # 2025-10-07: `cp3??t-*` excludes free-threading, which currently breaks
+    # some tests.
+    
+    if cibw_skip_add_defaults:
+        CIBW_SKIP = env_extra.get('CIBW_SKIP', '')
+        CIBW_SKIP += ' pp* *i686 cp36* cp37* *musllinux* *-win32 *-aarch64 cp3??t-*'
+        CIBW_SKIP = CIBW_SKIP.split()
+        CIBW_SKIP = sorted(list(set(CIBW_SKIP)))
+        CIBW_SKIP = ' '.join(CIBW_SKIP)
+        env_extra['CIBW_SKIP'] = CIBW_SKIP
+    
     # Set what wheels to build, if not already specified.
     if 'CIBW_ARCHS' not in env_extra:
         if 'CIBW_ARCHS_WINDOWS' not in env_extra:
