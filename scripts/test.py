@@ -929,10 +929,14 @@ def cibuildwheel(
         env_extra['CIBW_PYODIDE_VERSION'] = cibw_pyodide_version
         env_extra['CIBW_ENABLE'] = 'pyodide-prerelease'
 
-    # Pass all the environment variables we have set, to Linux
-    # docker. Note that this will miss any settings in the original
-    # environment.
-    env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = ' '.join(sorted(env_extra.keys()))
+    # Pass all the environment variables we have set, to Linux docker. Note
+    # that this will miss any settings in the original environment. We have to
+    # add CIBW_BUILD explicitly because we haven't set it yet.
+    CIBW_ENVIRONMENT_PASS_LINUX = set(env_extra.keys())
+    CIBW_ENVIRONMENT_PASS_LINUX.add('CIBW_BUILD')
+    CIBW_ENVIRONMENT_PASS_LINUX = sorted(list(CIBW_ENVIRONMENT_PASS_LINUX))
+    CIBW_ENVIRONMENT_PASS_LINUX = ' '.join(CIBW_ENVIRONMENT_PASS_LINUX)
+    env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = CIBW_ENVIRONMENT_PASS_LINUX
     
     if cibw_test_project:
         cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
