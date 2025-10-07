@@ -631,3 +631,22 @@ def test_4388():
         assert rms == 0
     else:
         assert rms >= 10
+
+
+def test_4699():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4699.pdf')
+    path_png_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4699.png')
+    path_png_actual = os.path.normpath(f'{__file__}/../../tests/test_4699.png')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        pixmap = page.get_pixmap()
+        pixmap.save(path_png_actual)
+    print(f'Have saved to {path_png_actual=}.')
+    rms = gentle_compare.pixmaps_rms(path_png_expected, pixmap)
+    print(f'test_4699(): {rms=}')
+    if pymupdf.mupdf_version_tuple >= (1, 27):
+        assert rms == 0
+    else:
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert 'syntax error: cannot find ExtGState resource' in wt
+        assert rms > 20
