@@ -26,7 +26,7 @@ Change Log
   * Retrospectively mark `4544 <https://github.com/pymupdf/PyMuPDF/issues/4544>`_ as fixed in 1.26.4.
 
 
-**Changes in version 1.26.4**
+**Changes in version 1.26.4 (2025-08-25)**
 
 * Use MuPDF-1.26.7.
 
