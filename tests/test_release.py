@@ -5,14 +5,16 @@ import re
 import sys
 
 
-g_root = os.path.normpath(f'{__file__}/../../')
-g_root = os.path.relpath(g_root)
+g_root_abs = os.path.normpath(f'{__file__}/../../')
 
-sys.path.insert(0, g_root)
+sys.path.insert(0, g_root_abs)
 try:
+    import pipcl
     import setup
 finally:
     del sys.path[0]
+
+g_root = pipcl.relpath(g_root_abs)
 
 
 def _file_line(path, text, re_match, offset=+2):
