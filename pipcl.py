@@ -69,6 +69,9 @@ class Package:
     by legacy distutils/setuptools and described in:
     https://pip.pypa.io/en/stable/reference/build-system/setup-py/
 
+    The file pyproject.toml must exist; this is checked if/when fn_build() is
+    called.
+
     Here is a `doctest` example of using pipcl to create a SWIG extension
     module. Requires `swig`.
 
@@ -335,63 +338,86 @@ class Package:
             wheel_compresslevel = None,
             ):
         '''
-        The initial args before `root` define the package
-        metadata and closely follow the definitions in:
+        The initial args before `entry_points` define the
+        package metadata and closely follow the definitions in:
         https://packaging.python.org/specifications/core-metadata/
 
         Args:
 
             name:
+                Used for metadata `Name`.
                 A string, the name of the Python package.
             version:
+                Used for metadata `Version`.
                 A string, the version of the Python package. Also see PEP-440
                 `Version Identification and Dependency Specification`.
             platform:
+                Used for metadata `Platform`.
                 A string or list of strings.
             supported_platform:
+                Used for metadata `Supported-Platform`.
                 A string or list of strings.
             summary:
+                Used for metadata `Summary`.
                 A string, short description of the package.
             description:
+                Used for metadata `Description`.
                 A string. If contains newlines, a detailed description of the
                 package. Otherwise the path of a file containing the detailed
                 description of the package.
             description_content_type:
+                Used for metadata `Description-Content-Type`.
                 A string describing markup of `description` arg. For example
                 `text/markdown; variant=GFM`.
             keywords:
+                Used for metadata `Keywords`.
                 A string containing comma-separated keywords.
             home_page:
+                Used for metadata `Home-page`.
                 URL of home page.
             download_url:
+                Used for metadata `Download-URL`.
                 Where this version can be downloaded from.
             author:
+                Used for metadata `Author`.
                 Author.
             author_email:
+                Used for metadata `Author-email`.
                 Author email.
             maintainer:
+                Used for metadata `Maintainer`.
                 Maintainer.
             maintainer_email:
+                Used for metadata `Maintainer-email`.
                 Maintainer email.
             license:
+                Used for metadata `License`.
                 A string containing the license text. Written into metadata
                 file `COPYING`. Is also written into metadata itself if not
                 multi-line.
             classifier:
+                Used for metadata `Classifier`.
                 A string or list of strings. Also see:
 
                 * https://pypi.org/pypi?%3Aaction=list_classifiers
                 * https://pypi.org/classifiers/
 
             requires_dist:
-                A string or list of strings. None items are ignored. Also see PEP-508.
+                Used for metadata `Requires-Dist`.
+                A string or list of strings, Python packages required
+                at runtime. None items are ignored.
             requires_python:
+                Used for metadata `Requires-Python`.
                 A string or list of strings.
             requires_external:
+                Used for metadata `Requires-External`.
                 A string or list of strings.
             project_url:
-                A string or list of strings, each of the form: `{name}, {url}`.
+                Used for metadata `Project-URL`.
+                A string or list of strings, each of the form: `{name},
+                {url}`.
             provides_extra:
+                Used for metadata `Provides-Extra`.
                 A string or list of strings.
 
             entry_points:
@@ -456,6 +482,11 @@ class Package:
                 default being `sysconfig.get_path('platlib')` e.g.
                 `myvenv/lib/python3.9/site-packages/`.
 
+                When calling this function, we assert that the file
+                pyproject.toml exists in the current directory. (We do this
+                here rather than in pipcl.Package's constructor, as otherwise
+                importing setup.py from non-package-related code could fail.)
+
             fn_clean:
                 A function taking a single arg `all_` that cleans generated
                 files. `all_` is true iff `--all` is in argv.
@@ -474,8 +505,7 @@ class Package:
                 It can be convenient to use `pipcl.git_items()`.
 
                 The specification for sdists requires that the list contains
-                `pyproject.toml`; we enforce this with a diagnostic rather than
-                raising an exception, to allow legacy command-line usage.
+                `pyproject.toml`; we enforce this with a Python assert.
 
             tag_python:
                 First element of wheel tag defined in PEP-425. If None we use
@@ -822,12 +852,11 @@ class Package:
                         assert 0, f'Path is inside sdist_directory={sdist_directory}: {from_!r}'
                     assert os.path.exists(from_), f'Path does not exist: {from_!r}'
                     assert os.path.isfile(from_), f'Path is not a file: {from_!r}'
-                    if to_rel == 'pyproject.toml':
-                        found_pyproject_toml = True
                     add(from_, to_rel)
+                if to_rel == 'pyproject.toml':
+                    found_pyproject_toml = True
 
-            if not found_pyproject_toml:
-                log0(f'Warning: no pyproject.toml specified.')
+            assert found_pyproject_toml, f'Cannot create sdist because file not specified: pyproject.toml'
 
             # Always add a PKG-INFO file.
             add_string(self._metainfo(), 'PKG-INFO')
@@ -978,6 +1007,9 @@ class Package:
 
     def _call_fn_build( self, config_settings=None):
         assert self.fn_build
+        assert os.path.isfile('pyproject.toml'), (
+                'Cannot create package because file does not exist: pyproject.toml'
+                )
         log2(f'calling self.fn_build={self.fn_build}')
         if inspect.signature(self.fn_build).parameters:
             ret = self.fn_build(config_settings)
@@ -985,6 +1017,28 @@ class Package:
             ret = self.fn_build()
         assert isinstance( ret, (list, tuple)), \
                 f'Expected list/tuple from {self.fn_build} but got: {ret!r}'
+
+        # Check that any extensions that we have built, have same
+        # py_limited_api value. If package is marked with py_limited_api=True
+        # then non-py_limited_api extensions seem to fail at runtime on
+        # Windows.
+        #
+        # (We could possibly allow package py_limited_api=False and extensions
+        # py_limited_api=True, but haven't tested this, and it seems simpler to
+        # be strict.)
+        for item in ret:
+            from_, (to_abs, to_rel) = self._fromto(item)
+            from_abs = os.path.abspath(from_)
+            is_py_limited_api = _extensions_to_py_limited_api.get(from_abs)
+            if is_py_limited_api is not None:
+                assert bool(self.py_limited_api) == bool(is_py_limited_api), (
+                        f'Extension was built with'
+                        f' py_limited_api={is_py_limited_api} but pipcl.Package'
+                        f' name={self.name!r} has'
+                        f' py_limited_api={self.py_limited_api}:'
+                        f' {from_abs!r}'
+                        )
+        
         return ret
 
 
@@ -1519,6 +1573,7 @@ class Package:
         log2(f'returning {from_=} {to_=}')
         return from_, to_
 
+_extensions_to_py_limited_api = dict()
 
 def build_extension(
         name,
@@ -1628,6 +1683,11 @@ def build_extension(
             `compile_extra`.
         py_limited_api:
             If true we build for current Python's limited API / stable ABI.
+
+            Note that we will assert false if this extension is added to a
+            pipcl.Package that has a different <py_limited_api>, because
+            on Windows importing a non-py_limited_api extension inside a
+            py_limited=True package fails.
 
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
@@ -1886,6 +1946,8 @@ def build_extension(
         #run(f'ls -l {path_so}', check=0)
         #run(f'file {path_so}', check=0)
 
+    _extensions_to_py_limited_api[os.path.abspath(path_so)] = py_limited_api
+    
     return path_so_leaf
 
 
@@ -2864,6 +2926,9 @@ def log_line_numbers(yes):
     global g_log_line_numbers
     g_log_line_numbers = bool(yes)
 
+def log(text='', caller=1):
+    _log(text, 0, caller+1)
+
 def log0(text='', caller=1):
     _log(text, 0, caller+1)
 
@@ -3146,11 +3211,8 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
                 # > If you need to have bison first in your PATH, run:
                 # >   echo 'export PATH="/opt/homebrew/opt/bison/bin:$PATH"' >> ~/.zshrc
                 #
-                run(f'brew install bison')
-                PATH = os.environ['PATH']
-                prefix_bison = run('brew --prefix bison', capture=1).strip()
-                PATH = f'{prefix_bison}/bin:{PATH}'
-                swig_env_extra = dict(PATH=PATH)
+                swig_env_extra = dict()
+                macos_add_brew_path('bison', swig_env_extra)
                 run(f'which bison')
                 run(f'which bison', env_extra=swig_env_extra)
             # Build swig.
@@ -3162,6 +3224,38 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
         return swig_binary
     else:
         return swig
+
+
+def macos_add_brew_path(package, env=None, gnubin=True):
+    '''
+    Adds path(s) for Brew <package>'s binaries to env['PATH'].
+    
+    Args:
+        package:
+            Name of package. We get <package_root> of installed package by
+            running `brew --prefix <package>`.
+        env:
+            The environment dict to modify. If None we use os.environ. If PATH
+            is not in <env>, we first copy os.environ['PATH'] into <env>.
+        gnubin:
+            If true, we also add path to gnu binaries if it exists,
+            <package_root>/libexe/gnubin.
+    '''
+    if not darwin():
+        return
+    if env is None:
+        env = os.environ
+    if 'PATH' not in env:
+        env['PATH'] = os.environ['PATH']
+    package_root = run(f'brew --prefix {package}', capture=1).strip()
+    def add(path):
+        if os.path.isdir(path):
+            log1(f'Adding to $PATH: {path}')
+            PATH = env['PATH']
+            env['PATH'] = f'{path}:{PATH}'
+    add(f'{package_root}/bin')
+    if gnubin:
+        add(f'{package_root}/libexec/gnubin')
 
 
 def _show_dict(d):
