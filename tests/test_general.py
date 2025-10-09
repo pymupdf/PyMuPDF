@@ -1989,7 +1989,9 @@ def test_gitinfo():
     print(f'{pymupdf.pymupdf_git_branch=}')
     print(f'{pymupdf.pymupdf_git_sha=}')
     print(f'{pymupdf.pymupdf_version=}')
-    print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
+    print(f'{pymupdf.pymupdf_git_diff=}')
+    if pymupdf.pymupdf_git_diff:
+        print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
     
 
 def test_4392():
@@ -2086,7 +2088,7 @@ def test_4590():
 
 def test_4702():
     if os.environ.get('PYODIDE_ROOT'):
-        # util.download() uses subrocess.
+        # util.download() uses subprocess.
         print('test_4702(): not running on Pyodide - cannot run child processes.')
         return
 
@@ -2115,3 +2117,66 @@ def test_4702():
             _ = document.xref_object(xref)
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'repairing PDF document'
+
+
+def test_4712():
+    '''
+    Crash with "corrupted double-linked list
+    '''
+    if 1:
+        print(f'test_4712(): Not running because known to fail.')
+        return
+    path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
+    path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
+    doc1 = pymupdf.open(path_a)
+    for i in range(6):
+        doc1.load_page(i).get_pixmap()
+    doc2 = pymupdf.open(path_b)
+    for i in range(6):
+        doc2.load_page(i).get_pixmap()
+
+
+def test_4712m():
+    if 1:
+        print(f'test_4712b(): Not running because known to fail.')
+        return
+    
+    path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
+    path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
+    
+    mupdf = pymupdf.mupdf
+    def get_pixmap(page):
+        displaylist = mupdf.fz_new_display_list_from_page(page)
+        rect = mupdf.fz_bound_display_list(displaylist)
+        irect = mupdf.fz_round_rect(rect)
+        pixmap = mupdf.fz_new_pixmap_with_bbox(
+                mupdf.FzColorspace(mupdf.FzColorspace.Fixed_RGB),
+                irect,
+                mupdf.FzSeparations(),
+                0,  # alpha
+                )
+        mupdf.fz_clear_pixmap_with_value(pixmap, 0xFF)
+        matrix = mupdf.FzMatrix()
+        device = mupdf.fz_new_draw_device(matrix, pixmap)
+        mupdf.fz_run_display_list(
+                displaylist,
+                device,
+                mupdf.FzMatrix(),
+                mupdf.FzRect(mupdf.FzRect.Fixed_INFINITE),
+                mupdf.FzCookie(),
+                )
+        mupdf.fz_close_device(device)
+    
+    def process_document(document):
+        for i in range(6):
+            print(f'    {i=}', flush=1)
+            page = mupdf.fz_load_page(document, i)
+            get_pixmap(page)
+
+    print(f'Processing {path_a=}', flush=1)
+    document_a = mupdf.fz_open_document(path_a)
+    process_document(document_a)
+
+    print(f'Processing {path_b=}', flush=1)
+    document_b = mupdf.fz_open_document(path_b)
+    process_document(document_b)

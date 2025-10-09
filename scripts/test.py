@@ -95,6 +95,10 @@ Command line args:
     --cibw-release-2
         Set up so that `cibw` builds only linux-aarch64 wheel.
     
+    --cibw-skip-add-defaults 0|1
+        If 1 (the default) we add defaults to CIBW_SKIP such as `pp*` (to
+        exclude pypy) and `cp3??t-*` (to exclude free-threading).
+    
     --cibw-test-project 0|1
          If 1, command `cibw` will use a minimal test project instead of the
          PyMuPDF directory itself.
@@ -293,7 +297,7 @@ Command line args:
         Use specified prefix when running pytest, must be one of:
             gdb
             helgrind
-            vagrind
+            valgrind
     
     -v <venv>
         venv is:
@@ -384,6 +388,19 @@ log = pipcl.log0
 run = pipcl.run
 
 
+# We build and test Python 3.x for x in this range.
+python_versions_minor = range(9, 14+1)
+
+def cibw_cp(*version_minors):
+    '''
+    Returns <version_tuples> in 'cp39*' format.
+    '''
+    ret = list()
+    for version_minor in version_minors:
+        ret.append(f'cp3{version_minor}*')
+    return ' '.join(ret)
+
+
 def main(argv):
 
     if github_workflow_unimportant():
@@ -393,6 +410,7 @@ def main(argv):
     cibw_name = None
     cibw_pyodide = None
     cibw_pyodide_version = None
+    cibw_skip_add_defaults = True
     cibw_test_project = None
     commands = list()
     env_extra = dict()
@@ -461,13 +479,14 @@ def main(argv):
             env_extra['CIBW_ARCHS_LINUX'] = 'auto64'
             env_extra['CIBW_ARCHS_MACOS'] = 'auto64'
             env_extra['CIBW_ARCHS_WINDOWS'] = 'auto'    # win32 and win64.
-            env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux*aarch64*'
+            env_extra['CIBW_SKIP'] = '*musllinux*aarch64*'
         
         elif arg == '--cibw-release-2':
             env_extra['CIBW_ARCHS_LINUX'] = 'aarch64'
             # Testing only first and last python versions because otherwise
             # Github times out after 6h.
-            env_extra['CIBW_BUILD'] = 'cp39* cp313*'
+            versions = python_versions_cibw()
+            env_extra['CIBW_BUILD'] = f'{cibw_cp(python_versions_minor[0], python_versions_minor[-1])}'
             os_names = ['linux']
         
         elif arg == '--cibw-archs-linux':
@@ -478,6 +497,9 @@ def main(argv):
         
         elif arg == '--cibw-pyodide':
             cibw_pyodide = int(next(args))
+        
+        elif arg == '--cibw-skip-add-defaults':
+            cibw_skip_add_defaults = int(next(args))
         
         elif arg == '--cibw-test-project':
             cibw_test_project = int(next(args))
@@ -693,6 +715,7 @@ def main(argv):
                     cibw_pyodide_version,
                     cibw_sdist,
                     cibw_test_project,
+                    cibw_skip_add_defaults,
                     )
         
         elif command == 'install':
@@ -843,6 +866,7 @@ def cibuildwheel(
         cibw_pyodide_version,
         cibw_sdist,
         cibw_test_project,
+        cibw_skip_add_defaults,
         ):
     
     if cibw_sdist and platform.system() == 'Linux':
@@ -857,9 +881,19 @@ def cibuildwheel(
     # Some general flags.
     if 'CIBW_BUILD_VERBOSITY' not in env_extra:
         env_extra['CIBW_BUILD_VERBOSITY'] = '1'
-    if 'CIBW_SKIP' not in env_extra:
-        env_extra['CIBW_SKIP'] = 'pp* *i686 cp36* cp37* *musllinux* *-win32 *-aarch64'
-
+    
+    # Add default flags to CIBW_SKIP.
+    # 2025-10-07: `cp3??t-*` excludes free-threading, which currently breaks
+    # some tests.
+    
+    if cibw_skip_add_defaults:
+        CIBW_SKIP = env_extra.get('CIBW_SKIP', '')
+        CIBW_SKIP += ' pp* *i686 cp36* cp37* *musllinux* *-win32 *-aarch64 cp3??t-*'
+        CIBW_SKIP = CIBW_SKIP.split()
+        CIBW_SKIP = sorted(list(set(CIBW_SKIP)))
+        CIBW_SKIP = ' '.join(CIBW_SKIP)
+        env_extra['CIBW_SKIP'] = CIBW_SKIP
+    
     # Set what wheels to build, if not already specified.
     if 'CIBW_ARCHS' not in env_extra:
         if 'CIBW_ARCHS_WINDOWS' not in env_extra:
@@ -896,7 +930,7 @@ def cibuildwheel(
             CIBW_BUILD = 'cp313*'
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
             # Build/test all supported Python versions.
-            CIBW_BUILD = 'cp39* cp310* cp311* cp312* cp313*'
+            CIBW_BUILD = cibw_cp(*python_versions_minor)
         else:
             # Build/test current Python only.
             v = platform.python_version_tuple()[:2]
@@ -915,10 +949,14 @@ def cibuildwheel(
         env_extra['CIBW_PYODIDE_VERSION'] = cibw_pyodide_version
         env_extra['CIBW_ENABLE'] = 'pyodide-prerelease'
 
-    # Pass all the environment variables we have set, to Linux
-    # docker. Note that this will miss any settings in the original
-    # environment.
-    env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = ' '.join(sorted(env_extra.keys()))
+    # Pass all the environment variables we have set, to Linux docker. Note
+    # that this will miss any settings in the original environment. We have to
+    # add CIBW_BUILD explicitly because we haven't set it yet.
+    CIBW_ENVIRONMENT_PASS_LINUX = set(env_extra.keys())
+    CIBW_ENVIRONMENT_PASS_LINUX.add('CIBW_BUILD')
+    CIBW_ENVIRONMENT_PASS_LINUX = sorted(list(CIBW_ENVIRONMENT_PASS_LINUX))
+    CIBW_ENVIRONMENT_PASS_LINUX = ' '.join(CIBW_ENVIRONMENT_PASS_LINUX)
+    env_extra['CIBW_ENVIRONMENT_PASS_LINUX'] = CIBW_ENVIRONMENT_PASS_LINUX
     
     if cibw_test_project:
         cibw_do_test_project(env_extra, CIBW_BUILD, cibw_pyodide, cibw_pyodide_args)
