@@ -2182,7 +2182,7 @@ def git_get(
             If true, we clone with `--recursive --shallow-submodules` and run
             `git submodule update --init --recursive` before returning.
     '''
-    log0(f'{remote=} {local=} {branch=} {tag=}')
+    log0(f'{remote=} {local=} {branch=} {tag=} {text=}')
     
     if text:
         if text.startswith('git:'):
@@ -2276,6 +2276,8 @@ def run(
         timeout=None,
         caller=1,
         prefix=None,
+        encoding=None,  # System default.
+        errors='backslashreplace',
         ):
     '''
     Runs a command using `subprocess.run()`.
@@ -2331,11 +2333,12 @@ def run(
     lines = _command_lines( command)
     if verbose:
         text = f'Running:'
-        if env_extra:
-            for k in sorted(env_extra.keys()):
-                text += f' {k}={shlex.quote(env_extra[k])}'
-        nl = '\n'
+        nl = '\n    '
         text += f' {nl.join(lines)}'
+        if env_extra:
+            text += f'\nwith:\n'
+            for k in sorted(env_extra.keys()):
+                text += f'    {k}={shlex.quote(env_extra[k])}\n'
         log1(text, caller=caller+1)
     sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
@@ -2347,29 +2350,30 @@ def run(
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                encoding='utf8',
+                encoding=encoding,
+                errors=errors,
                 env=env,
                 )
         if capture:
             capture_text = ''
-        decoder = codecs.getincrementaldecoder('utf8')('replace')
+        decoder = codecs.getincrementaldecoder(child.stdout.encoding)(errors)
         line_start = True
+        
         while 1:
             raw = os.read( child.stdout.fileno(), 10000)
             text = decoder.decode(raw, final=not raw)
-            if text:
-                if capture:
-                    capture_text += text
-                lines = text.split('\n')
-                for i, line in enumerate(lines):
-                    if line_start:
-                        sys.stdout.write(prefix)
-                        line_start = False
-                    sys.stdout.write(line)
-                    if i < len(lines) - 1:
-                        sys.stdout.write('\n')
-                        line_start = True
-                sys.stdout.flush()
+            if capture:
+                capture_text += text
+            lines = text.split('\n')
+            for i, line in enumerate(lines):
+                if line_start:
+                    sys.stdout.write(prefix)
+                    line_start = False
+                sys.stdout.write(line)
+                if i < len(lines) - 1:
+                    sys.stdout.write('\n')
+                    line_start = True
+            sys.stdout.flush()
             if not raw:
                 break
         if not line_start:
@@ -2388,7 +2392,8 @@ def run(
                 stdout=subprocess.PIPE if capture else None,
                 stderr=subprocess.STDOUT if capture else None,
                 check=check,
-                encoding='utf8',
+                encoding=encoding,
+                errors=errors,
                 env=env,
                 timeout=timeout,
                 )
