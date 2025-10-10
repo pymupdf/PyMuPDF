@@ -2308,6 +2308,8 @@ void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
             for (auto line: block)
             {
                 int last_char = 0;
+                int prev_c = 0;         // 2025.10.10
+                float prev_x = 0.0f;    // 2025.10.10
                 for (auto ch: line)
                 {
                     fz_rect chbbox = JM_char_bbox( line, ch);
@@ -2316,7 +2318,18 @@ void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
                             )
                     {
                         last_char = ch.m_internal->c;
+                        // 2025.10.10: Insert a space between two separated non-space characters.
+                        if (prev_c > 0 && prev_c != 0x20 && last_char != 0x20)
+                        {
+                            float gap = ch.m_internal->quad.ul.x - prev_x;
+                            if (gap > 0.5f)
+                            {
+                                JM_append_rune(res.m_internal, 0x20);
+                            }
+                        }
                         JM_append_rune(res.m_internal, last_char);
+                        prev_c = last_char;     // 2025.10.10
+                        prev_x = ch.m_internal->quad.ur.x;  // 2025.10.10
                     }
                 }
                 if (last_char != 10 && last_char > 0)
