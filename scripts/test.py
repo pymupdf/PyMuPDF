@@ -652,6 +652,12 @@ def main(argv):
             # Rerun ourselves inside a venv if not already in a venv.
             if not venv_in():
                 if graal:
+                    if 'cibw' in commands:
+                        # We don't create graal/pyenv so wheel/build commands
+                        # will not work.
+                        assert 'wheel' not in commands
+                        assert 'build' not in commands
+                if graal and 'cibw' not in commands:
                     # 2025-07-24: We need the latest pyenv.
                     graalpy = 'graalpy-24.2.1'
                     venv_name = f'venv-pymupdf-{graalpy}'
@@ -725,6 +731,7 @@ def main(argv):
                     cibw_test_project,
                     cibw_test_project_setjmp,
                     cibw_skip_add_defaults,
+                    graal,
                     )
         
         elif command == 'install':
@@ -877,6 +884,7 @@ def cibuildwheel(
         cibw_test_project,
         cibw_test_project_setjmp,
         cibw_skip_add_defaults,
+        graal,
         ):
     
     if cibw_sdist and platform.system() == 'Linux':
@@ -935,7 +943,10 @@ def cibuildwheel(
     CIBW_BUILD = env_extra.get('CIBW_BUILD')
     log(f'{CIBW_BUILD=}')
     if CIBW_BUILD is None:
-        if cibw_pyodide:
+        if graal:
+            CIBW_BUILD = 'gp*'
+            env_extra['CIBW_ENABLE'] = 'graalpy'
+        elif cibw_pyodide:
             # Using python-3.13 fixes problems with MuPDF's setjmp/longjmp.
             CIBW_BUILD = 'cp313*'
         elif os.environ.get('GITHUB_ACTIONS') == 'true':
