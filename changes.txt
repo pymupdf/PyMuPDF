@@ -2,7 +2,10 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.5**
+**Changes in version 1.26.6**
+
+
+**Changes in version 1.26.5** (2025-10-10)
 
 * Use MuPDF-1.26.10.
 
