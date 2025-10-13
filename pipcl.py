@@ -2945,7 +2945,7 @@ def log2(text='', caller=1):
 
 def _log(text, level, caller):
     '''
-    Logs lines with prefix, if <level> is lower than <g_verbose>.
+    Logs lines with prefix, if <level> is lower or equal to <g_verbose>.
     '''
     if level <= g_verbose:
         fr = inspect.stack(context=0)[caller]
@@ -3207,6 +3207,7 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
             if darwin():
                 run(f'brew install automake')
                 run(f'brew install pcre2')
+                run(f'brew install bison')
                 # Default bison doesn't work, and Brew's bison is not added to $PATH.
                 #
                 # > bison is keg-only, which means it was not symlinked into /opt/homebrew,
@@ -3235,6 +3236,8 @@ def macos_add_brew_path(package, env=None, gnubin=True):
     '''
     Adds path(s) for Brew <package>'s binaries to env['PATH'].
     
+    We assert-fail if the relevant directory does no exist.
+    
     Args:
         package:
             Name of package. We get <package_root> of installed package by
@@ -3253,14 +3256,22 @@ def macos_add_brew_path(package, env=None, gnubin=True):
     if 'PATH' not in env:
         env['PATH'] = os.environ['PATH']
     package_root = run(f'brew --prefix {package}', capture=1).strip()
+    log(f'{package=} {package_root=}')
     def add(path):
+        log(f'{path=}')
         if os.path.isdir(path):
-            log1(f'Adding to $PATH: {path}')
+            log(f'Prepending to $PATH: {path}')
             PATH = env['PATH']
             env['PATH'] = f'{path}:{PATH}'
-    add(f'{package_root}/bin')
+            return 1
+        else:
+            log(f'Not a directory: {path=}')
+            return 0
+    n = 0
+    n += add(f'{package_root}/bin')
     if gnubin:
-        add(f'{package_root}/libexec/gnubin')
+        n += add(f'{package_root}/libexec/gnubin')
+    assert n, f'Failed to add to $PATH, {package=} {gnubin=}.'
 
 
 def _show_dict(d):
