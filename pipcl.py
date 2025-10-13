@@ -796,6 +796,7 @@ class Package:
 
         Returns leafname of generated archive within `sdist_directory`.
         '''
+        assert self.fn_sdist, f'fn_sdist() not provided.'
         log2(
                 f' sdist_directory={sdist_directory!r}'
                 f' formats={formats!r}'
@@ -804,11 +805,10 @@ class Package:
         if formats and formats != 'gztar':
             raise Exception( f'Unsupported: formats={formats}')
         items = list()
-        if self.fn_sdist:
-            if inspect.signature(self.fn_sdist).parameters:
-                items = self.fn_sdist(config_settings)
-            else:
-                items = self.fn_sdist()
+        if inspect.signature(self.fn_sdist).parameters:
+            items = self.fn_sdist(config_settings)
+        else:
+            items = self.fn_sdist()
 
         prefix = f'{_normalise2(self.name)}-{self.version}'
         os.makedirs(sdist_directory, exist_ok=True)
