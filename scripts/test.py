@@ -989,23 +989,9 @@ def cibuildwheel(
                 )
         return
     
-    # Build for lowest (assumed first) Python version.
-    #
-    CIBW_BUILD_0 = CIBW_BUILD.split()[0]
-    log(f'Building for first Python version {CIBW_BUILD_0}.')
-    env_extra['CIBW_BUILD'] = CIBW_BUILD_0
-    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
-
-    # Tell cibuildwheel to build and test all specified Python versions; it
-    # will notice that the wheel we built above supports all versions of
-    # Python, so will not actually do any builds here.
-    #
-    # We only do this if there are more than one Python versions. This still
-    # duplicates the testing of the first python version.
-    if len(CIBW_BUILD.split()) > 1:
-        env_extra['CIBW_BUILD'] = CIBW_BUILD
-        run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra)
-        run(f'ls -ld {pymupdf_dir}/wheelhouse/*')
+    env_extra['CIBW_BUILD'] = CIBW_BUILD
+    run(f'cd {pymupdf_dir} && cibuildwheel{cibw_pyodide_args}', env_extra=env_extra, prefix='cibw: ')
+    run(f'ls -ld {pymupdf_dir}/wheelhouse/*')
 
 
 def cibw_do_test_project(
@@ -1167,7 +1153,10 @@ def cibw_do_test_project(
     env_extra['CIBW_TEST_COMMAND'] = CIBW_TEST_COMMAND
     #env_extra['CIBW_TEST_COMMAND'] = ''
     
-    run(f'cd {testdir} && cibuildwheel --output-dir ../wheelhouse{cibw_pyodide_args}', env_extra=env_extra)
+    run(f'cd {testdir} && cibuildwheel --output-dir ../wheelhouse{cibw_pyodide_args}',
+            env_extra=env_extra,
+            prefix='cibw: ',
+            )
     run(f'ls -ldt {pymupdf_dir_abs}/wheelhouse/*')
         
 
