@@ -2123,8 +2123,8 @@ def test_4712():
     '''
     Crash with "corrupted double-linked list
     '''
-    if 1:
-        print(f'test_4712(): Not running because known to fail.')
+    if pymupdf.mupdf_version_tuple < (1, 26, 11):
+        print(f'test_4712m(): Not running because known to fail on mupdf < 1.26.11: {pymupdf.mupdf_version=}.')
         return
     path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
     path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
@@ -2137,8 +2137,8 @@ def test_4712():
 
 
 def test_4712m():
-    if 1:
-        print(f'test_4712b(): Not running because known to fail.')
+    if pymupdf.mupdf_version_tuple < (1, 26, 11):
+        print(f'test_4712m(): Not running because known to fail on mupdf < 1.26.11: {pymupdf.mupdf_version=}.')
         return
     
     path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
