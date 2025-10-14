@@ -27,7 +27,7 @@ import warnings
 import weakref
 import zipfile
 from . import extra
-from . import reading_order
+import importlib.util
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -351,6 +351,7 @@ def _warn_layout_once():
         and not callable(_get_layout)
         and os.getenv("PYMUPDF_SUGGEST_LAYOUT_ANALYZER") != "0"
         and not hasattr(pymupdf, "layout")
+        and not importlib.util.find_spec("pymupdf.layout")
     ):
         print(msg)
         _recommend_layout = False
@@ -10819,7 +10820,7 @@ class Page:
             return
 
         layout_info = _get_layout(self)
-        self.layout_information = reading_order.find_reading_order(layout_info, vertical_gap=vertical_gap)
+        self.layout_information = layout_info
 
     @property
     def artbox(self):
