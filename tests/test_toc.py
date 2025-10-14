@@ -76,8 +76,8 @@ def test_circular():
     """The test file contains circular bookmarks."""
     doc = pymupdf.open(circular)
     toc = doc.get_toc(False)  # this must not loop
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
+    if pymupdf.mupdf_version_tuple < (1, 27):
+        # Expect warning.
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'Bad or missing prev pointer in outline tree, repairing', \
                 f'{wt=}'
