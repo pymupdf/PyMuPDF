@@ -928,17 +928,7 @@ class Package:
             ret = ret.replace('-', '_').replace('.', '_').lower()
             log0(f'From sysconfig.get_platform(): {ret=}.')
 
-            # We need to patch things on MacOS.
-            #
-            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
-            # causes `pip` to fail with: `not a supported wheel on this
-            # platform`. We seem to need to add `_0` to the OS version.
-            #
-            m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', ret)
-            if m:
-                ret2 = f'{m.group(1)}_0{m.group(2)}'
-                log0(f'After macos patch, changing from {ret!r} to {ret2!r}.')
-                ret = ret2
+            ret = _macos_fixup_platform_tag(ret)
 
         log0( f'tag_platform(): returning {ret=}.')
         assert '-' not in ret
@@ -2622,6 +2612,37 @@ def macos_patch( library, *sublibraries):
     subprocess.run( command, shell=1, check=1)
     subprocess.run( f'otool -L {library}', shell=1, check=1)
 
+
+def _macos_fixup_platform_tag(tag):
+    '''
+    Patch up platform tag on MacOS.
+
+    E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl` causes `pip` to fail with:
+    `not a supported wheel on this platform`. We seem to need to add `_0` to
+    the OS version.
+
+    And we replace trailing `universal2` with x86_64 or arm64, because we don't
+    create universal wheels.
+    
+    >>> pt = _macos_fixup_platform_tag('macosx_10_13_universal2')
+    >>> assert pt == f'macosx_10_13_{platform.machine()}'
+    >>> pt = _macos_fixup_platform_tag('macosx_13_universal2')
+    >>> assert pt == f'macosx_13_0_{platform.machine()}', f'{pt=}'
+    '''
+    m = re.match( '^macosx_([0-9_]+)_([^0-9].+)$', tag)
+    if not m:
+        return tag
+    a = m.group(1)
+    if '_' not in a:
+        a += '_0'
+    b = m.group(2)
+    if b == 'universal2':
+        # Replace with x86_64 or arm64.
+        b = platform.machine()
+    ret = f'macosx_{a}_{b}'
+    #log0(f'Changing from {tag=} to {ret=}.')
+    return ret
+    
 
 # Internal helpers.
 #
