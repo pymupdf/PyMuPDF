@@ -14660,6 +14660,10 @@ class Rect:
     def height(self):
         return max(0, self.y1 - self.y0)
 
+    def get_area(self, *args) -> float:
+        """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
+        return _rect_area(self.width, self.height, args)
+
     def include_point(self, p):
         """Extend to include point-like p."""
         if len(p) != 2:
@@ -17263,13 +17267,7 @@ class IRect:
 
     def get_area(self, *args) -> float:
         """Calculate area of rectangle.\nparameter is one of 'px' (default), 'in', 'cm', or 'mm'."""
-        if args:
-            unit = args[0]
-        else:
-            unit = "px"
-        u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (2.54, 72.0), "mm": (25.4, 72.0)}
-        f = (u[unit][0] / u[unit][1]) ** 2
-        return f * self.width * self.height
+        return _rect_area(self.width, self.height, args)
 
     def include_point(self, p):
         """Extend rectangle to include point p."""
@@ -18276,6 +18274,13 @@ zapf_glyphs = ( # Glyph list for the built-in font 'ZapfDingbats'
 
 # Functions
 #
+
+def _rect_area(width, height, args):
+    # Used by IRect.get_area() and Rect.get_area().
+    unit = args[0] if args else 'px'
+    u = {"px": (1, 1), "in": (1.0, 72.0), "cm": (2.54, 72.0), "mm": (25.4, 72.0)}
+    f = (u[unit][0] / u[unit][1]) ** 2
+    return f * width * height
 
 def _read_samples( pixmap, offset, n):
     # fixme: need to be able to get a sample in one call, as a Python
