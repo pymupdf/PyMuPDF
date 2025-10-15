@@ -644,7 +644,7 @@ def test_4699():
     print(f'Have saved to {path_png_actual=}.')
     rms = gentle_compare.pixmaps_rms(path_png_expected, pixmap)
     print(f'test_4699(): {rms=}')
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 26, 11):
         assert rms == 0
     else:
         wt = pymupdf.TOOLS.mupdf_warnings()
