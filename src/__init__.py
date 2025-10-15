@@ -4935,7 +4935,7 @@ class Document:
                         o = mupdf.pdf_array_get( intent, j)
                         if mupdf.pdf_is_name( o):
                             intents.append( mupdf.pdf_to_name( o))
-            if mupdf_version_tuple >= (1, 27):
+            if mupdf_version_tuple >= (1, 26, 11):
                 resource_stack = mupdf.PdfResourceStack()
                 hidden = mupdf.pdf_is_ocg_hidden( pdf, resource_stack, usage, ocg)
             else:
