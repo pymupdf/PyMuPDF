@@ -4,8 +4,6 @@ Change Log
 
 **Changes in version 1.26.6**
 
-* Use MuPDF-1.26.11.
-
 * Fixed issues:
 
   * **Fixed** `4699 <https://github.com/pymupdf/PyMuPDF/issues/4699>`_: cannot find ExtGState resource
