@@ -1739,29 +1739,6 @@ static const char* JM_font_name(fz_font* font)
     return s + 1;
 }
 
-static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
-{
-    if (line->wmode == 0 && line->dir.x == 1 && line->dir.y == 0)
-    {
-        return ch->origin.y < line->first_char->origin.y - ch->size * 0.1f;
-    }
-    return 0;
-}
-
-static int JM_char_font_flags(fz_font *font, fz_stext_line *line, fz_stext_char *ch)
-{
-    int flags = 0;
-    if (line && ch)
-    {
-        flags += detect_super_script(line, ch) * TEXT_FONT_SUPERSCRIPT;
-    }
-    flags += mupdf::ll_fz_font_is_italic(font) * TEXT_FONT_ITALIC;
-    flags += mupdf::ll_fz_font_is_serif(font) * TEXT_FONT_SERIFED;
-    flags += mupdf::ll_fz_font_is_monospaced(font) * TEXT_FONT_MONOSPACED;
-    flags += mupdf::ll_fz_font_is_bold(font) * TEXT_FONT_BOLD;
-    return flags;
-}
-
 static void jm_trace_text_span(
         jm_tracedraw_device* dev,
         fz_text_span* span,
@@ -2297,35 +2274,62 @@ void JM_append_rune(fz_buffer *buff, int ch);
 // but lines within a block are concatenated by space instead a new-line
 // character (which else leads to 2 new-lines).
 //-----------------------------------------------------------------------------
-void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
+void _as_text(fz_stext_block *block, mupdf::FzBuffer& res, mupdf::FzStextPage& page)
 {
+    /*
+    Recursive function for output by blocks as identified by the
+    MuPDF SEGMENT logic.
+    The recursion happens when we encounter a structure block.
+    */
     fz_rect rect = page.m_internal->mediabox;
-
-    for (auto block: page)
+    int last_char;
+    fz_stext_line *line;
+    fz_stext_char *ch;
+    while (block)
     {
-        if (block.m_internal->type == FZ_STEXT_BLOCK_TEXT)
+        switch (block->type)
         {
-            for (auto line: block)
-            {
-                int last_char = 0;
-                for (auto ch: line)
+            case FZ_STEXT_BLOCK_STRUCT:
+                if (block->u.s.down)
                 {
-                    fz_rect chbbox = JM_char_bbox( line, ch);
-                    if (mupdf::ll_fz_is_infinite_rect(rect)
-                            || JM_rects_overlap(rect, chbbox)
-                            )
+                    _as_text(block->u.s.down->first_block, res, page);
+                }
+                break;
+
+            case FZ_STEXT_BLOCK_TEXT:
+                last_char = 0;
+                for (line = block->u.t.first_line; line; line = line->next)
+                {
+                    for (ch = line->first_char; ch; ch = ch->next)
                     {
-                        last_char = ch.m_internal->c;
-                        JM_append_rune(res.m_internal, last_char);
+                        fz_rect chbbox = JM_char_bbox( line, ch);
+                        if (mupdf::ll_fz_is_infinite_rect(rect) || JM_rects_overlap(rect, chbbox))
+                        {
+                            last_char = ch->c;
+                            JM_append_rune(res.m_internal, last_char);
+                        }
+                    }
+                    if (last_char != 10 && last_char > 0)
+                    {
+                        mupdf::ll_fz_append_string(res.m_internal, "\n");
+                        last_char = 10;
                     }
                 }
                 if (last_char != 10 && last_char > 0)
                 {
                     mupdf::ll_fz_append_string(res.m_internal, "\n");
+                    last_char = 10;
                 }
-            }
+                break;
         }
+        block = block->next;
     }
+}
+
+void JM_print_stext_page_as_text(mupdf::FzBuffer& res, mupdf::FzStextPage& page)
+{
+    fz_stext_block *block = page.m_internal->first_block;
+    _as_text(block, res, page);
 }
 
 
@@ -3006,6 +3010,25 @@ PyObject* get_cdrawings(mupdf::FzPage& page, PyObject *extended=NULL, PyObject *
 }
 
 
+static int detect_super_script(fz_stext_line *line, fz_stext_char *ch)
+{
+    if (line->wmode == 0 && line->dir.x == 1 && line->dir.y == 0)
+    {
+        return ch->origin.y < line->first_char->origin.y - ch->size * 0.1f;
+    }
+    return 0;
+}
+
+static int JM_char_font_flags(fz_font *font, fz_stext_line *line, fz_stext_char *ch)
+{
+    int flags = detect_super_script(line, ch);
+    flags += mupdf::ll_fz_font_is_italic(font) * TEXT_FONT_ITALIC;
+    flags += mupdf::ll_fz_font_is_serif(font) * TEXT_FONT_SERIFED;
+    flags += mupdf::ll_fz_font_is_monospaced(font) * TEXT_FONT_MONOSPACED;
+    flags += mupdf::ll_fz_font_is_bold(font) * TEXT_FONT_BOLD;
+    return flags;
+}
+
 //---------------------------------------------------------------------------
 // APPEND non-ascii runes in unicode escape format to fz_buffer
 //---------------------------------------------------------------------------
@@ -3264,51 +3287,77 @@ int JM_append_word(
     return word_n + 1;  // word counter
 }
 
-PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
+int _as_words(fz_stext_block *block, mupdf::FzBuffer& buff, fz_rect tp_rect, PyObject *lines, int block_n, PyObject *delimiters)
 {
-    int block_n = -1;
-    fz_rect wbbox = fz_empty_rect;  // word bbox
-    fz_rect tp_rect = this_tpage.m_internal->mediabox;
-
-    PyObject *lines = NULL;
-    mupdf::FzBuffer buff = mupdf::fz_new_buffer(64);
-    lines = PyList_New(0);
-    for (mupdf::FzStextBlock block: this_tpage)
+    /* 'buff' is intermediate storage for composing a word. Used as parameter only for
+    avoiding repeated allocation of an FzBuffer.*/
+    int line_n;
+    fz_stext_line *line;
+    fz_stext_char *ch;
+    fz_rect wbbox, blockrect;
+    while (block)
     {
-        block_n++;
-        if (block.m_internal->type != FZ_STEXT_BLOCK_TEXT)
+        switch (block->type)
         {
-            continue;
-        }
-        int line_n = -1;
-        for (mupdf::FzStextLine line: block)
-        {
-            line_n++;
-            int word_n = 0;                 // word counter per line
-            mupdf::fz_clear_buffer(buff);   // reset word buffer
-            size_t buflen = 0;              // reset char counter
-            int last_char_rtl = 0;          // was last character RTL?
-            for (mupdf::FzStextChar ch: line)
-            {
-                mupdf::FzRect cbbox = JM_char_bbox(line, ch);
-                if (!JM_rects_overlap(tp_rect, *cbbox.internal()) && !fz_is_infinite_rect(tp_rect))
+            case FZ_STEXT_BLOCK_STRUCT:
+                if (block->u.s.down)
                 {
-                    continue;
+                    block_n = _as_words(block->u.s.down->first_block, buff, tp_rect, lines, block_n, delimiters);
                 }
-                // prevent Unicode ZWJ 0x200d to start a word
-                if (buflen == 0 && ch.m_internal->c == 0x200d)
+                break;
+
+            case FZ_STEXT_BLOCK_TEXT:
+                block_n++;
+                blockrect = block->bbox;
+                wbbox = fz_empty_rect;
+                line_n = -1;
+                for (line = block->u.t.first_line; line; line = line->next)
                 {
-                    continue;
-                }
-                int word_delimiter = JM_is_word_delimiter(ch.m_internal->c, delimiters);
-                int this_char_rtl = JM_is_rtl_char(ch.m_internal->c);
-                if (word_delimiter || this_char_rtl != last_char_rtl)
-                {
-                    if (buflen == 0 && word_delimiter)
+                    line_n++;
+                    int word_n = 0;                 // word counter per line
+                    mupdf::fz_clear_buffer(buff);   // reset word buffer
+                    int last_char_rtl = 0;          // was last character RTL?
+                            for (ch = line->first_char; ch; ch = ch->next)
                     {
-                        continue;  // skip delimiters at line start
+                        mupdf::FzRect cbbox = JM_char_bbox(line, ch);
+                        if (!JM_rects_overlap(tp_rect, *cbbox.internal()) && !fz_is_infinite_rect(tp_rect))
+                        {
+                            continue;
+                        }
+                        // prevent Unicode ZWJ 0x200d to start a word
+                        if (mupdf::fz_buffer_storage(buff, NULL) == 0 && ch->c == 0x200d)
+                        {
+                            continue;
+                        }
+                        int word_delimiter = JM_is_word_delimiter(ch->c, delimiters);
+                        int this_char_rtl = JM_is_rtl_char(ch->c);
+                        if (word_delimiter || this_char_rtl != last_char_rtl)
+                        {
+                            if (mupdf::fz_buffer_storage(buff, NULL) == 0 && word_delimiter)
+                            {
+                                continue;  // skip delimiters at line start
+                            }
+                            if (!fz_is_empty_rect(wbbox))
+                            {
+                                word_n = JM_append_word(
+                                        lines,
+                                        buff.m_internal,
+                                        &wbbox,
+                                        block_n,
+                                        line_n,
+                                        word_n
+                                        );
+                            }
+                            mupdf::fz_clear_buffer(buff);
+                            if (word_delimiter) continue;
+                        }
+                        // append one unicode character to the word
+                        JM_append_rune(buff.m_internal, ch->c);
+                        last_char_rtl = this_char_rtl;
+                        // enlarge word bbox
+                        wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
                     }
-                    if (!fz_is_empty_rect(wbbox))
+                    if (mupdf::fz_buffer_storage(buff, NULL) && !fz_is_empty_rect(wbbox))
                     {
                         word_n = JM_append_word(
                                 lines,
@@ -3320,34 +3369,26 @@ PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
                                 );
                     }
                     mupdf::fz_clear_buffer(buff);
-                    buflen = 0;  // reset char counter
-                    if (word_delimiter) continue;
                 }
-                // append one unicode character to the word
-                JM_append_rune(buff.m_internal, ch.m_internal->c);
-                last_char_rtl = this_char_rtl;
-                buflen++;
-                // enlarge word bbox
-                wbbox = fz_union_rect(wbbox, JM_char_bbox(line, ch));
-            }
-            if (buflen && !fz_is_empty_rect(wbbox))
-            {
-                word_n = JM_append_word(
-                        lines,
-                        buff.m_internal,
-                        &wbbox,
-                        block_n,
-                        line_n,
-                        word_n
-                        );
-            }
-            mupdf::fz_clear_buffer(buff);
-            buflen = 0;
+                break;
         }
+        block = block->next;     
     }
-    return lines;
+    return block_n;
 }
 
+
+PyObject* extractWORDS(mupdf::FzStextPage& this_tpage, PyObject *delimiters)
+{
+    int block_n = -1;
+    fz_rect tp_rect = this_tpage.m_internal->mediabox;
+    PyObject *lines = NULL;
+    mupdf::FzBuffer buff = mupdf::fz_new_buffer(64);
+    lines = PyList_New(0);
+    mupdf::FzStextBlock block = this_tpage.m_internal->first_block;
+    block_n = _as_words(block.m_internal, buff, tp_rect, lines, block_n, delimiters);
+    return lines;
+}
 
 
 struct ScopedPyObject
@@ -3385,74 +3426,116 @@ called. */
     PyObject*   m_pyobject = nullptr;
 };
 
+int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int block_n)
+{
+    /*
+    Recursive function for output by blocks as identified by the
+    MuPDF SEGMENT logic.
+    Recursion happens on encountering a structure block.
+    In addition to the previous support of text and image, we now also support
+    vector blocks.
+    */
+    PyObject *text = NULL;
+    fz_rect blockrect;
+    mupdf::FzBuffer res;
+    while (block)
+    {
+        switch (block->type)
+        {
+            case FZ_STEXT_BLOCK_STRUCT:
+                if (block->u.s.down)
+                {
+                    block_n = _as_blocks(block->u.s.down->first_block, tp_rect, lines, block_n);
+                }
+                break;
+
+            case FZ_STEXT_BLOCK_TEXT:
+                blockrect = fz_empty_rect;
+                res = mupdf::fz_new_buffer(1024);
+                int last_char;
+                for (fz_stext_line* line = block->u.t.first_line; line; line = line->next)
+                {
+                    fz_rect linerect = fz_empty_rect;
+                    for (fz_stext_char* ch = line->first_char; ch; ch = ch->next)
+                    {
+                        fz_rect cbbox = JM_char_bbox(line, ch);
+                        if (!JM_rects_overlap(tp_rect, cbbox) && !fz_is_infinite_rect(tp_rect))
+                        {
+                            continue;
+                        }
+                        JM_append_rune(res.m_internal, ch->c);
+                        last_char = ch->c;
+                        linerect = fz_union_rect(linerect, cbbox);
+                    }
+                    if (last_char != 10 && !fz_is_empty_rect(linerect))
+                    {
+                            JM_append_rune(res.m_internal, 10);
+                    }
+                    blockrect = fz_union_rect(blockrect, linerect);
+                }
+                text = JM_EscapeStrFromBuffer(res);
+                break;
+
+            case FZ_STEXT_BLOCK_IMAGE:
+                if (fz_contains_rect(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
+                {
+                    blockrect = block->bbox;
+                    fz_image *img = block->u.i.image;
+                    fz_colorspace *cs = img->colorspace;
+                    text = PyUnicode_FromFormat(
+                                    "<image: %s, width: %d, height: %d, bpc: %d>\n",
+                            mupdf::ll_fz_colorspace_name(cs),
+                            img->w,
+                            img->h,
+                            img->bpc
+                            );
+                }
+                break;
+
+            case FZ_STEXT_BLOCK_VECTOR:
+                if (JM_rects_overlap(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
+                {
+                    blockrect = block->bbox;
+                    int alpha = (int) (block->u.v.argb >> 24);
+                    int color = (int) (block->u.v.argb & 0xffffff);
+                    text = PyUnicode_FromFormat(
+                            "\n<vector %s, color: #%06x, alpha: %i, is-rect: %s, continues: %s>\n",
+                            (block->u.v.flags & FZ_STEXT_VECTOR_IS_STROKED) ? "stroked" : "filled",
+                            color,
+                            alpha,
+                            (block->u.v.flags & FZ_STEXT_VECTOR_IS_RECTANGLE) ? "true":"false",
+                            (block->u.v.flags & FZ_STEXT_VECTOR_CONTINUES) ? "true":"false");
+                }
+                break;
+        }
+
+        if (text)
+        {
+            block_n += 1;
+            PyObject *litem = PyTuple_New(7);
+            PyTuple_SET_ITEM(litem, 0, Py_BuildValue("f", blockrect.x0));
+            PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
+            PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
+            PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
+            PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
+            PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
+            PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
+            LIST_APPEND(lines, litem);
+        }
+        text = NULL;
+        block = block->next;
+        }
+    return block_n;
+    }
 
 PyObject* extractBLOCKS(mupdf::FzStextPage& self)
 {
     fz_stext_page *this_tpage = self.m_internal;
     fz_rect tp_rect = this_tpage->mediabox;
-    mupdf::FzBuffer res(1024);
-    ScopedPyObject lines( PyList_New(0));
+    ScopedPyObject lines(PyList_New(0));
     int block_n = -1;
-    for (fz_stext_block* block = this_tpage->first_block; block; block = block->next)
-    {
-        ScopedPyObject text;
-        block_n++;
-        fz_rect blockrect = fz_empty_rect;
-        if (block->type == FZ_STEXT_BLOCK_TEXT)
-        {
-            mupdf::fz_clear_buffer(res);  // set text buffer to empty
-            int line_n = -1;
-            int last_char = 0;
-            (void) line_n;  /* Not actually used, but keeping in the code for now. */
-            for (fz_stext_line* line = block->u.t.first_line; line; line = line->next)
-            {
-                line_n++;
-                fz_rect linerect = fz_empty_rect;
-                for (fz_stext_char* ch = line->first_char; ch; ch = ch->next)
-                {
-                    fz_rect cbbox = JM_char_bbox(line, ch);
-                    if (!JM_rects_overlap(tp_rect, cbbox) && !fz_is_infinite_rect(tp_rect))
-                    {
-                        continue;
-                    }
-                    JM_append_rune(res.m_internal, ch->c);
-                    last_char = ch->c;
-                    linerect = fz_union_rect(linerect, cbbox);
-                }
-                if (last_char != 10 && !fz_is_empty_rect(linerect))
-                {
-                    mupdf::fz_append_byte(res, 10);
-                }
-                blockrect = fz_union_rect(blockrect, linerect);
-            }
-            text = JM_EscapeStrFromBuffer(res);
-        }
-        else if (JM_rects_overlap(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
-        {
-            fz_image *img = block->u.i.image;
-            fz_colorspace *cs = img->colorspace;
-            text = PyUnicode_FromFormat(
-                    "<image: %s, width: %d, height: %d, bpc: %d>",
-                    mupdf::ll_fz_colorspace_name(cs),
-                    img->w,
-                    img->h,
-                    img->bpc
-                    );
-            blockrect = fz_union_rect(blockrect, block->bbox);
-        }
-        if (!fz_is_empty_rect(blockrect))
-        {
-            ScopedPyObject litem = PyTuple_New(7);
-            PyTuple_SET_ITEM(litem.get(), 0, Py_BuildValue("f", blockrect.x0));
-            PyTuple_SET_ITEM(litem.get(), 1, Py_BuildValue("f", blockrect.y0));
-            PyTuple_SET_ITEM(litem.get(), 2, Py_BuildValue("f", blockrect.x1));
-            PyTuple_SET_ITEM(litem.get(), 3, Py_BuildValue("f", blockrect.y1));
-            PyTuple_SET_ITEM(litem.get(), 4, Py_BuildValue("O", text.get()));
-            PyTuple_SET_ITEM(litem.get(), 5, Py_BuildValue("i", block_n));
-            PyTuple_SET_ITEM(litem.get(), 6, Py_BuildValue("i", block->type));
-            LIST_APPEND(lines.get(), litem.get());
-        }
-    }
+    fz_stext_block *block = this_tpage->first_block;
+    block_n = _as_blocks(block, tp_rect, lines.get(), block_n);
     return lines.release();
 }
 
@@ -3599,9 +3682,87 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
         fz_drop_buffer(ctx, mask_buf);
         fz_drop_buffer(ctx, freebuf);
     }
-    fz_catch(ctx) {;}
+    fz_catch(ctx)
+    {
+        fz_ignore_error(ctx);
+    }
     return;
 }
+
+
+void JM_make_vector_block(fz_stext_block *block, PyObject *block_dict)
+{
+    DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+    DICT_SETITEMSTR_DROP(block_dict, "stroked", JM_BOOL(block->u.v.flags & FZ_STEXT_VECTOR_IS_STROKED));
+    DICT_SETITEMSTR_DROP(block_dict, "isrect", JM_BOOL(block->u.v.flags & FZ_STEXT_VECTOR_IS_RECTANGLE));
+    DICT_SETITEMSTR_DROP(block_dict, "continues", JM_BOOL(block->u.v.flags & FZ_STEXT_VECTOR_CONTINUES));
+    int color = (int) block->u.v.argb & 0xffffff;  // extract color components
+    int alpha = block->u.v.argb >> 24;  // extract alpha value
+    DICT_SETITEM_DROP(block_dict, dictkey_color, Py_BuildValue("i", color));
+    DICT_SETITEMSTR_DROP(block_dict, "alpha", Py_BuildValue("i", alpha));
+    return;
+}
+
+void JM_make_grid_block(fz_stext_block *block, PyObject *block_dict)
+{
+    Py_ssize_t i;
+    PyObject *pos;
+
+    DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+
+    DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+
+    DICT_SETITEMSTR_DROP(block_dict, "max_uncertain", Py_BuildValue("ii",
+        block->u.b.xs->max_uncertainty,
+        block->u.b.ys->max_uncertainty));
+
+    // x coordinates with uncertainties
+    pos = PyList_New((size_t) block->u.b.xs->len);
+    for (i = 0; i <  block->u.b.xs->len; i++)
+    {
+        PyList_SetItem(pos, i, Py_BuildValue("fi",
+            block->u.b.xs->list[i].pos,
+            block->u.b.xs->list[i].uncertainty));
+    }
+    DICT_SETITEMSTR_DROP(block_dict, "xpos", pos);
+
+    // y coordinates with uncertainties
+    pos = PyList_New((size_t) block->u.b.ys->len);
+    for (i = 0; i <  block->u.b.ys->len; i++)
+    {
+        PyList_SetItem(pos, i, Py_BuildValue("fi",
+            block->u.b.ys->list[i].pos,
+            block->u.b.ys->list[i].uncertainty));
+    }
+    DICT_SETITEMSTR_DROP(block_dict, "ypos", pos);
+    
+    return;
+}
+
+
+void make_table_dict(fz_stext_page *tp, PyObject *table_dict, PyObject *bbox)
+{
+    fz_rect bounds = JM_rect_from_py(bbox);
+    fz_stext_block *block;
+
+    try
+    {
+        block = mupdf::ll_fz_find_table_within_bounds(tp, bounds);
+    }
+    catch (std::exception&)
+    {
+        /* Ignore failure to find a table structure. */
+        return;
+    }
+
+    // Check if a table structure was found
+    if (block && block->type == FZ_STEXT_BLOCK_GRID)
+    {
+        JM_make_grid_block(block, table_dict);
+    }
+
+}
+
 
 static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int raw, fz_buffer *buff, fz_rect tp_rect)
 {
@@ -3638,38 +3799,111 @@ static void JM_make_text_block(fz_stext_block *block, PyObject *block_dict, int 
     return;
 }
 
+
+void JM_make_struct_block(fz_stext_block *block, PyObject *block_dict)
+{
+    DICT_SETITEMSTR_DROP(block_dict, "index", Py_BuildValue("i",block->u.s.index));
+    if (block->u.s.down)
+    {
+        DICT_SETITEMSTR_DROP(block_dict, "raw", Py_BuildValue("s",block->u.s.down->raw));
+        DICT_SETITEMSTR_DROP(block_dict, "std", Py_BuildValue("s",fz_structure_to_string(block->u.s.down->standard)));
+    }
+    
+}
+
+
+int _as_dict(PyObject *block_list, fz_stext_block *block, fz_buffer *text_buffer, int raw, fz_rect tp_rect, int block_n)
+{
+    /*
+    Recursive function for output by blocks as identified by the
+    MuPDF SEGMENT logic.
+    */
+    PyObject *block_dict;
+    while (block)
+    {
+        switch (block->type)
+        {
+            case FZ_STEXT_BLOCK_STRUCT:
+                if (block->u.s.down && block->u.s.down->first_block)
+                {
+                    block_n++;
+                    block_dict = PyDict_New();
+                    DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+                    DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
+                    DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+                    JM_make_struct_block(block, block_dict);
+                    PyObject *subblocks = PyList_New(0);
+                    block_n = _as_dict(subblocks, block->u.s.down->first_block, text_buffer, raw, tp_rect, block_n);
+                    DICT_SETITEM_DROP(block_dict, dictkey_blocks, subblocks);
+                    LIST_APPEND_DROP(block_list, block_dict);
+                }
+            break;
+
+            case FZ_STEXT_BLOCK_TEXT:
+                if (JM_rects_overlap(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
+                {
+                    block_dict = PyDict_New();
+                    block_n++;
+                    DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+                    DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
+                    DICT_SETITEMSTR_DROP(block_dict, "flags", Py_BuildValue("i", block->u.t.flags));
+                    JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect);
+                    LIST_APPEND_DROP(block_list, block_dict);
+                }
+            break;
+
+            case FZ_STEXT_BLOCK_IMAGE:
+                if (fz_contains_rect(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
+                {
+                    block_dict = PyDict_New();
+                    block_n++;
+                    DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+                    DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
+                    DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
+                    JM_make_image_block(block, block_dict);
+                    LIST_APPEND_DROP(block_list, block_dict);
+                }
+            break;
+
+            case FZ_STEXT_BLOCK_VECTOR:
+                if (JM_rects_overlap(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
+                {
+                    block_dict = PyDict_New();
+                    block_n++;
+                    DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+                    DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
+                    JM_make_vector_block(block, block_dict);
+                    LIST_APPEND_DROP(block_list, block_dict);
+                }
+            break;
+
+            case FZ_STEXT_BLOCK_GRID:
+                if (JM_rects_overlap(tp_rect, block->bbox) || fz_is_infinite_rect(tp_rect))
+                {
+                    block_dict = PyDict_New();
+                    block_n++;
+                    DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
+                    DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
+                    JM_make_grid_block(block, block_dict);
+                    LIST_APPEND_DROP(block_list, block_dict);
+                }
+            break;
+        }
+        block = block->next;
+    }
+    return block_n;
+}
+
 void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw)
 {
     fz_context* ctx = mupdf::internal_context_get();
     fz_stext_block *block;
     fz_buffer *text_buffer = fz_new_buffer(ctx, 128);
-    PyObject *block_dict, *block_list = PyList_New(0);
+    PyObject *block_list = PyList_New(0);
     fz_rect tp_rect = tp->mediabox;
+    block = tp->first_block;
     int block_n = -1;
-    for (block = tp->first_block; block; block = block->next) {
-        block_n++;
-        if (!fz_contains_rect(tp_rect, block->bbox) &&
-            !fz_is_infinite_rect(tp_rect) &&
-            block->type == FZ_STEXT_BLOCK_IMAGE) {
-            continue;
-        }
-        if (!fz_is_infinite_rect(tp_rect) &&
-            fz_is_empty_rect(fz_intersect_rect(tp_rect, block->bbox))) {
-            continue;
-        }
-
-        block_dict = PyDict_New();
-        DICT_SETITEM_DROP(block_dict, dictkey_number, Py_BuildValue("i", block_n));
-        DICT_SETITEM_DROP(block_dict, dictkey_type, Py_BuildValue("i", block->type));
-        if (block->type == FZ_STEXT_BLOCK_IMAGE) {
-            DICT_SETITEM_DROP(block_dict, dictkey_bbox, JM_py_from_rect(block->bbox));
-            JM_make_image_block(block, block_dict);
-        } else {
-            JM_make_text_block(block, block_dict, raw, text_buffer, tp_rect);
-        }
-
-        LIST_APPEND_DROP(block_list, block_dict);
-    }
+    block_n = _as_dict(block_list, block, text_buffer, raw, tp_rect, block_n);
     DICT_SETITEM_DROP(page_dict, dictkey_blocks, block_list);
     fz_drop_buffer(ctx, text_buffer);
 }
@@ -4270,6 +4504,7 @@ fz_stext_page* page_get_textpage(
         PyObject* matrix
         );
 
+void make_table_dict(fz_stext_page *tp, PyObject *table_dict, PyObject *bbox);
 void JM_make_textpage_dict(fz_stext_page *tp, PyObject *page_dict, int raw);
 PyObject *pixmap_pixel(fz_pixmap* pm, int x, int y);
 int pixmap_n(mupdf::FzPixmap& pixmap);
