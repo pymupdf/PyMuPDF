@@ -2180,3 +2180,8 @@ def test_4712m():
     print(f'Processing {path_b=}', flush=1)
     document_b = mupdf.fz_open_document(path_b)
     process_document(document_b)
+
+
+def test_4746():
+    archive = pymupdf.Archive('.')
+    archive.add('foo', __file__)
