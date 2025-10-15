@@ -2619,15 +2619,18 @@ def _macos_fixup_platform_tag(tag):
 
     E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl` causes `pip` to fail with:
     `not a supported wheel on this platform`. We seem to need to add `_0` to
-    the OS version.
+    the OS version. (This is documented at
+    https://packaging.python.org/en/latest/specifications/platform-compatibility-tags/#macos).
 
-    And we replace trailing `universal2` with x86_64 or arm64, because we don't
-    create universal wheels.
+    And with graal we need to replace trailing `universal2` with x86_64
+    or arm64. On non-graal this causes problems because non-universal
+    platform tags seem more restricted than platform tags from
+    sysconfig.get_platform(). For example:
     
-    >>> pt = _macos_fixup_platform_tag('macosx_10_13_universal2')
-    >>> assert pt == f'macosx_10_13_{platform.machine()}'
-    >>> pt = _macos_fixup_platform_tag('macosx_13_universal2')
-    >>> assert pt == f'macosx_13_0_{platform.machine()}', f'{pt=}'
+        pip install ...-macosx_10_13_arm64.whl
+            ERROR: ...-macosx_10_13_arm64.whl is not a supported wheel on this platform.
+        pip install ...-macosx_10_13_universal2.whl
+            Ok.
     '''
     m = re.match( '^macosx_([0-9_]+)_([^0-9].+)$', tag)
     if not m:
@@ -2636,8 +2639,8 @@ def _macos_fixup_platform_tag(tag):
     if '_' not in a:
         a += '_0'
     b = m.group(2)
-    if b == 'universal2':
-        # Replace with x86_64 or arm64.
+    if sys.implementation.name == 'graalpy' and b == 'universal2':
+        # Replace 'universal2' with x86_64 or arm64.
         b = platform.machine()
     ret = f'macosx_{a}_{b}'
     #log0(f'Changing from {tag=} to {ret=}.')
