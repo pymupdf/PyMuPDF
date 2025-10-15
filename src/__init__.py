@@ -120,15 +120,15 @@ def _make_output(
             assert 0, f'Expected prefix `fd:`, `path:`. `path+:` or `logging:` in {text=}.'
     
     if fd is not None:
-        ret = open(fd, mode='w', closefd=False)
+        ret = io.open(fd, mode='w', closefd=False)
     elif stream is not None:
         assert hasattr(stream, 'write')
         assert hasattr(stream, 'flush')
         ret = stream
     elif path is not None:
-        ret = open(path, 'w')
+        ret = io.open(path, 'w')
     elif path_append is not None:
-        ret = open(path_append, 'a')
+        ret = io.open(path_append, 'a')
     elif (0
             or pylogging is not None
             or pylogging_logger is not None
@@ -2010,7 +2010,7 @@ class Archive:
             elif os.path.isfile(content):
                 assert isinstance(path, str) and path != '', \
                         f'Need name for binary content, but {path=}.'
-                with open(content) as f:
+                with io.open(content, 'rb') as f:
                     ff = f.read()
                 self._add_treeitem(ff, path)
                 return make_subarch([path], None, 'tree')
@@ -2055,7 +2055,7 @@ class Archive:
                 self._add_treeitem(data, name, path=path)
             elif isinstance(data, str):
                 if os.path.isfile(data):
-                    with open(data, 'rb') as f:
+                    with io.open(data, 'rb') as f:
                         ff = f.read()
                     self._add_treeitem(ff, name, path=path)
             else:
@@ -7559,7 +7559,7 @@ class Document:
                 ]
 
                 # store glyph ids or unicodes as file
-                with open(f"{tmp_dir}/uncfile.txt", "w", encoding='utf8') as unc_file:
+                with io.open(f"{tmp_dir}/uncfile.txt", "w", encoding='utf8') as unc_file:
                     if 0xFFFD in unc_set:  # error unicode exists -> use glyphs
                         args.append(f"--gids-file={uncfile_path}")
                         gid_set.add(189)
@@ -7574,7 +7574,7 @@ class Document:
                             unc_file.write("%04x\n" % unc)
 
                 # store fontbuffer as a file
-                with open(oldfont_path, "wb") as fontfile:
+                with io.open(oldfont_path, "wb") as fontfile:
                     fontfile.write(buffer)
                 try:
                     os.remove(newfont_path)  # remove old file
