@@ -2184,4 +2184,4 @@ def test_4712m():
 
 def test_4746():
     archive = pymupdf.Archive('.')
-    archive.add('foo', __file__)
+    archive.add(__file__, 'foo')
