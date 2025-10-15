@@ -4,6 +4,11 @@ Change Log
 
 **Changes in version 1.26.6**
 
+* Fixed issues:
+
+  * **Fixed** `4742 <https://github.com/pymupdf/PyMuPDF/issues/4742>`_: 'Rect' object has no attribute 'get_area'
+  * **Fixed** `4746 <https://github.com/pymupdf/PyMuPDF/issues/4746>`_: Document.__init__() got an unexpected keyword argument 'encoding'
+
 
 **Changes in version 1.26.5** (2025-10-10)
 
