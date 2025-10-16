@@ -299,6 +299,8 @@ def test_2533():
     if hasattr(pymupdf, 'mupdf') and not pymupdf.g_use_extra:
         print('Not running test_2533() because rebased with use_extra=0 known to fail')
         return
+    old_settings=pymupdf.TOOLS.unset_quad_corrections()
+    pymupdf.TOOLS.unset_quad_corrections(False)
     pymupdf.TOOLS.set_small_glyph_heights(True)
     try:
         doc = pymupdf.open(os.path.join(scriptdir, "resources", "test_2533.pdf"))
@@ -313,6 +315,7 @@ def test_2533():
         bbox2 = page.search_for(NEEDLE)[0]
         assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
     finally:
+        pymupdf.TOOLS.unset_quad_corrections(old_settings)
         pymupdf.TOOLS.set_small_glyph_heights(False)
 
 

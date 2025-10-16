@@ -28,7 +28,7 @@ import weakref
 import zipfile
 
 from . import extra
-
+import importlib.util
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -333,6 +333,29 @@ class _Globals:
 
 _globals = _Globals()
 
+_get_layout: typing.Optional[typing.Callable] = None
+_recommend_layout = True
+
+
+def no_recommend_layout():
+    global _recommend_layout
+    _recommend_layout = False
+
+
+def _warn_layout_once():
+    msg="""Consider using the pymupdf_layout package for a greatly improved page layout analysis."""
+
+    global _recommend_layout
+    if (
+        1
+        and _recommend_layout
+        and not callable(_get_layout)
+        and os.getenv("PYMUPDF_SUGGEST_LAYOUT_ANALYZER") != "0"
+        and not importlib.util.find_spec("pymupdf.layout")
+    ):
+        print(msg)
+        _recommend_layout = False
+
 
 # Optionally use MuPDF via cppyy bindings; experimental and not tested recently
 # as of 2023-01-20 11:51:40
@@ -383,7 +406,8 @@ from ._build import pymupdf_git_branch  # noqa F401
 from ._build import pymupdf_git_diff    # noqa F401
 from ._build import pymupdf_git_sha     # noqa F401
 from ._build import pymupdf_version     # noqa F401
-from ._build import pymupdf_version_tuple   # noqa F401
+#from ._build import pymupdf_version_tuple   # noqa F401
+pymupdf_version_tuple = tuple(map(int, pymupdf_version.split(".")))
 from ._build import swig_version        # noqa F401
 from ._build import swig_version_tuple  # noqa F401
 
@@ -1054,6 +1078,7 @@ class Annot:
         annot = self.this
         stextpage = mupdf.FzStextPage(annot, options)
         ret = TextPage(stextpage)
+        ret._dev_flags = flags
         p = self.get_parent()
         if isinstance(p, weakref.ProxyType):
             ret.parent = p
@@ -2784,6 +2809,7 @@ class DisplayList:
         stext_options.flags = flags
         val = mupdf.FzStextPage(self.this, stext_options)
         val.thisown = True
+        val._dev_flags = flags
         return val
 
     @property
@@ -9952,9 +9978,10 @@ class Page:
         return rc
 
     def _get_textpage(self, clip=None, flags=0, matrix=None):
-        if g_use_extra:
+        if 1 or g_use_extra:
             ll_tpage = extra.page_get_textpage(self.this, clip, flags, matrix)
             tpage = mupdf.FzStextPage(ll_tpage)
+            tpage._dev_flags = flags
             return tpage
         page = self.this
         options = mupdf.FzStextOptions(flags)
@@ -10781,6 +10808,20 @@ class Page:
         pclip = JM_rect_from_py(clip)
         mupdf.pdf_clip_page(pdfpage, pclip)
 
+    def get_layout(self, vertical_gap=12):
+        """Try to access layout information."""
+
+        if self.layout_information is not None:
+            # layout information already present
+            return
+
+        if not callable(_get_layout):
+            # no layout information available
+            return
+
+        layout_info = _get_layout(self)
+        self.layout_information = layout_info
+
     @property
     def artbox(self):
         """The ArtBox"""
@@ -11432,7 +11473,7 @@ class Page:
         assert isinstance(page, mupdf.FzPage), f'{self.this=}'
         clips = True if extended else False
         prect = mupdf.fz_bound_page(page)
-        if g_use_extra:
+        if 1 or g_use_extra:
             rc = extra.get_cdrawings(page, extended, callback, method)
         else:
             rc = list()
@@ -12146,6 +12187,7 @@ class Page:
             if old_rotation != 0:
                 self.set_rotation(old_rotation)
         textpage = TextPage(textpage)
+        textpage._dev_flags = flags
         textpage.parent = weakref.proxy(self)
         return textpage
 
@@ -12157,7 +12199,7 @@ class Page:
             self.set_rotation(0)
         page = self.this
         rc = []
-        if g_use_extra:
+        if 1 or g_use_extra:
             dev = extra.JM_new_texttrace_device(rc)
         else:
             dev = JM_new_texttrace_device(rc)
@@ -13205,6 +13247,9 @@ class Page:
         return self.parent.page_xref(self.number)
 
     rect = property(bound, doc="page rectangle")
+
+    # any result of layout analysis is stored here
+    layout_information: typing.Optional[typing.List[tuple]] = None
 
 
 class Pixmap:
@@ -16391,7 +16436,7 @@ class TextPage:
 
     def extractBLOCKS(self):
         """Return a list with text block information."""
-        if g_use_extra:
+        if 1 or g_use_extra:
             return extra.extractBLOCKS(self.this)
         block_n = -1
         this_tpage = self.this
@@ -16587,7 +16632,7 @@ class TextPage:
 
     def extractWORDS(self, delimiters=None):
         """Return a list with text word information."""
-        if g_use_extra:
+        if 1 or g_use_extra:
             return extra.extractWORDS(self.this, delimiters)
         buflen = 0
         last_char_rtl = 0
@@ -18969,7 +19014,7 @@ def JM_color_FromSequence(color):
 
 
 def JM_color_count( pm, clip):
-    if g_use_extra:
+    if 1 or g_use_extra:
         return extra.ll_JM_color_count(pm.m_internal, clip)
     
     rc = dict()
@@ -20469,7 +20514,7 @@ def JM_make_annot_DA(annot, ncol, col, fontname, fontsize):
 
 
 def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
-    if g_use_extra:
+    if 1 or g_use_extra:
         return extra.JM_make_spanlist(line_dict, line, raw, buff, tp_rect)
     char_list = None
     span_list = []
@@ -20682,7 +20727,7 @@ def JM_make_image_block(block, block_dict):
 
 
 def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
-    if g_use_extra:
+    if 1 or g_use_extra:
         return extra.JM_make_text_block(block.m_internal, block_dict, raw, buff.m_internal, tp_rect.m_internal)
     line_list = []
     block_rect = mupdf.FzRect(mupdf.FzRect.Fixed_EMPTY)
@@ -20705,8 +20750,8 @@ def JM_make_text_block(block, block_dict, raw, buff, tp_rect):
 
 
 def JM_make_textpage_dict(tp, page_dict, raw):
-    if g_use_extra:
-        return extra.JM_make_textpage_dict(tp.m_internal, page_dict, raw)
+    if 1 or g_use_extra:
+        return extra.JM_make_textpage_dict(tp.m_internal, page_dict, raw, tp._dev_flags)
     text_buffer = mupdf.fz_new_buffer(128)
     block_list = []
     tp_rect = mupdf.FzRect(tp.m_internal.mediabox)
@@ -21356,7 +21401,7 @@ def JM_rotate_page_matrix(page):
 
 
 def JM_search_stext_page(page, needle):
-    if g_use_extra:
+    if 1 or g_use_extra:
         return extra.JM_search_stext_page(page.m_internal, needle)
     
     rect = mupdf.FzRect(page.m_internal.mediabox)

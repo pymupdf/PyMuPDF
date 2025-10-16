@@ -787,7 +787,8 @@ def test_extendable_textpage():
         # Create a pymupdf.TextPage() for <stext_page> so we can use
         # text_page.extractDICT() etc.
         text_page = pymupdf.TextPage(stext_page)
-        
+        text_page._dev_flags = stext_options.flags
+
         # Read text from stext_page using text_page.extractDICT().
         print(f'Using text_page.extractDICT().')
         print(f'{text_page.this.m_internal.mediabox=}')
