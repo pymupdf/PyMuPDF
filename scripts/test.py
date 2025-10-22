@@ -162,10 +162,17 @@ Command line args:
     --graal
         Use graal - run inside a Graal VM instead of a Python venv.
         
-        As of 2025-08-04 we:
-        * Clone the latest pyenv and build it.
-        * Use pyenv to install graalpy.
-        * Use graalpy to create venv.
+        As of 2025-08-04, if specified:
+        * We assert-fail if cibw and non-cibw commands are specified.
+        * If `cibw` is specified:
+            * We use a conventional venv.
+            * We set CIBW_ENABLE=graalpy.
+            * We set CIBW_BUILD = 'gp*'.
+        * Otherwise:
+            * We don't create a conventional venv.
+            * Clone the latest pyenv and build it.
+            * Use pyenv to install graalpy.
+            * Use graalpy to create venv.
         
         [After the first time, suggest `-v 1` to avoid delay from
         updating/building pyenv and recreating the graal venv.]
