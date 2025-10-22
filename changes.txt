@@ -8,6 +8,7 @@ Change Log
 
   * **Fixed** `4699 <https://github.com/pymupdf/PyMuPDF/issues/4699>`_: cannot find ExtGState resource
   * **Fixed** `4712 <https://github.com/pymupdf/PyMuPDF/issues/4712>`_: Crash with "corrupted double-linked list"
+  * **Fixed** `4720 <https://github.com/pymupdf/PyMuPDF/issues/4720>`_: Memory leaking in rewrite_images?
   * **Fixed** `4742 <https://github.com/pymupdf/PyMuPDF/issues/4742>`_: 'Rect' object has no attribute 'get_area'
   * **Fixed** `4746 <https://github.com/pymupdf/PyMuPDF/issues/4746>`_: Document.__init__() got an unexpected keyword argument 'encoding'
 
