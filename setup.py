@@ -1410,7 +1410,8 @@ else:
         elif openbsd:
             print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
         else:
-            ret.append( 'swig')
+            # 2025-10-27: new swig-4.4.0 fails badly at runtime.
+            ret.append( 'swig==4.3.1')
         return ret
 
 
