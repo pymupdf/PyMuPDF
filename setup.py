@@ -726,7 +726,7 @@ def build():
         log(f'Failed to get git information: {e}')
         sha, comment, diff, branch = (None, None, None, None)
     swig = PYMUPDF_SETUP_SWIG or 'swig'
-    swig_version_text = run(f'{swig} --version', capture=1)
+    swig_version_text = run(f'{swig} -version', capture=1)
     m = re.search('\nSWIG Version ([^\n]+)', swig_version_text)
     log(f'{swig_version_text=}')
     assert m, f'Unrecognised {swig_version_text=}'
