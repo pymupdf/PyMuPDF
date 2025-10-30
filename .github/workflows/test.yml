@@ -26,16 +26,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022, macos-13, macos-14]
+        os: [ubuntu-latest, windows-2022, macos-15-intel, macos-14]
 
       # Avoid cancelling of all runs after a single failure.
       fail-fast: false
 
     steps:
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
 
@@ -54,9 +54,9 @@ jobs:
         run:
           python scripts/test.py -a PYMUPDF_test_args
       
-      # Upload generated wheels, to be accessible from github Actions page.
+      # Upload generated wheels, to be accessible from GitHub Actions page.
       #
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           path: |
               wheelhouse/pymupdf*.whl
