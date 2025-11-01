@@ -451,6 +451,9 @@ def test_3854():
 
 
 def test_4155():
+    if platform.python_implementation() == 'GraalVM':
+        print(f'test_4155(): skipping because known to segv on graal.')
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3854.pdf')
     with pymupdf.open(path) as document:
         page = document[0]

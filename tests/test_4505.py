@@ -4,6 +4,9 @@ import os.path
 
 def test_4505():
     """Copy field flags to Parent widget and all of its kids."""
+    #if platform.python_implementation() == 'GraalVM':
+    #    print(f'test_4505(): skipping because known to segv on graal.')
+    #    return
     path = os.path.abspath(f"{__file__}/../../tests/resources/test_4505.pdf")
     doc = pymupdf.open(path)
     page = doc[0]
