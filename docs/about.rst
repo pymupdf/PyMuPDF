@@ -80,6 +80,21 @@ Here are current results, grouped by task:
 
    For more detail regarding the methodology for these performance timings see: :ref:`Performance Comparison Methodology<Appendix4>`.
 
+
+
+Architecture
+----------------------
+
+
+|PyMuPDF| follows a four-layer system architecture with clear separation between components:
+
+- **Python API Layer** - User-facing classes and functions
+- **Python Wrapper Layer** - High-level abstractions and utilities
+- **Binding Layer** - SWIG-generated Python-C bridges
+- **MuPDF Core Layer** - Native C/C++ implementation
+
+.. include:: version.rst
+
 .. _About_License:
 
 License and Copyright
@@ -110,6 +125,7 @@ License and Copyright
 :title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the :title:`MuPDF` logo are registered trademarks of :title:`Artifex Software Inc.`
 
 
-.. include:: version.rst
+
+
 
 .. include:: footer.rst
