@@ -8,7 +8,7 @@ Join us on **Discord** here: [#pymupdf](https://discord.gg/TSpYGBW4eq)
 
 # Installation
 
-**PyMuPDF** requires **Python 3.9 or later**, install using **pip** with:
+**PyMuPDF** requires **Python 3.10 or later**, install using **pip** with:
 
 `pip install PyMuPDF`
 

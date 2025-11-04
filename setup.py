@@ -1358,7 +1358,7 @@ else:
             author = 'Artifex',
             author_email = 'support@artifex.com',
             requires_dist = requires_dist,
-            requires_python = '>=3.9',
+            requires_python = '>=3.10',
             license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
             project_url = [
                 ('Documentation, https://pymupdf.readthedocs.io/'),

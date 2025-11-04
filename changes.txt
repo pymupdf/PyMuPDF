@@ -6,6 +6,8 @@ Change Log
 
 * Use MuPDF-1.26.11.
 
+* Supported Python versions are now 3.10-3.14.
+
 * Fixed issues:
 
   * **Fixed** `4699 <https://github.com/pymupdf/PyMuPDF/issues/4699>`_: cannot find ExtGState resource
