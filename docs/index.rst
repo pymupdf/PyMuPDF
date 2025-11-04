@@ -23,6 +23,12 @@ Welcome to |PyMuPDF|
 
 |PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
+.. if we want a Github repo badge
+
+   .. raw:: html
+
+      <a href="https://trendshift.io/repositories/11536" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11536" alt="pymupdf%2FPyMuPDF | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+
 
 ----
 
@@ -35,8 +41,10 @@ This documentation covers all versions up to |version|.
    :maxdepth: 1
 
    about.rst
+   pymupdf-layout/index.rst
    pymupdf4llm/index.rst
-   pymupdf-pro.rst
+   pymupdf-pro/index.rst
+
 
 
 .. toctree::
