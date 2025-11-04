@@ -748,6 +748,7 @@ def build():
     text += f'pymupdf_git_branch = {branch!r}\n'
     text += f'swig_version = {swig_version!r}\n'
     text += f'swig_version_tuple = {swig_version_tuple!r}\n'
+    log(f'_build.py is:\n{textwrap.indent(text, "    ")}')
     add('p', text.encode(), f'{to_dir}/_build.py')
     
     # Add single README file.
@@ -1409,9 +1410,13 @@ else:
             print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
         elif openbsd:
             print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
-        else:
+        elif PYMUPDF_SETUP_SWIG:
+            pass
+        elif darwin:
             # 2025-10-27: new swig-4.4.0 fails badly at runtime.
-            ret.append( 'swig==4.3.1')
+            ret.append('swig==4.3.1')
+        else:
+            ret.append('swig')
         return ret
 
 
