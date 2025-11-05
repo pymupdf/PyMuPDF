@@ -2,7 +2,14 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.6**
+**Changes in version 1.26.7**
+
+Other:
+
+  * Retrospectively mark `4756 <https://github.com/pymupdf/PyMuPDF/issues/4756>`_ as fixed in 1.26.6.
+
+
+**Changes in version 1.26.6** (2025-11-05)
 
 * Use MuPDF-1.26.11.
 
@@ -15,6 +22,7 @@ Change Log
   * **Fixed** `4720 <https://github.com/pymupdf/PyMuPDF/issues/4720>`_: Memory leaking in rewrite_images?
   * **Fixed** `4742 <https://github.com/pymupdf/PyMuPDF/issues/4742>`_: 'Rect' object has no attribute 'get_area'
   * **Fixed** `4746 <https://github.com/pymupdf/PyMuPDF/issues/4746>`_: Document.__init__() got an unexpected keyword argument 'encoding'
+  * **Fixed** `4756 <https://github.com/pymupdf/PyMuPDF/issues/4756>`_: swig --version doesn't work in all versions of swig; -version should be used instead
 
 
 **Changes in version 1.26.5** (2025-10-10)
