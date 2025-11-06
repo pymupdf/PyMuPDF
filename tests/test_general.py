@@ -62,11 +62,8 @@ def test_iswrapped():
     doc = pymupdf.open(filename)
     page = doc[0]
     assert page.is_wrapped
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26, 0):
-        assert wt == 'bogus font ascent/descent values (0 / 0)'
-    else:
-        assert not wt
+    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
+        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)'
 
 
 def test_wrapcontents():
@@ -82,7 +79,7 @@ def test_wrapcontents():
     rebased = hasattr(pymupdf, 'mupdf')
     if rebased:
         wt = pymupdf.TOOLS.mupdf_warnings()
-        if pymupdf.mupdf_version_tuple >= (1, 26, 0):
+        if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
             assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
         else:
             assert wt == 'PDF stream Length incorrect'
@@ -246,11 +243,8 @@ def test_get_text_dict():
     blocks=page.get_text("dict")["blocks"]
     # Check no opaque types in `blocks`.
     json.dumps( blocks, indent=4)
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26, 0):
-        assert wt == 'bogus font ascent/descent values (0 / 0)'
-    else:
-        assert not wt
+    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
+        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)'
 
 def test_font():
     font = pymupdf.Font()

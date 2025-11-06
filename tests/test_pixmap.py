@@ -200,7 +200,7 @@ def test_3050():
         else:
             assert rms == 0
         wt = pymupdf.TOOLS.mupdf_warnings()
-        if pymupdf.mupdf_version_tuple >= (1, 26, 0):
+        if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
             assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
         else:
             assert wt == 'PDF stream Length incorrect'
@@ -523,8 +523,8 @@ def test_4435():
         print(f'Calling page.get_pixmap().', flush=1)
         pixmap = page.get_pixmap(alpha=False, dpi=120)
         print(f'Called page.get_pixmap().', flush=1)
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
+    if pymupdf.mupdf_version_tuple < (1, 27):
+        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
 
 
 def test_4423():

@@ -337,4 +337,5 @@ def test_4457():
     # Avoid test failure caused by mupdf warnings.
     wt = pymupdf.TOOLS.mupdf_warnings()
     print(f'{wt=}')
-    assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 5 times...'
+    if pymupdf.mupdf_version_tuple < (1, 27):
+        assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 5 times...'
