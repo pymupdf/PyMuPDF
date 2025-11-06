@@ -18,7 +18,8 @@ def test_clip():
     page = doc[0]
     page.clip_to_rect(rect)  # clip the page to the rectangle
     # capture font warning message of MuPDF
-    assert pymupdf.TOOLS.mupdf_warnings() == "bogus font ascent/descent values (0 / 0)"
+    if pymupdf.mupdf_version_tuple < (1, 27):
+        assert pymupdf.TOOLS.mupdf_warnings() == "bogus font ascent/descent values (0 / 0)"
     # extract all text characters and assert that each one
     # has a non-empty intersection with the rectangle.
     chars = [
