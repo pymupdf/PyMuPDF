@@ -14,6 +14,11 @@ import pytest
 # before tests start to run.
 #
 def install_required_packages():
+    PYODIDE_ROOT = os.environ.get('PYODIDE_ROOT')
+    if PYODIDE_ROOT:
+        # We can't run child processes, so rely on required test packages
+        # already being installed, e.g. in our wheel's <requires_dist>.
+        return
     packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell'
     if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
         # No pillow wheel available, and doesn't build easily.
