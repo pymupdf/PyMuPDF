@@ -1412,8 +1412,9 @@ else:
             print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
         elif PYMUPDF_SETUP_SWIG:
             pass
-        elif darwin:
-            # 2025-10-27: new swig-4.4.0 fails badly at runtime.
+        elif darwin or os.environ.get('PYODIDE_ROOT'):
+            # 2025-10-27: new swig-4.4.0 fails badly at runtime on macos.
+            # 2025-11-06: similar for pyodide.
             ret.append('swig==4.3.1')
         else:
             ret.append('swig')
