@@ -10,6 +10,7 @@ import gentle_compare
 
 import os
 import platform
+import re
 import subprocess
 import sys
 import tempfile
@@ -521,7 +522,21 @@ def test_4435():
     with pymupdf.open(path) as document:
         page = document[2]
         print(f'Calling page.get_pixmap().', flush=1)
-        pixmap = page.get_pixmap(alpha=False, dpi=120)
+        if os.environ.get('PYODIDE_ROOT'):
+            # 2025-11-07: Expect alloc failure.
+            try:
+                pixmap = page.get_pixmap(alpha=False, dpi=120)
+            except Exception as e:
+                print(f'Received exception: {type(e)=}: {e}')
+                assert isinstance(e, pymupdf.mupdf.FzErrorSystem), f'Unrecognised {type(e)=}'
+                m = re.match('code=2: malloc [(][0-9]+ bytes[)] failed', str(e))
+                assert m, f'Unrecognised exception text: {e}'
+                return
+            else:
+                # Hopefully this means that mupdf has been fixed.
+                assert 0, 'Expected alloc failure on pyodide'
+        else:
+            pixmap = page.get_pixmap(alpha=False, dpi=120)
         print(f'Called page.get_pixmap().', flush=1)
     if pymupdf.mupdf_version_tuple < (1, 27):
         assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
