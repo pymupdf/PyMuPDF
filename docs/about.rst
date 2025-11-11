@@ -86,12 +86,13 @@ Architecture
 ----------------------
 
 
-|PyMuPDF| follows a four-layer system architecture with clear separation between components:
+|PyMuPDF| follows a four-layer system architecture with the following components:
 
 - **Python API Layer** - User-facing classes and functions
 - **Python Wrapper Layer** - High-level abstractions and utilities
-- **Binding Layer** - SWIG-generated Python-C bridges
+- **Binding Layer** - SWIG-generated wrapper for the MuPDF C++ API
 - **MuPDF Core Layer** - Native C/C++ implementation
+
 
 .. include:: version.rst
 
