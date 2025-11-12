@@ -1665,7 +1665,7 @@ def test_3569():
                 '</defs>\n'
                 '<g clip-path="url(#clip_1)">\n'
                 '<g inkscape:groupmode="layer" inkscape:label="CED - Text">\n'
-                '<text xml:space="preserve" transform="matrix(.06 0 0 .06 3024 2160)" font-size="174.644" font-family="ArialMT"><tspan y="-28538" x="-14909 -14841.063 -14773.127 -14676.024 -14578.922 -14520.766 -14423.663">**L1-13</tspan></text>\n'
+                '<text xml:space="preserve" transform="matrix(.06 0 0 .06 3024 2160)" font-size="174.644" font-family="Nimbus Sans"><tspan y="-28538" x="-14909 -14841.063 -14773.127 -14676.024 -14578.922 -14520.766 -14423.663">**L1-13</tspan></text>\n'
                 '</g>\n'
                 '</g>\n'
                 '<g clip-path="url(#clip_2)">\n'
