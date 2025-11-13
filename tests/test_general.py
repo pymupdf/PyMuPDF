@@ -4,19 +4,20 @@
 * Confirm proper release of file handles via Document.close()
 * Confirm properly raising exceptions in document creation
 """
-import io
-import os
-
 import fnmatch
+import io
 import json
-import pymupdf
+import os
 import pathlib
 import pickle
 import platform
+import pymupdf
 import re
+import shlex
 import shutil
 import subprocess
 import sys
+import sysconfig
 import textwrap
 import time
 import util
@@ -25,6 +26,15 @@ import gentle_compare
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
+
+Py_GIL_DISABLED = sysconfig.get_config_var('Py_GIL_DISABLED')
+try:
+    gil_enabled = sys._is_gil_enabled()
+except AttributeError:
+    gil_enabled = True
+regex_gil_stderr = None
+if Py_GIL_DISABLED and gil_enabled:
+    regex_gil_stderr = '.*The global interpreter lock.*'
 
 
 def test_haslinks():
@@ -1038,10 +1048,10 @@ def check_lines(expected_regexes, actual):
     '''
     Checks lines in <actual> match regexes in <expected_regexes>.
     '''
-    print(f'check_lines():', flush=1)
-    print(f'{expected_regexes=}', flush=1)
-    print(f'{actual=}', flush=1)
+    print(f'### check_lines():', flush=1)
     def str_to_list(s):
+        if s is None:
+            return list()
         if isinstance(s, str):
             return s.split('\n') if s else list()
         return s
@@ -1051,11 +1061,35 @@ def check_lines(expected_regexes, actual):
         expected_regexes.append('') # Always expect a trailing empty line.
     # Remove `None` regexes and make all regexes match entire lines.
     expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
-    print(f'{expected_regexes=}', flush=1)
-    for expected_regex_line, actual_line in zip(expected_regexes, actual):
-        print(f'    {expected_regex_line=}', flush=1)
-        print(f'            {actual_line=}', flush=1)
-        assert re.match(expected_regex_line, actual_line)
+    
+    print(f'expected_regexes ({len(expected_regexes)}):')
+    for i in expected_regexes:
+        print(f'    {i!r}')
+    
+    print(f'actual ({len(actual)}):')
+    for i in actual:
+        print(f'    {i!r}')
+    
+    i_expected = 0
+    i_actual = 0
+    while 1:
+        if i_expected == len(expected_regexes) and i_actual == len(actual):
+            break
+        print(f'expected {i_expected+1}/{len(expected_regexes)}')
+        print(f'actual {i_actual+1}/{len(actual)}')
+        assert i_expected < len(expected_regexes) and i_actual < len(actual)
+        expected_regex_line = expected_regexes[i_expected]
+        actual_line = actual[i_actual]
+        if expected_regex_line is None:
+            i_expected += 1
+            continue
+        print(f'    expected_regex: {expected_regex_line!r}', flush=1)
+        print(f'    actual:         {actual!r}', flush=1)
+        match = re.match(expected_regex_line, actual_line)
+        print(f'    {match=}')
+        assert match
+        i_expected += 1
+        i_actual += 1
     assert len(expected_regexes) == len(actual), \
             f'expected/actual lines mismatch: {len(expected_regexes)=} {len(actual)=}.'
 
@@ -1078,12 +1112,17 @@ def test_cli_out():
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
+    sys.path.append(os.path.normpath(f'{__file__}/../..'))
+    try:
+        import pipcl
+    finally:
+        del sys.path[0]
+    pipcl.show_system()
     def check(
             expect_out,
             expect_err,
             message=None,
             log=None,
-            verbose=0,
             ):
         '''
         Sets PYMUPDF_MESSAGE to `message` and PYMUPDF_LOG to `log`, runs
@@ -1095,39 +1134,44 @@ def test_cli_out():
             env['PYMUPDF_LOG'] = log
         if message:
             env['PYMUPDF_MESSAGE'] = message
+        command = 'pymupdf internal'
+        print(f'Running: {command}', flush=1)
+        if env:
+            print(f'with:')
+            for key in sorted(env.keys()):
+                print(f'    {key}={shlex.quote(env[key])}')
         env = os.environ | env
-        print(f'Running with {env=}: pymupdf internal', flush=1)
-        cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
+        cp = subprocess.run(command, shell=1, check=1, capture_output=1, env=env, text=True)
         
-        if verbose:
-            #print(f'{cp.stdout=}.', flush=1)
-            #print(f'{cp.stderr=}.', flush=1)
-            sys.stdout.write(f'stdout:\n{textwrap.indent(cp.stdout, "    ")}')
-            sys.stdout.write(f'stderr:\n{textwrap.indent(cp.stderr, "    ")}')
         check_lines(expect_out, cp.stdout)
         check_lines(expect_err, cp.stderr)
     
-    #
+    print(f'test_cli_out(): {Py_GIL_DISABLED=}')
+    print(f'test_cli_out(): {gil_enabled=}')
+    
     print(f'Checking default, all output to stdout.')
+    regex_gil_stderr = None
+    if Py_GIL_DISABLED and gil_enabled:
+        regex_gil_stderr = '.*The global interpreter lock.*'
     check(
             [
                 log_prefix,
                 'This is from PyMuPDF message[(][)][.]',
                 '.+This is from PyMuPDF log[(][)].',
             ],
-            '',
+            regex_gil_stderr,
             )
     
     #
     if platform.system() != 'Windows':
         print(f'Checking redirection of everything to /dev/null.')
-        check('', '', 'path:/dev/null', 'path:/dev/null')
+        check('', regex_gil_stderr, 'path:/dev/null', 'path:/dev/null')
     
     #
     print(f'Checking redirection to files.')
     path_out = os.path.abspath(f'{__file__}/../../tests/test_cli_out.out')
     path_err = os.path.abspath(f'{__file__}/../../tests/test_cli_out.err')
-    check('', '', f'path:{path_out}', f'path:{path_err}')
+    check('', regex_gil_stderr, f'path:{path_out}', f'path:{path_err}')
     def read(path):
         with open(path) as f:
             return f.read()
@@ -1143,6 +1187,7 @@ def test_cli_out():
                 'This is from PyMuPDF message[(][)][.]',
             ],
             [
+                regex_gil_stderr,
                 log_prefix,
                 '.+This is from PyMuPDF log[(][)].',
             ],
@@ -1211,6 +1256,7 @@ def test_use_python_logging():
                 '.+this is pymupdf.log[(][)]',
             ],
             [
+                regex_gil_stderr,
                 'this is pymupdf.message[(][)] 2',
                 '.+this is pymupdf.log[(][)] 2',
             ],
@@ -1233,6 +1279,7 @@ def test_use_python_logging():
                 log_prefix,
             ],
             [
+                regex_gil_stderr,
                 'WARNING:pymupdf:this is pymupdf.message[(][)]',
                 'WARNING:pymupdf:.+this is pymupdf.log[(][)]',
             ],
@@ -1247,6 +1294,7 @@ def test_use_python_logging():
             ''',
             '',
             [
+                regex_gil_stderr,
                 log_prefix,
                 'this is pymupdf.message[(][)]',
                 '.+this is pymupdf.log[(][)]',
@@ -1276,6 +1324,8 @@ def test_use_python_logging():
                 log_prefix,
             ],
             [
+                regex_gil_stderr,
+                log_prefix,
                 'WARNING:foo:this is pymupdf.message[(][)]',
                 'ERROR:foo:.+this is pymupdf.log[(][)]',
             ],
@@ -1300,6 +1350,8 @@ def test_use_python_logging():
                 log_prefix,
             ],
             [
+                regex_gil_stderr,
+                log_prefix,
                 'CRITICAL:pymupdf:this is pymupdf.message[(][)]',
                 'INFO:pymupdf:.+this is pymupdf.log[(][)]',
             ],
@@ -1316,7 +1368,9 @@ def test_use_python_logging():
             pymupdf.log('this is pymupdf.log()')
             ''',
             [],
-            [],
+            [
+                regex_gil_stderr,
+            ],
             )
     
 
@@ -2026,10 +2080,15 @@ def test_4392():
         # We get SEGV's etc with older swig.
         if platform.system() == 'Windows':
             assert (e2, e3) == (0xc0000005, 0xc0000005)
-        else:
+        elif platform.system() == 'Linux':
             # On plain linux we get (139, 139). On manylinux we get (-11,
             # -11). On MacOS we get (-11, -11).
             assert (e2, e3) == (139, 139) or (e2, e3) == (-11, -11)
+        elif platform.system() == 'Darwin':
+            # python3.14t gives (4, -11)?
+            assert (e2, e3) == (-11, -11) or (e2, e3) == (4, -11)
+        else:
+            assert e2 and e3
 
 
 def test_4639():
