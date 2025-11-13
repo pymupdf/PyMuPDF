@@ -2435,6 +2435,12 @@ def show_system():
     log(f'{sys.version_info=}')
     log(f'{list(sys.version_info)=}')
     
+    log(f'{sysconfig.get_config_var("Py_GIL_DISABLED")=}')
+    try:
+        log(f'{sys._is_gil_enabled()=}')
+    except AttributeError:
+        log(f'sys._is_gil_enabled() => AttributeError')
+    
     log(f'CPU bits: {cpu_bits()}')
     
     log(f'sys.argv ({len(sys.argv)}):')
