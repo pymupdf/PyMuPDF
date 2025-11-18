@@ -3348,9 +3348,27 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
         if quick and os.path.isfile(swig_binary):
             log1(f'{quick=} and {swig_binary=} already exists, so not downloading/building.')
         else:
+            if darwin():
+                run(f'brew install automake')
+                run(f'brew install pcre2')
+                run(f'brew install bison')
+                # Default bison doesn't work, and Brew's bison is not added to $PATH.
+                #
+                # > bison is keg-only, which means it was not symlinked into /opt/homebrew,
+                # > because macOS already provides this software and installing another version in
+                # > parallel can cause all kinds of trouble.
+                # > 
+                # > If you need to have bison first in your PATH, run:
+                # >   echo 'export PATH="/opt/homebrew/opt/bison/bin:$PATH"' >> ~/.zshrc
+                #
+                swig_env_extra = dict()
+                macos_add_brew_path('bison', swig_env_extra)
+                run(f'which bison')
+                run(f'which bison', env_extra=swig_env_extra)
+            
             # Building swig requires bison>=3.5.
             bison_ok = 0
-            e, text = run(f'bison --version', capture=1, check=0)
+            e, text = run(f'bison --version', capture=1, check=0, env_extra=swig_env_extra)
             if not e:
                 log(textwrap.indent(text, '    '))
                 m = re.search('bison (GNU Bison) ([0-9]+)[.]([0-9]+)', text)
@@ -3398,24 +3416,6 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
                     remote='https://github.com/swig/swig.git',
                     branch='master',
                     )
-            if darwin():
-                run(f'brew install automake')
-                run(f'brew install pcre2')
-                run(f'brew install bison')
-                # Default bison doesn't work, and Brew's bison is not added to $PATH.
-                #
-                # > bison is keg-only, which means it was not symlinked into /opt/homebrew,
-                # > because macOS already provides this software and installing another version in
-                # > parallel can cause all kinds of trouble.
-                # > 
-                # > If you need to have bison first in your PATH, run:
-                # >   echo 'export PATH="/opt/homebrew/opt/bison/bin:$PATH"' >> ~/.zshrc
-                #
-                swig_env_extra = dict()
-                macos_add_brew_path('bison', swig_env_extra)
-                run(f'which bison')
-                run(f'which bison', env_extra=swig_env_extra)
-            
             # Build swig.
             run(f'cd {swig_local} && ./autogen.sh', env_extra=swig_env_extra)
             run(f'cd {swig_local} && ./configure --prefix={swig_local}/install-dir', env_extra=swig_env_extra)
