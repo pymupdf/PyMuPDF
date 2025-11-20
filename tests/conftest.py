@@ -23,6 +23,8 @@ def install_required_packages():
     if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
         # No pillow wheel available, and doesn't build easily.
         pass
+    elif platform.python_implementation() == 'GraalVM':
+        pass
     else:
         packages += ' pillow'
     if platform.system().startswith('MSYS_NT-'):
