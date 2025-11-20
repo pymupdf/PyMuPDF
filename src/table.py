@@ -2656,15 +2656,19 @@ def find_tables(
         tset = TableSettings.resolve(settings=settings)
         page.table_settings = tset
 
-        make_chars(page, clip=clip)  # create character list of page
-        make_edges(
-            page,
-            clip=clip,
-            tset=tset,
-            paths=paths,
-            add_lines=add_lines,
-            add_boxes=add_boxes,
-        )  # create lines and curves
+        if tset.vertical_strategy == "text" or tset.horizontal_strategy == "text":
+            make_chars(page, clip=clip)  # create character list of page
+        if tset.vertical_strategy.startswith(
+            "lines"
+        ) or tset.horizontal_strategy.startswith("lines"):
+            make_edges(
+                page,
+                clip=clip,
+                tset=tset,
+                paths=paths,
+                add_lines=add_lines,
+                add_boxes=add_boxes,
+            )  # create lines and curves
 
         tbf = TableFinder(page, settings=tset)
 
