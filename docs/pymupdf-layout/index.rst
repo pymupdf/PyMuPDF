@@ -103,15 +103,14 @@ So in this case we can adjust our API calls to ignore these elements as follows:
 Extending Capability
 ----------------------------------
 
-
 Using with Pro
 ~~~~~~~~~~~~~~~~~
 
-We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Pro| and thus increase our capability by allowing Office documents to be provided as input files. In this case all we have to do is to include the import for |PyMuPDF Pro| and unlock it before we import & activate |PyMuPDF Layout|::
+We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Pro| and thus increase our capability by allowing Office documents to be provided as input files. In this case all we have to do is to add the import for |PyMuPDF Pro| and unlock it::
 
     import pymupdf.layout
-    import pymupdf.pro
     import pymupdf4llm
+    import pymupdf.pro
     pymupdf.pro.unlock()
 
 Now we can happily load Office files and convert them as follows::
@@ -119,93 +118,24 @@ Now we can happily load Office files and convert them as follows::
     md = pymupdf4llm.to_markdown("sample.docx")
 
 
-
 OCR support
 ~~~~~~~~~~~~~~~~~
 
 The new layout-sensitive PyMuPDF4LLM version also evaluates whether a page would benefit from applying OCR to it. If its heuristics come to this conclusion, the built-in Tesseract-OCR module is automatically invoked. Its results are then handled like normal page content.
+ 
+If a page contains no text at all, but is covered with an image or many vectors, a check is made using `OpenCV <https://pypi.org/project/opencv-python/>`_ whether text is *probably* detectable on the page at all. This is done to tell apart ordinary pictures (like photographies - which we don't want to OCR) from image-based text.
 
-If Tesseract is not installed on your platform, no OCR is attempted.
+If the page does contain text but contains too many unreadable characters (like "�����"), OCR is also executed, but **for the affected text areas only** -- not the full page. This way, we avoid losing already existing text and other content like images and vectors.
 
-
+For these heuristics to work we need both, an existing Tesseract installation and the availability of OpenCV in the Python environment. If either is missing, no OCR is attempted at all.
 
 ----
 
 .. _pymupdf_layout_and_pymupdf4llm_api:
 
-PyMuPDF Layout and parameter caveats
---------------------------------------
+|PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats
+-----------------------------------------------------
 
-
-|PyMuPDF Layout| uses |PyMuPDF4LLM| for its interface. However, if you have imported ``Layout`` then the following caveats apply to the method parameters:
-
-
-+-------------------+-------------+---------+---------+----------------------------------+
-| Parameter         | to_markdown | to_text | to_json | Comments                         |
-+===================+=============+=========+=========+==================================+
-| doc               | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| header            | ✔️          | ✔️      | ignored | **new:** replaces ``margins``    |
-+-------------------+-------------+---------+---------+----------------------------------+
-| footer            | ✔️          | ✔️      | ignored | **new:** replaces ``margins``    |
-+-------------------+-------------+---------+---------+----------------------------------+
-| detect_bg_color   | ❌          | ❌      | ❌      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| dpi               | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| embed_images      | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| extract_words     | later       | later   | later   | postponed                        |
-+-------------------+-------------+---------+---------+----------------------------------+
-| filename          | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| fontsize_limit    | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| force_text        | ❌          | ❌      | ❌      | text in pictures is always       |
-|                   |             |         |         | ignored                          |
-+-------------------+-------------+---------+---------+----------------------------------+
-| graphics_limit    | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| hdr_info          | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| ignore_alpha      | ❌          | ❌      | ❌      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| ignore_code       | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| ignore_graphics   | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| ignore_images     | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| image_format      | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| image_path        | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| image_size_limit  | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| margins           | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| page_chunks       | later       | later   | later   | postponed                        |
-+-------------------+-------------+---------+---------+----------------------------------+
-| page_height       | later       | later   | later   | postponed                        |
-+-------------------+-------------+---------+---------+----------------------------------+
-| page_separators   | later       | later   | later   | postponed                        |
-+-------------------+-------------+---------+---------+----------------------------------+
-| page_width        | later       | later   | later   | postponed                        |
-+-------------------+-------------+---------+---------+----------------------------------+
-| pages             | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-| show_progress     | later       | later   | later   | postponed                        |
-+-------------------+-------------+---------+---------+----------------------------------+
-| table_strategy    | ❌          | ❌      | ❌      | obsolete                         |
-+-------------------+-------------+---------+---------+----------------------------------+
-| use_glyphs        | ❌          | ❌      | ❌      | always show &#xfffd;             |
-+-------------------+-------------+---------+---------+----------------------------------+
-| write_images      | ✔️          | ✔️      | ✔️      |                                  |
-+-------------------+-------------+---------+---------+----------------------------------+
-
-
-
-
-
+If you have imported ``pymupdf.layout``, |PyMuPDF4LLM| changes its behavior in various areas. New methods become available and some features are no longer supported. Please visit `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for a detailed description of the changes. This web site is being kept up to date while we continue to work on improvements.
 
 .. include:: ../footer.rst

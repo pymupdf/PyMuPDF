@@ -9,6 +9,8 @@ PyMuPDF4LLM
 
 |PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in the format you need for **LLM** & **RAG** environments. It supports :ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex document output <extracting_as_llamaindex>`.
 
+When using |PyMuPDF4LLM| with PyMuPDF-Layout, page layout detection will be greatly improved. This is true for table detection, but also for the detection of page headers and footers, footnotes, list items and text paragraphs. In addition two new methods become available, `to_json()` and `to_text()`.
+
 .. important::
 
     You can extend the supported file types to also include **Office** document formats (DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX) by :ref:`using PyMuPDF Pro with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`.
@@ -20,6 +22,8 @@ Features
     - Support for image and vector graphics extraction (and inclusion of references in the MD text)
     - Support for page chunking output.
     - Direct support for output as :ref:`LlamaIndex Documents <extracting_as_llamaindex>`.
+    - In "layout mode": Support for plain text output similar to Markdown
+    - In "layout mode": Support for JSON output
 
 
 Functionality
@@ -68,7 +72,7 @@ Then in your **Python** script do:
 
 .. note::
 
-    Instead of the filename string as above, one can also provide a :ref:`PyMuPDF Document <Document>`. A second parameter may be a list of `0`-based page numbers, e.g. `[0,1]` would just select the first and second pages of the document.
+    Instead of the filename string as above, one can also provide a :ref:`PyMuPDF Document <Document>`. A second parameter may be a list of `0`-based page numbers, e.g. `[0, 1]` would just select the first and second pages of the document.
 
 
 If you want to store your **Markdown** file, e.g. store as a UTF8-encoded file, then do:
