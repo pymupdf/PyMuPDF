@@ -1023,7 +1023,12 @@ def build_mupdf_unix(
     if PYMUPDF_SETUP_SWIG:
         command += f' --swig {shlex.quote(PYMUPDF_SETUP_SWIG)}'
     command += f' -d build/{build_prefix}{build_type} -b'
-    #command += f' --m-target libs'
+    if sys.implementation.name == 'graalpy':
+        # Force rerun of swig.
+        pipcl.run(f'ls -l {mupdf_local}/platform/python/')
+        for p in glob.glob(f'{mupdf_local}/platform/python/mupdfcpp*.i.cpp'):
+            pipcl.log(f'Graal, deleting: {p!r}')
+            pipcl.fs_remove(p)
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
