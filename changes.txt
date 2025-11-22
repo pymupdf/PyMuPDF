@@ -2,7 +2,33 @@ Change Log
 ==========
 
 
-**Changes in version 1.26.5**
+**Changes in version 1.26.7**
+
+Other:
+
+  * Retrospectively mark `4756 <https://github.com/pymupdf/PyMuPDF/issues/4756>`_ as fixed in 1.26.6.
+  * Improved safety of `pymupdf embed-extract`. This now refuses to write to
+    an existing file or outside current directory, unless `-output` or new flag
+    `-unsafe` is specified.
+
+
+**Changes in version 1.26.6** (2025-11-05)
+
+* Use MuPDF-1.26.11.
+
+* Supported Python versions are now 3.10-3.14.
+
+* Fixed issues:
+
+  * **Fixed** `4699 <https://github.com/pymupdf/PyMuPDF/issues/4699>`_: cannot find ExtGState resource
+  * **Fixed** `4712 <https://github.com/pymupdf/PyMuPDF/issues/4712>`_: Crash with "corrupted double-linked list"
+  * **Fixed** `4720 <https://github.com/pymupdf/PyMuPDF/issues/4720>`_: Memory leaking in rewrite_images?
+  * **Fixed** `4742 <https://github.com/pymupdf/PyMuPDF/issues/4742>`_: 'Rect' object has no attribute 'get_area'
+  * **Fixed** `4746 <https://github.com/pymupdf/PyMuPDF/issues/4746>`_: Document.__init__() got an unexpected keyword argument 'encoding'
+  * **Fixed** `4756 <https://github.com/pymupdf/PyMuPDF/issues/4756>`_: swig --version doesn't work in all versions of swig; -version should be used instead
+
+
+**Changes in version 1.26.5** (2025-10-10)
 
 * Use MuPDF-1.26.10.
 

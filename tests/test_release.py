@@ -65,7 +65,8 @@ def test_release_changelog_version():
     p = f'{g_root}/changes.txt'
     with open(p) as f:
         text = f.read()
-    m = re.search(f'\n[*][*]Changes in version ([0-9.]+)[*][*]\n', text)
+    # We match `**Changes in version a.b.c**' optionally followed by ` (YYYY-MM-DD)`.
+    m = re.search(f'\n[*][*]Changes in version ([0-9.]+)[*][*]( [([0-9-]+[)])?\n', text)
     assert m, f'Cannot parse {p}.'
     assert m[1] == setup.version_p, \
             f'{_file_line(p, text, m)}: Cannot find {setup.version_p=} in first changelog item: {m[0].strip()!r}.'

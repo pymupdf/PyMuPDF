@@ -1,5 +1,3 @@
-.. include:: header.rst
-
 ----
 
 This documentation covers PyMuPDF |version|.

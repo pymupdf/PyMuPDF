@@ -38,6 +38,7 @@ import hashlib
 import inspect
 import io
 import os
+import pickle
 import platform
 import re
 import shlex
@@ -68,6 +69,9 @@ class Package:
     with a legacy (pre-PEP-517) pip, as implemented
     by legacy distutils/setuptools and described in:
     https://pip.pypa.io/en/stable/reference/build-system/setup-py/
+
+    The file pyproject.toml must exist; this is checked if/when fn_build() is
+    called.
 
     Here is a `doctest` example of using pipcl to create a SWIG extension
     module. Requires `swig`.
@@ -335,63 +339,86 @@ class Package:
             wheel_compresslevel = None,
             ):
         '''
-        The initial args before `root` define the package
-        metadata and closely follow the definitions in:
+        The initial args before `entry_points` define the
+        package metadata and closely follow the definitions in:
         https://packaging.python.org/specifications/core-metadata/
 
         Args:
 
             name:
+                Used for metadata `Name`.
                 A string, the name of the Python package.
             version:
+                Used for metadata `Version`.
                 A string, the version of the Python package. Also see PEP-440
                 `Version Identification and Dependency Specification`.
             platform:
+                Used for metadata `Platform`.
                 A string or list of strings.
             supported_platform:
+                Used for metadata `Supported-Platform`.
                 A string or list of strings.
             summary:
+                Used for metadata `Summary`.
                 A string, short description of the package.
             description:
+                Used for metadata `Description`.
                 A string. If contains newlines, a detailed description of the
                 package. Otherwise the path of a file containing the detailed
                 description of the package.
             description_content_type:
+                Used for metadata `Description-Content-Type`.
                 A string describing markup of `description` arg. For example
                 `text/markdown; variant=GFM`.
             keywords:
+                Used for metadata `Keywords`.
                 A string containing comma-separated keywords.
             home_page:
+                Used for metadata `Home-page`.
                 URL of home page.
             download_url:
+                Used for metadata `Download-URL`.
                 Where this version can be downloaded from.
             author:
+                Used for metadata `Author`.
                 Author.
             author_email:
+                Used for metadata `Author-email`.
                 Author email.
             maintainer:
+                Used for metadata `Maintainer`.
                 Maintainer.
             maintainer_email:
+                Used for metadata `Maintainer-email`.
                 Maintainer email.
             license:
+                Used for metadata `License`.
                 A string containing the license text. Written into metadata
                 file `COPYING`. Is also written into metadata itself if not
                 multi-line.
             classifier:
+                Used for metadata `Classifier`.
                 A string or list of strings. Also see:
 
                 * https://pypi.org/pypi?%3Aaction=list_classifiers
                 * https://pypi.org/classifiers/
 
             requires_dist:
-                A string or list of strings. None items are ignored. Also see PEP-508.
+                Used for metadata `Requires-Dist`.
+                A string or list of strings, Python packages required
+                at runtime. None items are ignored.
             requires_python:
+                Used for metadata `Requires-Python`.
                 A string or list of strings.
             requires_external:
+                Used for metadata `Requires-External`.
                 A string or list of strings.
             project_url:
-                A string or list of strings, each of the form: `{name}, {url}`.
+                Used for metadata `Project-URL`.
+                A string or list of strings, each of the form: `{name},
+                {url}`.
             provides_extra:
+                Used for metadata `Provides-Extra`.
                 A string or list of strings.
 
             entry_points:
@@ -456,6 +483,11 @@ class Package:
                 default being `sysconfig.get_path('platlib')` e.g.
                 `myvenv/lib/python3.9/site-packages/`.
 
+                When calling this function, we assert that the file
+                pyproject.toml exists in the current directory. (We do this
+                here rather than in pipcl.Package's constructor, as otherwise
+                importing setup.py from non-package-related code could fail.)
+
             fn_clean:
                 A function taking a single arg `all_` that cleans generated
                 files. `all_` is true iff `--all` is in argv.
@@ -474,8 +506,7 @@ class Package:
                 It can be convenient to use `pipcl.git_items()`.
 
                 The specification for sdists requires that the list contains
-                `pyproject.toml`; we enforce this with a diagnostic rather than
-                raising an exception, to allow legacy command-line usage.
+                `pyproject.toml`; we enforce this with a Python assert.
 
             tag_python:
                 First element of wheel tag defined in PEP-425. If None we use
@@ -766,6 +797,7 @@ class Package:
 
         Returns leafname of generated archive within `sdist_directory`.
         '''
+        assert self.fn_sdist, f'fn_sdist() not provided.'
         log2(
                 f' sdist_directory={sdist_directory!r}'
                 f' formats={formats!r}'
@@ -774,11 +806,10 @@ class Package:
         if formats and formats != 'gztar':
             raise Exception( f'Unsupported: formats={formats}')
         items = list()
-        if self.fn_sdist:
-            if inspect.signature(self.fn_sdist).parameters:
-                items = self.fn_sdist(config_settings)
-            else:
-                items = self.fn_sdist()
+        if inspect.signature(self.fn_sdist).parameters:
+            items = self.fn_sdist(config_settings)
+        else:
+            items = self.fn_sdist()
 
         prefix = f'{_normalise2(self.name)}-{self.version}'
         os.makedirs(sdist_directory, exist_ok=True)
@@ -822,12 +853,11 @@ class Package:
                         assert 0, f'Path is inside sdist_directory={sdist_directory}: {from_!r}'
                     assert os.path.exists(from_), f'Path does not exist: {from_!r}'
                     assert os.path.isfile(from_), f'Path is not a file: {from_!r}'
-                    if to_rel == 'pyproject.toml':
-                        found_pyproject_toml = True
                     add(from_, to_rel)
+                if to_rel == 'pyproject.toml':
+                    found_pyproject_toml = True
 
-            if not found_pyproject_toml:
-                log0(f'Warning: no pyproject.toml specified.')
+            assert found_pyproject_toml, f'Cannot create sdist because file not specified: pyproject.toml'
 
             # Always add a PKG-INFO file.
             add_string(self._metainfo(), 'PKG-INFO')
@@ -899,17 +929,7 @@ class Package:
             ret = ret.replace('-', '_').replace('.', '_').lower()
             log0(f'From sysconfig.get_platform(): {ret=}.')
 
-            # We need to patch things on MacOS.
-            #
-            # E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl`
-            # causes `pip` to fail with: `not a supported wheel on this
-            # platform`. We seem to need to add `_0` to the OS version.
-            #
-            m = re.match( '^(macosx_[0-9]+)(_[^0-9].+)$', ret)
-            if m:
-                ret2 = f'{m.group(1)}_0{m.group(2)}'
-                log0(f'After macos patch, changing from {ret!r} to {ret2!r}.')
-                ret = ret2
+            ret = _macos_fixup_platform_tag(ret)
 
         log0( f'tag_platform(): returning {ret=}.')
         assert '-' not in ret
@@ -978,6 +998,9 @@ class Package:
 
     def _call_fn_build( self, config_settings=None):
         assert self.fn_build
+        assert os.path.isfile('pyproject.toml'), (
+                'Cannot create package because file does not exist: pyproject.toml'
+                )
         log2(f'calling self.fn_build={self.fn_build}')
         if inspect.signature(self.fn_build).parameters:
             ret = self.fn_build(config_settings)
@@ -985,6 +1008,28 @@ class Package:
             ret = self.fn_build()
         assert isinstance( ret, (list, tuple)), \
                 f'Expected list/tuple from {self.fn_build} but got: {ret!r}'
+
+        # Check that any extensions that we have built, have same
+        # py_limited_api value. If package is marked with py_limited_api=True
+        # then non-py_limited_api extensions seem to fail at runtime on
+        # Windows.
+        #
+        # (We could possibly allow package py_limited_api=False and extensions
+        # py_limited_api=True, but haven't tested this, and it seems simpler to
+        # be strict.)
+        for item in ret:
+            from_, (to_abs, to_rel) = self._fromto(item)
+            from_abs = os.path.abspath(from_)
+            is_py_limited_api = _extensions_to_py_limited_api.get(from_abs)
+            if is_py_limited_api is not None:
+                assert bool(self.py_limited_api) == bool(is_py_limited_api), (
+                        f'Extension was built with'
+                        f' py_limited_api={is_py_limited_api} but pipcl.Package'
+                        f' name={self.name!r} has'
+                        f' py_limited_api={self.py_limited_api}:'
+                        f' {from_abs!r}'
+                        )
+        
         return ret
 
 
@@ -1519,6 +1564,7 @@ class Package:
         log2(f'returning {from_=} {to_=}')
         return from_, to_
 
+_extensions_to_py_limited_api = dict()
 
 def build_extension(
         name,
@@ -1628,6 +1674,11 @@ def build_extension(
             `compile_extra`.
         py_limited_api:
             If true we build for current Python's limited API / stable ABI.
+
+            Note that we will assert false if this extension is added to a
+            pipcl.Package that has a different <py_limited_api>, because
+            on Windows importing a non-py_limited_api extension inside a
+            py_limited=True package fails.
 
     Returns the leafname of the generated library file within `outdir`, e.g.
     `_{name}.so` on Unix or `_{name}.cp311-win_amd64.pyd` on Windows.
@@ -1886,6 +1937,8 @@ def build_extension(
         #run(f'ls -l {path_so}', check=0)
         #run(f'file {path_so}', check=0)
 
+    _extensions_to_py_limited_api[os.path.abspath(path_so)] = py_limited_api
+    
     return path_so_leaf
 
 
@@ -2120,7 +2173,7 @@ def git_get(
             If true, we clone with `--recursive --shallow-submodules` and run
             `git submodule update --init --recursive` before returning.
     '''
-    log0(f'{remote=} {local=} {branch=} {tag=}')
+    log0(f'{remote=} {local=} {branch=} {tag=} {text=}')
     
     if text:
         if text.startswith('git:'):
@@ -2214,6 +2267,8 @@ def run(
         timeout=None,
         caller=1,
         prefix=None,
+        encoding=None,  # System default.
+        errors='backslashreplace',
         ):
     '''
     Runs a command using `subprocess.run()`.
@@ -2269,11 +2324,12 @@ def run(
     lines = _command_lines( command)
     if verbose:
         text = f'Running:'
-        if env_extra:
-            for k in sorted(env_extra.keys()):
-                text += f' {k}={shlex.quote(env_extra[k])}'
-        nl = '\n'
+        nl = '\n    '
         text += f' {nl.join(lines)}'
+        if env_extra:
+            text += f'\nwith:\n'
+            for k in sorted(env_extra.keys()):
+                text += f'    {k}={shlex.quote(env_extra[k])}\n'
         log1(text, caller=caller+1)
     sep = ' ' if windows() else ' \\\n'
     command2 = sep.join( lines)
@@ -2285,29 +2341,30 @@ def run(
                 shell=True,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                encoding='utf8',
+                encoding=encoding,
+                errors=errors,
                 env=env,
                 )
         if capture:
             capture_text = ''
-        decoder = codecs.getincrementaldecoder('utf8')('replace')
+        decoder = codecs.getincrementaldecoder(child.stdout.encoding)(errors)
         line_start = True
+        
         while 1:
             raw = os.read( child.stdout.fileno(), 10000)
             text = decoder.decode(raw, final=not raw)
-            if text:
-                if capture:
-                    capture_text += text
-                lines = text.split('\n')
-                for i, line in enumerate(lines):
-                    if line_start:
-                        sys.stdout.write(prefix)
-                        line_start = False
-                    sys.stdout.write(line)
-                    if i < len(lines) - 1:
-                        sys.stdout.write('\n')
-                        line_start = True
-                sys.stdout.flush()
+            if capture:
+                capture_text += text
+            lines = text.split('\n')
+            for i, line in enumerate(lines):
+                if line_start:
+                    sys.stdout.write(prefix)
+                    line_start = False
+                sys.stdout.write(line)
+                if i < len(lines) - 1:
+                    sys.stdout.write('\n')
+                    line_start = True
+            sys.stdout.flush()
             if not raw:
                 break
         if not line_start:
@@ -2326,7 +2383,8 @@ def run(
                 stdout=subprocess.PIPE if capture else None,
                 stderr=subprocess.STDOUT if capture else None,
                 check=check,
-                encoding='utf8',
+                encoding=encoding,
+                errors=errors,
                 env=env,
                 timeout=timeout,
                 )
@@ -2376,6 +2434,12 @@ def show_system():
     log(f'{sys.version=}')
     log(f'{sys.version_info=}')
     log(f'{list(sys.version_info)=}')
+    
+    log(f'{sysconfig.get_config_var("Py_GIL_DISABLED")=}')
+    try:
+        log(f'{sys._is_gil_enabled()=}')
+    except AttributeError:
+        log(f'sys._is_gil_enabled() => AttributeError')
     
     log(f'CPU bits: {cpu_bits()}')
     
@@ -2556,6 +2620,40 @@ def macos_patch( library, *sublibraries):
     subprocess.run( f'otool -L {library}', shell=1, check=1)
 
 
+def _macos_fixup_platform_tag(tag):
+    '''
+    Patch up platform tag on MacOS.
+
+    E.g. `foo-1.2.3-cp311-none-macosx_13_x86_64.whl` causes `pip` to fail with:
+    `not a supported wheel on this platform`. We seem to need to add `_0` to
+    the OS version. (This is documented at
+    https://packaging.python.org/en/latest/specifications/platform-compatibility-tags/#macos).
+
+    And with graal we need to replace trailing `universal2` with x86_64
+    or arm64. On non-graal this causes problems because non-universal
+    platform tags seem more restricted than platform tags from
+    sysconfig.get_platform(). For example:
+    
+        pip install ...-macosx_10_13_arm64.whl
+            ERROR: ...-macosx_10_13_arm64.whl is not a supported wheel on this platform.
+        pip install ...-macosx_10_13_universal2.whl
+            Ok.
+    '''
+    m = re.match( '^macosx_([0-9_]+)_([^0-9].+)$', tag)
+    if not m:
+        return tag
+    a = m.group(1)
+    if '_' not in a:
+        a += '_0'
+    b = m.group(2)
+    if sys.implementation.name == 'graalpy' and b == 'universal2':
+        # Replace 'universal2' with x86_64 or arm64.
+        b = platform.machine()
+    ret = f'macosx_{a}_{b}'
+    #log0(f'Changing from {tag=} to {ret=}.')
+    return ret
+    
+
 # Internal helpers.
 #
 
@@ -2599,15 +2697,17 @@ def run_if( command, out, *prerequisites, caller=1):
 
     Args:
         command:
-            The command to run. We write this into a file <out>.cmd so that we
-            know to run a command if the command itself has changed.
+            The command to run. We write this and a hash of argv[0] into a file
+            <out>.cmd so that we know to run a command if the command itself
+            has changed.
         out:
             Path of the output file.
 
         prerequisites:
             List of prerequisite paths or true/false/None items. If an item
             is None it is ignored, otherwise if an item is not a string we
-            immediately return it cast to a bool.
+            immediately return it cast to a bool. We recurse into directories,
+            effectively using the newest file in the directory.
 
     Returns:
         True if we ran the command, otherwise None.
@@ -2666,25 +2766,75 @@ def run_if( command, out, *prerequisites, caller=1):
 
         >>> run_if( f'touch  {out}', out, prerequisite, caller=0)
         pipcl.py:run_if(): Not running command because up to date: 'run_if_test_out'
+    
+    We detect changes to the contents of argv[0]:
+    
+    Create a shell script and run it:
+    
+    >>> _ = subprocess.run('rm run_if_test_argv0.* 1>/dev/null 2>/dev/null || true', shell=1)
+    >>> with open('run_if_test_argv0.sh', 'w') as f:
+    ...     print('#! /bin/sh', file=f)
+    ...     print('echo hello world > run_if_test_argv0.out', file=f)
+    >>> _ = subprocess.run(f'chmod u+x run_if_test_argv0.sh', shell=1)
+    >>> run_if( f'./run_if_test_argv0.sh', f'run_if_test_argv0.out', caller=0)
+    pipcl.py:run_if(): Running command because: File does not exist: 'run_if_test_argv0.out'
+    pipcl.py:run_if(): Running: ./run_if_test_argv0.sh
+    True
+    
+    Running it a second time does nothing:
+    
+    >>> run_if( f'./run_if_test_argv0.sh', f'run_if_test_argv0.out', caller=0)
+    pipcl.py:run_if(): Not running command because up to date: 'run_if_test_argv0.out'
+    
+    Modify the script.
+    
+    >>> with open('run_if_test_argv0.sh', 'a') as f:
+    ...     print('\\necho hello >> run_if_test_argv0.out', file=f)
+    
+    And now it is run because the hash of argv[0] has changed:
+    
+    >>> run_if( f'./run_if_test_argv0.sh', f'run_if_test_argv0.out', caller=0)
+    pipcl.py:run_if(): Running command because: arg0 hash has changed.
+    pipcl.py:run_if(): Running: ./run_if_test_argv0.sh
+    True
     '''
     doit = False
+    
+    # Path of file containing pickle data for command and hash of command's
+    # first arg.
     cmd_path = f'{out}.cmd'
+    
+    def hash_get(path):
+        try:
+            with open(path, 'rb') as f:
+                return hashlib.md5(f.read()).hexdigest()
+        except Exception as e:
+            #log(f'Failed to get hash of {path=}: {e}')
+            return None
+    
+    command_args = shlex.split(command or '')
+    command_arg0_path = fs_find_in_paths(command_args[0])
+    command_arg0_hash = hash_get(command_arg0_path)
+    
+    cmd_args, cmd_arg0_hash = (None, None)
+    if os.path.isfile(cmd_path):
+        with open(cmd_path, 'rb') as f:
+            try:
+                cmd_args, cmd_arg0_hash = pickle.load(f)
+            except Exception as e:
+                #log(f'pickle.load() failed with {cmd_path=}: {e}')
+                pass
 
     if not doit:
+        # Set doit if outfile does not exist.
         out_mtime = _fs_mtime( out)
         if out_mtime == 0:
             doit = f'File does not exist: {out!r}'
 
     if not doit:
-        if os.path.isfile( cmd_path):
-            with open( cmd_path) as f:
-                cmd = f.read()
-        else:
-            cmd = None
-        cmd_args = shlex.split(cmd or '')
-        command_args = shlex.split(command or '')
+        # Set doit if command has changed.
         if command_args != cmd_args:
-            if cmd is None:
+            if cmd_args is None:
                 doit = 'No previous command stored'
             else:
                 doit = f'Command has changed'
@@ -2700,8 +2850,8 @@ def run_if( command, out, *prerequisites, caller=1):
                     # shlex.split().
                     doit += ':\n'
                     lines = difflib.unified_diff(
-                            cmd.split(),
-                            command.split(),
+                            cmd_args,
+                            command_args,
                             lineterm='',
                             )
                     # Skip initial lines.
@@ -2710,6 +2860,13 @@ def run_if( command, out, *prerequisites, caller=1):
                     for line in lines:
                         doit += f'    {line}\n'
 
+    if not doit:
+        # Set doit if argv[0] hash has changed.
+        #print(f'{cmd_arg0_hash=} {command_arg0_hash=}', file=sys.stderr)
+        if command_arg0_hash != cmd_arg0_hash:
+            doit = f'arg0 hash has changed.'
+            #doit = f'arg0 hash has changed from {cmd_arg0_hash=} to {command_arg0_hash=}..'
+    
     if not doit:
         # See whether any prerequisites are newer than target.
         def _make_prerequisites(p):
@@ -2754,8 +2911,9 @@ def run_if( command, out, *prerequisites, caller=1):
         run( command, caller=caller+1)
 
         # Write the command we ran, into `cmd_path`.
-        with open( cmd_path, 'w') as f:
-            f.write( command)
+        
+        with open(cmd_path, 'wb') as f:
+            pickle.dump((command_args, command_arg0_hash), f)
         return True
     else:
         log1( f'Not running command because up to date: {out!r}', caller=caller+1)
@@ -2764,6 +2922,35 @@ def run_if( command, out, *prerequisites, caller=1):
         log2( f'out_mtime={time.ctime(out_mtime)} pre_mtime={time.ctime(pre_mtime)}.'
                 f' pre_path={pre_path!r}: returning {ret!r}.'
                 )
+
+
+def fs_find_in_paths( name, paths=None, verbose=False):
+    '''
+    Looks for `name` in paths and returns complete path. `paths` is list/tuple
+    or `os.pathsep`-separated string; if `None` we use `$PATH`. If `name`
+    contains `/`, we return `name` itself if it is a file or None, regardless
+    of <paths>.
+    '''
+    if '/' in name:
+        return name if os.path.isfile( name) else None
+    if paths is None:
+        paths = os.environ.get( 'PATH', '')
+        if verbose:
+            log('From os.environ["PATH"]: {paths=}')
+    if isinstance( paths, str):
+        paths = paths.split( os.pathsep)
+        if verbose:
+            log('After split: {paths=}')
+    for path in paths:
+        p = os.path.join( path, name)
+        if verbose:
+            log('Checking {p=}')
+        if os.path.isfile( p):
+            if verbose:
+                log('Returning because is file: {p!r}')
+            return p
+    if verbose:
+        log('Returning None because not found: {name!r}')
 
 
 def _get_prerequisites(path):
@@ -2864,6 +3051,9 @@ def log_line_numbers(yes):
     global g_log_line_numbers
     g_log_line_numbers = bool(yes)
 
+def log(text='', caller=1):
+    _log(text, 0, caller+1)
+
 def log0(text='', caller=1):
     _log(text, 0, caller+1)
 
@@ -2875,7 +3065,7 @@ def log2(text='', caller=1):
 
 def _log(text, level, caller):
     '''
-    Logs lines with prefix, if <level> is lower than <g_verbose>.
+    Logs lines with prefix, if <level> is lower or equal to <g_verbose>.
     '''
     if level <= g_verbose:
         fr = inspect.stack(context=0)[caller]
@@ -3137,6 +3327,7 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
             if darwin():
                 run(f'brew install automake')
                 run(f'brew install pcre2')
+                run(f'brew install bison')
                 # Default bison doesn't work, and Brew's bison is not added to $PATH.
                 #
                 # > bison is keg-only, which means it was not symlinked into /opt/homebrew,
@@ -3146,11 +3337,8 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
                 # > If you need to have bison first in your PATH, run:
                 # >   echo 'export PATH="/opt/homebrew/opt/bison/bin:$PATH"' >> ~/.zshrc
                 #
-                run(f'brew install bison')
-                PATH = os.environ['PATH']
-                prefix_bison = run('brew --prefix bison', capture=1).strip()
-                PATH = f'{prefix_bison}/bin:{PATH}'
-                swig_env_extra = dict(PATH=PATH)
+                swig_env_extra = dict()
+                macos_add_brew_path('bison', swig_env_extra)
                 run(f'which bison')
                 run(f'which bison', env_extra=swig_env_extra)
             # Build swig.
@@ -3162,6 +3350,48 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
         return swig_binary
     else:
         return swig
+
+
+def macos_add_brew_path(package, env=None, gnubin=True):
+    '''
+    Adds path(s) for Brew <package>'s binaries to env['PATH'].
+    
+    We assert-fail if the relevant directory does no exist.
+    
+    Args:
+        package:
+            Name of package. We get <package_root> of installed package by
+            running `brew --prefix <package>`.
+        env:
+            The environment dict to modify. If None we use os.environ. If PATH
+            is not in <env>, we first copy os.environ['PATH'] into <env>.
+        gnubin:
+            If true, we also add path to gnu binaries if it exists,
+            <package_root>/libexe/gnubin.
+    '''
+    if not darwin():
+        return
+    if env is None:
+        env = os.environ
+    if 'PATH' not in env:
+        env['PATH'] = os.environ['PATH']
+    package_root = run(f'brew --prefix {package}', capture=1).strip()
+    log(f'{package=} {package_root=}')
+    def add(path):
+        log(f'{path=}')
+        if os.path.isdir(path):
+            log(f'Prepending to $PATH: {path}')
+            PATH = env['PATH']
+            env['PATH'] = f'{path}:{PATH}'
+            return 1
+        else:
+            log(f'Not a directory: {path=}')
+            return 0
+    n = 0
+    n += add(f'{package_root}/bin')
+    if gnubin:
+        n += add(f'{package_root}/libexec/gnubin')
+    assert n, f'Failed to add to $PATH, {package=} {gnubin=}.'
 
 
 def _show_dict(d):

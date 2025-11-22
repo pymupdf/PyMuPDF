@@ -350,6 +350,12 @@ def embedded_get(args):
     except (ValueError, pymupdf.mupdf.FzErrorBase) as e:
         sys.exit(f'no such embedded file {args.name!r}: {e}')
     filename = args.output if args.output else d["filename"]
+    if not args.unsafe and not args.output:
+        if os.path.exists(filename):
+            sys.exit(f'refusing to overwrite existing file with stored name: {filename}')
+        filename_abs = os.path.abspath(filename)
+        if not filename_abs.startswith(os.getcwd() + os.sep):
+            sys.exit(f'refusing to write stored name outside current directory: {filename}')
     with open(filename, "wb") as output:
         output.write(stream)
     pymupdf.message("saved entry '%s' as '%s'" % (args.name, filename))
@@ -1024,6 +1030,9 @@ def main():
     ps_embed_extract.add_argument("input", type=str, help="PDF filename")
     ps_embed_extract.add_argument("-name", required=True, help="name of entry")
     ps_embed_extract.add_argument("-password", help="password")
+    ps_embed_extract.add_argument("-unsafe", default=False, action="store_true",
+        help="allow write to stored name even if an existing file or outside current directory"
+    )
     ps_embed_extract.add_argument(
         "-output", help="output filename, default is stored name"
     )

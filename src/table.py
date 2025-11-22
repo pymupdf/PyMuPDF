@@ -80,39 +80,121 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
 import weakref
+import pymupdf
+from pymupdf import mupdf
 
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
-from . import (
-    Rect,
-    Matrix,
-    TEXTFLAGS_TEXT,
-    TEXT_FONT_BOLD,
-    TEXT_FONT_ITALIC,
-    TEXT_FONT_MONOSPACED,
-    TEXT_FONT_SUPERSCRIPT,
-    TEXT_COLLECT_STYLES,
-    TOOLS,
-    EMPTY_RECT,
-    sRGB_to_pdf,
-    Point,
-    message,
-    mupdf,
-)
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
 TEXTPAGE = None
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
-FLAGS = TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES
-
+FLAGS = (
+    0
+    | pymupdf.TEXTFLAGS_TEXT
+    | pymupdf.TEXT_COLLECT_STYLES
+    | pymupdf.TEXT_ACCURATE_BBOXES
+    | pymupdf.TEXT_MEDIABOX_CLIP
+)
+# needed by mupdf function fz_find_table_within_bounds().
+TABLE_DETECTOR_FLAGS = (
+    0
+    | pymupdf.TEXT_ACCURATE_BBOXES
+    | pymupdf.TEXT_SEGMENT
+    | pymupdf.TEXT_COLLECT_VECTORS
+    | pymupdf.TEXT_MEDIABOX_CLIP
+)
 white_spaces = set(string.whitespace)  # for checking white space only cells
 
 
+def _iou(r1, r2):
+    """Compute intersection over union of two rectangles."""
+    ix = max(0, min(r1[2], r2[2]) - max(r1[0], r2[0]))
+    iy = max(0, min(r1[3], r2[3]) - max(r1[1], r2[1]))
+    intersection = ix * iy  # intersection area
+    if not intersection:
+        return 0
+    area1 = (r1[2] - r1[0]) * (r1[3] - r1[1])
+    area2 = (r2[2] - r2[0]) * (r2[3] - r2[1])
+    return intersection / (area1 + area2 - intersection)
+
+
+def intersects_words_h(bbox, y, word_rects) -> bool:
+    """Check whether any of the words in bbox are cut through by
+    horizontal line y.
+    """
+    return any(r.y0 < y < r.y1 for r in word_rects if r in bbox)
+
+
+def get_table_dict_from_rect(textpage, rect):
+    """Extract MuPDF table structure information from a given rectangle."""
+    table_dict = {}
+    pymupdf.extra.make_table_dict(textpage.this.m_internal, table_dict, rect)
+    return table_dict
+
+
+def make_table_from_bbox(textpage, word_rects, rect):
+    """Detect table structure within a given rectangle."""
+    cells = []  # table cells as (x0,y0,x1,y1) tuples
+
+    # calls fz_find_table_within_bounds
+    block = get_table_dict_from_rect(textpage, rect)
+    # No table structure found if not a grid block
+    if block.get("type") != mupdf.FZ_STEXT_BLOCK_GRID:
+        return cells
+    bbox = pymupdf.Rect(block["bbox"])  # resulting table bbox
+
+    # lists of (pos,uncertainty) tuples
+    xpos = sorted(block["xpos"], key=lambda x: x[0])
+    ypos = sorted(block["ypos"], key=lambda y: y[0])
+
+    # maximum uncertainties in x and y directions
+    xmaxu, ymaxu = block["max_uncertain"]
+
+    # Modify ypos to remove uncertain positions, and y positions
+    # that cut through words.
+    nypos = []
+    for y, yunc in ypos:
+        if yunc > 0:  # allow no uncertain y values
+            continue
+        if intersects_words_h(bbox, y, word_rects):
+            continue  # allow no y that cuts through words
+        if nypos and (y - nypos[-1] < 3):
+            nypos[-1] = y  # snap close positions
+        else:
+            nypos.append(y)
+
+    # New max y uncertainty: 35% of remaining y positions.
+    # Omit x positions that intersect too many words, otherwise
+    # only remove x for the affected cells.
+    ymaxu = max(0, round((len(nypos) - 2) * 0.35))
+
+    # Exclude x positions with too high uncertainty
+    # (we allow more uncertainty in x direction)
+    nxpos = [x[0] for x in xpos if x[1] <= ymaxu]
+    if bbox.x1 > nxpos[-1] + 3:
+        nxpos.append(bbox.x1)  # ensure right table border
+
+    # Compose cells from the remaining x and y positions.
+    for i in range(len(nypos) - 1):
+        row_box = pymupdf.Rect(bbox.x0, nypos[i], bbox.x1, nypos[i + 1])
+        # Sub-select words in this row and sort them by left coordinate
+        row_words = sorted([r for r in word_rects if r in row_box], key=lambda r: r.x0)
+        # Sub-select x values that do not cut through words
+        this_xpos = [x for x in nxpos if not any(r.x0 < x < r.x1 for r in row_words)]
+        for j in range(len(this_xpos) - 1):
+            cell = pymupdf.Rect(this_xpos[j], nypos[i], this_xpos[j + 1], nypos[i + 1])
+            if not cell.is_empty:  # valid cell
+                cells.append(tuple(cell))
+    # Add new table to TableFinder tables
+    return cells
+
+
 def extract_cells(textpage, cell, markdown=False):
-    """Extract text from a rect-like 'cell' as plain or MD style text.
+    """Extract text from a rect-like 'cell' as plain or MD styled text.
 
     This function should ultimately be used to extract text from a table cell.
     Markdown output will only work correctly if extraction flag bit
@@ -171,9 +253,12 @@ def extract_cells(textpage, cell, markdown=False):
                 # only include chars with more than 50% bbox overlap
                 span_text = ""
                 for char in span["chars"]:
-                    bbox = Rect(char["bbox"])
+                    this_char = char["c"]
+                    bbox = pymupdf.Rect(char["bbox"])
                     if abs(bbox & cell) > 0.5 * abs(bbox):
-                        span_text += char["c"]
+                        span_text += this_char
+                    elif this_char in white_spaces:
+                        span_text += " "
 
                 if not span_text:
                     continue  # skip empty span
@@ -190,10 +275,10 @@ def extract_cells(textpage, cell, markdown=False):
                 if span["char_flags"] & TEXT_BOLD:
                     prefix += "**"
                     suffix = "**" + suffix
-                if span["flags"] & TEXT_FONT_ITALIC:
+                if span["flags"] & pymupdf.TEXT_FONT_ITALIC:
                     prefix += "_"
                     suffix = "_" + suffix
-                if span["flags"] & TEXT_FONT_MONOSPACED:
+                if span["flags"] & pymupdf.TEXT_FONT_MONOSPACED:
                     prefix += "`"
                     suffix = "`" + suffix
 
@@ -1358,7 +1443,7 @@ def cells_to_tables(page, cells) -> list:
     # PyMuPDF modification:
     # Remove tables without text or having only 1 column
     for i in range(len(tables) - 1, -1, -1):
-        r = EMPTY_RECT()
+        r = pymupdf.EMPTY_RECT()
         x1_vals = set()
         x0_vals = set()
         for c in tables[i]:
@@ -1556,7 +1641,7 @@ class Table:
         try:
             import pandas as pd
         except ModuleNotFoundError:
-            message("Package 'pandas' is not installed")
+            pymupdf.message("Package 'pandas' is not installed")
             raise
 
         pd_dict = {}
@@ -1618,7 +1703,7 @@ class Table:
             above. If different, return True indicating that the original
             table top row is already the header.
             """
-            bbox0 = Rect(self.rows[0].bbox)
+            bbox0 = pymupdf.Rect(self.rows[0].bbox)
             bboxt = bbox0 + (0, -bbox0.height, 0, -bbox0.height)  # area above
             top_color0 = page.get_pixmap(clip=bbox0).color_topusage()[1]
             top_colort = page.get_pixmap(clip=bboxt).color_topusage()[1]
@@ -1636,15 +1721,17 @@ class Table:
 
             Returns True if any spans are bold else False.
             """
-            blocks = page.get_text("dict", flags=TEXTFLAGS_TEXT, clip=bbox)["blocks"]
+            blocks = page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT, clip=bbox)[
+                "blocks"
+            ]
             spans = [s for b in blocks for l in b["lines"] for s in l["spans"]]
 
-            return any(s["flags"] & TEXT_FONT_BOLD for s in spans)
+            return any(s["flags"] & pymupdf.TEXT_FONT_BOLD for s in spans)
 
         try:
             row = self.rows[0]
             cells = row.cells
-            bbox = Rect(row.bbox)
+            bbox = pymupdf.Rect(row.bbox)
         except IndexError:  # this table has no rows
             return None
 
@@ -1686,7 +1773,9 @@ class Table:
         clip.y0 = 0  # start at top of page
         clip.y1 = bbox.y0  # end at top of table
 
-        blocks = page.get_text("dict", clip=clip, flags=TEXTFLAGS_TEXT)["blocks"]
+        blocks = page.get_text("dict", clip=clip, flags=pymupdf.TEXTFLAGS_TEXT)[
+            "blocks"
+        ]
         # non-empty, non-superscript spans above table, sorted descending by y1
         spans = sorted(
             [
@@ -1696,7 +1785,7 @@ class Table:
                 for s in l["spans"]
                 if not (
                     white_spaces.issuperset(s["text"])
-                    or s["flags"] & TEXT_FONT_SUPERSCRIPT
+                    or s["flags"] & pymupdf.TEXT_FONT_SUPERSCRIPT
                 )
             ],
             key=lambda s: s["bbox"][3],
@@ -1712,7 +1801,7 @@ class Table:
             s = spans[i]
             y1 = s["bbox"][3]  # span bottom
             h = y1 - s["bbox"][1]  # span bbox height
-            bold = s["flags"] & TEXT_FONT_BOLD
+            bold = s["flags"] & pymupdf.TEXT_FONT_BOLD
 
             # use first item to start the lists
             if i == 0:
@@ -1759,7 +1848,7 @@ class Table:
             return header_top_row
 
         # re-compute clip above table
-        nclip = EMPTY_RECT()
+        nclip = pymupdf.EMPTY_RECT()
         for s in [s for s in spans if s["bbox"][3] >= select[-1]]:
             nclip |= s["bbox"]
         if not nclip.is_empty:
@@ -1768,7 +1857,7 @@ class Table:
         clip.y1 = bbox.y0  # make sure we still include every word above
 
         # Confirm that no word in clip is intersecting a column separator
-        word_rects = [Rect(w[:4]) for w in page.get_text("words", clip=clip)]
+        word_rects = [pymupdf.Rect(w[:4]) for w in page.get_text("words", clip=clip)]
         word_tops = sorted(list(set([r[1] for r in word_rects])), reverse=True)
 
         select = []
@@ -2074,7 +2163,7 @@ def make_chars(page, clip=None):
         for line in block["lines"]:
             ldir = line["dir"]  # = (cosine, sine) of angle
             ldir = (round(ldir[0], 4), round(ldir[1], 4))
-            matrix = Matrix(ldir[0], -ldir[1], ldir[1], ldir[0], 0, 0)
+            matrix = pymupdf.Matrix(ldir[0], -ldir[1], ldir[1], ldir[0], 0, 0)
             if ldir[1] == 0:
                 upright = True
             else:
@@ -2082,11 +2171,11 @@ def make_chars(page, clip=None):
             for span in sorted(line["spans"], key=lambda s: s["bbox"][0]):
                 fontname = span["font"]
                 fontsize = span["size"]
-                color = sRGB_to_pdf(span["color"])
+                color = pymupdf.sRGB_to_pdf(span["color"])
                 for char in sorted(span["chars"], key=lambda c: c["bbox"][0]):
-                    bbox = Rect(char["bbox"])
+                    bbox = pymupdf.Rect(char["bbox"])
                     bbox_ctm = bbox * ctm
-                    origin = Point(char["origin"]) * ctm
+                    origin = pymupdf.Point(char["origin"]) * ctm
                     matrix.e = origin.x
                     matrix.f = origin.y
                     text = char["c"]
@@ -2136,9 +2225,9 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
     prect = page.rect
     if page.rotation in (90, 270):
         w, h = prect.br
-        prect = Rect(0, 0, h, w)
+        prect = pymupdf.Rect(0, 0, h, w)
     if clip is not None:
-        clip = Rect(clip)
+        clip = pymupdf.Rect(clip)
     else:
         clip = prect
 
@@ -2309,8 +2398,8 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                     rect.width <= min_length and rect.width < rect.height
                 ):  # simulates a vertical line
                     x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
-                    p1 = Point(x, rect.y0)
-                    p2 = Point(x, rect.y1)
+                    p1 = pymupdf.Point(x, rect.y0)
+                    p2 = pymupdf.Point(x, rect.y1)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict:
                         EDGES.append(line_to_edge(line_dict))
@@ -2320,8 +2409,8 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                     rect.height <= min_length and rect.height < rect.width
                 ):  # simulates a horizontal line
                     y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
-                    p1 = Point(rect.x0, y)
-                    p2 = Point(rect.x1, y)
+                    p1 = pymupdf.Point(rect.x0, y)
+                    p2 = pymupdf.Point(rect.x1, y)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict:
                         EDGES.append(line_to_edge(line_dict))
@@ -2386,8 +2475,8 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
     else:
         add_lines = []
     for p1, p2 in add_lines:
-        p1 = Point(p1)
-        p2 = Point(p2)
+        p1 = pymupdf.Point(p1)
+        p2 = pymupdf.Point(p2)
         line_dict = make_line(path, p1, p2, clip)
         if line_dict:
             EDGES.append(line_to_edge(line_dict))
@@ -2397,7 +2486,7 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
     else:
         add_boxes = []
     for box in add_boxes:
-        r = Rect(box)
+        r = pymupdf.Rect(box)
         line_dict = make_line(path, r.tl, r.bl, clip)
         if line_dict:
             EDGES.append(line_to_edge(line_dict))
@@ -2426,17 +2515,17 @@ def page_rotation_set0(page):
 
     if rot == 90:
         # before derotation, shift content horizontally
-        mat0 = Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
+        mat0 = pymupdf.Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
     elif rot == 270:
         # before derotation, shift content vertically
-        mat0 = Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
+        mat0 = pymupdf.Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
     else:
-        mat0 = Matrix(1, 0, 0, 1, -2 * mb.x0, -2 * mb.y0)
+        mat0 = pymupdf.Matrix(1, 0, 0, 1, -2 * mb.x0, -2 * mb.y0)
 
     # prefix with derotation matrix
     mat = mat0 * page.derotation_matrix
     cmd = b"%g %g %g %g %g %g cm " % tuple(mat)
-    xref = TOOLS._insert_contents(page, cmd, 0)
+    xref = pymupdf.TOOLS._insert_contents(page, cmd, 0)
 
     # swap x- and y-coordinates
     if rot in (90, 270):
@@ -2496,11 +2585,12 @@ def find_tables(
     add_boxes=None,  # user-specified rectangles
     paths=None,  # accept vector graphics as parameter
 ):
+    pymupdf._warn_layout_once()
     global CHARS, EDGES
     CHARS = []
     EDGES = []
-    old_small = bool(TOOLS.set_small_glyph_heights())  # save old value
-    TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
+    old_small = bool(pymupdf.TOOLS.set_small_glyph_heights())  # save old value
+    pymupdf.TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
     if page.rotation != 0:
         page, old_xref, old_rot, old_mediabox = page_rotation_set0(page)
     else:
@@ -2543,21 +2633,65 @@ def find_tables(
         "text_x_tolerance": text_x_tolerance,
         "text_y_tolerance": text_y_tolerance,
     }
-    tset = TableSettings.resolve(settings=settings)
-    page.table_settings = tset
 
-    make_chars(page, clip=clip)  # create character list of page
-    make_edges(
-        page,
-        clip=clip,
-        tset=tset,
-        paths=paths,
-        add_lines=add_lines,
-        add_boxes=add_boxes,
-    )  # create lines and curves
-    tables = TableFinder(page, settings=tset)
+    old_quad_corrections = pymupdf.TOOLS.unset_quad_corrections()
+    try:
+        page.get_layout()
+        if page.layout_information:
+            pymupdf.TOOLS.unset_quad_corrections(True)
+            boxes = [
+                pymupdf.Rect(b[:4]) for b in page.layout_information if b[-1] == "table"
+            ]
+        else:
+            boxes = []
 
-    TOOLS.set_small_glyph_heights(old_small)
-    if old_xref is not None:
-        page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
-    return tables
+        if boxes:  # layout did find some tables
+            pass
+        elif page.layout_information is not None:
+            # layout was executed but found no tables
+            # make sure we exit quickly with an empty TableFinder
+            tbf = TableFinder(page)
+            return tbf
+
+        tset = TableSettings.resolve(settings=settings)
+        page.table_settings = tset
+
+        make_chars(page, clip=clip)  # create character list of page
+        make_edges(
+            page,
+            clip=clip,
+            tset=tset,
+            paths=paths,
+            add_lines=add_lines,
+            add_boxes=add_boxes,
+        )  # create lines and curves
+
+        tbf = TableFinder(page, settings=tset)
+
+        if boxes:
+            # only keep Finder tables that match a layout box
+            tbf.tables = [
+                tab
+                for tab in tbf.tables
+                if any(_iou(tab.bbox, r) >= 0.6 for r in boxes)
+            ]
+        # build the complementary list of layout table boxes
+        my_boxes = [
+            r for r in boxes if all(_iou(r, tab.bbox) < 0.6 for tab in tbf.tables)
+        ]
+        if my_boxes:
+            word_rects = [pymupdf.Rect(w[:4]) for w in TEXTPAGE.extractWORDS()]
+            tp2 = page.get_textpage(flags=TABLE_DETECTOR_FLAGS)
+        for rect in my_boxes:
+            cells = make_table_from_bbox(tp2, word_rects, rect)  # pylint: disable=E0606
+            tbf.tables.append(Table(page, cells))
+    except Exception as e:
+        pymupdf.message("find_tables: exception occurred: %s" % str(e))
+        return None
+    finally:
+        pymupdf.TOOLS.set_small_glyph_heights(old_small)
+        if old_xref is not None:
+            page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
+        pymupdf.TOOLS.unset_quad_corrections(old_quad_corrections)
+
+    return tbf

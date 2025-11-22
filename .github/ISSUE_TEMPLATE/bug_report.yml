@@ -46,6 +46,8 @@ body:
     attributes:
       label: PyMuPDF version
       options:
+        - 1.26.7
+        - 1.26.6
         - 1.26.5
         - 1.26.4
         - 1.26.3
@@ -54,7 +56,7 @@ body:
         - 1.25.x or earlier
         - Built from source
       description: |
-        * For example from `pymupdf.VersionBind`.
+        * For example from `pymupdf.pymupdf_version`.
         * We generally only look at bugs in the most recent release of PyMuPDF.
     validations:
       required: true

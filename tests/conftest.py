@@ -1,11 +1,47 @@
 import copy
 import os
 import platform
+import subprocess
 import sys
 
+import pytest
+
+# Install required packages. There doesn't seem to be any official way for
+# us to programmatically specify required test packages in setup.py, or in
+# pytest. Doing it here seems to be the least ugly approach.
+#
+# However our diagnostics do not show up so this can cause an unfortunate pause
+# before tests start to run.
+#
+def install_required_packages():
+    PYODIDE_ROOT = os.environ.get('PYODIDE_ROOT')
+    if PYODIDE_ROOT:
+        # We can't run child processes, so rely on required test packages
+        # already being installed, e.g. in our wheel's <requires_dist>.
+        return
+    packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell'
+    if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
+        # No pillow wheel available, and doesn't build easily.
+        pass
+    elif platform.python_implementation() == 'GraalVM':
+        pass
+    else:
+        packages += ' pillow'
+    if platform.system().startswith('MSYS_NT-'):
+        # psutil not available on msys2.
+        pass
+    else:
+        packages += ' psutil'
+    command = f'pip install --upgrade {packages}'
+    print(f'{__file__}:install_required_packages)(): Running: {command}', flush=1)
+    subprocess.run(command, shell=1, check=1)
+
+install_required_packages()
+
+# Need to import pymupdf only after we've installed pymupdf-fonts above,
+# because pymupdf imports pymupdf_fonts, and copes with import failure.
 import pymupdf
 
-import pytest
 
 PYMUPDF_PYTEST_RESUME = os.environ.get('PYMUPDF_PYTEST_RESUME')
 

@@ -726,7 +726,7 @@ def build():
         log(f'Failed to get git information: {e}')
         sha, comment, diff, branch = (None, None, None, None)
     swig = PYMUPDF_SETUP_SWIG or 'swig'
-    swig_version_text = run(f'{swig} --version', capture=1)
+    swig_version_text = run(f'{swig} -version', capture=1)
     m = re.search('\nSWIG Version ([^\n]+)', swig_version_text)
     log(f'{swig_version_text=}')
     assert m, f'Unrecognised {swig_version_text=}'
@@ -748,6 +748,7 @@ def build():
     text += f'pymupdf_git_branch = {branch!r}\n'
     text += f'swig_version = {swig_version!r}\n'
     text += f'swig_version_tuple = {swig_version_tuple!r}\n'
+    log(f'_build.py is:\n{textwrap.indent(text, "    ")}')
     add('p', text.encode(), f'{to_dir}/_build.py')
     
     # Add single README file.
@@ -1022,7 +1023,12 @@ def build_mupdf_unix(
     if PYMUPDF_SETUP_SWIG:
         command += f' --swig {shlex.quote(PYMUPDF_SETUP_SWIG)}'
     command += f' -d build/{build_prefix}{build_type} -b'
-    #command += f' --m-target libs'
+    if sys.implementation.name == 'graalpy':
+        # Force rerun of swig.
+        pipcl.run(f'ls -l {mupdf_local}/platform/python/')
+        for p in glob.glob(f'{mupdf_local}/platform/python/mupdfcpp*.i.cpp'):
+            pipcl.log(f'Graal, deleting: {p!r}')
+            pipcl.fs_remove(p)
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
@@ -1267,9 +1273,9 @@ classifier = [
 #
 
 # PyMuPDF version.
-version_p = '1.26.5'
+version_p = '1.26.7'
 
-version_mupdf = '1.26.10'
+version_mupdf = '1.26.11'
 
 # PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
 # (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
@@ -1357,7 +1363,7 @@ else:
             author = 'Artifex',
             author_email = 'support@artifex.com',
             requires_dist = requires_dist,
-            requires_python = '>=3.9',
+            requires_python = '>=3.10',
             license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
             project_url = [
                 ('Documentation, https://pymupdf.readthedocs.io/'),
@@ -1409,8 +1415,14 @@ else:
             print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
         elif openbsd:
             print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
+        elif PYMUPDF_SETUP_SWIG:
+            pass
+        elif darwin or os.environ.get('PYODIDE_ROOT'):
+            # 2025-10-27: new swig-4.4.0 fails badly at runtime on macos.
+            # 2025-11-06: similar for pyodide.
+            ret.append('swig==4.3.1')
         else:
-            ret.append( 'swig')
+            ret.append('swig')
         return ret
 
 

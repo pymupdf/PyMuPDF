@@ -80,6 +80,9 @@ Here are current results, grouped by task:
 
    For more detail regarding the methodology for these performance timings see: :ref:`Performance Comparison Methodology<Appendix4>`.
 
+
+
+
 .. _About_License:
 
 License and Copyright
@@ -111,5 +114,6 @@ License and Copyright
 
 
 .. include:: version.rst
+
 
 .. include:: footer.rst

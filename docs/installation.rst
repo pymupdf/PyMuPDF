@@ -142,7 +142,7 @@ Notes
   
   *
     Each wheel uses the Python Stable ABI of the current oldest supported
-    Python version (currently 3.9), and so works with all later Python
+    Python version (currently 3.10), and so works with all later Python
     versions, including new Python releases.
   
   *
@@ -224,7 +224,7 @@ Also, one can build for different Python versions in the same PyMuPDF tree:
 
   So for example on Windows one can build different versions with::
 
-    cd PyMuPDF && py -3.9 -m pip install .
+    cd PyMuPDF && py -3.10 -m pip install .
 
   or::
 
