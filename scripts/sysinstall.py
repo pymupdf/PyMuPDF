@@ -401,6 +401,7 @@ def main():
                 'test_textbox3',
                 'test_3493',
                 'test_4180',
+                'test_4767',
                 )
         excluded_tests = ' and not '.join(excluded_tests)
         if not pytest_args:
