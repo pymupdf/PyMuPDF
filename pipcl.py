@@ -2450,7 +2450,11 @@ def show_system():
     log(f'os.environ ({len(os.environ)}):')
     for k in sorted( os.environ.keys()):
         v = os.environ[ k]
-        log( f'    {k}: {v!r}')
+        if 'BEGIN OPENSSH PRIVATE KEY' in v:
+            # Don't show private keys.
+            log(f'    {k} ****')
+        else:
+            log( f'    {k}: {v!r}')
 
 
 class PythonFlags:
