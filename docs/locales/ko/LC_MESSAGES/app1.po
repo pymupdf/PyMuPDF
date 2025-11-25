@@ -1,0 +1,646 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 b63e36b67e8a44e789752decae758e83
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 e0da5e0d85184ed69a42ef8e32e4ed85
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 e06822680b004870af6da375e9614933
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../app1.rst:7 4aa59227e1bc4902938be155b3c846ab
+msgid "Appendix 1: Details on Text Extraction"
+msgstr ""
+
+#: ../../app1.rst:8 c4a15e5247104a09bb9b36ac199c0a28
+msgid ""
+"This chapter provides background on the text extraction methods of "
+"PyMuPDF."
+msgstr ""
+
+#: ../../app1.rst:10 2e9bc8cf9b71428b8520ed5b6afad430
+msgid "Information of interest are"
+msgstr ""
+
+#: ../../app1.rst:12 0deb2f883f5f4387bde429329f1bae7b
+msgid "what do they provide?"
+msgstr ""
+
+#: ../../app1.rst:13 45c9c32702024484bdb3305c7e87faf7
+msgid "what do they imply (processing time / data sizes)?"
+msgstr ""
+
+#: ../../app1.rst:16 fde4b48bf0784a33849cd72c5d22218c
+msgid "General structure of a TextPage"
+msgstr ""
+
+#: ../../app1.rst:17 7fc02c7d51cd42079849d6836d102acc
+msgid ""
+":ref:`TextPage` is one of (Py-) MuPDF's classes. It is normally created "
+"(and destroyed again) behind the curtain, when :ref:`Page` text "
+"extraction methods are used, but it is also available directly and can be"
+" used as a persistent object. Other than its name suggests, images may "
+"optionally also be part of a text page::"
+msgstr ""
+
+#: ../../app1.rst:27 66fcac07e660407fa94a50c99aacdd57
+msgid "A **text page** consists of blocks (= roughly paragraphs)."
+msgstr ""
+
+#: ../../app1.rst:29 0be706ea23474e148d6ac4453252bd47
+msgid "A **block** consists of either lines and their characters, or an image."
+msgstr ""
+
+#: ../../app1.rst:31 c0a517869bb34a7d97003a5aef98fd51
+msgid "A **line** consists of spans."
+msgstr ""
+
+#: ../../app1.rst:33 517dd3b2b07645b8b02c39add65933dd
+msgid ""
+"A **span** consists of adjacent characters with identical font "
+"properties: name, size, flags and color."
+msgstr ""
+
+#: ../../app1.rst:36 275e9dfe8a8c43eaac52d976da135915
+msgid "Plain Text"
+msgstr ""
+
+#: ../../app1.rst:38 9d36b5923a304f7a9edbb308a34e087e
+msgid ""
+"Function :meth:`TextPage.extractText` (or *Page.get_text(\"text\")*) "
+"extracts a page's plain **text in original order** as specified by the "
+"creator of the document."
+msgstr ""
+
+#: ../../app1.rst:40 a844cfb991fb44ba922960d023c28deb
+msgid "An example output::"
+msgstr ""
+
+#: ../../app1.rst:45 83c6c339e3924476b41ff9b80c5e50d9
+msgid ""
+"The output may not equal an accustomed \"natural\" reading order. "
+"However, you can request a reordering following the scheme \"top-left to "
+"bottom-right\" by executing `page.get_text(\"text\", sort=True)`."
+msgstr ""
+
+#: ../../app1.rst:49 ../../app1.rst:337 19e4af19f3d74a33909a5898279c5eab
+#: 4eb48dd8cc9e4ac88b8890d5ed10f9a7
+msgid "BLOCKS"
+msgstr ""
+
+#: ../../app1.rst:51 686c7ad1dcf54c52be5a45853aad1f78
+msgid ""
+"Function :meth:`TextPage.extractBLOCKS` (or *Page.get_text(\"blocks\")*) "
+"extracts a page's text blocks as a list of items like::"
+msgstr ""
+
+#: ../../app1.rst:55 c216dd1a83d846b19dfbfc40fbbb3a86
+msgid ""
+"Where the first 4 items are the float coordinates of the block's bbox. "
+"The lines within each block are concatenated by a new-line character."
+msgstr ""
+
+#: ../../app1.rst:57 ac5e7636040b407abf4b4c74f54734e6
+msgid ""
+"This is a high-speed method, which by default also extracts image meta "
+"information: Each image appears as a block with one text line, which "
+"contains meta information. The image itself is not shown."
+msgstr ""
+
+#: ../../app1.rst:59 493c35f505154b66a5413eb8aae3f20b
+msgid ""
+"As with simple text output above, the `sort` argument can be used as well"
+" to obtain a reading order."
+msgstr ""
+
+#: ../../app1.rst:61 ../../app1.rst:79 3b27a871707241fab31e8b57d54a181b
+#: 72a6a0bd50b84a369ab338f015c7c0c5
+msgid "Example output::"
+msgstr ""
+
+#: ../../app1.rst:69 ../../app1.rst:338 2b7c8cb324cd43a5935bad475501fbba
+#: ac2182e6a5334397ba4cba52f6a0ecbb
+msgid "WORDS"
+msgstr ""
+
+#: ../../app1.rst:71 bd891cd06d344be6a34c3533eef6b2b1
+msgid ""
+"Function :meth:`TextPage.extractWORDS` (or *Page.get_text(\"words\")*) "
+"extracts a page's text **words** as a list of items like::"
+msgstr ""
+
+#: ../../app1.rst:75 7b33ff6ba92d470f8bab020fcd37037d
+msgid ""
+"Where the first 4 items are the float coordinates of the words's bbox. "
+"The last three integers provide some more information on the word's "
+"whereabouts."
+msgstr ""
+
+#: ../../app1.rst:77 d553fb9cb8484714ba2faab69dc0c761
+msgid ""
+"This is a high-speed method. As with the previous methods, argument "
+"`sort=True` will reorder the words."
+msgstr ""
+
+#: ../../app1.rst:95 ../../app1.rst:341 4c71524cc80240d8a4a615692160ee42
+#: 6e202dc149ab40d4a04fbf729bde5724
+msgid "HTML"
+msgstr ""
+
+#: ../../app1.rst:97 279a64262cf0486490e50a36ebcb9fc4
+msgid ""
+":meth:`TextPage.extractHTML` (or *Page.get_text(\"html\")* output fully "
+"reflects the structure of the page's ``TextPage`` -- much like DICT / "
+"JSON below. This includes images, font information and text positions. If"
+" wrapped in HTML header and trailer code, it can readily be displayed by "
+"an internet browser. Our above example::"
+msgstr ""
+
+#: ../../app1.rst:113 a754b6fee5f44c9e9763dd071ea484d3
+msgid "Controlling Quality of HTML Output"
+msgstr ""
+
+#: ../../app1.rst:114 9d69d29a89e34b598cab8061b0df6acb
+msgid ""
+"While HTML output has improved a lot in MuPDF v1.12.0, it is not yet bug-"
+"free: we have found problems in the areas **font support** and **image "
+"positioning**."
+msgstr ""
+
+#: ../../app1.rst:116 e323aee6a8184c43b04054264f0ad164
+msgid ""
+"HTML text contains references to the fonts used of the original document."
+" If these are not known to the browser (a fat chance!), it will replace "
+"them with others; the results will probably look awkward. This issue "
+"varies greatly by browser -- on my Windows machine, MS Edge worked just "
+"fine, whereas Firefox looked horrible."
+msgstr ""
+
+#: ../../app1.rst:118 a3e819ae14b54c27a9a077e7e935cb86
+msgid ""
+"For PDFs with a complex structure, images may not be positioned and / or "
+"sized correctly. This seems to be the case for rotated pages and pages, "
+"where the various possible page bbox variants do not coincide (e.g. "
+"*MediaBox != CropBox*). We do not know yet, how to address this -- we "
+"filed a bug at MuPDF's site."
+msgstr ""
+
+#: ../../app1.rst:120 eb269d37c6994ea68a4d82c390bd674f
+msgid ""
+"To address the font issue, you can use a simple utility script to scan "
+"through the HTML file and replace font references. Here is a little "
+"example that replaces all fonts with one of the :ref:`Base-14-Fonts`: "
+"serifed fonts will become \"Times\", non-serifed \"Helvetica\" and "
+"monospaced will become \"Courier\". Their respective variations for "
+"\"bold\", \"italic\", etc. are hopefully done correctly by your browser::"
+msgstr ""
+
+#: ../../app1.rst:160 9a01edbae3494fb6bcfa415551ffe12d
+msgid "DICT (or JSON)"
+msgstr ""
+
+#: ../../app1.rst:162 dc5943b2ac244ae3bd4c1c3cced27b9a
+msgid ""
+":meth:`TextPage.extractDICT` (or *Page.get_text(\"dict\", sort=False)*) "
+"output fully reflects the structure of a ``TextPage`` and provides image "
+"content and position detail (*bbox* -- boundary boxes in pixel units) for"
+" every block, line and span. Images are stored as *bytes* for DICT output"
+" and base64 encoded strings for JSON output."
+msgstr ""
+
+#: ../../app1.rst:164 c83998d97cb54af2a6c9e8ee068e02d3
+msgid ""
+"For a visualization of the dictionary structure have a look at "
+":ref:`textpagedict`."
+msgstr ""
+
+#: ../../app1.rst:166 dd7c1a96c694470682bfdfceee248a97
+msgid "Here is how this looks like::"
+msgstr ""
+
+#: ../../app1.rst:192 c2fb2cd52f07453b86d0afd6278fef62
+msgid "RAWDICT (or RAWJSON)"
+msgstr ""
+
+#: ../../app1.rst:193 7d7646fe8d554083af47f4d372febdde
+msgid ""
+":meth:`TextPage.extractRAWDICT` (or *Page.get_text(\"rawdict\", "
+"sort=False)*) is an **information superset of DICT** and takes the detail"
+" level one step deeper. It looks exactly like the above, except that the "
+"*\"text\"* items (*string*) in the spans are replaced by the list "
+"*\"chars\"*. Each *\"chars\"* entry is a character *dict*. For example, "
+"here is what you would see in place of item *\"text\": \"Text in black "
+"color.\"* above::"
+msgstr ""
+
+#: ../../app1.rst:224 ../../app1.rst:339 2400046f9c4f49858da21224a19d4b15
+#: 2d3722af4f584209bd8eaab07e032c6d
+msgid "XML"
+msgstr ""
+
+#: ../../app1.rst:226 c5a5b0c5667b42278fbebec3ebb83fab
+msgid ""
+"The :meth:`TextPage.extractXML` (or *Page.get_text(\"xml\")*) version "
+"extracts text (no images) with the detail level of RAWDICT::"
+msgstr ""
+
+#: ../../app1.rst:255 76940447ff984e9f8267433f30622b18
+msgid ""
+"We have successfully tested `lxml <https://pypi.org/project/lxml/>`_ to "
+"interpret this output."
+msgstr ""
+
+#: ../../app1.rst:258 ../../app1.rst:340 a405be8a4b8c4148920284c0af5d2a21
+#: def99570eabf40eb9a2296563cf87c89
+msgid "XHTML"
+msgstr ""
+
+#: ../../app1.rst:259 f860ba05b7b84b0cbbd677dfb53ba52c
+msgid ""
+":meth:`TextPage.extractXHTML` (or *Page.get_text(\"xhtml\")*) is a "
+"variation of TEXT but in HTML format, containing the bare text and images"
+" (\"semantic\" output)::"
+msgstr ""
+
+#: ../../app1.rst:268 0f8064883834458ab08418752216e011
+msgid "Text Extraction Flags Defaults"
+msgstr ""
+
+#: ../../app1.rst:269 8ba849c311aa457d85362ff7f4f1819e
+msgid ""
+"New in version 1.16.2: Method :meth:`Page.get_text` supports a keyword "
+"parameter *flags* *(int)* to control the amount and the quality of "
+"extracted data. The following table shows the defaults settings (flags "
+"parameter omitted or None) for each extraction variant. If you specify "
+"flags with a value other than ``None``, be aware that you must set **all "
+"desired** options. A description of the respective bit settings can be "
+"found in :ref:`TextPreserve`."
+msgstr ""
+
+#: ../../app1.rst:271 d40d16d07939413e8c75c3dc13b1127c
+msgid ""
+"New in v1.19.6: The default combinations in the following table are now "
+"available as Python constants: :data:`TEXTFLAGS_TEXT`, "
+":data:`TEXTFLAGS_WORDS`, :data:`TEXTFLAGS_BLOCKS`, "
+":data:`TEXTFLAGS_DICT`, :data:`TEXTFLAGS_RAWDICT`, "
+":data:`TEXTFLAGS_HTML`, :data:`TEXTFLAGS_XHTML`, :data:`TEXTFLAGS_XML`, "
+"and :data:`TEXTFLAGS_SEARCH`. You can now easily modify a default flag, "
+"e.g."
+msgstr ""
+
+#: ../../app1.rst:273 dc924700aa9b4042894cae14679d63f2
+msgid "**include** images in a \"blocks\" output:"
+msgstr ""
+
+#: ../../app1.rst:275 3d7561abbff8475c825b8d983783bf39
+msgid "`flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES`"
+msgstr ""
+
+#: ../../app1.rst:277 4ca8d0166e4646bd80fcc1d69f340a95
+msgid "**exclude** images from a \"dict\" output:"
+msgstr ""
+
+#: ../../app1.rst:279 1a2e1663435b4abaa1b188e5d6bd9338
+msgid "`flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES`"
+msgstr ""
+
+#: ../../app1.rst:281 d3769cd425ff4854b0e4292af9c3a0e1
+msgid "set **dehyphenation off** in text searches:"
+msgstr ""
+
+#: ../../app1.rst:283 2365979a4e104875a8c468496909f03d
+msgid "`flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE`"
+msgstr ""
+
+#: ../../app1.rst:287 6f7f786332d34c359591ddf8d17a374b
+msgid "Indicator"
+msgstr ""
+
+#: ../../app1.rst:287 5f2792809a9645ccaa7c3103a8c35f60
+msgid "text"
+msgstr ""
+
+#: ../../app1.rst:287 9330883adb104a8b880b90565531cf78
+msgid "html"
+msgstr ""
+
+#: ../../app1.rst:287 ead5e0f63b1849fcad0e1d2b7e718887
+msgid "xhtml"
+msgstr ""
+
+#: ../../app1.rst:287 6c6f9476a4614058833f45708bdc20be
+msgid "xml"
+msgstr ""
+
+#: ../../app1.rst:287 0248ca12579948d7a86695462a79fdcb
+msgid "dict"
+msgstr ""
+
+#: ../../app1.rst:287 e7d633c232874f17bede991cf837d6c3
+msgid "rawdict"
+msgstr ""
+
+#: ../../app1.rst:287 7fa4130e9ccf41c4a89237b146f501ef
+msgid "words"
+msgstr ""
+
+#: ../../app1.rst:287 34941a4200304d7492e796f779d70af9
+msgid "blocks"
+msgstr ""
+
+#: ../../app1.rst:287 29648526b349495e89efdba8501f7d58
+msgid "search"
+msgstr ""
+
+#: ../../app1.rst:289 a7ced22ad3514aee9d5860e7a63e2585
+msgid "preserve ligatures"
+msgstr ""
+
+#: ../../app1.rst:289 ../../app1.rst:290 ../../app1.rst:291 ../../app1.rst:293
+#: ../../app1.rst:294 ../../app1.rst:295 0cb4cd763ef542608c195c6460b399dc
+#: 0f43651d2736498e96beed8c24af63e9 20bddcebf4b543228091164700c68887
+#: 25d6766e4acb4fc49ec8e4fc1eb66529 2bc4aa25150c4d8c9902fd0ce38a2999
+#: 2bd684139d2e454d819cd76bed2bd102 2e7049fda6e14a2ca9a522be96770d00
+#: 2ea03f7b7fb14b7a976160f27232430c 48e9b5e2fdf046c8a01ae4b5cf3d92b7
+#: 51fcf587aa804e63a7afdca232a5123e 530e59a3a9bd4518859c2074f4a8fb16
+#: 5650d9d0ff634f79a775ea6061792d1e 57fc8ce1840144cfac20f2ad74fc2830
+#: 58b687804f9f44f78d42f22ec402f444 592dbaf3091e4acebbebdacbc132c557
+#: 5fe9aa6f8b084af9b13c0b18aabd3924 6a11a4e3a9ea4e17b2f62dac6565c592
+#: 7e477874caf041e4bfdb2b9715ca466b 8558f363af2e463c86807ec68536a6fe
+#: 856d9f908ce4492d9d6e4d9942aeaf71 a030d647ca2549b28cd1f8423e3250ab
+#: a0b1d47cb17f47bf8e80bb4647de9186 a1764775c19e4c57936ebdd4291fc8bb
+#: ad1ab38b1e5448a784ec98ef8c12df3a b06d0e59e44649a28ad4fc081b0cee19
+#: b4f9c2410ff243ecab4fc54dc7d849e9 bfcb17e586004c2886905b1b94eeed1d
+#: c0f6469d6bc44f709be506a3cdd9a339 c96eb459feb14f60ad45b43c108367f9
+#: d53f99316ae94e71b4d4480f84277945 d5838173cacf47a2b9d2d7ab0f3cbab0
+#: d5b75f9369ea4ceba86c82894b7cad40 d87075ec3a7d4392aed8b7b4266e41a4
+#: e13a6d7235c14b3fb15384adaba80ce9 e2ded0a0075c4d9e931b78360a6cef6b
+#: e93caf9105d0420c9d8bb40bbf2cdf90 eab3ab57cb1548baaf7011b0604ed429
+#: f0220244eb534ddda9c6a22290717a50 f7971b72219d4d95b439b84693a28f73
+msgid "1"
+msgstr ""
+
+#: ../../app1.rst:289 ../../app1.rst:291 ../../app1.rst:292 ../../app1.rst:293
+#: ../../app1.rst:295 011c44af019c41c298922bebee1b1c11
+#: 12c4cb08b28542d49005e9339fe0834c 1c35e49b6df44d79bff74df1b4d78b83
+#: 21f7a63996d64dcb83a41b385bdfe468 31af0f63c4434ef3b9b3bf48be4f77a8
+#: 3b439777a243470cbeaa2171bb389696 428e7a5d17e14bd2823284322ebe8792
+#: 43fd32ccc6b84942abf31f7c7066b718 46be00d2353b4350993b3ade6d4555e5
+#: 517834e9ea544ee48a80774f32298485 594207767efc47ac9b5174f8d44bc078
+#: 5fad2f44f76842fdae75090a3d39fe7a 6273d3b284c94893ae7f4cee674e31bf
+#: 9e452b6cb65f4c7ea9fe05f5e312a3e8 a577f5deaa234a9a8a05f26b7c1b7368
+#: b28c3e3b6015418c983c625e5bc7f5b5 b4566a369cf745989dcdde6fb5650bb8
+#: bf6d2bf8b3bf4c26b4f6c86f2dd651a6 c984d40f754d445c9df1e4477d112414
+#: dab827d3d3944e789a78bf1474d0f410 ded8f8ccfe914788a0b031d4fa55fb21
+msgid "0"
+msgstr ""
+
+#: ../../app1.rst:290 d4a8b0082348457c9b3a7f0c83dde31d
+msgid "preserve whitespace"
+msgstr ""
+
+#: ../../app1.rst:291 7cff9f000b1f41abbca9effe3a08af35
+msgid "preserve images"
+msgstr ""
+
+#: ../../app1.rst:291 2dbd9b27a6ad426cb7dcc9be3911020b
+#: c63946a2a43041a995ca0fbeb23153ef d209151eb3624d868e0ce8d60b9347b8
+msgid "n/a"
+msgstr ""
+
+#: ../../app1.rst:292 5a4bb22be2824af98d9db38f003324d8
+msgid "inhibit spaces"
+msgstr ""
+
+#: ../../app1.rst:293 cb5ae3cd443344048f5ddc1e916152df
+msgid "dehyphenate"
+msgstr ""
+
+#: ../../app1.rst:294 ac1c83a387304202a50381f999e13a9b
+msgid "clip to mediabox"
+msgstr ""
+
+#: ../../app1.rst:295 0fec3cdc767c4ecc80645956dbdaa050
+msgid "use CID instead of U+FFFD"
+msgstr ""
+
+#: ../../app1.rst:298 3e0abf5ee8404c7c85743a6d0c348e5f
+msgid "**search** refers to the text search function."
+msgstr ""
+
+#: ../../app1.rst:299 2063c0aa9e6746fca18404258dea465f
+msgid "**\"json\"** is handled exactly like **\"dict\"** and is hence left out."
+msgstr ""
+
+#: ../../app1.rst:300 4a5e41e47c864b39a729542c7bb2ae23
+msgid ""
+"**\"rawjson\"** is handled exactly like **\"rawdict\"** and is hence left"
+" out."
+msgstr ""
+
+#: ../../app1.rst:301 5783eaf8a223417bbb6edf7595657706
+msgid ""
+"An \"n/a\" specification means a value of 0 and setting this bit never "
+"has any effect on the output (but an adverse effect on performance)."
+msgstr ""
+
+#: ../../app1.rst:302 b5dddb0dc411425db6bc1a169ff2a8d4
+msgid ""
+"If you are not interested in images when using an output variant which "
+"includes them by default, then by all means set the respective bit off: "
+"You will experience a better performance and much lower space "
+"requirements."
+msgstr ""
+
+#: ../../app1.rst:304 608cc56e35e24516bf555cbdb28b782e
+msgid "To show the effect of `TEXT_INHIBIT_SPACES` have a look at this example::"
+msgstr ""
+
+#: ../../app1.rst:324 73de41a5c50b4025bbb2c6a93243d3b7
+msgid "Performance"
+msgstr ""
+
+#: ../../app1.rst:325 008bf5834d9c43878d55c1f182c383ad
+msgid ""
+"The text extraction methods differ significantly both: in terms of "
+"information they supply, and in terms of resource requirements and "
+"runtimes. Generally, more information of course means, that more "
+"processing is required and a higher data volume is generated."
+msgstr ""
+
+#: ../../app1.rst:327 aa82ec64134a4f3bbbea8037e3f3835d
+#, python-format
+msgid ""
+"Especially images have a **very significant** impact. Make sure to "
+"exclude them (via the *flags* parameter) whenever you do not need them. "
+"To process the below mentioned 2'700 total pages with default flags "
+"settings required 160 seconds across all extraction methods. When all "
+"images where excluded, less than 50% of that time (77 seconds) were "
+"needed."
+msgstr ""
+
+#: ../../app1.rst:329 74982287fc904cbe9d5f67869c717cff
+msgid ""
+"To begin with, all methods are **very fast** in relation to other "
+"products out there in the market. In terms of processing speed, we are "
+"not aware of a faster (free) tool. Even the most detailed method, "
+"RAWDICT, processes all 1'310 pages of the :ref:`AdobeManual` in less than"
+" 5 seconds (simple text needs less than 2 seconds here)."
+msgstr ""
+
+#: ../../app1.rst:331 83629ccfb7c9414089033b0147642f2e
+msgid ""
+"The following table shows average relative speeds (\"RSpeed\", baseline "
+"1.00 is TEXT), taken across ca. 1400 text-heavy and 1300 image-heavy "
+"pages."
+msgstr ""
+
+#: ../../app1.rst:334 bc84a1d73aa545a3aca4437e5017ed0e
+msgid "Method"
+msgstr ""
+
+#: ../../app1.rst:334 9368181159ab4fd6a75aae6bdaa5d189
+msgid "RSpeed"
+msgstr ""
+
+#: ../../app1.rst:334 7110ef6f2a7c4849a31df08c1bbf7f95
+msgid "Comments"
+msgstr ""
+
+#: ../../app1.rst:334 e1c0047fd9194edba834839b48102df9
+msgid "no images"
+msgstr ""
+
+#: ../../app1.rst:336 4b7a66b4248d47dc9f0ac0139eea5321
+msgid "TEXT"
+msgstr ""
+
+#: ../../app1.rst:336 ../../app1.rst:337 ../../app1.rst:340
+#: 25343a3526d44c7e9147a4b83482b458 5c3d7bcdd77648fea697a40e67bab8fc
+#: 6669d2767e5c49eeb1606eef0ef897e0 e55d755ae5ee4a62bd2e705a1b4974a4
+#: f0dcc7f23fa74accb9461d0e6ad00b34
+msgid "1.00"
+msgstr ""
+
+#: ../../app1.rst:336 74b3bb1df5a74fe7965c9a036c43b0b6
+msgid "no images, **plain** text, line breaks"
+msgstr ""
+
+#: ../../app1.rst:337 db8f0e8c5f874c7bbbc6d938ebde2e18
+msgid "image bboxes (only), **block** level text with bboxes, line breaks"
+msgstr ""
+
+#: ../../app1.rst:338 075075d180484d1e9a104abafa5c7123
+#: 18d11064908b48228b89fe3c8c0d242c
+msgid "1.02"
+msgstr ""
+
+#: ../../app1.rst:338 b3d7c61c84a84af98ad596efb0959503
+msgid "no images, **word** level text with bboxes"
+msgstr ""
+
+#: ../../app1.rst:339 0c5c60a2ef4342038c3a2c60d07bd072
+#: ab025008beb540c3af6517c25c3731c8
+msgid "2.72"
+msgstr ""
+
+#: ../../app1.rst:339 233b3e8abb32457bb01d804468cd86e2
+msgid "no images, **char** level text, layout and font details"
+msgstr ""
+
+#: ../../app1.rst:340 495e91c0090643cd9239576c13e8f216
+msgid "3.32"
+msgstr ""
+
+#: ../../app1.rst:340 b4c7e848e2814720ab1d9fbeb303c9f9
+msgid "**base64** images, **span** level text, no layout info"
+msgstr ""
+
+#: ../../app1.rst:341 e1c73c9152e644efbed95fc738d1ae9d
+msgid "3.54"
+msgstr ""
+
+#: ../../app1.rst:341 61d71ce102d24fbbb30ff945dc28f207
+msgid "**base64** images, **span** level text, layout and font details"
+msgstr ""
+
+#: ../../app1.rst:341 892ba5e6677e4561bfe9a5dc406e3852
+msgid "1.01"
+msgstr ""
+
+#: ../../app1.rst:342 5b44d6bc99504bb4bc7e4d457aa5509f
+msgid "DICT"
+msgstr ""
+
+#: ../../app1.rst:342 bb46e12ef905445f84a825d968043de6
+msgid "3.93"
+msgstr ""
+
+#: ../../app1.rst:342 426e28067c23452bb6edeb57689a7855
+msgid "**binary** images, **span** level text, layout and font details"
+msgstr ""
+
+#: ../../app1.rst:342 16da06be2e1a492c94b26bb12c8c4022
+msgid "1.04"
+msgstr ""
+
+#: ../../app1.rst:343 02cf93b26e5f449e95976162924b980c
+msgid "RAWDICT"
+msgstr ""
+
+#: ../../app1.rst:343 0eddcb199db847968d5f20c520727971
+msgid "4.50"
+msgstr ""
+
+#: ../../app1.rst:343 7ae92e67a9f34967b697139a85969bff
+msgid "**binary** images, **char** level text, layout and font details"
+msgstr ""
+
+#: ../../app1.rst:343 b31064906dbc405e9e886eab7a219b5f
+msgid "1.68"
+msgstr ""
+
+#: ../../app1.rst:346 bbe02a1a6ecb4053aea6eac932438250
+#, python-format
+msgid ""
+"As mentioned: when excluding image extraction (last column), the relative"
+" speeds are changing drastically: except RAWDICT and XML, the other "
+"methods are almost equally fast, and RAWDICT requires 40% less execution "
+"time than the **now slowest XML**."
+msgstr ""
+
+#: ../../app1.rst:348 c9763e96efa94f389c83973e6830f9cc
+msgid "Look at chapter **Appendix 1** for more performance information."
+msgstr ""
+
+#: ../../footer.rst:46 ee2a605b55f548d69f51e5e9c010b812
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

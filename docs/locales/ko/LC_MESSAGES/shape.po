@@ -1,0 +1,1460 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 7909b1fec71a4bb1918715ca5918f604
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 87466d36d4244b14b06775988b5a86da
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 c4e019a1ef45475794222706f39fa6bd
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../shape.rst:6 a9435293f59542b2850588abf5b6a5c0
+msgid "Shape"
+msgstr ""
+
+#: ../../shape.rst:8 c22618002fb44404a4ac660d7663c2a9
+msgid "|pdf_only_class|"
+msgstr ""
+
+#: ../../shape.rst:10 83f7ae44343b4e29b36be26c67c582a7
+msgid ""
+"This class allows creating interconnected graphical elements on a PDF "
+"page. Its methods have the same meaning and name as the corresponding "
+":ref:`Page` methods."
+msgstr ""
+
+#: ../../shape.rst:12 1687c125d94c4a889d4123d18b33a654
+msgid ""
+"In fact, each :ref:`Page` draw method is just a convenience wrapper for "
+"(1) one shape draw method, (2) the :meth:`Shape.finish` method, and (3) "
+"the :meth:`Shape.commit` method. For page text insertion, only the "
+":meth:`Shape.commit` method is invoked. If many draw and text operations "
+"are executed for a page, you should always consider using a Shape object."
+msgstr ""
+
+#: ../../shape.rst:14 61eb314053054e4e9a36e36845c74ae6
+msgid ""
+"Several draw methods can be executed in a row and each one of them will "
+"contribute to one drawing. Once the drawing is complete, the "
+":meth:`Shape.finish` method must be invoked to apply color, dashing, "
+"width, morphing and other attributes."
+msgstr ""
+
+#: ../../shape.rst:16 f3481ff5d87c41998cb0f7de7874cbee
+msgid ""
+"**Draw** methods of this class (and :meth:`Shape.insert_textbox`) are "
+"logging the area they are covering in a rectangle (:attr:`Shape.rect`). "
+"This property can for instance be used to set "
+":attr:`Page.cropbox_position`."
+msgstr ""
+
+#: ../../shape.rst:18 93fc8032a8144e439538867e5d7d9ff1
+msgid ""
+"**Text insertions** :meth:`Shape.insert_text` and "
+":meth:`Shape.insert_textbox` implicitly execute a \"finish\" and "
+"therefore only require :meth:`Shape.commit` to become effective. As a "
+"consequence, both include parameters for controlling properties like "
+"colors, etc."
+msgstr ""
+
+#: ../../shape.rst:21 7753ef6a86874229bc626bf090e7fd68
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../shape.rst:21 21306cc0a07a4be8b729f6d593a2a25e
+msgid "**Description**"
+msgstr ""
+
+#: ../../shape.rst:23 76875c2923b44844919d4f7dbc4ff2ae
+msgid ":meth:`Shape.commit`"
+msgstr ""
+
+#: ../../shape.rst:23 b6e101dde14a4c0399c2d1e32dfae0e3
+msgid "update the page's contents"
+msgstr ""
+
+#: ../../shape.rst:24 68e32b027b2a42519c263a5d79f0aca5
+msgid ":meth:`Shape.draw_bezier`"
+msgstr ""
+
+#: ../../shape.rst:24 cfd73fa2818546d897d3cc7dbf43cb7f
+msgid "draw a cubic Bezier curve"
+msgstr ""
+
+#: ../../shape.rst:25 4f7b9a227586442b8c80cfc50bb5d2f6
+msgid ":meth:`Shape.draw_circle`"
+msgstr ""
+
+#: ../../shape.rst:25 9f885ddec57646dc9618b9b296ef806e
+msgid "draw a circle around a point"
+msgstr ""
+
+#: ../../shape.rst:26 aa0ac0a299bb4cacbdb189b821d1057f
+msgid ":meth:`Shape.draw_curve`"
+msgstr ""
+
+#: ../../shape.rst:26 444333668308404a995780c7c2ffd1e8
+msgid "draw a cubic Bezier using one helper point"
+msgstr ""
+
+#: ../../shape.rst:27 1b7d6cc35258460398a82cc2ea5f5017
+msgid ":meth:`Shape.draw_line`"
+msgstr ""
+
+#: ../../shape.rst:27 0a76a1b23d26472bb46eaef1b0b11d37
+msgid "draw a line"
+msgstr ""
+
+#: ../../shape.rst:28 eea95a7b69df4cc6a775a0d4015d87f5
+msgid ":meth:`Shape.draw_oval`"
+msgstr ""
+
+#: ../../shape.rst:28 34529e37e99440538218de68e175f373
+msgid "draw an ellipse"
+msgstr ""
+
+#: ../../shape.rst:29 8817f8a373594a85a5b96f2658e31d98
+msgid ":meth:`Shape.draw_polyline`"
+msgstr ""
+
+#: ../../shape.rst:29 3b98bc2fd12c456c8a2410d43daa8912
+msgid "connect a sequence of points"
+msgstr ""
+
+#: ../../shape.rst:30 4022cf63cc3a496696d3f62c0a2805ab
+msgid ":meth:`Shape.draw_quad`"
+msgstr ""
+
+#: ../../shape.rst:30 bde0f7baa3e145cda4e9d029099dda80
+msgid "draw a quadrilateral"
+msgstr ""
+
+#: ../../shape.rst:31 c4addcda29c140a6b1975890737ead18
+msgid ":meth:`Shape.draw_rect`"
+msgstr ""
+
+#: ../../shape.rst:31 2b173978a5c64357ac1aabcc6e976c73
+msgid "draw a rectangle"
+msgstr ""
+
+#: ../../shape.rst:32 7f7f34efc2e944109b6c07df81c75430
+msgid ":meth:`Shape.draw_sector`"
+msgstr ""
+
+#: ../../shape.rst:32 d5d4937a74fb42b7b20852638b500044
+msgid "draw a circular sector or piece of pie"
+msgstr ""
+
+#: ../../shape.rst:33 880b0c8a153e48fdaa1029e9be76e520
+msgid ":meth:`Shape.draw_squiggle`"
+msgstr ""
+
+#: ../../shape.rst:33 da68180d030a4b1fb309de94d47743b1
+msgid "draw a squiggly line"
+msgstr ""
+
+#: ../../shape.rst:34 9fe45650af3d4e0ca97f2b9d25d87789
+msgid ":meth:`Shape.draw_zigzag`"
+msgstr ""
+
+#: ../../shape.rst:34 63c2fdb3045d4b81ae22677572e74fbe
+msgid "draw a zigzag line"
+msgstr ""
+
+#: ../../shape.rst:35 c22ba5f6783649118106601684861498
+msgid ":meth:`Shape.finish`"
+msgstr ""
+
+#: ../../shape.rst:35 7c247cc071c04f4383953864f5d543ee
+msgid "finish a set of draw commands"
+msgstr ""
+
+#: ../../shape.rst:36 0ba068100e264e0b9e9ec1f368662d1d
+msgid ":meth:`Shape.insert_text`"
+msgstr ""
+
+#: ../../shape.rst:36 5dd5770c7a054a66ab3b70a9d530c6f3
+msgid "insert text lines"
+msgstr ""
+
+#: ../../shape.rst:37 fa4216d497f9485cb9c79fc192a851bf
+msgid ":meth:`Shape.insert_textbox`"
+msgstr ""
+
+#: ../../shape.rst:37 47ec8b14ef6c4a6d97b355006a0b0b62
+msgid "fit text into a rectangle"
+msgstr ""
+
+#: ../../shape.rst:38 f1252e5521e147f5bb1c776091ef3328
+msgid ":attr:`Shape.doc`"
+msgstr ""
+
+#: ../../shape.rst:38 7f05739c6d0d459aa0631c532353654e
+msgid "stores the page's document"
+msgstr ""
+
+#: ../../shape.rst:39 61f46d3f420545e684f380815c9730f3
+msgid ":attr:`Shape.draw_cont`"
+msgstr ""
+
+#: ../../shape.rst:39 8a19e4b60bd145ceaa799130f96ab50f
+msgid "draw commands since last :meth:`Shape.finish`"
+msgstr ""
+
+#: ../../shape.rst:40 dbc1fe5e22804f4291fdc27abafe492f
+msgid ":attr:`Shape.height`"
+msgstr ""
+
+#: ../../shape.rst:40 a1b344bfa62b474dbecc168b7566abfd
+msgid "stores the page's height"
+msgstr ""
+
+#: ../../shape.rst:41 98c50cf9d34b4f1fac07407191336a46
+msgid ":attr:`Shape.lastPoint`"
+msgstr ""
+
+#: ../../shape.rst:41 d744e08ab64c4be89b54b91da06292ad
+msgid "stores the current point"
+msgstr ""
+
+#: ../../shape.rst:42 3c7b42195cfb495cba0b78bee8af7989
+msgid ":attr:`Shape.page`"
+msgstr ""
+
+#: ../../shape.rst:42 94b8094277504a3e865c3fc7a2fbadcf
+msgid "stores the owning page"
+msgstr ""
+
+#: ../../shape.rst:43 74e41af07b7e49dfb9e8897106da6072
+msgid ":attr:`Shape.rect`"
+msgstr ""
+
+#: ../../shape.rst:43 2fd72b972ba64904b71bf6a28bf4aa69
+msgid "rectangle surrounding drawings"
+msgstr ""
+
+#: ../../shape.rst:44 d662c10c7b284e1a9e8fb0cfacc0af7e
+msgid ":attr:`Shape.text_cont`"
+msgstr ""
+
+#: ../../shape.rst:44 260872b329274794a91fbe27de9d0fd7
+msgid "accumulated text insertions"
+msgstr ""
+
+#: ../../shape.rst:45 260f168374084a0389735532a415f968
+msgid ":attr:`Shape.totalcont`"
+msgstr ""
+
+#: ../../shape.rst:45 cca60781247448a6bef1b019d5b03005
+msgid "accumulated string to be stored in :data:`contents`"
+msgstr ""
+
+#: ../../shape.rst:46 bf5489e997644d1b86ef1a304a20a630
+msgid ":attr:`Shape.width`"
+msgstr ""
+
+#: ../../shape.rst:46 320f315bc7e34fb9a224c8104c0490ba
+msgid "stores the page's width"
+msgstr ""
+
+#: ../../shape.rst:49 bb77ff1beb1643f1a32fbeb881764556
+msgid "**Class API**"
+msgstr ""
+
+#: ../../shape.rst:55 f849eb8fe4ea4d84ae176a3bfaddbc5d
+msgid ""
+"Create a new drawing. During importing PyMuPDF, the *pymupdf.Page* object"
+" is being given the convenience method *new_shape()* to construct a "
+"*Shape* object. During instantiation, a check will be made whether we do "
+"have a PDF page. An exception is otherwise raised."
+msgstr ""
+
+#: ../../shape.rst 1c33018ebf664e5c82016942d1b106b9
+#: 1ffb902ffb054dea81b4421598d73d3b 2c7222c93878455593e199cee35f9bc0
+#: 526e0601602e4ad294c77828899ee151 652ecb786383456887f3e684eb50a16f
+#: 8351d111f6ba44c5a48d07b45ecd69ec 8512993c092848e68b405672b0329a5f
+#: 97750b106384485e9da4b3a178fc8b8a bdcf123cefb04a72ac000f1e6d213cab
+#: d33f1cb5159441b288aacd2ccae007dd d522a8dc82fa46aaa1bf98571addfab6
+#: ec2e6f2b47e543f780ac5d88287a15e3 f4f238ef2bbb4c60a0db78dc6ba48ae3
+#: fc6fd8d86630442eac29f0ee69909dd3
+msgid "Parameters"
+msgstr ""
+
+#: ../../shape.rst:57 7af1e6f9a6c54700a96a634680458cf7
+msgid "an existing page of a PDF document."
+msgstr ""
+
+#: ../../shape.rst:62 76f377d8f0084511ba9e8ab03be15272
+msgid "Draw a line from :data:`point_like` objects *p1* to *p2*."
+msgstr ""
+
+#: ../../shape.rst:64 ../../shape.rst:78 ../../shape.rst:114
+#: 0bd9ca4fa2034c02bba75a1ed84436e8 67a3775d53744800bce979bd9509dae4
+#: 6fdeeec1ae7344738df476d7c0995efd
+msgid "starting point"
+msgstr ""
+
+#: ../../shape.rst:66 ../../shape.rst:80 ../../shape.rst:116
+#: 233bc3b5db494f95bd617855177b0ba3 b9a33dfd5ad0434bb5d1681c4ef5477f
+#: d7a11d5e2d0843bf98b67ccb4c5a1b5c
+msgid "end point"
+msgstr ""
+
+#: ../../shape.rst 00c99cce86684724a7484f034aead4b9
+#: 11b2ce9eb7ac446288dfe432b6af2d66 37b1db5fc557483698f96296fca977a1
+#: 398f16080c7c485daf19f594085b75e3 4fb89ac12ab341e98fd2fbfde502762f
+#: 79c3be157132461c91fbd43f577c6960 7f449ff12a28486c9377d3eae5881abe
+#: 86a6ff3345b34b99a0b2846ce9b63f97 87752e32bcb84c439a39262387ed43ad
+#: 8ce97810f50346f1963cb9045d0e3bc9 9a9e08e465d642609b4034f0ac585738
+#: e06a173ede194c2499189e3f4ea96d22 f8c5c0c193bf4857a6d61a7fe76a58a0
+msgid "Return type"
+msgstr ""
+
+#: ../../shape.rst:68 ../../shape.rst:84 ../../shape.rst:120
+#: ../../shape.rst:129 ../../shape.rst:138 ../../shape.rst:157
+#: ../../shape.rst:173 ../../shape.rst:185 ../../shape.rst:207
+#: ../../shape.rst:224 ../../shape.rst:233 ../../shape.rst:448
+#: 02178d1d64304122974cdd7d2eda4e9a 04e3fd71585f46408e34e1b5d2918e9d
+#: 1b90b951d85a446a9b18d2751aa79908 258641b6956c4c2ebb65129fbc72ae92
+#: 2c6a3892b51541d9b2bc4f6aa0613353 318dc522d9764a2e9e4ad48a39be4ebb
+#: 60c74e5979e14e0e8d70ebeb78df14b9 6b818606a66c4dc494a2fe410d34be22
+#: 6f503a8ab6474890be0934600cf2de3b 881f284fe0a54cc180a7ff765822eb7e
+#: 8b84d3286ddb4519bb3afc99075e83fb f570f468b63940e4b0b9f5890f13db63
+msgid ":ref:`Point`"
+msgstr ""
+
+#: ../../shape.rst 19bca25aa417451a9d8eb8425f4d7fe5
+#: 2d7984c3e8b24f9cacf4f90e2f10a7e0 42bcff3c5d7c4b3ea0f0cff8b94a1936
+#: 5725a8009d724bfda07948d7fdd6a975 5ab553dbd9a245ef85863361d3458c06
+#: 5baa94cd077f42439269059c4560779d a0d4f65446c742a5b9f88f747fecf574
+#: a8b9ec9227c447c7b5b7e475f0ad137b b93d921a09e2475eb2dfecc00159859c
+#: c9221ebfa6724c35be3fe1b3043dcc84 edda77c9978d4bdc8e49a11220f628de
+#: fda0a5dbf3e44f70993141cd223cda9f ffd43af87088494c8ab238422d4affeb
+msgid "Returns"
+msgstr ""
+
+#: ../../shape.rst:69 ../../shape.rst:85 ../../shape.rst:121
+#: 03c2703f4c2c4c488c6e1dd5a8bde13f 54fc79ebcc5547368af108398f088aa1
+#: d5a893ea1f9f4e6cb959502504cda257
+msgid "the end point, *p2*."
+msgstr ""
+
+#: ../../shape.rst:76 eed928e2a53b4d0db6454fc9a3031e88
+msgid ""
+"Draw a squiggly (wavy, undulated) line from :data:`point_like` objects "
+"*p1* to *p2*. An integer number of full wave periods will always be "
+"drawn, one period having a length of *4 * breadth*. The breadth parameter"
+" will be adjusted as necessary to meet this condition. The drawn line "
+"will always turn \"left\" when leaving *p1* and always join *p2* from the"
+" \"right\"."
+msgstr ""
+
+#: ../../shape.rst:82 cbee403daaee4a56b9b2f131ff95afb9
+msgid ""
+"the amplitude of each wave. The condition *2 * breadth < abs(p2 - p1)* "
+"must be true to fit in at least one wave. See the following picture, "
+"which shows two points connected by one full period."
+msgstr ""
+
+#: ../../shape.rst:89 c61f3a8ac2e84d7e88c065f6a80328ac
+msgid ""
+"Here is an example of three connected lines, forming a closed, filled "
+"triangle. Little arrows indicate the stroking direction."
+msgstr ""
+
+#: ../../shape.rst:105 3b09c6c0299043ad9e407b82096dc07f
+msgid ""
+"Waves drawn are **not** trigonometric (sine / cosine). If you need that, "
+"have a look at `draw.py <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/draw-sines/draw.py>`_."
+msgstr ""
+
+#: ../../shape.rst:112 e6d38796d27441ac9eb554ae3567f070
+msgid ""
+"Draw a zigzag line from :data:`point_like` objects *p1* to *p2*. "
+"Otherwise works exactly like :meth:`Shape.draw_squiggle`."
+msgstr ""
+
+#: ../../shape.rst:118 2686f76e3e56495ca08bdd2711d1c28e
+msgid ""
+"the amplitude of the movement. The condition *2 * breadth < abs(p2 - p1)*"
+" must be true to fit in at least one period."
+msgstr ""
+
+#: ../../shape.rst:125 bfb5a00ac07547bf822e4b2d95c0f3d7
+msgid ""
+"Draw several connected lines between points contained in the sequence "
+"*points*. This can be used for creating arbitrary polygons by setting the"
+" last item equal to the first one."
+msgstr ""
+
+#: ../../shape.rst:127 9afa3278382745228b82849acc3d1db1
+msgid ""
+"a sequence of :data:`point_like` objects. Its length must at least be 2 "
+"(in which case it is equivalent to *draw_line()*)."
+msgstr ""
+
+#: ../../shape.rst:130 b0f8276e3be04c6996c165c83ed3fdbd
+msgid "*points[-1]* -- the last point in the argument sequence."
+msgstr ""
+
+#: ../../shape.rst:134 bf9fc4f7ee704353953bbb497b85a344
+msgid ""
+"Draw a standard cubic Bézier curve from *p1* to *p4*, using *p2* and *p3*"
+" as control points."
+msgstr ""
+
+#: ../../shape.rst:136 65ae6d8fa1ca4696b5ceec6e6a33a484
+msgid "All arguments are :data:`point_like` objects."
+msgstr ""
+
+#: ../../shape.rst:139 c3bc7d17a1564a259bbccff931fbceb4
+msgid "the end point, *p4*."
+msgstr ""
+
+#: ../../shape.rst:141 540f633870214c57b214a2d3dc6fad47
+msgid ""
+"The points do not need to be different -- experiment a bit with some of "
+"them being equal!"
+msgstr ""
+
+#: ../../shape.rst:143 cc32f6b9b719471e990541995cb91d8a
+msgid "Example:"
+msgstr ""
+
+#: ../../shape.rst:149 3cd13feab216456fb40eabb0f87476f2
+msgid ""
+"Draw an \"ellipse\" inside the given tetragon (quadrilateral). If it is a"
+" square, a regular circle is drawn, a general rectangle will result in an"
+" ellipse. If a quadrilateral is used instead, a plethora of shapes can be"
+" the result."
+msgstr ""
+
+#: ../../shape.rst:151 3beef81862054f6c9dcfb27abe73062b
+msgid ""
+"The drawing starts and ends at the middle point of the line `bottom-left "
+"-> top-left` corners in an anti-clockwise movement."
+msgstr ""
+
+#: ../../shape.rst:153 dbc5cddf46e74369a4ec90c4aba4a510
+msgid ""
+":data:`rect_like` or :data:`quad_like`.  *Changed in version 1.14.5:*  "
+"Quads are now also supported."
+msgstr ""
+
+#: ../../shape.rst:153 0704abfebefe4fe78ed8116b1a8491c3
+msgid ":data:`rect_like` or :data:`quad_like`."
+msgstr ""
+
+#: ../../shape.rst:155 b5056fbc16ad42e4b786c5a89beddb09
+msgid "*Changed in version 1.14.5:*  Quads are now also supported."
+msgstr ""
+
+#: ../../shape.rst:158 913c4e5f92e8407f8da84ba1fbe6cb29
+msgid ""
+"the middle point of line `rect.bl -> rect.tl`, or resp. `quad.ll -> "
+"quad.ul`. Look at just a few examples here, or at the *quad-show?.py* "
+"scripts in the PyMuPDF-Utilities repository."
+msgstr ""
+
+#: ../../shape.rst:165 e10d02b00d77481699e5ed1c3824246d
+msgid ""
+"Draw a circle given its center and radius. The drawing starts and ends at"
+" point `center - (radius, 0)` in an **anti-clockwise** movement. This "
+"point is the middle of the enclosing square's left side."
+msgstr ""
+
+#: ../../shape.rst:167 ab7929d6c83247179ab99962d0e45182
+msgid ""
+"This is a shortcut for `draw_sector(center, start, 360, "
+"fullSector=False)`. To draw the same circle in a **clockwise** movement, "
+"use `-360` as degrees."
+msgstr ""
+
+#: ../../shape.rst:169 ../../shape.rst:199 6f2705ad71a74c2b917e39246bc2698d
+#: bd872730dfb6401aa65d5bf0dcfa4a1d
+msgid "the center of the circle."
+msgstr ""
+
+#: ../../shape.rst:171 5b6ab9084a254ee998a1d680ac1e0240
+msgid "the radius of the circle. Must be positive."
+msgstr ""
+
+#: ../../shape.rst:174 7c4ce467661b468b8439dadac7926f6a
+msgid ""
+"`Point(center.x - radius, center.y)`.  .. image:: images/img-drawcircle.*"
+"    :scale: 60"
+msgstr ""
+
+#: ../../shape.rst:174 2debffa3cd414df1912ce3b384b1301c
+msgid "`Point(center.x - radius, center.y)`."
+msgstr ""
+
+#: ../../shape.rst:181 ee66694536bb4ca4a6a74521eab10648
+msgid ""
+"A special case of *draw_bezier()*: Draw a cubic Bezier curve from *p1* to"
+" *p3*. On each of the two lines `p1 -> p2` and `p3 -> p2` one control "
+"point is generated. Both control points will therefore be on the same "
+"side of the line `p1 -> p3`. This guaranties that the curve's curvature "
+"does not change its sign. If the lines to p2 intersect with an angle of "
+"90 degrees, then the resulting curve is a quarter ellipse (resp. quarter "
+"circle, if of same length)."
+msgstr ""
+
+#: ../../shape.rst:183 b9aa05d9515a4765ba0ed43ffaf7fdc8
+msgid "All arguments are :data:`point_like`."
+msgstr ""
+
+#: ../../shape.rst:186 17f64971541f45cd813e80d02b9a38f9
+msgid ""
+"the end point, *p3*. The following is a filled quarter ellipse segment. "
+"The yellow area is oriented **clockwise:**  .. image:: images/img-"
+"drawCurve.png    :align: center"
+msgstr ""
+
+#: ../../shape.rst:186 13f26770deb8487da263851084fcf4e9
+msgid ""
+"the end point, *p3*. The following is a filled quarter ellipse segment. "
+"The yellow area is oriented **clockwise:**"
+msgstr ""
+
+#: ../../shape.rst:197 e52f58c73f024ab492a6b26bf05ef6d1
+msgid ""
+"Draw a circular sector, optionally connecting the arc to the circle's "
+"center (like a piece of pie)."
+msgstr ""
+
+#: ../../shape.rst:201 4a4f8fd9d4ae4e9f9d879279d68a23eb
+msgid ""
+"one of the two end points of the pie's arc segment. The other one is "
+"calculated from the *angle*."
+msgstr ""
+
+#: ../../shape.rst:203 cde4d3b5b77e4714a1e8229d3a7d5901
+msgid ""
+"the angle of the sector in degrees. Used to calculate the other end point"
+" of the arc. Depending on its sign, the arc is drawn anti-clockwise "
+"(positive) or clockwise."
+msgstr ""
+
+#: ../../shape.rst:205 240361925857465eae04d2b1fb29fe7f
+msgid ""
+"whether to draw connecting lines from the ends of the arc to the circle "
+"center. If a fill color is specified, the full \"pie\" is colored, "
+"otherwise just the sector."
+msgstr ""
+
+#: ../../shape.rst:208 be7cd89a7589439eb4d78244412304ad
+msgid ""
+"the other end point of the arc. Can be used as starting point for a "
+"following invocation to create logically connected pies charts. Examples:"
+"  .. image:: images/img-drawSector1.*  .. image:: images/img-"
+"drawSector2.*"
+msgstr ""
+
+#: ../../shape.rst:208 0043e2c7a86744b4a2bc4d7f0bce8a4b
+msgid ""
+"the other end point of the arc. Can be used as starting point for a "
+"following invocation to create logically connected pies charts. Examples:"
+msgstr ""
+
+#: ../../shape.rst:217 5fb3a670ab80402c9dcadb97fd8823f0
+msgid "Changed in v1.22.0: Added parameter *radius*."
+msgstr ""
+
+#: ../../shape.rst:219 d0e527f29d634bf6a4487b2594b804af
+msgid ""
+"Draw a rectangle. The drawing starts and ends at the top-left corner in "
+"an anti-clockwise movement."
+msgstr ""
+
+#: ../../shape.rst:221 9f2b7555b1844871bbf67f60773f3566
+msgid "where to put the rectangle on the page."
+msgstr ""
+
+#: ../../shape.rst:222 67f101fa3c674ce7b113450e58af1ac1
+#, python-format
+msgid ""
+"draw rounded rectangle corners. If not `None`, specifies the radius of "
+"the curvature as a percentage of a rectangle side length. This must one "
+"or (a tuple of) two floats `0 < radius <= 0.5`, where 0.5 corresponds to "
+"50% of the respective side. If a float, the radius of the curvature is "
+"computed as `radius * min(width, height)`, drawing the corner's perimeter"
+" as a quarter circle. If a tuple `(rx, ry)` is given, then the curvature "
+"is asymmetric with respect to the horizontal and vertical directions. A "
+"value of `radius=(0.5, 0.5)` draws an ellipse."
+msgstr ""
+
+#: ../../shape.rst:225 6c3047af9341428fb1852d642a8d8fb3
+msgid "top-left corner of the rectangle."
+msgstr ""
+
+#: ../../shape.rst:229 654bd0a3b7ce4bf78f0d2d85b1d37414
+msgid ""
+"Draw a quadrilateral. The drawing starts and ends at the top-left corner "
+"(:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of "
+":meth:`Shape.draw_polyline` with the argument `(ul, ll, lr, ur, ul)`."
+msgstr ""
+
+#: ../../shape.rst:231 046262682daf47c8be64f00f93f9acba
+msgid "where to put the tetragon on the page."
+msgstr ""
+
+#: ../../shape.rst:234 3fe224acf6924b1085f1052564c9423f
+msgid ":attr:`Quad.ul`."
+msgstr ""
+
+#: ../../shape.rst:253 0de6d95816a442d3b9408559071e8954
+msgid ""
+"Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all "
+"of them."
+msgstr ""
+
+#: ../../shape.rst:255 56332b3691544dfbaf0fd9e731231bc5
+msgid ""
+"It has **no effect on** :meth:`Shape.insert_text` and "
+":meth:`Shape.insert_textbox`."
+msgstr ""
+
+#: ../../shape.rst:257 549c8c7eeb8344aaa7576d3e8a534e9c
+msgid ""
+"The method also supports **morphing the compound drawing** using "
+":ref:`Point` *fixpoint* and :ref:`matrix` *matrix*."
+msgstr ""
+
+#: ../../shape.rst:259 dba0c80e395c4f9992d5e84ad7225ffd
+msgid ""
+"morph the text or the compound drawing around some arbitrary :ref:`Point`"
+" *fixpoint* by applying :ref:`Matrix` *matrix* to it. This implies that "
+"*fixpoint* is a **fixed point** of this operation: it will not change its"
+" position. Default is no morphing (``None``). The matrix can contain any "
+"values in its first 4 components, *matrix.e == matrix.f == 0* must be "
+"true, however. This means that any combination of scaling, shearing, "
+"rotating, flipping, etc. is possible, but translations are not."
+msgstr ""
+
+#: ../../shape.rst:261 5dafa22688dd4869b353c3ba9d3b07f7
+msgid ""
+"*(new in v1.18.1)* set transparency for stroke colors. Value < 0 or > 1 "
+"will be ignored. Default is 1 (intransparent)."
+msgstr ""
+
+#: ../../shape.rst:262 ccec6b24043c40a28e9532eddd90bdce
+msgid ""
+"*(new in v1.18.1)* set transparency for fill colors. Default is 1 "
+"(intransparent)."
+msgstr ""
+
+#: ../../shape.rst:264 df15c1363a6a46538ab6875019646cbd
+msgid ""
+"request the **\"even-odd rule\"** for filling operations. Default is "
+"``False``, so that the **\"nonzero winding number rule\"** is used. These"
+" rules are alternative methods to apply the fill color where areas "
+"overlap. Only with fairly complex shapes a different behavior is to be "
+"expected with these rules. For an in-depth explanation, see "
+":ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the "
+"difference."
+msgstr ""
+
+#: ../../shape.rst:266 c674e567b1e5433eaf84acd80acc23dc
+msgid ""
+"*(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or "
+":data:`OCMD` to make this drawing conditionally displayable."
+msgstr ""
+
+#: ../../shape.rst:270 63c92f36394847c489986e7f2afbb97a
+msgid "For each pixel in a shape, the following will happen:"
+msgstr ""
+
+#: ../../shape.rst:272 36c14ed50f0445be999e611bc169aa24
+msgid ""
+"Rule **\"even-odd\"** counts, how many areas contain the pixel. If this "
+"count is **odd,** the pixel is regarded **inside** the shape, if it is "
+"**even**, the pixel is **outside**."
+msgstr ""
+
+#: ../../shape.rst:274 3effcfe2b7fe4980b3622d1cc2555db9
+msgid ""
+"The default rule **\"nonzero winding\"** in addition looks at the "
+"*\"orientation\"* of each area containing the pixel: it **adds 1** if an "
+"area is drawn anti-clockwise and it **subtracts 1** for clockwise areas. "
+"If the result is zero, the pixel is regarded **outside,** pixels with a "
+"non-zero count are **inside** the shape."
+msgstr ""
+
+#: ../../shape.rst:276 b72f9a0a9d6a42fba11e06941aaae289
+msgid ""
+"Of the four shapes in above image, the top two each show three circles "
+"drawn in standard manner (anti-clockwise, look at the arrows). The lower "
+"two shapes contain one (the top-left) circle drawn clockwise. As can be "
+"seen, area orientation is irrelevant for the right column (even-odd "
+"rule)."
+msgstr ""
+
+#: ../../shape.rst:297 a50a3db9c4f74b3aaed7c91f010f050f
+msgid "Insert text lines starting at ``point``."
+msgstr ""
+
+#: ../../shape.rst:299 d60ae29ad0ca4e709ff2c72d7bf5c264
+msgid ""
+"the bottom-left position of the first character of *text* in pixels. It "
+"is important to understand, how this works in conjunction with the "
+"*rotate* parameter. Please have a look at the following picture. The "
+"small red dots indicate the positions of *point* in each of the four "
+"possible cases.  .. image:: images/img-inserttext.*    :scale: 33"
+msgstr ""
+
+#: ../../shape.rst:299 1521f8f6fbea43a0be0deb7904e4623c
+msgid ""
+"the bottom-left position of the first character of *text* in pixels. It "
+"is important to understand, how this works in conjunction with the "
+"*rotate* parameter. Please have a look at the following picture. The "
+"small red dots indicate the positions of *point* in each of the four "
+"possible cases."
+msgstr ""
+
+#: ../../shape.rst:304 c50197a3ee954fc4b17e16da50350320
+msgid ""
+"the text to be inserted. May be specified as either a string type or as a"
+" sequence type. For sequences, or strings containing line breaks ``\\n``,"
+" several lines will be inserted. No care will be taken if lines are too "
+"wide, but the number of inserted lines will be limited by \"vertical\" "
+"space on the page (in the sense of reading direction as established by "
+"the *rotate* parameter). Any rest of *text* is discarded -- the return "
+"code however contains the number of inserted lines."
+msgstr ""
+
+#: ../../shape.rst:306 ../../shape.rst:346 a2bce94fcad44fc08799f6d16a27e19d
+#: f75a16cbc40142c5a8ce2199eb87b25c
+msgid ""
+"a factor to override the line height calculated from font properties. If "
+"not `None`, a line height of `fontsize * lineheight` will be used."
+msgstr ""
+
+#: ../../shape.rst:307 1ecd328d935546d38c4621a762982871
+msgid ""
+"*(new in v1.18.1)* set transparency for stroke colors (the **border "
+"line** of a character). Only  `0 <= value <= 1` will be considered. "
+"Default is 1 (intransparent)."
+msgstr ""
+
+#: ../../shape.rst:308 ../../shape.rst:351 168d47f1a50e45efbddb4be1a0a28d1c
+#: 7029b8b04590494a850f9bf97c737317
+msgid ""
+"*(new in v1.18.1)* set transparency for fill colors. Default is 1 "
+"(intransparent). Use this value to control transparency of the text "
+"color. Stroke opacity **only** affects the border line of characters."
+msgstr ""
+
+#: ../../shape.rst:310 bc253669783d43fbbcea827f904f8df7
+msgid ""
+"determines whether to rotate the text. Acceptable values are multiples of"
+" 90 degrees. Default is 0 (no rotation), meaning horizontal text lines "
+"oriented from left to right. 180 means text is shown upside down from "
+"**right to left**. 90 means anti-clockwise rotation, text running "
+"**upwards**. 270 (or -90) means clockwise rotation, text running "
+"**downwards**. In any case, *point* specifies the bottom-left coordinates"
+" of the first character's rectangle. Multiple lines, if present, always "
+"follow the reading direction established by this parameter. So line 2 is "
+"located **above** line 1 in case of `rotate = 180`, etc."
+msgstr ""
+
+#: ../../shape.rst:312 ../../shape.rst:355 68906f83108042f0b104b462a3b39709
+#: 9759f8b8a55448eb88645d85395ee4e8
+msgid ""
+"*(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or "
+":data:`OCMD` to make this text conditionally displayable."
+msgstr ""
+
+#: ../../shape.rst:315 ed86c6cd4572455ba92ae3ff42b41fdf
+msgid "number of lines inserted."
+msgstr ""
+
+#: ../../shape.rst:317 ../../shape.rst:367 4a40110f016f4c7bb3e919ac462d14e3
+#: 785b22c9fbc5484186666fbe76c0f207
+msgid "For a description of the other parameters see :ref:`CommonParms`."
+msgstr ""
+
+#: ../../shape.rst:338 32569db0897946de8f8338dcc82e3dd3
+msgid ""
+"PDF only: Insert text into the specified rectangle. The text will be "
+"split into lines and words and then filled into the available space, "
+"starting from one of the four rectangle corners, which depends on "
+"`rotate`. Line feeds and multiple space will be respected."
+msgstr ""
+
+#: ../../shape.rst:340 c50da8ee249d416084e826f0a8a2efd6
+msgid "the area to use. It must be finite and not empty."
+msgstr ""
+
+#: ../../shape.rst:342 7990001f1d8a482696c3ea94ee3b11c5
+msgid ""
+"the text to be inserted. Must be specified as a string or a sequence of "
+"strings. Line breaks are respected also when occurring in a sequence "
+"entry."
+msgstr ""
+
+#: ../../shape.rst:344 8bfa2ed038884962a70ceb3e0459dc06
+msgid ""
+"align each text line. Default is 0 (left). Centered, right and justified "
+"are the other supported options, see :ref:`TextAlign`. Please note that "
+"the effect of parameter value *TEXT_ALIGN_JUSTIFY* is only achievable "
+"with \"simple\" (single-byte) fonts (including the :ref:`Base-14-Fonts`)."
+msgstr ""
+
+#: ../../shape.rst:348 9adb4b3bbe094da8a624bd552fc13f21
+msgid ""
+"controls handling of tab characters ``\\t`` using the "
+"`string.expandtabs()` method **per each line**."
+msgstr ""
+
+#: ../../shape.rst:350 67177b4ade6c4da5a4523395d6bd4bf4
+msgid ""
+"*(new in v1.18.1)* set transparency for stroke colors. Negative values "
+"and values > 1 will be ignored. Default is 1 (intransparent)."
+msgstr ""
+
+#: ../../shape.rst:353 d5edb13ac13b4ab4ba9d26fa3d3a6d82
+msgid ""
+"requests text to be rotated in the rectangle. This value must be a "
+"multiple of 90 degrees. Default is 0 (no rotation). Effectively, the four"
+" values `0`, `90`, `180` and `270` (= `-90`) are processed, each causing "
+"the text to start in a different rectangle corner. Bottom-left is `90`, "
+"bottom-right is `180`, and `-90 / 270` is top-right. See the example how "
+"text is filled in a rectangle. This argument takes precedence over "
+"morphing. See the second example, which shows text first rotated left by "
+"`90` degrees and then the whole rectangle rotated clockwise around is "
+"lower left corner."
+msgstr ""
+
+#: ../../shape.rst:358 c9924f296b104dcb885e423a8329287a
+msgid ""
+"**If positive or zero**: successful execution. The value returned is the "
+"unused rectangle line space in pixels. This may safely be ignored -- or "
+"be used to optimize the rectangle, position subsequent items, etc.  **If "
+"negative**: no execution. The value returned is the space deficit to "
+"store text lines. Enlarge rectangle, decrease *fontsize*, decrease text "
+"amount, etc."
+msgstr ""
+
+#: ../../shape.rst:359 ff434ea0b01748d3a22351b8914d1de9
+msgid ""
+"**If positive or zero**: successful execution. The value returned is the "
+"unused rectangle line space in pixels. This may safely be ignored -- or "
+"be used to optimize the rectangle, position subsequent items, etc."
+msgstr ""
+
+#: ../../shape.rst:361 2d7f62a0c5ec468eb58daea2b7b74842
+msgid ""
+"**If negative**: no execution. The value returned is the space deficit to"
+" store text lines. Enlarge rectangle, decrease *fontsize*, decrease text "
+"amount, etc."
+msgstr ""
+
+#: ../../shape.rst:375 f65e40d3ebec4535af01faa79e3c04db
+msgid ""
+"Update the page's :data:`contents` with the accumulated drawings, "
+"followed by any text insertions. If text overlaps drawings, it will be "
+"written on top of the drawings."
+msgstr ""
+
+#: ../../shape.rst:377 3cc36436278147c4bf9af8031f1046a3
+msgid "**Do not forget to execute this method:**"
+msgstr ""
+
+#: ../../shape.rst:379 44ccc171888e476f88b7c3ce68d54ad9
+msgid ""
+"If a shape is **not committed, it will be ignored and the page will not "
+"be changed!**"
+msgstr ""
+
+#: ../../shape.rst:381 8911998982cf45e6b4d61df722ae0084
+msgid ""
+"The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, "
+":attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, "
+"the shape object can be reused for the **same page**."
+msgstr ""
+
+#: ../../shape.rst:383 90b57d6cc3344abaa5ae796d17518c78
+msgid ""
+"determine whether to put content in foreground (default) or background. "
+"Relevant only, if the page already has a non-empty :data:`contents` "
+"object."
+msgstr ""
+
+#: ../../shape.rst:385 555f29f07330465799e60c983380d945
+msgid "**---------- Attributes ----------**"
+msgstr ""
+
+#: ../../shape.rst:389 bcd84d9d71fe4ab7a75882c2f6ea55ee
+msgid "For reference only: the page's document."
+msgstr ""
+
+#: ../../shape.rst 4bc5f78dcd47499499d993fc76937923
+#: 51e0e906798c404999816e887c14725e 583eb30bb6764d82886dcee5ecc5ef23
+#: 7da907572dab4cdd850b1f99866f1208 84fee03ff02a47de895a2e76a85339b0
+#: 8ad67482ac084e4e8acd77c771ac9813 bd1c39ed922a4dba9f34104a29bd9bd6
+#: dc8385568c9641d9bb717e0218bc356a f04ca533ba0f465e9baafc622227ff3a
+msgid "type"
+msgstr ""
+
+#: ../../shape.rst:391 d4a7179efc87417687ed54512b5fd372
+msgid ":ref:`Document`"
+msgstr ""
+
+#: ../../shape.rst:395 e50d0793a5eb432bb3c2ca8ea196f4c2
+msgid "For reference only: the owning page."
+msgstr ""
+
+#: ../../shape.rst:397 a88ee833273045f299c35dd3ead948a4
+msgid ":ref:`Page`"
+msgstr ""
+
+#: ../../shape.rst:401 2bad01b347624c13a0c42fc3970fc1b5
+msgid "Copy of the page's height"
+msgstr ""
+
+#: ../../shape.rst:403 ../../shape.rst:409 a1d7f49541cb48ab8a1087635dffe627
+#: ee0e76b01d494167bc804a4bcb20168e
+msgid "float"
+msgstr ""
+
+#: ../../shape.rst:407 ae4a0df9e57c45dd99dc05694d71194d
+msgid "Copy of the page's width."
+msgstr ""
+
+#: ../../shape.rst:413 36e04a92b85b455f986d86cf86a84b9d
+msgid ""
+"Accumulated command buffer for **draw methods** since last finish. Every "
+"finish method will append its commands to :attr:`Shape.totalcont`."
+msgstr ""
+
+#: ../../shape.rst:415 ../../shape.rst:421 ../../shape.rst:442
+#: 0e691c52a692459fb3651063bbd96fa1 3bd5e87273ea409ba3861ff7a5df3fba
+#: 6131e3edacf44d948d0f06ae76196fb4
+msgid "str"
+msgstr ""
+
+#: ../../shape.rst:419 1c7cc423d0b647cc8b976e70594d7e5a
+msgid ""
+"Accumulated text buffer. All **text insertions** go here. This buffer "
+"will be appended to :attr:`totalcont` :meth:`Shape.commit`, so that text "
+"will never be covered by drawings in the same Shape."
+msgstr ""
+
+#: ../../shape.rst:425 31e0348adf3949dea03c7e108eec0e9a
+msgid ""
+"Rectangle surrounding drawings. This attribute is at your disposal and "
+"may be changed at any time. Its value is set to ``None`` when a shape is "
+"created or committed. Every *draw** method, and "
+":meth:`Shape.insert_textbox` update this property (i.e. **enlarge** the "
+"rectangle as needed). **Morphing** operations, however "
+"(:meth:`Shape.finish`, :meth:`Shape.insert_textbox`) are ignored."
+msgstr ""
+
+#: ../../shape.rst:427 58e3a175f61343beb779d52d6f9a968a
+msgid ""
+"A typical use of this attribute would be setting "
+":attr:`Page.cropbox_position` to this value, when you are creating shapes"
+" for later or external use. If you have not manipulated the attribute "
+"yourself, it should reflect a rectangle that contains all drawings so "
+"far."
+msgstr ""
+
+#: ../../shape.rst:429 bde3111f6fcb4fde8ae6d94e2b784878
+msgid ""
+"If you have used morphing and need a rectangle containing the morphed "
+"objects, use the following code::"
+msgstr ""
+
+#: ../../shape.rst:436 8b59162d4cdc4453a1a62c884c29d8c5
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../shape.rst:440 70f79c2bf0624368be25e43a4b7a3c3f
+msgid ""
+"Total accumulated command buffer for draws and text insertions. This will"
+" be used by :meth:`Shape.commit`."
+msgstr ""
+
+#: ../../shape.rst:446 2a512a35544e4ff4bc0908226c3f1474
+msgid ""
+"For reference only: the current point of the drawing path. It is ``None``"
+" at *Shape* creation and after each *finish()* and *commit()*."
+msgstr ""
+
+#: ../../shape.rst:451 5f43e7fa99ee464a8f4e310b6073e35b
+msgid "Usage"
+msgstr ""
+
+#: ../../shape.rst:452 a35b85f2df424fe5a8123cbd236b49c9
+msgid ""
+"A drawing object is constructed by *shape = page.new_shape()*. After "
+"this, as many draw, finish and text insertions methods as required may "
+"follow. Each sequence of draws must be finished before the drawing is "
+"committed. The overall coding pattern looks like this::"
+msgstr ""
+
+#: ../../shape.rst:471 7d0392c130464a54a962cc95cad3ce9d
+msgid ""
+"Each *finish()* combines the preceding draws into one logical shape, "
+"giving it common colors, line width, morphing, etc. If *closePath* is "
+"specified, it will also connect the end point of the last draw with the "
+"starting point of the first one."
+msgstr ""
+
+#: ../../shape.rst:473 d909c60fe1834c8eb1936c81f4fe8a7c
+msgid ""
+"To successfully create compound graphics, let each draw method use the "
+"end point of the previous one as its starting point. In the above pseudo "
+"code, *draw2* should hence use the returned :ref:`Point` of *draw1* as "
+"its starting point. Failing to do so, would automatically start a new "
+"path and *finish()* may not work as expected (but it won't complain "
+"either)."
+msgstr ""
+
+#: ../../shape.rst:475 fb42b4b00cfd4c8f9bc125398e78d941
+msgid ""
+"Text insertions may occur anywhere before the commit (they neither touch "
+":attr:`Shape.draw_cont` nor :attr:`Shape.lastPoint`). They are appended "
+"to *Shape.totalcont* directly, whereas draws will be appended by "
+"*Shape.finish*."
+msgstr ""
+
+#: ../../shape.rst:477 f1ba4537b82747479d0306c9e87f4f4c
+msgid ""
+"Each *commit* takes all text insertions and shapes and places them in "
+"foreground or background on the page -- thus providing a way to control "
+"graphical layers."
+msgstr ""
+
+#: ../../shape.rst:479 f54933082b2d4eff99e12a13fc1482a9
+msgid ""
+"**Only** *commit* **will update** the page's contents, the other methods "
+"are basically string manipulations."
+msgstr ""
+
+#: ../../shape.rst:482 278641dcb46d4baf936c58e97dcd5458
+msgid "Examples"
+msgstr ""
+
+#: ../../shape.rst:483 eb1041462daa4eaea29f2c68f9820833
+msgid "Create a full circle of pieces of pie in different colors::"
+msgstr ""
+
+#: ../../shape.rst:498 eaebaebe3baa4f09947553ff9e26c2a1
+msgid "Here is an example for 5 colors:"
+msgstr ""
+
+#: ../../shape.rst:502 3cf653254d684532a9c3aba1c78bfd12
+msgid ""
+"Create a regular n-edged polygon (fill yellow, red border). We use "
+"*draw_sector()* only to calculate the points on the circumference, and "
+"empty the draw command buffer again before drawing the polygon::"
+msgstr ""
+
+#: ../../shape.rst:517 e093071b33a14f6ca8a50b7e9ef6d3b1
+msgid "Here is the polygon for n = 7:"
+msgstr ""
+
+#: ../../shape.rst:524 32cfdbeb116244d09f20318c9cbaa2ac
+msgid "Common Parameters"
+msgstr ""
+
+#: ../../shape.rst:526 e8e32aa90b154bf9b1f9186f60ab584a
+msgid "**fontname** (*str*)"
+msgstr ""
+
+#: ../../shape.rst:528 77ba86666bd24c11b1d1d22120f706a7
+msgid "In general, there are three options:"
+msgstr ""
+
+#: ../../shape.rst:530 02905b80e6194c4eacf48669a2b4862d
+msgid ""
+"Use one of the standard :ref:`Base-14-Fonts`. In this case, *fontfile* "
+"**must not** be specified and *\"Helvetica\"* is used if this parameter "
+"is omitted, too."
+msgstr ""
+
+#: ../../shape.rst:531 e643b83ac7934c6a8daf143d5e6ea969
+msgid ""
+"Choose a font already in use by the page. Then specify its **reference** "
+"name prefixed with a slash \"/\", see example below."
+msgstr ""
+
+#: ../../shape.rst:532 1aa96eb291154994b5334cb249b357b8
+msgid ""
+"Specify a font file present on your system. In this case choose an "
+"arbitrary, but new name for this parameter (without \"/\" prefix)."
+msgstr ""
+
+#: ../../shape.rst:534 42e52261eb524d2984f6a0c4332a2f24
+msgid ""
+"If inserted text should re-use one of the page's fonts, use its reference"
+" name appearing in :meth:`Page.get_fonts` like so:"
+msgstr ""
+
+#: ../../shape.rst:536 17c14b3525c343518ae06671819af5b8
+msgid ""
+"Suppose the font list has the item *[1024, 0, 'Type1', 'NimbusMonL-Bold',"
+" 'R366']*, then specify *fontname = \"/R366\", fontfile = None* to use "
+"font *NimbusMonL-Bold*."
+msgstr ""
+
+#: ../../shape.rst:540 30272688bae040099e4f10745899bb73
+msgid "**fontfile** (*str*)"
+msgstr ""
+
+#: ../../shape.rst:542 c86a2afe0b8040a3841ecc108e5f0c2a
+msgid ""
+"File path of a font existing on your computer. If you specify *fontfile*,"
+" make sure you use a *fontname* **not occurring** in the above list. This"
+" new font will be embedded in the PDF upon *doc.save()*. Similar to new "
+"images, a font file will be embedded only once. A table of MD5 codes for "
+"the binary font contents is used to ensure this."
+msgstr ""
+
+#: ../../shape.rst:546 de497e62ab204c48ae01fa7ac3ed1c32
+msgid "**set_simple** (*bool*)"
+msgstr ""
+
+#: ../../shape.rst:548 8620026ea526446e8ef1ca19f9760737
+msgid ""
+"Fonts installed from files are installed as **Type0** fonts by default. "
+"If you want to use 1-byte characters only, set this to true. This setting"
+" cannot be reverted. Subsequent changes are ignored."
+msgstr ""
+
+#: ../../shape.rst:552 3981f48a75204dc09ff6f422f689ffa4
+msgid "**fontsize** (*float*)"
+msgstr ""
+
+#: ../../shape.rst:554 30ac30c13b44417bbeb1b66ed6d98114
+msgid "Font size of text, see: :data:`fontsize`."
+msgstr ""
+
+#: ../../shape.rst:558 4d0dc80686d94b4c88776c39286aa523
+msgid "**dashes** (*str*)"
+msgstr ""
+
+#: ../../shape.rst:560 47655eea2c2e46188c15bd1c75c4117a
+msgid ""
+"Causes lines to be drawn dashed. The general format is `\"[n m] p\"` of "
+"(up to) 3 floats denoting pixel lengths. ``n`` is the dash length, ``m`` "
+"(optional) is the subsequent gap length, and ``p`` (the \"phase\" - "
+"**required**, even if 0!) specifies how many pixels should be skipped "
+"before the dashing starts. If ``m`` is omitted, it defaults to ``n``."
+msgstr ""
+
+#: ../../shape.rst:562 c003ae76596a4f938a7fd5de9cb061a3
+msgid ""
+"A continuous line (no dashes) is drawn with `\"[] 0\"` or ``None`` or "
+"`\"\"`. Examples:"
+msgstr ""
+
+#: ../../shape.rst:564 e6cbda6711694eb8b100b5a9792385ef
+msgid ""
+"Specifying `\"[3 4] 0\"` means dashes of 3 and gaps of 4 pixels following"
+" each other."
+msgstr ""
+
+#: ../../shape.rst:565 3391c97c4550433782ec215117a6557d
+msgid "`\"[3 3] 0\"` and `\"[3] 0\"` do the same thing."
+msgstr ""
+
+#: ../../shape.rst:567 f068a3fa466545ecaf2d248a20fc2739
+msgid ""
+"For (the rather complex) details on how to achieve sophisticated dashing "
+"effects, see :ref:`AdobeManual`, page 217."
+msgstr ""
+
+#: ../../shape.rst:571 82aa9894181a4fe3b697261487bbfe7e
+msgid "**color / fill** (*list, tuple*)"
+msgstr ""
+
+#: ../../shape.rst:573 3ed2643ec6df4cc28a73683cb286285e
+msgid ""
+"Stroke and fill colors can be specified as tuples or list of of floats "
+"from 0 to 1. These sequences must have a length of 1 (GRAY), 3 (RGB) or 4"
+" (CMYK). For GRAY colorspace, a single float instead of the unwieldy "
+"*(float,)* or *[float]* is also accepted. Accept (default) or use `None` "
+"to not use the parameter."
+msgstr ""
+
+#: ../../shape.rst:575 06bd406c862d430d8527a7a38b17df9b
+msgid ""
+"To simplify color specification, method *getColor()* in *pymupdf.utils* "
+"may be used to get predefined RGB color triples by name. It accepts a "
+"string as the name of the color and returns the corresponding triple. The"
+" method knows over 540 color names -- see section :ref:`ColorDatabase`."
+msgstr ""
+
+#: ../../shape.rst:577 3313c7d4006745a8b2fc466404404f63
+msgid ""
+"Please note that the term *color* usually means \"stroke\" color when "
+"used in conjunction with fill color."
+msgstr ""
+
+#: ../../shape.rst:579 0a6d8ba9500941c4bc6aa00352d41451
+msgid ""
+"If letting default a color parameter to `None`, then no resp. color "
+"selection command will be generated. If *fill* and *color* are both "
+"`None`, then the drawing will contain no color specification. But it will"
+" still be \"stroked\", which causes PDF's default color \"black\" be used"
+" by Adobe Acrobat and all other viewers."
+msgstr ""
+
+#: ../../shape.rst:583 2e5246304d274dfaa37af742928af0ea
+msgid "**width** (*float*)"
+msgstr ""
+
+#: ../../shape.rst:585 77b8db9870114d7f91f971f5aaa99512
+msgid ""
+"The stroke (\"border\") width of the elements in a shape (if applicable)."
+" The default value is 1. The values width, color and fill have the "
+"following relationship / dependency:"
+msgstr ""
+
+#: ../../shape.rst:587 bd3f3d47979d4ba6967fc689176d7873
+msgid ""
+"If `fill=None` shape elements will always be drawn with a border - even "
+"if `color=None` (in which case black is taken) or `width=0` (in which "
+"case 1 is taken)."
+msgstr ""
+
+#: ../../shape.rst:588 50e316e85bee43f3ae23b6e8bf36459e
+msgid ""
+"Shapes without border can only be achieved if a fill color is specified "
+"(which may be white of course). To achieve this, specify `width=0`. In "
+"this case, the ``color`` parameter is ignored."
+msgstr ""
+
+#: ../../shape.rst:592 dbf0b7aa242944fd9c3dba05b0a5476c
+msgid "**stroke_opacity / fill_opacity** (*floats*)"
+msgstr ""
+
+#: ../../shape.rst:594 f10fd732b18e4d06882b251b866820ed
+msgid ""
+"Both values are floats in range [0, 1]. Negative values or values > 1 "
+"will ignored (in most cases). Both set the transparency such that a value"
+" 0.5 corresponds to 50% transparency, 0 means invisible and 1 means "
+"intransparent. For e.g. a rectangle the stroke opacity applies to its "
+"border and fill opacity to its interior."
+msgstr ""
+
+#: ../../shape.rst:596 908ef08674a94047bf811e5db7824042
+msgid ""
+"For text insertions (:meth:`Shape.insert_text` and "
+":meth:`Shape.insert_textbox`), use *fill_opacity* for the text. At first "
+"sight this seems surprising, but it becomes obvious when you look further"
+" down to `render_mode`: `fill_opacity` applies to the yellow and "
+"`stroke_opacity` applies to the blue color."
+msgstr ""
+
+#: ../../shape.rst:600 807dedb850524343a44713165dc92d74
+msgid "**border_width** (*float*)"
+msgstr ""
+
+#: ../../shape.rst:602 7c05f5b49a074002a9a8e24fa16e09c0
+msgid ""
+"Set the border width for text insertions. New in v1.14.9. Relevant only "
+"if the render mode argument is used with a value greater zero."
+msgstr ""
+
+#: ../../shape.rst:606 e8f74369b5414cf39c02c7bdc84d0278
+msgid "**render_mode** (*int*)"
+msgstr ""
+
+#: ../../shape.rst:608 07e11204dc2b4479bd2e65c3e33aad8d
+msgid ""
+"*New in version 1.14.9:* Integer in `range(8)` which controls the text "
+"appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). "
+"See page 246 in :ref:`AdobeManual`. New in v1.14.9. These methods now "
+"also differentiate between fill and stroke colors."
+msgstr ""
+
+#: ../../shape.rst:610 69a9ed429520483291966e04bc134827
+msgid ""
+"For default 0, only the text fill color is used to paint the text. For "
+"backward compatibility, using the *color* parameter instead also works."
+msgstr ""
+
+#: ../../shape.rst:611 92f8238398a445de9ac634455065140b
+msgid ""
+"For render mode 1, only the border of each glyph (i.e. text character) is"
+" drawn with a thickness as set in argument *border_width*. The color "
+"chosen in the *color* argument is taken for this, the *fill* parameter is"
+" ignored."
+msgstr ""
+
+#: ../../shape.rst:612 6dd3e1055d934657ae6fbe17f98f1b7b
+msgid ""
+"For render mode 2, the glyphs are filled and stroked, using both color "
+"parameters and the specified border width. You can use this value to "
+"simulate **bold text** without using another font: choose the same value "
+"for *fill* and *color* and an appropriate value for *border_width*."
+msgstr ""
+
+#: ../../shape.rst:613 44ab50cc9488478cbafcd5e8d9859763
+msgid ""
+"For render mode 3, the glyphs are neither stroked nor filled: the text "
+"becomes invisible."
+msgstr ""
+
+#: ../../shape.rst:615 e59e76826913438ea50a2cc075ab7cd2
+msgid ""
+"The following examples use border_width=0.3, together with a fontsize of "
+"15. Stroke color is blue and fill color is some yellow."
+msgstr ""
+
+#: ../../shape.rst:621 082047ee68a54ee3ae920d7817052247
+msgid "**miter_limit** (*float*)"
+msgstr ""
+
+#: ../../shape.rst:623 5df811fb349949d38e4160fbc8097077
+msgid ""
+"A float specifying the maximum acceptable value of the quotient `miter-"
+"length / line-width` (\"miter quotient\"). Used in text output methods. "
+"This is only relevant for non-zero render mode values -- then, characters"
+" are written with border lines (i.e. \"stroked\")."
+msgstr ""
+
+#: ../../shape.rst:625 fcdf5a0b4b05400fabcc68e71bbfe4a3
+msgid ""
+"If two lines stroking some character meet at a sharp (<= 90°) angle and "
+"the line width is large enough, then \"spikes\" may become visible -- "
+"causing an ugly appearance as shown below. For more background, see page "
+"126 of the :ref:`AdobeManual`."
+msgstr ""
+
+#: ../../shape.rst:627 61ef12d76d4c44a5971fbe5f377e42cd
+msgid ""
+"For instance, when joins meet at 90°, then the miter length is ``sqrt(2) "
+"* line-width``, so the miter quotient is ``sqrt(2)``."
+msgstr ""
+
+#: ../../shape.rst:629 6e57edd425af46cab1f0544ea9fb09d6
+msgid ""
+"If ``miter_limit`` is exceeded, then all joins with a larger qotient will"
+" appear as beveled (\"butt\" appearance)."
+msgstr ""
+
+#: ../../shape.rst:631 1b9c88426fad4881993b42f8df4e29ba
+msgid ""
+"The default value 1 (and any smaller value) will ensure that all joins "
+"are rendered as a butt. A value of ``None`` will use the PDF default "
+"value."
+msgstr ""
+
+#: ../../shape.rst:633 6c5240d22b91424eb8a99f3f6cdd9e61
+msgid "Example text showing spikes (``miter_limit=None``):"
+msgstr ""
+
+#: ../../shape.rst:637 22b2f2ab87704749865bf8654f86f486
+msgid "Example text suppressing spikes (``miter_limit=1``):"
+msgstr ""
+
+#: ../../shape.rst:643 ef72de748a3241f494828889b778a5c3
+msgid "**overlay** (*bool*)"
+msgstr ""
+
+#: ../../shape.rst:645 1a50148614e94b0f9e09a72b981ba540
+msgid "Causes the item to appear in foreground (default) or background."
+msgstr ""
+
+#: ../../shape.rst:649 f9c30f5c9a0245e5acbf5d0126b40609
+msgid "**morph** (*sequence*)"
+msgstr ""
+
+#: ../../shape.rst:651 5029b952e1be402ea4aea727b6c5334a
+msgid ""
+"Causes \"morphing\" of either a shape, created by the *draw*()* methods, "
+"or the text inserted by page methods *insert_textbox()* / "
+"*insert_text()*. If not ``None``, it must be a pair *(fixpoint, matrix)*,"
+" where *fixpoint* is a :ref:`Point` and *matrix* is a :ref:`Matrix`. The "
+"matrix can be anything except translations, i.e. *matrix.e == matrix.f =="
+" 0* must be true. The point is used as a fixed point for the matrix "
+"operation. For example, if *matrix* is a rotation or scaling, then "
+"*fixpoint* is its center. Similarly, if *matrix* is a left-right or up-"
+"down flip, then the mirroring axis will be the vertical, respectively "
+"horizontal line going through *fixpoint*, etc."
+msgstr ""
+
+#: ../../shape.rst:653 b02e3c71c8f64fc68a15b90bf3c129ea
+msgid ""
+"Several methods contain checks whether the to be inserted items will "
+"actually fit into the page (like :meth:`Shape.insert_text`, or "
+":meth:`Shape.draw_rect`). For the result of a morphing operation there is"
+" however no such guaranty: this is entirely the programmer's "
+"responsibility."
+msgstr ""
+
+#: ../../shape.rst:657 62281c77ca8f47188d63f20f3712a5b0
+msgid "**lineCap (deprecated: \"roundCap\")** (*int*)"
+msgstr ""
+
+#: ../../shape.rst:659 cd5b630baa744b1189ae847e6e8286fd
+msgid ""
+"Controls the look of line ends. The default value 0 lets each line end at"
+" exactly the given coordinate in a sharp edge. A value of 1 adds a semi-"
+"circle to the ends, whose center is the end point and whose diameter is "
+"the line width. Value 2 adds a semi-square with an edge length of line "
+"width and a center of the line end."
+msgstr ""
+
+#: ../../shape.rst:661 6026a44a326145afa3e7a6f376a1bbf6
+msgid "*Changed in version 1.14.15*"
+msgstr ""
+
+#: ../../shape.rst:665 2e6dced4dc3b49d0bfc6d15aba362eba
+msgid "**lineJoin** (*int*)"
+msgstr ""
+
+#: ../../shape.rst:667 66fbb0a47a7648efa567adac178985a1
+msgid ""
+"*New in version 1.14.15:* Controls the way how line connections look "
+"like. This may be either as a sharp edge (0), a rounded join (1), or a "
+"cut-off edge (2, \"butt\")."
+msgstr ""
+
+#: ../../shape.rst:671 82bab1c6af0a4d169a36b68529a2ab41
+msgid "**closePath** (*bool*)"
+msgstr ""
+
+#: ../../shape.rst:673 991347c321464275b6f78b81a2f89e09
+msgid ""
+"Causes the end point of a drawing to be automatically connected with the "
+"starting point (by a straight line)."
+msgstr ""
+
+#: ../../footer.rst:46 703f5e6cdc364cd898823615d897ea50
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

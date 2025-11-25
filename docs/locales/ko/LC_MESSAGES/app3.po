@@ -1,0 +1,776 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 6a4f4d9aba284482b17f5158db768103
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 ca8dbdbe51984f3d841ffa5414e59d9f
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 acc2a6d07e304bfeb3e884b734b79031
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../app3.rst:7 635cfbba07cc4d7fafc89714611a9318
+msgid "Appendix 3: Assorted Technical Information"
+msgstr ""
+
+#: ../../app3.rst:8 4769a2a2c2d84bf2b3ee95f7b4bf80e3
+msgid ""
+"This section deals with various technical topics, that are not "
+"necessarily related to each other."
+msgstr ""
+
+#: ../../app3.rst:15 ec8a4400984a477ca650493b54e8d584
+msgid "Image Transformation Matrix"
+msgstr ""
+
+#: ../../app3.rst:16 e34c11954ed74384aadeee4920e21331
+msgid ""
+"Starting with version 1.18.11, the image transformation matrix is "
+"returned by some methods for text and image extraction: "
+":meth:`Page.get_text` and :meth:`Page.get_image_bbox`."
+msgstr ""
+
+#: ../../app3.rst:18 b72e0ef8b41e494489563ac4faed2c68
+msgid ""
+"The transformation matrix contains information about how an image was "
+"transformed to fit into the rectangle (its \"boundary box\" = \"bbox\") "
+"on some document page. By inspecting the image's bbox on the page and "
+"this matrix, one can determine for example, whether and how the image is "
+"displayed scaled or rotated on a page."
+msgstr ""
+
+#: ../../app3.rst:20 d13c3c9d78be4c7baf9efb9708ddda02
+msgid ""
+"The relationship between image dimension and its bbox on a page is the "
+"following:"
+msgstr ""
+
+#: ../../app3.rst:24 24589c9043924415af09f8353878e2fa
+msgid "Using the original image's width and height,"
+msgstr ""
+
+#: ../../app3.rst:23 5fcd053e3c4745e3ac9752cf844e3899
+msgid "define the image rectangle `imgrect = pymupdf.Rect(0, 0, width, height)`"
+msgstr ""
+
+#: ../../app3.rst:24 7a8b751ef2f84e4eb0d4f3bffd76a9ba
+msgid ""
+"define the \"shrink matrix\" `shrink = pymupdf.Matrix(1/width, 0, 0, "
+"1/height, 0, 0)`."
+msgstr ""
+
+#: ../../app3.rst:26 be4e302d72a047d9ad89310d107eb3e3
+msgid ""
+"Transforming the image rectangle with its shrink matrix, will result in "
+"the unit rectangle: `imgrect * shrink = pymupdf.Rect(0, 0, 1, 1)`."
+msgstr ""
+
+#: ../../app3.rst:28 cd872603d2774c46a06dda3917faa61c
+msgid ""
+"Using the image **transformation matrix** \"transform\", the following "
+"steps will compute the bbox::"
+msgstr ""
+
+#: ../../app3.rst:34 b2fb7d53a3f8485390e8070c74877726
+msgid ""
+"Inspecting the matrix product `shrink * transform` will reveal all "
+"information about what happened to the image rectangle to make it fit "
+"into the bbox on the page: rotation, scaling of its sides and translation"
+" of its origin. Let us look at an example:"
+msgstr ""
+
+#: ../../app3.rst:71 5677aee6873b459a93e06865c3302434
+msgid "PDF Base 14 Fonts"
+msgstr ""
+
+#: ../../app3.rst:72 3df5aeca5c3f4ccf9325390f51398b06
+msgid ""
+"The following 14 builtin font names **must be supported by every PDF "
+"viewer** application. They are available as a dictionary, which maps "
+"their full names amd their abbreviations in lower case to the full font "
+"basename. Wherever a **fontname** must be provided in PyMuPDF, any **key "
+"or value** from the dictionary may be used::"
+msgstr ""
+
+#: ../../app3.rst:105 a5f070fd9c6546bfa33ed69a6639683e
+msgid ""
+"In contrast to their obligation, not all PDF viewers support these fonts "
+"correctly and completely -- this is especially true for Symbol and "
+"ZapfDingbats. Also, the glyph (visual) images will be specific to every "
+"reader."
+msgstr ""
+
+#: ../../app3.rst:107 6842b8433a9547b6a82435e36e06fb70
+msgid ""
+"To see how these fonts can be used -- including the **CJK built-in** "
+"fonts -- look at the table in :meth:`Page.insert_font`."
+msgstr ""
+
+#: ../../app3.rst:114 e3268f776b5a4b06a629bf9f9c25828c
+msgid "Adobe PDF References"
+msgstr ""
+
+#: ../../app3.rst:116 17a3fab0bc0d4dcc9ab758228d6be220
+msgid ""
+"This PDF Reference manual published by Adobe is frequently quoted "
+"throughout this documentation. It can be viewed and downloaded from "
+"`opensource.adobe.com <https://opensource.adobe.com/dc-acrobat-sdk-"
+"docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_."
+msgstr ""
+
+#: ../../app3.rst:125 c4f0367b9f574635971bdcbd0d2ca6fb
+msgid "Using Python Sequences as Arguments in PyMuPDF"
+msgstr ""
+
+#: ../../app3.rst:126 3d89e490fbf7457284a6ae3fcc59d506
+msgid ""
+"When PyMuPDF objects and methods require a Python **list** of numerical "
+"values, other Python **sequence types** are also allowed. Python classes "
+"are said to implement the **sequence protocol**, if they have a "
+"`__getitem__()` method."
+msgstr ""
+
+#: ../../app3.rst:128 bd7b31cc19e54f17857367f55587a14e
+msgid ""
+"This basically means, you can interchangeably use Python *list* or "
+"*tuple* or even *array.array*, *numpy.array* and *bytearray* types in "
+"these cases."
+msgstr ""
+
+#: ../../app3.rst:130 cc50a15ebc1a45c3ba30d1d2615eeb1b
+msgid "For example, specifying a sequence `\"s\"` in any of the following ways"
+msgstr ""
+
+#: ../../app3.rst:132 ba9e965ec2384d4aaaacc84791926237
+msgid "`s = [1, 2]` -- a list"
+msgstr ""
+
+#: ../../app3.rst:133 a1b8ab6b13fe41159b6b656dd7debae0
+msgid "`s = (1, 2)` -- a tuple"
+msgstr ""
+
+#: ../../app3.rst:134 c68b9c09194b47c78b57fa6656c1ffea
+msgid "`s = array.array(\"i\", (1, 2))` -- an array.array"
+msgstr ""
+
+#: ../../app3.rst:135 3a8427a9db4d4436a94ddb0536f292f1
+msgid "`s = numpy.array((1, 2))` -- a numpy array"
+msgstr ""
+
+#: ../../app3.rst:136 33fa18c1c81f441890f097d10863edf5
+msgid "`s = bytearray((1, 2))` -- a bytearray"
+msgstr ""
+
+#: ../../app3.rst:138 723f57c7a65942108b9add6c3d6123e3
+msgid "will make it usable in the following example expressions:"
+msgstr ""
+
+#: ../../app3.rst:140 7e8310592817456db2c249694ee67e4c
+msgid "`pymupdf.Point(s)`"
+msgstr ""
+
+#: ../../app3.rst:141 ef9f88aff26342c1b8b682b45b03735a
+msgid "`pymupdf.Point(x, y) + s`"
+msgstr ""
+
+#: ../../app3.rst:142 0a05dd917a434de3b831f92af1f206d8
+msgid "`doc.select(s)`"
+msgstr ""
+
+#: ../../app3.rst:144 e7823b7a8a1642dea3763c0d1fcf75df
+msgid ""
+"Similarly with all geometry objects :ref:`Rect`, :ref:`IRect`, "
+":ref:`Matrix` and :ref:`Point`."
+msgstr ""
+
+#: ../../app3.rst:146 e62989d3437d4c809e933779b0b4f916
+msgid ""
+"Because all PyMuPDF geometry classes themselves are special cases of "
+"sequences, they (with the exception of :ref:`Quad` -- see below) can be "
+"freely used where numerical sequences can be used, e.g. as arguments for "
+"functions like *list()*, *tuple()*, *array.array()* or *numpy.array()*. "
+"Look at the following snippet to see this work."
+msgstr ""
+
+#: ../../app3.rst:163 cd48dbd7918c44989e77808c4e3d2273
+msgid ""
+":ref:`Quad` is a Python sequence object as well and has a length of 4. "
+"Its items however are :data:`point_like` -- not numbers. Therefore, the "
+"above remarks do not apply."
+msgstr ""
+
+#: ../../app3.rst:170 a239cac6134847fa88f5fdc763bc0034
+msgid "Ensuring Consistency of Important Objects in PyMuPDF"
+msgstr ""
+
+#: ../../app3.rst:171 94db2c4ab30441ca82c022e184f57bf9
+msgid ""
+"PyMuPDF is a Python binding for the C library MuPDF. While a lot of "
+"effort has been invested by MuPDF's creators to approximate some sort of "
+"an object-oriented behavior, they certainly could not overcome basic "
+"shortcomings of the C language in that respect."
+msgstr ""
+
+#: ../../app3.rst:173 7cf69b3e065341f0a20a77da785f6027
+msgid ""
+"Python on the other hand implements the OO-model in a very clean way. The"
+" interface code between PyMuPDF and MuPDF consists of two basic files: "
+"*pymupdf.py* and *fitz_wrap.c*. They are created by the excellent SWIG "
+"tool for each new version."
+msgstr ""
+
+#: ../../app3.rst:175 05bb51a7321b4ecd8dc9585c3e3f3b8c
+msgid ""
+"When you use one of PyMuPDF's objects or methods, this will result in "
+"execution of some code in *pymupdf.py*, which in turn will call some C "
+"code compiled with *fitz_wrap.c*."
+msgstr ""
+
+#: ../../app3.rst:177 0d437950b2ba4e1cbdfd6ccd5a4b5f4b
+msgid ""
+"Because SWIG goes a long way to keep the Python and the C level in sync, "
+"everything works fine, if a certain set of rules is being strictly "
+"followed. For example: **never access** a :ref:`Page` object, after you "
+"have closed (or deleted or set to ``None``) the owning :ref:`Document`. "
+"Or, less obvious: **never access** a page or any of its children (links "
+"or annotations) after you have executed one of the document methods "
+"*select()*, *delete_page()*, *insert_page()* ... and more."
+msgstr ""
+
+#: ../../app3.rst:179 740cda1605364f24b13938ce08977597
+msgid ""
+"But just no longer accessing invalidated objects is actually not enough: "
+"They should rather be actively deleted entirely, to also free C-level "
+"resources (meaning allocated memory)."
+msgstr ""
+
+#: ../../app3.rst:181 9f8e966b70d34ecfabbaf171069a4cca
+msgid ""
+"The reason for these rules lies in the fact that there is a hierarchical "
+"2-level one-to-many relationship between a document and its pages and "
+"also between a page and its links / annotations. To maintain a consistent"
+" situation, any of the above actions must lead to a complete reset -- in "
+"**Python and, synchronously, in C**."
+msgstr ""
+
+#: ../../app3.rst:183 a7f44e6e345e43358b3a79b7c052cd44
+msgid "SWIG cannot know about this and consequently does not do it."
+msgstr ""
+
+#: ../../app3.rst:185 9f2723ebd7904acaa02811c5490da7a1
+msgid ""
+"The required logic has therefore been built into PyMuPDF itself in the "
+"following way."
+msgstr ""
+
+#: ../../app3.rst:187 fd908d3774f14df1b4fb95b1d9afb2f4
+msgid ""
+"If a page \"loses\" its owning document or is being deleted itself, all "
+"of its currently existing annotations and links will be made unusable in "
+"Python, and their C-level counterparts will be deleted and deallocated."
+msgstr ""
+
+#: ../../app3.rst:189 25e9288e71cb47e586bca43a0f860fb2
+msgid ""
+"If a document is closed (or deleted or set to ``None``) or if its "
+"structure has changed, then similarly all currently existing pages and "
+"their children will be made unusable, and corresponding C-level deletions"
+" will take place. \"Structure changes\" include methods like *select()*, "
+"*delePage()*, *insert_page()*, *insert_pdf()* and so on: all of these "
+"will result in a cascade of object deletions."
+msgstr ""
+
+#: ../../app3.rst:191 54df808609fb4f028e086d3d8e9d2f3b
+msgid ""
+"The programmer will normally not realize any of this. If he, however, "
+"tries to access invalidated objects, exceptions will be raised."
+msgstr ""
+
+#: ../../app3.rst:193 563eaa2415b64daabefd0a63dca2bd34
+msgid ""
+"Invalidated objects cannot be directly deleted as with Python statements "
+"like *del page* or *page = None*, etc. Instead, their *__del__* method "
+"must be invoked."
+msgstr ""
+
+#: ../../app3.rst:195 e5c1f65e4ac6489ca69e7ebe7b57195c
+msgid ""
+"All pages, links and annotations have the property *parent*, which points"
+" to the owning object. This is the property that can be checked on the "
+"application level: if *obj.parent == None* then the object's parent is "
+"gone, and any reference to its properties or methods will raise an "
+"exception informing about this \"orphaned\" state."
+msgstr ""
+
+#: ../../app3.rst:197 d631125a6585402abe79abea78f9a828
+msgid "A sample session:"
+msgstr ""
+
+#: ../../app3.rst:214 9f74080977604195aab03d9e5d402dd0
+msgid "This shows the cascading effect:"
+msgstr ""
+
+#: ../../app3.rst:231 2b8666687af94a81ad4c68af9a5f9e6b
+msgid ""
+"Objects outside the above relationship are not included in this "
+"mechanism. If you e.g. created a table of contents by *toc = "
+"doc.get_toc()*, and later close or change the document, then this cannot "
+"and does not change variable *toc* in any way. It is your responsibility "
+"to refresh such variables as required."
+msgstr ""
+
+#: ../../app3.rst:238 d3876be10a3649c3b2ab6f5d57c69ce0
+msgid "Design of Method :meth:`Page.show_pdf_page`"
+msgstr ""
+
+#: ../../app3.rst:241 3180435e0924483181b1a26a8cba5f32
+msgid "Purpose and Capabilities"
+msgstr ""
+
+#: ../../app3.rst:243 bf37b033f7ca48c58de17d9d2051b74d
+msgid ""
+"The method displays an image of a (\"source\") page of another PDF "
+"document within a specified rectangle of the current (\"containing\", "
+"\"target\") page."
+msgstr ""
+
+#: ../../app3.rst:245 6f60a372555246208767f53ea2bfd820
+msgid ""
+"**In contrast** to :meth:`Page.insert_image`, this display is vector-"
+"based and hence remains accurate across zooming levels."
+msgstr ""
+
+#: ../../app3.rst:246 998a98e328ec42aba32d728c2b4334e4
+msgid ""
+"**Just like** :meth:`Page.insert_image`, the size of the display is "
+"adjusted to the given rectangle."
+msgstr ""
+
+#: ../../app3.rst:248 e75e8ccc88234308a5ec9fa48fa086f2
+msgid "The following variations of the display are currently supported:"
+msgstr ""
+
+#: ../../app3.rst:250 d8cc5e5d21b84c21b682d4ab99c0d9df
+msgid ""
+"Bool parameter `\"keep_proportion\"` controls whether to maintain the "
+"aspect ratio (default) or not."
+msgstr ""
+
+#: ../../app3.rst:251 186e450479084963890fe9da769fab60
+msgid ""
+"Rectangle parameter `\"clip\"` restricts the visible part of the source "
+"page rectangle. Default is the full page."
+msgstr ""
+
+#: ../../app3.rst:252 4f399ef693d44c11953293c07415b9ae
+msgid ""
+"float `\"rotation\"` rotates the display by an arbitrary angle (degrees)."
+" If the angle is not an integer multiple of 90, only 2 of the 4 corners "
+"may be positioned on the target border if also `\"keep_proportion\"` is "
+"true."
+msgstr ""
+
+#: ../../app3.rst:253 64850af2d5454c3b8c0cc5f82512df49
+msgid ""
+"Bool parameter `\"overlay\"` controls whether to put the image on top "
+"(foreground, default) of current page content or not (background)."
+msgstr ""
+
+#: ../../app3.rst:255 7e80998882b74dbd8a0af43da85cb0d4
+msgid "Use cases include (but are not limited to) the following:"
+msgstr ""
+
+#: ../../app3.rst:257 996173b99261405f88be22fdbd55394b
+msgid ""
+"\"Stamp\" a series of pages of the current document with the same image, "
+"like a company logo or a watermark."
+msgstr ""
+
+#: ../../app3.rst:258 1c47493c9a7d4b9f86bf2e065fad544e
+msgid ""
+"Combine arbitrary input pages into one output page to support “booklet” "
+"or double-sided printing (known as \"4-up\", \"n-up\")."
+msgstr ""
+
+#: ../../app3.rst:259 7e5cd1ef35154a02b0bee17ee2806729
+msgid ""
+"Split up (large) input pages into several arbitrary pieces. This is also "
+"called “posterization”, because you e.g. can split an A4 page "
+"horizontally and vertically, print the 4 pieces enlarged to separate A4 "
+"pages, and end up with an A2 version of your original page."
+msgstr ""
+
+#: ../../app3.rst:262 b540c10d38674f279374416c7ec65281
+msgid "Technical Implementation"
+msgstr ""
+
+#: ../../app3.rst:264 69b731e1cb1b4b1f82341ad0baeff00b
+msgid ""
+"This is done using PDF **\"Form XObjects\"**, see section 8.10 on page "
+"217 of :ref:`AdobeManual`. On execution of a :meth:`Page.show_pdf_page`, "
+"the following things happen:"
+msgstr ""
+
+#: ../../app3.rst:266 50910b81c885485fadb624aecb9e1577
+msgid ""
+"The :data:`resources` and :data:`contents` objects of source page in "
+"source document are copied over to the target document, jointly creating "
+"a new **Form XObject** with the following properties. The PDF "
+":data:`xref` number of this object is returned by the method."
+msgstr ""
+
+#: ../../app3.rst:268 a1333276b2c34164b105e04d7d4d2515
+msgid "`/BBox` equals `/Mediabox` of the source page"
+msgstr ""
+
+#: ../../app3.rst:269 fbe66f56505f421dad721b5efa325673
+msgid "`/Matrix` equals the identity matrix."
+msgstr ""
+
+#: ../../app3.rst:270 3a867e67f3d843608d9857ad1253fa34
+msgid ""
+"`/Resources` equals that of the source page. This involves a “deep-copy” "
+"of hierarchically nested other objects (including fonts, images, etc.). "
+"The complexity involved here is covered by MuPDF's grafting [#f1]_ "
+"technique functions."
+msgstr ""
+
+#: ../../app3.rst:271 1a49d5440ba142cf9172da9514e3c857
+msgid ""
+"This is a stream object type, and its stream is an exact copy of the "
+"combined data of the source page's :data:`contents` objects."
+msgstr ""
+
+#: ../../app3.rst:273 dd47a3e1e5374c23ae28df502b54d8a4
+msgid ""
+"This Form XObject is only executed once per shown source page. Subsequent"
+" displays of the same source page will skip this step and only create "
+"\"pointer\" Form XObjects (done in next step) to this object."
+msgstr ""
+
+#: ../../app3.rst:275 42724012ec184801b99998826eed3a72
+msgid ""
+"A second **Form XObject** is then created which the target page uses to "
+"invoke the display. This object has the following properties:"
+msgstr ""
+
+#: ../../app3.rst:277 e03b9eae952d4d1bb6e04da71d195465
+msgid "`/BBox` equals the `/CropBox` of the source page (or `\"clip\"`)."
+msgstr ""
+
+#: ../../app3.rst:278 1749263652a44611a4af6fbe1690c814
+msgid "`/Matrix` represents the mapping of `/BBox` to the target rectangle."
+msgstr ""
+
+#: ../../app3.rst:279 4fb0197364cf4a88b015f8fa5d6d6ff2
+msgid ""
+"`/XObject` references the previous Form XObject via the fixed name "
+"`fullpage`."
+msgstr ""
+
+#: ../../app3.rst:280 a3736f591c254b8a801d28e108cec9a8
+msgid ""
+"The stream of this object contains exactly one fixed statement: "
+"`/fullpage Do`."
+msgstr ""
+
+#: ../../app3.rst:281 5d63f1c31a56424b8903208d2ac3af39
+msgid ""
+"If the method's `\"oc\"` argument is given, its value is assigned to this"
+" Form XObject as `/OC`."
+msgstr ""
+
+#: ../../app3.rst:283 e5c4f530e1134086bac2da1f45b4d894
+msgid ""
+"The :data:`resources` and :data:`contents` objects of the target page are"
+" now modified as follows."
+msgstr ""
+
+#: ../../app3.rst:285 d81644bc7b114307a984f10eed9801e7
+msgid ""
+"Add an entry to the `/XObject` dictionary of `/Resources` with the name "
+"`fzFrm<n>` (with n chosen such that this entry is unique on the page)."
+msgstr ""
+
+#: ../../app3.rst:286 ff1f4fdf2e59413da229698f3921b8d0
+msgid ""
+"Depending on `\"overlay\"`, prepend or append a new object to the page's "
+"`/Contents` array, containing the statement `q /fzFrm<n> Do Q`."
+msgstr ""
+
+#: ../../app3.rst:288 01882ae84bb54534ba3c6ab5ca61b114
+msgid "This design approach ensures that:"
+msgstr ""
+
+#: ../../app3.rst:290 b9976fb7daeb4b6291c769ba97d9ac06
+msgid ""
+"The (potentially large) source page is only copied once to the target "
+"PDF. Only small \"pointer\" Form XObjects objects are created per each "
+"target page to show the source page."
+msgstr ""
+
+#: ../../app3.rst:291 521ab75e321e488ca9676c4ce898d1b3
+msgid ""
+"Each referring target page can have its own `\"oc\"` parameter to control"
+" the source page's visibility individually."
+msgstr ""
+
+#: ../../app3.rst:298 05bf5b83ea6142389d3172a05aa36f27
+msgid "Diagnostics"
+msgstr ""
+
+#: ../../app3.rst:303 b856bdfa521a4448b19dc8a507f2c401
+msgid "|PyMuPDF| messages"
+msgstr ""
+
+#: ../../app3.rst:305 85b5e6f89d3649809ada540c8eea82a1
+msgid "|PyMuPDF| has a Message system for showing text diagnostics."
+msgstr ""
+
+#: ../../app3.rst:307 4c84b6f861ea48f3a8e09715aebfc6d9
+msgid ""
+"By default messages are written to `sys.stdout`. This can be controlled "
+"in two ways:"
+msgstr ""
+
+#: ../../app3.rst:311 74ccaa7010d84feaaff8d9a38c69b5f1
+msgid "Set environment variable `PYMUPDF_MESSAGE` before |PyMuPDF| is imported."
+msgstr ""
+
+#: ../../app3.rst:314 2f88318d369944be868c62a39006cca7
+msgid "Call `set_messages()`:"
+msgstr ""
+
+#: ../../app3.rst:318 e5c533c2a71c4b608f529bfb4df7afb2
+msgid "|MuPDF| errors and warnings"
+msgstr ""
+
+#: ../../app3.rst:320 1523d23bbbce45f1a25c851f5b69abf0
+msgid "|MuPDF| generates text errors and warnings."
+msgstr ""
+
+#: ../../app3.rst:323 adb68bfb91384894b21b746a73dd6bc0
+msgid ""
+"These errors and warnings are appended to an internal list, accessible "
+"with `Tools.mupdf_warnings()`. Also see `Tools.reset_mupdf_warnings()`."
+msgstr ""
+
+#: ../../app3.rst:327 79324fa6e32d42af95e9abf26233099a
+msgid ""
+"By default these errors and warnings are also sent to the |PyMuPDF| "
+"message system."
+msgstr ""
+
+#: ../../app3.rst:330 a71ef1ec2b084888adf04787091192a1
+msgid ""
+"This can be controlled with `mupdf_display_errors()` and "
+"`mupdf_display_warnings()`."
+msgstr ""
+
+#: ../../app3.rst:334 83b10651533947bc9bd63e655367d81e
+msgid ""
+"These messages are prefixed with `MuPDF error:` and `MuPDF warning:` "
+"respectively."
+msgstr ""
+
+#: ../../app3.rst:337 943f00a7c2a849f483525f7b3653f6a0
+msgid "Some |MuPDF| errors may lead to Python exceptions."
+msgstr ""
+
+#: ../../app3.rst:339 0cdf1f5474fa4616a11df5f246a531a1
+msgid ""
+"Example output for a **recoverable error**. We are opening a damaged PDF,"
+" but MuPDF is able to repair it and gives us a little information on what"
+" happened. Then we illustrate how to find out whether the document can "
+"later be saved incrementally. Checking the :attr:`Document.is_dirty` "
+"attribute at this point also indicates that during `pymupdf.open` the "
+"document had to be repaired:"
+msgstr ""
+
+#: ../../app3.rst:360 af0558fd6f8c4501a41d850a84d3da7b
+msgid "Example output for an **unrecoverable error**:"
+msgstr ""
+
+#: ../../app3.rst:378 01987f6b7c4e4b13a325bf16dc6d2fda
+msgid "Coordinates"
+msgstr ""
+
+#: ../../app3.rst:381 cc111c4761774e13839c570b6a760b94
+msgid ""
+"This is one of the most frequently used terms in this documentation. A "
+"**coordinate** generally means a pair of numbers `(x, y)` referring to "
+"some location, like a corner of a rectangle (:ref:`Rect`), a :ref:`Point`"
+" and so forth. The two values usually are floats, but there a objects "
+"like images which only allow them to be integers."
+msgstr ""
+
+#: ../../app3.rst:383 8e23a5ba1da047d88532eda8f671451a
+msgid ""
+"To actually *find* a coordinate's location, we also need to know the "
+"*reference* point for ``x`` and ``y`` - in other words, we must know "
+"where location `(0, 0)` is positioned. Once `(0, 0)` (the \"origin\") is "
+"known, we speak of a \"coordinate system\"."
+msgstr ""
+
+#: ../../app3.rst:385 5720add281a54277b7a0232978fa8662
+msgid ""
+"Several coordinate systems exist in document processing. For instance, "
+"the coordinate systems of a PDF page and the image created from it are "
+"**different**. We therefore need ways to *transform* coordinates from one"
+" system to another (and also back occasionally). This is the task of a "
+":ref:`Matrix`. It is a mathematical function which works much like a "
+"factor that can be \"multiplied\" with a point or rectangle to give us "
+"the corresponding point / rectangle in another coordinate system. The "
+"inverse of a transformation matrix can be used to revert the "
+"transformation. Much like multiplying by some factor, say 3, can be "
+"reverted by dividing the result by 3 (or multiplying it with 1/3)."
+msgstr ""
+
+#: ../../app3.rst:388 9bd43359dae34a3db3ed2502539abb9f
+msgid "Coordinates and Images"
+msgstr ""
+
+#: ../../app3.rst:390 ef142876a50648b88ce6825a05daf149
+msgid ""
+"Images have a coordinate system with integer coordinates. Origin `(0, 0)`"
+" is the top-left point. ``x`` values must be in `range(width)`, and ``y``"
+" values in `range(height)`. Therefore, ``y`` values *increase* if we go "
+"*downwards*. For every image, there is only a **finite number** of "
+"coordinates, namely `width * height`. A location in an image is also "
+"called a \"pixel\"."
+msgstr ""
+
+#: ../../app3.rst:392 a43cf286a2d14b4892269df18f857b1b
+msgid ""
+"How **large** an image will be (in centimeters or inches) when e.g. "
+"printed, depends on additional information: the \"resolution\". This is "
+"measured in **DPI** (dots per inch, or pixels per inch). To find the "
+"printed size of some image, we therefore must divide its width and its "
+"height by the corresponding DPI values (there may separate ones for width"
+" and for height) and will get the respective number of inches."
+msgstr ""
+
+#: ../../app3.rst:396 b694fe03ac784433945a778cd53034f2
+msgid "Origin Point, Point Size and Y-Axis"
+msgstr ""
+
+#: ../../app3.rst:398 a92885d699744510b39176e360fb8a63
+msgid ""
+"In |PDF|, the origin `(0, 0)` of a page is located at its **bottom-left "
+"point**. In |MuPDF|, the origin `(0, 0)` of a page is located at its "
+"**top-left point**."
+msgstr ""
+
+#: ../../app3.rst:403 b0a22dfe25a8493dbcd9b65008507920
+msgid "Coordinates are float numbers and measured in **points**, where:"
+msgstr ""
+
+#: ../../app3.rst:405 68d51777bcaf4642b1031f9dc960cd29
+msgid "**one point equals 1/72 inches**."
+msgstr ""
+
+#: ../../app3.rst:407 756d6701c9f747b9830a3c7d01111f53
+msgid ""
+"Typical document page sizes are **ISO A4** and **Letter**. A **Letter** "
+"page has a size of **8.5 x 11 inches**, corresponding to **612 x 792 "
+"points**. In the |PDF| coordinate system, the top-left point of a "
+"**Letter** page hence has the coordinate `(0, 792)` as **the y-axis "
+"points upwards**. Now we know our document size the |MuPDF| coordinate "
+"system for the bottom right would be coordinate `(612, 792)` (and for "
+"|PDF| this coordinate would then be `(612,0)`)."
+msgstr ""
+
+#: ../../app3.rst:409 50dac25ebb9848779eb3bff43cb168dc
+msgid ""
+"Theoretically, there are **infinitely many** coordinate positions on a "
+"|PDF| page. In practice however, at most the first 5 decimal places are "
+"sufficient for a reasonable precision."
+msgstr ""
+
+#: ../../app3.rst:412 e630dd4abdb84c43b0315dfb4e77cef8
+msgid ""
+"In |MuPDF|, multiple document formats are supported - |PDF| just being "
+"one among **over a dozen others**. Images are also supported as documents"
+" in |MuPDF| (therefore having one page usually). This is one of the "
+"reasons why |MuPDF| uses a coordinate system with the origin `(0, 0)` "
+"being the **top-left** point of any document page. **The y-axis points "
+"downwards**, like with images. Coordinates in |MuPDF| in any case are "
+"floats, like in |PDF|."
+msgstr ""
+
+#: ../../app3.rst:414 a69f66be61c5411c909b4daed6378f6c
+msgid ""
+"A rectangle `Rect(0, 0, 100, 100)` for instance in |MuPDF| (and thus "
+"|PyMuPDF|) therefore is a square with edges of length 100 points (= 1.39 "
+"inches or 3.53 centimeters). Its top-left corner is the origin. To switch"
+" between the two coordinate systems |PDF| to |MuPDF|, every :ref:`Page` "
+"object has a :attr:`Page.transformation_matrix`. Its inverse can be used "
+"to compute a rectangle's PDF coordinates. In this way we can conveniently"
+" find that `Rect(0, 0, 100, 100)` in |MuPDF| is the same as `Rect(0, 692,"
+" 100, 792)` in |PDF|. See this code snippet::"
+msgstr ""
+
+#: ../../app3.rst:425 0358a41bcfde49298c244a781732a9cc
+msgid "Footnotes"
+msgstr ""
+
+#: ../../app3.rst:426 2a940ba3cc664855b3afbb56eaefdade
+msgid ""
+"MuPDF supports \"deep-copying\" objects between PDF documents. To avoid "
+"duplicate data in the target, it uses so-called \"graftmaps\", like a "
+"form of scratchpad: for each object to be copied, its :data:`xref` number"
+" is looked up in the graftmap. If found, copying is skipped. Otherwise, "
+"the new :data:`xref` is recorded and the copy takes place. PyMuPDF makes "
+"use of this technique in two places so far: :meth:`Document.insert_pdf` "
+"and :meth:`Page.show_pdf_page`. This process is fast and very efficient, "
+"because it prevents multiple copies of typically large and frequently "
+"referenced data, like images and fonts. However, you may still want to "
+"consider using garbage collection (option 4) in any of the following "
+"cases:"
+msgstr ""
+
+#: ../../app3.rst:428 12291c684340429ebe3dfc12d79126a2
+msgid ""
+"The target PDF is not new / empty: grafting does not check for resources "
+"that already existed (e.g. images, fonts) in the target document before "
+"opening it."
+msgstr ""
+
+#: ../../app3.rst:429 85b00d1ae84a4e159e1accdfa5034bdc
+msgid ""
+"Using :meth:`Page.show_pdf_page` for more than one source document: each "
+"grafting occurs **within one source** PDF only, not across multiple. So "
+"if e.g. the same image exists in pages from different source PDFs, then "
+"this will not be detected until garbage collection."
+msgstr ""
+
+#: ../../footer.rst:46 2a972e62f98f45208da9b9eaf1158726
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

@@ -1,0 +1,665 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 b5d193bc1b274d55b812ca653ec68fad
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 2bc267634e2a46b2a13b54c6aadda8c0
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 1629ae10629c4c9fbbd1776a5b603010
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-stories.rst:18 8314345d0647437d82e4ab3dfd98d5d1
+msgid "Stories"
+msgstr ""
+
+#: ../../recipes-stories.rst:20 595796cef87c4b7ab7031798c86047a5
+msgid ""
+"This document showcases some typical use cases for "
+":ref:`Stories<WorkingWithStories>`."
+msgstr ""
+
+#: ../../recipes-stories.rst:22 995d0e959c2c43259e09def294ea1759
+msgid ""
+"As mentioned in the :ref:`tutorial<WorkingWithStories>`, stories may be "
+"created using up to three input sources: HTML, CSS and Archives -- all of"
+" which are optional and which, respectively, can be provided "
+"programmatically."
+msgstr ""
+
+#: ../../recipes-stories.rst:24 f48c55a3c4bd4c2f81e39c6ed5117f22
+msgid "The following examples will showcase combinations for using these inputs."
+msgstr ""
+
+#: ../../recipes-stories.rst:28 f931abd31c8f473b8a30402b72d2037a
+msgid ""
+"Many of these recipe's source code are included as examples in the `docs`"
+" folder."
+msgstr ""
+
+#: ../../recipes-stories.rst:34 052173f8f2be4dc9938bc267e8d774b8
+msgid "How to Add a Line of Text with Some Formatting"
+msgstr ""
+
+#: ../../recipes-stories.rst:36 eeb1b6e720474b3ba8158d228da8e939
+msgid "Here is the inevitable \"Hello World\" example. We will show two variants:"
+msgstr ""
+
+#: ../../recipes-stories.rst:38 c71486f3b5194a389a39bbe61b8a3dd8
+msgid "Create using existing HTML source [#f1]_, that may come from anywhere."
+msgstr ""
+
+#: ../../recipes-stories.rst:39 3477752d744d4d17972620ffab3621ae
+msgid "Create using the Python API."
+msgstr ""
+
+#: ../../recipes-stories.rst:43 a4855e116ed84da28c0c7f0adb1ba452
+msgid ""
+"Variant using an existing HTML source [#f1]_ -- which in this case is "
+"defined as a constant in the script::"
+msgstr ""
+
+#: ../../recipes-stories.rst:69 54989c4eb624422c9343633c849a172d
+msgid ""
+"The above effect (sans-serif and blue text) could have been achieved by "
+"using a separate CSS source like so::"
+msgstr ""
+
+#: ../../recipes-stories.rst:90 d640d05290e44092bef652b25473bfae
+msgid "The Python API variant -- everything is created programmatically::"
+msgstr ""
+
+#: ../../recipes-stories.rst:114 8e4d50be827247b7974656d7de688f75
+msgid "Both variants will produce the same output PDF."
+msgstr ""
+
+#: ../../recipes-stories.rst:122 069e5a16feed4b3ba04b7f545ff25868
+msgid "How to use Images"
+msgstr ""
+
+#: ../../recipes-stories.rst:124 d14be063cc6f47e89f14211f41113abb
+msgid ""
+"Images can be referenced in the provided HTML source, or the reference to"
+" a desired image can also be stored via the Python API. In any case, this"
+" requires using an :ref:`Archive`, which refers to the place where the "
+"image can be found."
+msgstr ""
+
+#: ../../recipes-stories.rst:126 097753bc282141dc9c12d4462a635a6a
+msgid ""
+"Images with the binary content embedded in the HTML source are **not "
+"supported** by stories."
+msgstr ""
+
+#: ../../recipes-stories.rst:128 5325dfa364c947ee83aa589fc95cff1e
+msgid ""
+"We extend our \"Hello World\" example from above and display an image of "
+"our planet right after the text. Assuming the image has the name "
+"\"world.jpg\" and is present in the script's folder, then this is the "
+"modified version of the above Python API variant::"
+msgstr ""
+
+#: ../../recipes-stories.rst:168 615eea37135744afb2f7306c69fcfa53
+msgid "How to Read External HTML and CSS for a Story"
+msgstr ""
+
+#: ../../recipes-stories.rst:170 3e62969f6ef34607a59289d3c5a2b616
+msgid "These cases are fairly straightforward."
+msgstr ""
+
+#: ../../recipes-stories.rst:172 9e79a62cf0f8448594719c149f421fe4
+msgid ""
+"As a general recommendation, HTML and CSS sources should be **read as "
+"binary files** and decoded before using them in a story. The Python "
+"`pathlib.Path` provides convenient ways to do this::"
+msgstr ""
+
+#: ../../recipes-stories.rst:193 424a5680167f4243bfdae2bc11a6a865
+msgid "How to Output Database Content with Story Templates"
+msgstr ""
+
+#: ../../recipes-stories.rst:195 75230534b810462489a2c0543f108196
+msgid ""
+"This script demonstrates how to report SQL database content using an "
+"**HTML template**."
+msgstr ""
+
+#: ../../recipes-stories.rst:199 573a4db0337c431ba12822e512233a72
+msgid "The example SQL database contains two tables:"
+msgstr ""
+
+#: ../../recipes-stories.rst:201 d12453e5387d4c86aef125b1c917cdc5
+msgid ""
+"Table \"films\" contains one row per film with the fields **\"title\"**, "
+"**\"director\"** and (release) **\"year\"**."
+msgstr ""
+
+#: ../../recipes-stories.rst:202 48c7c2781fa04d22ad47bdd68f0e7430
+msgid ""
+"Table \"actors\" contains one row per actor and film title (fields "
+"(actor) **\"name\"** and (film) **\"title\"**)."
+msgstr ""
+
+#: ../../recipes-stories.rst:204 29aa52738ef94cbfb71a5e58eb4207f9
+msgid ""
+"The story DOM consists of a template for one film, which reports film "
+"data together with a list of casted actors."
+msgstr ""
+
+#: ../../recipes-stories.rst:206 ../../recipes-stories.rst:231
+#: ../../recipes-stories.rst:257 ../../recipes-stories.rst:309
+#: ../../recipes-stories.rst:343 ../../recipes-stories.rst:377
+#: ../../recipes-stories.rst:398 ../../recipes-stories.rst:433
+#: ../../recipes-stories.rst:467 ../../recipes-stories.rst:497
+#: ../../recipes-stories.rst:531 08c1a4e126cb48978f4f6d8d01328a9d
+#: 1f86ef58d3744dc6b95fcda088603493 252df0b354254037b866b630e74e2da8
+#: 4e6c2eefb4e04eb1af7f436651caf09b 703c6ee5dcb04da88e0551d3b09617ad
+#: 7ab440172c9b492d83a77e8c6b3a5ce3 7e9d0135ecac455194beff5db8e97383
+#: c3d8138b12a64495b66fc448295bdf87 d783b1de9b01428d87a0f12d8bc86213
+#: e6786c9897324e95a0694f81946c35c6 f4a5a290b11645758f555fb83ad91ec4
+msgid "**Files:**"
+msgstr ""
+
+#: ../../recipes-stories.rst:208 76f13a564fe44af38d30607e6903e0e8
+msgid "`docs/samples/filmfestival-sql.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:209 0011f520db504866869f4fc79f37465a
+msgid "`docs/samples/filmfestival-sql.db`"
+msgstr ""
+
+#: ../../recipes-stories.rst:212 ../../recipes-stories.rst:235
+#: ../../recipes-stories.rst:263 ../../recipes-stories.rst:316
+#: ../../recipes-stories.rst:347 ../../recipes-stories.rst:360
+#: ../../recipes-stories.rst:381 ../../recipes-stories.rst:402
+#: ../../recipes-stories.rst:437 ../../recipes-stories.rst:471
+#: ../../recipes-stories.rst:501 ../../recipes-stories.rst:535
+#: 1d8920d6cfac4577be9b37a82329452a 278a24defbbf496193211fdfb1c2a54a
+#: 40ab396528814a3fac246a5a00c34f65 5723b2a904ba47b9860b557379721ae1
+#: 9707ab332af04a1a9cb72a3ab89fffd3 9ea47fe98a8844ffaf1223a3e33e1bb8
+#: ae83566d84a2413980f2a252c0940048 be88afb45b4948b18b486920f53daf2e
+#: c004e3f49ac3466c8c9ef9888157f02d c942e3a7452248f58a5bddc23570027c
+#: f3dbc504b00e4947ac703f22b8109786 f8ece455a9d6481eae9b3f6faac7ac53
+msgid "|toggleStart|"
+msgstr ""
+
+#: ../../recipes-stories.rst:216 ../../recipes-stories.rst:239
+#: ../../recipes-stories.rst:267 ../../recipes-stories.rst:320
+#: ../../recipes-stories.rst:351 ../../recipes-stories.rst:364
+#: ../../recipes-stories.rst:385 ../../recipes-stories.rst:406
+#: ../../recipes-stories.rst:441 ../../recipes-stories.rst:475
+#: ../../recipes-stories.rst:505 ../../recipes-stories.rst:539
+#: 092f94a8817948c8abafc3734fcf198b 4a98f729722249cd982f858648efc237
+#: 62d1782a6ea04c2db57ab1ee0ca4fe5f 8ba4cffc6b654792918dc7b1dd969a30
+#: 8c53e41912464fc1be6bbe4c83f4028f 9ddbc2dae3a649e1ba30b92fc174fbe4
+#: caf97ca2ef514514bc825397ac3bf0d9 e3ff13ae3b40495fabcf13c543af9d12
+#: eaf1260e02b949b79eed85f34153be91 ec1850ab1501425c8a0bd816f0817878
+#: ef3d65dc1872490f8de2efc2cc2a90b2 fef63adfa7c341ffbbf5c7407c27a06f
+msgid "|toggleEnd|"
+msgstr ""
+
+#: ../../recipes-stories.rst:225 18a13135616545bfad20fd11639e4c84
+msgid "How to Integrate with Existing PDFs"
+msgstr ""
+
+#: ../../recipes-stories.rst:227 f03491738dc64176a90468adac627ab0
+msgid ""
+"Because a :ref:`DocumentWriter` can only write to a new file, stories "
+"cannot be placed on existing pages. This script demonstrates a "
+"circumvention of this restriction."
+msgstr ""
+
+#: ../../recipes-stories.rst:229 96c37297327d48c0bd3a2b2e00278cee
+msgid ""
+"The basic idea is letting :ref:`DocumentWriter` output to a PDF in "
+"memory. Once the story has finished, we re-open this memory PDF and put "
+"its pages to desired locations on **existing** pages via method "
+":meth:`Page.show_pdf_page`."
+msgstr ""
+
+#: ../../recipes-stories.rst:233 4f5ee88727ea49c296c840ca51c75e45
+msgid "`docs/samples/showpdf-page.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:248 563332f15b53462da0c68cde0c1beb09
+msgid ""
+"How to Make Multi-Columned Layouts and Access Fonts from Package "
+"`pymupdf-fonts`_"
+msgstr ""
+
+#: ../../recipes-stories.rst:250 c67e2e9e13c4449cb12ec6a84c9d23ea
+msgid ""
+"This script outputs an article (taken from Wikipedia) that contains text "
+"and multiple images and uses a 2-column page layout."
+msgstr ""
+
+#: ../../recipes-stories.rst:252 e5c809facc4047608e51c439efe8f7a6
+msgid ""
+"In addition, two \"Ubuntu\" font families from package `pymupdf-fonts`_ "
+"are used instead of defaulting to Base-14 fonts."
+msgstr ""
+
+#: ../../recipes-stories.rst:254 710ea657eaed417790c2b2e1408ff46a
+msgid ""
+"Yet another feature used here is that all data -- the images and the "
+"article HTML -- are jointly stored in a ZIP file."
+msgstr ""
+
+#: ../../recipes-stories.rst:259 baca45cc5cea40718096fd055c4c6f29
+msgid "`docs/samples/quickfox.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:260 ../../recipes-stories.rst:313
+#: 279ba9d3da96462d9521b6401f261ffc 79489cda481541c5af08712bcd696dcf
+msgid "`docs/samples/quickfox.zip`"
+msgstr ""
+
+#: ../../recipes-stories.rst:276 0f2bd834af8f474bb16581d5edd338b8
+msgid "How to Make a Layout which Wraps Around a Predefined \"no go area\" Layout"
+msgstr ""
+
+#: ../../recipes-stories.rst:279 dbd26e7d6a2f4abaa6462e796a1208bb
+msgid ""
+"This is a demo script using PyMuPDF's Story class to output text as a PDF"
+" with a two-column page layout."
+msgstr ""
+
+#: ../../recipes-stories.rst:282 2eb13f3738a8491b97fe654a99f8ce3a
+msgid "The script demonstrates the following features:"
+msgstr ""
+
+#: ../../recipes-stories.rst:284 25765b0dd11a43508066ab08e902d66f
+msgid "Layout text around images of an existing (\"target\") PDF."
+msgstr ""
+
+#: ../../recipes-stories.rst:285 e472244ac7ad455690ffc3c6049d7bc3
+msgid ""
+"Based on a few global parameters, areas on each page are identified, that"
+" can be used to receive text layouted by a Story."
+msgstr ""
+
+#: ../../recipes-stories.rst:287 51459bb508b34fa1adb8a3b05cb25082
+msgid ""
+"These global parameters are not stored anywhere in the target PDF and "
+"must therefore be provided in some way:"
+msgstr ""
+
+#: ../../recipes-stories.rst:290 9c4f7ed7210f4d129f08fc68b1449c1b
+msgid "The width of the border(s) on each page."
+msgstr ""
+
+#: ../../recipes-stories.rst:291 2adfda4cd7994235b17faaaa456c4645
+msgid ""
+"The fontsize to use for text. This value determines whether the provided "
+"text will fit in the empty spaces of the (fixed) pages of target PDF. It "
+"cannot be predicted in any way. The script ends with an exception if "
+"target PDF has not enough pages, and prints a warning message if not all "
+"pages receive at least some text. In both cases, the FONTSIZE value can "
+"be changed (a float value)."
+msgstr ""
+
+#: ../../recipes-stories.rst:297 ef8d9dc888f04ea18e29d8deec8eebc7
+msgid "Use of a 2-column page layout for the text."
+msgstr ""
+
+#: ../../recipes-stories.rst:298 0dc84c7986d740dea5c0d99ee3cd5965
+msgid ""
+"The layout creates a temporary (memory) PDF. Its produced page content "
+"(the text) is used to overlay the corresponding target page. If text "
+"requires more pages than are available in target PDF, an exception is "
+"raised. If not all target pages receive at least some text, a warning is "
+"printed."
+msgstr ""
+
+#: ../../recipes-stories.rst:302 76e3c6f16fca4501a3d6b09051f5c6fc
+msgid ""
+"The script reads \"image-no-go.pdf\" in its own folder. This is the "
+"\"target\" PDF. It contains 2 pages with each 2 images (from the original"
+" article), which are positioned at places that create a broad overall "
+"test coverage. Otherwise the pages are empty."
+msgstr ""
+
+#: ../../recipes-stories.rst:306 5feb7616d6454982b6c9c0803bed70ec
+msgid ""
+"The script produces \"quickfox-image-no-go.pdf\" which contains the "
+"original pages and image positions, but with the original article text "
+"laid out around them."
+msgstr ""
+
+#: ../../recipes-stories.rst:311 2d87632d8f7d4b999f854a81b2e80541
+msgid "`docs/samples/quickfox-image-no-go.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:312 cab8c8e6552e4a2f88203240822139a2
+msgid "`docs/samples/quickfox-image-no-go.pdf`"
+msgstr ""
+
+#: ../../recipes-stories.rst:329 07ad707123e64f328f43969ff77a58f7
+msgid "How to Output an HTML Table"
+msgstr ""
+
+#: ../../recipes-stories.rst:331 6cd7587dab1f4b6aa7013a9ab05d5131
+msgid "Outputting HTML tables is supported as follows:"
+msgstr ""
+
+#: ../../recipes-stories.rst:333 a094cc112239433e8f1c4e235bd1c1d7
+msgid ""
+"Flat table layouts are supported (\"rows x columns\"), no support of the "
+"\"colspan\" / \"rowspan\" attributes."
+msgstr ""
+
+#: ../../recipes-stories.rst:334 3e3366cef2bc44d29a1f557f36e98bd3
+msgid ""
+"Table header tag :htmlTag:`th` supports attribute \"scope\" with values "
+"\"row\" or \"col\". Applicable text will be bold by default."
+msgstr ""
+
+#: ../../recipes-stories.rst:335 533fc1b4bbf248e2b203786ae6c443b7
+msgid ""
+"Column widths are computed automatically based on column content. They "
+"cannot be directly set."
+msgstr ""
+
+#: ../../recipes-stories.rst:336 76c98b7342de4fd38e793274a40bfee5
+msgid ""
+"Table **cells may contain images** which will be considered in the column"
+" width calculation magic."
+msgstr ""
+
+#: ../../recipes-stories.rst:337 2444753418ed48efbdaf659f55ebd3d9
+msgid ""
+"Row heights are computed automatically based on row content - leading to "
+"multi-line rows where needed."
+msgstr ""
+
+#: ../../recipes-stories.rst:338 c66ef7c08bce47369611cd47d34761ad
+msgid ""
+"The potentially multiple lines of a table row will always be kept "
+"together on one page (respectively \"where\" rectangle) and not be split."
+msgstr ""
+
+#: ../../recipes-stories.rst:339 88f98486ab714f12834b175e3270a938
+msgid ""
+"Table header rows are only **shown on the first page / \"where\" "
+"rectangle.**"
+msgstr ""
+
+#: ../../recipes-stories.rst:340 10bdfdc885fb4f9297afc239193cbda7
+msgid ""
+"The \"style\" attribute is ignored when given directly in HTML table "
+"elements. Styling for a table and its elements must happen separately, in"
+" CSS source or within the :htmlTag:`style` tag."
+msgstr ""
+
+#: ../../recipes-stories.rst:341 482d5b34b15a4a9c9f4b7ece5d79a9ce
+msgid ""
+"Styling for :htmlTag:`tr` elements is not supported and ignored. "
+"Therefore, a table-wide grid or alternating row background colors are not"
+" supported. One of the following example scripts however shows an easy "
+"way to deal with this limitation."
+msgstr ""
+
+#: ../../recipes-stories.rst:345 8345e9575f6844029b2999b8b6fed76f
+msgid "`docs/samples/table01.py` This script reflects basic features."
+msgstr ""
+
+#: ../../recipes-stories.rst:353 e5188ccc429743cab9f17635eaab8002
+msgid ""
+"`docs/samples/national-capitals.py` Advanced script extending table "
+"output options using simple additional code:"
+msgstr ""
+
+#: ../../recipes-stories.rst:355 d786bb83c47a488a86e7603d731dac6b
+msgid "Multi-page output simulating **repeating header rows**"
+msgstr ""
+
+#: ../../recipes-stories.rst:356 64263c3cea7742dcafd285f9c1d9a690
+msgid "Alternating table row background colors"
+msgstr ""
+
+#: ../../recipes-stories.rst:357 291f158657964fed93655aa568365aca
+msgid "Table rows and columns delimited by gridlines"
+msgstr ""
+
+#: ../../recipes-stories.rst:358 5f5af232f8f34e9f9f06b6bc48f9b935
+msgid "Table rows dynamically generated / filled with data from an SQL database"
+msgstr ""
+
+#: ../../recipes-stories.rst:373 8de5b747eeee4c49a2ff9b5f6659192a
+msgid "How to Create a Simple Grid Layout"
+msgstr ""
+
+#: ../../recipes-stories.rst:375 2f9c6ef2b7224c718c51897ec71e2722
+msgid ""
+"By creating a sequence of :ref:`Story` objects within a grid created via "
+"the :ref:`make_table<Functions_make_table>` function a developer can "
+"create grid layouts as required."
+msgstr ""
+
+#: ../../recipes-stories.rst:379 ef7f8c1036ed43a287e48b4719422ffd
+msgid "`docs/samples/simple-grid.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:394 d33c94d00852413d800e1a8cc6dce372
+msgid "How to Generate a Table of Contents"
+msgstr ""
+
+#: ../../recipes-stories.rst:396 30c4a1111f18493d8276608dbce4e4cb
+msgid ""
+"This script lists the source code of all Python scripts that live in the "
+"script's directory."
+msgstr ""
+
+#: ../../recipes-stories.rst:400 2b3106d169114915b35cfabdb62e4820
+msgid "`docs/samples/code-printer.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:409 b512515de19446c1b6c1d11c09f1d286
+msgid "It features the following capabilities:"
+msgstr ""
+
+#: ../../recipes-stories.rst:411 d8bc94329c9d42799b70240e483a9535
+msgid ""
+"Automatic generation of a Table of Contents (TOC) on separately numbered "
+"pages at the start of the document - using a specialized :ref:`Story`."
+msgstr ""
+
+#: ../../recipes-stories.rst:413 1b625819dde2421ca9d1f8556c5b03cd
+msgid ""
+"Use of 3 separate :ref:`Story` objects per page: header story, footer "
+"story and the story for printing the Python sources."
+msgstr ""
+
+#: ../../recipes-stories.rst:415 ba47006f7ad743bab33a577e74e7dac7
+msgid ""
+"The page **footer is automatically changed** to show the name of the "
+"current Python file."
+msgstr ""
+
+#: ../../recipes-stories.rst:417 3723e3ea0ce3414c99483f90f6315678
+msgid ""
+"Use of :meth:`Story.element_positions` to collect the data for the TOC "
+"and for the dynamic adjustment of page footers. This is an example of a "
+"**bidirectional communication** between the story output process and the "
+"script."
+msgstr ""
+
+#: ../../recipes-stories.rst:419 5d56f451e2e44b589a69c8d6faa0dc16
+msgid ""
+"The main PDF with the Python sources is being written to memory by its "
+":ref:`DocumentWriter`. Another :ref:`Story` / :ref:`DocumentWriter` pair "
+"is then used to create a (memory) PDF for the TOC pages. Finally, both "
+"these PDFs are joined and the result stored to disk."
+msgstr ""
+
+#: ../../recipes-stories.rst:428 3e0fa770cc3b415fa27affd8b6659042
+msgid "How to Display a List from JSON Data"
+msgstr ""
+
+#: ../../recipes-stories.rst:430 fc54ff1f63294ae3880c28ae96b73d3d
+msgid ""
+"This example takes some JSON data input which it uses to populate a "
+":ref:`Story`. It also contains some visual text formatting and shows how "
+"to add links."
+msgstr ""
+
+#: ../../recipes-stories.rst:435 96d6b1d5632348d8a2d1a067ea7b5e30
+msgid "`docs/samples/json-example.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:451 d389b54283c647c2aa18c6cac96e2679
+msgid "Using the Alternative :meth:`Story.write*()` functions"
+msgstr ""
+
+#: ../../recipes-stories.rst:453 97c0d297b7de4f52be883dd1fe9ec6da
+msgid ""
+"The :meth:`Story.write*()` functions provide a different way to use the "
+":ref:`Story` functionality, removing the need for calling code to "
+"implement a loop that calls :meth:`Story.place()` and "
+":meth:`Story.draw()` etc, at the expense of having to provide at least a "
+"`rectfn()` callback."
+msgstr ""
+
+#: ../../recipes-stories.rst:462 c5a3507786364d729ce97e31af0be224
+msgid "How to do Basic Layout with :meth:`Story.write()`"
+msgstr ""
+
+#: ../../recipes-stories.rst:464 d1aac41eb76d486c8b6ef2a9bf8c1862
+msgid ""
+"This script lays out multiple copies of its own source code, into four "
+"rectangles per page."
+msgstr ""
+
+#: ../../recipes-stories.rst:469 0af6a8efdd4b4f829b827d3fdfe7b1a0
+msgid "`docs/samples/story-write.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:484 022633dfece24abd830b877bb6eb3083
+msgid ""
+"How to do Iterative Layout for a Table of Contents with "
+":meth:`Story.write_stabilized()`"
+msgstr ""
+
+#: ../../recipes-stories.rst:486 cc0bf853cf404c9bbebe6a560eb9c1d7
+msgid ""
+"This script creates html content dynamically, adding a contents section "
+"based on :ref:`ElementPosition` items that have non-zero `.heading` "
+"values."
+msgstr ""
+
+#: ../../recipes-stories.rst:489 99707707c94744dda5a7c265feb53666
+msgid ""
+"The contents section is at the start of the document, so modifications to"
+" the contents can change page numbers in the rest of the document, which "
+"in turn can cause page numbers in the contents section to be incorrect."
+msgstr ""
+
+#: ../../recipes-stories.rst:493 641abbf30eac459daee550983498c0d2
+msgid ""
+"So the script uses :meth:`Story.write_stabilized()` to repeatedly lay "
+"things out until things are stable."
+msgstr ""
+
+#: ../../recipes-stories.rst:499 3be99332904c4113a7541cd214abf180
+msgid "`docs/samples/story-write-stabilized.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:514 524e644a3c994d5aa854cd8bddbe82d5
+msgid ""
+"How to do Iterative Layout and Create PDF Links with "
+":meth:`Story.write_stabilized_links()`"
+msgstr ""
+
+#: ../../recipes-stories.rst:516 ddff6a045e8d43fca2d9144a4d8433a4
+msgid ""
+"This script is similar to the one described in \"How to use "
+":meth:`Story.write_stabilized()`\" above, except that the generated PDF "
+"also contains links that correspond to the internal links in the original"
+" html."
+msgstr ""
+
+#: ../../recipes-stories.rst:520 b9678b083c9c4ba788c436e3d5e8c3fb
+msgid ""
+"This is done by using :meth:`Story.write_stabilized_links()`; this is "
+"slightly different from :meth:`Story.write_stabilized()`:"
+msgstr ""
+
+#: ../../recipes-stories.rst:523 31f9c57387284c839d1085d91cb625b2
+msgid "It does not take a :ref:`DocumentWriter` `writer` arg."
+msgstr ""
+
+#: ../../recipes-stories.rst:524 9c7bd5e90df443cdbe61b132c03467b2
+msgid "It returns a PDF :ref:`Document` instance."
+msgstr ""
+
+#: ../../recipes-stories.rst:526 d8ba37b0defe4b7eb40aa17b6e2d8356
+msgid ""
+"[The reasons for this are a little involved; for example a "
+":ref:`DocumentWriter` is not necessarily a PDF writer, so doesn't really "
+"work in a PDF-specific API.]"
+msgstr ""
+
+#: ../../recipes-stories.rst:533 bdb356f1c6e6499c9a9ed3fa8c0d6721
+msgid "`docs/samples/story-write-stabilized-links.py`"
+msgstr ""
+
+#: ../../recipes-stories.rst:547 9b7cb4775a4e44f2881def8ce1ca8369
+msgid "Footnotes"
+msgstr ""
+
+#: ../../recipes-stories.rst:548 9c133ed7af7a4415b60b9ed96ac04830
+msgid "HTML & CSS support"
+msgstr ""
+
+#: ../../recipes-stories.rst:552 b1da3ee4c5a3436a8a6b46802918e564
+msgid ""
+"At the time of writing the HTML engine for Stories is fairly basic and "
+"supports a subset of CSS2 attributes."
+msgstr ""
+
+#: ../../recipes-stories.rst:554 01ac3d98abae4349b9b5c28d6a74755e
+msgid "Some important CSS support to consider:"
+msgstr ""
+
+#: ../../recipes-stories.rst:556 b91cde3adf67437fb80037c56700f274
+msgid "The only available layout is relative layout."
+msgstr ""
+
+#: ../../recipes-stories.rst:557 e4be54e31399436792c52c7fda0353d1
+msgid "`background` is unavailable, use `background-color` instead."
+msgstr ""
+
+#: ../../recipes-stories.rst:558 2e7a1ffef1e64856a8bac73062d1051f
+msgid "`float` is unavailable."
+msgstr ""
+
+#: ../../footer.rst:46 e3f4dcf0211e47ab91f9299fb7f43fd1
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

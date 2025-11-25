@@ -48,11 +48,35 @@ A better way of building the documentation if you are actively working on update
 
 This will serve the docs on a localhost and auto-update the pages live as you make edits.
 
-### Building the Japanese documentation
+
+
+## Internationalization
+
+PyMuPDF docs can be delivered in multiple languages - English, Japanese & Korean.
+
+To add a new langauge, e.g. Korean, use:
+
+`sphinx-build -b gettext . _build/gettext`
+`sphinx-intl update -p _build/gettext -l ko`
+
+
+### Building the Localiized documentation
 
 - From the "docs" location run:
 
+#### Japanese:
 `sphinx-build -a -b html -D language=ja . _build/html/ja`
+
+
+Once built HTML docs HTML pages are in `_build/html/ja`.
+
+#### Korean:
+`sphinx-build -a -b html -D language=ko . _build/html/ko`
+
+
+Once built HTML docs HTML pages are in `_build/html/ko`.
+
+Note: subsequent runs can omit the `-a` parameter to speed up builds (it will just build what has changed).
 
 
 - Updating, after changes on the `main` branch and a sync with the main `en` .rst files, from the "docs" location, do:
@@ -62,6 +86,7 @@ This will serve the docs on a localhost and auto-update the pages live as you ma
 then:
 
 `sphinx-intl update -p _build/gettext -l ja`
+`sphinx-intl update -p _build/gettext -l ko`
 
 This will update the corresponding `po` files for further edits. Then check these files for "#, fuzzy" entries as the new stuff might exist there and requires editing.
 

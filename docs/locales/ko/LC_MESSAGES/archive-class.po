@@ -1,0 +1,266 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 7172941a6af740c8a8c939eeb12aab6f
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 7f24f6f0cd5c48f7b5ef12886e7d3dc2
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 2ce7ac460eea4d7fa274674358f58cb3
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../archive-class.rst:7 4da66911f34043f4b535f63a47cba447
+msgid "Archive"
+msgstr ""
+
+#: ../../archive-class.rst:9 1dbbb103178b492a8c9bf5b05d021272
+msgid "New in v1.21.0"
+msgstr ""
+
+#: ../../archive-class.rst:11 1e7ee6091313470abe0dcc5c8168a504
+msgid ""
+"This class represents a generalization of file folders and container "
+"files like ZIP and TAR archives. Archives allow accessing arbitrary "
+"collections of file folders, ZIP / TAR files and single binary data "
+"elements as if they all were part of one hierarchical tree of folders."
+msgstr ""
+
+#: ../../archive-class.rst:13 bc799244f4a54577b1ab6043ddcef969
+msgid ""
+"In PyMuPDF, archives are currently only used by :ref:`Story` objects to "
+"specify where to look for fonts, images and other resources."
+msgstr ""
+
+#: ../../archive-class.rst:16 733307d2ac0c48d5943722db88b66ca3
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../archive-class.rst:16 067a02c3d0eb402e87db2ab8a79cec6a
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../archive-class.rst:18 917e00b33c264053b763260480ae3cb0
+msgid ":meth:`Archive.add`"
+msgstr ""
+
+#: ../../archive-class.rst:18 5758685d282946d0b76452d8a3d35bf1
+msgid "add new data to the archive"
+msgstr ""
+
+#: ../../archive-class.rst:19 96e83a97ca3a4e0d99f2eba9b8dd862c
+msgid ":meth:`Archive.has_entry`"
+msgstr ""
+
+#: ../../archive-class.rst:19 e29b1efc996f43298b3e2c9fd91522a4
+msgid "check if given name is a member"
+msgstr ""
+
+#: ../../archive-class.rst:20 7e3fbbcec68b4db0b0e06433c33177c1
+msgid ":meth:`Archive.read_entry`"
+msgstr ""
+
+#: ../../archive-class.rst:20 4cbe9ceb4c8744f69ad9da999cf33862
+msgid "read the data given by the name"
+msgstr ""
+
+#: ../../archive-class.rst:21 40716b5223004d5ba100ffb57f39be5a
+msgid ":attr:`Archive.entry_list`"
+msgstr ""
+
+#: ../../archive-class.rst:21 c6a15b6d228b4c37a9d06697f7992694
+msgid "list[dict] of archive items"
+msgstr ""
+
+#: ../../archive-class.rst:24 d96c6d9573704987968f177a3bf7a3ad
+msgid "**Class API**"
+msgstr ""
+
+#: ../../archive-class.rst:30 d4ac6bed829f43429a56efde53217fce
+msgid "Creates a new archive. Without parameters, an empty archive is created."
+msgstr ""
+
+#: ../../archive-class.rst:32 ce56c558cdfd467bb88c2e5a14edbc06
+msgid "If provided, `content` may be one of the following:"
+msgstr ""
+
+#: ../../archive-class.rst:34 b4730a481ea84967b6cb58ae9fe5ba6e
+msgid "another Archive: the archive is being made a sub-archive of the new one."
+msgstr ""
+
+#: ../../archive-class.rst:36 5b42f6018b314dbca0ec8d6039baf4d7
+msgid ""
+"a string: this must be the name of a local folder or file. `pathlib.Path`"
+" objects are also supported."
+msgstr ""
+
+#: ../../archive-class.rst:38 619d605a712947c2a548c8e110f21c7d
+msgid ""
+"A **folder** will be converted to a sub-archive, so its files (and any "
+"sub-folders) can be accessed by their names."
+msgstr ""
+
+#: ../../archive-class.rst:39 4cd647737643458d9e392abbb2da302c
+msgid ""
+"A **file** will be read with mode `\"rb\"` and these binary data (a "
+"`bytes` object) be treated as a single-member sub-archive. In this case, "
+"the `path` parameter is **mandatory** and should be the member name under"
+" which this item can be found / retrieved."
+msgstr ""
+
+#: ../../archive-class.rst:41 6b1e54d53ee048bebe0aa7b13aa24963
+msgid ""
+"a `zipfile.ZipFile` or `tarfile.TarFile` object: Will be added as a sub-"
+"archive."
+msgstr ""
+
+#: ../../archive-class.rst:43 3e15f440e05843dc80023b21dca6c101
+msgid ""
+"a Python binary object (`bytes`, `bytearray`, `io.BytesIO`): this will "
+"add a single-member sub-archive. In this case, the `path` parameter is "
+"**mandatory** and should be the member name under which this item can be "
+"found / retrieved."
+msgstr ""
+
+#: ../../archive-class.rst:45 0d17f917bfaf4703827752f14540c1b0
+msgid ""
+"a tuple `(data, name)`: This will add a single-member sub-archive with "
+"the member name ``name``. ``data`` may be a Python binary object or a "
+"local file name (in which case its binary file content is used). Use this"
+" format if you need to specify `path`."
+msgstr ""
+
+#: ../../archive-class.rst:47 1597cdc3f8254638bf2cdf9bc2309574
+msgid ""
+"a Python sequence: This is a convenience format to specify any "
+"combination of the above."
+msgstr ""
+
+#: ../../archive-class.rst:49 4988de212ed54833a49be91d2d82d21d
+msgid "If provided, `path` must be a string."
+msgstr ""
+
+#: ../../archive-class.rst:51 f90f1ba75dbd4b94be663d3d1a03ce47
+msgid ""
+"If `content` is either binary data or a file name, this parameter is "
+"mandatory and must be the name under which the data can be found."
+msgstr ""
+
+#: ../../archive-class.rst:53 2b3e0332d6b34ab1ad0dd16b095eadfe
+msgid ""
+"Otherwise this parameter is optional. It can be used to simulate a folder"
+" name or a mount point, under which this sub-archive's elements can be "
+"found. For example this specification `Archive((data, \"name\"), "
+"\"path\")` means that `data` will be found using the element name "
+"`\"path/name\"`. Similar is true for other sub-archives: to retrieve "
+"members of a ZIP sub-archive, their names must be prefixed with "
+"`\"path/\"`. The main purpose of this parameter probably is to "
+"differentiate between duplicate names."
+msgstr ""
+
+#: ../../archive-class.rst:55 5faa270a9a8e4b1e9cb54ca0b81bec9e
+msgid ""
+"If duplicate entry names exist in the archive, always the last entry with"
+" that name will be found / retrieved. During archive creation, or "
+"appending more data to an archive (see :meth:`Archive.add`) no check for "
+"duplicates will be made. Use the `path` parameter to prevent this from "
+"happening."
+msgstr ""
+
+#: ../../archive-class.rst:59 8f8691f33cb24edf8cf015488e88618a
+msgid ""
+"Append a sub-archive. The meaning of the parameters are exactly the same "
+"as explained above. Of course, parameter `content` is not optional here."
+msgstr ""
+
+#: ../../archive-class.rst:63 d7d9c4ee5eb44c0b95fe42f32102c97a
+msgid "Checks whether an entry exists in any of the sub-archives."
+msgstr ""
+
+#: ../../archive-class.rst 5f8828ec2f374296878d56b8bda07845
+#: 8a109a840a9f48f69f8ad6d589cd57ea
+msgid "Parameters"
+msgstr ""
+
+#: ../../archive-class.rst:65 ../../archive-class.rst:73
+#: 9a6f2dbd567f43d2bfe08e06091dcabb ed415071f9ec4041bffb1dcf6075f18d
+msgid ""
+"The fully qualified name of the entry. So must include any `path` prefix "
+"under which the entry's sub-archive has been added."
+msgstr ""
+
+#: ../../archive-class.rst 77dc263426c34dc88d2d354f2137f0bd
+#: d7ec8d61f7784b09a3583b2731f89a03
+msgid "Returns"
+msgstr ""
+
+#: ../../archive-class.rst:67 82d8554eda284d14be8c15dcd79fb3ca
+msgid "`True` or `False`."
+msgstr ""
+
+#: ../../archive-class.rst:71 a873f11522bd47f09f770c162ec439ca
+msgid "Retrieve the data of an entry."
+msgstr ""
+
+#: ../../archive-class.rst:75 1dcd801a861448d2bc31a0ae9ab2b9ca
+msgid ""
+"The binary data (`bytes`) of the entry. If not found, an exception is "
+"raised."
+msgstr ""
+
+#: ../../archive-class.rst:79 7e31c0d4b2874e7aa8dd5ae7daa91341
+msgid ""
+"A list of the archive's sub-archives. Each list item is a dictionary with"
+" the following keys:"
+msgstr ""
+
+#: ../../archive-class.rst:81 dc6567d9e6a4485690cf0a5f6fb09b30
+msgid "`entries` -- a list of (top-level) entry names in this sub-archive."
+msgstr ""
+
+#: ../../archive-class.rst:82 78d2dbe9caeb4e6b9ae6de4d14d95e52
+msgid ""
+"`fmt` -- the format of the sub-archive. This is one of the strings "
+"\"dir\" (file folder), \"zip\" (ZIP archive), \"tar\" (TAR archive), or "
+"\"tree\" for single binary entries or file content."
+msgstr ""
+
+#: ../../archive-class.rst:83 8934885694024d44ac1f04c95acb8fae
+msgid ""
+"`path` -- the value of the `path` parameter under which this sub-archive "
+"was added."
+msgstr ""
+
+#: ../../archive-class.rst:85 9bd80fbd40594e6da4b7541250d79442
+msgid "**Example:**"
+msgstr ""
+
+#: ../../footer.rst:46 23b6293c2dc24cbd87c6de2cd2f05c0c
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

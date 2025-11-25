@@ -1,0 +1,178 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 b5b4277baa2f45589bb33213fe28d133
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 99651177bb7e45218e911de8509ad3d7
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 bfa8a6eb19134fd5a3ed2f7ff3e5a66b
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../document-writer-class.rst:7 9ec19dc1ee5e4333ada6ca4a81b20c76
+msgid "DocumentWriter"
+msgstr ""
+
+#: ../../document-writer-class.rst:9 a8428a7a09fa4d84ba14e57e1cd9933c
+msgid "|pdf_only_class|"
+msgstr ""
+
+#: ../../document-writer-class.rst:12 fdd84ae0909a4d88bcdceeefa2b39965
+msgid "New in v1.21.0"
+msgstr ""
+
+#: ../../document-writer-class.rst:14 2d81b86330d54196bb5037872069be5e
+msgid ""
+"This class represents a utility which can output various :ref:`document "
+"types supported by PyMuPDF<Supported_File_Types>`."
+msgstr ""
+
+#: ../../document-writer-class.rst:16 f752c28f5ed14d28b92bcff7e31a12f8
+msgid ""
+"In |PyMuPDF| only used for outputting PDF documents whose pages are "
+"populated by :ref:`Story` DOMs."
+msgstr ""
+
+#: ../../document-writer-class.rst:18 a51f0f40cbb0442f86dc705ad1fa8132
+msgid ""
+"Using DocumentWriter_ also for other document types might happen in the "
+"future."
+msgstr ""
+
+#: ../../document-writer-class.rst:21 8c16e93aa1ce4c6e89c38ba3555943a2
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../document-writer-class.rst:21 078570c061cc494ab88a122d6f975a13
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../document-writer-class.rst:23 e28aaeaab2de42e2be303102f8816b38
+msgid ":meth:`DocumentWriter.begin_page`"
+msgstr ""
+
+#: ../../document-writer-class.rst:23 46462fa63c0f497ca2b40e3aa34b103a
+msgid "start a new output page"
+msgstr ""
+
+#: ../../document-writer-class.rst:24 3fb4972774e64633aeb1fa920d332d0b
+msgid ":meth:`DocumentWriter.end_page`"
+msgstr ""
+
+#: ../../document-writer-class.rst:24 deca462b344444baaba815c62c4ccf49
+msgid "finish the current output page"
+msgstr ""
+
+#: ../../document-writer-class.rst:25 e80c1d8e184c453bbec00d4725057371
+msgid ":meth:`DocumentWriter.close`"
+msgstr ""
+
+#: ../../document-writer-class.rst:25 82b604112a0849018b6017d0b48a269a
+msgid "flush pending output and close the file"
+msgstr ""
+
+#: ../../document-writer-class.rst:28 77d9bb485f4345bc9066ac6cbf59d8a9
+msgid "**Class API**"
+msgstr ""
+
+#: ../../document-writer-class.rst:34 ae20c5fbdb154f71a4aa713c0690c587
+msgid ""
+"Create a document writer object, passing a Python file pointer or a file "
+"path. Options to use when saving the file may also be passed."
+msgstr ""
+
+#: ../../document-writer-class.rst:36 6124d2357c6a4781a34eddaaf0ca7dfa
+msgid "This class can also be used as a Python context manager."
+msgstr ""
+
+#: ../../document-writer-class.rst d2e1469751bd4c2e8536b3688da9abc9
+#: e1457a30002847edb1dba253d238fc76
+msgid "Parameters"
+msgstr ""
+
+#: ../../document-writer-class.rst:38 3fd7620d0e854ab3bc313135cc0b7a22
+msgid ""
+"the output file. This may be a string file name, or any Python file "
+"pointer.  .. note:: By using a `io.BytesIO()` object as file pointer, a "
+"document writer can create a PDF in memory. Subsequently, this PDF can be"
+" re-opened for input and be further manipulated. This technique is used "
+"by several example scripts in :ref:`Stories recipes<RecipesStories>`."
+msgstr ""
+
+#: ../../document-writer-class.rst:38 8206476585d647538a060a35c0be1961
+msgid ""
+"the output file. This may be a string file name, or any Python file "
+"pointer."
+msgstr ""
+
+#: ../../document-writer-class.rst:40 5cc894a076804ce4bbaf88cd575d9067
+msgid ""
+"By using a `io.BytesIO()` object as file pointer, a document writer can "
+"create a PDF in memory. Subsequently, this PDF can be re-opened for input"
+" and be further manipulated. This technique is used by several example "
+"scripts in :ref:`Stories recipes<RecipesStories>`."
+msgstr ""
+
+#: ../../document-writer-class.rst:42 8e2b505af0b34fec888ef183d42bc55a
+msgid ""
+"specify saving options for the output PDF. Typical are \"compress\" or "
+"\"clean\". More possible values may be taken from help output of the "
+"`mutool convert` CLI utility."
+msgstr ""
+
+#: ../../document-writer-class.rst:46 f4aad7b430d043e1af763b51fe58f1be
+msgid "Start a new output page of a given dimension."
+msgstr ""
+
+#: ../../document-writer-class.rst:48 d97df503773b4b5d804d95f381624a79
+msgid ""
+"a rectangle specifying the page size. After this method, output "
+"operations may write content to the page."
+msgstr ""
+
+#: ../../document-writer-class.rst:52 3357a3e14b5c4681a572cf35f2056a51
+msgid ""
+"Finish a page. This flushes any pending data and appends the page to the "
+"output document."
+msgstr ""
+
+#: ../../document-writer-class.rst:56 b42cc189417341c8939b89cb1ea93a07
+msgid ""
+"Close the output file. This method is required for writing any pending "
+"data."
+msgstr ""
+
+#: ../../document-writer-class.rst:58 f5b95d821dfe45629904bb96a9fb09e4
+msgid "For usage examples consult the section of :ref:`Story`."
+msgstr ""
+
+#: ../../footer.rst:46 de69d88972544cf695683e1f78897d93
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

@@ -1,0 +1,504 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 fba66bf65f8244c99a76005b4aa13c77
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 c942dc1ee97843a1823121e8c22c5942
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 8e36a463460e419f9787f96dfe806717
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../irect.rst:7 5159d7062cad401c98bbfc419330c03c
+msgid "IRect"
+msgstr ""
+
+#: ../../irect.rst:9 da2f82891e674e9a99975f0e1c77534a
+msgid ""
+"IRect is a rectangular bounding box, very similar to :ref:`Rect`, except "
+"that all corner coordinates are integers. IRect is used to specify an "
+"area of pixels, e.g. to receive image data during rendering. Otherwise, "
+"e.g. considerations concerning emptiness and validity of rectangles also "
+"apply to this class. Methods and attributes have the same names, and in "
+"many cases are implemented by re-using the respective :ref:`Rect` "
+"counterparts."
+msgstr ""
+
+#: ../../irect.rst:12 a2319632991b4392b7ea2363ed3ce3ca
+msgid "**Attribute / Method**"
+msgstr ""
+
+#: ../../irect.rst:12 985bc4b51a2844cc8c87af7ba3568037
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../irect.rst:14 312b0f5bcbbd40a2bd8e8e1e19229048
+msgid ":meth:`IRect.contains`"
+msgstr ""
+
+#: ../../irect.rst:14 1ccbbb3d38b14035b18375fea8176585
+msgid "checks containment of another object"
+msgstr ""
+
+#: ../../irect.rst:15 48378afa42394efc9fdbf9eb14494570
+msgid ":meth:`IRect.get_area`"
+msgstr ""
+
+#: ../../irect.rst:15 7c5d16bc4f66409496a2544313c511e1
+msgid "calculate rectangle area"
+msgstr ""
+
+#: ../../irect.rst:16 f0ccc3542ac74ea990d056a328e04a38
+msgid ":meth:`IRect.intersect`"
+msgstr ""
+
+#: ../../irect.rst:16 1dc1ecaee3494262a0fe5f21fa1f14d9
+msgid "common part with another rectangle"
+msgstr ""
+
+#: ../../irect.rst:17 dcc6834c254f4196bae3b0d0fab4ceb1
+msgid ":meth:`IRect.intersects`"
+msgstr ""
+
+#: ../../irect.rst:17 4fa770702f6f48ddab2468a3aa6c9af1
+msgid "checks for non-empty intersection"
+msgstr ""
+
+#: ../../irect.rst:18 1475b0caba85400c836e2e24795f6c17
+msgid ":meth:`IRect.morph`"
+msgstr ""
+
+#: ../../irect.rst:18 185917170ebf4403aecdb06acfbbdb30
+msgid "transform with a point and a matrix"
+msgstr ""
+
+#: ../../irect.rst:19 f89cd99364a04f8ead7c40c76d334821
+msgid ":meth:`IRect.torect`"
+msgstr ""
+
+#: ../../irect.rst:19 b73013e1bd9c44e28fb742260bdf0272
+msgid "matrix that transforms to another rectangle"
+msgstr ""
+
+#: ../../irect.rst:20 15c7541278e84bb8ab6442f22f75170c
+msgid ":meth:`IRect.norm`"
+msgstr ""
+
+#: ../../irect.rst:20 5344860eef7b4ebca725b7087c5ba8b1
+msgid "the Euclidean norm"
+msgstr ""
+
+#: ../../irect.rst:21 b4daf225e3034e7f9a2a7efdb849941e
+msgid ":meth:`IRect.normalize`"
+msgstr ""
+
+#: ../../irect.rst:21 da5ac901945f432e951f9ccfbde9a1e3
+msgid "makes a rectangle finite"
+msgstr ""
+
+#: ../../irect.rst:22 b57e345172924c9f92f87bdeee2b8b3b
+msgid ":attr:`IRect.bottom_left`"
+msgstr ""
+
+#: ../../irect.rst:22 8de2dbecf83540c2845f6fea2e7ecc7b
+msgid "bottom left point, synonym *bl*"
+msgstr ""
+
+#: ../../irect.rst:23 78ac63f7fbd94c12a1bb2853a704964d
+msgid ":attr:`IRect.bottom_right`"
+msgstr ""
+
+#: ../../irect.rst:23 694a01dd73e044ebb482e19a2d477c0f
+msgid "bottom right point, synonym *br*"
+msgstr ""
+
+#: ../../irect.rst:24 c996baab80024480b6fa888ba3dae48d
+msgid ":attr:`IRect.height`"
+msgstr ""
+
+#: ../../irect.rst:24 5cfaf1765add470395b5f7e3f9f3af09
+msgid "height of the rectangle"
+msgstr ""
+
+#: ../../irect.rst:25 1b7c56522528489b89e2c3863d10335b
+msgid ":attr:`IRect.is_empty`"
+msgstr ""
+
+#: ../../irect.rst:25 0f3aefc4a2e247f4909ac53517ac039c
+msgid "whether rectangle is empty"
+msgstr ""
+
+#: ../../irect.rst:26 ebba20f4de03492090a9968e1e5dd412
+msgid ":attr:`IRect.is_infinite`"
+msgstr ""
+
+#: ../../irect.rst:26 9c334c81b9b8415ba1053a2528ecb6ff
+msgid "whether rectangle is infinite"
+msgstr ""
+
+#: ../../irect.rst:27 5001534eb64f471d85cc5b89d7d974a1
+msgid ":attr:`IRect.rect`"
+msgstr ""
+
+#: ../../irect.rst:27 4b920cbbb5bd436ea5424583f46a971f
+msgid "the :ref:`Rect` equivalent"
+msgstr ""
+
+#: ../../irect.rst:28 73d2bc3e97c64f5facee96dfcf12b95c
+msgid ":attr:`IRect.top_left`"
+msgstr ""
+
+#: ../../irect.rst:28 5806b5f7f43040419aec40fe1ec99f9b
+msgid "top left point, synonym *tl*"
+msgstr ""
+
+#: ../../irect.rst:29 856082fe624c4dd4b8eeb24285c1a347
+msgid ":attr:`IRect.top_right`"
+msgstr ""
+
+#: ../../irect.rst:29 0b985550b8ed4625a72796ab4c754952
+msgid "top_right point, synonym *tr*"
+msgstr ""
+
+#: ../../irect.rst:30 5cc9d50c8cec4d768741a74eca8abf0b
+msgid ":attr:`IRect.quad`"
+msgstr ""
+
+#: ../../irect.rst:30 d135c468e28048fc921fdfdf4bbb13cf
+msgid ":ref:`Quad` made from rectangle corners"
+msgstr ""
+
+#: ../../irect.rst:31 022996f05c34445fa253e0e774b365a3
+msgid ":attr:`IRect.width`"
+msgstr ""
+
+#: ../../irect.rst:31 0b36bdc4d3bf46afab89889318dc863a
+msgid "width of the rectangle"
+msgstr ""
+
+#: ../../irect.rst:32 521608cb542c4976ba07f2f56d904ace
+msgid ":attr:`IRect.x0`"
+msgstr ""
+
+#: ../../irect.rst:32 d0964024870440a58844774693381ec8
+msgid "X-coordinate of the top left corner"
+msgstr ""
+
+#: ../../irect.rst:33 548e8fbd99a442b2b5a586073ff4f2ab
+msgid ":attr:`IRect.x1`"
+msgstr ""
+
+#: ../../irect.rst:33 30a1db52025e46e0be799ff23b4f2696
+msgid "X-coordinate of the bottom right corner"
+msgstr ""
+
+#: ../../irect.rst:34 f81b38bd9fde4f54bed975e459d7a9ac
+msgid ":attr:`IRect.y0`"
+msgstr ""
+
+#: ../../irect.rst:34 2b16ddf8934849fbaab256d3d54e4363
+msgid "Y-coordinate of the top left corner"
+msgstr ""
+
+#: ../../irect.rst:35 70d84d3ce7a34c4297a1e7700d3f7109
+msgid ":attr:`IRect.y1`"
+msgstr ""
+
+#: ../../irect.rst:35 b3e0e713d8d046a8968b780c0340f966
+msgid "Y-coordinate of the bottom right corner"
+msgstr ""
+
+#: ../../irect.rst:38 2edafd03825b4939bfe6472c41b08bcf
+msgid "**Class API**"
+msgstr ""
+
+#: ../../irect.rst:50 70995ff946be4d8d84849a0c0b6f16d3
+msgid ""
+"Overloaded constructors. Also see examples below and those for the "
+":ref:`Rect` class."
+msgstr ""
+
+#: ../../irect.rst:52 8f664a86d7374ec9bda83e6905b4e67b
+msgid "If another irect is specified, a **new copy** will be made."
+msgstr ""
+
+#: ../../irect.rst:54 6e6e21909c9c4ae3a9139bde73277f88
+msgid ""
+"If sequence is specified, it must be a Python sequence type of 4 numbers "
+"(see :ref:`SequenceTypes`). Non-integer numbers will be truncated, non-"
+"numeric values will raise an exception."
+msgstr ""
+
+#: ../../irect.rst:56 f9a414d271ee415fb26b8f0b142958b7
+msgid "The other parameters mean integer coordinates."
+msgstr ""
+
+#: ../../irect.rst:61 7c84bdc985c64c339d0548802f831996
+msgid ""
+"Calculates the area of the rectangle and, with no parameter, equals "
+"*abs(IRect)*. Like an empty rectangle, the area of an infinite rectangle "
+"is also zero."
+msgstr ""
+
+#: ../../irect.rst 18e4b1fb1da640de88306538351ca10b
+#: 218364ce30ff4c0a9be4541c11fe1e9f 394c5a21898045d19dc3fca6edc763a7
+#: 489a707b54a24c2eb3edb81f8229ef4f 5b5047f52c7a458c90e239164e797307
+#: 6408eafe7a4547e980f6763bd4b559e1
+msgid "Parameters"
+msgstr ""
+
+#: ../../irect.rst:63 63bea0a8781c48c49fac02eaeda867ce
+msgid ""
+"Specify required unit: respective squares of \"px\" (pixels, default), "
+"\"in\" (inches), \"cm\" (centimeters), or \"mm\" (millimeters)."
+msgstr ""
+
+#: ../../irect.rst 0f9fbd309a584cab995697cae68f899d
+#: 7c2bab6d8e594a5589e33354d18a1796 ba5dbf6b9e214071aaec6e290fac295f
+#: e6ca9e94a86f416a922d607f4943a5a3
+msgid "Return type"
+msgstr ""
+
+#: ../../irect.rst:69 5dc2badf5382432fa2d57f3db0e32119
+msgid ""
+"The intersection (common rectangular area) of the current rectangle and "
+"*ir* is calculated and replaces the current rectangle. If either "
+"rectangle is empty, the result is also empty. If either rectangle is "
+"infinite, the other one is taken as the result -- and hence also infinite"
+" if both rectangles were infinite."
+msgstr ""
+
+#: ../../irect.rst:71 8af38038c172477b9e9af3e3b7862926
+msgid "Second rectangle."
+msgstr ""
+
+#: ../../irect.rst:75 e7214be906944cddbd77c8aecdd86d95
+msgid ""
+"Checks whether *x* is contained in the rectangle. It may be "
+":data:`rect_like`, :data:`point_like` or a number. If *x* is an empty "
+"rectangle, this is always true. Conversely, if the rectangle is empty "
+"this is always ``False``, if *x* is not an empty rectangle and not a "
+"number. If *x* is a number, it will be checked to be one of the four "
+"components. *x in irect* and *irect.contains(x)* are equivalent."
+msgstr ""
+
+#: ../../irect.rst:77 7cc8752befc847a9885e54e61f00faee
+msgid "the object to check."
+msgstr ""
+
+#: ../../irect.rst:84 41a07fef21a04ff9b1f1c59de07d83d1
+msgid ""
+"Checks whether the rectangle and the :data:`rect_like` \"r\" contain a "
+"common non-empty :ref:`IRect`. This will always be ``False`` if either is"
+" infinite or empty."
+msgstr ""
+
+#: ../../irect.rst:86 aa8981e507b44374bd69c86ddf1f7541
+msgid "the rectangle to check."
+msgstr ""
+
+#: ../../irect.rst:92 e0237b4a333a4949bae56a33d349416d
+msgid "New in version 1.19.3"
+msgstr ""
+
+#: ../../irect.rst:94 a8f435e24dcb48e2bdbca8838eca5764
+msgid ""
+"Compute the matrix which transforms this rectangle to a given one. See "
+":meth:`Rect.torect`."
+msgstr ""
+
+#: ../../irect.rst:96 d1c97833dc404dbf9a4af4245c9a4541
+msgid "the target rectangle. Must not be empty or infinite."
+msgstr ""
+
+#: ../../irect.rst:97 2f2d67d9571f465fa494157309add0d7
+msgid ":ref:`Matrix`"
+msgstr ""
+
+#: ../../irect.rst 75c56c65e0e64566a450b019b0cac229
+#: a68dd79a643440fbb2173c54bf9da905
+msgid "Returns"
+msgstr ""
+
+#: ../../irect.rst:98 c705e90002274a80b333b03348c54360
+msgid ""
+"a matrix `mat` such that `self * mat = rect`. Can for example be used to "
+"transform between the page and the pixmap coordinates."
+msgstr ""
+
+#: ../../irect.rst:103 287c04b5d7f141ccb8d6ad779ecaeb1e
+msgid "New in version 1.17.0"
+msgstr ""
+
+#: ../../irect.rst:105 e37ea5bfcc8d496abb5f6decf903b78d
+msgid "Return a new quad after applying a matrix to it using a fixed point."
+msgstr ""
+
+#: ../../irect.rst:107 05bbb73520154a3181137a24fec1c86f
+msgid "the fixed point."
+msgstr ""
+
+#: ../../irect.rst:108 b34bf6b64a6543358399eee20fed216a
+msgid "the matrix."
+msgstr ""
+
+#: ../../irect.rst:109 c69142f99a804255b75e2eaf0d41597a
+msgid ""
+"a new :ref:`Quad`. This a wrapper of the same-named quad method. If "
+"infinite, the infinite quad is returned."
+msgstr ""
+
+#: ../../irect.rst:113 1cacf407916d48f49e0c36e73c9d2795
+msgid "New in version 1.16.0"
+msgstr ""
+
+#: ../../irect.rst:115 73cccdef3ba54c138d3c2949905823f1
+msgid ""
+"Return the Euclidean norm of the rectangle treated as a vector of four "
+"numbers."
+msgstr ""
+
+#: ../../irect.rst:119 1e3b3df827f64cdaa8f3e30d20539c21
+msgid ""
+"Make the rectangle finite. This is done by shuffling rectangle corners. "
+"After this, the bottom right corner will indeed be south-eastern to the "
+"top left one. See :ref:`Rect` for a more details."
+msgstr ""
+
+#: ../../irect.rst:125 80fcd714078d4459b6446f7aa881ded8
+msgid "Equals *Point(x0, y0)*."
+msgstr ""
+
+#: ../../irect.rst 1185a0d53778409b8eb3beb582b64888
+#: 34743c436e9f444485fae4bae2ddb7f9 352aed9e86654ed0bfb3414c7c9f882a
+#: 451fc25fef3146ae8daf60b87a4dc707 49a176812ba94813ba64a196ce27e163
+#: 4f24b7a2272a40bcb5f1498431a01dff 6692646f4aef49ceb6263730817ee21f
+#: 89ab45a59a934aa39249ed1a86f07ee5 9d4221e962164e72948ac5d4b8d2703c
+#: b2290785b17149418de10d614a0f8eda c787e5b509d24f1b838ac1e121cfc685
+#: d95b0909ef3d4300a206cd4f2b8c8671 f6cdc81509354493aa34a01e5ebc06b4
+#: f97ab05a65224ade959a073fae8e16c2
+msgid "type"
+msgstr ""
+
+#: ../../irect.rst:127 ../../irect.rst:135 ../../irect.rst:143
+#: ../../irect.rst:151 88e60a9d15ad4d409f7a85722cd1cb9c
+#: c7e32fdd1a374a44979cdc28e388d038 fb5fa1bba9ab48979d23d8dd6744ca12
+#: fdc51db9a96f4153893929ddb8e95ee3
+msgid ":ref:`Point`"
+msgstr ""
+
+#: ../../irect.rst:133 305506d4a8894b98b370bfdaf51af233
+msgid "Equals *Point(x1, y0)*."
+msgstr ""
+
+#: ../../irect.rst:141 9af3c12519684f28bb4bc50d612e4372
+msgid "Equals *Point(x0, y1)*."
+msgstr ""
+
+#: ../../irect.rst:149 ae11bdfc7226476aac26a17b08ad9204
+msgid "Equals *Point(x1, y1)*."
+msgstr ""
+
+#: ../../irect.rst:155 6b6c7c24528e4d028bb599bcaba2d291
+msgid "The :ref:`Rect` with the same coordinates as floats."
+msgstr ""
+
+#: ../../irect.rst:157 07b31a4170c647d1ae20c438ea29c332
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../irect.rst:161 6d942227a8804d80be71085d59471e1f
+msgid "The quadrilateral *Quad(irect.tl, irect.tr, irect.bl, irect.br)*."
+msgstr ""
+
+#: ../../irect.rst:163 21c9866abaed4b9ea6806095673297f4
+msgid ":ref:`Quad`"
+msgstr ""
+
+#: ../../irect.rst:167 aa41fcfcf80642958f591e2014a05804
+msgid "Contains the width of the bounding box. Equals *abs(x1 - x0)*."
+msgstr ""
+
+#: ../../irect.rst:169 ../../irect.rst:175 ../../irect.rst:181
+#: ../../irect.rst:187 ../../irect.rst:193 ../../irect.rst:199
+#: 36d28775650b4893b50c1bb5ecf9c14e 65120d228f2f4ab28e5fa51eb06d8761
+#: a72fd244eafd454380cfe3bc5def6325 f2ef5e017dda4f76ab39cff8b6079d88
+#: fa70673340164af19d538be4a10b59ad fc10d7f00d79406db00d1066e4567571
+msgid "int"
+msgstr ""
+
+#: ../../irect.rst:173 e896ac73b5c64e75b7724b41502abd00
+msgid "Contains the height of the bounding box. Equals *abs(y1 - y0)*."
+msgstr ""
+
+#: ../../irect.rst:179 29e02c90a309472484e82207f4e2bb94
+msgid "X-coordinate of the left corners."
+msgstr ""
+
+#: ../../irect.rst:185 ec2198ff697e420d9c05f93f973367bb
+msgid "Y-coordinate of the top corners."
+msgstr ""
+
+#: ../../irect.rst:191 e02641fa0cb443a58d8b6f6d447edb7a
+msgid "X-coordinate of the right corners."
+msgstr ""
+
+#: ../../irect.rst:197 2e367ece51d84b1280d4ec05cc038c6a
+msgid "Y-coordinate of the bottom corners."
+msgstr ""
+
+#: ../../irect.rst:203 900a2545643f4623905b338b7edefd8b
+msgid "``True`` if rectangle is infinite, ``False`` otherwise."
+msgstr ""
+
+#: ../../irect.rst:205 ../../irect.rst:211 4c1a21a29dfe4414ad6992b3dcc0b117
+#: aec6fc0ebb874b20bfb1a90a68a30dcc
+msgid "bool"
+msgstr ""
+
+#: ../../irect.rst:209 877573fb6317435ca1b1a73c24606949
+msgid "``True`` if rectangle is empty, ``False`` otherwise."
+msgstr ""
+
+#: ../../irect.rst:216 7cc608bcd141490a9f473438421895b4
+msgid ""
+"This class adheres to the Python sequence protocol, so components can be "
+"accessed via their index, too. Also refer to :ref:`SequenceTypes`."
+msgstr ""
+
+#: ../../irect.rst:217 a3c01f53c9ef4d5eb1b84f26294b538b
+msgid ""
+"Rectangles can be used with arithmetic operators -- see chapter "
+":ref:`Algebra`."
+msgstr ""
+
+#: ../../footer.rst:46 512cd6db01a142258a5b31acbcb8a187
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

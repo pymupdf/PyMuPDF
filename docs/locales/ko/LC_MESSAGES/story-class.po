@@ -1,0 +1,852 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 4450760445994835a9f3775bc9c6f0d5
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 418de775a4634f88837f5ac77a451b10
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 497384ace3f84fa19412dac9da22148c
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../story-class.rst:7 8fafdeea9e5940c28193c7e4fca942c5
+msgid "Story"
+msgstr ""
+
+#: ../../story-class.rst:11 ce4d16eaf6e64bc59264c0a812630ed7
+msgid "New in v1.21.0"
+msgstr ""
+
+#: ../../story-class.rst:14 9b7cd17b7b8b43e89336e41091ffd8db
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../story-class.rst:14 306881cbd8ff40e98c769bdad361af16
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../story-class.rst:16 87f3b530a2174677808e6a73c8c7c3d4
+msgid ":meth:`Story.reset`"
+msgstr ""
+
+#: ../../story-class.rst:16 986c1b4812b34f7b90447c9b85c00515
+msgid "\"rewind\" story output to its beginning"
+msgstr ""
+
+#: ../../story-class.rst:17 acfb8788456043e98e066d8b7f232242
+msgid ":meth:`Story.place`"
+msgstr ""
+
+#: ../../story-class.rst:17 71dd7b0f8852455eb72f274d589300e5
+msgid "compute story content to fit in provided rectangle"
+msgstr ""
+
+#: ../../story-class.rst:18 f37a1cf6b3d447fcb752828907626437
+msgid ":meth:`Story.draw`"
+msgstr ""
+
+#: ../../story-class.rst:18 44a1f29ca77c4ed281ff70a784a28d92
+msgid "write the computed content to current page"
+msgstr ""
+
+#: ../../story-class.rst:19 fc8ae71a62484786b2548b2f0715d3e7
+msgid ":meth:`Story.element_positions`"
+msgstr ""
+
+#: ../../story-class.rst:19 78ea4b34e9924ea0b59ec0f387db8d9f
+msgid "callback function logging currently processed story content"
+msgstr ""
+
+#: ../../story-class.rst:20 5703135b6e844a53859347624fb3ba8e
+msgid ":attr:`Story.body`"
+msgstr ""
+
+#: ../../story-class.rst:20 8074d90f9db0473c9f78fde5598d87a0
+msgid "the story's underlying :htmlTag:`body`"
+msgstr ""
+
+#: ../../story-class.rst:21 b7007d57a5f0478da333d3b7defa34da
+msgid ":meth:`Story.write`"
+msgstr ""
+
+#: ../../story-class.rst:21 529c592a049543488f766ea64af4aef6
+msgid "places and draws Story to a DocumentWriter"
+msgstr ""
+
+#: ../../story-class.rst:22 48189b1970a944249727deeaab30767a
+msgid ":meth:`Story.write_stabilized`"
+msgstr ""
+
+#: ../../story-class.rst:22 c71c16dc9e434b81ae25d7e81791842c
+msgid "iterative layout of html content to a DocumentWriter"
+msgstr ""
+
+#: ../../story-class.rst:23 926f2a550c3b4cb3856a305b4c499249
+msgid ":meth:`Story.write_with_links`"
+msgstr ""
+
+#: ../../story-class.rst:23 ea4c862bdeb84b94a80868a8fa1d6d3c
+msgid "like `write()` but also creates PDF links"
+msgstr ""
+
+#: ../../story-class.rst:24 355d937b5c4a4d2ea430c50ed160c9a9
+msgid ":meth:`Story.write_stabilized_with_links`"
+msgstr ""
+
+#: ../../story-class.rst:24 ff1a2e0bd3b942a9825101dc74641ab4
+msgid "like `write_stabilized()` but also creates PDF links"
+msgstr ""
+
+#: ../../story-class.rst:25 98afa53a01d5479fb9a84e798fc75af0
+msgid ":meth:`Story.fit`"
+msgstr ""
+
+#: ../../story-class.rst:25 ../../story-class.rst:252
+#: 08f697738e6841388fafdd24e5a00d7d f9fb3d7fc30744c5a4bcf19dc86ef076
+msgid "Finds optimal rect that contains the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:26 071db5186e824d7fad400d8f4d4621cc
+msgid ":meth:`Story.fit_scale`"
+msgstr ""
+
+#: ../../story-class.rst:27 29faf46f8f304213baacc284272e99ba
+msgid ":meth:`Story.fit_height`"
+msgstr ""
+
+#: ../../story-class.rst:28 2063bec0fd3d4a00af6338d93189ee72
+msgid ":meth:`Story.fit_width`"
+msgstr ""
+
+#: ../../story-class.rst:31 35c3d645808f404fb3d0ac4e2995d443
+msgid "**Class API**"
+msgstr ""
+
+#: ../../story-class.rst:37 49eb5559ce2b4b13a47f5ad496e9d111
+msgid ""
+"Create a **story**, optionally providing HTML and CSS source. The HTML is"
+" parsed, and held within the Story as a DOM (Document Object Model)."
+msgstr ""
+
+#: ../../story-class.rst:40 bf2f904ab1c24ea9aa46205eca2718ea
+msgid ""
+"This structure may be modified: content (text, images) may be added, "
+"copied, modified or removed by using methods of the :ref:`Xml` class."
+msgstr ""
+
+#: ../../story-class.rst:43 1e855bc531eb4f55a7c51053f068d9ab
+msgid ""
+"When finished, the **story** can be written to any device; in typical "
+"usage the device may be provided by a :ref:`DocumentWriter` to make new "
+"pages."
+msgstr ""
+
+#: ../../story-class.rst:46 c090bdee02db4f288f710c647c45c161
+msgid "Here are some general remarks:"
+msgstr ""
+
+#: ../../story-class.rst:48 3110c6455944434ca9ae1a71696896a3
+msgid ""
+"The :ref:`Story` constructor parses and validates the provided HTML to "
+"create the DOM."
+msgstr ""
+
+#: ../../story-class.rst:49 4d9f69c5792d489b85a3b9d41d525d79
+msgid ""
+"PyMuPDF provides a number of ways to manipulate the HTML source by "
+"providing access to the *nodes* of the underlying DOM. Documents can be "
+"completely built from ground up programmatically, or the existing DOM can"
+" be modified pretty arbitrarily. For details of this interface, please "
+"see the :ref:`Xml` class."
+msgstr ""
+
+#: ../../story-class.rst:54 ac1a27756a8945c8b1dbf9b6e9da921b
+msgid ""
+"If no (or no more) changes to the DOM are required, the story is ready to"
+" be laid out and to be fed to a series of devices (typically devices "
+"provided by a :ref:`DocumentWriter` to produce new pages)."
+msgstr ""
+
+#: ../../story-class.rst:57 43fe3dfc3cf348098a32b05485bde654
+msgid ""
+"The next step is to place the story and write it out. This can either be "
+"done directly, by looping around calling `place()` and `draw()`, or "
+"alternatively, the looping can handled for you using the `write()` or "
+"`write_stabilised()` methods. Which method you choose is largely a matter"
+" of taste."
+msgstr ""
+
+#: ../../story-class.rst:63 f4b32731d97b4d2a84d306de1e33820a
+msgid "To work in the first of these styles, the following loop should be used:"
+msgstr ""
+
+#: ../../story-class.rst:65 1ae96b31b4494e6b907dcec02c2fdea5
+msgid ""
+"Obtain a suitable device to write to; typically by requesting a new, "
+"empty page from a :ref:`DocumentWriter`."
+msgstr ""
+
+#: ../../story-class.rst:68 73b9d54af347493b94d1d93c72bb7e84
+msgid ""
+"Determine one or more rectangles on the page, that should receive "
+"**story** data. Note that not every page needs to have the same set of "
+"rectangles."
+msgstr ""
+
+#: ../../story-class.rst:71 f486ccb350994671b7e2380f3a839e86
+msgid ""
+"Pass each rectangle to the **story** to place it, learning what part of "
+"that rectangle has been filled, and whether there is more story data that"
+" did not fit. This step can be repeated several times with adjusted "
+"rectangles until the caller is happy with the results."
+msgstr ""
+
+#: ../../story-class.rst:76 ff1738fc7d2d4f969c58dcf423696458
+msgid ""
+"Optionally, at this point, we can request details of where interesting "
+"items have been placed, by calling the `element_positions()` method. "
+"Items are deemed to be interesting if their integer `heading` attribute "
+"is a non-zero (corresponding to HTML tags :htmlTag:`h1` - :htmlTag:`h6`),"
+" if their `id` attribute is not `None` (corresponding to HTML tag "
+":htmlTag:`id`), or if their `href` attribute is not `None` (responding to"
+" HTML tag :htmlTag:`href`). This can conveniently be used for automatic "
+"generation of a Table of Contents, an index of images or the like."
+msgstr ""
+
+#: ../../story-class.rst:85 b921780cdb2e45e389e9a40859c21b25
+msgid "Next, draw that rectangle out to the device with the `draw()` method."
+msgstr ""
+
+#: ../../story-class.rst:86 7c8805ef770e4dde8806474fd720a74d
+msgid ""
+"If the most recent call to `place()` indicated that all the story data "
+"had fitted, stop now."
+msgstr ""
+
+#: ../../story-class.rst:88 c13e1999d6654790a96926efb47a4809
+msgid ""
+"Otherwise, we can loop back. If there are more rectangles to be placed on"
+" the current device (page), we jump back to step 3 - if not, we jump back"
+" to step 1 to get a new device."
+msgstr ""
+
+#: ../../story-class.rst:91 4038804e871b4c1bbe32c9a13c9ec423
+msgid ""
+"Alternatively, in the case where you are using a :ref:`DocumentWriter`, "
+"the `write()` or `write_stabilized()` methods can be used. These handle "
+"all the looping for you, in exchange for being provided with callbacks "
+"that control the behaviour (notably a callback that enumerates the "
+"rectangles/pages to use)."
+msgstr ""
+
+#: ../../story-class.rst:96 ee657bc17cb9479098b79a0775f10c3a
+msgid ""
+"Which part of the **story** will land on which rectangle / which page, is"
+" fully under control of the :ref:`Story` object and cannot be predicted."
+msgstr ""
+
+#: ../../story-class.rst:98 2373c29f02c449119f61da189826bc09
+msgid ""
+"Images may be part of a **story**. They will be placed together with any "
+"surrounding text."
+msgstr ""
+
+#: ../../story-class.rst:99 30316b2b832342268461f6c7d74a9197
+msgid ""
+"Multiple stories may - independently from each other - write to the same "
+"page. For example, one may have separate stories for page header, page "
+"footer, regular text, comment boxes, etc."
+msgstr ""
+
+#: ../../story-class.rst 3bc54fe727d84b0fb5ec6f5a505593d7
+#: 632479f010e74a7fa705e9873fc201e2 6bae93af6e1f4bcd9f975e3dbf237a8f
+#: 76b91680f9494dcda1b320b971f127f3 835ef3aac08946a7b21892dd5d446841
+#: 9faeb1de8c834831b2eefc6ba27d02c6 a7f1db20a98f4acd8ac3a50281de1d54
+#: b092aa952799492ab41859def37221e6 c431629c4269486e838a6416b26f8a06
+#: ecb562eb477f4178bbbac8624595e806
+msgid "Parameters"
+msgstr ""
+
+#: ../../story-class.rst:103 7a7770ae27444f9cbae197749eec78ab
+msgid ""
+"HTML source code. If omitted, a basic minimum is generated (see below). "
+"If provided, not a complete HTML document is needed. The in-built source "
+"parser will forgive (many / most) HTML syntax errors and also accepts "
+"HTML fragments like `\"<b>Hello, <i>World!</i></b>\"`."
+msgstr ""
+
+#: ../../story-class.rst:108 998745be0a874eeb8f4d73e3411eb0cc
+msgid "CSS source code. If provided, must contain valid CSS specifications."
+msgstr ""
+
+#: ../../story-class.rst:109 2bfac39f7a0745239025903a70202169
+msgid "the default text font size."
+msgstr ""
+
+#: ../../story-class.rst:110 78219d1129fc40ab9949caef213ed7a5
+msgid ""
+"an :ref:`Archive` from which to load resources for rendering. Currently "
+"supported resource types are images and text fonts. If omitted, the story"
+" will not try to look up any such data and may thus produce incomplete "
+"output.  .. note:: Instead of an actual archive, valid arguments for "
+"**creating** an :ref:`Archive` can also be provided -- in which case an "
+"archive will temporarily be constructed. So, instead of `story = "
+"pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also "
+"shorter write `story = pymupdf.Story(archive=\"myfolder\")`."
+msgstr ""
+
+#: ../../story-class.rst:110 4050936d618a42da8eecf6ab4e063d8b
+msgid ""
+"an :ref:`Archive` from which to load resources for rendering. Currently "
+"supported resource types are images and text fonts. If omitted, the story"
+" will not try to look up any such data and may thus produce incomplete "
+"output."
+msgstr ""
+
+#: ../../story-class.rst:112 dbafa089e71b405c8505fe068f111435
+msgid ""
+"Instead of an actual archive, valid arguments for **creating** an "
+":ref:`Archive` can also be provided -- in which case an archive will "
+"temporarily be constructed. So, instead of `story = "
+"pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also "
+"shorter write `story = pymupdf.Story(archive=\"myfolder\")`."
+msgstr ""
+
+#: ../../story-class.rst:116 38e199a574974c68a5789c3487298702
+msgid ""
+"Calculate that part of the story's content, that will fit in the provided"
+" rectangle. The method maintains a pointer which part of the story's "
+"content has already been written and upon the next invocation resumes "
+"from that pointer's position."
+msgstr ""
+
+#: ../../story-class.rst:118 9204c5de62594877a0b9554fe46dd00d
+msgid ""
+"layout the current part of the content to fit into this rectangle. This "
+"must be a sub-rectangle of the page's :ref:`MediaBox<Glossary_MediaBox>`."
+msgstr ""
+
+#: ../../story-class.rst f63a283a6c88499ead37123b58293124
+msgid "Return type"
+msgstr ""
+
+#: ../../story-class.rst 94bc5676fca747a28908e39b08f758dd
+msgid "Returns"
+msgstr ""
+
+#: ../../story-class.rst:121 cfc9d87ae2c0427fb812923a5380f63e
+msgid ""
+"a bool (int) `more` and a rectangle `filled`. If `more == 0`, all content"
+" of the story has been written, otherwise more is waiting to be written "
+"to subsequent rectangles / pages. Rectangle `filled` is the part of "
+"`where` that has actually been filled."
+msgstr ""
+
+#: ../../story-class.rst:125 6813b9d6cf0a4992aac607d827be601c
+msgid "Write the content part prepared by :meth:`Story.place` to the page."
+msgstr ""
+
+#: ../../story-class.rst:127 883fc316b5194fbebc4f2e1002d07a4a
+msgid ""
+"the :ref:`Device` created by `dev = writer.begin_page(mediabox)`. The "
+"device knows how to call all MuPDF functions needed to write the content."
+msgstr ""
+
+#: ../../story-class.rst:128 15d1012c1f36445b97b2245366f1fe29
+msgid ""
+"a matrix for transforming content when writing to the page. An example "
+"may be writing rotated text. The default means no transformation (i.e. "
+"the :ref:`Identity` matrix)."
+msgstr ""
+
+#: ../../story-class.rst:132 a4b6e0a215c74c77bc15ee4a585a753c
+msgid ""
+"Let the Story provide positioning information about certain HTML elements"
+" once their place on the current page has been computed - i.e. invoke "
+"this method **directly after** :meth:`Story.place`."
+msgstr ""
+
+#: ../../story-class.rst:134 132b23607fe24fd4b386d921fa955b1f
+msgid ""
+"*Story* will pass position information to *function*. This information "
+"can for example be used to generate a Table of Contents."
+msgstr ""
+
+#: ../../story-class.rst:136 9b62cdc7c4734ce9bd97fd06ae689ced
+msgid ""
+"a Python function accepting an :class:`ElementPosition` object. It will "
+"be invoked by the Story object to process positioning information. The "
+"function **must** be a callable accepting exactly one argument."
+msgstr ""
+
+#: ../../story-class.rst:137 95c635a4d01544919b451835ba7cfb5e
+msgid ""
+"an optional dictionary with any **additional** information that should be"
+" added to the :class:`ElementPosition` instance passed to `function`. "
+"Like for example the current output page number. Every key in this "
+"dictionary must be a string that conforms to the rules for a valid Python"
+" identifier. The complete set of information is explained below."
+msgstr ""
+
+#: ../../story-class.rst:146 d1a8ec5e26534fb08b5644c78bdd0f35
+msgid "Rewind the story's document to the beginning for starting over its output."
+msgstr ""
+
+#: ../../story-class.rst:150 99e9fa88415b44008dfa1a9212359a94
+msgid ""
+"The :htmlTag:`body` part of the story's DOM. This attribute contains the "
+":ref:`Xml` node of :htmlTag:`body`. All relevant content for PDF "
+"production is contained between \"<body>\" and \"</body>\"."
+msgstr ""
+
+#: ../../story-class.rst:154 41b172bf34d0440fadc8322fad80b439
+msgid ""
+"Places and draws Story to a `DocumentWriter`. Avoids the need for calling"
+" code to implement a loop that calls `Story.place()` and `Story.draw()` "
+"etc, at the expense of having to provide at least the `rectfn()` "
+"callback."
+msgstr ""
+
+#: ../../story-class.rst:159 f45d6bee9274444588f63a947cb04ff9
+msgid "a `DocumentWriter` or None."
+msgstr ""
+
+#: ../../story-class.rst:160 0a82dd0477cc4e6aba46d8bde1ff66cb
+msgid ""
+"a callable taking `(rect_num: int, filled: Rect)` and returning "
+"`(mediabox, rect, ctm)`:  * mediabox: None or rect for new page. * rect: "
+"The next rect into which content should be placed. * ctm: None or a "
+"`Matrix`."
+msgstr ""
+
+#: ../../story-class.rst:160 09db40fd97944cc3bdc056101682d345
+msgid ""
+"a callable taking `(rect_num: int, filled: Rect)` and returning "
+"`(mediabox, rect, ctm)`:"
+msgstr ""
+
+#: ../../story-class.rst:163 ../../story-class.rst:204
+#: 195039e86a0a453b80a1947c0d982191 cc6afdff529d4b18bf96bab124b071b0
+msgid "mediabox: None or rect for new page."
+msgstr ""
+
+#: ../../story-class.rst:164 ../../story-class.rst:205
+#: 25c7020d98834950b5d94ff65444d7dd 66c0ba4ebccc4299ab74abd2a830ae53
+msgid "rect: The next rect into which content should be placed."
+msgstr ""
+
+#: ../../story-class.rst:165 15dd25041536413eb3b45f6c0546d4c9
+msgid "ctm: None or a `Matrix`."
+msgstr ""
+
+#: ../../story-class.rst:166 00bf180b2a0c4c8d85c03815119541f1
+msgid ""
+"None, or a callable taking `(position: ElementPosition)`:  * position:"
+"     An `ElementPosition` with an extra `.page_num` member. Typically "
+"called multiple times as we generate elements that are headings or have "
+"an id."
+msgstr ""
+
+#: ../../story-class.rst:166 25928f4a5c5f491488b15662e26bc608
+msgid "None, or a callable taking `(position: ElementPosition)`:"
+msgstr ""
+
+#: ../../story-class.rst:168 2dd05e9f8b994f32855896af88fa138a
+msgid "position:"
+msgstr ""
+
+#: ../../story-class.rst:169 e39ff5907e3f417a840c59e64a0ce9d8
+msgid "An `ElementPosition` with an extra `.page_num` member."
+msgstr ""
+
+#: ../../story-class.rst:170 4892cafe0f7d41f0985e89860b77823a
+msgid ""
+"Typically called multiple times as we generate elements that are headings"
+" or have an id."
+msgstr ""
+
+#: ../../story-class.rst:172 3fa53b922faa4eda8ba2cba1ac636ca9
+msgid ""
+"None, or a callable taking `(page_num, mediabox, dev, after)`; called at "
+"start (`after=0`) and end (`after=1`) of each page."
+msgstr ""
+
+#: ../../story-class.rst:178 dd5221f0ed8740b9870aee56024e5b7b
+msgid ""
+"Static method that does iterative layout of html content to a "
+"`DocumentWriter`."
+msgstr ""
+
+#: ../../story-class.rst:181 30078c22673b4583b6668ac47bc366ff
+msgid ""
+"For example this allows one to add a table of contents section while "
+"ensuring that page numbers are patched up until stable."
+msgstr ""
+
+#: ../../story-class.rst:184 c06d6f0e11c445a79282ea1b2b0ad535
+msgid ""
+"Repeatedly creates a new `Story` from `(contentfn(), user_css, em, "
+"archive)` and lays it out with internal call to `Story.write()`; uses a "
+"None writer and extracts the list of `ElementPosition`'s which is passed "
+"to the next call of `contentfn()`."
+msgstr ""
+
+#: ../../story-class.rst:190 44779b3ded2c4ee6874e7b1ae2bff004
+msgid ""
+"When the html from `contentfn()` becomes unchanged, we do a final "
+"iteration using `writer`."
+msgstr ""
+
+#: ../../story-class.rst:193 0f2c4d433e064304a49d4bd0a6ebfe73
+msgid "A `DocumentWriter`."
+msgstr ""
+
+#: ../../story-class.rst:195 368d195d03b147fc837acd54849c93e0
+msgid ""
+"A function taking a list of `ElementPositions` and returning a string "
+"containing html. The returned html can depend on the list of positions, "
+"for example with a table of contents near the start."
+msgstr ""
+
+#: ../../story-class.rst:200 1cf1064d178a4eb5abc44f35d1b26213
+msgid ""
+"A callable taking `(rect_num: int, filled: Rect)` and returning "
+"`(mediabox, rect, ctm)`:  * mediabox: None or rect for new page. * rect: "
+"The next rect into which content should be placed. * ctm: A `Matrix`."
+msgstr ""
+
+#: ../../story-class.rst:201 9c7835ef50c04228a8a373880c57f7ec
+msgid ""
+"A callable taking `(rect_num: int, filled: Rect)` and returning "
+"`(mediabox, rect, ctm)`:"
+msgstr ""
+
+#: ../../story-class.rst:206 ee9f39495b5e42c8abe6db31752b059c
+msgid "ctm: A `Matrix`."
+msgstr ""
+
+#: ../../story-class.rst:207 0e5bb33450b440519eaa4678352a268d
+msgid ""
+"None, or a callable taking `(page_num, medibox, dev, after)`; called at "
+"start (`after=0`) and end (`after=1`) of each page."
+msgstr ""
+
+#: ../../story-class.rst:212 1e4fd7df55fb49df898e449e0f6cc1d4
+msgid ""
+"If true, we add unique ids to all header tags that don't already have an "
+"id. This can help automatic generation of tables of contents."
+msgstr ""
+
+#: ../../story-class.rst:216 5855dd1c0eb74ba680d81ec3bd7ab855
+msgid "Returns:"
+msgstr ""
+
+#: ../../story-class.rst:217 b8d9d14cc3f7420cbfcb12cdd3784c27
+msgid "None."
+msgstr ""
+
+#: ../../story-class.rst:221 22ec8dffec4842c2b36b31e44c148e9b
+msgid ""
+"Similar to `write()` except that we don't have a `writer` arg and we "
+"return a PDF `Document` in which links have been created for each "
+"internal html link."
+msgstr ""
+
+#: ../../story-class.rst:227 cb292a6045f4454589078e45beb372b8
+msgid ""
+"Similar to `write_stabilized()` except that we don't have a `writer` arg "
+"and instead return a PDF `Document` in which links have been created for "
+"each internal html link."
+msgstr ""
+
+#: ../../story-class.rst:233 79e6df9feb764d49bb6c4880d7985f6e
+msgid "The result from a `Story.fit*()` method."
+msgstr ""
+
+#: ../../story-class.rst:235 2a76b4161e5f46ca816faca601040d90
+msgid "Members:"
+msgstr ""
+
+#: ../../story-class.rst:237 035ed3847947402d887364c7d5c447e9
+msgid "`big_enough`:"
+msgstr ""
+
+#: ../../story-class.rst:238 bf717872d31642deaf8eb1605a3012a6
+msgid "`True` if the fit succeeded."
+msgstr ""
+
+#: ../../story-class.rst:239 7320376b01af4fa9a8fa3ae295bbda83
+msgid "`filled`:"
+msgstr ""
+
+#: ../../story-class.rst:240 17cc4e2057bd41cc8e2633814392b385
+msgid "From the last call to `Story.place()`."
+msgstr ""
+
+#: ../../story-class.rst:241 e24cc834373e411587bbb7bfa0414333
+msgid "`more`:"
+msgstr ""
+
+#: ../../story-class.rst:242 4a3e937b059041a7b3a20e0d429f503c
+msgid "`False` if the fit succeeded."
+msgstr ""
+
+#: ../../story-class.rst:243 bbbe1925cdb245ad87cc43c74cf72b73
+msgid "`numcalls`:"
+msgstr ""
+
+#: ../../story-class.rst:244 9e3bcaa3dbf8478a98ff6e4241532bb6
+msgid "Number of calls made to `self.place()`."
+msgstr ""
+
+#: ../../story-class.rst:245 169f3c8877c640d8aa7fb28ee47ab520
+msgid "`parameter`:"
+msgstr ""
+
+#: ../../story-class.rst:246 985d429bb06144c6bcfa903f4c388ebf
+msgid "The successful parameter value, or the largest failing value."
+msgstr ""
+
+#: ../../story-class.rst:247 42a31d9fef9248d9a8d194383c59191d
+msgid "`rect`:"
+msgstr ""
+
+#: ../../story-class.rst:248 902774936ea0439f89fd8ff5b6dfc8e4
+msgid "The rect created from `parameter`."
+msgstr ""
+
+#: ../../story-class.rst:254 ../../story-class.rst:282
+#: ../../story-class.rst:304 ../../story-class.rst:325
+#: 696c11bfa76d489093846a7c247a4851 853a35b41b0d4e92a0abce39320b0d0b
+#: 8e63b26bcbe146e994f59d0598d8ae81 f109c3abb97c461c90ef5083439ae6b7
+msgid "Returns a `Story.FitResult` instance."
+msgstr ""
+
+#: ../../story-class.rst:256 18ef28643cd147a3a66b0e495f27b656
+msgid ""
+"On success, the last call to `self.place()` will have been with the "
+"returned rectangle, so `self.draw()` can be used directly."
+msgstr ""
+
+#: ../../story-class.rst:259 fcc258b789cf4618a282896268872c2f
+msgid ""
+"A callable taking a floating point `parameter` and returning a "
+"`pymupdf.Rect()`. If the rect is empty, we assume the story will not fit "
+"and do not call `self.place()`.  Must guarantee that `self.place()` "
+"behaves monotonically when given rect `fn(parameter`) as `parameter` "
+"increases. This usually means that both width and height increase or stay"
+" unchanged as `parameter` increases."
+msgstr ""
+
+#: ../../story-class.rst:260 c6955c50c2ba4885973d0c3f04c0e2c5
+msgid ""
+"A callable taking a floating point `parameter` and returning a "
+"`pymupdf.Rect()`. If the rect is empty, we assume the story will not fit "
+"and do not call `self.place()`."
+msgstr ""
+
+#: ../../story-class.rst:264 d7e59ae0c80245ab9c009b98fd8b45c0
+msgid ""
+"Must guarantee that `self.place()` behaves monotonically when given rect "
+"`fn(parameter`) as `parameter` increases. This usually means that both "
+"width and height increase or stay unchanged as `parameter` increases."
+msgstr ""
+
+#: ../../story-class.rst:268 11dc2ac2cfa948f9b5a1f9820e2552e5
+msgid "Minimum parameter to consider; `None` for -infinity."
+msgstr ""
+
+#: ../../story-class.rst:270 318cf2242b354dcfaf2261319967a6e2
+msgid "Maximum parameter to consider; `None` for +infinity."
+msgstr ""
+
+#: ../../story-class.rst:272 c04b8320d63941998719b704f3829f97
+msgid "Maximum error in returned `parameter`."
+msgstr ""
+
+#: ../../story-class.rst:274 ../../story-class.rst:295
+#: ../../story-class.rst:317 ../../story-class.rst:338
+#: 04ed040f1f414b7c8386ffe687178265 470693ef9de2469a8028547ee1f19ddd
+#: 8b4b77e4979541f0a4121fe75de9674d aed40072033645edb4aa0fbcdb14816f
+msgid "If true we output diagnostics."
+msgstr ""
+
+#: ../../story-class.rst:279 44286dc4a32a44f390cb28a04e6cf752
+msgid ""
+"Finds smallest value `scale` in range `scale_min..scale_max` where `scale"
+" * rect` is large enough to contain the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:284 ../../story-class.rst:306
+#: bc70968d12674cddba38101f99cb1fbd fdda159f6afc401ebac759335fb3dfec
+msgid "width of rect."
+msgstr ""
+
+#: ../../story-class.rst:286 ../../story-class.rst:327
+#: 3ee0663bbd3d4788b49acf35a5a11b7e b17196b122de4057b9427222b9a3e7f4
+msgid "height of rect."
+msgstr ""
+
+#: ../../story-class.rst:288 198e10d6fd8b4243a6c9e1051223c22e
+msgid "Minimum scale to consider; must be >= 0."
+msgstr ""
+
+#: ../../story-class.rst:290 8fb7f93b830e4d5bb7de7c76d7c7e540
+msgid "Maximum scale to consider, must be >= scale_min or `None` for infinite."
+msgstr ""
+
+#: ../../story-class.rst:293 f423b2cdc42a427f978455fb05d8b7df
+msgid "Maximum error in returned scale."
+msgstr ""
+
+#: ../../story-class.rst:300 9dc7b774a8d94c71b557ecfbb9976265
+msgid ""
+"Finds smallest height in range `height_min..height_max` where a rect with"
+" size `(width, height)` is large enough to contain the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:308 85ff87d9747942168779a4df514ba339
+msgid "Minimum height to consider; must be >= 0."
+msgstr ""
+
+#: ../../story-class.rst:310 912d526c91f243f18cb6395c816ca9bc
+msgid "Maximum height to consider, must be >= height_min or `None` for infinite."
+msgstr ""
+
+#: ../../story-class.rst:313 ../../story-class.rst:334
+#: c1f7875eb4ae4239a6376368ebf24647 c7cca120f409456097470b299bdfb49a
+msgid "`(x0, y0)` of rect."
+msgstr ""
+
+#: ../../story-class.rst:315 f67d83462abe4bbcaff9a80b51a5978f
+msgid "Maximum error in returned height."
+msgstr ""
+
+#: ../../story-class.rst:322 acf77aa0831f4a0386314816cc6f06aa
+msgid ""
+"Finds smallest width in range `width_min..width_max` where a rect with "
+"size `(width, height)` is large enough to contain the story `self`."
+msgstr ""
+
+#: ../../story-class.rst:329 9bd900ad77c545e490768485d91fc7c8
+msgid "Minimum width to consider; must be >= 0."
+msgstr ""
+
+#: ../../story-class.rst:331 ff7c27444b38461aa0606500f65534c2
+msgid "Maximum width to consider, must be >= width_min or `None` for infinite."
+msgstr ""
+
+#: ../../story-class.rst:336 0b2941234085492388b7df6476fba23f
+msgid "Maximum error in returned width."
+msgstr ""
+
+#: ../../story-class.rst:343 b1ca57aa343940a18c8a31095aa158c9
+msgid "Element Positioning CallBack function"
+msgstr ""
+
+#: ../../story-class.rst:345 091fadf161344745a01b68eb9c135c89
+msgid ""
+"The callback function can be used to log information about story output. "
+"The function's access to the information is read-only: it has no way to "
+"influence the story's output."
+msgstr ""
+
+#: ../../story-class.rst:347 6228d7d0c75448809d16fd4e876f667e
+msgid ""
+"A typical loop for executing a story with using this method would look "
+"like this::"
+msgstr ""
+
+#: ../../story-class.rst:379 ae147d021aa143be82a1e049deb89061
+msgid "Attributes of the ElementPosition class"
+msgstr ""
+
+#: ../../story-class.rst:380 c1fbd0b7565542d1b95f8c57a58016bd
+msgid ""
+"Exactly one parameter must be passed to the function provided by "
+":meth:`Story.element_positions`. It is an object with the following "
+"attributes:"
+msgstr ""
+
+#: ../../story-class.rst:382 db748bf0d1de49da994057c0c9813003
+msgid ""
+"The parameter passed to the `recorder` function is an object with the "
+"following attributes:"
+msgstr ""
+
+#: ../../story-class.rst:384 332f4d6df2e849cda1fb558f9f1bc52e
+msgid "`elpos.depth` (int) -- depth of this element in the box structure."
+msgstr ""
+
+#: ../../story-class.rst:386 43ebf06ffd544102857d5d1e63b02e5e
+msgid ""
+"`elpos.heading` (int) -- the header level, 0 if no header, 1-6 for "
+":htmlTag:`h1` - :htmlTag:`h6`."
+msgstr ""
+
+#: ../../story-class.rst:388 fd08004f2ef1497584d8af90ce1c5a41
+msgid ""
+"`elpos.href` (str) -- value of the `href` attribute, or None if not "
+"defined."
+msgstr ""
+
+#: ../../story-class.rst:390 d75122312d1142dc8e2d75061746ee48
+msgid "`elpos.id` (str) -- value of the `id` attribute, or None if not defined."
+msgstr ""
+
+#: ../../story-class.rst:392 f0d4a253cad54310a3c431f54e394f96
+msgid "`elpos.rect` (tuple) -- element position on page."
+msgstr ""
+
+#: ../../story-class.rst:394 a66c52c844ca4388889b38841925a406
+msgid "`elpos.text` (str) -- immediate text of the element."
+msgstr ""
+
+#: ../../story-class.rst:396 bed702a812984188bb16fc3565c6d75a
+msgid ""
+"`elpos.open_close` (int bit field) -- bit 0 set: opens element, bit 1 "
+"set: closes element. Relevant for elements that may contain other "
+"elements and thus may not immediately be closed after being created / "
+"opened."
+msgstr ""
+
+#: ../../story-class.rst:398 9c020d958f7e41739d4c89fc24c82271
+msgid "`elpos.rect_num` (int) -- count of rectangles filled by the story so far."
+msgstr ""
+
+#: ../../story-class.rst:400 64579e878d5a4437b0267944543f75dc
+msgid ""
+"`elpos.page_num` (int) -- page number; only present when using "
+"`pymupdf.Story.write*()` functions."
+msgstr ""
+
+#: ../../footer.rst:46 a8171a5060434652be4eadd0eef0baa1
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

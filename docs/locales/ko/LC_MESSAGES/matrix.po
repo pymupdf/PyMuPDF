@@ -1,0 +1,496 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 22b6a2a0571c4176bce077c545c814b3
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 73c9619ac3ee44d084a65d56842dc380
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 84065a34a4a14808906180f02e2efea2
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../matrix.rst:7 8a040befeffb44ac97583a22b00537bb
+msgid "Matrix"
+msgstr ""
+
+#: ../../matrix.rst:9 8eb69980d89943bb8e94c77820ab6263
+msgid ""
+"Matrix is a row-major 3x3 matrix used by image transformations in MuPDF "
+"(which complies with the respective concepts laid down in the "
+":ref:`AdobeManual`). With matrices you can manipulate the rendered image "
+"of a page in a variety of ways: (parts of) the page can be rotated, "
+"zoomed, flipped, sheared and shifted by setting some or all of just six "
+"float values."
+msgstr ""
+
+#: ../../matrix.rst:12 99311bf26c5b4fd5b0df9afed1d8ff5a
+msgid ""
+"Since all points or pixels live in a two-dimensional space, one column "
+"vector of that matrix is a constant unit vector, and only the remaining "
+"six elements are used for manipulations. These six elements are usually "
+"represented by `[a, b, c, d, e, f]`. Here is how they are positioned in "
+"the matrix:"
+msgstr ""
+
+#: ../../matrix.rst:17 981036c6e6c24d00adc24601b311399b
+msgid "Please note:"
+msgstr ""
+
+#: ../../matrix.rst:19 f1ae75aa82ce4a989a3afb538b648bd5
+msgid ""
+"the below methods are just convenience functions -- everything they do, "
+"can also be achieved by directly manipulating the six numerical values"
+msgstr ""
+
+#: ../../matrix.rst:20 26c41674818040ab9d706c72f62e5b31
+msgid ""
+"all manipulations can be combined -- you can construct a matrix that "
+"rotates **and** shears **and** scales **and** shifts, etc. in one go. If "
+"you however choose to do this, do have a look at the **remarks** further "
+"down or at the :ref:`AdobeManual`."
+msgstr ""
+
+#: ../../matrix.rst:23 afd4ea95b6d34a6e914cc64e20f4259b
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../matrix.rst:23 c34d2903bcee45ddb3cc5e621baefea0
+msgid "**Description**"
+msgstr ""
+
+#: ../../matrix.rst:25 11abdcd6cd234d4fa95850fe12580df9
+msgid ":meth:`Matrix.prerotate`"
+msgstr ""
+
+#: ../../matrix.rst:25 80427e602a66422cac1da53c44af455f
+msgid "perform a rotation"
+msgstr ""
+
+#: ../../matrix.rst:26 cad3e578828b433ba7ba0051be2032bf
+msgid ":meth:`Matrix.prescale`"
+msgstr ""
+
+#: ../../matrix.rst:26 a7e0bd6a201641fb912613e9f27fd76f
+msgid "perform a scaling"
+msgstr ""
+
+#: ../../matrix.rst:27 50c7f90d06004c62b19c6bff1b5a0ee9
+msgid ":meth:`Matrix.preshear`"
+msgstr ""
+
+#: ../../matrix.rst:27 10745ab48ff842fa86f0dba65a8ac4c9
+msgid "perform a shearing (skewing)"
+msgstr ""
+
+#: ../../matrix.rst:28 b4c7cc3f2aff4f929fd556b21396c232
+msgid ":meth:`Matrix.pretranslate`"
+msgstr ""
+
+#: ../../matrix.rst:28 cefba85880554c02abc66d69a6a32faf
+msgid "perform a translation (shifting)"
+msgstr ""
+
+#: ../../matrix.rst:29 b3b9abc777594cf8b33d5290836afe88
+msgid ":meth:`Matrix.concat`"
+msgstr ""
+
+#: ../../matrix.rst:29 fe1f3aa66e6042309e54265e9b99b18d
+msgid "perform a matrix multiplication"
+msgstr ""
+
+#: ../../matrix.rst:30 fb89b2f56f6247ac8fc9b88f34f7e6c1
+msgid ":meth:`Matrix.invert`"
+msgstr ""
+
+#: ../../matrix.rst:30 4dab7517ebb647c78b179fbe83285a9f
+msgid "calculate the inverted matrix"
+msgstr ""
+
+#: ../../matrix.rst:31 3f0c29fd96594bd7824f5d9ab40c0fd7
+msgid ":meth:`Matrix.norm`"
+msgstr ""
+
+#: ../../matrix.rst:31 bee6a79c30594e5a9982c37569a07722
+msgid "the Euclidean norm"
+msgstr ""
+
+#: ../../matrix.rst:32 b0e601bc11b94c5b978faf3969d20262
+msgid ":attr:`Matrix.a`"
+msgstr ""
+
+#: ../../matrix.rst:32 7bd503f42cb2438da182834d71fb2dd4
+msgid "zoom factor X direction"
+msgstr ""
+
+#: ../../matrix.rst:33 b20b6e26dcf04b37bf9d3226d6b7720f
+msgid ":attr:`Matrix.b`"
+msgstr ""
+
+#: ../../matrix.rst:33 dc49e0f4424c40eaa3c9b116b0a0d20f
+msgid "shearing effect Y direction"
+msgstr ""
+
+#: ../../matrix.rst:34 d2e19dfdd9104ec19d44f40c663bcc03
+msgid ":attr:`Matrix.c`"
+msgstr ""
+
+#: ../../matrix.rst:34 0a2f7dcd0de34db7a4c69a001674c37a
+msgid "shearing effect X direction"
+msgstr ""
+
+#: ../../matrix.rst:35 c72a8985cba049b487c8ffebefcf9d99
+msgid ":attr:`Matrix.d`"
+msgstr ""
+
+#: ../../matrix.rst:35 c1fe0a57201a4eb6ad2a830ae1b17b15
+msgid "zoom factor Y direction"
+msgstr ""
+
+#: ../../matrix.rst:36 e471bd7cfd92424ab1e5f3e5059d4be9
+msgid ":attr:`Matrix.e`"
+msgstr ""
+
+#: ../../matrix.rst:36 d19ab3110ade4ac3b17c845a8c80fb37
+msgid "horizontal shift"
+msgstr ""
+
+#: ../../matrix.rst:37 4a6eb68a255c4608873196c13298d411
+msgid ":attr:`Matrix.f`"
+msgstr ""
+
+#: ../../matrix.rst:37 0f0db520282844e9869b27e82d6fba11
+msgid "vertical shift"
+msgstr ""
+
+#: ../../matrix.rst:38 e75c12f64eee44059ea4b0762741fdb1
+msgid ":attr:`Matrix.is_rectilinear`"
+msgstr ""
+
+#: ../../matrix.rst:38 bc57693d7a8c445eb2a7717732d081b9
+msgid "true if rect corners will remain rect corners"
+msgstr ""
+
+#: ../../matrix.rst:41 01aaa6a5cece41dd86f5e6c6f0d08b42
+msgid "**Class API**"
+msgstr ""
+
+#: ../../matrix.rst:59 56627216de1442368ffe90a40bd40b5a
+msgid "Overloaded constructors."
+msgstr ""
+
+#: ../../matrix.rst:61 ab9ade436b794d9cb70e8ec07c59573e
+msgid ""
+"Without parameters, the zero matrix *Matrix(0.0, 0.0, 0.0, 0.0, 0.0, "
+"0.0)* will be created."
+msgstr ""
+
+#: ../../matrix.rst:63 0ff005031e87475e82c82f509a503432
+msgid ""
+"*zoom-** and *shear-** specify zoom or shear values (float) and create a "
+"zoom or shear matrix, respectively."
+msgstr ""
+
+#: ../../matrix.rst:65 3772827e3c4e46efaa66e0541654fbde
+msgid "For \"matrix\" a **new copy** of another matrix will be made."
+msgstr ""
+
+#: ../../matrix.rst:67 e0de220e569d4fb192d61776da7cc98d
+msgid ""
+"Float value \"degree\" specifies the creation of a rotation matrix which "
+"rotates anti-clockwise."
+msgstr ""
+
+#: ../../matrix.rst:69 202fbb08a1534f9b873b978d1ee2f25e
+msgid ""
+"A \"sequence\" must be any Python sequence object with exactly 6 float "
+"entries (see :ref:`SequenceTypes`)."
+msgstr ""
+
+#: ../../matrix.rst:71 3290c36cfd044349b8b73b9a12b39105
+msgid ""
+"*pymupdf.Matrix(1, 1)* and *pymupdf.Matrix(pymupdf.Identity)* create "
+"modifiable versions of the :ref:`Identity` matrix, which looks like *[1, "
+"0, 0, 1, 0, 0]*."
+msgstr ""
+
+#: ../../matrix.rst:75 2d27925e056c4beab39284c17c097dc8
+msgid "New in version 1.16.0"
+msgstr ""
+
+#: ../../matrix.rst:77 23099b3eeb904d19a2fca93ba4ff4ac2
+msgid "Return the Euclidean norm of the matrix as a vector."
+msgstr ""
+
+#: ../../matrix.rst:81 cf82a48349524343a3a9fb35951b2482
+msgid ""
+"Modify the matrix to perform a counter-clockwise rotation for positive "
+"*deg* degrees, else clockwise. The matrix elements of an identity matrix "
+"will change in the following way:"
+msgstr ""
+
+#: ../../matrix.rst:83 a024346df65d49e7bcdef1a35d0f0ea9
+msgid "*[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]*."
+msgstr ""
+
+#: ../../matrix.rst 0e2caa4b969d4e8c883315663dfbb010
+#: 2a76f7fdef494d7cb96fb9bcb0b288a0 44ed05851fab4cd4b3017cd0b82bc4f4
+#: 797389fbee9c42f6a11d44d628804863 c8b2675c06ee43c4abcd46c105be0f19
+#: e6e50d5d62724013ba993ce51b6e65a8
+msgid "Parameters"
+msgstr ""
+
+#: ../../matrix.rst:85 34bf9b5e70b9486285ffd6799c5556ca
+msgid ""
+"The rotation angle in degrees (use conventional notation based on Pi = "
+"180 degrees)."
+msgstr ""
+
+#: ../../matrix.rst:89 94eb659613c24f939142b8fc6dd19ab4
+msgid ""
+"Modify the matrix to scale by the zoom factors sx and sy. Has effects on "
+"attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [a*sx, b*sx, c*sy, "
+"d*sy, e, f]*."
+msgstr ""
+
+#: ../../matrix.rst:91 72c725939ccb4e8b90b12926ae88abec
+msgid ""
+"Zoom factor in X direction. For the effect see description of attribute "
+"*a*."
+msgstr ""
+
+#: ../../matrix.rst:93 2ef911aad48643e18db6f643f2613c9a
+msgid ""
+"Zoom factor in Y direction. For the effect see description of attribute "
+"*d*."
+msgstr ""
+
+#: ../../matrix.rst:97 a47d6e8530894f2aac1846c0416c7f14
+msgid ""
+"Modify the matrix to perform a shearing, i.e. transformation of "
+"rectangles into parallelograms (rhomboids). Has effects on attributes *a*"
+" thru *d* only: *[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]*."
+msgstr ""
+
+#: ../../matrix.rst:99 7af0396c77db4280bd8b6ef9764cab2d
+msgid "Shearing effect in X direction. See attribute *c*."
+msgstr ""
+
+#: ../../matrix.rst:101 5a8d7d2b58c348f0bf481d54d9ff5b01
+msgid "Shearing effect in Y direction. See attribute *b*."
+msgstr ""
+
+#: ../../matrix.rst:105 152c5f45800e42b6a038fee68ba116d4
+msgid ""
+"Modify the matrix to perform a shifting / translation operation along the"
+" x and / or y axis. Has effects on attributes *e* and *f* only: *[a, b, "
+"c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]*."
+msgstr ""
+
+#: ../../matrix.rst:107 8b15e98fb7734d2fb7d3a90c734616fd
+msgid "Translation effect in X direction. See attribute *e*."
+msgstr ""
+
+#: ../../matrix.rst:109 1ac03cdeaadf47039b40d141265dad51
+msgid "Translation effect in Y direction. See attribute *f*."
+msgstr ""
+
+#: ../../matrix.rst:113 a7232949340949e6bee6b5a75b157849
+msgid ""
+"Calculate the matrix product *m1 * m2* and store the result in the "
+"current matrix. Any of *m1* or *m2* may be the current matrix. Be aware "
+"that matrix multiplication is not commutative. So the sequence of *m1*, "
+"*m2* is important."
+msgstr ""
+
+#: ../../matrix.rst:115 c868c7bce6e24c17aefb279a2b589bad
+msgid "First (left) matrix."
+msgstr ""
+
+#: ../../matrix.rst:118 6a23a720cc824c018154df578fbe2287
+msgid "Second (right) matrix."
+msgstr ""
+
+#: ../../matrix.rst:123 c1c62753df994db5a29eaf60b74d5311
+msgid ""
+"Calculate the matrix inverse of *m* and store the result in the current "
+"matrix. Returns *1* if *m* is not invertible (\"degenerate\"). In this "
+"case the current matrix **will not change**. Returns *0* if *m* is "
+"invertible, and the current matrix is replaced with the inverted *m*."
+msgstr ""
+
+#: ../../matrix.rst:125 6f3f8c966b71407b9e3b02488f7f4034
+msgid "Matrix to be inverted. If not provided, the current matrix will be used."
+msgstr ""
+
+#: ../../matrix.rst e8077cac107d4551bdd9b1c1d14a4952
+msgid "Return type"
+msgstr ""
+
+#: ../../matrix.rst:132 db229e59a31b455b98ea5ccfa578122a
+msgid ""
+"Scaling in X-direction **(width)**. For example, a value of 0.5 performs "
+"a shrink of the **width** by a factor of 2. If a < 0, a left-right flip "
+"will (additionally) occur."
+msgstr ""
+
+#: ../../matrix.rst 6fcedf91827d4c289e6a645364d76ea6
+#: 8654b40d08014804b0c0e8c304580291 96cbe6754a4b4f99bb7e0e80e180c0a6
+#: afc20c369a9f4c739bc1f16197754859 c2c0c17a6a334d9daf1a246b0a95ca15
+#: fab66c3105f3412b8e17b401ecfe57ab fceb1d67502e44b49baa260b088dd68f
+msgid "type"
+msgstr ""
+
+#: ../../matrix.rst:134 ../../matrix.rst:140 ../../matrix.rst:146
+#: ../../matrix.rst:152 ../../matrix.rst:158 ../../matrix.rst:164
+#: 137024cc37b74d68971a780ab821bb5c 20de69effd914f3f92727bc07f7de025
+#: 5804209069a04b28ae858ceb0466f4d1 5b5b333b8cb346858ac4e11335709c2a
+#: 789de033d5c0443997dabc1c08157dbc 867fd680a9e9402583480286d03e27ca
+msgid "float"
+msgstr ""
+
+#: ../../matrix.rst:138 c229f8ba4d804490b761e624fe313b6d
+msgid ""
+"Causes a shearing effect: each `Point(x, y)` will become `Point(x, y - "
+"b*x)`. Therefore, horizontal lines will be \"tilt\"."
+msgstr ""
+
+#: ../../matrix.rst:144 7b98255d69974126bcf901feb1b268f6
+msgid ""
+"Causes a shearing effect: each `Point(x, y)` will become `Point(x - c*y, "
+"y)`. Therefore, vertical lines will be \"tilt\"."
+msgstr ""
+
+#: ../../matrix.rst:150 ac4f38489ad847b7827dcac0e26521a5
+msgid ""
+"Scaling in Y-direction **(height)**. For example, a value of 1.5 performs"
+" a stretch of the **height** by 50%. If d < 0, an up-down flip will "
+"(additionally) occur."
+msgstr ""
+
+#: ../../matrix.rst:156 9660c53c0df84ae99b72badb3989dddf
+msgid ""
+"Causes a horizontal shift effect: Each *Point(x, y)* will become *Point(x"
+" + e, y)*. Positive (negative) values of *e* will shift right (left)."
+msgstr ""
+
+#: ../../matrix.rst:162 96c71528239744f1b8cd967c2e46cb62
+msgid ""
+"Causes a vertical shift effect: Each *Point(x, y)* will become *Point(x, "
+"y - f)*. Positive (negative) values of *f* will shift down (up)."
+msgstr ""
+
+#: ../../matrix.rst:168 fbbefd1680244e43b84002ed9a436dec
+msgid ""
+"Rectilinear means that no shearing is present and that any rotations are "
+"integer multiples of 90 degrees. Usually this is used to confirm that "
+"(axis-aligned) rectangles before the transformation are still axis-"
+"aligned rectangles afterwards."
+msgstr ""
+
+#: ../../matrix.rst:170 36d4d94103214600af41eafe39212e90
+msgid "bool"
+msgstr ""
+
+#: ../../matrix.rst:174 90ffe958045f48d090dba5ba44f73165
+msgid ""
+"This class adheres to the Python sequence protocol, so components can be "
+"accessed via their index, too. Also refer to :ref:`SequenceTypes`."
+msgstr ""
+
+#: ../../matrix.rst:175 ae28f509b9434158ad3509b43fcadd26
+msgid ""
+"Matrices can be used with arithmetic operators almost like ordinary "
+"numbers: they can be added, subtracted, multiplied or divided -- see "
+"chapter :ref:`Algebra`."
+msgstr ""
+
+#: ../../matrix.rst:176 8bec4a086d304bbb9bfd022e4556dd29
+msgid ""
+"Matrix multiplication is **not commutative** -- changing the sequence of "
+"the multiplicands will change the result in general. So it can quickly "
+"become unclear which result a transformation will yield."
+msgstr ""
+
+#: ../../matrix.rst:180 281fd31e543c4617a40894e7ac37597e
+msgid "Examples"
+msgstr ""
+
+#: ../../matrix.rst:181 401084daabc9429b9009d38c9e0f2aec
+msgid ""
+"Here are examples that illustrate some of the achievable effects. All "
+"pictures show some text, inserted under control of some matrix and "
+"relative to a fixed reference point (the red dot)."
+msgstr ""
+
+#: ../../matrix.rst:183 ef95f7140bc84ceb80f3fe9cc5ffe0d2
+msgid "The :ref:`Identity` matrix performs no operation."
+msgstr ""
+
+#: ../../matrix.rst:188 a80fc2a091374e8cb6815dfe8672bddd
+msgid ""
+"The scaling matrix `Matrix(2, 0.5)` stretches by a factor of 2 in "
+"horizontal, and shrinks by factor 0.5 in vertical direction."
+msgstr ""
+
+#: ../../matrix.rst:193 9699134c66a146af9068adb90948b8f2
+msgid ""
+"Attributes :attr:`Matrix.e` and :attr:`Matrix.f` shift horizontally and, "
+"respectively vertically. In the following 10 to the right and 20 down."
+msgstr ""
+
+#: ../../matrix.rst:198 168fe9a931a94651ac55f633dffbe987
+msgid "A negative :attr:`Matrix.a` causes a left-right flip."
+msgstr ""
+
+#: ../../matrix.rst:203 f2cb4722af2e45f6ac67fda814935ea4
+msgid "A negative :attr:`Matrix.d` causes an up-down flip."
+msgstr ""
+
+#: ../../matrix.rst:208 28cc582a5ec24205816af0c892b692d1
+msgid "Attribute :attr:`Matrix.b` tilts upwards / downwards along the x-axis."
+msgstr ""
+
+#: ../../matrix.rst:213 a2b77644fc61456690d3603561dae948
+msgid "Attribute :attr:`Matrix.c` tilts left / right along the y-axis."
+msgstr ""
+
+#: ../../matrix.rst:218 bd842bfbd48b44509584185764d44373
+msgid ""
+"Matrix `Matrix(beta)` performs counterclockwise rotations for positive "
+"angles `beta`."
+msgstr ""
+
+#: ../../matrix.rst:223 ac0b2cc97b1347ab9f63fa8f97f50072
+msgid "Show some effects on a rectangle::"
+msgstr ""
+
+#: ../../footer.rst:46 2a49496b580540908297c502618954b2
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+
