@@ -39,6 +39,9 @@ Environmental variables:
             Directory containing MuPDF libraries, (libmupdf.so,
             libmupdfcpp.so).
     
+    PIPCL_SHOW_ENV
+        If '0', we do not show environment variables on startup.
+    
     PYMUPDF_SETUP_DEVENV
         Location of devenv.com on Windows. If unset we search for it - see
         wdev.py. if that fails we use just 'devenv.com'.
