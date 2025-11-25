@@ -2416,6 +2416,8 @@ def openbsd():
 def show_system():
     '''
     Show useful information about the system plus argv and environ.
+    
+    Omits os.environ if $PIPCL_SHOW_ENV is '0'.
     '''
     def log(text):
         log0(text, caller=3)
@@ -2447,14 +2449,18 @@ def show_system():
     for i, arg in enumerate(sys.argv):
         log(f'    {i}: {arg!r}')
     
-    log(f'os.environ ({len(os.environ)}):')
-    for k in sorted( os.environ.keys()):
-        v = os.environ[ k]
-        if 'BEGIN OPENSSH PRIVATE KEY' in v:
-            # Don't show private keys.
-            log(f'    {k} ****')
-        else:
-            log( f'    {k}: {v!r}')
+    PIPCL_SHOW_ENV = os.environ.get('PIPCL_SHOW_ENV')
+    if PIPCL_SHOW_ENV == '0':
+        log(f'[Not showing os.environ because {PIPCL_SHOW_ENV=}.]')
+    else:
+        log(f'os.environ ({len(os.environ)}):')
+        for k in sorted( os.environ.keys()):
+            v = os.environ[ k]
+            if 'BEGIN OPENSSH PRIVATE KEY' in v:
+                # Don't show private keys.
+                log(f'    {k} ****')
+            else:
+                log( f'    {k}: {v!r}')
 
 
 class PythonFlags:
