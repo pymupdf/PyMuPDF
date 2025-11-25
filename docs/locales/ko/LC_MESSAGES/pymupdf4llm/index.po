@@ -1,0 +1,242 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 53c72493367d4eb1be603397129b39fe
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 1b5624909c1b466fb93485742b40bbd2
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 113a15e76cb34538aebd04c22e64f82d
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:8 96b9f29894ff49beba7a07931c5c900d
+msgid "PyMuPDF4LLM"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:10 59d6714b7f6549e0a52c173974da2135
+msgid ""
+"|PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in the "
+"format you need for **LLM** & **RAG** environments. It supports "
+":ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex"
+" document output <extracting_as_llamaindex>`."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:14 50bf080e50e64ba58e973f0addf24d73
+msgid ""
+"You can extend the supported file types to also include **Office** "
+"document formats (DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX) by :ref:`using "
+"PyMuPDF Pro with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:17 38428359cdaf4039b439454f5c712ec7
+msgid "Features"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:19 5f4fb197fcdd4a0ab3ac79607a78a25e
+msgid "Support for multi-column pages"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:20 7e249663241a4aacb2f9b1fcb4450393
+msgid ""
+"Support for image and vector graphics extraction (and inclusion of "
+"references in the MD text)"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:21 cf659dc9b2da48d69e7ab3d1cda7f132
+msgid "Support for page chunking output."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:22 20715d6347fb42b7b485fba224287741
+msgid ""
+"Direct support for output as :ref:`LlamaIndex Documents "
+"<extracting_as_llamaindex>`."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:26 90f6c12aacd14b7eba944b6c1e013ed5
+msgid "Functionality"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:28 e63a722974dc41f3928dc372e66da5c0
+msgid ""
+"This package converts the pages of a file to text in **Markdown** format "
+"using |PyMuPDF|."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:30 1504c800279e44568bfbbeef3eb2ba6d
+msgid ""
+"Standard text and tables are detected, brought in the right reading "
+"sequence and then together converted to **GitHub**-compatible "
+"**Markdown** text."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:32 4d3e28d4b9654f6889e99f25edeafb6f
+msgid ""
+"Header lines are identified via the font size and appropriately prefixed "
+"with one or more `#` tags."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:34 d3dc9c01915e4fd5a47c1784eae70c00
+msgid ""
+"Bold, italic, mono-spaced text and code blocks are detected and formatted"
+" accordingly. Similar applies to ordered and unordered lists."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:36 bc9f92950b5b4c038ed82153c462a0c6
+msgid ""
+"By default, all document pages are processed. If desired, a subset of "
+"pages can be specified by providing a list of `0`-based page numbers."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:40 24714fd3cb744a908099e19f1af6ce7e
+msgid "Installation"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:43 dd73904df42146e18551936620e44355
+msgid "Install the package via **pip** with:"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:54 a08840e778fe46379ec9110ad3c3608a
+msgid "Extracting a file as **Markdown**"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:56 98c0760b58c04cbeb1299faf5b79ab3f
+msgid ""
+"To retrieve your document content in **Markdown** simply install the "
+"package and then use a couple of lines of **Python** code to get results."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:60 6a398956ca7f4c9c9057734393a79743
+msgid "Then in your **Python** script do:"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:71 b227684a017d42e8b88f83ad2a3c673e
+msgid ""
+"Instead of the filename string as above, one can also provide a "
+":ref:`PyMuPDF Document <Document>`. A second parameter may be a list of "
+"`0`-based page numbers, e.g. `[0,1]` would just select the first and "
+"second pages of the document."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:74 a0929decafbc41cb86a00b46905219e0
+msgid ""
+"If you want to store your **Markdown** file, e.g. store as a UTF8-encoded"
+" file, then do:"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:87 fe47c11343ec4d278c9f9cc524bccb86
+msgid "Extracting a file as a **LlamaIndex** document"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:89 6834228bb5524c319b8c3d5dbe8138d6
+msgid ""
+"|PyMuPDF4LLM| supports direct conversion to a **LLamaIndex** document. A "
+"document is first converted into **Markdown** format and then a "
+"**LlamaIndex** document is returned as follows:"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:103 e653025ecf1948759d96b33b7902c524
+msgid "Using with |PyMuPDF Pro|"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:106 9e877b4bd26d43cbaf81821091d51a1b
+msgid ""
+"For **Office** document support, |PyMuPDF4LLM| works seamlessly with "
+"|PyMuPDF Pro|. Assuming you have :doc:`../pymupdf-pro` installed you will"
+" be able to work with **Office** documents as expected:"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:117 ff1a10504dbe4b5381a2f6232a21b346
+msgid ""
+"As you can see |PyMuPDF Pro| functionality will be available within the "
+"|PyMuPDF4LLM| context!"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:122 32a7f061e08e4a6ca0f4f3fddb070669
+msgid "API"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:124 b4ebede9414d489da467192cd788038a
+msgid "See :ref:`the PyMuPDF4LLM API <pymupdf4llm-api>`."
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:127 bb3e7108ffa0474c9130db24bde17039
+msgid "Further Resources"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:131 ec0ceb929e634253940d9d8b12c34e12
+msgid "Sample code"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:133 f2d41ac1c1d24d9289e6ce68bc9370de
+msgid ""
+"`Command line RAG Chatbot with PyMuPDF "
+"<https://github.com/pymupdf/RAG/tree/main/examples/country-capitals>`_"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:134 bf6ddba28b86427ab7c934e3fe869608
+msgid ""
+"`Example of a Browser Application using Langchain and PyMuPDF "
+"<https://github.com/pymupdf/RAG/tree/main/examples/GUI>`_"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:138 05f33a793ba04dbea19e7a464b4c8cd5
+msgid "Blogs"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:140 d6c3173afe6a4dbd880c662d9a8b9e66
+msgid ""
+"`RAG/LLM and PDF: Enhanced Text Extraction <https://artifex.com/blog/rag-"
+"llm-and-pdf-enhanced-text-extraction>`_"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:141 2469a1a8ebb649b083d10e876d5b3022
+msgid ""
+"`Creating a RAG Chatbot with ChatGPT and PyMuPDF "
+"<https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-"
+"pymupdf>`_"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:142 750da7ec1111406c9f24fe09151140ae
+msgid ""
+"`Building a RAG Chatbot GUI with the ChatGPT API and PyMuPDF "
+"<https://artifex.com/blog/building-a-rag-chatbot-gui-with-the-chatgpt-"
+"api-and-pymupdf>`_"
+msgstr ""
+
+#: ../../pymupdf4llm/index.rst:143 d820865d4e2b470b975fd95e67ec0436
+msgid ""
+"`RAG/LLM and PDF: Conversion to Markdown Text with PyMuPDF "
+"<https://artifex.com/blog/rag-llm-and-pdf-conversion-to-markdown-text-"
+"with-pymupdf>`_"
+msgstr ""
+
+#: ../../footer.rst:46 30b12247e1244acba7a2885245d87849
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

@@ -1,0 +1,608 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 9be7fe8ece684722b20723502ba6e81a
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 4fd0b4c61f30429d928c92ebb1081bc3
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 8395c05a667445b68d678e31a6c9296f
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../widget.rst:7 b5bf7834aa6d4acc80837502b85e97c1
+msgid "Widget"
+msgstr ""
+
+#: ../../widget.rst:9 db658752009445c5a3459712f6b25c8f
+msgid "|pdf_only_class|"
+msgstr ""
+
+#: ../../widget.rst:11 d1312e8bf60148598975d49439011b6c
+msgid ""
+"This class represents a PDF Form field, also called a \"widget\". "
+"Throughout this documentation, we are using these terms synonymously. "
+"Fields technically are a special case of PDF annotations, which allow "
+"users with limited permissions to enter information in a PDF. This is "
+"primarily used for filling out forms."
+msgstr ""
+
+#: ../../widget.rst:13 6befe4905ed146a2ab8cfd92d1d923bc
+msgid ""
+"Like annotations, widgets live on PDF pages. Similar to annotations, the "
+"first widget on a page is accessible via :attr:`Page.first_widget` and "
+"subsequent widgets can be accessed via the :attr:`Widget.next` property."
+msgstr ""
+
+#: ../../widget.rst:15 f5dcbec91e9446b1bc886ab894d9b27c
+msgid ""
+"Like annotations, widgets also lose connection to their page when the "
+"page becomes unavailable, please see `here "
+"<https://pymupdf.readthedocs.io/en/latest/app3.html#ensuring-consistency-"
+"of-important-objects-in-pymupdf>`_ for details. This is relevant "
+"especially when updating the widget: this will fail if the original page "
+"object is no longer available."
+msgstr ""
+
+#: ../../widget.rst:17 23ea64f7e0164b6788a0c02783469bef
+msgid ""
+"*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset "
+"of general annotations. Consequently, :attr:`Page.first_annot` and "
+":meth:`Annot.next` will deliver **non-widget annotations exclusively**, "
+"and be ``None`` if only form fields exist on a page. Vice versa, "
+":attr:`Page.first_widget` and :meth:`Widget.next` will only show widgets."
+" This design decision is purely internal to MuPDF; technically, links, "
+"annotations and fields have a lot in common and also continue to share "
+"the better part of their code within (Py-) MuPDF."
+msgstr ""
+
+#: ../../widget.rst:20 4c382afc381347e990494e4d0e1c78f7
+msgid "**Class API**"
+msgstr ""
+
+#: ../../widget.rst:26 f56bf175166444f7920a252639d09199
+msgid "*New in version 1.18.15*"
+msgstr ""
+
+#: ../../widget.rst:28 00cee4b5b9734e0484ff17718afb7614
+msgid ""
+"Return the names of On / Off (i.e. selected / clicked or not) states a "
+"button field may have. While the 'Off' state usually is also named like "
+"so, the 'On' state is often given a name relating to the functional "
+"context, for example 'Yes', 'Female', etc."
+msgstr ""
+
+#: ../../widget.rst:30 7d6a3ae94e2742d5a84bf396789e24e1
+msgid ""
+"This method helps finding out the possible values of :attr:`field_value` "
+"in these cases."
+msgstr ""
+
+#: ../../widget.rst 3ba59739b0504accbfb45a04c8b24a7f
+#: ac61f1c8af7547ca9e4696981cd7c001
+msgid "returns"
+msgstr ""
+
+#: ../../widget.rst:32 dc0ef726c74e4a249337ee6f20cdd308
+msgid ""
+"a dictionary with the names of 'On' and 'Off' for the *normal* and the "
+"*pressed-down* appearance of button widgets. The following example shows "
+"that the \"selected\" value is \"Male\":"
+msgstr ""
+
+#: ../../widget.rst:40 dca66819e96f4f19a12d511c1409a188
+msgid "New in version 1.22.2"
+msgstr ""
+
+#: ../../widget.rst:42 72cfa1c4a4794fdebcf176d87534ed11
+msgid ""
+"Return the value of the \"ON\" state of check boxes and radio buttons. "
+"For check boxes this is always the value \"Yes\". For radio buttons, this"
+" is the value to select / activate the button."
+msgstr ""
+
+#: ../../widget.rst:44 ef6612006aa6463b9f062200357220e8
+msgid ""
+"the value that sets the button to \"selected\". For non-checkbox, non-"
+"radiobutton fields, always `None` is returned. For check boxes the return"
+" is `True`. For radio buttons this is the value \"Male\" in the following"
+" example:"
+msgstr ""
+
+#: ../../widget.rst:51 149007e65bf84de18e2eb1c2afe8bf71
+msgid ""
+"So for check boxes and radio buttons, the recommended method to set them "
+"to \"selected\", or to check the state is the following:"
+msgstr ""
+
+#: ../../widget.rst:60 9b42ee70ae144a8b92f71cf466956b05
+msgid ""
+"After any changes to a widget, this **method must be used** to reflect "
+"changes in the PDF [#f1]_."
+msgstr ""
+
+#: ../../widget.rst f9afde507f67494fbafed9da093edc2c
+msgid "Parameters"
+msgstr ""
+
+#: ../../widget.rst:62 4a0049c3506c40d99e4aba3b7c10c027
+msgid ""
+"if ``True``, the widget's :attr:`Widget.field_flags` are copied to the "
+"``Parent`` object (if present) and all widgets named in its ``Kids`` "
+"array. This provides a convenient way to -- for example -- set all "
+"instances of the widget to read-only, no matter on which page they may "
+"occur [#f2]_."
+msgstr ""
+
+#: ../../widget.rst:66 ad4e8312e49447b68aa62039c7138968
+msgid ""
+"Reset the field's value to its default -- if defined -- or remove it. Do "
+"not forget to issue :meth:`update` afterwards."
+msgstr ""
+
+#: ../../widget.rst:70 ac472167a7e14f4290ac8a193c79160c
+msgid ""
+"Point to the next form field on the page. The last widget returns "
+"``None``."
+msgstr ""
+
+#: ../../widget.rst:74 1f2d580b4eca4c468f4a0e6592281c85
+msgid ""
+"A list of up to 4 floats defining the field's border color. Default value"
+" is ``None`` which causes border style and border width to be ignored."
+msgstr ""
+
+#: ../../widget.rst:78 4d75daab990241b7a3b26a0e4ab3a3f3
+msgid ""
+"A string defining the line style of the field's border. See "
+":attr:`Annot.border`. Default is \"s\" (\"Solid\") -- a continuous line. "
+"Only the first character (upper or lower case) will be regarded when "
+"creating a widget."
+msgstr ""
+
+#: ../../widget.rst:82 a3b4c3bbfb544efd99ac42ab92c5d596
+msgid "A float defining the width of the border line. Default is 1."
+msgstr ""
+
+#: ../../widget.rst:86 8abf38d7b6a540acb99b929363d614c3
+msgid ""
+"A list/tuple of integers defining the dash properties of the border line."
+" This is only meaningful if *border_style == \"D\"* and "
+":attr:`border_color` is provided."
+msgstr ""
+
+#: ../../widget.rst:90 89fa9c260a8c49f0b07ea1b251cece4e
+msgid ""
+"Python sequence of strings defining the valid choices of list boxes and "
+"combo boxes. For these widget types, this property is mandatory and must "
+"contain at least two items. Ignored for other types."
+msgstr ""
+
+#: ../../widget.rst:94 d429d2ef1dd644d79f98b280f55ad276
+msgid ""
+"A mandatory string defining the field's name. No checking for duplicates "
+"takes place."
+msgstr ""
+
+#: ../../widget.rst:98 3e1f3a12889b40cdb2687c5e1e275082
+msgid ""
+"An optional string containing an \"alternate\" field name. Typically used"
+" for any notes, help on field usage, etc. Default is the field name."
+msgstr ""
+
+#: ../../widget.rst:102 02bb3f5a570947e98e225720d915a4b5
+msgid "The value of the field."
+msgstr ""
+
+#: ../../widget.rst:106 159866e898664171a44d8b61241d2731
+msgid ""
+"An integer defining a large amount of properties of a field. Be careful "
+"when changing this attribute as this may change the field type."
+msgstr ""
+
+#: ../../widget.rst:110 62966a5f68404db5822a72647d202b90
+msgid ""
+"A mandatory integer defining the field type. This is a value in the range"
+" of 0 to 6. It cannot be changed when updating the widget."
+msgstr ""
+
+#: ../../widget.rst:114 a9fbed37d8be4f51b900e87522083cb4
+msgid "A string describing (and derived from) the field type."
+msgstr ""
+
+#: ../../widget.rst:118 0893214230bb4b998907cfb864bf8047
+msgid "A list of up to 4 floats defining the field's background color."
+msgstr ""
+
+#: ../../widget.rst:122 864cf589b08549bca7920c38f91caa48
+msgid "The caption string of a button-type field."
+msgstr ""
+
+#: ../../widget.rst:126 d1ed58b8e9784d0f9f5368aa781d8db2
+msgid "A bool indicating the signing status of a signature field, else ``None``."
+msgstr ""
+
+#: ../../widget.rst:130 fd9f9f5619ec4ae69d780dcfdcaf1cf5
+msgid "The rectangle containing the field."
+msgstr ""
+
+#: ../../widget.rst:134 32a4055906494c169f91575f408fd75e
+msgid ""
+"A list of **1, 3 or 4 floats** defining the text color. Default value is "
+"black (`[0, 0, 0]`)."
+msgstr ""
+
+#: ../../widget.rst:138 f951f27a175047e6ad58a7ee9d45d202
+msgid ""
+"A string defining the font to be used. Default and replacement for "
+"invalid values is *\"Helv\"*. For valid font reference names see the "
+"table below."
+msgstr ""
+
+#: ../../widget.rst:142 93d6bab5e8ed4964b445aaff3f5a666e
+msgid ""
+"A float defining the text :data:`fontsize`. Default value is zero, which "
+"causes PDF viewer software to dynamically choose a size suitable for the "
+"annotation's rectangle and text amount."
+msgstr ""
+
+#: ../../widget.rst:146 a1ded660efa640cd9b872d5a1fffdb1f
+msgid ""
+"An integer defining the maximum number of text characters. PDF viewers "
+"will (should) not accept a longer text."
+msgstr ""
+
+#: ../../widget.rst:150 68eac259cd954e619832866bde7c37e3
+msgid ""
+"An integer defining acceptable text types (e.g. numeric, date, time, "
+"etc.). For reference only for the time being -- will be ignored when "
+"creating or updating widgets."
+msgstr ""
+
+#: ../../widget.rst:154 9df210c84ecd4845b952f6d3cc9195cc
+msgid "The PDF :data:`xref` of the widget."
+msgstr ""
+
+#: ../../widget.rst:158 ../../widget.rst:164 ../../widget.rst:170
+#: ../../widget.rst:176 ../../widget.rst:182 6ac3abf289404eeaafe2d71129cccf4f
+#: 8034826ba5bf458fa878c3dfe0dcb46e 8155dfc13cad413eb75cd134942ce80a
+#: b8eb6a539c4941e6b3212dc4474dfd75 c5b33ed64c7043db966de5404c881830
+msgid "New in version 1.16.12"
+msgstr ""
+
+#: ../../widget.rst:160 27f8421d8a374cd587fc385b05348e06
+msgid ""
+"JavaScript text (unicode) for an action associated with the widget, or "
+"``None``. This is the only script action supported for **button type** "
+"widgets."
+msgstr ""
+
+#: ../../widget.rst:166 bbc99abeab574327895dbdfadb016871
+msgid ""
+"JavaScript text (unicode) to be performed when the user types a key-"
+"stroke into a text field or combo box or modifies the selection in a "
+"scrollable list box. This action can check the keystroke for validity and"
+" reject or modify it. ``None`` if not present."
+msgstr ""
+
+#: ../../widget.rst:172 49c953662fc846e4ab3a5754771075d5
+msgid ""
+"JavaScript text (unicode) to be performed before the field is formatted "
+"to display its current value. This action can modify the field’s value "
+"before formatting. ``None`` if not present."
+msgstr ""
+
+#: ../../widget.rst:178 f099a7380085444088d138037fc88009
+msgid ""
+"JavaScript text (unicode) to be performed when the field’s value is "
+"changed. This action can check the new value for validity. ``None`` if "
+"not present."
+msgstr ""
+
+#: ../../widget.rst:184 195412bc8f7645c7af94839cbeef56c7
+msgid ""
+"JavaScript text (unicode) to be performed to recalculate the value of "
+"this field when that of another field changes. ``None`` if not present."
+msgstr ""
+
+#: ../../widget.rst:188 ../../widget.rst:194 be53028b2eeb496e91e645ddedbecf73
+#: caaac82450ae43fd84f1684ee16cc1aa
+msgid "New in version 1.22.6"
+msgstr ""
+
+#: ../../widget.rst:190 66757bee21264b4591997469672bf407
+msgid ""
+"JavaScript text (unicode) to be performed on losing the focus of this "
+"field. ``None`` if not present."
+msgstr ""
+
+#: ../../widget.rst:196 6d86df2f110242b9b322d96488384f39
+msgid ""
+"JavaScript text (unicode) to be performed on focusing this field. "
+"``None`` if not present."
+msgstr ""
+
+#: ../../widget.rst:200 31230d72253b4583a09b8159f40329f4
+msgid "For **adding** or **changing** one of the above scripts,"
+msgstr ""
+
+#: ../../widget.rst:201 3d2a3d82396442afb52dfc4cdd423495
+msgid ""
+"just put the appropriate JavaScript source code in the widget attribute. "
+"To **remove** a script, set the respective attribute to ``None``."
+msgstr ""
+
+#: ../../widget.rst:204 8ae6388eebe44c248ddac814e91ade75
+msgid "Button fields only support :attr:`script`."
+msgstr ""
+
+#: ../../widget.rst:205 eaf4aaf730aa470bac28fa589c1d9a75
+msgid "Other script entries will automatically be set to ``None``."
+msgstr ""
+
+#: ../../widget.rst:207 1574012d10e54a92850485e41d1ffedf
+msgid ""
+"It is worthwhile to look at `this "
+"<https://experienceleague.adobe.com/docs/experience-manager-"
+"learn/assets/FormsAPIReference.pdf?lang=en>`_ manual with lots of "
+"information about Adobe's standard scripts for various field types. For "
+"example, if you want to add a text field representing a date, you may "
+"want to store the following scripts. They will ensure pattern-compatible "
+"date formats and display date pickers in supporting viewers::"
+msgstr ""
+
+#: ../../widget.rst:219 c65b215c2ad34e7488b15662ebd4d3bb
+msgid "Standard Fonts for Widgets"
+msgstr ""
+
+#: ../../widget.rst:220 cdad1a06914d4e0096cf6f84a03b0434
+msgid ""
+"Widgets use their own resources object ``/DR``. A widget resources object"
+" must at least contain a ``/Font`` object. Widget fonts are independent "
+"from page fonts. We currently support the 14 PDF base fonts using the "
+"following fixed reference names, or any name of an already existing field"
+" font. When specifying a text font for new or changed widgets, **either**"
+" choose one in the first table column (upper and lower case supported), "
+"**or** one of the already existing form fonts. In the latter case, "
+"spelling must exactly match."
+msgstr ""
+
+#: ../../widget.rst:222 7fd5734a55b445cc854e109cbc203e17
+msgid ""
+"To find out already existing field fonts, inspect the list "
+":attr:`Document.FormFonts`."
+msgstr ""
+
+#: ../../widget.rst:225 989af4e78c0847918dbff49079157c49
+msgid "**Reference**"
+msgstr ""
+
+#: ../../widget.rst:225 2a3d30a6f94b40939fd222ac5505a0c3
+msgid "**Base14 Fontname**"
+msgstr ""
+
+#: ../../widget.rst:227 352a551d7b7d4200932f4f74ab639993
+msgid "CoBI"
+msgstr ""
+
+#: ../../widget.rst:227 97b97d88ac2049608397f18450ce94f9
+msgid "Courier-BoldOblique"
+msgstr ""
+
+#: ../../widget.rst:228 5784d31036e8451ea00333ebfc861db7
+msgid "CoBo"
+msgstr ""
+
+#: ../../widget.rst:228 f62fddbdd0ec4ca5a7de461de53b6f58
+msgid "Courier-Bold"
+msgstr ""
+
+#: ../../widget.rst:229 7b2ab33a398843e2b2becf0f64045392
+msgid "CoIt"
+msgstr ""
+
+#: ../../widget.rst:229 053e2cadb71446e3938febe4ef984f31
+msgid "Courier-Oblique"
+msgstr ""
+
+#: ../../widget.rst:230 4f7d11706d4b41ec968dff1ac8fb677f
+msgid "Cour"
+msgstr ""
+
+#: ../../widget.rst:230 bc034dde385b406280bef75f575a2672
+msgid "Courier"
+msgstr ""
+
+#: ../../widget.rst:231 ff774f899f274ee5a81ee1e6d1959b8c
+msgid "HeBI"
+msgstr ""
+
+#: ../../widget.rst:231 172ee9521a2348cd9f506babd8af5f10
+msgid "Helvetica-BoldOblique"
+msgstr ""
+
+#: ../../widget.rst:232 79d0f51c58f54f67a759e45d17d9ffc6
+msgid "HeBo"
+msgstr ""
+
+#: ../../widget.rst:232 467053b50fdf4b6a970d48f6d4cc2e1a
+msgid "Helvetica-Bold"
+msgstr ""
+
+#: ../../widget.rst:233 5abb199e534a4b2985760322156b7819
+msgid "HeIt"
+msgstr ""
+
+#: ../../widget.rst:233 8d472db0bc5a44caa9de71c566f7cb7e
+msgid "Helvetica-Oblique"
+msgstr ""
+
+#: ../../widget.rst:234 d03174f7c84045ea9ef98507a09fa344
+msgid "Helv"
+msgstr ""
+
+#: ../../widget.rst:234 bbec46b6db884fb29167ffc50a0c7dcb
+msgid "Helvetica **(default)**"
+msgstr ""
+
+#: ../../widget.rst:235 cd1c089129784daeb903d5ef116ea70b
+msgid "Symb"
+msgstr ""
+
+#: ../../widget.rst:235 81ad28b580f44ba78513b1abebbc40bc
+msgid "Symbol"
+msgstr ""
+
+#: ../../widget.rst:236 de4c92826dc94244b1b8ef026ab90a2e
+msgid "TiBI"
+msgstr ""
+
+#: ../../widget.rst:236 3dc417d13f2d4a6cbb1233643dc93f65
+msgid "Times-BoldItalic"
+msgstr ""
+
+#: ../../widget.rst:237 43969ece08334ca685bd92f021cd1884
+msgid "TiBo"
+msgstr ""
+
+#: ../../widget.rst:237 32b0cc34477144ffb88eb7565f2a0533
+msgid "Times-Bold"
+msgstr ""
+
+#: ../../widget.rst:238 a1252968a11c4601b7341a5c9ad95394
+msgid "TiIt"
+msgstr ""
+
+#: ../../widget.rst:238 8cdd804d025940c8b5d05a9397419bdc
+msgid "Times-Italic"
+msgstr ""
+
+#: ../../widget.rst:239 4d07f298c6d14909b518fad20ea5e681
+msgid "TiRo"
+msgstr ""
+
+#: ../../widget.rst:239 b7c540028a3d4cedb72159dba9849432
+msgid "Times-Roman"
+msgstr ""
+
+#: ../../widget.rst:240 58ea0b46026f4588b999a9ca93163980
+msgid "ZaDb"
+msgstr ""
+
+#: ../../widget.rst:240 2e0483edf38749a1928b25d20ab9055a
+msgid "ZapfDingbats"
+msgstr ""
+
+#: ../../widget.rst:243 a31f0eb06f284c738ae3404fb14e5e42
+msgid ""
+"You are generally free to use any font for every widget. However, we "
+"recommend using ``ZaDb`` (\"ZapfDingbats\") and :data:`fontsize` 0 for "
+"check boxes: typical viewers will put a correctly sized tickmark in the "
+"field's rectangle, when it is clicked."
+msgstr ""
+
+#: ../../widget.rst:246 25ed10dbd2a14216bbd4ed04f57c98cd
+msgid "Supported Widget Types"
+msgstr ""
+
+#: ../../widget.rst:247 8cb59d1d5bd14f098f5fc408b8849853
+msgid ""
+"PyMuPDF supports the creation and update of many, but not all widget "
+"types."
+msgstr ""
+
+#: ../../widget.rst:249 8461bca05ec547fabc82884dedd125bb
+msgid "text (`PDF_WIDGET_TYPE_TEXT`)"
+msgstr ""
+
+#: ../../widget.rst:250 4c1a2929bc174c79bd4b539f47d803f2
+msgid "push button (`PDF_WIDGET_TYPE_BUTTON`)"
+msgstr ""
+
+#: ../../widget.rst:251 c8546d5d5e834b6bb9bf78579650d52d
+msgid "check box (`PDF_WIDGET_TYPE_CHECKBOX`)"
+msgstr ""
+
+#: ../../widget.rst:252 90c82cab0fe4443ab3b6c96bde056ab8
+msgid "combo box (`PDF_WIDGET_TYPE_COMBOBOX`)"
+msgstr ""
+
+#: ../../widget.rst:253 466344d91d064ed5a8d839e9b95d1988
+msgid "list box (`PDF_WIDGET_TYPE_LISTBOX`)"
+msgstr ""
+
+#: ../../widget.rst:254 315046b3a75448dd80a03dc3287c68fe
+msgid ""
+"radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently "
+"support the **creation** of groups of (interconnected) radio buttons, "
+"where setting one button automatically unsets the other buttons in the "
+"group. The widget object also does not reflect the presence of a button "
+"group. However: consistently selecting (or unselecting) a radio button is"
+" supported. This includes correctly setting the value maintained in the "
+"owning button group. Selecting a radio button may be done by either "
+"assigning `True` or `field.on_state()` to the field value. **De-"
+"selecting** the button should be done assigning `False`."
+msgstr ""
+
+#: ../../widget.rst:255 b7ca95506bb743bf8bc9d51686c700fc
+msgid ""
+"signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or "
+"creation of signatures."
+msgstr ""
+
+#: ../../widget.rst:258 b53b3f3d840749208db6e32b83f6d04d
+msgid "Footnotes"
+msgstr ""
+
+#: ../../widget.rst:259 3eaba62dde8347e2a386454b987a2ed7
+msgid ""
+"If you intend to re-access a new or updated field (e.g. for making a "
+"pixmap), make sure to reload the page first. Either close and re-open the"
+" document, or load another page first, or simply do `page = "
+"doc.reload_page(page)`."
+msgstr ""
+
+#: ../../widget.rst:261 148f6fb2b3f74450a3f794e012c04772
+msgid ""
+"Among other purposes, ``Parent`` objects are also used to facilitate "
+"multiple occurrences of a field (on the same or on different pages). The "
+"``Kids`` array in this ``Parent`` object contains the cross references of"
+" all widgets that are \"copies\" of the same field. Whenever the field "
+"value of any \"kid\" widget is changed, all the other kids are "
+"immediately updated too. This is a very efficient way to handle multiple "
+"copies of the same field, e.g. for filling out forms. This simultaneous "
+"update only happens for :attr:`Widget.field value`. The new parameter "
+"``sync_flags`` extends this to :attr:`Widget.field_flags`. This cannot be"
+" automated in the same way as for the field value to allow for more "
+"flexibility."
+msgstr ""
+
+#: ../../footer.rst:46 00e495d1b07b4fb7afe8b0b3fc2b91b4
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

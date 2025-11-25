@@ -1,0 +1,78 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../index.rst:39 952c2d69888a45e9b0da6e043ddab148
+msgid "About"
+msgstr ""
+
+#: ../../index.rst:50 83a8e5dd2a9b4d099b68e52044113c27
+msgid "User Guide"
+msgstr ""
+
+#: ../../index.rst:62 d17242cca69d431c8485f8ab5b729f2e
+msgid "How to Guide"
+msgstr ""
+
+#: ../../index.rst:69 7466b8745c424beaac09483b379e1f16
+msgid "API Reference"
+msgstr ""
+
+#: ../../index.rst:82 b24fcc31226540bc96465c601658ca98
+msgid "Other"
+msgstr ""
+
+#: ../../header.rst:-1 43d585d8a38b489ca647a0f6d7ee01dd
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 6af6f9115aea4bcba5a905e65f50def7
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 d0fa97b60e13424eb62997400c445a63
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../index.rst:20 3275915a8da84e58bd47e046c54375d2
+msgid "Welcome to |PyMuPDF|"
+msgstr "PyMuPDF에 오신 것을 환영합니다"
+
+#: ../../index.rst:22 443397ce6ddd47f5b1d2c0008cd4b639
+msgid ""
+"|PyMuPDF| is a high-performance **Python** library for data extraction, "
+"analysis, conversion & manipulation of |PDF| (and other) documents."
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작 기능을 제공하는 고성능 **Python** 라이브러리입니다."
+
+#: ../../index.rst:24 b09454f69e4247b09e28b65c7744f34a
+msgid ""
+"|PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and"
+" registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_."
+msgstr "|PyMuPDF| 는 `GitHub <https://github.com/pymupdf/PyMuPDF>`_ 에 호스팅되고 `PyPI <https://pypi.org/project/PyMuPDF/>`_ 에 등록되어 있습니다."
+
+#: ../../footer.rst:46 ../../index.rst:35 9c0239a10d754ddea28f6b0d7597c26f
+#: d10c71ec0c454e0899fc16f6f34f2a83
+msgid "This documentation covers all versions up to |version|."
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
+

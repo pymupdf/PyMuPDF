@@ -1,0 +1,372 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 f61795372a914927a8bb8d2bc7871cd0
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 b6c88945ca3e433796ac09242bcafb92
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 f29d92f907804c35aff5269176052c3a
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../link.rst:7 a2ac83b843064d1690148214e4e62cab
+msgid "Link"
+msgstr ""
+
+#: ../../link.rst:8 e3ca00a770434f0896694fc8c2dc8e8d
+msgid ""
+"Represents a pointer to somewhere (this document, other documents, the "
+"internet). Links exist per document page, and they are forward-chained to"
+" each other, starting from an initial link which is accessible by the "
+":attr:`Page.first_link` property."
+msgstr ""
+
+#: ../../link.rst:10 55f719cc6bfa4e1dbdf8bba301fe4110
+msgid ""
+"There is a parent-child relationship between a link and its page. If the "
+"page object becomes unusable (closed document, any document structure "
+"change, etc.), then so does every of its existing link objects -- an "
+"exception is raised saying that the object is \"orphaned\", whenever a "
+"link property or method is accessed."
+msgstr ""
+
+#: ../../link.rst:13 a4193e607a9145218508afeabe0b4c2e
+msgid "**Attribute**"
+msgstr ""
+
+#: ../../link.rst:13 af32ee5e21764bdab065a26b66230ad7
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../link.rst:15 9f4a2508022d463a93f91c3406c08ab1
+msgid ":meth:`Link.set_border`"
+msgstr ""
+
+#: ../../link.rst:15 6a3d66278e124793bee041fb82bd823a
+msgid "modify border properties"
+msgstr ""
+
+#: ../../link.rst:16 ca6e0ec1d2e5409894887ce466dd9c14
+msgid ":meth:`Link.set_colors`"
+msgstr ""
+
+#: ../../link.rst:16 ebd1bee66f204d6bbd8e54086d79f55f
+msgid "modify color properties"
+msgstr ""
+
+#: ../../link.rst:17 111ec52301b74aac956f980fdfcaf35a
+msgid ":meth:`Link.set_flags`"
+msgstr ""
+
+#: ../../link.rst:17 502cb7c9642642f293df7c93f92a2fd6
+msgid "modify link flags"
+msgstr ""
+
+#: ../../link.rst:18 489cb6995acd4a8f9459e84f8e29671e
+msgid ":attr:`Link.border`"
+msgstr ""
+
+#: ../../link.rst:18 c61da7b8553c4f35b0de3f5b60a3f9e9
+msgid "border characteristics"
+msgstr ""
+
+#: ../../link.rst:19 5a1564c23ae44405bedf7e18c649d130
+msgid ":attr:`Link.colors`"
+msgstr ""
+
+#: ../../link.rst:19 01a00d5d838a47e3964be170b4b2aca4
+msgid "border line color"
+msgstr ""
+
+#: ../../link.rst:20 df6c0ef2a13f47b28ec2cb2b88f5decf
+msgid ":attr:`Link.dest`"
+msgstr ""
+
+#: ../../link.rst:20 2d7f3af920794e158f2472af28c69a4c
+msgid "points to destination details"
+msgstr ""
+
+#: ../../link.rst:21 c858c9ac8f3148deb29f863be9b27de6
+msgid ":attr:`Link.is_external`"
+msgstr ""
+
+#: ../../link.rst:21 df77568aba6c4d24babf4d0d97c19d54
+msgid "checks if the link is an external destination"
+msgstr ""
+
+#: ../../link.rst:22 09dcfdc3988d4ab0bb1b56be72905b8a
+msgid ":attr:`Link.flags`"
+msgstr ""
+
+#: ../../link.rst:22 0fb0e2e7ae3944e6aa9886cccd29ba57
+msgid "link annotation flags"
+msgstr ""
+
+#: ../../link.rst:23 8b3432b79e804e8a8467829f70a5504d
+msgid ":attr:`Link.next`"
+msgstr ""
+
+#: ../../link.rst:23 482fbb3ecd0442a8bb0a43de75382822
+msgid "points to next link"
+msgstr ""
+
+#: ../../link.rst:24 7baaa58c6b184381b9aba640162dfe9b
+msgid ":attr:`Link.rect`"
+msgstr ""
+
+#: ../../link.rst:24 0e0788e18be94b5784f4c8a3d0c8590b
+msgid "clickable area in untransformed coordinates"
+msgstr ""
+
+#: ../../link.rst:25 e8df77ad16fe4114a80eff4b8240b89c
+msgid ":attr:`Link.uri`"
+msgstr ""
+
+#: ../../link.rst:25 502ec4ee36504004bd39daf295626fbc
+msgid "link destination"
+msgstr ""
+
+#: ../../link.rst:26 d17729b40a80480caa127d310a3450c2
+msgid ":attr:`Link.xref`"
+msgstr ""
+
+#: ../../link.rst:26 678f619f97a244a0a539107e973f3986
+msgid ":data:`xref` number of the entry"
+msgstr ""
+
+#: ../../link.rst:29 f76011eb2dd2424bba83dfb242a73eb3
+msgid "**Class API**"
+msgstr ""
+
+#: ../../link.rst:35 e01c9234e1b24ef4a42fe98da9e3b5b8
+msgid "PDF only: Change border width and dashing properties."
+msgstr ""
+
+#: ../../link.rst:37 00c3ab6e292048be95d9d1e26a0319ce
+msgid ""
+"*(Changed in version 1.16.9)* Allow specification without using a "
+"dictionary. The direct parameters are used if *border* is not a "
+"dictionary."
+msgstr ""
+
+#: ../../link.rst 00e8660458ca4df49c759966985d7ccf
+#: 4560ff2f8db3457ea45107e432c3e7ee
+msgid "Parameters"
+msgstr ""
+
+#: ../../link.rst:39 9210f90061d54d20bb40b7811a63e193
+msgid ""
+"a dictionary as returned by the :attr:`border` property, with keys "
+"*\"width\"* (*float*), *\"style\"* (*str*) and *\"dashes\"* (*sequence*)."
+" Omitted keys will leave the resp. property unchanged. To e.g. remove "
+"dashing use: *\"dashes\": []*. If dashes is not an empty sequence, "
+"\"style\" will automatically be set to \"D\" (dashed)."
+msgstr ""
+
+#: ../../link.rst:41 ../../link.rst:42 ../../link.rst:43 ../../link.rst:54
+#: 0f652b3dc1754811b0fd20b619f58221 2a2addfc429e4856a5b9d38ccc565155
+#: 4b687a46789e46148cf496194b0b604d 6666190d7e824106bd77ad41db6f0b41
+msgid "see above."
+msgstr ""
+
+#: ../../link.rst:47 8657681111dc457788d3482a31e7fd86
+msgid "PDF only: Changes the \"stroke\" color."
+msgstr ""
+
+#: ../../link.rst:49 a9f5e77a06364c1a8e73536a14d852c9
+msgid ""
+"In PDF, links are a subtype of annotations technically and **do not "
+"support fill colors**. However, to keep a consistent API, we do allow "
+"specifying a `fill=` parameter like with all annotations, which will be "
+"ignored with a warning."
+msgstr ""
+
+#: ../../link.rst:51 2f9965cf55cc4fa69cb5dc350c17ad09
+msgid ""
+"*(Changed in version 1.16.9)* Allow colors to be directly set. These "
+"parameters are used if *colors* is not a dictionary."
+msgstr ""
+
+#: ../../link.rst:53 d1bb1f867e02444ebfbb4a94573959bf
+msgid ""
+"a dictionary containing color specifications. For accepted dictionary "
+"keys and values see below. The most practical way should be to first make"
+" a copy of the *colors* property and then modify this dictionary as "
+"required."
+msgstr ""
+
+#: ../../link.rst:58 ../../link.rst:65 986b15f24ea54de580c0c662299fe12d
+#: bb27f8be006d4918acba2be1f77e4ee4
+msgid "*New in v1.18.16*"
+msgstr ""
+
+#: ../../link.rst:60 df2a5f5ab5654a15a59600eb3536f242
+msgid ""
+"Set the PDF `/F` property of the link annotation. See "
+":meth:`Annot.set_flags` for details. If not a PDF, this method is a no-"
+"op."
+msgstr ""
+
+#: ../../link.rst:67 e8cfa36461074dacb4c30dea81b83979
+msgid ""
+"Return the link annotation flags, an integer (see :attr:`Annot.flags` for"
+" details). Zero if not a PDF."
+msgstr ""
+
+#: ../../link.rst:72 004a6c2778ec462eb43f612d6513adde
+msgid ""
+"Meaningful for PDF only: A dictionary of two tuples of floats in range `0"
+" <= float <= 1` specifying the *stroke* and the interior (*fill*) colors."
+" If not a PDF, ``None`` is returned. As mentioned above, the fill color "
+"is always `None` for links. The stroke color is used for the border of "
+"the link rectangle. The length of the tuple implicitly determines the "
+"colorspace: 1 = GRAY, 3 = RGB, 4 = CMYK. So `(1.0, 0.0, 0.0)` stands for "
+"RGB color red. The value of each float *f* is mapped to the integer value"
+" *i* in range 0 to 255 via the computation *f = i / 255*."
+msgstr ""
+
+#: ../../link.rst 114960dc31e14f46bd090eb9728c77c2
+#: 4fbd9899261b4dcebb25e7595add5438
+msgid "Return type"
+msgstr ""
+
+#: ../../link.rst:78 3cbc8f0469d241929e34c352e5745bc1
+msgid ""
+"Meaningful for PDF only: A dictionary containing border characteristics. "
+"It will be ``None`` for non-PDFs and an empty dictionary if no border "
+"information exists. The following keys can occur:"
+msgstr ""
+
+#: ../../link.rst:80 c1ab318b501a47688d2fc6b081566c84
+msgid ""
+"*width* -- a float indicating the border thickness in points. The value "
+"is -1.0 if no width is specified."
+msgstr ""
+
+#: ../../link.rst:82 ee2605f02f554ef69ce01c7ce647b5c6
+msgid ""
+"*dashes* -- a sequence of integers specifying a line dash pattern. *[]* "
+"means no dashes, *[n]* means equal on-off lengths of *n* points, longer "
+"lists will be interpreted as specifying alternating on-off length values."
+" See the :ref:`AdobeManual` page 126 for more detail."
+msgstr ""
+
+#: ../../link.rst:84 b4b27c2220234e3c9f0da44681173211
+msgid ""
+"*style* -- 1-byte border style: *S* (Solid) = solid rectangle surrounding"
+" the annotation, *D* (Dashed) = dashed rectangle surrounding the link, "
+"the dash pattern is specified by the *dashes* entry, *B* (Beveled) = a "
+"simulated embossed rectangle that appears to be raised above the surface "
+"of the page, *I* (Inset) = a simulated engraved rectangle that appears to"
+" be recessed below the surface of the page, *U* (Underline) = a single "
+"line along the bottom of the annotation rectangle."
+msgstr ""
+
+#: ../../link.rst:90 052b846ac7bf4348bb05373fe93c7f66
+msgid "The area that can be clicked in untransformed coordinates."
+msgstr ""
+
+#: ../../link.rst 278b7dd100364049a9a0f8a608dfe200
+#: 5b8584b479504935a82003972fba8296 91cdff8cf9e5471f8c8c7ebd105a9694
+#: 92b24b7f7b1d434bab261bfbfc850087 a7dd1626e8024de0a8394b7ac58b00dc
+#: b3fc6b24eede40c5a5ff68c9552eb5d3
+msgid "type"
+msgstr ""
+
+#: ../../link.rst:92 b6cde768d2b448d3918fcc2629f09e45
+msgid ":ref:`Rect`"
+msgstr ""
+
+#: ../../link.rst:96 9cbf66013e07421da625a37f62f421af
+msgid ""
+"A bool specifying whether the link target is outside of the current "
+"document."
+msgstr ""
+
+#: ../../link.rst:98 3bf7415e10f64b17a00d1894d75abd4d
+msgid "bool"
+msgstr ""
+
+#: ../../link.rst:102 7722949c512e472da9f50b38d703a9f0
+msgid ""
+"A string specifying the link target. The meaning of this property should "
+"be evaluated in conjunction with property `is_external`:"
+msgstr ""
+
+#: ../../link.rst:106 8a85f4db122a4632acda8a79099ab276
+msgid ""
+"`is_external` is true: `uri` points to some target outside the current "
+"PDF, which may be an internet resource (`uri` starts with ``http://`` or "
+"similar), another file (`uri` starts with \"file:\" or \"file://\") or "
+"some other service like an e-mail address (`uri` starts with "
+"``mailto:``)."
+msgstr ""
+
+#: ../../link.rst:112 aa85a467ae894a49801187d31376da42
+msgid ""
+"`is_external` is false: `uri` will be `None` or point to an internal "
+"location. In case of PDF documents, this should either be *#nnnn* to "
+"indicate a 1-based (!) page number *nnnn*, or a named location. The "
+"format varies for other document types, for example "
+"\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
+"document."
+msgstr ""
+
+#: ../../link.rst:119 169f5e74d4d248acaf39fe0e78f64c8c
+msgid "str"
+msgstr ""
+
+#: ../../link.rst:123 b896a257acf94231987101c53ec2a3ee
+msgid "An integer specifying the PDF :data:`xref`. Zero if not a PDF."
+msgstr ""
+
+#: ../../link.rst:125 0a7066aaee624b82bdccf14c63cbeb5a
+msgid "int"
+msgstr ""
+
+#: ../../link.rst:129 3d5c16c89c01444b862176bdfbe17241
+msgid "The next link or ``None``."
+msgstr ""
+
+#: ../../link.rst:131 aeff8c341c48462292eba7bef8c73eeb
+msgid "*Link*"
+msgstr ""
+
+#: ../../link.rst:135 bc9d0756ee4e4e0c8f03bde2e4a58991
+msgid "The link destination details object."
+msgstr ""
+
+#: ../../link.rst:137 9b93286e15e64f8f9bc75c6e2a1305bb
+msgid ":ref:`linkDest`"
+msgstr ""
+
+#: ../../footer.rst:46 74c752369b354d73af2f7c11e7b19f1f
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

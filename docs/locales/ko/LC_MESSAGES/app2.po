@@ -1,0 +1,133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 91d1a3926cf04b7f86982004576a7dac
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 079f5f8f8d67400f8dff2c457815bc6e
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 f3ec318cd565440481d5fc24ebd6dd9d
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../app2.rst:7 df962b6f73f94a62944d489a625e02f6
+msgid "Appendix 2: Considerations on Embedded Files"
+msgstr ""
+
+#: ../../app2.rst:8 fea3691f2b5d49e3be0cdd79daecdb75
+msgid ""
+"This chapter provides some background on embedded files support in "
+"PyMuPDF."
+msgstr ""
+
+#: ../../app2.rst:11 e6abfba16abf44f5b53d5c259c06168e
+msgid "General"
+msgstr ""
+
+#: ../../app2.rst:12 2e9ff1e795ec4a80886665b6d98570d1
+msgid ""
+"Starting with version 1.4, PDF supports embedding arbitrary files as part"
+" (\"Embedded File Streams\") of a PDF document file (see chapter \"7.11.4"
+" Embedded File Streams\", pp. 103 of the :ref:`AdobeManual`)."
+msgstr ""
+
+#: ../../app2.rst:15 3740cf26355f419488a18d5c5bf691e2
+msgid ""
+"In many aspects, this is comparable to concepts also found in ZIP files "
+"or the OLE technique in MS Windows. PDF embedded files do, however, *not*"
+" support directory structures as does the ZIP format. An embedded file "
+"can in turn contain embedded files itself."
+msgstr ""
+
+#: ../../app2.rst:17 cf0b0ce27ac343a7989b881239cb446f
+msgid ""
+"Advantages of this concept are that embedded files are under the PDF "
+"umbrella, benefitting from its permissions / password protection and "
+"integrity aspects: all data, which a PDF may reference or even may be "
+"dependent on, can be bundled into it and so form a single, consistent "
+"unit of information."
+msgstr ""
+
+#: ../../app2.rst:19 7979fde2425b48d89516fd519a799cb9
+msgid ""
+"In addition to embedded files, PDF 1.7 adds *collections* to its support "
+"range. This is an advanced way of storing and presenting meta information"
+" (i.e. arbitrary and extensible properties) of embedded files."
+msgstr ""
+
+#: ../../app2.rst:22 96f7716c2f354c4e9734c53ec68da72d
+msgid "MuPDF Support"
+msgstr ""
+
+#: ../../app2.rst:23 c829491b2aaa4844aa1c48047af82974
+msgid ""
+"After adding initial support for collections (portfolios) and "
+"*/EmbeddedFiles* in MuPDF version 1.11, this support was dropped again in"
+" version 1.15."
+msgstr ""
+
+#: ../../app2.rst:25 f683f1fd707f420b90cc13279f35ebc0
+msgid ""
+"As a consequence, the cli utility *mutool* no longer offers access to "
+"embedded files."
+msgstr ""
+
+#: ../../app2.rst:27 de207c079b314eaea490841b284ea876
+msgid ""
+"PyMuPDF -- having implemented an */EmbeddedFiles* API in response in its "
+"version 1.11.0 -- was therefore forced to change gears starting with its "
+"version 1.16.0 (we never published a MuPDF v1.15.x compatible PyMuPDF)."
+msgstr ""
+
+#: ../../app2.rst:29 73bd7a0c6aef40dea2819f6f52a55ff6
+msgid ""
+"We are now maintaining our own code basis supporting embedded files. This"
+" code makes use of basic MuPDF dictionary and array functions only."
+msgstr ""
+
+#: ../../app2.rst:32 de313e6dfe7e40e781939fab264fd4e5
+msgid "PyMuPDF Support"
+msgstr ""
+
+#: ../../app2.rst:33 420a4c9141134c469dfb6d107c9bcd58
+msgid ""
+"We continue to support the full old API with respect to embedded files --"
+" with only minor, cosmetic changes."
+msgstr ""
+
+#: ../../app2.rst:35 66a7d51f81c6402caf1d00e67bd1bfd2
+msgid ""
+"There even also is a new function, which delivers a list of all names "
+"under which embedded data are registered in a PDF, "
+":meth:`Document.embfile_names`."
+msgstr ""
+
+#: ../../footer.rst:46 c600b715098140b3b7f197c61eb560ac
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

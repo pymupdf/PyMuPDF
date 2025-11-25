@@ -1,0 +1,165 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 c21340a4b75747d5952e637a324049bf
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 12768be3aef44279a0f53bb67e659597
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 4d3f2343a3e8462e92d346b6ef1bbe0f
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../about.rst:10 6bf350a1548242f08f4231816b75ae9e
+msgid "Features Comparison"
+msgstr ""
+
+#: ../../about.rst:16 e6e0680f36684a24b35c48e7756b8ee2
+msgid "Feature Matrix"
+msgstr ""
+
+#: ../../about.rst:18 fdad9ebd21e342da9d1b6b35ca5ad4e9
+msgid ""
+"The following table illustrates how |PyMuPDF| compares with other typical"
+" solutions."
+msgstr ""
+
+#: ../../about.rst:47 5f1d6f3b09ac43e1ae7043dc7a879c02
+msgid ""
+"A note about **Office** document types (DOCX, XLXS, PPTX) and **Hangul** "
+"documents (HWPX). These documents can be loaded into |PyMuPDF| and you "
+"will receive a :ref:`Document <Document>` object."
+msgstr ""
+
+#: ../../about.rst:49 9add749bf1d7451aabfcb79190677ddb
+msgid "There are some caveats:"
+msgstr ""
+
+#: ../../about.rst:52 a610a8b3f5cf4333938a9e7a75157f1d
+msgid "we convert the input to **HTML** to layout the content."
+msgstr ""
+
+#: ../../about.rst:53 a71abef4bb604e3b8f1065200afb7907
+msgid "because of this the original page separation has gone."
+msgstr ""
+
+#: ../../about.rst:55 255d6618e34f4f11ae7a1a0f54f57322
+msgid ""
+"When saving out the result any faithful representation of the original "
+"layout cannot be expected."
+msgstr ""
+
+#: ../../about.rst:57 59954cbab9914471b64ad43b7eb7a58b
+msgid ""
+"Therefore input files are mostly in a form that's useful for text "
+"extraction."
+msgstr ""
+
+#: ../../about.rst:65 f3ad21fdc6c841f090824af510994edb
+msgid "Performance"
+msgstr ""
+
+#: ../../about.rst:69 482ba1a4696f429da50d900517f9001b
+msgid ""
+"To benchmark |PyMuPDF| performance against a range of tasks a test suite "
+"with a fixed set of :ref:`8 PDFs with a total of 7,031 "
+"pages<Appendix4_Files_Used>` containing text & images is used to obtain "
+"performance timings."
+msgstr ""
+
+#: ../../about.rst:72 11c5e7e482204c7682f05223297c6488
+msgid "Here are current results, grouped by task:"
+msgstr ""
+
+#: ../../about.rst:81 9f36f4db74ab492ba26cc4fb9946f818
+msgid ""
+"For more detail regarding the methodology for these performance timings "
+"see: :ref:`Performance Comparison Methodology<Appendix4>`."
+msgstr ""
+
+#: ../../about.rst:89 e86ca33131a544e8a4cc0821737a9a86
+msgid "License and Copyright"
+msgstr ""
+
+#: ../../about.rst:93 061c6a01a19c40198fd34033af39cc6d
+msgid ""
+"|PyMuPDF| and |MuPDF| are now available under both, open-source |AGPL| "
+"and commercial license agreements. Please read the full text of the "
+"|AGPL| license agreement, available in the distribution material (file "
+"COPYING) and `on the GNU license page "
+"<https://www.gnu.org/licenses/agpl-3.0.html>`_, to ensure that your use "
+"case complies with the guidelines of the license. If you determine you "
+"cannot meet the requirements of the |AGPL|, please contact `Artifex "
+"<https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-"
+"pymupdf&utm_medium=rtd&utm_content=inline-link>`_ for more information "
+"regarding a commercial license."
+msgstr ""
+
+#: ../../about.rst:111 0cf7adfbbbe6404aae5016ba8cf4ca79
+msgid ""
+":title:`Artifex` is the exclusive commercial licensing agent for "
+":title:`MuPDF`."
+msgstr ""
+
+#: ../../about.rst:113 1206bde366264e91900de44a990e7b13
+msgid ""
+":title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the "
+":title:`MuPDF` logo are registered trademarks of :title:`Artifex Software"
+" Inc.`"
+msgstr ""
+
+#: ../../version.rst:3 b23f02d66d164eb195ed6512c8e9ff6c
+msgid "This documentation covers PyMuPDF |version|."
+msgstr ""
+
+#: ../../version.rst:5 ca881a8c265b46618c644701ea14c695
+msgid ""
+"The major and minor versions of |PyMuPDF| and |MuPDF| will always be the "
+"same. Only the third qualifier (patch level) may deviate from that of "
+"|MuPDF|."
+msgstr ""
+
+#: ../../version.rst:7 a91d12805e42498fb4eebcb3f7923eb8
+msgid ""
+"Typically PyMuPDF is released more frequently than MuPDF so it will often"
+" be the case that the patch level of PyMuPDF will be greater than the "
+"embedded MuPDF."
+msgstr ""
+
+#: ../../version.rst:11 2e3b5e5955fc4cba8aafc25d3d650e7a
+msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
+msgstr ""
+
+#: ../../version.rst:13 a60af2aa03494194b19ecf8e3bc095fc
+msgid "Also see `pymupdf_version` and `mupdf_version`."
+msgstr ""
+
+#: ../../footer.rst:46 ea2d1136af82416baa3286db6ed38f96
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

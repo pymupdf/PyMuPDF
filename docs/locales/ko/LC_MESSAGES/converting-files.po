@@ -1,0 +1,100 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 f8990f687e0047c89745e6b15ef5f312
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 606c02d809cb449ab8e5df484cb2149f
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 90891c93f09445feb007b8f80d447d93
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../converting-files.rst:7 153e0c6c14bf4b8bac1dcdc565ac0f16
+msgid "Converting Files"
+msgstr ""
+
+#: ../../converting-files.rst:12 9b1bc6f3061c4fd9a084829ef7554c37
+msgid "Files to PDF"
+msgstr ""
+
+#: ../../converting-files.rst:14 38d5a093dfc24e72b3627f1a2c952515
+msgid ""
+":ref:`Document types supported by PyMuPDF<HowToOpenAFile>` can easily be "
+"converted to |PDF| by using the :meth:`Document.convert_to_pdf` method. "
+"This method returns a buffer of data which can then be utilized by "
+"|PyMuPDF| to create a new |PDF|."
+msgstr ""
+
+#: ../../converting-files.rst:18 ../../converting-files.rst:38
+#: ../../converting-files.rst:62 ../../converting-files.rst:82
+#: 2eff8f1c0f704e9d9e23a98078353847 7345723f19864e81be97447aab194cd9
+#: c3ae18efff164928b70b884d3a47caac ecdbf8cbbb2d46bc9bf312b716b264af
+msgid "**Example**"
+msgstr ""
+
+#: ../../converting-files.rst:32 4e3eda1d4bff4593ae1f0333bcc47a5d
+msgid "PDF to SVG"
+msgstr ""
+
+#: ../../converting-files.rst:34 d8f0e0e26f99486485d27038482b5558
+msgid ""
+"Technically, as SVG files cannot be multipage, we must export each page "
+"as an SVG."
+msgstr ""
+
+#: ../../converting-files.rst:36 45efc8839a1b44e9a877335aa51df1b6
+msgid ""
+"To get an SVG representation of a page use the :meth:`Page.get_svg_image`"
+" method."
+msgstr ""
+
+#: ../../converting-files.rst:58 9249883d41654d3c8041c561743679c6
+msgid "PDF to Markdown"
+msgstr ""
+
+#: ../../converting-files.rst:60 9d35a0dc74c742419817cfab8ac5fbb6
+msgid ""
+"By utlilizing the :doc:`PyMuPDF4LLM API <pymupdf4llm/api>` we are able to"
+" convert PDF to a Markdown representation."
+msgstr ""
+
+#: ../../converting-files.rst:76 a8c608159d57471c89e55f3c44adafe2
+msgid "PDF to DOCX"
+msgstr ""
+
+#: ../../converting-files.rst:78 443eb3ec0d3a4ba89f8e4361a7607e16
+msgid ""
+"Use the pdf2docx_ library which uses |PyMuPDF| to provide document "
+"conversion from |PDF| to **DOCX** format."
+msgstr ""
+
+#: ../../footer.rst:46 bf92de7cbdc140fba9255f9a43b9932a
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

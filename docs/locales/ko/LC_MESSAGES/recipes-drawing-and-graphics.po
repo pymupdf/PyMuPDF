@@ -1,0 +1,238 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 a59582325d1e4587841306a803482970
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 90e5418f2a4041ddb379751a155076c1
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 cbdc25861a8d484890d2227e3494b661
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:7 dab2a6c85f334d099e76c1c25fc379f3
+msgid "Drawing and Graphics"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:11 a70f821282c64602b5f57347f8a0bae4
+msgid ""
+"When the terms \"Drawings\" or \"Graphics\" are mentioned here we are "
+"referring to \"Vector Graphics\" or \"Line Art\"."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:13 93510784237c4c4b885dc832f8aaeb1f
+msgid "Therefore please consider these terms as being synonymous!"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:16 df755690b5be464ab98f1f6014fc5132
+msgid ""
+"PDF files support elementary drawing operations as part of their syntax. "
+"These are **vector graphics** and include basic geometrical objects like "
+"lines, curves, circles, rectangles including specifying colors."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:18 a7dfbdbdeeb54c68afa0bbf219b2f3ba
+msgid ""
+"The syntax for such operations is defined in \"A Operator Summary\" on "
+"page 643 of the :ref:`AdobeManual`. Specifying these operators for a PDF "
+"page happens in its :data:`contents` objects."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:20 463f264141f64e68b6fbe2cd2f02fbbb
+msgid ""
+"|PyMuPDF| implements a large part of the available features via its "
+":ref:`Shape` class, which is comparable to notions like \"canvas\" in "
+"other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_)."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:22 d166a046958a49a8a28311049458c79a
+msgid ""
+"A shape is always created as a **child of a page**, usually with an "
+"instruction like `shape = page.new_shape()`. The class defines numerous "
+"methods that perform drawing operations on the page's area. For example, "
+"`last_point = shape.draw_rect(rect)` draws a rectangle along the borders "
+"of a suitably defined `rect = pymupdf.Rect(...)`."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:24 4b3375c816d64b008ab7d1854be54f7a
+msgid ""
+"The returned *last_point* **always** is the :ref:`Point` where drawing "
+"operation ended (\"last point\"). Every such elementary drawing requires "
+"a subsequent :meth:`Shape.finish` to \"close\" it, but there may be "
+"multiple drawings which have one common ``finish()`` method."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:26 f14edc2fb2be4ab8ba19ffdb3740738d
+msgid ""
+"In fact, :meth:`Shape.finish` *defines* a group of preceding draw "
+"operations to form one -- potentially rather complex -- graphics object. "
+"|PyMuPDF| provides several predefined graphics in `shapes_and_symbols.py "
+"<https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/shapes/shapes_and_symbols.py>`_ which demonstrate "
+"how this works."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:28 c9bdfffa82e64c1d8431f654e9925619
+msgid ""
+"If you import this script, you can also directly use its graphics as in "
+"the following example::"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:86 e4c7e6930be54525bd756ddc32d931d2
+msgid "This is the script's outcome:"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:97 63f4873345ad4432a9dcf2f213c921ca
+msgid "How to Extract Drawings"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:99 c269bccda59e4ce1be7bfbb7665979a2
+msgid "New in v1.18.0"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:101 99437db9d3344f56937dc3ef539d724e
+msgid ""
+"Drawing commands (**vector graphics**) issued by a page can be extracted "
+"as a list of dictionaries. Interestingly, this is possible for :ref:`all "
+"supported document types<Supported_File_Types>` -- not just PDF: so you "
+"can use it for XPS, EPUB and others as well."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:103 9746769ddda943309de190bcae0ff9fe
+msgid ""
+"Page method, :meth:`Page.get_drawings()` accesses draw commands and "
+"converts them into a list of Python dictionaries. Each dictionary -- "
+"called a \"path\" -- represents a separate drawing -- it may be simple "
+"like a single line, or a complex combination of lines and curves "
+"representing one of the shapes of the previous section."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:105 3a7f618513034c8e9ef3833145ea41c1
+msgid ""
+"The *path* dictionary has been designed such that it can easily be used "
+"by the :ref:`Shape` class and its methods. Here is an example for a page "
+"with one path, that draws a red-bordered yellow circle inside rectangle "
+"`Rect(100, 100, 200, 200)`::"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:140 0de0ff2bcd1b4aa4bc87691ca4f375c5
+msgid ""
+"You need (at least) 4 Bézier curves (of 3rd order) to draw a circle with "
+"acceptable precision. See this `Wikipedia article "
+"<https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ for some background."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:143 b621ef3cc79448109301a7679857a685
+msgid ""
+"The following is a code snippet which extracts the drawings of a page and"
+" re-draws them on a new page::"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:194 f4c89adbb0a8490d8e03b50a712dcc58
+msgid ""
+"As can be seen, there is a high congruence level with the :ref:`Shape` "
+"class. With one exception: For technical reasons `lineCap` is a tuple of "
+"3 numbers here, whereas it is an integer in :ref:`Shape` (and in PDF). So"
+" we simply take the maximum value of that tuple."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:196 782e233251fb459883d5a1434c5a2365
+msgid ""
+"Here is a comparison between input and output of an example page, created"
+" by the previous script:"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:201 ceca22c756464670adafb8f59a266f9f
+msgid ""
+"The reconstruction of graphics, like shown here, is not perfect. The "
+"following aspects will not be reproduced as of this version:"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:203 4859b04375644a9da37b4c2c286032e9
+msgid ""
+"Page definitions can be complex and include instructions for not showing "
+"/ hiding certain areas to keep them invisible. Things like this are "
+"ignored by :meth:`Page.get_drawings` - it will always return all paths."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:205 0823be3f9f0b4512b042dd4c974406ca
+msgid ""
+"You can use the path list to make your own lists of e.g. all lines or all"
+" rectangles on the page and subselect them by criteria, like color or "
+"position on the page etc."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:210 882f949ade2d4b528fbe0a18f15aa51e
+msgid "How to Delete Drawings"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:212 d9a69d70bb29499381afbb9347fa3ec5
+msgid ""
+"To delete drawings/vector graphics we must use a :ref:`Redaction "
+"Annotation <The_Basics_Redacting>` with the bounding box of the drawing "
+"and then **add and apply** a redaction to it to delete it."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:215 486d33c08c624da1ba4d3f8b61cf54e2
+msgid ""
+"The following code shows an example of deleting the first drawing found "
+"on the page::"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:225 74954d428a74469bae0a628b09803ec9
+msgid ""
+"See :meth:`Page.apply_redactions` for the parameter options which can be "
+"sent - you are able to apply deletion options to image, drawing and text "
+"objects which are bound by the annotation area."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:229 0e3b851a469b4f34b686a303776ff667
+msgid "How to Draw Graphics"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:231 903bdff31610401eba4df3faa0747295
+msgid ""
+"Drawing graphics is as simple as calling the type of :meth:`Drawing "
+"Method <Page.draw_line>` you may want. You can draw graphics directly on "
+"pages or within shape objects."
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:234 c8c7da7541804af39da538bd86a48706
+msgid "For example, to draw a circle::"
+msgstr ""
+
+#: ../../recipes-drawing-and-graphics.rst:245 a58742fee8a64d88a569cc24aa989eac
+msgid ""
+"The :ref:`Shape` object can be used to combine multiple drawings that "
+"should receive common properties as specified by :meth:`Shape.finish`."
+msgstr ""
+
+#: ../../footer.rst:46 b08a651f11954075811284b1a70b5a8c
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

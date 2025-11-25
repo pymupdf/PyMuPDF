@@ -1,0 +1,47 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../version.rst:3 d1fbe6ff1d5549fb8be875f6d37c584b
+msgid "This documentation covers PyMuPDF |version|."
+msgstr ""
+
+#: ../../version.rst:5 133bf913bb004c8ca82964184ed7628c
+msgid ""
+"The major and minor versions of |PyMuPDF| and |MuPDF| will always be the "
+"same. Only the third qualifier (patch level) may deviate from that of "
+"|MuPDF|."
+msgstr ""
+
+#: ../../version.rst:7 994720d99f72419ebd711b2cf71dcefb
+msgid ""
+"Typically PyMuPDF is released more frequently than MuPDF so it will often"
+" be the case that the patch level of PyMuPDF will be greater than the "
+"embedded MuPDF."
+msgstr ""
+
+#: ../../version.rst:11 371aa251e8314b9aad7c870f54636f80
+msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
+msgstr ""
+
+#: ../../version.rst:13 7c7d7d87d7e14441959c236fee7d2ee5
+msgid "Also see `pymupdf_version` and `mupdf_version`."
+msgstr ""
+

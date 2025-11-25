@@ -1,0 +1,108 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 0eb4a369e5b94c7489997eb18eb43347
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 d0b7be7b87414f0dacea935473d04f43
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 caca777a734049198ad1a788ab3304f9
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../znames.rst:7 083b7e0a5a2b460f8da6d411d620371a
+msgid "Deprecated Names"
+msgstr ""
+
+#: ../../znames.rst:9 e3a203bb6f834ba0a39fa9d32da05a58
+msgid ""
+"The original naming convention for methods and properties has been "
+"\"camelCase\". Since its creation around 2013, a tremendous increase of "
+"functionality has happened in PyMuPDF -- and with it a corresponding "
+"increase in classes, methods and properties. In too many cases, this has "
+"led to non-intuitive, illogical and ugly names, difficult to memorize or "
+"guess."
+msgstr ""
+
+#: ../../znames.rst:11 d001aeecdacb4bd59a62961dbc1370dd
+msgid ""
+"A few versions ago, I therefore decided to shift gears and switch to a "
+"\"snake_cased\" naming standard. This was a major effort, which needed a "
+"step-wise approach. I think am done with it now (version 1.18.14)."
+msgstr ""
+
+#: ../../znames.rst:14 6f07346687c14dbb83e38186df94b743
+msgid ""
+"The following list maps deprecated names to their new versions. For "
+"example, property `pageCount` became `page_count` in the :ref:`Document` "
+"class. There also are less obvious name changes, e.g. method `getPNGdata`"
+" was renamed to `tobytes` in the :ref:`Pixmap` class."
+msgstr ""
+
+#: ../../znames.rst:16 cc7e51d7a5144cd290ff0b79249d442c
+msgid ""
+"Names of classes (camel case) and package-wide constants (the majority is"
+" upper case) remain untouched."
+msgstr ""
+
+#: ../../znames.rst:18 6e79bdebc3d2434394db7e65ce997c71
+msgid ""
+"Old names will remain available as deprecated aliases through MuPDF "
+"version 1.19.0 and **be removed** in the version that follows it - "
+"probably version 1.20.0, but this depends on upstream decisions (MuPDF)."
+msgstr ""
+
+#: ../../znames.rst:20 dbf4b6c8f3134ca596bd0a822ffd2e9b
+msgid ""
+"Starting with version 1.19.0, we will issue deprecation warnings on "
+"`sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' "
+"after v1.19.0 - use 'new_page'.` when aliased methods are being used. "
+"Using a deprecated property will not cause this type of warning."
+msgstr ""
+
+#: ../../znames.rst:22 2f0d5cce9e2e4f5e8541eb4b6fc686ed
+msgid ""
+"Starting immediately, all deprecated objects (methods and properties) "
+"will show a copy of the original's docstring, **prefixed** with the "
+"deprecation message, for example::"
+msgstr ""
+
+#: ../../znames.rst:39 8e4f2cae0e38499bbf0543f4bdfb1885
+msgid ""
+"There is a utility script `alias-changer.py <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/tree/master/alias-changer.py>`_ which can be used to "
+"do mass-renames in your scripts. It accepts either a single file or a "
+"folder as argument. If a folder is supplied, all its Python files and "
+"those of its subfolders are changed. Optionally, backups of the scripts "
+"can be taken."
+msgstr ""
+
+#: ../../footer.rst:46 52ab1685187a4ce284f0a14818fcf934
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

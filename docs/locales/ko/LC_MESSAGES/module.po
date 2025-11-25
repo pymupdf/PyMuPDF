@@ -1,0 +1,496 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 62136ba5c5a74ecfa227336e448d62b5
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 6fc9c3c622e84783910d3b11c3709f37
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 d611277d72c64dd99b3b9f2f8ec96367
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../module.rst:7 f33c4cbb9f05422084dddcddaf87949a
+msgid "Command line interface"
+msgstr ""
+
+#: ../../module.rst:9 9f557fd4350a42ed9a1df58860be9669
+msgid "New in version 1.16.8"
+msgstr ""
+
+#: ../../module.rst:11 ecd7d23131464943807a4fb959173755
+msgid ""
+"PyMuPDF can also be used from the command line to perform utility "
+"functions. This feature should obsolete writing some of the most basic "
+"scripts."
+msgstr ""
+
+#: ../../module.rst:13 20b8d208b65e4c74bf7ad83bfb388393
+msgid ""
+"Admittedly, there is some functional overlap with the MuPDF CLI `mutool`."
+" On the other hand, PDF embedded files are no longer supported by MuPDF, "
+"so PyMuPDF is offering something unique here."
+msgstr ""
+
+#: ../../module.rst:16 61944c3cbe72440580bdadeeb1269b75
+msgid "Invocation"
+msgstr ""
+
+#: ../../module.rst:18 295dfa35e12a40d48e27c0055204d5a7
+msgid "The command-line interface can be invoked in two ways."
+msgstr ""
+
+#: ../../module.rst:20 7177082a690146019882a6b232aa8853
+msgid "Use the installed `pymupdf` command::"
+msgstr ""
+
+#: ../../module.rst:24 87e819afc653442caceed77952e1ed58
+msgid "Or use Python's `-m` switch with PyMuPDF's `pymupdf` module::"
+msgstr ""
+
+#: ../../module.rst:31 c1e7f23de6ef452a83faa31ed988d657
+msgid "General remarks:"
+msgstr ""
+
+#: ../../module.rst:33 fd3bac8dc3e9421eb2371c451ec1c3da
+msgid ""
+"Request help via `\"-h\"`, resp. command-specific help via `\"command "
+"-h\"`."
+msgstr ""
+
+#: ../../module.rst:34 dbd5a72f66d84df5b18b6bec2f4fd2f5
+msgid "Parameters may be abbreviated where this does not introduce ambiguities."
+msgstr ""
+
+#: ../../module.rst:35 73cd69c626714f7aa1e084d11447cea6
+msgid ""
+"Several commands support parameters `-pages` and `-xrefs`. They are "
+"intended for down-selection. Please note that:"
+msgstr ""
+
+#: ../../module.rst:37 7ff6972a285a4695baa4e4276641b755
+msgid "**page numbers** for this utility must be given **1-based**."
+msgstr ""
+
+#: ../../module.rst:38 b9688dc1937342d0a9ba2a88937c6d0a
+msgid "valid :data:`xref` numbers start at 1."
+msgstr ""
+
+#: ../../module.rst:39 7c0c1890d37b41f6820770dd6bed4376
+msgid ""
+"Specify a comma-separated list of either *single* integers or integer "
+"*ranges*. A **range** is a pair of integers separated by one hyphen "
+"\"-\". Integers must not exceed the maximum page, resp. xref number. To "
+"specify that maximum, the symbolic variable \"N\" may be used. Integers "
+"or ranges may occur several times, in any sequence and may overlap. If in"
+" a range the first number is greater than the second one, the respective "
+"items will be processed in reversed order."
+msgstr ""
+
+#: ../../module.rst:41 ee46edb0ea2b44e98364d207aaa2d1ef
+msgid "How to use the module inside your script::"
+msgstr ""
+
+#: ../../module.rst:50 123a2e5ad2564826b878adadaf638eeb
+msgid ""
+"Use the following 2-liner and compile it with `Nuitka "
+"<https://pypi.org/project/Nuitka/>`_ in standalone mode. This will give "
+"you a CLI executable with all the module's features, that can be used on "
+"all compatible platforms without Python, PyMuPDF or MuPDF being "
+"installed."
+msgstr ""
+
+#: ../../module.rst:59 621c5379e7d44e29a5ae735c58352834
+msgid "Cleaning and Copying"
+msgstr ""
+
+#: ../../module.rst:63 a41c329fb87940c482d0805086ecc3cf
+msgid ""
+"This command will optimize the PDF and store the result in a new file. "
+"You can use it also for encryption, decryption and creating sub "
+"documents. It is mostly similar to the MuPDF command line utility "
+"*\"mutool clean\"*::"
+msgstr ""
+
+#: ../../module.rst:96 95c61ecff9474da7a32002be18ff00b3
+msgid ""
+"If you specify \"-pages\", be aware that only page-related objects are "
+"copied, **no document-level items** like e.g. embedded files."
+msgstr ""
+
+#: ../../module.rst:98 958ae9bd4e2244ae9cbb5d24a62a8c94
+msgid "Please consult :meth:`Document.save` for the parameter meanings."
+msgstr ""
+
+#: ../../module.rst:102 5b59f04532e94259bf5b3ecd530ca408
+msgid "Extracting Fonts and Images"
+msgstr ""
+
+#: ../../module.rst:103 170896a4fb624362bfbd8172cf909da4
+msgid "Extract fonts or images from selected PDF pages to a desired directory::"
+msgstr ""
+
+#: ../../module.rst:123 220fe33385e844f3928ec0625f051414
+msgid ""
+"**Image filenames** are built according to the naming scheme: **\"img-"
+"xref.ext\"**, where \"ext\" is the extension associated with the image "
+"and \"xref\" the :data:`xref` of the image PDF object."
+msgstr ""
+
+#: ../../module.rst:125 d56994d8f2a8433280e4ef35819f2e7a
+msgid ""
+"**Font filenames** consist of the fontname and the associated extension. "
+"Any spaces in the fontname are replaced with hyphens \"-\"."
+msgstr ""
+
+#: ../../module.rst:127 a8e1a30f5fde401d810825a6e3b01a09
+msgid "The output directory must already exist."
+msgstr ""
+
+#: ../../module.rst:129 f2bc1eaf74014a2c9c0473449a9e7b11
+msgid ""
+"Except for output directory creation, this feature is **functionally "
+"equivalent** to and obsoletes `this script <https://github.com/pymupdf"
+"/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-"
+"pages.py>`_."
+msgstr ""
+
+#: ../../module.rst:133 b52a0c02382d4e9abbd491e7b26f50d8
+msgid "Joining PDF Documents"
+msgstr ""
+
+#: ../../module.rst:134 b52dba2292bb478f86d8bd2a68e72d49
+msgid "To join several PDF files specify::"
+msgstr ""
+
+#: ../../module.rst:153 e75a700cceee42eda662850bcb411254
+msgid ""
+"Each input must be entered as **\"filename,password,pages\"**. Password "
+"and pages are optional."
+msgstr ""
+
+#: ../../module.rst:154 5bbc4bbfbbe44ea29ce63dc28468ecde
+msgid ""
+"The password entry **is required** if the \"pages\" entry is used. If the"
+" PDF needs no password, specify two commas."
+msgstr ""
+
+#: ../../module.rst:155 24124b66f3f9496c9cba03a6c3987619
+msgid ""
+"The **\"pages\"** format is the same as explained at the top of this "
+"section."
+msgstr ""
+
+#: ../../module.rst:156 6c8cd3be3fd844a18d6859e34270344c
+msgid ""
+"Each input file is immediately closed after use. Therefore you can use "
+"one of them as output filename, and thus overwrite it."
+msgstr ""
+
+#: ../../module.rst:159 62faf24e6a7143aca5c2f6d4d0a3bd13
+msgid "Example: To join the following files"
+msgstr ""
+
+#: ../../module.rst:161 088838df3b2545f8801c172c3bc996f0
+msgid "**file1.pdf:** all pages, back to front, no password"
+msgstr ""
+
+#: ../../module.rst:162 72f4cc0b55a64f16a43ce016fb9d46a0
+msgid "**file2.pdf:** last page, first page, password: \"secret\""
+msgstr ""
+
+#: ../../module.rst:163 518dcf41451c4ab098ae80c98c705da7
+msgid "**file3.pdf:** pages 5 to last, no password"
+msgstr ""
+
+#: ../../module.rst:165 579e18430ffe47deaf32eb9b5bb856c7
+msgid "and store the result as **output.pdf** enter this command:"
+msgstr ""
+
+#: ../../module.rst:167 945d0c96b4b34fc782a86ae2fcf40aa5
+msgid ""
+"``pymupdf join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 "
+"file3.pdf,,5-N``"
+msgstr ""
+
+#: ../../module.rst:171 45664921245f42c09b294edb251048f5
+msgid "Low Level Information"
+msgstr ""
+
+#: ../../module.rst:173 fdf3d7f12d914afe950de66d094693fa
+msgid ""
+"Display PDF internal information. Again, there are similarities to "
+"*\"mutool show\"*::"
+msgstr ""
+
+#: ../../module.rst:194 ad5c07b578e24a87b4bdfa72f035288d
+msgid "Examples::"
+msgstr ""
+
+#: ../../module.rst:243 a932285ed88f489cb35fb9fd00084410
+msgid "Embedded Files Commands"
+msgstr ""
+
+#: ../../module.rst:245 22fe7451356d4b07a68f7b814a48f7db
+msgid ""
+"The following commands deal with embedded files -- which is a feature "
+"completely removed from MuPDF after v1.14, and hence from all its command"
+" line tools."
+msgstr ""
+
+#: ../../module.rst:248 031889fce5ba40c8aa00dca7f543935f
+msgid "Information"
+msgstr ""
+
+#: ../../module.rst:250 923441e6e99c4679913ea9650bd321f3
+msgid "Show the embedded file names (long or short format)::"
+msgstr ""
+
+#: ../../module.rst:266 2938ace8fd974862bd2b852f6d01c1b5
+msgid "Example::"
+msgstr ""
+
+#: ../../module.rst:287 4b906057dfa84c65ba2f7b3875e76f45
+msgid "Detailed output would look like this per entry::"
+msgstr ""
+
+#: ../../module.rst:297 fa6b969dc09f4e7aa8ddad1a74b85f27
+msgid "Extraction"
+msgstr ""
+
+#: ../../module.rst:299 b95b620ad9f548139f65380c81a609eb
+msgid "Extract an embedded file like this::"
+msgstr ""
+
+#: ../../module.rst:317 b425246653d244139ee6064fef0cce03
+msgid ""
+"For details consult :meth:`Document.embfile_get`. Example (refer to "
+"previous section)::"
+msgstr ""
+
+#: ../../module.rst:323 beb7e7b57a2d40d7b80215a90a015016
+msgid "Deletion"
+msgstr ""
+
+#: ../../module.rst:324 a66d4e86731745edabc9c4f4e5e0bb9f
+msgid "Delete an embedded file like this::"
+msgstr ""
+
+#: ../../module.rst:340 c7c9134eddaa4ad2b9672122f1aa8fe9
+msgid "For details consult :meth:`Document.embfile_del`."
+msgstr ""
+
+#: ../../module.rst:343 8027d6ea455e4050ace1ead2c3a951fb
+msgid "Insertion"
+msgstr ""
+
+#: ../../module.rst:344 05c0ffa1d1fd4495a04887a13fa6a0ff
+msgid "Add a new embedded file using this command::"
+msgstr ""
+
+#: ../../module.rst:364 a3ce7e14c5a6493190e34f36253a7b11
+msgid ""
+"*\"NAME\"* **must not** already exist in the PDF. For details consult "
+":meth:`Document.embfile_add`."
+msgstr ""
+
+#: ../../module.rst:367 8b7188f7140248f2ace12ff2559a5810
+msgid "Updates"
+msgstr ""
+
+#: ../../module.rst:368 bf7de82ffcc6488492d7f1ed813a78d7
+msgid "Update an existing embedded file using this command::"
+msgstr ""
+
+#: ../../module.rst:393 dfb87b27e010457ea91a44ac1607508d
+msgid ""
+"Use this method to change meta-information of the file -- just omit the "
+"*\"PATH\"*. For details consult :meth:`Document.embfile_upd`."
+msgstr ""
+
+#: ../../module.rst:397 9724107b71a3473586bf932f86556d37
+msgid "Copying"
+msgstr ""
+
+#: ../../module.rst:398 320c9dfca9614ce1aad38deec15e2f14
+msgid "Copy embedded files between PDFs::"
+msgstr ""
+
+#: ../../module.rst:422 4f474c3c92134dbf92a95d04287f6b7c
+msgid "Text Extraction"
+msgstr ""
+
+#: ../../module.rst:423 10013955206643cdabf54b9427cf9162
+msgid "New in v1.18.16"
+msgstr ""
+
+#: ../../module.rst:425 6175e1799fe14be7857049aacbf4f76e
+msgid ""
+"Extract text from arbitrary :ref:`supported "
+"documents<Supported_File_Types>` to a textfile. Currently, there are "
+"three output formatting modes available: simple, block sorting and "
+"reproduction of physical layout."
+msgstr ""
+
+#: ../../module.rst:427 104746a6d24348c085e4d1f05530f3c4
+msgid ""
+"**Simple** text extraction reproduces all text as it appears in the "
+"document pages -- no effort is made to rearrange in any particular "
+"reading order."
+msgstr ""
+
+#: ../../module.rst:428 46976f7ba91e4ed195d1d2970b450ce8
+msgid ""
+"**Block sorting** sorts text blocks (as identified by MuPDF) by ascending"
+" vertical, then horizontal coordinates. This should be sufficient to "
+"establish a \"natural\" reading order for basic pages of text."
+msgstr ""
+
+#: ../../module.rst:429 736d584551084ce0ae8db3ab132de413
+msgid ""
+"**Layout** strives to reproduce the original appearance of the input "
+"pages. You can expect results like this (produced by the command `pymupdf"
+" gettext -pages 1 demo1.pdf`):"
+msgstr ""
+
+#: ../../module.rst:434 50eb59c01b5243e4a1beb240596e9fcf
+msgid ""
+"The \"gettext\" command offers a functionality similar to the CLI tool "
+"`pdftotext` by XPDF software, http://www.foolabs.com/xpdf/ -- this is "
+"especially true for \"layout\" mode, which combines that tool's `-layout`"
+" and `-table` options."
+msgstr ""
+
+#: ../../module.rst:438 49563f540be445d984dba68ffffbfe02
+msgid ""
+"After each page of the output file, a formfeed character, `hex(12)` is "
+"written -- even if the input page has no text at all. This behavior can "
+"be controlled via options."
+msgstr ""
+
+#: ../../module.rst:440 647dbf1080904cb5b86c438feafcb584
+msgid ""
+"For \"layout\" mode, **only horizontal, left-to-right, top-to bottom** "
+"text is supported, other text is ignored. In this mode, text is also "
+"ignored, if its :data:`fontsize` is too small."
+msgstr ""
+
+#: ../../module.rst:442 baeab1e7bac9497995324b659ebebf03
+msgid ""
+"\"Simple\" and \"blocks\" mode in contrast output **all text** for any "
+"text size or orientation."
+msgstr ""
+
+#: ../../module.rst:444 8617ac5a55024a57b4b1d70bdb264ced
+msgid "Command::"
+msgstr ""
+
+#: ../../module.rst:472 f1019c52949f4174acd4b9381a394601
+msgid ""
+"Command options may be abbreviated as long as no ambiguities are "
+"introduced. So the following do the same:"
+msgstr ""
+
+#: ../../module.rst:474 d70e9f44b99141809981474f2ff8b052
+msgid ""
+"`... -output text.txt -noligatures -noformfeed -convert-white -grid 3 "
+"-extra-spaces ...`"
+msgstr ""
+
+#: ../../module.rst:475 07cb51f3b38747abbb4010f810490249
+msgid "`... -o text.txt -nol -nof -c -g 3 -e ...`"
+msgstr ""
+
+#: ../../module.rst:477 f16b9ac2c6c14bd5bb7fcea64f1fcd80
+msgid ""
+"The output filename defaults to the input with its extension replaced by "
+"`.txt`. As with other commands, you can select page ranges **(caution: "
+"1-based!)** in `mutool` format, as indicated above."
+msgstr ""
+
+#: ../../module.rst:479 f23822348e0f44868acd1a434c638317
+msgid "**mode:** (str) select a formatting mode -- default is \"layout\"."
+msgstr ""
+
+#: ../../module.rst:480 34f6f03b6b7c4d14b5b53d480ad19652
+msgid ""
+"**noligatures:** (bool) corresponds to **not** "
+":data:`TEXT_PRESERVE_LIGATURES`. If specified, ligatures (present in "
+"advanced fonts: glyphs combining multiple characters like \"fi\") are "
+"split up into their components (i.e. \"f\", \"i\"). Default is passing "
+"them through."
+msgstr ""
+
+#: ../../module.rst:481 7ad52df691114a03bf07a72f2434d4a9
+msgid ""
+"**convert-white:** corresponds to **not** "
+":data:`TEXT_PRESERVE_WHITESPACE`. If specified, all white space "
+"characters (like tabs) are replaced with one or more spaces. Default is "
+"passing them through."
+msgstr ""
+
+#: ../../module.rst:482 b925a23489d24b3396cf53888050c32d
+msgid ""
+"**extra-spaces:**  (bool) corresponds to **not** "
+":data:`TEXT_INHIBIT_SPACES`. If specified, large gaps between adjacent "
+"characters will be filled with one or more spaces. Default is off."
+msgstr ""
+
+#: ../../module.rst:483 9d95e72389b3445ba510fb682107c642
+msgid ""
+"**noformfeed:**  (bool) instead of `hex(12)` (formfeed), write linebreaks"
+" ``\\n`` at end of output pages."
+msgstr ""
+
+#: ../../module.rst:484 703f5774d5234679a03f67da753bc40a
+msgid "**skip-empty:**  (bool) skip pages with no text."
+msgstr ""
+
+#: ../../module.rst:485 8f19a7610cc64fc88819c1b7fc295330
+msgid ""
+"**grid:** lines with a vertical coordinate difference of no more than "
+"this value (in points) will be merged into the same output line. Only "
+"relevant for \"layout\" mode. **Use with care:** 3 or the default 2 "
+"should be adequate in most cases. If **too large**, lines that are "
+"*intended* to be different in the original may be merged and will result "
+"in garbled and / or incomplete output. If **too low**, artifact separate "
+"output lines may be generated for some spans in the input line, just "
+"because they are coded in a different font with slightly deviating "
+"properties."
+msgstr ""
+
+#: ../../module.rst:486 eac14db14ad14562a3b3b10a76827016
+msgid ""
+"**fontsize:** include text with :data:`fontsize` larger than this value "
+"only (default 3). Only relevant for \"layout\" option."
+msgstr ""
+
+#: ../../footer.rst:46 bf24bcacdf454aba8a6c79d83a00209b
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

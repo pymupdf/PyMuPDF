@@ -1,0 +1,1826 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 77cdad9d379a4a459fb8f61a5126752b
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 32cc68ce63c240bdb7a2fdfe4d927af7
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 db64d0baaca745e7910c08e63ef36441
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../pixmap.rst:7 e0494509a30b4c1991cc5e57de63e15b
+msgid "Pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:9 32dd6915408a408ea1d9db1812927e46
+msgid ""
+"Pixmaps (\"pixel maps\") are objects at the heart of MuPDF's rendering "
+"capabilities. They represent plane rectangular sets of pixels. Each pixel"
+" is described by a number of bytes (\"components\") defining its color, "
+"plus an optional alpha byte defining its transparency."
+msgstr ""
+
+#: ../../pixmap.rst:11 0ae7623584d34b0793a6b1689e2e9ff9
+msgid ""
+"In PyMuPDF, there exist several ways to create a pixmap. Except the first"
+" one, all of them are available as overloaded constructors. A pixmap can "
+"be created ..."
+msgstr ""
+
+#: ../../pixmap.rst:13 73ba045692a74b84a13ce27f369588ef
+msgid "from a document page (method :meth:`Page.get_pixmap`)"
+msgstr ""
+
+#: ../../pixmap.rst:14 d9db8727d6f34c5ea67a95212b48a901
+msgid "empty, based on :ref:`Colorspace` and :ref:`IRect` information"
+msgstr ""
+
+#: ../../pixmap.rst:15 3bd37a5d119449b79b2df8e6183899b2
+msgid "from a file"
+msgstr ""
+
+#: ../../pixmap.rst:16 6c2ae5d2cf9e4e9c8a85876940ac2c65
+msgid "from an in-memory image"
+msgstr ""
+
+#: ../../pixmap.rst:17 985854117e77421ab5c08305ad9a7ebc
+msgid "from a memory area of plain pixels"
+msgstr ""
+
+#: ../../pixmap.rst:18 51817c0b224a4d79becc251812e52d59
+msgid "from an image inside a PDF document"
+msgstr ""
+
+#: ../../pixmap.rst:19 c50a8dabd5de4315af9f49bd6f4e3300
+msgid "as a copy of another pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:21 a40603d11eae465f98c51d914e3f60f0
+msgid ""
+"A number of image formats is supported as input for points 3. and 4. "
+"above. See section :ref:`ImageFiles`."
+msgstr ""
+
+#: ../../pixmap.rst:23 3bdce298316f4c59aea2dcf926ba360d
+msgid ""
+"Have a look at the :ref:`FAQ` section to see some pixmap usage \"at "
+"work\"."
+msgstr ""
+
+#: ../../pixmap.rst:26 c77d9f0a0ac441569275429f77da5352
+msgid "**Method / Attribute**"
+msgstr ""
+
+#: ../../pixmap.rst:26 0c5aa62f906e4af38c4f3f15dbd58acb
+msgid "**Short Description**"
+msgstr ""
+
+#: ../../pixmap.rst:28 2202b52b548143ffb14aef4ce3088e4e
+msgid ":meth:`Pixmap.clear_with`"
+msgstr ""
+
+#: ../../pixmap.rst:28 f8c6fd586d294e3194f9966984db1cd7
+msgid "clear parts of the pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:29 74887257fa9a4ce4bccdc2c054561ab8
+msgid ":meth:`Pixmap.color_count`"
+msgstr ""
+
+#: ../../pixmap.rst:29 266d94deb7124050adc51b2d0925c285
+msgid "determine used colors"
+msgstr ""
+
+#: ../../pixmap.rst:30 6fa71e0e57754c778d2a793a2d4b5e0c
+msgid ":meth:`Pixmap.color_topusage`"
+msgstr ""
+
+#: ../../pixmap.rst:30 40a15ae449a04a5fa2c777c1ac0a6175
+msgid "determine share of most used color"
+msgstr ""
+
+#: ../../pixmap.rst:31 b915ce033980496eb00292ada4fbcca5
+msgid ":meth:`Pixmap.copy`"
+msgstr ""
+
+#: ../../pixmap.rst:31 8e57cd2829fa414abc482e80c6d4c4d9
+msgid "copy parts of another pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:32 112981a34c4348f8ad862d81cdc02514
+msgid ":meth:`Pixmap.gamma_with`"
+msgstr ""
+
+#: ../../pixmap.rst:32 f42a9b37c4ac4000a006188d993c87e5
+msgid "apply a gamma factor to the pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:33 01c950df9e2145aa8d39d7760c67ad87
+msgid ":meth:`Pixmap.invert_irect`"
+msgstr ""
+
+#: ../../pixmap.rst:33 8fd44b50652147ff824e5fc414ff6a30
+msgid "invert the pixels of a given area"
+msgstr ""
+
+#: ../../pixmap.rst:34 516fe80e3c4a459a81a150dc6a462f8e
+msgid ":meth:`Pixmap.pdfocr_save`"
+msgstr ""
+
+#: ../../pixmap.rst:34 ../../pixmap.rst:35 67e410a8f8c842c1944b038c5708de2d
+#: f38b40a1d99c4c509644c872d19b87e2
+msgid "save the pixmap as an OCRed 1-page PDF"
+msgstr ""
+
+#: ../../pixmap.rst:35 be86eecb9ae84058896ab1db4a2fcab1
+msgid ":meth:`Pixmap.pdfocr_tobytes`"
+msgstr ""
+
+#: ../../pixmap.rst:36 b0881e3fa8064b569e1476c50325b3d7
+msgid ":meth:`Pixmap.pil_image`"
+msgstr ""
+
+#: ../../pixmap.rst:36 6075a73ecdcb46979d4b836f39403d5f
+msgid "create a Pillow Image"
+msgstr ""
+
+#: ../../pixmap.rst:37 c71cca896c4e47509c4fa0e362fa044c
+msgid ":meth:`Pixmap.pil_save`"
+msgstr ""
+
+#: ../../pixmap.rst:37 4be536342cb047aeb0a6b64adbba1e9a
+msgid "save as a Pillow Image"
+msgstr ""
+
+#: ../../pixmap.rst:38 52b8400d5cce434b87e23399f61d2117
+msgid ":meth:`Pixmap.pil_tobytes`"
+msgstr ""
+
+#: ../../pixmap.rst:38 bafc4631127f4561936ab5d1e6403a2d
+msgid "write to `bytes` as a Pillow Image"
+msgstr ""
+
+#: ../../pixmap.rst:39 4002db687ffc4feabe3a41f2274b7804
+msgid ":meth:`Pixmap.pixel`"
+msgstr ""
+
+#: ../../pixmap.rst:39 efb78dfb56524049a7580e3a15723114
+msgid "return the value of a pixel"
+msgstr ""
+
+#: ../../pixmap.rst:40 e0ffa2a456944476bb6984b064566f95
+msgid ":meth:`Pixmap.save`"
+msgstr ""
+
+#: ../../pixmap.rst:40 7f4131a6b70d41cd802f09e3f4f6f11f
+msgid "save the pixmap in a variety of formats"
+msgstr ""
+
+#: ../../pixmap.rst:41 23956dccd6e94052aef51929b1c393dc
+msgid ":meth:`Pixmap.set_alpha`"
+msgstr ""
+
+#: ../../pixmap.rst:41 3979119c35f341c694e03dd5db7a0115
+msgid "set alpha values"
+msgstr ""
+
+#: ../../pixmap.rst:42 80aa084bf73c4f61abbf2f808d42bdcd
+msgid ":meth:`Pixmap.set_dpi`"
+msgstr ""
+
+#: ../../pixmap.rst:42 881510d8c71545b59d91fb5dac173605
+msgid "set the image resolution"
+msgstr ""
+
+#: ../../pixmap.rst:43 af00886d005e4a1890d7b7789b93e7e7
+msgid ":meth:`Pixmap.set_origin`"
+msgstr ""
+
+#: ../../pixmap.rst:43 7e6045d9838046cea1cd1fcb38a15dab
+msgid "set pixmap x,y values"
+msgstr ""
+
+#: ../../pixmap.rst:44 cb25eecee8af4917ab427d3cf303152f
+msgid ":meth:`Pixmap.set_pixel`"
+msgstr ""
+
+#: ../../pixmap.rst:44 23d1909be60a4b269aaec2547ae2aa05
+msgid "set color and alpha of a pixel"
+msgstr ""
+
+#: ../../pixmap.rst:45 72b4d710dc894939936c377380bbc22e
+msgid ":meth:`Pixmap.set_rect`"
+msgstr ""
+
+#: ../../pixmap.rst:45 0f7af78460a4450da9d9108517b4d4c4
+msgid "set color and alpha of all pixels in a rectangle"
+msgstr ""
+
+#: ../../pixmap.rst:46 b791b993ad61409eaef1d0b360847ffc
+msgid ":meth:`Pixmap.shrink`"
+msgstr ""
+
+#: ../../pixmap.rst:46 38e21b2c7aa8493e8bb7266e1e835f69
+msgid "reduce size keeping proportions"
+msgstr ""
+
+#: ../../pixmap.rst:47 be56d7fc15e24cf2826c82badd69df56
+msgid ":meth:`Pixmap.tint_with`"
+msgstr ""
+
+#: ../../pixmap.rst:47 d5a1e740218c41ceb31d912cae43599f
+msgid "tint the pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:48 408bd07e5e004c53845a34ccb73684f6
+msgid ":meth:`Pixmap.tobytes`"
+msgstr ""
+
+#: ../../pixmap.rst:48 dbfd2cd88a2e40689877d688108593b5
+msgid "return a memory area in a variety of formats"
+msgstr ""
+
+#: ../../pixmap.rst:49 73ad7e8e412146939a933bc554653bd9
+msgid ":meth:`Pixmap.warp`"
+msgstr ""
+
+#: ../../pixmap.rst:49 27dcdd34ccd6434c8be2f3d0cab9f361
+msgid "return a pixmap made from a quad inside"
+msgstr ""
+
+#: ../../pixmap.rst:50 85defbb4523445e9bfc92785c42fcb0b
+msgid ":attr:`Pixmap.alpha`"
+msgstr ""
+
+#: ../../pixmap.rst:50 f9f7e74d1a854ce584726e3236d915a4
+msgid "transparency indicator"
+msgstr ""
+
+#: ../../pixmap.rst:51 fbf1760092864dcf8f5566ac85074c05
+msgid ":attr:`Pixmap.colorspace`"
+msgstr ""
+
+#: ../../pixmap.rst:51 48b501a974724e6cadfe58ebbfebeb9a
+msgid "pixmap's :ref:`Colorspace`"
+msgstr ""
+
+#: ../../pixmap.rst:52 b766c11c9d60491bb1cd9e4c8cfd9751
+msgid ":attr:`Pixmap.digest`"
+msgstr ""
+
+#: ../../pixmap.rst:52 3d7b532618f3451896efe2d64d4ffdfe
+msgid "MD5 hashcode of the pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:53 76675540ad27482bada64b6a598d25f9
+msgid ":attr:`Pixmap.height`"
+msgstr ""
+
+#: ../../pixmap.rst:53 3c22531079e34fa79dddc4e586d958e6
+msgid "pixmap height"
+msgstr ""
+
+#: ../../pixmap.rst:54 9182d024c67b490b9fe7855b4f5715d0
+msgid ":attr:`Pixmap.interpolate`"
+msgstr ""
+
+#: ../../pixmap.rst:54 3688b5e0286840669d320a95bc5a17fb
+msgid "interpolation method indicator"
+msgstr ""
+
+#: ../../pixmap.rst:55 b7b0a90b1ba846e89b22db0ed4553281
+msgid ":attr:`Pixmap.is_monochrome`"
+msgstr ""
+
+#: ../../pixmap.rst:55 df352c76b67546089f124cbd0e5babb1
+msgid "check if only black and white occur"
+msgstr ""
+
+#: ../../pixmap.rst:56 a17ad0a90a7d413c9fb8b1aa83257598
+msgid ":attr:`Pixmap.is_unicolor`"
+msgstr ""
+
+#: ../../pixmap.rst:56 81dfed8a598641f6ae936549b0e7f7ba
+msgid "check if only one color occurs"
+msgstr ""
+
+#: ../../pixmap.rst:57 abd7ff4e70754c9daef32d9525250608
+msgid ":attr:`Pixmap.irect`"
+msgstr ""
+
+#: ../../pixmap.rst:57 2791b580e848470a814a376d6e220255
+msgid ":ref:`IRect` of the pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:58 2fec6f3a895d4409b0e482a40f200f22
+msgid ":attr:`Pixmap.n`"
+msgstr ""
+
+#: ../../pixmap.rst:58 c7b79f65d4494cdb897cc22abe8eff21
+msgid "bytes per pixel"
+msgstr ""
+
+#: ../../pixmap.rst:59 743bc8e881d44773b5fcf7beffc6a3fa
+msgid ":attr:`Pixmap.samples_mv`"
+msgstr ""
+
+#: ../../pixmap.rst:59 4179ce00d1e746b295e577083af074b0
+msgid "`memoryview` of pixel area"
+msgstr ""
+
+#: ../../pixmap.rst:60 c5ff63d0faaa4137832a944521ce8069
+msgid ":attr:`Pixmap.samples_ptr`"
+msgstr ""
+
+#: ../../pixmap.rst:60 8116e2e6a5fe470082d7fbdca4673935
+msgid "Python pointer to pixel area"
+msgstr ""
+
+#: ../../pixmap.rst:61 2abc33dc84a348c6ad9b8da90c57e531
+msgid ":attr:`Pixmap.samples`"
+msgstr ""
+
+#: ../../pixmap.rst:61 060cb94948d84088a5cf7c6d4319fea3
+msgid "`bytes` copy of pixel area"
+msgstr ""
+
+#: ../../pixmap.rst:62 d41ed2ab508249d0ae96e3145e92258b
+msgid ":attr:`Pixmap.size`"
+msgstr ""
+
+#: ../../pixmap.rst:62 cfe014376f9745ea9c2ce0e7a11bb369
+msgid "pixmap's total length"
+msgstr ""
+
+#: ../../pixmap.rst:63 34fea4631d014515b7406f2f5bb813bc
+msgid ":attr:`Pixmap.stride`"
+msgstr ""
+
+#: ../../pixmap.rst:63 5a29f36af34340aea9cba617eed85cc6
+msgid "size of one image row"
+msgstr ""
+
+#: ../../pixmap.rst:64 62ed9c389676438299a427713f0f7b08
+msgid ":attr:`Pixmap.width`"
+msgstr ""
+
+#: ../../pixmap.rst:64 70e7618e0783483ea97302b042784152
+msgid "pixmap width"
+msgstr ""
+
+#: ../../pixmap.rst:65 e62961e6786e48c796a2e5a23a76654f
+msgid ":attr:`Pixmap.x`"
+msgstr ""
+
+#: ../../pixmap.rst:65 4e8faa2fe6154453bf50951bfbcbfa0e
+msgid "X-coordinate of top-left corner"
+msgstr ""
+
+#: ../../pixmap.rst:66 d69ccf0ae1844b88aaff3eb7fbfa1973
+msgid ":attr:`Pixmap.xres`"
+msgstr ""
+
+#: ../../pixmap.rst:66 a1ecbc77214845fea2e4c6cee89a8ce8
+msgid "resolution in X-direction"
+msgstr ""
+
+#: ../../pixmap.rst:67 83ca1188acde43af9c9f6c742f8c9fcb
+msgid ":attr:`Pixmap.y`"
+msgstr ""
+
+#: ../../pixmap.rst:67 b0432d623ef4473aa3515de8b215d9f5
+msgid "Y-coordinate of top-left corner"
+msgstr ""
+
+#: ../../pixmap.rst:68 b704d755356e4e53903e4306cb1850d6
+msgid ":attr:`Pixmap.yres`"
+msgstr ""
+
+#: ../../pixmap.rst:68 857aeb5083a44b1795d1ede13f95021f
+msgid "resolution in Y-direction"
+msgstr ""
+
+#: ../../pixmap.rst:71 a006e37a45ad4ed88da3603714dc9820
+msgid "**Class API**"
+msgstr ""
+
+#: ../../pixmap.rst:77 046bff7f68fe47dc89b42ec79b63be49
+msgid ""
+"**New empty pixmap:** Create an empty pixmap of size and origin given by "
+"the rectangle. So, *irect.top_left* designates the top left corner of the"
+" pixmap, and its width and height are *irect.width* resp. *irect.height*."
+" Note that the image area is **not initialized** and will contain crap "
+"data -- use eg. :meth:`clear_with` or :meth:`set_rect` to be sure."
+msgstr ""
+
+#: ../../pixmap.rst 02b0fea3d9c34817aad000ad9f071590
+#: 054aba92b788492e988045fb104e4481 0eb0df83e45a406cb560af5072cdff86
+#: 2d9ab2f5c1024f7085600fc7ec9dc603 42fca49eb0844237a0b14c72c95e7dbc
+#: 4c84fc0dcb054b659ed6e2dae1b27605 57542313cdbd47cc89f43d9329495cb5
+#: 610dfac6df044219bea31b4eb7ef6b47 63f20c0df7eb4be8be807f287c781d58
+#: 67a50e42c1294501bb59b8b035850481 687444f1e3dc45509b4ec2a7192c0a48
+#: 73fe0913c7364c31916311fc0cffc16e 7e25b63146fa45858f1ff6b966a16913
+#: 8b3e2416c26c445bb9979be602f6adf5 95824bfb86ff41de835e47b77393048f
+#: a5c5caaf10934649be3b74635eb16787 af618a04af8e40efa6512d296a27fb9b
+#: bdfbcea144bd4cfb93f787f52dfadf48 c7f77794bd054561aa08e0b18497e5bd
+#: d044792ccaea48328805a0a6efd678c9 d625b8ee73b34a459873edc513b40002
+#: d81abb686bb542518846ad32bd035b5e dd1276958278455fb3ad0d1ad3b08045
+#: dd4e9e5837dc4c1eb17ec63c8681b4d4 e60d8f4e03c24b918ad9bdf22e21adb0
+#: f1bff3e4b66c4afca6ae66a014ac0fc1 f2e0f5d755134588846f75c89c28b5af
+#: f8a2e37bd2ef4ca79bf827a1a3fe8e70
+msgid "Parameters"
+msgstr ""
+
+#: ../../pixmap.rst:79 56321802a9014c348fa2d20d4294c9f2
+msgid "colorspace."
+msgstr ""
+
+#: ../../pixmap.rst:82 3753a76b227f496eb369ca2d40057f0c
+msgid "The pixmap's position and dimension."
+msgstr ""
+
+#: ../../pixmap.rst:84 0f1256f4866c4a888d73cefe035cfb17
+msgid ""
+"Specifies whether transparency bytes should be included. Default is "
+"``False``."
+msgstr ""
+
+#: ../../pixmap.rst:88 b9326c334f6345fdaf185501bfa27892
+msgid ""
+"**Copy and set colorspace:** Copy *source* pixmap converting colorspace. "
+"Any colorspace combination is possible, but source colorspace must not be"
+" ``None``."
+msgstr ""
+
+#: ../../pixmap.rst:90 97014f607fba4a5cb553297120c90034
+msgid ""
+"desired **target** colorspace. This **may also be** ``None``. In this "
+"case, a \"masking\" pixmap is created: its :attr:`Pixmap.samples` will "
+"consist of the source's alpha bytes only."
+msgstr ""
+
+#: ../../pixmap.rst:93 ../../pixmap.rst:112 36ef86e1d48d4c5a9dd2bf95b2fd7b14
+#: 52423174b9b746d2840bdc738fa82069
+msgid "the source pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:98 1df405a79ae244d1a01b677a84951540
+msgid "New in v1.18.18"
+msgstr ""
+
+#: ../../pixmap.rst:100 dac52c1c940a488587523e971b8678bb
+msgid ""
+"**Copy and add image mask:** Copy *source* pixmap, add an alpha channel "
+"with transparency data from a mask pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:102 760c74ba53044cbcbdf31aee15f90bca
+msgid "pixmap without alpha channel."
+msgstr ""
+
+#: ../../pixmap.rst:105 46e5c3640fcf48d382edee1c823984e6
+msgid "a mask pixmap. Must be a graysale pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:110 d9ec3e84c0ea4239b426990e4164290e
+msgid ""
+"**Copy and scale:** Copy *source* pixmap, scaling new width and height "
+"values -- the image will appear stretched or shrunk accordingly. Supports"
+" partial copying. The source colorspace may be ``None``."
+msgstr ""
+
+#: ../../pixmap.rst:115 682ea20bf52b4efe901eaeac97e98829
+msgid "desired target width."
+msgstr ""
+
+#: ../../pixmap.rst:117 3bf8da6692aa4465bad88ed923353c01
+msgid "desired target height."
+msgstr ""
+
+#: ../../pixmap.rst:119 7aa6286551464fc79c589f402e5f4064
+msgid "restrict the resulting pixmap to this region of the **scaled** pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:121 3be7525712a64bad8e5cc168ff57efeb
+msgid ""
+"If width or height do not *represent* integers (i.e. `value.is_integer() "
+"!= True`), then the resulting pixmap **will have an alpha channel**."
+msgstr ""
+
+#: ../../pixmap.rst:125 fcd3877dc9924a5098cb10a1fec25153
+msgid ""
+"**Copy and add or drop alpha:** Copy *source* and add or drop its alpha "
+"channel. Identical copy if *alpha* equals *source.alpha*. If an alpha "
+"channel is added, its values will be set to 255."
+msgstr ""
+
+#: ../../pixmap.rst:127 ../../pixmap.rst:305 29341e581eda460c9963b056957f0057
+#: 6755e67f1ebd4c6397a96a8387727fc0
+msgid "source pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:130 c616e3541c6f481680da4d95d038b5f5
+msgid ""
+"whether the target will have an alpha channel, default and mandatory if "
+"source colorspace is ``None``."
+msgstr ""
+
+#: ../../pixmap.rst:132 df4cef61a1c149a39965a6f332bf9f2c
+msgid ""
+"A typical use includes separation of color and transparency bytes in "
+"separate pixmaps. Some applications require this like e.g. "
+"*wx.Bitmap.FromBufferAndAlpha()* of *wxPython*:"
+msgstr ""
+
+#: ../../pixmap.rst:142 154d69621fb94872a7ad34eae19ef7aa
+msgid ""
+"**From a file:** Create a pixmap from *filename*. All properties are "
+"inferred from the input. The origin of the resulting pixmap is *(0, 0)*."
+msgstr ""
+
+#: ../../pixmap.rst:144 aedb335cf31242c6807afec841343b05
+msgid "Path of the image file."
+msgstr ""
+
+#: ../../pixmap.rst:148 e21d860e62cb466b8dcd5c58ecd8816a
+msgid ""
+"**From memory:** Create a pixmap from a memory area. All properties are "
+"inferred from the input. The origin of the resulting pixmap is *(0, 0)*."
+msgstr ""
+
+#: ../../pixmap.rst:150 74221d3aec5f41afae36e2b37ac8dfc7
+msgid ""
+"Data containing a complete, valid image. Could have been created by e.g. "
+"*stream = bytearray(open('image.file', 'rb').read())*. Type *bytes* is "
+"supported in **Python 3 only**, because *bytes == str* in Python 2 and "
+"the method will interpret the stream as a filename.  *Changed in version "
+"1.14.13:* *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../pixmap.rst:150 e9ed395c0d8c4b56a458e072bbd347e0
+msgid ""
+"Data containing a complete, valid image. Could have been created by e.g. "
+"*stream = bytearray(open('image.file', 'rb').read())*. Type *bytes* is "
+"supported in **Python 3 only**, because *bytes == str* in Python 2 and "
+"the method will interpret the stream as a filename."
+msgstr ""
+
+#: ../../pixmap.rst:152 a162db2d5e5f46a092952a708f6e5469
+msgid "*Changed in version 1.14.13:* *io.BytesIO* is now also supported."
+msgstr ""
+
+#: ../../pixmap.rst:157 016950d3c686415a993d228b20deed87
+msgid ""
+"**From plain pixels:** Create a pixmap from *samples*. Each pixel must be"
+" represented by a number of bytes as controlled by the *colorspace* and "
+"*alpha* parameters. The origin of the resulting pixmap is *(0, 0)*. This "
+"method is useful when raw image data are provided by some other program "
+"-- see :ref:`FAQ`."
+msgstr ""
+
+#: ../../pixmap.rst:159 cda1965dbe524b2f958354d3bf86203d
+msgid "Colorspace of image."
+msgstr ""
+
+#: ../../pixmap.rst:162 e4ca43e6639b433195a95bc4b9cff17c
+msgid "image width"
+msgstr ""
+
+#: ../../pixmap.rst:164 e6bd73524bf443928467e7d153097052
+msgid "image height"
+msgstr ""
+
+#: ../../pixmap.rst:166 bc04c5ee0a2f4c219321973a46ca1fec
+msgid ""
+"an area containing all pixels of the image. Must include alpha values if "
+"specified.  *Changed in version 1.14.13:* (1) *io.BytesIO* can now also "
+"be used. (2) Data are now **copied** to the pixmap, so may safely be "
+"deleted or become unavailable."
+msgstr ""
+
+#: ../../pixmap.rst:166 882216b59426469ebf0fc58e1a590a22
+msgid ""
+"an area containing all pixels of the image. Must include alpha values if "
+"specified."
+msgstr ""
+
+#: ../../pixmap.rst:168 94da32783c284a7c9e5cd26b1aa7aead
+msgid ""
+"*Changed in version 1.14.13:* (1) *io.BytesIO* can now also be used. (2) "
+"Data are now **copied** to the pixmap, so may safely be deleted or become"
+" unavailable."
+msgstr ""
+
+#: ../../pixmap.rst:170 92e53d092aa1464db50b36eb7899219d
+msgid "whether a transparency channel is included."
+msgstr ""
+
+#: ../../pixmap.rst:174 d35de668e91d424ebf94418d892dcbd6
+msgid ""
+"The following equation **must be true**: *(colorspace.n + alpha) * width "
+"* height == len(samples)*."
+msgstr ""
+
+#: ../../pixmap.rst:175 1c597631a5304c869da76bb9d81e6ed9
+msgid ""
+"Starting with version 1.14.13, the samples data are **copied** to the "
+"pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:180 5c8af01ebb9141c4b8de801dd3f3356e
+msgid ""
+"**From a PDF image:** Create a pixmap from an image **contained in PDF** "
+"*doc* identified by its :data:`xref`. All pimap properties are set by the"
+" image. Have a look at `extract-img1.py "
+"<https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img1.py>`_ "
+"and `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo"
+"/extract-img2.py>`_ to see how this can be used to recover all of a PDF's"
+" images."
+msgstr ""
+
+#: ../../pixmap.rst:182 83027e8baba3428f9138b9272d50b7c5
+msgid "an opened |PDF| document."
+msgstr ""
+
+#: ../../pixmap.rst:185 1d115e0cbe8d45c1a12b21ba961b218c
+msgid ""
+"the :data:`xref` of an image object. For example, you can make a list of "
+"images used on a particular page with :meth:`Document.get_page_images`, "
+"which also shows the :data:`xref` numbers of each image."
+msgstr ""
+
+#: ../../pixmap.rst:189 af2a4e8f44da46f9b6b2a58073bb2cfc
+msgid "Initialize the samples area."
+msgstr ""
+
+#: ../../pixmap.rst:191 e9fa66fe4f434c59baeea5e2c721a40d
+msgid ""
+"if specified, values from 0 to 255 are valid. Each color byte of each "
+"pixel will be set to this value, while alpha will be set to 255 (non-"
+"transparent) if present. If omitted, then all bytes (including any alpha)"
+" are cleared to *0x00*."
+msgstr ""
+
+#: ../../pixmap.rst:193 bb47605a216946dba119a8bf60a6dcdd
+msgid ""
+"the area to be cleared. Omit to clear the whole pixmap. Can only be "
+"specified, if *value* is also specified."
+msgstr ""
+
+#: ../../pixmap.rst:197 78bf5b67f38f46178532a1e37e7ddd72
+msgid ""
+"Colorize a pixmap by replacing black and / or white with colors given as "
+"**sRGB integer** values. Only colorspaces :data:`CS_GRAY` and "
+":data:`CS_RGB` are supported, others are ignored with a warning."
+msgstr ""
+
+#: ../../pixmap.rst:199 abae57d0723b4345a89b12f880d933fa
+msgid ""
+"If the colorspace is :data:`CS_GRAY`, the average *(red + green + "
+"blue)/3* will be taken. The pixmap will be changed in place."
+msgstr ""
+
+#: ../../pixmap.rst:201 04577dadbfbc43a3abbe3d997f6561ab
+msgid "replace black with this value. Specifying 0x000000 makes no changes."
+msgstr ""
+
+#: ../../pixmap.rst:202 43f498ae78e443a28b06bdcc72789414
+msgid "replace white with this value. Specifying 0xFFFFFF makes no changes."
+msgstr ""
+
+#: ../../pixmap.rst:204 391411e29bc24c0183271fc962fc85ae
+msgid "Examples:"
+msgstr ""
+
+#: ../../pixmap.rst:206 6e89c521384c4c5bbc9619d3efe8b909
+msgid "`tint_with(0x000000, 0xFFFFFF)` is a no-op."
+msgstr ""
+
+#: ../../pixmap.rst:207 64e6d46367ef4feca63cb7fb163d6b63
+msgid ""
+"`tint_with(0x00FF00, 0xFFFFFF)` changes black to green, leaves white "
+"intact."
+msgstr ""
+
+#: ../../pixmap.rst:208 8ea3f30122264c92b50ec935ec42fc3c
+msgid "`tint_with(0xFF0000, 0x0000FF)` changes black to red and white to blue."
+msgstr ""
+
+#: ../../pixmap.rst:213 ca2f9c12e08649b5870ae3ad64eacd72
+msgid ""
+"Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with"
+" colorspace ``None`` are ignored with a warning."
+msgstr ""
+
+#: ../../pixmap.rst:215 f4c36ad3313f4088882a49b8ff1847ec
+msgid ""
+"*gamma = 1.0* does nothing, *gamma < 1.0* lightens, *gamma > 1.0* darkens"
+" the image."
+msgstr ""
+
+#: ../../pixmap.rst:219 8543630bd8134fbfbad3e241950d6cea
+msgid ""
+"Shrink the pixmap by dividing both, its width and height by 2\\ "
+":sup:``n``."
+msgstr ""
+
+#: ../../pixmap.rst:221 30c7f5ad783249949e9748a49eb7d9f9
+msgid ""
+"determines the new pixmap (samples) size. For example, a value of 2 "
+"divides width and height by 4 and thus results in a size of one 16\\ "
+":sup:`th` of the original. Values less than 1 are ignored with a warning."
+msgstr ""
+
+#: ../../pixmap.rst:223 f45f17093df4420cb6fbc619648afd22
+msgid ""
+"Use this methods to reduce a pixmap's size retaining its proportion. The "
+"pixmap is changed \"in place\". If you want to keep original and also "
+"have more granular choices, use the resp. copy constructor above."
+msgstr ""
+
+#: ../../pixmap.rst:227 1455e6653c744eeba403a49f543d6fab
+msgid ""
+"*New in version:: 1.14.5:* Return the value of the pixel at location (x, "
+"y) (column, line)."
+msgstr ""
+
+#: ../../pixmap.rst:229 ../../pixmap.rst:239 4665e9dd65654240abe6ee77bae37183
+#: ffb7d135ed9a41f1b4f0bfa146d6de82
+msgid "the column number of the pixel. Must be in `range(pix.width)`."
+msgstr ""
+
+#: ../../pixmap.rst:230 f1efa4c149644cc680d5348ad2c2e068
+msgid "the line number of the pixel, Must be in `range(pix.height)`."
+msgstr ""
+
+#: ../../pixmap.rst 369baee8d7234ef2ab7f82e75e9111ad
+#: a81a4cbd70ad4e0b8fb189a247cfcaaf b3a66cf736f24daea703147e167c320f
+#: cc865d958a3d4c81b2cbd3d3f814714b d2546977b027475993b2df887c1cb6e8
+#: e81aa1c04aa6419da09b400752672904 eb0378b2f08a49a0af740a769d1a6087
+msgid "Return type"
+msgstr ""
+
+#: ../../pixmap.rst 186871c10cae496984d33e4181c189b0
+#: 24ba23b408644b24bd9aa5c5c7695c13 375a4a43a898465fa252490979e2f154
+#: 44939b8c082c4f128aecb10f802bce36 8183d07de46a4c909fc8ff25a1c13b5e
+#: 82dd9565faa544cf8799ce6981d78e02 a7c02e0b9035405a9f75f61d1ef8a011
+msgid "Returns"
+msgstr ""
+
+#: ../../pixmap.rst:233 1c117c2f7320435ab28104a0c9e6b3f0
+msgid ""
+"a list of color values and, potentially the alpha value. Its length and "
+"content depend on the pixmap's colorspace and the presence of an alpha. "
+"For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are "
+"integers in `range(256)`."
+msgstr ""
+
+#: ../../pixmap.rst:237 4e3d50e363f54e7da5ab00f4aa58fec5
+msgid ""
+"*New in version 1.14.7:* Manipulate the pixel at location (x, y) (column,"
+" line)."
+msgstr ""
+
+#: ../../pixmap.rst:240 0dcca10c1c4c4b58b61746cd5da73f43
+msgid "the line number of the pixel. Must be in `range(pix.height)`."
+msgstr ""
+
+#: ../../pixmap.rst:241 eee0a54112754d7db4a0e21facaf19c8
+msgid ""
+"the desired pixel value given as a sequence of integers in `range(256)`. "
+"The length of the sequence must equal :attr:`Pixmap.n`, which includes "
+"any alpha byte."
+msgstr ""
+
+#: ../../pixmap.rst:245 223fcf7f54984d26a1a64657ed00a81d
+msgid "*New in version 1.14.8:* Set the pixels of a rectangle to a value."
+msgstr ""
+
+#: ../../pixmap.rst:247 95d0f97710ba444391fd993ca732bc02
+msgid ""
+"the rectangle to be filled with the value. The actual area is the "
+"intersection of this parameter and :attr:`Pixmap.irect`. For an empty "
+"intersection (or an invalid parameter), no change will happen."
+msgstr ""
+
+#: ../../pixmap.rst:248 a8fe7a3cf13a40e6a5abc4a65a481906
+msgid ""
+"the desired value, given as a sequence of integers in `range(256)`. The "
+"length of the sequence must equal :attr:`Pixmap.n`, which includes any "
+"alpha byte."
+msgstr ""
+
+#: ../../pixmap.rst:251 ef594268cf964435b0f7fae7229908c8
+msgid ""
+"``False`` if the rectangle was invalid or had an empty intersection with "
+":attr:`Pixmap.irect`, else ``True``."
+msgstr ""
+
+#: ../../pixmap.rst:255 bcf6532518a34f9c87fe6473f29b283c
+msgid ""
+"This method is equivalent to :meth:`Pixmap.set_pixel` executed for each "
+"pixel in the rectangle, but is obviously **very much faster** if many "
+"pixels are involved."
+msgstr ""
+
+#: ../../pixmap.rst:256 bc5f1b513a0f4c4fa649296505adae7c
+msgid ""
+"This method can be used similar to :meth:`Pixmap.clear_with` to "
+"initialize a pixmap with a certain color like this: "
+"*pix.set_rect(pix.irect, (255, 255, 0))* (RGB example, colors the "
+"complete pixmap with yellow)."
+msgstr ""
+
+#: ../../pixmap.rst:260 a513c003abe849829c11fe1447ebad4c
+msgid "New in v1.17.7"
+msgstr ""
+
+#: ../../pixmap.rst:262 0b7cc0a788dd40cb8acfbdb60fc95d01
+msgid "Set the x and y values of the pixmap's top-left point."
+msgstr ""
+
+#: ../../pixmap.rst:264 235e6e23b0b24739bc80e81e21526714
+msgid "x coordinate"
+msgstr ""
+
+#: ../../pixmap.rst:265 6abac422a54b4e5bb66a4859637f5a69
+msgid "y coordinate"
+msgstr ""
+
+#: ../../pixmap.rst:270 c5527c1032f044a2a640143d01653c61
+msgid "New in v1.16.17"
+msgstr ""
+
+#: ../../pixmap.rst:272 f49f9e8464474d7cbf7a85f1ba506a82
+msgid ""
+"Changed in v1.18.0: When saving as a PNG image, these values will be "
+"stored now."
+msgstr ""
+
+#: ../../pixmap.rst:274 a468673bcf8b49a68b788fd8ae23b5d5
+msgid "Set the resolution (dpi) in x and y direction."
+msgstr ""
+
+#: ../../pixmap.rst:276 0ac91572ffc64e2bba64b0279d3fc7a3
+msgid "resolution in x direction."
+msgstr ""
+
+#: ../../pixmap.rst:277 1eb356ec57454ca9815ab72ead63956f
+msgid "resolution in y direction."
+msgstr ""
+
+#: ../../pixmap.rst:282 8623995d2c004b0ba2caf470042846f1
+msgid "Changed in v 1.18.13"
+msgstr ""
+
+#: ../../pixmap.rst:284 82d487067f8d4ced9ef11d081f5e4ce8
+msgid "Change the alpha values. The pixmap must have an alpha channel."
+msgstr ""
+
+#: ../../pixmap.rst:286 c98fe169c19c487481ca55cd0633f3f8
+msgid ""
+"the new alpha values. If provided, its length must be at least *width * "
+"height*. If omitted (`None`), all alpha values are set to 255 (no "
+"transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also "
+"accepted."
+msgstr ""
+
+#: ../../pixmap.rst:287 e94c3d6b68c141e2b61b6f54ab717d33
+msgid ""
+"*New in v1.18.13:* whether to premultiply color components with the alpha"
+" value."
+msgstr ""
+
+#: ../../pixmap.rst:288 fbe9e806927d460389c858b14d4f3644
+msgid ""
+"ignore the alpha value and set this color to fully transparent. A "
+"sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. "
+"Default is ``None``. For example, a typical choice for RGB would be "
+"`opaque=(255, 255, 255)` (white)."
+msgstr ""
+
+#: ../../pixmap.rst:293 e617ef83731c4689a35511a90c29ceeb
+msgid ""
+"Invert the color of all pixels in :ref:`IRect` *irect*. Will have no "
+"effect if colorspace is ``None``."
+msgstr ""
+
+#: ../../pixmap.rst:295 b9d38a022bef44f89d241d1964237fbb
+msgid "The area to be inverted. Omit to invert everything."
+msgstr ""
+
+#: ../../pixmap.rst:299 e764fb3df0324f5187dbb68ba9a917ba
+msgid ""
+"Copy the *irect* part of the *source* pixmap into the corresponding area "
+"of this one. The two pixmaps may have different dimensions and can each "
+"have :data:`CS_GRAY` or :data:`CS_RGB` colorspaces, but they currently "
+"**must** have the same alpha property [#f2]_. The copy mechanism "
+"automatically adjusts discrepancies between source and target like so:"
+msgstr ""
+
+#: ../../pixmap.rst:301 e270f22850b84663930783d1f33ca33c
+msgid ""
+"If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade "
+"value will be put into each of the three rgb component bytes. If the "
+"other way round, *(r + g + b) / 3* will be taken as the gray-shade value "
+"of the target."
+msgstr ""
+
+#: ../../pixmap.rst:303 e29fc4caf130461db1843ba16fe4fc72
+msgid ""
+"Between *irect* and the target pixmap's rectangle, an \"intersection\" is"
+" calculated at first. This takes into account the rectangle coordinates "
+"and the current attribute values :attr:`Pixmap.x` and :attr:`Pixmap.y` "
+"(which you are free to modify for this purpose via "
+":meth:`Pixmap.set_origin`). Then the corresponding data of this "
+"intersection are copied. If the intersection is empty, nothing will "
+"happen."
+msgstr ""
+
+#: ../../pixmap.rst:308 fb1b535c8adc44baa4c729c25fec3e14
+msgid "The area to be copied."
+msgstr ""
+
+#: ../../pixmap.rst:310 82448c014aa543b68e66cec1b07f3d96
+msgid ""
+"Example: Suppose you have two pixmaps, `pix1` and `pix2` and you want to "
+"copy the lower right quarter of `pix2` to `pix1` such that it starts at "
+"the top-left point of `pix1`. Use the following snippet::"
+msgstr ""
+
+#: ../../pixmap.rst:329 7fbfff308f9d4627a4a6f2fc60e1651e
+msgid ""
+"Changed in v1.22.0: Added **direct support of JPEG** images. Image "
+"quality can be controlled via parameter \"jpg_quality\"."
+msgstr ""
+
+#: ../../pixmap.rst:331 97bd54f9e597471292898030e2002c7a
+msgid ""
+"Save pixmap as an image file. Depending on the output chosen, only some "
+"or all colorspaces are supported and different file extensions can be "
+"chosen. Please see the table below."
+msgstr ""
+
+#: ../../pixmap.rst:333 9cbb39acd6fd43c7b4231f63399b34d8
+msgid ""
+"The file to save to. May be provided as a string, as a ``pathlib.Path`` "
+"or as a Python file object. In the latter two cases, the filename is "
+"taken from the resp. object. The filename's extension determines the "
+"image format, which can be overruled by the output parameter."
+msgstr ""
+
+#: ../../pixmap.rst:335 a8f9fb30eb6f4e129ccdb1eb4dfb2d50
+msgid ""
+"The desired image format. The default is the filename's extension. If "
+"both, this value and the file extension are unsupported, an exception is "
+"raised. For possible values see :ref:`PixmapOutput`."
+msgstr ""
+
+#: ../../pixmap.rst:336 ../../pixmap.rst:346 57c5e89d61b643828893b09c1506e81c
+#: a4031bcffabf4809bb9b3450054f39ec
+msgid ""
+"The desired image quality, default 95. Only applies to JPEG images, else "
+"ignored. This parameter trades quality against file size. A value of 98 "
+"is close to lossless. Higher values should not lead to better quality."
+msgstr ""
+
+#: ../../pixmap.rst 31830ae4676c49a29f6eda0ec74b2cc7
+#: 35f861d76f76416f84ca4a6cfbb9ba36 9e7d20d2ebff48a5a2f12a7bb9cb207f
+#: 9e8d92287683474c8894ca359bc0df3c eaa3f51d3c63445d921c804b8d264fba
+msgid "Raises"
+msgstr ""
+
+#: ../../pixmap.rst:338 ../../pixmap.rst:348 74c8c07d5a4d429180ebc61a6dc88b40
+#: 888fc652cefb483cbc631acba45b2a8c
+msgid "For unsupported image formats."
+msgstr ""
+
+#: ../../pixmap.rst:342 3e89ee831b4744b2a7778a6f2ab7d705
+msgid ""
+"New in version 1.14.5: Return the pixmap as a *bytes* memory object of "
+"the specified format -- similar to :meth:`save`."
+msgstr ""
+
+#: ../../pixmap.rst:343 4dff4d1183ff44f2a456ec123ddad67f
+msgid ""
+"Changed in v1.22.0: Added **direct JPEG support**. Image quality can be "
+"influenced via new parameter \"jpg_quality\"."
+msgstr ""
+
+#: ../../pixmap.rst:345 17d9ad6bf1cd4d0caaf174d46a29b286
+msgid ""
+"The desired image format. The default is \"png\". For possible values see"
+" :ref:`PixmapOutput`."
+msgstr ""
+
+#: ../../pixmap.rst:351 7a4a3392440c413b9549ddfd80aa09e8
+msgid ""
+"The requested image format. The default is \"png\". For other possible "
+"values see :ref:`PixmapOutput`."
+msgstr ""
+
+#: ../../pixmap.rst:355 ../../pixmap.rst:370 024249ef113f468bba659314559663a8
+#: 3ebc661e655c4894a0780bd40d34f1b9
+msgid "New in v1.19.0"
+msgstr ""
+
+#: ../../pixmap.rst:357 ../../pixmap.rst:372 98399e67142a4ab4bfa0146bb6a938e0
+#: fde150994fb44c0dac805e2d7807ae53
+msgid "Changed in v1.22.5: Support of new parameter for Tesseract's tessdata."
+msgstr ""
+
+#: ../../pixmap.rst:359 7e216757569f4c4ebb1b9d88f2858c00
+msgid ""
+"Perform text recognition using Tesseract and save the image as a 1-page "
+"PDF with an OCR text layer."
+msgstr ""
+
+#: ../../pixmap.rst:361 9e480852cca4498d8cb34f674e078760
+msgid ""
+"identifies the file to save to. May be either a string or a pointer to a "
+"file opened with \"wb\" (includes `io.BytesIO()` objects)."
+msgstr ""
+
+#: ../../pixmap.rst:362 739251505f694c69af4730ee2d8f7848
+msgid "whether to compress the resulting PDF, default is `True`."
+msgstr ""
+
+#: ../../pixmap.rst:363 8c1c54fe56a34bf19f07465936ed9f10
+msgid ""
+"the languages occurring in the image. This must be specified in Tesseract"
+" format. Default is \"eng\" for English. Use \"+\"-separated Tesseract "
+"language codes for multiple languages, like \"eng+spa\" for English and "
+"Spanish."
+msgstr ""
+
+#: ../../pixmap.rst:364 fcca47fa76a9459cbec299e7f148dec6
+msgid ""
+"folder name of Tesseract's language support. If omitted, this information"
+" must be present as environment variable `TESSDATA_PREFIX`."
+msgstr ""
+
+#: ../../pixmap.rst:366 21a4cf67602b4076b49b985e8aa0c66b
+msgid ""
+"**Will fail** if Tesseract is not installed or if the environment "
+"variable \"TESSDATA_PREFIX\" is not set to the `tessdata` folder name and"
+" not provided as parameter."
+msgstr ""
+
+#: ../../pixmap.rst:374 32b8acd13d9f48e1bfd79ab1023be929
+msgid ""
+"Perform text recognition using Tesseract and convert the image to a "
+"1-page PDF with an OCR text layer. Internally invokes "
+":meth:`Pixmap.pdfocr_save`."
+msgstr ""
+
+#: ../../pixmap.rst:376 9e005bf6ab3440c085ee1193ba601f87
+msgid ""
+"A 1-page PDF file in memory. Could be opened like "
+"`doc=pymupdf.open(\"pdf\", pix.pdfocr_tobytes())`, and text extractions "
+"could be performed on its `page=doc[0]`.  .. note::     Another possible "
+"use is insertion into some pdf. The following snippet reads the images of"
+" a folder and stores them as pages in a new PDF that contain an OCR text "
+"layer::        doc = pymupdf.open()       for imgfile in "
+"os.listdir(folder):          pix = pymupdf.Pixmap(imgfile)          "
+"imgpdf = pymupdf.open(\"pdf\", pix.pdfocr_tobytes())          "
+"doc.insert_pdf(imgpdf)          pix = None          imgpdf.close()       "
+"doc.save(\"ocr-images.pdf\")"
+msgstr ""
+
+#: ../../pixmap.rst:376 b412ebf7d201478890ec75b641a17871
+msgid ""
+"A 1-page PDF file in memory. Could be opened like "
+"`doc=pymupdf.open(\"pdf\", pix.pdfocr_tobytes())`, and text extractions "
+"could be performed on its `page=doc[0]`."
+msgstr ""
+
+#: ../../pixmap.rst:380 2cd418d767ef4149b35f4d0415d14af1
+msgid ""
+"Another possible use is insertion into some pdf. The following snippet "
+"reads the images of a folder and stores them as pages in a new PDF that "
+"contain an OCR text layer::"
+msgstr ""
+
+#: ../../pixmap.rst:394 efc06e14189c4871827c5261c0623dfa
+msgid "Create a Pillow Image from the pixmap. PIL / Pillow must be installed."
+msgstr ""
+
+#: ../../pixmap.rst:396 ../../pixmap.rst:416 ../../pixmap.rst:424
+#: 3df2560f6e804a789cc70c26deec880b 8087c1edcca942f186efe9ad6be77c16
+#: 85c874d70f274112a51bc6ce56e6e197
+msgid "if Pillow is not installed."
+msgstr ""
+
+#: ../../pixmap.rst:397 69708896f8e44f9eb5a130326ae36b80
+msgid "a ``PIL.Image`` object"
+msgstr ""
+
+#: ../../pixmap.rst:401 3f77a2ee05134b31a570bc40ff704b87
+msgid ""
+"Write the pixmap as an image file using Pillow. Use this method for "
+"output unsupported by MuPDF. Examples are"
+msgstr ""
+
+#: ../../pixmap.rst:403 8f8925fd0a1e4868840945ccf3b35017
+msgid "Formats JPX, J2K, WebP, etc."
+msgstr ""
+
+#: ../../pixmap.rst:404 bd17d3e24fb740469efea4743e5ffb78
+msgid "Storing EXIF information."
+msgstr ""
+
+#: ../../pixmap.rst:405 d7d0bc56bfcb4f179b7f00d2ad59c255
+msgid ""
+"If you do not provide dpi information, the values *xres*, *yres* stored "
+"with the pixmap are automatically used."
+msgstr ""
+
+#: ../../pixmap.rst:407 20bf1e69dd5147b9a108ab328fe2657e
+msgid ""
+"A simple example: `pix.pil_save(\"some.webp\", optimize=True, dpi=(150, "
+"150))`."
+msgstr ""
+
+#: ../../pixmap.rst:409 71799e7c62324bbea016ae30eafbc021
+msgid ""
+"If the pixmap's colorspace is RGB with transparency, the alpha values may"
+" or may not already be multiplied into the color components "
+"ref/green/blue (called \"premultiplied\"). To enforce undoing "
+"premultiplication, set this parameter to `True`. To learn about some "
+"background, e.g. look for `\"Premultiplied alpha\" on this page "
+"<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
+msgstr ""
+
+#: ../../pixmap.rst:412 c5f67c82cc1b4a078d120281dc779a59
+msgid "For details on other parameters see the Pillow documentation."
+msgstr ""
+
+#: ../../pixmap.rst:414 d3f2fde19b034f09971604debcf8e6dc
+msgid ""
+"Since v1.22.0, PyMuPDF supports JPEG output directly. We recommended to "
+"no longer use this method for JPEG output -- for performance reasons and "
+"for avoiding unnecessary external dependencies."
+msgstr ""
+
+#: ../../pixmap.rst:420 835e9bbf2bc047f2b9657ca7741ec37e
+msgid "New in v1.17.3"
+msgstr ""
+
+#: ../../pixmap.rst:422 d0177a551753414586749bf415cf6080
+msgid ""
+"Return an image as a bytes object in the specified format using Pillow. "
+"For example `stream = pix.pil_tobytes(format=\"WEBP\", optimize=True, "
+"dpi=(150, 150))`. Also see above. For details on other parameters see the"
+" Pillow documentation."
+msgstr ""
+
+#: ../../pixmap.rst:431 ../../pixmap.rst:466 68173364cda84dab84fa461435fdec56
+#: b156a10f58714dae92ca5c3163c24112
+msgid "New in v1.19.3"
+msgstr ""
+
+#: ../../pixmap.rst:433 129930765e83498b8cb4362c41d7fb9a
+msgid ""
+"Return a new pixmap by \"warping\" the quad such that the quad corners "
+"become the new pixmap's corners. The target pixmap's `irect` will be `(0,"
+" 0, width, height)`."
+msgstr ""
+
+#: ../../pixmap.rst:435 6c6e2bf54f6c4c1cbd3c172dbbfb7712
+msgid ""
+"a convex quad with coordinates inside :attr:`Pixmap.irect` (including the"
+" border points)."
+msgstr ""
+
+#: ../../pixmap.rst:436 e9644c03761249019390c475ce09eeb9
+msgid "desired resulting width."
+msgstr ""
+
+#: ../../pixmap.rst:437 5af3c5ce964244d9ac8c1210ae145777
+msgid "desired resulting height."
+msgstr ""
+
+#: ../../pixmap.rst:438 23af53d676c943ab8270f1f4eb3e15f8
+msgid ""
+"A new pixmap where the quad corners are mapped to the pixmap corners in a"
+" clockwise fashion: `quad.ul -> irect.tl`, `quad.ur -> irect.tr`, etc."
+msgstr ""
+
+#: ../../pixmap.rst:439 c3fb88fba3f7447889bc2174e90ed4ed
+msgid ""
+":ref:`Pixmap`  .. image:: images/img-warp.*      :scale: 40      :align: "
+"center"
+msgstr ""
+
+#: ../../pixmap.rst:439 8eb4c765b10a4af0b07fe6d1cd7386d2
+msgid ":ref:`Pixmap`"
+msgstr ""
+
+#: ../../pixmap.rst:448 ../../pixmap.rst:505 ../../pixmap.rst:514
+#: 00c62e32e38c4d82895121b426757269 0149558efd01426095beb5bf88035b73
+#: 5c3eedb1091c4eb1af8d1010e7f2b3f0
+msgid "New in v1.19.2"
+msgstr ""
+
+#: ../../pixmap.rst:449 b8fe5dd5d0294610a99db8d7ebd6deec
+msgid "Changed in v1.19.3"
+msgstr ""
+
+#: ../../pixmap.rst:451 c2da2a6121594d6c8b3f4e6e7d643cee
+msgid "Determine the pixmap's unique colors and their count."
+msgstr ""
+
+#: ../../pixmap.rst:453 992445f66d104d8c89ac2f8297c8e9c4
+msgid ""
+"*(changed in v1.19.3)* If `True` return a dictionary of color pixels and "
+"their usage count, else just the number of unique colors."
+msgstr ""
+
+#: ../../pixmap.rst:454 db2ea4eae7a1492dad41fae7951b0160
+msgid ""
+"a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels "
+"are considered. This allows inspecting sub-rectangles of a given pixmap "
+"directly -- instead of building sub-pixmaps."
+msgstr ""
+
+#: ../../pixmap.rst:456 61a615b057024b7a9b6ac7fe5ff849ab
+msgid ""
+"either the number of colors, or a dictionary with the items `pixel: "
+"count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`.  .."
+" note:: To recover the **tuple** of a pixel, use "
+"`tuple(colors.keys()[i])` for the i-th item.     * The response time "
+"depends on the pixmap's samples size and may be more than a second for "
+"very large pixmaps.    * Where applicable, pixels with different alpha "
+"values will be treated as different colors."
+msgstr ""
+
+#: ../../pixmap.rst:456 9ad0b09ff1334369af15be4f052a2f6f
+msgid ""
+"either the number of colors, or a dictionary with the items `pixel: "
+"count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`."
+msgstr ""
+
+#: ../../pixmap.rst:458 d7bdc5a53abc43d6a1041953b5c0c526
+msgid ""
+"To recover the **tuple** of a pixel, use `tuple(colors.keys()[i])` for "
+"the i-th item."
+msgstr ""
+
+#: ../../pixmap.rst:460 260f96dbe8c04ab1a25159255b8b79a7
+msgid ""
+"The response time depends on the pixmap's samples size and may be more "
+"than a second for very large pixmaps."
+msgstr ""
+
+#: ../../pixmap.rst:461 1b987ef794b6454eb0d9366a05344070
+msgid ""
+"Where applicable, pixels with different alpha values will be treated as "
+"different colors."
+msgstr ""
+
+#: ../../pixmap.rst:468 2b6490adea534fa6a8de4eaf1edb354a
+msgid "Return the most frequently used color and its relative frequency."
+msgstr ""
+
+#: ../../pixmap.rst:470 485c7c5b4da94258b242db7b59b19b53
+msgid ""
+"A rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels "
+"are considered. This allows inspecting sub-rectangles of a given pixmap "
+"directly -- instead of building sub-pixmaps."
+msgstr ""
+
+#: ../../pixmap.rst:472 9110208e27134f02a9b9bcdc7700add8
+#, python-format
+msgid ""
+"A tuple `(ratio, pixel)` where `0 < ratio <= 1` and *pixel* is the pixel "
+"value of the color. Use this to decide if the image is \"almost\" "
+"unicolor: a response `(0.95, b\"\\x00\\x00\\x00\")` means that 95% of all"
+" pixels are black. See an example here :ref:`RecipesImages_P`."
+msgstr ""
+
+#: ../../pixmap.rst:477 5e93c19118c44e4598fc55ffb9cd04f6
+msgid "Indicates whether the pixmap contains transparency information."
+msgstr ""
+
+#: ../../pixmap.rst 09340208613f48af95d9e1d2a3ef91fa
+#: 0cc2b878ea234bfe8d91795141e3924d 0ff51066858f4faaad58612b0fbd5896
+#: 163c7d4bd8d3405ca26c2650fa5d8a10 3eb04a688a904a5eaadf5d79aed68b1a
+#: 4869cfa0cd314211b192a2294838c7dc 5124ac9063654c24a37926de5ab662b6
+#: 557f147c6be94fe083e8082986fa08b6 5ee3e6766dd44d2582e805125e914472
+#: 5f52d2e5c48c47d7aec0c2b7a743fd46 6124bd56d7524796b1aa3c3e18458232
+#: 7c890834a7cf4a088780dfb0e21745a8 84cbd010ada9441a9182c12bbe62059b
+#: 89488e9f1e4c4e3d8c6ca9ce290016a4 8be2b06b344443289085426c1e14fa50
+#: 922e0d0d08124b5081bcbb57569a2aa8 a1b9de76b34b47f9b95c7bb1563b9e5a
+#: d0c0191f32ed43c6a6857c305705698b ead0a6e9dc94433ba020dae746028076
+msgid "type"
+msgstr ""
+
+#: ../../pixmap.rst:479 ../../pixmap.rst:509 ../../pixmap.rst:518
+#: ../../pixmap.rst:633 3d5651d764be40cca15a078b7f2531b8
+#: 694a5ede4c4c43319c089b1737fd0b9c a65782123b144e4186d43ddd5c138a97
+#: cd79fe63f067476c8342570d590c3121
+msgid "bool"
+msgstr ""
+
+#: ../../pixmap.rst:483 98d329d87318478090434465b043c79d
+msgid ""
+"The MD5 hashcode (16 bytes) of the pixmap. This is a technical value used"
+" for unique identifications."
+msgstr ""
+
+#: ../../pixmap.rst:485 ../../pixmap.rst:537 d353d95ffd0249c9985587a89eec06f3
+#: fe9d2fb1853646c9bb567d4a448e58de
+msgid "bytes"
+msgstr ""
+
+#: ../../pixmap.rst:489 94c016ffd0e94ef8a92a913eac909cf0
+msgid ""
+"The colorspace of the pixmap. This value may be ``None`` if the image is "
+"to be treated as a so-called *image mask* or *stencil mask* (currently "
+"happens for extracted PDF document images only)."
+msgstr ""
+
+#: ../../pixmap.rst:491 b6cfc944281042b38f313e221d8208ee
+msgid ":ref:`Colorspace`"
+msgstr ""
+
+#: ../../pixmap.rst:495 6a4abc1ca4ea41e5b98e5867969d0aea
+msgid ""
+"Contains the length of one row of image data in :attr:`Pixmap.samples`. "
+"This is primarily used for calculation purposes. The following "
+"expressions are true:"
+msgstr ""
+
+#: ../../pixmap.rst:497 9ef5987d2b004c03a37ac85ebe94eb90
+msgid "`len(samples) == height * stride`"
+msgstr ""
+
+#: ../../pixmap.rst:498 ad30730142bb41048a7ad4d99adb37ff
+msgid "`width * n == stride`"
+msgstr ""
+
+#: ../../pixmap.rst:500 ../../pixmap.rst:575 ../../pixmap.rst:581
+#: ../../pixmap.rst:589 ../../pixmap.rst:597 ../../pixmap.rst:603
+#: ../../pixmap.rst:609 ../../pixmap.rst:615 ../../pixmap.rst:621
+#: ../../pixmap.rst:627 565eef89a4f1443196235c362117a790
+#: 5790752de4bc4483b7998ab835faa57f 6b853b1effba4f9fa88e23a4ae3e5bf7
+#: a40cc5c113bb4004862e82488bb6ad45 accc4d8148f54c7db1495d30f6c968f0
+#: bca3975d0f204589a21f970e856552f3 d03716e1479c4f6b823e4712bf40c8e9
+#: d2bde8f030b0409d8de6030b27ad0c95 d833bb6cf43f4a109aa43ffba391db0f
+#: d8b756b8057c42329c2c1040697bad3a
+msgid "int"
+msgstr ""
+
+#: ../../pixmap.rst:507 8695567f63d74993b36963cb05639cf6
+msgid "Is `True` for a gray pixmap which only has the colors black and white."
+msgstr ""
+
+#: ../../pixmap.rst:516 b44722fd47e341cb9f851ef65e077148
+msgid ""
+"Is `True` if all pixels are identical (any colorspace). Where applicable,"
+" pixels with different alpha values will be treated as different colors."
+msgstr ""
+
+#: ../../pixmap.rst:523 6f074461eb274b3388c6956012c6f942
+msgid "Contains the :ref:`IRect` of the pixmap."
+msgstr ""
+
+#: ../../pixmap.rst:525 8f50d53afc654b528e20564902041ddb
+msgid ":ref:`IRect`"
+msgstr ""
+
+#: ../../pixmap.rst:529 3abafa8c77804d0482f902d9e46ffb92
+msgid ""
+"The color and (if :attr:`Pixmap.alpha` is true) transparency values for "
+"all pixels. It is an area of `width * height * n` bytes. Each n bytes "
+"define one pixel. Each successive n bytes yield another pixel in scanline"
+" order. Subsequent scanlines follow each other with no padding. E.g. for "
+"an RGBA colorspace this means, *samples* is a sequence of bytes like "
+"*..., R, G, B, A, ...*, and the four byte values R, G, B, A define one "
+"pixel."
+msgstr ""
+
+#: ../../pixmap.rst:531 4d2c9332a9384bb2ac55549aea165f04
+msgid ""
+"This area can be passed to other graphics libraries like PIL (Python "
+"Imaging Library) to do additional processing like saving the pixmap in "
+"other image formats."
+msgstr ""
+
+#: ../../pixmap.rst:534 44ba67d25a5246c9b5c0fd86fc515d65
+msgid ""
+"The underlying data is typically a **large** memory area, from which a "
+"`bytes` copy is made for this attribute ... each time you access it: for "
+"example an RGB-rendered letter page has a samples size of almost 1.4 MB. "
+"So consider assigning a new variable to it or use the `memoryview` "
+"version :attr:`Pixmap.samples_mv` (new in v1.18.17)."
+msgstr ""
+
+#: ../../pixmap.rst:535 028c2991fa3746d8ba4fcb1363e0ac36
+msgid ""
+"Any changes to the underlying data are available only after accessing "
+"this attribute again. This is different from using the memoryview "
+"version."
+msgstr ""
+
+#: ../../pixmap.rst:541 ../../pixmap.rst:563 6231b732cd664d9ea3f80fe04f0151c9
+#: a54baa772ece47f4b743977662b324a4
+msgid "New in v1.18.17"
+msgstr ""
+
+#: ../../pixmap.rst:543 090480ef9ce349efab292a2a0fe883b7
+msgid ""
+"Like :attr:`Pixmap.samples`, but in Python `memoryview` format. It is "
+"built pointing to the memory in the pixmap -- not from a copy of it. So "
+"its creation speed is independent from the pixmap size, and any changes "
+"to pixels will be available immediately."
+msgstr ""
+
+#: ../../pixmap.rst:545 93fdd4817c6d451593bce44eed03a5c1
+msgid ""
+"Copies like `bytearray(pix.samples_mv)`, or `bytes(pixmap.samples_mv)` "
+"are equivalent to and can be used in place of `pix.samples`."
+msgstr ""
+
+#: ../../pixmap.rst:547 a15d8e7edd204441a7b9a76052a64fac
+msgid "We also have `len(pix.samples) == len(pix.samples_mv)`."
+msgstr ""
+
+#: ../../pixmap.rst:549 f7663a0870b54e46b8a6d53a9a5d3958
+msgid ""
+"Look at this example from a 2 MB JPEG: the memoryview is **ten thousand "
+"times faster**::"
+msgstr ""
+
+#: ../../pixmap.rst:556 4d36f9e0a4af4491be38efa57f54faf8
+msgid ""
+"After the Pixmap has been destroyed, any attempt to use the memoryview "
+"will fail with ValueError."
+msgstr ""
+
+#: ../../pixmap.rst:559 91107ae487b14fe0b83a14f571082c55
+msgid "memoryview"
+msgstr ""
+
+#: ../../pixmap.rst:565 d3bfaae3761a4c0eb851933ffe8701a3
+msgid ""
+"Python pointer to the pixel area. This is a special integer format, which"
+" can be used by supporting applications (such as PyQt) to directly "
+"address the samples area and thus build their images extremely fast. For "
+"example::"
+msgstr ""
+
+#: ../../pixmap.rst:570 92d9db2f39614549b2c8a9605c681e0b
+msgid ""
+"Both of the above lead to the same Qt image, but (2) can be **many "
+"hundred times faster**, because it avoids an additional copy of the pixel"
+" area."
+msgstr ""
+
+#: ../../pixmap.rst:572 37f284851e024d87b4ae3d3f4b495885
+msgid ""
+"Warning: after the Pixmap has been destroyed, the Python pointer will be "
+"invalid and attempting to use it may crash the Python interpreter."
+msgstr ""
+
+#: ../../pixmap.rst:579 ad8485f478d04d1791c23f7e6c8cf984
+msgid ""
+"Contains *len(pixmap)*. This will generally equal *len(pix.samples)* plus"
+" some platform-specific value for defining other attributes of the "
+"object."
+msgstr ""
+
+#: ../../pixmap.rst:587 c1796fc010774081b59146b900edf924
+msgid "Width of the region in pixels."
+msgstr ""
+
+#: ../../pixmap.rst:595 d21ef5432611489797b4691400ea9d15
+msgid "Height of the region in pixels."
+msgstr ""
+
+#: ../../pixmap.rst:601 5f88d51c88864babb326d12c5da3c8b4
+msgid ""
+"X-coordinate of top-left corner in pixels. Cannot directly be changed -- "
+"use :meth:`Pixmap.set_origin`."
+msgstr ""
+
+#: ../../pixmap.rst:607 d82f9559530f4ed3a33c06c66cd24f3c
+msgid ""
+"Y-coordinate of top-left corner in pixels. Cannot directly be changed -- "
+"use :meth:`Pixmap.set_origin`."
+msgstr ""
+
+#: ../../pixmap.rst:613 26e889e8aa564bbea3553b3d55151e83
+msgid ""
+"Number of components per pixel. This number depends on colorspace and "
+"alpha. If colorspace is not ``None`` (stencil masks), then *Pixmap.n - "
+"Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is ``None``, "
+"then *n == alpha == 1*."
+msgstr ""
+
+#: ../../pixmap.rst:619 ddc7c2c6d915466a8673711ed573419a
+msgid ""
+"Horizontal resolution in dpi (dots per inch). Please also see "
+":data:`resolution`. Cannot directly be changed -- use "
+":meth:`Pixmap.set_dpi`."
+msgstr ""
+
+#: ../../pixmap.rst:625 5952023fee854e3f82d65f1dbcc33361
+msgid ""
+"Vertical resolution in dpi (dots per inch). Please also see "
+":data:`resolution`. Cannot directly be changed -- use "
+":meth:`Pixmap.set_dpi`."
+msgstr ""
+
+#: ../../pixmap.rst:631 966a193e7ae14efe944c435e65718b73
+msgid ""
+"An information-only boolean flag set to ``True`` if the image will be "
+"drawn using \"linear interpolation\". If ``False`` \"nearest neighbour "
+"sampling\" will be used."
+msgstr ""
+
+#: ../../pixmap.rst:638 32f8505442184689838784d6630b61ca
+msgid "Supported Input Image Formats"
+msgstr ""
+
+#: ../../pixmap.rst:639 708fca4db2a64b96a2de83796cd396e7
+msgid ""
+"The following file types are supported as **input** to construct pixmaps:"
+" **BMP, JPEG, GIF, TIFF, JXR, JPX**, **PNG**, **PAM** and all of the "
+"**Portable Anymap** family (**PBM, PGM, PNM, PPM**). This support is two-"
+"fold:"
+msgstr ""
+
+#: ../../pixmap.rst:641 4f4eb0bb22404ab184bf7ed8014abcc3
+msgid ""
+"Directly create a pixmap with *Pixmap(filename)* or *Pixmap(byterray)*. "
+"The pixmap will then have properties as determined by the image."
+msgstr ""
+
+#: ../../pixmap.rst:643 1f9a875b37444d988033c769493f20e4
+msgid ""
+"Open such files with *pymupdf.open(...)*. The result will then appear as "
+"a document containing one single page. Creating a pixmap of this page "
+"offers all the options available in this context: apply a matrix, choose "
+"colorspace and alpha, confine the pixmap to a clip area, etc."
+msgstr ""
+
+#: ../../pixmap.rst:645 b8da58f972e349c099d429016189277f
+msgid ""
+"**SVG images** are only supported via method 2 above, not directly as "
+"pixmaps. But remember: the result of this is a **raster image** as is "
+"always the case with pixmaps [#f1]_."
+msgstr ""
+
+#: ../../pixmap.rst:650 5eb573904fb7401cb281c16fb4549f3a
+msgid "Supported Output Image Formats"
+msgstr ""
+
+#: ../../pixmap.rst:651 e4357173b7ec40d892ee19fcd4f3b83d
+msgid ""
+"A number of image **output** formats are supported. You have the option "
+"to either write an image directly to a file (:meth:`Pixmap.save`), or to "
+"generate a bytes object (:meth:`Pixmap.tobytes`). Both methods accept a "
+"string identifying the desired format (**Format** column below). Please "
+"note that not all combinations of pixmap colorspace, transparency support"
+" (alpha) and image format are possible."
+msgstr ""
+
+#: ../../pixmap.rst:654 4dbea7a06e2b4187a123a1c604d44efe
+msgid "**Format**"
+msgstr ""
+
+#: ../../pixmap.rst:654 80b26e8d30f3423393a42e35c1a19bb0
+msgid "**Colorspaces**"
+msgstr ""
+
+#: ../../pixmap.rst:654 227b7bee485d4b79a2402f03891614ea
+msgid "**alpha**"
+msgstr ""
+
+#: ../../pixmap.rst:654 9797dfa1d6b74610af214069c4ee23d6
+msgid "**Extensions**"
+msgstr ""
+
+#: ../../pixmap.rst:654 a635c115d504411785c1bf1a3984582a
+msgid "**Description**"
+msgstr ""
+
+#: ../../pixmap.rst:656 3f28e0c2c0e44d239075c2258795286a
+msgid "jpg, jpeg"
+msgstr ""
+
+#: ../../pixmap.rst:656 ../../pixmap.rst:657 ../../pixmap.rst:663
+#: ../../pixmap.rst:664 18832c370236476095068f372050837f
+#: 3eb2a94753b44fdd9c7731ef24aef48b 4a67821c83134b4db3e4be1914c17d60
+#: c83309e3c1934fc7ae1a973ebe7d1300
+msgid "gray, rgb, cmyk"
+msgstr ""
+
+#: ../../pixmap.rst:656 ../../pixmap.rst:658 ../../pixmap.rst:659
+#: ../../pixmap.rst:661 ../../pixmap.rst:662 ../../pixmap.rst:663
+#: 02f9cb78532645d38d5abf940e1679f8 0cdb296b3e59480f8ec76bf53ac1c17b
+#: 2e0bd0a838434201878c609cff82145c 73c34c7c328f4d31af9f2258cc254f0d
+#: 947c1b80c66441799e2aba09091f8adb dd93afdec02947318d933a37f2c15024
+msgid "no"
+msgstr ""
+
+#: ../../pixmap.rst:656 600504f9efd041ffb5b69ec388b137e9
+msgid ".jpg, .jpeg"
+msgstr ""
+
+#: ../../pixmap.rst:656 26fa6ed5043a4a66a2c7adf39eb4e0cf
+msgid "Joint Photographic Experts Group"
+msgstr ""
+
+#: ../../pixmap.rst:657 6f1f99578dd84b0b96b1fb4707aac08b
+msgid "pam"
+msgstr ""
+
+#: ../../pixmap.rst:657 ../../pixmap.rst:660 ../../pixmap.rst:664
+#: 1389030dbadc408693776ddaa02d250f db4043e33252451d9cfa830afcf4325c
+#: eb6f616d9083427b85a8e817b7b3c601
+msgid "yes"
+msgstr ""
+
+#: ../../pixmap.rst:657 2f529016f72342f3ad621590a17c2720
+msgid ".pam"
+msgstr ""
+
+#: ../../pixmap.rst:657 e2baced162604080b59bf27d358fda6c
+msgid "Portable Arbitrary Map"
+msgstr ""
+
+#: ../../pixmap.rst:658 95a9f8727e6846bdad7d42b2756dcf5e
+msgid "pbm"
+msgstr ""
+
+#: ../../pixmap.rst:658 ../../pixmap.rst:659 ../../pixmap.rst:660
+#: ../../pixmap.rst:661 ../../pixmap.rst:662 220d5771addc47059dfafb3b7fd7a809
+#: 68fd8f934dac404f86a38dcab3bb7bc2 91f4a25b5a5148af9a8c601bdc987ee9
+#: 9d56458bd5944b7eab22abdec12c33c6 da23d0d1e79b4239bc3b878fd251ed6f
+msgid "gray, rgb"
+msgstr ""
+
+#: ../../pixmap.rst:658 10546c5955514cb99a4533ae396c259f
+msgid ".pbm"
+msgstr ""
+
+#: ../../pixmap.rst:658 3a22578bed7f479ba9f8bd94ddba617b
+msgid "Portable Bitmap"
+msgstr ""
+
+#: ../../pixmap.rst:659 12f4977253d34e7fb05ef71f9b6bb875
+msgid "pgm"
+msgstr ""
+
+#: ../../pixmap.rst:659 34b5715a5a94481fa5410ee5467f5ae1
+msgid ".pgm"
+msgstr ""
+
+#: ../../pixmap.rst:659 06d8a88352b54e25b36fc1dbd2289ecc
+msgid "Portable Graymap"
+msgstr ""
+
+#: ../../pixmap.rst:660 31684d0764064d42a3a8d884741e85be
+msgid "png"
+msgstr ""
+
+#: ../../pixmap.rst:660 34455c189f334f3ab56545b979560b1b
+msgid ".png"
+msgstr ""
+
+#: ../../pixmap.rst:660 682ed1780ad3421e9223fdefb0b8184c
+msgid "Portable Network Graphics"
+msgstr ""
+
+#: ../../pixmap.rst:661 f94a2f8f962f47fc9c9b1a7e2a906e11
+msgid "pnm"
+msgstr ""
+
+#: ../../pixmap.rst:661 964f7dfd9ae844129b05d2e56342317d
+msgid ".pnm"
+msgstr ""
+
+#: ../../pixmap.rst:661 d627891286e44ad3987520c5e705f3a1
+msgid "Portable Anymap"
+msgstr ""
+
+#: ../../pixmap.rst:662 3ada12b4d8b84c17aac44fec31492b76
+msgid "ppm"
+msgstr ""
+
+#: ../../pixmap.rst:662 29fa1a416b3345479d3cb7258b83155e
+msgid ".ppm"
+msgstr ""
+
+#: ../../pixmap.rst:662 9045e7c717ae4d61ae56392d64c8f030
+msgid "Portable Pixmap"
+msgstr ""
+
+#: ../../pixmap.rst:663 b528c16c8d064788976a0d977cf72a73
+msgid "ps"
+msgstr ""
+
+#: ../../pixmap.rst:663 3d3a984cad1f4a1ba8eca7cfbc0af43f
+msgid ".ps"
+msgstr ""
+
+#: ../../pixmap.rst:663 f472a32950f140dcbd4258d41e955e95
+msgid "Adobe PostScript Image"
+msgstr ""
+
+#: ../../pixmap.rst:664 d30993e0b1534a1da119de1e713e1fe7
+msgid "psd"
+msgstr ""
+
+#: ../../pixmap.rst:664 c340e5edd2234429989f7c57fcbe6d4f
+msgid ".psd"
+msgstr ""
+
+#: ../../pixmap.rst:664 5ad137cb3c0c44fb8491eab0123adabe
+msgid "Adobe Photoshop Document"
+msgstr ""
+
+#: ../../pixmap.rst:668 5b70a01cdd2d49678a5104943c6ceb05
+msgid ""
+"Not all image file types are supported (or at least common) on all OS "
+"platforms. E.g. PAM and the Portable Anymap formats are rare or even "
+"unknown on Windows."
+msgstr ""
+
+#: ../../pixmap.rst:669 ac24d0029a85434e89d87aea3c768299
+msgid ""
+"Especially pertaining to CMYK colorspaces, you can always convert a CMYK "
+"pixmap to an RGB pixmap with *rgb_pix = pymupdf.Pixmap(pymupdf.csRGB, "
+"cmyk_pix)* and then save that in the desired format."
+msgstr ""
+
+#: ../../pixmap.rst:670 0d389b2c11cb4b7dbad0be0409dbf4dc
+msgid ""
+"As can be seen, MuPDF's image support range is different for input and "
+"output. Among those supported both ways, PNG and JPEG are probably the "
+"most popular."
+msgstr ""
+
+#: ../../pixmap.rst:671 78fe092f468843e984dee90661b2dbac
+msgid ""
+"We also recommend using \"ppm\" formats as input to tkinter's "
+"*PhotoImage* method like this: *tkimg = "
+"tkinter.PhotoImage(data=pix.tobytes(\"ppm\"))* (also see the tutorial). "
+"This is **very** fast (**60 times** faster than PNG)."
+msgstr ""
+
+#: ../../pixmap.rst:676 ae8dd148bf7a4c1ea2de109295f929f5
+msgid "Footnotes"
+msgstr ""
+
+#: ../../pixmap.rst:677 b53f5a80a69a41dea8df4b23d4e4be3d
+msgid ""
+"If you need a **vector image** from the SVG, you must first convert it to"
+" a PDF. Try :meth:`Document.convert_to_pdf`. If this is not good enough, "
+"look for other SVG-to-PDF conversion tools like the Python packages "
+"`svglib <https://pypi.org/project/svglib>`_, `CairoSVG "
+"<https://pypi.org/project/cairosvg>`_, `Uniconvertor "
+"<https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_"
+" or the Java solution `Apache Batik <https://github.com/apache/batik>`_. "
+"Have a look at our Wiki for more examples."
+msgstr ""
+
+#: ../../pixmap.rst:679 7efc30a117974783984b2f586a774632
+msgid ""
+"To also set the alpha property, add an additional step to this method by "
+"dropping or adding an alpha channel to the result."
+msgstr ""
+
+#: ../../footer.rst:46 e3d72edf62c54080b2839fccccec965e
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

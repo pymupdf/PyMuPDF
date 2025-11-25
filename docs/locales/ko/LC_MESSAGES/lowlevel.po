@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 218a54ea43ac4940a4a60f2c3a6a2478
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 07e59acd2f254f13ab7d70dabdc0b0e5
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 b0edbb6b219e443c991a8de67143adf0
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../lowlevel.rst:5 ab1b60182cf44f4cbdbc96550824ae06
+msgid "Low Level Functions and Classes"
+msgstr ""
+
+#: ../../lowlevel.rst:6 7cd71eb177ee46c7809cc02f9cf0360a
+msgid ""
+"Contains a number of functions and classes for the experienced user. To "
+"be used for special needs or performance requirements."
+msgstr ""
+
+#: ../../footer.rst:46 e5486934644f471b8a6673bf428a5c43
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

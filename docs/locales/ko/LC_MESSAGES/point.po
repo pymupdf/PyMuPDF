@@ -1,0 +1,267 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 ff7f2bbd27574c06a12cfe0f8feaa292
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 a938f9fbdec343399166b697412bd381
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 9b1b01d63ee048cba25d12397c4cbc9c
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../point.rst:7 14b832da77494838a52695d7ed883865
+msgid "Point"
+msgstr ""
+
+#: ../../point.rst:9 ee92bfad50f840c592179ff205c48652
+msgid ""
+"*Point* represents a point in the plane, defined by its x and y "
+"coordinates."
+msgstr ""
+
+#: ../../point.rst:12 d95d005e957741acbcc453b2978ab474
+msgid "**Attribute / Method**"
+msgstr ""
+
+#: ../../point.rst:12 6cc17250feda46f3895c61daf01ae9ef
+msgid "**Description**"
+msgstr ""
+
+#: ../../point.rst:14 41c8142652234b88ac19813753d3307e
+msgid ":meth:`Point.distance_to`"
+msgstr ""
+
+#: ../../point.rst:14 261845b5a5b24bf0b064101ff507b23b
+msgid "calculate distance to point or rect"
+msgstr ""
+
+#: ../../point.rst:15 4aa6b4f0719c46e498b43fe18d24f3eb
+msgid ":meth:`Point.norm`"
+msgstr ""
+
+#: ../../point.rst:15 bb965571d49042f990f2ce83a5b1d501
+msgid "the Euclidean norm"
+msgstr ""
+
+#: ../../point.rst:16 8fa73d7331154012aedebe7f5f583ef0
+msgid ":meth:`Point.transform`"
+msgstr ""
+
+#: ../../point.rst:16 513606c9c9c24e929a77cffeb961406c
+msgid "transform point with a matrix"
+msgstr ""
+
+#: ../../point.rst:17 2cb5652a207046aabd4833605b0db9a7
+msgid ":attr:`Point.abs_unit`"
+msgstr ""
+
+#: ../../point.rst:17 a5938582888c4a3bb9c18a1c3f20c2e8
+msgid "same as unit, but positive coordinates"
+msgstr ""
+
+#: ../../point.rst:18 3e5b94700abd4e9f9ee59f420160e03b
+msgid ":attr:`Point.unit`"
+msgstr ""
+
+#: ../../point.rst:18 2b7bbc4e8d9b49fd90eba605096d6695
+msgid "point coordinates divided by *abs(point)*"
+msgstr ""
+
+#: ../../point.rst:19 31b75b9a5271468b91957b2b1e4f4cdc
+msgid ":attr:`Point.x`"
+msgstr ""
+
+#: ../../point.rst:19 62613a63800c42a9b2e4b7e25ce06a1b
+msgid "the X-coordinate"
+msgstr ""
+
+#: ../../point.rst:20 03bda37b4f4e43d5b2c87664d47e7c88
+msgid ":attr:`Point.y`"
+msgstr ""
+
+#: ../../point.rst:20 1f7a039317c9403b9eef49abcffc3c17
+msgid "the Y-coordinate"
+msgstr ""
+
+#: ../../point.rst:23 226585c9d32d4bdda8ea50151987bb6f
+msgid "**Class API**"
+msgstr ""
+
+#: ../../point.rst:35 52e6fd50060a435cbcd1ea5ea07199d9
+msgid "Overloaded constructors."
+msgstr ""
+
+#: ../../point.rst:37 858213bf59564a6493343f329aa59c60
+msgid "Without parameters, *Point(0, 0)* will be created."
+msgstr ""
+
+#: ../../point.rst:39 fe4c165d5aa24d3a979783344bfd9ac0
+msgid ""
+"With another point specified, a **new copy** will be created, "
+"\"sequence\" is a Python sequence of 2 numbers (see "
+":ref:`SequenceTypes`)."
+msgstr ""
+
+#: ../../point.rst 0eddda1bb6c54ccaa7d284736b29da50
+#: 3b9ed60226ef48f0a657c5ba46c27350 c7f85b4fbec2467896a422f72188865d
+msgid "Parameters"
+msgstr ""
+
+#: ../../point.rst:41 97152760b7ba410cb622804600ef1a35
+msgid "x coordinate of the point"
+msgstr ""
+
+#: ../../point.rst:43 7926764c81784f70845fd05cb89d5865
+msgid "y coordinate of the point"
+msgstr ""
+
+#: ../../point.rst:47 5c3faa24b7e144068803db83b33fe793
+msgid ""
+"Calculate the distance to *x*, which may be :data:`point_like` or "
+":data:`rect_like`. The distance is given in units of either pixels "
+"(default), inches, centimeters or millimeters."
+msgstr ""
+
+#: ../../point.rst:49 44d8777c04344d47bc4a9242808880d1
+msgid "to which to compute the distance."
+msgstr ""
+
+#: ../../point.rst:51 91e44f65560e4211accb6c725eebfdd6
+msgid "the unit to be measured in. One of \"px\", \"in\", \"cm\", \"mm\"."
+msgstr ""
+
+#: ../../point.rst 64687f2c94ef4b5ba2750e3eb184ad05
+#: cd80063c5dc9498cbbdd25b759d31cdb
+msgid "Return type"
+msgstr ""
+
+#: ../../point.rst a750839310d34c5d887db8268777489a
+msgid "Returns"
+msgstr ""
+
+#: ../../point.rst:54 bc0f187b31f44a7181e31d08f7c53a82
+msgid ""
+"the distance to *x*. If this is :data:`rect_like`, then the distance  * "
+"is the length of the shortest line connecting to one of the rectangle "
+"sides * is calculated to the **finite version** of it * is zero if it "
+"**contains** the point"
+msgstr ""
+
+#: ../../point.rst:54 ae37d128ae1440f3bbd8ed1ea99f2152
+msgid "the distance to *x*. If this is :data:`rect_like`, then the distance"
+msgstr ""
+
+#: ../../point.rst:56 9ee6925c977945fe973ed9ab955366b2
+msgid ""
+"is the length of the shortest line connecting to one of the rectangle "
+"sides"
+msgstr ""
+
+#: ../../point.rst:57 3081d399626b49c987de03dbfa3d0ff5
+msgid "is calculated to the **finite version** of it"
+msgstr ""
+
+#: ../../point.rst:58 c71eaa596c2c423b862c9e70cb89f044
+msgid "is zero if it **contains** the point"
+msgstr ""
+
+#: ../../point.rst:62 a6403033f7bf44a591174a022d0fdf1c
+msgid "New in version 1.16.0"
+msgstr ""
+
+#: ../../point.rst:64 7ece798ec8144d4692eb9a2959a40823
+msgid ""
+"Return the Euclidean norm (the length) of the point as a vector. Equals "
+"result of function *abs()*."
+msgstr ""
+
+#: ../../point.rst:68 f946cd0be509442bb0d77202325e2f96
+msgid "Apply a matrix to the point and replace it with the result."
+msgstr ""
+
+#: ../../point.rst:70 97f1624c012a40e1b233376529f768b0
+msgid "The matrix to be applied."
+msgstr ""
+
+#: ../../point.rst:72 ../../point.rst:80 ../../point.rst:86
+#: 18880915c78345d4a3e9807be13f50b7 52b88570e26b4eb5b5d6335523021f5f
+#: aab72bb00a464b30aa87b8638935ebd6
+msgid ":ref:`Point`"
+msgstr ""
+
+#: ../../point.rst:76 348afd234c5c4c98ba5a47b9d5463fbb
+msgid ""
+"Result of dividing each coordinate by *norm(point)*, the distance of the "
+"point to (0,0). This is a vector of length 1 pointing in the same "
+"direction as the point does. Its x, resp. y values are equal to the "
+"cosine, resp. sine of the angle this vector (and the point itself) has "
+"with the x axis."
+msgstr ""
+
+#: ../../point.rst 68c8e993f1924162940b72535b1ce094
+#: 74cca4c04a7c48d1a05b1cef455309b7 8ab750f04c354beda9b8193eb29e148a
+#: c3fab6e7e5714f6cb98f51b356a62c80
+msgid "type"
+msgstr ""
+
+#: ../../point.rst:84 1c2c3c05d9164c73a34b01b96b77e536
+msgid ""
+"Same as :attr:`unit` above, replacing the coordinates with their absolute"
+" values."
+msgstr ""
+
+#: ../../point.rst:90 fd219a7540914e5ea48f7ac85865752a
+msgid "The x coordinate"
+msgstr ""
+
+#: ../../point.rst:92 ../../point.rst:98 2782c521357b46fcb493227c412705b4
+#: 7c544b58e0744796b55d935cf4074748
+msgid "float"
+msgstr ""
+
+#: ../../point.rst:96 49f24b3a0ef74f0c936055a979a0c047
+msgid "The y coordinate"
+msgstr ""
+
+#: ../../point.rst:102 89afd299e213428fb3ff2efbf34ee8cf
+msgid ""
+"This class adheres to the Python sequence protocol, so components can be "
+"accessed via their index, too. Also refer to :ref:`SequenceTypes`."
+msgstr ""
+
+#: ../../point.rst:103 211bda314be541968172253f25a72895
+msgid ""
+"Rectangles can be used with arithmetic operators -- see chapter "
+":ref:`Algebra`."
+msgstr ""
+
+#: ../../footer.rst:46 065c44f95f8c488584785e74c127cd30
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+

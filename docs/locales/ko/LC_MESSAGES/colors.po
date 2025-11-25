@@ -1,0 +1,97 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ko\n"
+"Language-Team: ko <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 f7f80c710949468b8bd435236ad8e2c4
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 128dbd8ce067437e9fa9367d9a81490c
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 fc29ad4440c04367a8583f77893f5da0
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../colors.rst:7 904c9bd5c37245ada62e1853d3d3ab41
+msgid "Color Database"
+msgstr ""
+
+#: ../../colors.rst:8 3a6a8c4737a04dff80244d2af0ec3eb5
+msgid ""
+"Since the introduction of methods involving colors (like "
+":meth:`Page.draw_circle`), a requirement may be to have access to "
+"predefined colors."
+msgstr ""
+
+#: ../../colors.rst:10 413288a3680f4de18bf71a5e9d578ce4
+msgid ""
+"The fabulous GUI package `wxPython <https://wxpython.org/>`_ has a "
+"database of over 540 predefined RGB colors, which are given more or less "
+"memorizable names. Among them are not only standard names like \"green\" "
+"or \"blue\", but also \"turquoise\", \"skyblue\", and 100 (not only 50 "
+"...) shades of \"gray\", etc."
+msgstr ""
+
+#: ../../colors.rst:12 14609f03f5aa4aaa8e49243c7e03e485
+msgid ""
+"We have taken the liberty to copy this database (a list of tuples) "
+"modified into PyMuPDF and make its colors available as PDF compatible "
+"float triples: for wxPython's *(\"WHITE\", 255, 255, 255)* we return *(1,"
+" 1, 1)*, which can be directly used in *color* and *fill* parameters. We "
+"also accept any mixed case of \"wHiTe\" to find a color."
+msgstr ""
+
+#: ../../colors.rst:15 9ad1f31ffff5428d982d997142d514ed
+msgid "Function *getColor()*"
+msgstr ""
+
+#: ../../colors.rst:16 a622de02c9de4a36be638603c453810c
+msgid ""
+"As the color database may not be needed very often, one additional import"
+" statement seems acceptable to get access to it::"
+msgstr ""
+
+#: ../../colors.rst:41 77d5cf06ffb64791bf093176968e3823
+msgid "Printing the Color Database"
+msgstr ""
+
+#: ../../colors.rst:42 671f64b3cd454ac79241e57967a08885
+msgid ""
+"If you want to actually see how the many available colors look like, use "
+"scripts `print by RGB <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/blob/master/examples/print-rgb/print.py>`_ or `print by HSV "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/print-"
+"hsv/print.py>`_ in the examples directory. They create PDFs (already "
+"existing in the same directory) with all these colors. Their only "
+"difference is sorting order: one takes the RGB values, the other one the "
+"Hue-Saturation-Values as sort criteria. This is a screen print of what "
+"these files look like."
+msgstr ""
+
+#: ../../footer.rst:46 8a7d56a546234904856ce9f0b72c1614
+msgid "This documentation covers all versions up to |version|."
+msgstr ""
+
