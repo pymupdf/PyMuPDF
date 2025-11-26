@@ -47,7 +47,7 @@ msgstr "기능 매트릭스"
 msgid ""
 "The following table illustrates how |PyMuPDF| compares with other typical"
 " solutions."
-msgstr ""
+msgstr "다음 표는  |PyMuPDF| 가 다른 일반적인 솔루션들과 어떻게 비교되는지 보여줍니다."
 
 #: ../../about.rst:47 5f1d6f3b09ac43e1ae7043dc7a879c02
 msgid ""
