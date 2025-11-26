@@ -89,6 +89,7 @@ from pymupdf import mupdf
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
+CHARS_MADE = False # whether make_chars is executed. If not, make_chars is called before Table.extract()
 TEXTPAGE = None
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
@@ -1529,6 +1530,9 @@ class Table:
         return max([len(r.cells) for r in self.rows])
 
     def extract(self, **kwargs) -> list:
+        if not CHARS_MADE:
+            make_chars()
+
         chars = CHARS
         table_arr = []
 
@@ -2152,7 +2156,7 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global TEXTPAGE
+    global TEXTPAGE, CHARS_MADE
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
@@ -2204,6 +2208,7 @@ def make_chars(page, clip=None):
                         "y1": bbox_ctm.y1,
                     }
                     CHARS.append(char_dict)
+    CHARS_MADE = True
 
 
 # ------------------------------------------------------------------------
@@ -2586,9 +2591,10 @@ def find_tables(
     paths=None,  # accept vector graphics as parameter
 ):
     pymupdf._warn_layout_once()
-    global CHARS, EDGES
+    global CHARS, EDGES, CHARS_MADE
     CHARS = []
     EDGES = []
+    CHARS_MADE = False
     old_small = bool(pymupdf.TOOLS.set_small_glyph_heights())  # save old value
     pymupdf.TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
     if page.rotation != 0:
