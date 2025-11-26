@@ -79,6 +79,15 @@ Once built HTML docs HTML pages are in `_build/html/ko`.
 Note: subsequent runs can omit the `-a` parameter to speed up builds (it will just build what has changed).
 
 
+Note: When build the corresponding `.mo` binary files will also be generated - these updated binaries should also be committed to Git.
+
+### Depoloying
+
+Docs will be automatically deployed to RTD once pushes are made to relevant branches.
+
+
+### Updating
+
 - Updating, after changes on the `main` branch and a sync with the main `en` .rst files, from the "docs" location, do:
 
 `sphinx-build -b gettext . _build/gettext`
@@ -89,6 +98,11 @@ then:
 `sphinx-intl update -p _build/gettext -l ko`
 
 This will update the corresponding `po` files for further edits. Then check these files for "#, fuzzy" entries as the new stuff might exist there and requires editing.
+
+
+
+
+
 
 
 ## Building PDF documentation
