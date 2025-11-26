@@ -22,7 +22,7 @@ def test_codespell():
     
     if platform.system() == 'Windows':
         # Git commands seem to fail on Github Windows runners.
-        print(f'test_codespell(): Not running on Widows')
+        print(f'test_codespell(): Not running on Windows')
         return
         
     root = os.path.abspath(f'{__file__}/../..')
