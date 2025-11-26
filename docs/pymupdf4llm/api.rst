@@ -19,6 +19,7 @@ The |PyMuPDF4LLM| API
 .. method:: to_markdown(doc: pymupdf.Document | str, *, \
     detect_bg_color: bool = True, \
     dpi: int = 150, \
+    ocr_dpi: int = 400, \
     embed_images: bool = False, \
     extract_words: bool = False, \
     filename: str | None = None, \
@@ -53,6 +54,8 @@ The |PyMuPDF4LLM| API
     :arg bool detect_bg_color: does a simple check for the general background color of the pages (default is ``True``). If any text or vector has this color it will be ignored. May increase detection accuracy. **Ignored in "layout mode".**
 
     :arg int dpi: specify the desired image resolution in dots per inch. Relevant only if `write_images=True` or `embed_images=True`. Default value is 150.
+
+    :arg int ocr_dpi: specify the desired image resolution in dots per inch for applying OCR to the intermdeiate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precison but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high. **Only valid in "layout mode".**
 
     :arg bool embed_images: like `write_images`, but images will be included in the markdown text as base64-encoded strings. Mutually exclusive with `write_images` and ignores `image_path`. This may drastically increase the size of your markdown text.
 

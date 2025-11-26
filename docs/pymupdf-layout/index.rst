@@ -123,9 +123,9 @@ OCR support
 
 The new layout-sensitive PyMuPDF4LLM version also evaluates whether a page would benefit from applying OCR to it. If its heuristics come to this conclusion, the built-in Tesseract-OCR module is automatically invoked. Its results are then handled like normal page content.
  
-If a page contains no text at all, but is covered with an image or many vectors, a check is made using `OpenCV <https://pypi.org/project/opencv-python/>`_ whether text is *probably* detectable on the page at all. This is done to tell apart ordinary pictures (like photographies - which we don't want to OCR) from image-based text.
+If a page contains (roughly) no text at all, but is covered with images or many character-sized vectors, a check is made using `OpenCV <https://pypi.org/project/opencv-python/>`_ whether text is *probably* detectable on the page at all. This is done to tell apart image-based text from ordinary pictures (like photographies).
 
-If the page does contain text but contains too many unreadable characters (like "�����"), OCR is also executed, but **for the affected text areas only** -- not the full page. This way, we avoid losing already existing text and other content like images and vectors.
+If the page does contain text but too many characters are unreadable (like "�����"), OCR is also executed, but **for the affected text areas only** -- not the full page. This way, we avoid losing already existing text and other content like images and vectors.
 
 For these heuristics to work we need both, an existing Tesseract installation and the availability of OpenCV in the Python environment. If either is missing, no OCR is attempted at all.
 
@@ -136,6 +136,6 @@ For these heuristics to work we need both, an existing Tesseract installation an
 |PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats
 -----------------------------------------------------
 
-If you have imported ``pymupdf.layout``, |PyMuPDF4LLM| changes its behavior in various areas. New methods become available and some features are no longer supported. Please visit `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for a detailed description of the changes. This web site is being kept up to date while we continue to work on improvements.
+If you have imported ``pymupdf.layout``, |PyMuPDF4LLM| changes its behavior in various areas quite significantly. New methods become available and also some features are no longer supported. Please visit `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for a detailed description of the changes. That web site is being kept up to date while we continue to work on improvements.
 
 .. include:: ../footer.rst
