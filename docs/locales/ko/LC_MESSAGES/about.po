@@ -37,11 +37,11 @@ msgstr ""
 
 #: ../../about.rst:10 6bf350a1548242f08f4231816b75ae9e
 msgid "Features Comparison"
-msgstr ""
+msgstr "기능 비교"
 
 #: ../../about.rst:16 e6e0680f36684a24b35c48e7756b8ee2
 msgid "Feature Matrix"
-msgstr ""
+msgstr "기능 매트릭스"
 
 #: ../../about.rst:18 fdad9ebd21e342da9d1b6b35ca5ad4e9
 msgid ""
