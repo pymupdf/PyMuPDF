@@ -2855,7 +2855,7 @@ msgstr ""
 msgid ""
 "PDF only: Draw a circle around *center* (:data:`point_like`) with a "
 "radius of *radius*. See :meth:`Shape.draw_circle`."
-msgstr "PDF 전용: 중심(point_like)을 기준으로 반지름이 radius인 원을 그립니다. Shape.draw_circle() 참조."
+msgstr "PDF 전용: 중심(:data:`point_like`)을 기준으로 반지름이  *radius* 인 원을 그립니다. :meth:`Shape.draw_circle` 참조."
 
 #: ../../page.rst:990 2e0189701fa74750b9dacd5303fc0bd4
 msgid ""
