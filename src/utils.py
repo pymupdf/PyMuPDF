@@ -314,6 +314,33 @@ def get_text_selection(
     return rc
 
 
+def is_scanned_page(
+    page: pymupdf.Page,
+    threshold: int = 50,
+) -> bool:
+    """Detect if a page is scanned (image-based) vs native (text-based).
+    
+    Args:
+        page: The page to check
+        threshold: Minimum characters to consider as having text (default 50)
+    
+    Returns:
+        True if page appears to be scanned, False if native with embedded text
+    """
+    pymupdf.CheckParent(page)
+    
+    # Quick check: try to extract text
+    text = page.get_textpage(flags=0).extractText().strip()
+    
+    # If very little text, check for images
+    if len(text) < threshold:
+        images = page.get_images()
+        if len(images) > 0:
+            return True  # Has images but no text = scanned
+    
+    return False
+
+
 def get_textpage_ocr(
     page: pymupdf.Page,
     flags: int = 0,
@@ -398,6 +425,67 @@ def get_textpage_ocr(
     return tpage
 
 
+def get_text_smart(
+    page: pymupdf.Page,
+    option: str = "text",
+    *,
+    clip: rect_like = None,
+    flags: OptInt = None,
+    textpage: pymupdf.TextPage = None,
+    sort: bool = False,
+    delimiters=None,
+    tolerance=3,
+    auto_ocr: bool = True,
+    ocr_language: str = "eng",
+    ocr_dpi: int = 300,
+):
+    """Extract text with automatic OCR for scanned pages.
+    
+    This is an enhanced version of get_text() that automatically detects
+    scanned pages and applies OCR when needed.
+
+    Args:
+        page: The page to extract text from
+        option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
+        clip: (rect-like) restrict output to this area.
+        flags: bit switches to e.g. exclude images or decompose ligatures.
+        textpage: reuse this pymupdf.TextPage and make no new one.
+        sort: whether to sort the output
+        delimiters: word delimiters for "words" option
+        tolerance: tolerance for text sorting
+        auto_ocr: automatically use OCR for scanned pages (default True)
+        ocr_language: language for OCR (default "eng")
+        ocr_dpi: DPI for OCR rendering (default 300 for better accuracy)
+
+    Returns:
+        Same as get_text(), but with OCR applied to scanned pages
+    """
+    pymupdf.CheckParent(page)
+    
+    # Check if page is scanned and auto_ocr is enabled
+    if auto_ocr and textpage is None and is_scanned_page(page):
+        # Page is scanned, use OCR
+        textpage = get_textpage_ocr(
+            page,
+            flags=flags or 0,
+            language=ocr_language,
+            dpi=ocr_dpi,
+            full=True,
+        )
+    
+    # Now use normal get_text with the OCR textpage
+    return get_text(
+        page,
+        option=option,
+        clip=clip,
+        flags=flags,
+        textpage=textpage,
+        sort=sort,
+        delimiters=delimiters,
+        tolerance=tolerance,
+    )
+
+
 def get_text(
     page: pymupdf.Page,
     option: str = "text",
@@ -412,6 +500,8 @@ def get_text(
     """Extract text from a page or an annotation.
 
     This is a unifying wrapper for various methods of the pymupdf.TextPage class.
+    
+    Note: For automatic OCR support on scanned pages, use get_text_smart() instead.
 
     Args:
         option: (str) text, words, blocks, html, dict, json, rawdict, xhtml or xml.
@@ -1167,3 +1257,100 @@ def recover_char_quad(line_dir: tuple, span: dict, char: dict) -> pymupdf.Quad:
         raise ValueError("bad span argument")
 
     return recover_bbox_quad(line_dir, span, bbox)
+
+
+def to_markdown(
+    page: pymupdf.Page,
+    auto_ocr: bool = True,
+    ocr_language: str = "eng",
+    ocr_dpi: int = 300,
+) -> str:
+    """Convert page to Markdown format with automatic OCR for scanned pages.
+    
+    Args:
+        page: The page to convert
+        auto_ocr: Automatically use OCR for scanned pages (default True)
+        ocr_language: Language for OCR (default "eng")
+        ocr_dpi: DPI for OCR rendering (default 300)
+    
+    Returns:
+        Markdown-formatted text
+    """
+    pymupdf.CheckParent(page)
+    
+    # Get text with smart OCR detection
+    text_dict = get_text_smart(
+        page,
+        option="dict",
+        auto_ocr=auto_ocr,
+        ocr_language=ocr_language,
+        ocr_dpi=ocr_dpi,
+    )
+    
+    markdown_lines = []
+    
+    for block in text_dict.get("blocks", []):
+        if block.get("type") == 0:  # Text block
+            for line in block.get("lines", []):
+                line_text = ""
+                for span in line.get("spans", []):
+                    text = span.get("text", "")
+                    font_size = span.get("size", 12)
+                    flags = span.get("flags", 0)
+                    
+                    # Bold if flags indicate it
+                    if flags & 16:  # Bold flag
+                        text = f"**{text}**"
+                    # Italic if flags indicate it
+                    if flags & 2:  # Italic flag
+                        text = f"*{text}*"
+                    
+                    line_text += text
+                
+                # Detect headers based on font size
+                if font_size > 20:
+                    markdown_lines.append(f"# {line_text}")
+                elif font_size > 16:
+                    markdown_lines.append(f"## {line_text}")
+                elif font_size > 14:
+                    markdown_lines.append(f"### {line_text}")
+                else:
+                    markdown_lines.append(line_text)
+            
+            markdown_lines.append("")  # Paragraph break
+    
+    return "\n".join(markdown_lines)
+
+
+def document_to_markdown(
+    doc: pymupdf.Document,
+    auto_ocr: bool = True,
+    ocr_language: str = "eng",
+    ocr_dpi: int = 300,
+    page_separator: str = "\n\n---\n\n",
+) -> str:
+    """Convert entire document to Markdown with automatic OCR.
+    
+    Args:
+        doc: The document to convert
+        auto_ocr: Automatically use OCR for scanned pages (default True)
+        ocr_language: Language for OCR (default "eng")
+        ocr_dpi: DPI for OCR rendering (default 300)
+        page_separator: String to separate pages (default "\\n\\n---\\n\\n")
+    
+    Returns:
+        Markdown-formatted text for entire document
+    """
+    pages = []
+    
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        md = to_markdown(
+            page,
+            auto_ocr=auto_ocr,
+            ocr_language=ocr_language,
+            ocr_dpi=ocr_dpi,
+        )
+        pages.append(f"<!-- Page {page_num + 1} -->\n\n{md}")
+    
+    return page_separator.join(pages)

@@ -6764,6 +6764,27 @@ class Document:
             textpage=textpage,
         )
     
+    def to_markdown(self, auto_ocr: bool = True, ocr_language: str = "eng", ocr_dpi: int = 300, page_separator: str = "\n\n---\n\n") -> str:
+        """Convert entire document to Markdown with automatic OCR for scanned pages.
+        
+        Args:
+            auto_ocr: Automatically use OCR for scanned pages (default True)
+            ocr_language: Language for OCR (default "eng")
+            ocr_dpi: DPI for OCR rendering (default 300)
+            page_separator: String to separate pages (default "\\n\\n---\\n\\n")
+        
+        Returns:
+            Markdown-formatted text for entire document
+        
+        Example:
+            >>> doc = fitz.open("document.pdf")
+            >>> markdown = doc.to_markdown()  # Auto-detects scanned pages
+            >>> print(markdown)
+        """
+        if self.is_closed:
+            raise ValueError("document closed")
+        return utils.document_to_markdown(self, auto_ocr=auto_ocr, ocr_language=ocr_language, ocr_dpi=ocr_dpi, page_separator=page_separator)
+    
     def select(self, pyliste):
         """Build sub-pdf with page numbers in the list."""
         if self.is_closed or self.is_encrypted:
@@ -12177,6 +12198,48 @@ class Page:
     
     def get_textpage_ocr(self, *args, **kwargs):
         return utils.get_textpage_ocr(self, *args, **kwargs)
+    
+    def is_scanned(self, threshold: int = 50) -> bool:
+        """Check if page is scanned (image-based) vs native (text-based).
+        
+        Args:
+            threshold: Minimum characters to consider as having text (default 50)
+        
+        Returns:
+            True if page appears to be scanned, False if native
+        """
+        return utils.is_scanned_page(self, threshold=threshold)
+    
+    def get_text_smart(self, *args, **kwargs):
+        """Extract text with automatic OCR for scanned pages.
+        
+        This is an enhanced version of get_text() that automatically detects
+        scanned pages and applies OCR when needed.
+        
+        Args:
+            option: text format (text, html, dict, etc.)
+            auto_ocr: automatically use OCR for scanned pages (default True)
+            ocr_language: language for OCR (default "eng")
+            ocr_dpi: DPI for OCR rendering (default 300)
+            ... (other args same as get_text)
+        
+        Returns:
+            Extracted text, with OCR applied if page is scanned
+        """
+        return utils.get_text_smart(self, *args, **kwargs)
+    
+    def to_markdown(self, auto_ocr: bool = True, ocr_language: str = "eng", ocr_dpi: int = 300) -> str:
+        """Convert page to Markdown format with automatic OCR for scanned pages.
+        
+        Args:
+            auto_ocr: Automatically use OCR for scanned pages (default True)
+            ocr_language: Language for OCR (default "eng")
+            ocr_dpi: DPI for OCR rendering (default 300)
+        
+        Returns:
+            Markdown-formatted text
+        """
+        return utils.to_markdown(self, auto_ocr=auto_ocr, ocr_language=ocr_language, ocr_dpi=ocr_dpi)
     
     def get_textpage(self, clip: rect_like = None, flags: int = 0, matrix=None) -> "TextPage":
         CheckParent(self)
