@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-11-26 17:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 69bdc5540cdf44a780d55453fad1a7fa
+#: ../../header.rst:-1 55554f175cc249878ead6e3e984a2e8a
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 75b189cbfec540cfa54ca608b1023c06
+#: ../../header.rst:-1 6aa2efac349e4bcab64dd67c0a0d5b13
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 c2034d5aea3c471fa5ec4cb90d2c2101
+#: ../../header.rst:-1 fc386a5037ac4a0ba4239f1c51308e56
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -171,28 +171,27 @@ msgstr ""
 msgid "Extending Capability"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:108 f3bec49e1ee042caad2ba1f1f8d07230
+#: ../../pymupdf-layout/index.rst:107 f3bec49e1ee042caad2ba1f1f8d07230
 msgid "Using with Pro"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:110 1a6a4c0ada2842d588768a849fe3c7f3
+#: ../../pymupdf-layout/index.rst:109 1a6a4c0ada2842d588768a849fe3c7f3
 msgid ""
 "We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Pro| and "
 "thus increase our capability by allowing Office documents to be provided "
-"as input files. In this case all we have to do is to include the import "
-"for |PyMuPDF Pro| and unlock it before we import & activate |PyMuPDF "
-"Layout|::"
+"as input files. In this case all we have to do is to add the import for "
+"|PyMuPDF Pro| and unlock it::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:117 695ebd9778304b3da362108ea2e9695e
+#: ../../pymupdf-layout/index.rst:116 695ebd9778304b3da362108ea2e9695e
 msgid "Now we can happily load Office files and convert them as follows::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:124 14fdcdcd4aab4335919c50efc4749185
+#: ../../pymupdf-layout/index.rst:122 14fdcdcd4aab4335919c50efc4749185
 msgid "OCR support"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:126 99eb4f65329d45c7bb6eaf035c255259
+#: ../../pymupdf-layout/index.rst:124 99eb4f65329d45c7bb6eaf035c255259
 msgid ""
 "The new layout-sensitive PyMuPDF4LLM version also evaluates whether a "
 "page would benefit from applying OCR to it. If its heuristics come to "
@@ -200,262 +199,199 @@ msgid ""
 "invoked. Its results are then handled like normal page content."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:128 92a0df16770d46a1be17c84a05ee6af8
-msgid "If Tesseract is not installed on your platform, no OCR is attempted."
+#: ../../pymupdf-layout/index.rst:126 cdbf9a9f1f5341cc96aaaa1a6a74434f
+msgid ""
+"If a page contains (roughly) no text at all, but is covered with images "
+"or many character-sized vectors, a check is made using `OpenCV "
+"<https://pypi.org/project/opencv-python/>`_ whether text is *probably* "
+"detectable on the page at all. This is done to tell apart image-based "
+"text from ordinary pictures (like photographies)."
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:128 8c8ba1c1b2bc4875b04cc60b98293a08
+msgid ""
+"If the page does contain text but too many characters are unreadable "
+"(like \"�����\"), OCR is also executed, but **for the affected text areas"
+" only** -- not the full page. This way, we avoid losing already existing "
+"text and other content like images and vectors."
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:130 225a390ebce94321a090f94ab2165c16
+msgid ""
+"For these heuristics to work we need both, an existing Tesseract "
+"installation and the availability of OpenCV in the Python environment. If"
+" either is missing, no OCR is attempted at all."
 msgstr ""
 
 #: ../../pymupdf-layout/index.rst:137 fddcc1ea96e64c658554704bb141490b
-msgid "PyMuPDF Layout and parameter caveats"
+msgid "|PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:140 7900f027d5e94aefb22c02f4ba83a6b2
+#: ../../pymupdf-layout/index.rst:139 b7f33df2c3974ea1bbead613286f3639
 msgid ""
-"|PyMuPDF Layout| uses |PyMuPDF4LLM| for its interface. However, if you "
-"have imported ``Layout`` then the following caveats apply to the method "
-"parameters:"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:144 0642cf3b9b4842168a9b83a1d06e4eac
-msgid "Parameter"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:144 3eb44a2de17a445fb8b8ed8245e03cc5
-msgid "to_markdown"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:144 a11e031283df470a903feff06d45481b
-msgid "to_text"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:144 0cbc4803367040939fc85ff509844af3
-msgid "to_json"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:144 20e2c633fff34b4ba62ca527052c8079
-msgid "Comments"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:146 a034d76a566b404d95e9aac2fc39a171
-msgid "doc"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:146 ../../pymupdf-layout/index.rst:148
-#: ../../pymupdf-layout/index.rst:150 ../../pymupdf-layout/index.rst:154
-#: ../../pymupdf-layout/index.rst:156 ../../pymupdf-layout/index.rst:160
-#: ../../pymupdf-layout/index.rst:173 ../../pymupdf-layout/index.rst:179
-#: ../../pymupdf-layout/index.rst:181 ../../pymupdf-layout/index.rst:195
-#: ../../pymupdf-layout/index.rst:203 068818a44d2f468db01eb1e3340b2ddf
-#: 0690c3cfbb2a443cb7421db631e24e13 08eef9a5c6914160a3445d125b84c640
-#: 13e87a62cf3d4fb59de03d87cae59ea1 1fa52c19198247198101c560907493e5
-#: 2996ea664103455f8649896a925bff10 323af2167afa47579fb625940d5a4524
-#: 340f851a7c23432b8a36e4a6540166fe 3c6cdb8a60d742f7b935bccb0c7def6e
-#: 4a30dc9de6d7441cb0ddb27bd890ae37 4ebd87d9dd5e4abbbfbd54dadb71c611
-#: 4fcc8cb87e474b05819c6a4b6bb25178 50303c1ffa214918b48f10a8933d50e1
-#: 521023f41c934cadb610eebfa8a7f081 615d79ebbb344a7a9e9c7d0dfd223fc0
-#: 773ef62fb56a453b962abd09a084a2dd 77d6080909844423a0f470a49866d84a
-#: 8d5b8d3f28bf4bff9396fc3bcedb4dd2 8df37e5f9251457fab0aff8602c4b9fd
-#: 986d476859504964a9a5ebef71fd0075 99e5b687820f4455960421ab4944cc00
-#: 99f5ec6922d148898c805085e81bb83f b2819d7080834bd3ba45a2854683fb39
-#: b3d9d1c0aab34f1c827e97178a3592b0 c0a638c053e74162815b811edbc008e4
-#: c9455f9401ef41fb857cbab2ba3a6bc9 ce153f4e6d844cf2923ecd2c9f263012
-#: d99fa30a6c204ad2b6c9be48f4f0ef40 ddb3f88f90a343c2937c199c0437e4f5
-#: e3b2457835f84671b58ecc288178d5b1 ec2d2d58e4f3425b874a4ca45c5d2d36
-msgid "✔️"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:148 af76689881b9484896f1889b34284589
-msgid "header"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:148 ../../pymupdf-layout/index.rst:150
-#: 54047d35dd0d4340ad828abcc3d4ae73 6957d49d6a86449c9eac38b2a54e6cc3
-msgid "ignored"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:148 ../../pymupdf-layout/index.rst:150
-#: 4ab4d0c7a8a24f25986f9f0da74a34bf 57878a2faa184f9c83e5541e0e238e5b
-msgid "**new:** replaces ``margins``"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:150 a9f77be1d664483ba6b37c632650f97b
-msgid "footer"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:152 d0aa12aa4f00428986bd9f1bfafb57ef
-msgid "detect_bg_color"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:152 ../../pymupdf-layout/index.rst:162
-#: ../../pymupdf-layout/index.rst:164 ../../pymupdf-layout/index.rst:167
-#: ../../pymupdf-layout/index.rst:169 ../../pymupdf-layout/index.rst:171
-#: ../../pymupdf-layout/index.rst:175 ../../pymupdf-layout/index.rst:177
-#: ../../pymupdf-layout/index.rst:183 ../../pymupdf-layout/index.rst:185
-#: ../../pymupdf-layout/index.rst:199 ../../pymupdf-layout/index.rst:201
-#: 037cf03b45de4c73a42ca68f8b58e8d8 0c4f9b0a754a4130875fadd22859ceee
-#: 177bda5be8d74b74a02a312beb496344 269fee74fba044ca8acb5475966e1115
-#: 2c220593bf574b1d85c715883132d849 329fa547d17240a68f456272d25e433f
-#: 3d36e353b9c4414088ed45fd637f555f 443ac9cbd7884660acbc1f4768f37cc6
-#: 4629f1f4dc7947779adb8d1b3018fae0 5453a421010344e4baffffc324a79e89
-#: 54f2ca47f5a247c5a8fa9a22636175dd 5688e49e2a0942cb87ee1a84c12e5b9f
-#: 575f36da9b824300b73aee4031c0cd50 577a53d6cb094743b8251dfec25e426b
-#: 5ed39c1ecda44e6db9e9a5483c1cf8cc 617e58b82cb94261bfd565e709aa011f
-#: 90c9c546859c43919105a8a6c6486072 a67a9ecd7cf3486cb7893dedc9896ae9
-#: a6c5fdafe0cc4d7dab5b70a076cb2bfc a6c888b311da43159bb397ef13d60f49
-#: a88f92dc304b45c39840633b1d3bfd88 b475e4ab0ea241bda89d6d58b97f25d1
-#: bf9f6bea83754ed692f50be05e399043 c1334286266a4c8a9af242a549f21c8e
-#: c692ae8281e04d2cb72f39cb96fcfb76 cc97ee937e26408ebd168280efee9ee3
-#: d4909e6b4ec248b7bd8d88a9e5297910 e4ee587fe79a4818b20273582191d961
-#: e768cb4c266a4fc8a76023f1ae232acb eceffb2e674145e29657be7bbf85f53d
-#: ed537ecf65b445e686f3b11090ea6a54 f3a11a7308ce4d3ebd50335ad46594f7
-#: f47af19af03a45979d0d8062269cdce8 f58e9d907c3c4b0385c02fec7667056a
-#: f770075c35b242128e597c9a21787dd6 fcb03e7a0a704153bc6499a549a66899
-msgid "❌"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:154 0f49a5f2a10b4d3483fe454f5d4127ff
-msgid "dpi"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:156 2ce7c0840b074f9f89c879b7c516f916
-msgid "embed_images"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:158 9fae796ddf3d4f94817ad1ec8104217d
-msgid "extract_words"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:158 ../../pymupdf-layout/index.rst:187
-#: ../../pymupdf-layout/index.rst:189 ../../pymupdf-layout/index.rst:191
-#: ../../pymupdf-layout/index.rst:193 ../../pymupdf-layout/index.rst:197
-#: 02cf7166619e45268ae2f38531587a19 030575d0b43f4fdcb1ac1f5e90e7f37a
-#: 04fcdcb70c51491a95b69936bef8b580 07b9b24696f24478abc7cf1859b9232b
-#: 3d410b7559fe4ad0a91f3f28649af4f6 439b7fb5351e457fb90b5d2737f7f6f5
-#: 452365aff045448496f6b44cbf4df358 58b4f806d86442099784e34b30f9049e
-#: 691d26f0c3864ceabd96fb1937e3bbd7 85f711e000cc440d94922f7cf086d5a7
-#: 88d45b4aa2ac43a0916160fedeb12e98 a3859bcf09ed4d268230d76c7fe04fed
-#: a824e96fb98e4fc3ba6bd28549fbf4fa b68c441f0baf44d3903525dedcf01258
-#: cc677c9bea974de48d747482441b9be6 eb7579f48b2244b3a7fb30fe80410fed
-#: eefc53bf898643739dbb14279ab26b39 ffd983ad5e524696ba650d59baaf5048
-msgid "later"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:158 ../../pymupdf-layout/index.rst:187
-#: ../../pymupdf-layout/index.rst:189 ../../pymupdf-layout/index.rst:191
-#: ../../pymupdf-layout/index.rst:193 ../../pymupdf-layout/index.rst:197
-#: 6a12374d878342418d29f3fc630535f1 729a892af35947fb91c98511c6be0b08
-#: b69eb7177bce4a7eb31590c9bc32d45c e73ee03b9f244390b91624ded6aac3a7
-#: f1d10bcdcaac4a0f86fbe3dcab155ff9 fab9fa35a7d14d1aa32cbf65818a2c16
-msgid "postponed"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:160 0a49f78e5c62484094cc1c85d6741a7b
-msgid "filename"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:162 d04a4d1509e14038860443d41643af9f
-msgid "fontsize_limit"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:162 ../../pymupdf-layout/index.rst:167
-#: ../../pymupdf-layout/index.rst:169 ../../pymupdf-layout/index.rst:175
-#: ../../pymupdf-layout/index.rst:177 ../../pymupdf-layout/index.rst:183
-#: ../../pymupdf-layout/index.rst:185 ../../pymupdf-layout/index.rst:199
-#: 07ed59e3b5b24c07ba338008f9e881d9 1836526077e24ef1ac357b066984045d
-#: 3d7c7766402740949e270a384e37f5a7 6060f327ed4b4672a2dc22f1268c1809
-#: ae9bf45f059b4b3cae574253cc9fbea4 b7a641f0c7f24a4e9d4f3a528be21093
-#: d5218d9c1d624865be5039e9dede61c5 fe36fba64a64462a917a32f226bcc3eb
-msgid "obsolete"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:164 b6282276cfba4dc1b37b41d5e2913e29
-msgid "force_text"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:164 f0b935a546764c8a96239ef8111a1f79
-msgid "text in pictures is always ignored"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:167 9fe7a34b4a014bc2afb30f28487f9b52
-msgid "graphics_limit"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:169 1ac6874d5d4a48a18ce2c93197fde65d
-msgid "hdr_info"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:171 72682ae27da04948b9f988b564308e9d
-msgid "ignore_alpha"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:173 f2d8cde52f9948dda58ace10f5e865d1
-msgid "ignore_code"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:175 60c85621f6ff4506a460423aaab9a67f
-msgid "ignore_graphics"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:177 9513eed707794239ad97baa9cfd136e7
-msgid "ignore_images"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:179 e6e3ea6a21814d51a7ade7192e23cf98
-msgid "image_format"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:181 910d2628948d47fab9e9baade593f743
-msgid "image_path"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:183 ba6e60df5c414e6fa3f372adedaf0f7d
-msgid "image_size_limit"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:185 3b92ae8dbd114e9db295e803e0f65aaf
-msgid "margins"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:187 31b9f54461174d0db4d217067064a9c0
-msgid "page_chunks"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:189 d75cd782ef7c48ab910d8db93fa073c9
-msgid "page_height"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:191 63083e192eea418f9db2d138ec32e2bb
-msgid "page_separators"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:193 bab876688b124ad886c4e738e7ab5eeb
-msgid "page_width"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:195 bb085d405a43484486042257ff985bbf
-msgid "pages"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:197 c13f0a229d2e44babf233bb21b554a56
-msgid "show_progress"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:199 9fdc17aff7f9403b8f46890e9f09cd56
-msgid "table_strategy"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:201 111d276552b24d8aa9f46214e58ca21a
-msgid "use_glyphs"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:201 95ec15fc72054b6699de7228b0ce9bc9
-msgid "always show &#xfffd;"
-msgstr ""
-
-#: ../../pymupdf-layout/index.rst:203 5b9fb335e14843328c32dac736894c1e
-msgid "write_images"
+"If you have imported ``pymupdf.layout``, |PyMuPDF4LLM| changes its "
+"behavior in various areas quite significantly. New methods become "
+"available and also some features are no longer supported. Please visit "
+"`this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for"
+" a detailed description of the changes. That web site is being kept up to"
+" date while we continue to work on improvements."
 msgstr ""
 
 #: ../../footer.rst:46 fcc43bbf382644f6928a40bc9aea37c1
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
+
+#~ msgid ""
+#~ "We are able to extend |PyMuPDF "
+#~ "Layout| to work with |PyMuPDF Pro| "
+#~ "and thus increase our capability by "
+#~ "allowing Office documents to be provided"
+#~ " as input files. In this case "
+#~ "all we have to do is to "
+#~ "include the import for |PyMuPDF Pro| "
+#~ "and unlock it before we import &"
+#~ " activate |PyMuPDF Layout|::"
+#~ msgstr ""
+
+#~ msgid "If Tesseract is not installed on your platform, no OCR is attempted."
+#~ msgstr ""
+
+#~ msgid "PyMuPDF Layout and parameter caveats"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "|PyMuPDF Layout| uses |PyMuPDF4LLM| for "
+#~ "its interface. However, if you have "
+#~ "imported ``Layout`` then the following "
+#~ "caveats apply to the method parameters:"
+#~ msgstr ""
+
+#~ msgid "Parameter"
+#~ msgstr ""
+
+#~ msgid "to_markdown"
+#~ msgstr ""
+
+#~ msgid "to_text"
+#~ msgstr ""
+
+#~ msgid "to_json"
+#~ msgstr ""
+
+#~ msgid "Comments"
+#~ msgstr ""
+
+#~ msgid "doc"
+#~ msgstr ""
+
+#~ msgid "✔️"
+#~ msgstr ""
+
+#~ msgid "header"
+#~ msgstr ""
+
+#~ msgid "ignored"
+#~ msgstr ""
+
+#~ msgid "**new:** replaces ``margins``"
+#~ msgstr ""
+
+#~ msgid "footer"
+#~ msgstr ""
+
+#~ msgid "detect_bg_color"
+#~ msgstr ""
+
+#~ msgid "❌"
+#~ msgstr ""
+
+#~ msgid "dpi"
+#~ msgstr ""
+
+#~ msgid "embed_images"
+#~ msgstr ""
+
+#~ msgid "extract_words"
+#~ msgstr ""
+
+#~ msgid "later"
+#~ msgstr ""
+
+#~ msgid "postponed"
+#~ msgstr ""
+
+#~ msgid "filename"
+#~ msgstr ""
+
+#~ msgid "fontsize_limit"
+#~ msgstr ""
+
+#~ msgid "obsolete"
+#~ msgstr ""
+
+#~ msgid "force_text"
+#~ msgstr ""
+
+#~ msgid "text in pictures is always ignored"
+#~ msgstr ""
+
+#~ msgid "graphics_limit"
+#~ msgstr ""
+
+#~ msgid "hdr_info"
+#~ msgstr ""
+
+#~ msgid "ignore_alpha"
+#~ msgstr ""
+
+#~ msgid "ignore_code"
+#~ msgstr ""
+
+#~ msgid "ignore_graphics"
+#~ msgstr ""
+
+#~ msgid "ignore_images"
+#~ msgstr ""
+
+#~ msgid "image_format"
+#~ msgstr ""
+
+#~ msgid "image_path"
+#~ msgstr ""
+
+#~ msgid "image_size_limit"
+#~ msgstr ""
+
+#~ msgid "margins"
+#~ msgstr ""
+
+#~ msgid "page_chunks"
+#~ msgstr ""
+
+#~ msgid "page_height"
+#~ msgstr ""
+
+#~ msgid "page_separators"
+#~ msgstr ""
+
+#~ msgid "page_width"
+#~ msgstr ""
+
+#~ msgid "pages"
+#~ msgstr ""
+
+#~ msgid "show_progress"
+#~ msgstr ""
+
+#~ msgid "table_strategy"
+#~ msgstr ""
+
+#~ msgid "use_glyphs"
+#~ msgstr ""
+
+#~ msgid "always show &#xfffd;"
+#~ msgstr ""
+
+#~ msgid "write_images"
+#~ msgstr ""
 
