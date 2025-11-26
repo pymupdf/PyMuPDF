@@ -54,7 +54,7 @@ This will serve the docs on a localhost and auto-update the pages live as you ma
 
 PyMuPDF docs can be delivered in multiple languages - English, Japanese & Korean.
 
-To add a new langauge, e.g. Korean, use:
+To add a new language, e.g. Korean, use:
 
 `sphinx-build -b gettext . _build/gettext`
 `sphinx-intl update -p _build/gettext -l ko`
