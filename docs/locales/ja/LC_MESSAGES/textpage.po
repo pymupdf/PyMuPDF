@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 9ca6145cb97145af9cdf5ef76dc0de3c
+#: ../../header.rst:-1 a689d6f014ae4b3e996f4ea1430fd7e2
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 0600b90839df40e9ac23cb738c57c29a
+#: ../../header.rst:-1 fcaf663acdd64264ba54a9b09a7a053d
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 1f6d63ced97943c9b613b299ec031e9c
+#: ../../header.rst:-1 2384969b3a1a48ecb481ced21413e4ab
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../textpage.rst:7 9966d819027e453abbb1adeb4d1b2bfb
+#: ../../textpage.rst:7 b50883dcbbd2424db737f428b4204dc7
 msgid "TextPage"
 msgstr "TextPage (テキストページ)"
 
-#: ../../textpage.rst:9 8297e05841c84513ba479147993e07bc
+#: ../../textpage.rst:9 6e81bba1ccf7481d8fc21ba0651cd715
 msgid ""
 "This class represents text and images shown on a document page. All "
 ":ref:`MuPDF document types<Supported_File_Types>` are supported."
@@ -47,7 +47,7 @@ msgstr ""
 "このクラスは、文書ページに表示されるテキストと画像を表します。すべての :ref:`MuPDF document "
 "types<Supported_File_Types>` がサポートされています。"
 
-#: ../../textpage.rst:11 305a69e6d1cc4efe929bb3b1e01c338f
+#: ../../textpage.rst:11 214a6f0b55b94183bb1a4fee5b003e96
 msgid ""
 "The usual ways to create a textpage are :meth:`DisplayList.get_textpage` "
 "and :meth:`Page.get_textpage`. Because there is a limited set of methods "
@@ -59,201 +59,201 @@ msgstr ""
 ":meth:`Page.get_textpage` です。このクラスにはメソッドのセットが制限されているため、:ref:`Page` "
 "内にはより使いやすいラッパーが存在します。この表の最後の列には、対応する :ref:`Page` メソッドが示されています。"
 
-#: ../../textpage.rst:13 b28048eebfef4686a5b9cce8aa9a9242
+#: ../../textpage.rst:13 8974c23cb16b4aa1b56189eff275c6fe
 msgid "For a description of what this class is all about, see Appendix 2."
 msgstr "このクラスに関する詳細な説明については、付録2を参照してください。"
 
-#: ../../textpage.rst:16 69b717897dfc419ea428dbd7a0de9662
+#: ../../textpage.rst:16 a2ef271a41f24f089f82cb6c12de5544
 msgid "**Method**"
 msgstr "**メソッド**"
 
-#: ../../textpage.rst:16 b015eb61d04f419e8b7fbb496471574b
+#: ../../textpage.rst:16 5b00ef707e3f4637b40a48d5d422e544
 msgid "**Description**"
 msgstr "**説明**"
 
-#: ../../textpage.rst:16 a44519ebf5904319bc4a59d55cfd8e73
+#: ../../textpage.rst:16 c508a7963cbb4c77ab691615841f72fb
 msgid "page get_text or search method"
 msgstr "page get_textまたはsearchメソッド"
 
-#: ../../textpage.rst:18 8008e72f7f374921bfa7c04521f8e0c3
+#: ../../textpage.rst:18 24790f911d6d4af491f3f0d4a90c5e4e
 msgid ":meth:`~.extractText`"
 msgstr ""
 
-#: ../../textpage.rst:18 77846738c3614d43b519d0e00d3d96a4
+#: ../../textpage.rst:18 56f3e18347124df290f5bb60a9c6ab6f
 msgid "extract plain text"
 msgstr "プレーンテキストを抽出します"
 
-#: ../../textpage.rst:18 ../../textpage.rst:19 3f6e2c97c46146adb7c925645b823ddd
-#: d689ad9d5aaa4bdb8029dd8b22b70b0f
+#: ../../textpage.rst:18 ../../textpage.rst:19 292888a082e041b8820ab5b47243fa82
+#: 587fc832f8b941329c209fc49dd67b0b
 msgid "\"text\""
 msgstr ""
 
-#: ../../textpage.rst:19 b33cc2a2a3ef4e318acbfd19152b414b
+#: ../../textpage.rst:19 062786889a8a4ad586cea1bcbfa2bb0d
 msgid ":meth:`~.extractTEXT`"
 msgstr ""
 
-#: ../../textpage.rst:19 c5c23844e38a4a5e8d5bde717d12f1f6
+#: ../../textpage.rst:19 e0b7b72c38c746a4b7c512c66b738f1c
 msgid "synonym of previous"
 msgstr "前述の同義語"
 
-#: ../../textpage.rst:20 d0ed007250bf40e39cec0ea8758af8da
+#: ../../textpage.rst:20 98ed5aa1b9884de7858b147ee2bd2f0c
 msgid ":meth:`~.extractBLOCKS`"
 msgstr ""
 
-#: ../../textpage.rst:20 814dcd360d82450599f24cdfbdef17c5
+#: ../../textpage.rst:20 35f208a1af3c4c5c8f17069788e702ca
 msgid "plain text grouped in blocks"
 msgstr "ブロックにグループ化されたプレーンテキスト"
 
-#: ../../textpage.rst:20 629bdb6414654b9f9cb94ce40354164c
+#: ../../textpage.rst:20 6318f67c8f964981b4a354142092e102
 msgid "\"blocks\""
 msgstr ""
 
-#: ../../textpage.rst:21 3ddf85d5fb49495cbea91a11e1607ae2
+#: ../../textpage.rst:21 07a1408ddaf24b158ac6dc5d9fcc8115
 msgid ":meth:`~.extractWORDS`"
 msgstr ""
 
-#: ../../textpage.rst:21 edfdc32c2fc74cd68e555cad8e96868b
+#: ../../textpage.rst:21 52e0458f76ee4231a07829bb051b29ac
 msgid "all words with their bbox"
 msgstr "すべての単語とそのバウンディングボックス"
 
-#: ../../textpage.rst:21 4bc95410c6ee4ff2bd0b600ecf44f4b9
+#: ../../textpage.rst:21 2efe7bf211e74dc4a731d81393a6e10c
 msgid "\"words\""
 msgstr ""
 
-#: ../../textpage.rst:22 07c485e7d0f7479faa4a87fd71b2f5e5
+#: ../../textpage.rst:22 7c9da76988c243e0b79a0f2a5c23cee7
 msgid ":meth:`~.extractHTML`"
 msgstr ""
 
-#: ../../textpage.rst:22 6d2468734a6640d2bb0382734ebd79e1
+#: ../../textpage.rst:22 269dcb92057443e096b0cd366dd7ba29
 msgid "page content in HTML format"
 msgstr "HTML形式のページコンテンツ"
 
-#: ../../textpage.rst:22 2adb8031ce96459cb3f20269010cca59
+#: ../../textpage.rst:22 d24ee0e44d5c45e59f125aacaccf3465
 msgid "\"html\""
 msgstr ""
 
-#: ../../textpage.rst:23 f5c7d3a6ff554e678c0b20e089c51a5b
+#: ../../textpage.rst:23 388abf5016ba455c959cdd56009a4499
 msgid ":meth:`~.extractXHTML`"
 msgstr ""
 
-#: ../../textpage.rst:23 2be43ebbad204613afa2dac47ec43dab
+#: ../../textpage.rst:23 b09f5acedceb4611bc7ea51121eb9bb2
 msgid "page content in XHTML format"
 msgstr "XHTML形式のページコンテンツ"
 
-#: ../../textpage.rst:23 f622b44d00444653961d91b40c500a36
+#: ../../textpage.rst:23 416a7019408e492da02693ffd6949a7a
 msgid "\"xhtml\""
 msgstr ""
 
-#: ../../textpage.rst:24 73a3a84cb7044222b3e3d3f13e95e717
+#: ../../textpage.rst:24 ee85d9810eff41caa760d9ffb2a4fed2
 msgid ":meth:`~.extractXML`"
 msgstr ""
 
-#: ../../textpage.rst:24 275a3c930f7d49e28dd68902c6f67f1b
+#: ../../textpage.rst:24 8ab1b023d2cc42b6ae74cb3b92b8d797
 msgid "page text in XML format"
 msgstr "XML形式のページテキスト"
 
-#: ../../textpage.rst:24 683535736405464a8c545be3161fc1b3
+#: ../../textpage.rst:24 fd3d4026c2c045b6a5dc724cd3c1cd16
 msgid "\"xml\""
 msgstr ""
 
-#: ../../textpage.rst:25 e682781270e94299b8ecc57e7673923a
+#: ../../textpage.rst:25 a0d67d42d20d483ba2dc7c60232c4262
 msgid ":meth:`~.extractDICT`"
 msgstr ""
 
-#: ../../textpage.rst:25 ../../textpage.rst:27 5f983ba8bbcd49e6a3f48d06600fbc5f
-#: 7cd7d12c082140efb13d14acb816f7fe
+#: ../../textpage.rst:25 ../../textpage.rst:27 1867105a7ef841cd809711e47e335c93
+#: 8cfc8dba8d384e489e2948bcbd7adaca
 msgid "page content in *dict* format"
 msgstr "*辞書* 形式のページコンテンツ"
 
-#: ../../textpage.rst:25 28f2f9408d05410e837a1fe3c511b4b2
+#: ../../textpage.rst:25 8159466e656146a38f47f43f6bdcb810
 msgid "\"dict\""
 msgstr ""
 
-#: ../../textpage.rst:26 60dc6c6e5d1842348ed55e5d047da848
+#: ../../textpage.rst:26 1d75b88f1edb442898ea8017de3492d7
 msgid ":meth:`~.extractJSON`"
 msgstr ""
 
-#: ../../textpage.rst:26 ../../textpage.rst:28 6c6f2c4c234d4bc796aef69138586877
-#: 8bba15457a094d60b34ebe13bf920b39
+#: ../../textpage.rst:26 ../../textpage.rst:28 7480fba67d534ecc8956acf7902d5aed
+#: 82d01a9dbb1d488198ecd836fed442ff
 msgid "page content in JSON format"
 msgstr "JSON形式のページコンテンツ"
 
-#: ../../textpage.rst:26 80dc933b5e3a4420bd0d3a08d3d10d9e
+#: ../../textpage.rst:26 78d2d0b851b240db8420aa1f8c823676
 msgid "\"json\""
 msgstr ""
 
-#: ../../textpage.rst:27 dcdb9d6944b54bcba9fa189b6c7f52cb
+#: ../../textpage.rst:27 1ade4b09c9674544bb58977574f5d593
 msgid ":meth:`~.extractRAWDICT`"
 msgstr ""
 
-#: ../../textpage.rst:27 49c8d6da08d144e9a3442f06e332a627
+#: ../../textpage.rst:27 3155e2902bcd4713aa47e4919ec46081
 msgid "\"rawdict\""
 msgstr ""
 
-#: ../../textpage.rst:28 53dbbd0bbeab41d1920c1ffa81f80296
+#: ../../textpage.rst:28 b5f0e031790f497694abb5caa6eee204
 msgid ":meth:`~.extractRAWJSON`"
 msgstr ""
 
-#: ../../textpage.rst:28 b0c2313e501d45a384644ecae53cbd1d
+#: ../../textpage.rst:28 9b7e2e49823242bf83ea6a25986488d0
 msgid "\"rawjson\""
 msgstr ""
 
-#: ../../textpage.rst:29 4560d07e61fa48dfa46c970d50b0743e
+#: ../../textpage.rst:29 c2c9458e9c4a490087a519b61ecc5b19
 msgid ":meth:`~.search`"
 msgstr ""
 
-#: ../../textpage.rst:29 01146efdbcf54aaba30cc1173162f210
+#: ../../textpage.rst:29 ee8c8a71aa524335969fbb8af60b211e
 msgid "Search for a string in the page"
 msgstr "ページ内の文字列を検索します"
 
-#: ../../textpage.rst:29 f35dabe2e99843cca4604961ee9dffde
+#: ../../textpage.rst:29 f79465ca7ff14a0a80fc365911c70bf6
 msgid ":meth:`Page.search_for`"
 msgstr ""
 
-#: ../../textpage.rst:32 8aee7016e26240e2bfa9d18be19a98d5
+#: ../../textpage.rst:32 083eef252c154937ae0bc85aa81aff68
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../textpage.rst:40 cd8df8359f9f4524a39869a7107a4368
+#: ../../textpage.rst:40 f33111b086ad4d72980c782edd305dd0
 msgid ""
 "Return a string of the page's complete text. The text is UTF-8 unicode "
 "and in the same sequence as specified at the time of document creation."
 msgstr "ページの完全なテキストの文字列を返します。テキストはUTF-8ユニコードで、文書作成時に指定された順序と同じです。"
 
-#: ../../textpage.rst 57da01987a7843fca5d739690f83f82a
-#: 671578e8ecf845f083967ff38478d427 7e7dcf3e596f4f5ebc9039838dc9ebba
-#: 8a8b6b3ca4e0408dbd33f8640e4ac26e ad6e9346d9d44984b434be3a8cd0b0a2
-#: d50290b47cbc4fc3b7fbf02c24036796 dc4e99ebeaaf4e068ef7cf6bc5915ac6
+#: ../../textpage.rst 3e9d1669f2fe4f15ab3177563f0420e3
+#: 4bd4b9fa21ed426188fe213d2241f4ac 720def9977a743fdb77d7caeb93f8e63
+#: aea747bd7d624e70bc7def00d62df838 ca24753a6b21474daba199227cbdb7cd
+#: d0072bc05d7144aca56767bfde82c6a9 e1647eb182054d70be24b2cc9c6381ca
 msgid "Parameters"
 msgstr ""
 
 #: ../../textpage.rst:42 ../../textpage.rst:85 ../../textpage.rst:93
 #: ../../textpage.rst:113 ../../textpage.rst:121
-#: 16fb4ac02785457b9710449f9df41f14 23ee8f97b7184497ad7bc905b9b13624
-#: 40321a9de1394c2199c23ff76e4ab458 89f2e9b0fea144eca048813faba0eeaa
-#: b003361c0ff648a7b8e6b841e0e05999
+#: 053cd209c0cd44b08367efe95d323dcb 2e3408186db64af29672df98a2541c3a
+#: 88f4b7d0b3014f8ab6a88c7157c764d9 eafc202f0101431bbd82bb8f066f24c2
+#: f7da0622405347bcb10099abdba152a3
 msgid ""
 "(new in v1.19.1) sort the output by vertical, then horizontal "
 "coordinates. In many cases, this should suffice to generate a \"natural\""
 " reading order."
 msgstr ""
 
-#: ../../textpage.rst 0016111872404e169cbf1939b7c7d6a8
-#: 0998a86461f24855ab3f792dded2227c 49da96effe14424886d87bb9d6621b29
-#: 6a93913ee78c40f894b9df8f0547aa11 717ee5c982c24238844eda2ac1ee1a99
-#: 80a094079a8f42f38a882326261f71a6 8142ec710040424cb21597ecea1e53d9
-#: 96346247583745628dac24baa4a6639e a4150f10a5c0406a8df2d01a211754ad
-#: af5da724d13e4f48991e381d99a03fdf ea64c177370c41e5884e95cf392dde1d
+#: ../../textpage.rst 07f5f0a7fa5f4efbb1093cd496e1425a
+#: 0f27872a10dd46fda6c8e7ecaf77c92b 34621dc4778249c49fbd4c5f8fd2fd39
+#: 4c8745e920b8430fadff84a8e977a147 5081234f6b32451d915cc94583c1d60e
+#: 9a9a5268dcfc421cb4ca9b69e5030ee1 9f3241fa28914e49a481723379042cd8
+#: c0b2e445162446e1b4a2e0eb834ac7ca f3b8d685f26e44edbe5e23bac745020d
+#: f63537f76faf47c884089748bdcbcd8b f8803c61a6fc41fe89a08237112d6d49
 msgid "Return type"
 msgstr ""
 
-#: ../../textpage.rst:49 6b33d35e93314ecfa37fa95c710500db
+#: ../../textpage.rst:49 63307d556a584ea19173a54596c7f880
 msgid ""
 "Textpage content as a list of text lines grouped by block. Each list "
 "items looks like this::"
 msgstr "テキストページの内容を、ブロックごとにグループ化されたテキスト行のリストとして返します。各リストアイテムは次のようになります::"
 
-#: ../../textpage.rst:53 cfb5ee966a994a11a216e249dc6caadf
+#: ../../textpage.rst:53 78718be495234f9dbfa93e48e16d1e13
 msgid ""
 "The first four entries are the block's bbox coordinates, *block_type* is "
 "1 for an image block, 0 for text. *block_no* is the block sequence "
@@ -262,29 +262,29 @@ msgstr ""
 "最初の4つのエントリはブロックのbbox座標で、*ブblock_type* は画像ブロックの場合は1、テキストの場合は0です。*block_no*"
 " はブロックのシーケンス番号です。複数のテキスト行は改行で結合されます。"
 
-#: ../../textpage.rst:55 ca9405c070eb4a92877a2ab6f30a3e12
+#: ../../textpage.rst:55 12f402e2e12346f8b7dd871f590f3197
 msgid ""
 "For an image block, its bbox and a text line with some image meta "
 "information is included -- **not the image content**."
 msgstr "画像ブロックの場合、そのbboxと画像メタ情報を含むテキスト行が含まれますが、**画像の内容は含まれません**。"
 
-#: ../../textpage.rst:57 7e94ebbeaa0e491787ab47eb385add63
+#: ../../textpage.rst:57 fb2f6c324124423bb74dbd2e4b974806
 msgid ""
 "This is a high-speed method with just enough information to output plain "
 "text in desired reading sequence."
 msgstr "これは、必要な読み取り順序でプレーンテキストを出力するのに十分な情報を持つ高速なメソッドです。"
 
-#: ../../textpage.rst:63 dd5a25a964b24fd19590783019182acc
+#: ../../textpage.rst:63 cfb05f044359435fb061d158cb6ef21e
 msgid "Changed in v1.23.5: added `delimiters` parameter"
 msgstr ""
 
-#: ../../textpage.rst:65 7340df397af44343b4d15f029ae9bcfb
+#: ../../textpage.rst:65 e3116b1baa374ce2b67b6002aaae107d
 msgid ""
 "Textpage content as a list of single words with bbox information. An item"
 " of this list looks like this::"
 msgstr "テキストページの内容を、bbox情報を持つ単語のリストとして返します。このリストのアイテムは次のようになります::"
 
-#: ../../textpage.rst:69 c6d5a4cd67194e5199a675aa248f0bd3
+#: ../../textpage.rst:69 6f56fac0469e45afa313a96110815e53
 msgid ""
 "(new in v1.23.5) use these characters as *additional* word separators. By"
 " default, all white spaces (including the non-breaking space `0xA0`) "
@@ -297,7 +297,7 @@ msgid ""
 "\"word\" strings will not contain any delimiting character."
 msgstr ""
 
-#: ../../textpage.rst:71 7af81f97fcc2435ab536aebd6b7f34ab
+#: ../../textpage.rst:71 f122cb9dbcfb43fb8cd911d4aabb4817
 #, fuzzy
 msgid ""
 "This is a high-speed method which e.g. allows extracting text from within"
@@ -306,7 +306,7 @@ msgstr ""
 "スペースで区切られたすべてが *「単語」* "
 "として扱われます。これは、指定された領域内からテキストを抽出したり、テキストの読み取り順序を復元したりするのに適した高速なメソッドです。"
 
-#: ../../textpage.rst:77 1d2e06d47e9841048613550acba8bf61
+#: ../../textpage.rst:77 9fd59d1b4ce240e7ab72d24d4bfe0b1d
 msgid ""
 "Textpage content as a string in HTML format. This version contains "
 "complete formatting and positioning information. Images are included "
@@ -317,13 +317,13 @@ msgstr ""
 "HTML形式の文字列としてのテキストページの内容を返します。このバージョンには完全なフォーマットと位置情報が含まれています。画像も含まれており（base64文字列としてエンコードされています）、Pythonで出力を解釈するためにはHTMLパッケージが必要です。インターネットブラウザはこの情報を適切に表示できるはずですが、:ref:`HTMLQuality`"
 " を参照してください。"
 
-#: ../../textpage.rst:83 282b1d017a6e4a31ba6b7975680e0614
+#: ../../textpage.rst:83 a07e225c4bf3412585128a2fb86b8200
 msgid ""
 "Textpage content as a Python dictionary. Provides same information detail"
 " as HTML. See below for the structure."
 msgstr "TextPageの内容をPythonの辞書として取得します。HTMLと同じ情報の詳細を提供します。構造については以下を参照してください。"
 
-#: ../../textpage.rst:91 da83463d890f4b8fa66eafaf62eea27e
+#: ../../textpage.rst:91 3c7dcaacfe924c9ab076958b43f75600
 msgid ""
 "Textpage content as a JSON string. Created by "
 "`json.dumps(TextPage.extractDICT())`. It is included for backlevel "
@@ -334,7 +334,7 @@ msgstr ""
 "TextPageの内容をJSON形式の文字列として取得します。`json.dumps(TextPage.extractDICT())` "
 "によって作成されます。これは過去の互換性のために含まれています。おそらく、結果をファイルに出力する際にのみこのメソッドを使用するでしょう。このメソッドはバイナリ画像データを検出し、それらをBase64エンコードされた文字列に変換します。"
 
-#: ../../textpage.rst:99 df3e01a91f7c4ae790499d50c3e85f29
+#: ../../textpage.rst:99 87f36a88ced6410383dcdafa2979eae5
 msgid ""
 "Textpage content as a string in XHTML format. Text information detail is "
 "comparable with :meth:`extractTEXT`, but also contains images (base64 "
@@ -344,7 +344,7 @@ msgstr ""
 "TextPageの内容をXHTML形式の文字列として取得します。テキスト情報の詳細は :meth:`extractTEXT` "
 "と比較できますが、画像も含まれます（Base64エンコードされています）。このメソッドは元の視覚的な外観を再作成しようとしません。"
 
-#: ../../textpage.rst:105 435edffbc686457dba05b981881c25a0
+#: ../../textpage.rst:105 ce4a584473674c4e91533c25a532fe15
 msgid ""
 "Textpage content as a string in XML format. This contains complete "
 "formatting information about every single character on the page: font, "
@@ -352,7 +352,7 @@ msgid ""
 " an XML package to interpret the output in Python."
 msgstr "TextPageの内容をXML形式の文字列として取得します。これにはページ上の各文字に関する完全なフォーマット情報が含まれています：フォント、サイズ、行、段落、位置、色など。画像は含まれていません。Pythonで出力を解釈するにはXMLパッケージが必要です。"
 
-#: ../../textpage.rst:111 87bd5187b0f44f89ab4104b82f56e019
+#: ../../textpage.rst:111 53dc5f5e5cc04c54a952877ba4755541
 msgid ""
 "Textpage content as a Python dictionary -- technically similar to "
 ":meth:`extractDICT`, and it contains that information as a subset "
@@ -363,7 +363,7 @@ msgstr ""
 "TextPageの内容をPythonの辞書として取得します。技術的には :meth:`extractDICT` "
 "と類似しており、その情報をサブセットとして含みます（画像も含まれます）。詳細については以下を参照してください。"
 
-#: ../../textpage.rst:119 895cfa706afc446084e720ac3f93fd03
+#: ../../textpage.rst:119 33863035deb9499b8feb6d00b3064acb
 msgid ""
 "Textpage content as a JSON string. Created by "
 "`json.dumps(TextPage.extractRAWDICT())`. You will probably use this "
@@ -373,15 +373,15 @@ msgstr ""
 "TextPageの内容をJSON形式の文字列として取得します。`json.dumps(TextPage.extractRAWDICT())` "
 "によって作成されます。おそらく、結果をファイルに出力する際にのみこのメソッドを使用するでしょう。このメソッドはバイナリ画像データを検出し、それらをBase64エンコードされた文字列に変換します。"
 
-#: ../../textpage.rst:127 ee07f7cf801a4f8d95d545ad5bfc0560
+#: ../../textpage.rst:127 209053b84b6545e3994a163287facefa
 msgid "Changed in v1.18.2"
 msgstr "変更内容 v1.18.2"
 
-#: ../../textpage.rst:129 4cd763790da84021813e300e32cb9cf6
+#: ../../textpage.rst:129 05ffbacb61c7489882f082b48886e8d5
 msgid "Search for *string* and return a list of found locations."
 msgstr "*文字列* を検索し、見つかった位置のリストを返します。"
 
-#: ../../textpage.rst:131 cdac1bdde5e244499332db6777276c69
+#: ../../textpage.rst:131 c71683b946f54d84aff575da2005613b
 msgid ""
 "the string to search for. Upper and lower cases will all match if needle "
 "consists of ASCII letters only -- it does not yet work for \"Ä\" versus "
@@ -390,15 +390,15 @@ msgstr ""
 "検索対象の文字列。ASCII文字だけで構成されている場合、大文字と小文字はすべて一致します。これはまだ、例えば  \"Ä\" と \"ä\" "
 "のような場合には機能しません。"
 
-#: ../../textpage.rst:132 4453db069b674068b294e21ec53118c5
+#: ../../textpage.rst:132 0f1af98486ec43429066d8c48e3dc958
 msgid "return quadrilaterals instead of rectangles."
 msgstr "長方形の代わりに四辺形を返すかどうか。"
 
-#: ../../textpage.rst ed3dabd5dd09480d9af2c202991f0797
+#: ../../textpage.rst 943e3f54b51f470ba6d34411ccdabcd3
 msgid "Returns"
 msgstr ""
 
-#: ../../textpage.rst:134 a9e6d6c3c1b244359142004ee7c7a2f6
+#: ../../textpage.rst:134 89e19eb80ccd4b318611f268b0f75d7e
 msgid ""
 "a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found "
 "*needle* occurrence. As the search string may contain spaces, its parts "
@@ -414,15 +414,15 @@ msgstr ""
 "\"meth-\" と \"od\" という2つの部分に分かれている場合でも、\"meth\"（ハイフンなし）と \"od\" "
 "の2つの長方形が含まれます。"
 
-#: ../../textpage.rst:136 1406308a92e44433808a1f565e8f7e85
+#: ../../textpage.rst:136 c134a9fb178648ae8bab433d54e37e2b
 msgid "**Overview of changes in v1.18.2:**"
 msgstr "**v1.18.2 での変更内容の概要：**"
 
-#: ../../textpage.rst:138 eb8f8e4f7f4c49249c64dce6f62f72f7
+#: ../../textpage.rst:138 d9a3438955224e5685de548903667d74
 msgid "The `hit_max` parameter has been removed: all hits are always returned."
 msgstr "`hit_max` パラメータが削除され、すべてのヒットが常に返されます。"
 
-#: ../../textpage.rst:139 aff4eacc24194b39abe53618b30ac986
+#: ../../textpage.rst:139 c687c9305d954f6eaea257e2fe5bbe58
 msgid ""
 "The `rect` parameter of the :ref:`TextPage` is now respected: only text "
 "inside this area is examined. Only characters with fully contained bboxes"
@@ -432,11 +432,11 @@ msgstr ""
 ":ref:`TextPage` の `rect` パラメータが尊重され、この領域内のテキストのみが検査されます。完全に含まれる bboxes "
 "を持つ文字のみが考慮されます。:meth:`Page.search_for` のラッパーメソッドも対応するクリップパラメータをサポートしています。"
 
-#: ../../textpage.rst:140 3d50c7047c7644298736ada65850b843
+#: ../../textpage.rst:140 ec9e270e430341a88939c174a0e838a3
 msgid "**Hyphenated words** are now found."
 msgstr "**ハイフネーションされた単語** も見つかります。"
 
-#: ../../textpage.rst:141 6323511b08df43c8a157fa38e3e750e8
+#: ../../textpage.rst:141 595b14cd29774ef49fd1666b1d37dbb7
 msgid ""
 "**Overlapping rectangles** in the same line are now automatically joined."
 " We assume that such separations are an artifact created by multiple "
@@ -445,7 +445,7 @@ msgstr ""
 "同じ行内の **重複する長方形** "
 "は自動的に結合されます。このような分割は、同じ検索対象の一部を含む複数のマークコンテンツグループによって作成されたアーティファクトと仮定されます。"
 
-#: ../../textpage.rst:143 14e7f89d3d5c4489a8cbd68df8e257ec
+#: ../../textpage.rst:143 7b283f04f24544e18dc95d6f698f1a39
 msgid ""
 "Example Quad versus Rect: when searching for needle \"pymupdf\", then the"
 " corresponding entry will either be the blue rectangle, or, if *quads* "
@@ -454,7 +454,7 @@ msgstr ""
 "例：Quad 対 Rect：needle \"pymupdf\" を検索する場合、対応するエントリは青い長方形であるか、*quads* "
 "が指定された場合は四辺形 *Quad(ul, ur, ll, lr)* になります。"
 
-#: ../../textpage.rst:149 3a79ec0fc7fe4ccebd68324e457093ac
+#: ../../textpage.rst:149 22015cb6553240db9caee4c5d4d0a06b
 msgid ""
 "The rectangle associated with the text page. This either equals the "
 "rectangle of the creating page or the `clip` parameter of "
@@ -463,7 +463,7 @@ msgstr ""
 "テキストページに関連付けられた矩形。これは、作成ページの矩形または :meth:`Page.get_textpage` "
 "およびテキスト抽出/検索メソッドの `clip` パラメーターと一致する場合があります。"
 
-#: ../../textpage.rst:151 1bfbbebaedbb4052bb3fe3b6dd9c243a
+#: ../../textpage.rst:151 e4d7797e393d49f38a2ad6066b720a21
 msgid ""
 "The output of text searching and most text extractions **is restricted to"
 " this rectangle**. (X)HTML and XML output will however always extract the"
@@ -472,11 +472,11 @@ msgstr ""
 "テキスト検索およびほとんどのテキスト抽出の出力は "
 "**この矩形に制限されます**。ただし、(X)HTMLおよびXMLの出力は常にフルページを抽出します。"
 
-#: ../../textpage.rst:156 b141c7f9a7cb42d4a4fcdcd03e611923
+#: ../../textpage.rst:156 746d4f0331d74f5eb4b706ab194b8b02
 msgid "Structure of Dictionary Outputs"
 msgstr "辞書出力の構造"
 
-#: ../../textpage.rst:157 0ab389a241664dee85374659702e3186
+#: ../../textpage.rst:157 ae8559712aa84a3b8f3abc14fba42605
 msgid ""
 "Methods :meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, "
 ":meth:`TextPage.extractRAWDICT`, and :meth:`TextPage.extractRAWJSON` "
@@ -490,31 +490,31 @@ msgstr ""
 "、:meth:`TextPage.extractRAWDICT` 、:meth:`TextPage.extractRAWJSON` "
 "は、ページのテキストおよび画像コンテンツを含む辞書を返します。これらの4つのメソッドの辞書構造はほぼ同じです。これらは、ブロック、行、スパン、文字の情報階層をテキストページにできるだけ正確にマップし、各要素を独自のサブ辞書で表現することを目指しています。"
 
-#: ../../textpage.rst:159 ac8012d470e1498fbf322b84979d54fe
+#: ../../textpage.rst:159 1fc549b40ec54504aba36b49e614c7cc
 msgid "A **page** consists of a list of **block dictionaries**."
 msgstr "**ページ** は **ブロック辞書** のリストから構成されます。"
 
-#: ../../textpage.rst:160 b669893b4d0d43018ce1ae7cf03c0cc4
+#: ../../textpage.rst:160 531deb445eda49c78ee0170f577f2f93
 msgid "A (text) **block** consists of a list of **line dictionaries**."
 msgstr "(テキスト) **ブロック** は、**行辞書** のリストから構成されます。"
 
-#: ../../textpage.rst:161 fadd7e5c79ff4ef7bb836f45bfa54d3e
+#: ../../textpage.rst:161 5d0d26a55df64fb0bc4619f73f865415
 msgid "A **line** consists of a list of **span dictionaries**."
 msgstr "**行** は、**スパン辞書** のリストから構成されます。"
 
-#: ../../textpage.rst:162 36c8f65fcf1d4c619d438b8f01e187a7
+#: ../../textpage.rst:162 d297bff2aae540828c971d533f6fe3bb
 msgid ""
 "A **span** either consists of the text itself or, for the RAW variants, a"
 " list of **character dictionaries**."
 msgstr "**スパン** は、テキスト自体またはRAWバリアントの場合、**文字辞書** のリストから構成されます。"
 
-#: ../../textpage.rst:163 ed3f04f51bcd4c31b3e3dd7fd03320c0
+#: ../../textpage.rst:163 37000c1f71684c77a812407e7849a0e0
 msgid ""
 "RAW variants: a **character** is a dictionary of its origin, bbox and "
 "unicode."
 msgstr "RAWバリアント：**文字** はその起源、bbox、およびUnicodeの辞書です。"
 
-#: ../../textpage.rst:165 495b9d336f004a809e9f71f332f21699
+#: ../../textpage.rst:165 192df2422b5e482bbb29f7afc93e8cdc
 msgid ""
 "All PyMuPDF geometry objects herein (points, rectangles, matrices) are "
 "represented by there **\"like\"** formats: a :data:`rect_like` *tuple* is"
@@ -524,7 +524,7 @@ msgstr ""
 "ここでのすべてのPyMuPDFジオメトリオブジェクト（ポイント、矩形、行列）は、:data:`rect_like` *タプル* の形式で "
 ":ref:`Rect` などの代わりに使用されます。これは、パフォーマンスとメモリの考慮事項からです。"
 
-#: ../../textpage.rst:167 730e1437a5c243e0862e4cc1b85ddfae
+#: ../../textpage.rst:167 517e734e4772478cb6b1bc32cab2ab16
 msgid ""
 "This code is written in C, where Python tuples can easily be generated. "
 "The geometry objects on the other hand are defined in Python source only."
@@ -534,7 +534,7 @@ msgstr ""
 "このコードはCで書かれており、Pythonタプルは簡単に生成できます。一方、ジオメトリオブジェクトはPythonソースでのみ定義されています。 "
 "各Pythonタプルを対応するジオメトリオブジェクトに変換することは、実行時間を大幅に（かつ不必要に）増加させるでしょう。"
 
-#: ../../textpage.rst:168 6160bc818c6641d59712647ba09d6f2f
+#: ../../textpage.rst:168 a7f4b55b2bb84753bc138ab3a04c2f8a
 msgid ""
 "A 4-tuple needs about 168 bytes, the corresponding :ref:`Rect` 472 bytes "
 "- almost three times the size. A \"dict\" dictionary for a text-heavy "
@@ -549,7 +549,7 @@ msgstr ""
 "KBです。このようなページの「rawdict」出力は、**4,000から5,000** のbboxを含む場合がありますので、この場合は750 "
 "KB対2 MBとなります。"
 
-#: ../../textpage.rst:170 553b7505dc654bce9acc63f7985e8ee7
+#: ../../textpage.rst:170 bbdd6aa883a447c5b6bbb24a389b7944
 msgid ""
 "Please also note, that only **bboxes** (= :data:`rect_like` 4-tuples) are"
 " returned, whereas a :ref:`TextPage` actually has the **full position "
@@ -565,36 +565,36 @@ msgstr ""
 "の3倍のサイズ）が必要です。言及した数の生成されたbboxを考えると、:data:`quad_like` "
 "情報を返すことは重大な影響を与えるでしょう。"
 
-#: ../../textpage.rst:172 99cd9aa1d0454fccb81b7754e49fe731
+#: ../../textpage.rst:172 d2d5ce2b47bc4940b491f08fbbaa0027
 msgid ""
 "In the vast majority of cases, we are dealing with **horizontal text "
 "only**, where bboxes provide entirely sufficient information."
 msgstr "ほとんどの場合、**水平テキストのみ** を扱っており、bboxは十分な情報を提供します。"
 
-#: ../../textpage.rst:174 887228756dd54500a2972ea8eaaae72b
+#: ../../textpage.rst:174 feb1b497d7a04358ac4fc4f59750eb21
 msgid ""
 "In addition, **the full quad information is not lost**: it can be "
 "recovered as needed for lines, spans, and characters by using the "
 "appropriate function from the following list:"
 msgstr "さらに、**フルクワッド情報は失われていません**。必要に応じて、以下のリストから適切な関数を使用して行、スパン、および文字のクワッド情報を回復できます："
 
-#: ../../textpage.rst:176 8bf018658e234a00bc0de17969dae3bb
+#: ../../textpage.rst:176 e89548afd6dc44168e0b77628a3cba31
 msgid ":meth:`recover_quad` -- the quad of a complete span"
 msgstr ":meth:`recover_quad` – 完全なスパンのクワッド"
 
-#: ../../textpage.rst:177 6c3eebc9418f44c7831b2ffcb508609f
+#: ../../textpage.rst:177 27d71bee525843278a01adf552fa7a36
 msgid ":meth:`recover_span_quad` -- the quad of a character subset of a span"
 msgstr ":meth:`recover_span_quad` – スパンの一部の文字のクワッド"
 
-#: ../../textpage.rst:178 424c09f4c5c348309525195aab757ed0
+#: ../../textpage.rst:178 041a2862fe3d48ac95055a9328f85989
 msgid ":meth:`recover_line_quad` -- the quad of a line"
 msgstr ":meth:`recover_line_quad` – 行のクワッド"
 
-#: ../../textpage.rst:179 400df8764f0e431dac567a85e4bbd78f
+#: ../../textpage.rst:179 66ae40921c104d34aba6daaf7127f04f
 msgid ":meth:`recover_char_quad` -- the quad of a character"
 msgstr ":meth:`recover_char_quad` – 文字のクワッド"
 
-#: ../../textpage.rst:181 96e1e1fa7b2e47cda3509c378547e0c3
+#: ../../textpage.rst:181 727a2901b16c4ddd96ae14b244c5424a
 msgid ""
 "As mentioned, using these functions is ever only needed, if the text is "
 "**not written horizontally** -- `line[\"dir\"] != (1, 0)` -- and you need"
@@ -605,189 +605,189 @@ msgstr ""
 " 0)` - およびテキストマーカーアノテーション（:meth:`Page.add_highlight_annot` "
 "など）でクワッドが必要な場合のみです。"
 
-#: ../../textpage.rst:191 595f43998ba0436e97c27949a639e0cf
+#: ../../textpage.rst:191 7805ac6076c748d18288314bba88341d
 msgid "Page Dictionary"
 msgstr "ページ辞書"
 
 #: ../../textpage.rst:194 ../../textpage.rst:208 ../../textpage.rst:251
 #: ../../textpage.rst:263 ../../textpage.rst:285 ../../textpage.rst:369
-#: 1028a325d80d4f058a4b0359d7d4598d 25712968c441436eba02cf3a671cc015
-#: b97697d8ddd34a02b36ff938c56fe5e3 cffcfc0ebdc14a359647c0a579bc33b5
-#: e1d612602b454ac8a1f8fc9f345c7780 f8641ab264d24089a5504d8795434eb1
+#: 29f9782130d642a8b2fddc4dfd20716c 70f3d2461fad4b3fadb0fc3afaea9f2e
+#: 975906fdd1184ad3ad3fd3d27e4993b0 baf341562d684245aa92ddd993c2dd48
+#: bf7900e8b9b5405a8f0d4d83a8bf0411 c6778ca210f143f38e1b9841a02401e9
 msgid "**Key**"
 msgstr "**キー**"
 
 #: ../../textpage.rst:194 ../../textpage.rst:208 ../../textpage.rst:251
 #: ../../textpage.rst:263 ../../textpage.rst:285 ../../textpage.rst:369
-#: 0bf110ecaacf4aa28287fd0e005ffddd 289abda4fd474dcdb960b408ef88468b
-#: 3bf64d336de0427991445adcd0168093 574109b9a38f400a914c84c0356caf88
-#: a983b778e0064d50b3eaea79e9f4f3b6 c1f614c73fff407b9086f838a02bdaa2
+#: 264a4f1acc10474eb5e78fe3b5e5823b b4b639c47a4a414db8f8f3bb50ee8dc9
+#: cc9c466c5ba84957921e1ff86a57d116 d94353036c5b40c1846dd829e554f27f
+#: f0dc2d1c0f2f41dea26d6f56aa6b3a26 fe805e2ac2f84c418cdee9f01871d787
 msgid "**Value**"
 msgstr "**値**"
 
 #: ../../textpage.rst:196 ../../textpage.rst:214
-#: eb90193de1ce4b5c9eb39d385278964b f5b723f222a64cc68a99030c73b60d8f
+#: 07aa10194d0d48eb97c6202f508f7705 8f326282fbe8407aa66c61b1d8bcd062
 msgid "width"
 msgstr ""
 
-#: ../../textpage.rst:196 14cc2215742c4da9bd200255c8f933c5
+#: ../../textpage.rst:196 f244c49149a243688a1885d014c7a1bb
 msgid "width of the `clip` rectangle *(float)*"
 msgstr "`clip` 矩形の幅 *(float)*"
 
 #: ../../textpage.rst:197 ../../textpage.rst:215
-#: 3aa7f8da25374d7296bbe5236ae369aa f91db5b834224a16ad9aeabc73e98e8e
+#: b8882d43fa804c8a9c251b3ec47cef6d bcccca2b99b94b7ea01f4de3b4b7c85a
 msgid "height"
 msgstr ""
 
-#: ../../textpage.rst:197 c231566c6b4c4cb3b4fe79f2f8253c3c
+#: ../../textpage.rst:197 3100ead6fa2e45f5b61d6969928e4877
 msgid "height of the `clip` rectangle *(float)*"
 msgstr "`clip` 矩形の高さ *(float)*"
 
-#: ../../textpage.rst:198 31ed4b8f4f5541c3b722a5bdd6a6c34d
+#: ../../textpage.rst:198 c5935e75747b42e799fe04c7f318b0da
 msgid "blocks"
 msgstr ""
 
-#: ../../textpage.rst:198 a1079925560f4211bc1fb868e6b872a1
+#: ../../textpage.rst:198 30ab779a07894b089542bb81604f9b47
 msgid "*list* of block dictionaries"
 msgstr "ブロック辞書の *list* "
 
-#: ../../textpage.rst:202 08e070c1094e4ccca4fc04700d353970
+#: ../../textpage.rst:202 db462c15f35c46f5b52a233a3beed4d0
 msgid "Block Dictionaries"
 msgstr "ブロック辞書"
 
-#: ../../textpage.rst:203 7d0906215b32466288832e1b6896048a
+#: ../../textpage.rst:203 952d964d7a5e43c2848616b970e2716c
 msgid ""
 "Block dictionaries come in two different formats for **image blocks** and"
 " for **text blocks**."
 msgstr "ブロック辞書は、**画像ブロック** と **テキストブロック** の2つの異なるフォーマットで提供されます。"
 
-#: ../../textpage.rst:205 7e62f09f297148beb698e62d3afc4c36
+#: ../../textpage.rst:205 238f68f9676441f1bdcff950557a856e
 msgid "**Image block:**"
 msgstr "**画像ブロック：**"
 
 #: ../../textpage.rst:210 ../../textpage.rst:253
-#: 7b13ee4d579245ceb12b6f3cf76c1fab d85e1acb01be4077b861168ee129767f
+#: 800a3c27effc460f9480726ec3a5c729 d35d41a494c04f6285bda0eace697528
 msgid "type"
 msgstr ""
 
-#: ../../textpage.rst:210 efd2b31cf58548bebfe784580e65e609
+#: ../../textpage.rst:210 6328d3cec703451097bfaa7cf7f6c65f
 #, fuzzy
 msgid "1 = image (``int``)"
 msgstr "1 = 画像 *(int)*"
 
 #: ../../textpage.rst:211 ../../textpage.rst:254 ../../textpage.rst:265
 #: ../../textpage.rst:287 ../../textpage.rst:372
-#: 03d37603b3344af6b5e7da54db015b1b 319eb162bb77446380ad084c386e7880
-#: 489ec9a675314683b3e30183ac86b467 d66375110a74421c99ad70cba6cc18ef
-#: f6aa14043a8a4b699002979f9b457101
+#: 13e6c3dfe54549b9b050cea92d99d01a 322f2d6f5b2b44ed9706ad2f98ad459c
+#: 4f766fcb9538433a8d4db8a39a80ff3c bc56648f4c414b1eb1faa55dba01ab98
+#: db0fdf56b2254240a588914bece3c707
 msgid "bbox"
 msgstr ""
 
-#: ../../textpage.rst:211 51701c8e494240cb8459ca8170dd7511
+#: ../../textpage.rst:211 ff4d18f9a8d24d16a31d552e95f6e589
 msgid "image bbox on page (:data:`rect_like`)"
 msgstr "ページ上の画像の境界ボックス（:data:`rect_like`）"
 
 #: ../../textpage.rst:212 ../../textpage.rst:255
-#: dad8f7481ff04520890bf9540defc8d1 ee650f2cc2af439ebc7dfe5fcf770410
+#: 4c56479091544270885701e21d3794c0 5d311b7030c74d77b291641b825cabc0
 msgid "number"
 msgstr ""
 
-#: ../../textpage.rst:212 e77220a8a6de41c39d609dff474be846
+#: ../../textpage.rst:212 044f427c89414858935273b873628617
 #, fuzzy
 msgid "block count (``int``)"
 msgstr "ブロック数 *(int)*"
 
-#: ../../textpage.rst:213 58b4e56c8c424eed8d03bfeaeef4ea93
+#: ../../textpage.rst:213 d457db3dffd648f5b421b9dabda513e8
 msgid "ext"
 msgstr ""
 
-#: ../../textpage.rst:213 1583d8baf0cb4f9b88f96e64556d2f6c
+#: ../../textpage.rst:213 9a1b2497c15747ccae408e2908b03716
 #, fuzzy
 msgid "image type (``str``), as file extension, see below"
 msgstr "画像の種類 *(str)*、ファイル拡張子として、以下参照"
 
-#: ../../textpage.rst:214 3786a0ca184247ccbac8ce835f4b7dd6
+#: ../../textpage.rst:214 65917d8aff0a47ae97e1c880700ae5b9
 #, fuzzy
 msgid "original image width (``int``)"
 msgstr "元の画像の幅 *(int)*"
 
-#: ../../textpage.rst:215 d62202c977f4427897519364fff16fa0
+#: ../../textpage.rst:215 ef1b2983b8484b67aea4e7c52ec94c5e
 #, fuzzy
 msgid "original image height (``int``)"
 msgstr "元の画像の高さ *(int)*"
 
-#: ../../textpage.rst:216 e146c7ea5f6f460db3e8980b52c734cf
+#: ../../textpage.rst:216 cdbc1a0fe83a45878f7d57c8195c2541
 msgid "colorspace"
 msgstr ""
 
-#: ../../textpage.rst:216 a2b2fbd44fc947adb67a432fe838d702
+#: ../../textpage.rst:216 0768d9dd62e74b518365212bb8f2d509
 #, fuzzy
 msgid "colorspace component count (``int``)"
 msgstr "カラースペースのコンポーネント数 *(int)*"
 
-#: ../../textpage.rst:217 b011e27b5b7f4071accc210533eeb410
+#: ../../textpage.rst:217 c72ef151fd0843acbf96ee02c0b50384
 msgid "xres"
 msgstr ""
 
-#: ../../textpage.rst:217 76876d5bff234745968c9b29c479abf0
+#: ../../textpage.rst:217 2b798798946e43259c410f01235ab8cf
 #, fuzzy
-msgid "resolution in x-direction (``int``)"
+msgid "resolution in x-direction (``int``) [#f3]_"
 msgstr "x方向の解像度 *(int)*"
 
-#: ../../textpage.rst:218 ca47a153418e437983d2d8df4624aaec
+#: ../../textpage.rst:218 711945f5b34049a1b07317557513f490
 msgid "yres"
 msgstr ""
 
-#: ../../textpage.rst:218 45276559019b42ac85ff614a8b179484
+#: ../../textpage.rst:218 91a31d61290640b8988418d1a9ebb3ba
 #, fuzzy
-msgid "resolution in y-direction (``int``)"
+msgid "resolution in y-direction (``int``) [#f3]_"
 msgstr "y方向の解像度 *(int)*"
 
-#: ../../textpage.rst:219 5199ee0421fe41bb90ef866f83525686
+#: ../../textpage.rst:219 c247c45f267c4a6281d20687be8c99af
 msgid "bpc"
 msgstr ""
 
-#: ../../textpage.rst:219 3af264e6c2f44b12ac9f208644fceacd
+#: ../../textpage.rst:219 8934e38405664f3fa8f78d65d3a6dba5
 #, fuzzy
 msgid "bits per component (``int``)"
 msgstr "コンポーネントごとのビット数 *(int)*"
 
-#: ../../textpage.rst:220 30a1799870544636840f2ca52f4213b6
+#: ../../textpage.rst:220 2db498cd52714dd8b5097aa444b17ac0
 msgid "transform"
 msgstr ""
 
-#: ../../textpage.rst:220 bb9357da9bf547baacb8163e91b5b9ed
+#: ../../textpage.rst:220 c07a01fdd4744863a7e7b665d9066376
 msgid "matrix transforming image rect to bbox (:data:`matrix_like`)"
 msgstr "画像矩形を境界ボックスに変換する行列（:data:`matrix_like`）"
 
 #: ../../textpage.rst:221 ../../textpage.rst:292
-#: d46d130394b74529afbeafcf2648b049 fec7c57a41bd4be0ad7387af0fbdc847
+#: 416da7dc62f34728a5e65a5b6eccec10 e5bfbe8873ce4531a1a93eea31b542ab
 msgid "size"
 msgstr ""
 
-#: ../../textpage.rst:221 19a074e1bba545f0a6e1f4fa51b35bc8
+#: ../../textpage.rst:221 ef114c513c0140809c273a1fca277935
 #, fuzzy
 msgid "size of the image in bytes (``int``)"
 msgstr "画像のサイズ（バイト単位）*(int)*"
 
-#: ../../textpage.rst:222 0ada30bc2c4c455ca8a2eccf8ec5645a
+#: ../../textpage.rst:222 b4442e7378f340ad9bbc40a5bda85f94
 msgid "image"
 msgstr ""
 
-#: ../../textpage.rst:222 299044835f19498b9364b83a4be51966
+#: ../../textpage.rst:222 44de8974cd434bbca7c4dea100e9987f
 #, fuzzy
 msgid "image content (``bytes``)"
 msgstr "画像コンテンツ *(bytes)*"
 
-#: ../../textpage.rst:223 0f80267e7b8a43e48e7438031afc13b7
+#: ../../textpage.rst:223 ce697bda1a494d35a92a1a9b886f4a53
 msgid "mask"
 msgstr ""
 
-#: ../../textpage.rst:223 63331458b66141edb5d0d8d16c641424
+#: ../../textpage.rst:223 203d79f1d981499da21d8cae601cef42
 msgid "image mask content (``bytes``) for transparent images"
 msgstr ""
 
-#: ../../textpage.rst:226 3c28b6119f1e4c05845e754c4e7762df
+#: ../../textpage.rst:226 7b2748f1df1342538dd7b750dd6db1db
 msgid ""
 "Possible values of the \"ext\" key are \"bmp\", \"gif\", \"jpeg\", "
 "\"jpx\" (JPEG 2000), \"jxr\" (JPEG XR), \"png\", \"pnm\", and \"tiff\"."
@@ -795,14 +795,14 @@ msgstr ""
 "\"ext\"キーの可能な値は、\"bmp\"、\"gif\"、\"jpeg\"、\"jpx\"（JPEG 2000）、\"jxr\"（JPEG "
 "XR）、\"png\"、\"pnm\"、および \"tiff\" です。"
 
-#: ../../textpage.rst:230 6cc71007ae5943aba16bc9df25bcbfc9
+#: ../../textpage.rst:230 f165771e95ce4de587ef46d0281ce182
 msgid ""
 "An image block is generated for **all and every image occurrence** on the"
 " page. Hence there may be duplicates, if an image is shown at different "
 "locations."
 msgstr "ページ上の **すべての画像** が画像ブロックとして生成されます。したがって、画像が異なる場所で表示される場合、重複が発生する可能性があります。"
 
-#: ../../textpage.rst:232 968df807caf345efb4f5145afb265729
+#: ../../textpage.rst:232 34122c8c572a45d7a4acfd1f2cbbbe55
 msgid ""
 ":ref:`TextPage` and corresponding method :meth:`Page.get_text` are "
 "**available for all document types**. Only for PDF documents, methods "
@@ -816,7 +816,7 @@ msgstr ""
 ":meth:`Page.get_images` は画像リストに関する機能が一部重複しています。ただし、これらのリストは同じアイテムを "
 "**含むかどうかは必ずしも保証されません**。違いがある場合、その原因はおそらく次のいずれかです。"
 
-#: ../../textpage.rst:234 58c9e4620f5c45b5a55b38b92a6fd494
+#: ../../textpage.rst:234 87715f6d6a82452b8ef41b7cbb3b917c
 msgid ""
 "\"Inline\" images (see page 214 of the :ref:`AdobeManual`) of a PDF page "
 "are contained in a textpage, but **do not appear** in "
@@ -825,13 +825,13 @@ msgstr ""
 "PDFページの「インライン」画像（:ref:`AdobeManual` "
 "のページ214を参照）はテキストページに含まれていますが、:meth:`Page.get_images` には **表示されません**。"
 
-#: ../../textpage.rst:235 1976d291ba2043ed8edc7a38a5dab528
+#: ../../textpage.rst:235 7671c8c4e14e4452a9de51d3be9f9a57
 msgid ""
 "Annotations may also contain images -- these will **not appear** in "
 ":meth:`Page.get_images`."
 msgstr "アノテーションにも画像が含まれることがあります。これらは :meth:`Page.get_images` には **表示されません**。"
 
-#: ../../textpage.rst:236 06ed842b388847b7a7113443675b76cb
+#: ../../textpage.rst:236 528e4366c2844284b6b3e06d85663c2c
 msgid ""
 "Image blocks in a textpage are generated for **every** image location -- "
 "whether or not there are any duplicates. This is in contrast to "
@@ -842,7 +842,7 @@ msgstr ""
 "生成されます。重複があるかどうかに関係なくです。これは、:meth:`Page.get_images` "
 "では各画像が1回だけリストされる（参照名ごとに）のとは対照的です。"
 
-#: ../../textpage.rst:237 9f5942f2272b483590d6ed0a8a5f178e
+#: ../../textpage.rst:237 6ba5259a29524a72bae31a85c368deb0
 msgid ""
 "Images mentioned in the page's :data:`object` definition will **always** "
 "appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there "
@@ -852,7 +852,7 @@ msgstr ""
 "ページの :data:`object` 定義で言及されている画像は、常に :meth:`Page.get_images` に表示されます "
 "[#f1]_。ただし、ページの :data:`contents` に「表示」コマンドがない場合、画像はテキストページに表示されません。"
 
-#: ../../textpage.rst:239 b59961eabc8f46f486afc6f2c788b491
+#: ../../textpage.rst:239 e7f81738e67441429325db9963571f7d
 msgid ""
 "The image's \"transformation matrix\" is defined as the matrix, for which"
 " the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, "
@@ -861,7 +861,7 @@ msgstr ""
 "画像の「変換行列」は、`bbox / transform == pymupdf.Rect(0, 0, 1, 1)` "
 "という式が真である場合の行列です。詳細はこちらを参照してください： :ref:`ImageTransformation`。"
 
-#: ../../textpage.rst:241 43cad69a55ef4f20816d50cc8efbe1b6
+#: ../../textpage.rst:241 57bed7561cd444e0b640b95c35da2f85
 msgid ""
 "A transparent image may be accompanied by a mask image. This is stored "
 "under key `\"mask\"` and has the format of a `DeviceGray` PNG image. "
@@ -874,63 +874,63 @@ msgid ""
 "supported. Here is a code snippet:"
 msgstr ""
 
-#: ../../textpage.rst:248 a317df3004da43a6a184efa0266a463d
+#: ../../textpage.rst:248 4615f23b245b4db39e8ea23b4d176464
 msgid "**Text block:**"
 msgstr "**テキストブロック：**"
 
-#: ../../textpage.rst:253 030797816aa549989b47bbb0e2632ff6
+#: ../../textpage.rst:253 db5d3f31fc8d4153b8fafecfdf3d1727
 msgid "0 = text *(int)*"
 msgstr "0 = テキスト *(int)*"
 
-#: ../../textpage.rst:254 5845dcf4d2ff4b8aa3b8696f11fd4a20
+#: ../../textpage.rst:254 6964cf3c7ba24458aae29d347f3f603a
 msgid "block rectangle, :data:`rect_like`"
 msgstr "ブロックの矩形、:data:`rect_like`"
 
-#: ../../textpage.rst:255 392754de728c42fcae42b1f9b5a1145e
+#: ../../textpage.rst:255 731cf949720a4619b5ea681f7764d295
 msgid "block count *(int)*"
 msgstr "ブロック数 *(int)*"
 
-#: ../../textpage.rst:256 3bbc359f17e345399daa6507bdeea828
+#: ../../textpage.rst:256 3a23e4510e7949e29bf987d16327eb49
 msgid "lines"
 msgstr ""
 
-#: ../../textpage.rst:256 4042757af1954925a1cf44f2a1335dce
+#: ../../textpage.rst:256 ede4e782ec014752989f15767a43462d
 msgid "*list* of text line dictionaries"
 msgstr "テキスト行の辞書の *list*"
 
-#: ../../textpage.rst:260 3d06aedad94149bc9fda2938390bc25f
+#: ../../textpage.rst:260 647d1430aba549968a23caa9bd2bf178
 msgid "Line Dictionary"
 msgstr ""
 
-#: ../../textpage.rst:265 2aa6b4384d6a43ae8535097a2f4d7183
+#: ../../textpage.rst:265 88d566f6551a42a29f62a0819ecbed64
 msgid "line rectangle, :data:`rect_like`"
 msgstr "行の矩形、:data:`rect_like`"
 
-#: ../../textpage.rst:266 057f881221e5432c812c73df38a30476
+#: ../../textpage.rst:266 bc961e945f144c85a9e1a2193c3a4443
 msgid "wmode"
 msgstr ""
 
-#: ../../textpage.rst:266 9b8a69aaf19842ae8147069b78b00dd1
+#: ../../textpage.rst:266 220a8c26dda34ae4b15fb120791f0296
 msgid "writing mode *(int)*: 0 = horizontal, 1 = vertical"
 msgstr "書き込みモード *(int)*：0 = 水平、1 = 垂直"
 
-#: ../../textpage.rst:267 692c2dda2d01494db929c1c879dfbdba
+#: ../../textpage.rst:267 b23571753e8641b391f1c7bd3d666faf
 msgid "dir"
 msgstr ""
 
-#: ../../textpage.rst:267 9b0ca2dd38e24416955b894693d6ff52
+#: ../../textpage.rst:267 f040c814bf3643e0b50bb1889d157bc2
 msgid "writing direction, :data:`point_like`"
 msgstr "書き込み方向、:data:`point_like`"
 
-#: ../../textpage.rst:268 230317eadc6b4662a8970d6c2ba18495
+#: ../../textpage.rst:268 f4df6d31bea14f7d9133d10fe217a237
 msgid "spans"
 msgstr ""
 
-#: ../../textpage.rst:268 bf9fdcd40df14bcda53145f233e3ef56
+#: ../../textpage.rst:268 d2626131157f45bda11a0a0240ae20e0
 msgid "*list* of span dictionaries"
 msgstr "スパン辞書の *list*"
 
-#: ../../textpage.rst:271 fa187d7adc9a47ecb61fbbdb00651da2
+#: ../../textpage.rst:271 827a258f7a314424b22d7d3077bc4795
 #, fuzzy
 msgid ""
 "The value of key *\"dir\"* is the **unit vector** `dir = (cosine, -sine)`"
@@ -943,124 +943,124 @@ msgstr ""
 "sine)` "
 "です。次の図を参照してください：各象限内の単語（右上から反時計回りに、上から下まで）は、それぞれ30、120、210、300度回転しています。"
 
-#: ../../textpage.rst:277 9bb9215f24144aa98bdf2ba3bf53f511
+#: ../../textpage.rst:277 76e3be33b8eb4d20a040a290a7493044
 msgid "Span Dictionary"
 msgstr ""
 
-#: ../../textpage.rst:279 ede5941b8dfa4244a8c0216c6f7e2cad
+#: ../../textpage.rst:279 44e867372fca4010ae8c117e6f57244a
 msgid ""
 "Spans contain the actual text. A line contains **more than one span "
 "only**, if it contains text with different font properties."
 msgstr "スパンには実際のテキストが含まれています。フォントのプロパティが異なるテキストを含む場合を除き、1行には複数のスパンが含まれます。"
 
-#: ../../textpage.rst:281 6d53a255181a47a89ae1ffa5b80e2b1a
+#: ../../textpage.rst:281 2484e6f332594c488b1ab6e8e45e8358
 msgid "Changed in version 1.14.17 Spans now also have a *bbox* key (again)."
 msgstr "バージョン1.14.17で変更されました：スパンには *bbox* キーが含まれています（再び）。"
 
-#: ../../textpage.rst:282 7181bf3c38f348e28414b10b1f15325a
+#: ../../textpage.rst:282 fe2deeccb3484496b06cee9c45979177
 msgid "Changed in version 1.17.6 Spans now also have an *origin* key."
 msgstr "バージョン1.17.6で変更されました：スパンには *origin* キーも含まれています。"
 
-#: ../../textpage.rst:287 7a0c3e49b06244d5a3f9b08938753c70
+#: ../../textpage.rst:287 24917424394140498d62e12db012d491
 msgid "span rectangle, :data:`rect_like`"
 msgstr "スパンの矩形、:data:`rect_like`"
 
 #: ../../textpage.rst:288 ../../textpage.rst:371
-#: 941eff0bda7848b1aded9b21d87508d4 fc611070d2e14a749a6523327a435ab1
+#: d062895875c246f08ce11e156a46fe6c e4eadb2bf3fd4656a1dcaea2aa762fb2
 msgid "origin"
 msgstr ""
 
-#: ../../textpage.rst:288 4e9cfcbb63dd4d3b96d02cac7a72d335
+#: ../../textpage.rst:288 49dcac4791f7495283b181cd85e5cb96
 msgid "the first character's origin, :data:`point_like`"
 msgstr "最初の文字の原点、:data:`point_like`"
 
-#: ../../textpage.rst:289 ffe4ce11ff8e482d8125e561122e8a01
+#: ../../textpage.rst:289 a039c803b12f44f2b903bfd72ff968f0
 msgid "font"
 msgstr ""
 
-#: ../../textpage.rst:289 c193bd6161a1476a895ff5d05e36e414
+#: ../../textpage.rst:289 e59d2678453347c3b2290c87101bee41
 msgid "font name *(str)*"
 msgstr "フォント名  *（str）*"
 
-#: ../../textpage.rst:290 0f4cf45ac40742c2bdbba91439182885
+#: ../../textpage.rst:290 9789271ef0d44ca8b8b7753a47109329
 msgid "ascender"
 msgstr ""
 
-#: ../../textpage.rst:290 9d18fc7dfd794af3863c8617f6cca80b
+#: ../../textpage.rst:290 bae202ea90f340c08117616fba695605
 msgid "ascender of the font *(float)*"
 msgstr "フォントのアセンダー *（float）*"
 
-#: ../../textpage.rst:291 c8355e31a600438d9aa2f5c09ad08a32
+#: ../../textpage.rst:291 f04de1e03bc64ecb932178642bbf28a2
 msgid "descender"
 msgstr ""
 
-#: ../../textpage.rst:291 642a93c2137f4f22a445251b97134d53
+#: ../../textpage.rst:291 cab39571402145599cd516740c2cd5e3
 msgid "descender of the font *(float)*"
 msgstr "フォントのディセンダー *（float）*"
 
-#: ../../textpage.rst:292 0f948a6afd6c40c2af7e4682ea3f0c41
+#: ../../textpage.rst:292 7bb34b245d0e4a7a807d37f771540973
 msgid "font size *(float)*"
 msgstr "フォントサイズ *（float）*"
 
-#: ../../textpage.rst:293 3481c94bc1974e3e87ad16a48d7bee02
+#: ../../textpage.rst:293 728b3550893a43df91864ece6b6a6c75
 msgid "flags"
 msgstr ""
 
-#: ../../textpage.rst:293 7ad9d44635b2454b8676ec29468e86d6
+#: ../../textpage.rst:293 d4144f5c31e240ca8a9bc6a9902c4b40
 msgid "font characteristics *(int)*"
 msgstr "フォントの特性 *（int）*"
 
-#: ../../textpage.rst:294 1bea765fcc0d440780a84e5ff7428ab5
+#: ../../textpage.rst:294 4ab488b7a402495f924066ec5fa0901d
 msgid "char_flags"
 msgstr ""
 
-#: ../../textpage.rst:294 6bbef3a00ae64fe080a4f63e69c11277
+#: ../../textpage.rst:294 ac689e1eb3bd44c196f5a43696910e9c
 #, fuzzy
 msgid "char characteristics *(int)*"
 msgstr "フォントの特性 *（int）*"
 
-#: ../../textpage.rst:295 8eb70c16b7d646e48893ef568ff42402
+#: ../../textpage.rst:295 70dfc6783fdb4c5a8a1e0ad9b92b44fc
 msgid "color"
 msgstr ""
 
-#: ../../textpage.rst:295 59eabfe4fab04ba2affa939c5fde49b7
+#: ../../textpage.rst:295 0c21ca835d2f477e934a8f5cec1f8a4c
 #, fuzzy
 msgid "text color in sRGB format 0xRRGGBB *(int)*."
 msgstr "sRGB形式のテキストカラー *（int）*"
 
-#: ../../textpage.rst:296 fd9113d3e57447b5b4bdc780cde1dda4
+#: ../../textpage.rst:296 8e921b08a2ba477497897d70a87f4977
 msgid "alpha"
 msgstr ""
 
-#: ../../textpage.rst:296 d40a9c36fe9f4f0586641e3cf2350ff2
+#: ../../textpage.rst:296 ec794a253afb48ea90cf9d7494caa03b
 msgid "text opacity 0..255 *(int)*."
 msgstr ""
 
-#: ../../textpage.rst:297 94ac61d4a8494149a0be110b7b31fbb7
+#: ../../textpage.rst:297 72dbc8f290b94f6c88700e6a5df12717
 msgid "text"
 msgstr ""
 
-#: ../../textpage.rst:297 71f33f09b5dc4d26a232e868d6a71835
+#: ../../textpage.rst:297 42bc9c7faaed433c9e3868ab04254f3f
 msgid "(only for :meth:`extractDICT`) text *(str)*"
 msgstr "（:meth:`extractDICT` のみ）テキスト *（str）* "
 
-#: ../../textpage.rst:298 badb479f9a6c4f8cb637a1fc27887492
+#: ../../textpage.rst:298 6c4e864e58554766a1c930bd0e32e581
 msgid "chars"
 msgstr ""
 
-#: ../../textpage.rst:298 5f31662e0fd54663932aef0cf696bc81
+#: ../../textpage.rst:298 287db5214934490ba0764caaa9ee699d
 msgid "(only for :meth:`extractRAWDICT`) *list* of character dictionaries"
 msgstr "（:meth:`extractRAWDICT` のみ）文字の辞書の*list*"
 
-#: ../../textpage.rst:301 2e5c684a3b98457dad2eeca01251bcbe
+#: ../../textpage.rst:301 6a3a9323a60541ca97db64597a2a451a
 msgid "|history_begin|"
 msgstr ""
 
-#: ../../textpage.rst:303 af2202bc94eb4986b35814e7062ea2af
+#: ../../textpage.rst:303 e0b8ee67e36546b0b5b8b155e00eeb45
 msgid "*(New in version 1.25.3.0):* Added *\"alpha\"* item."
 msgstr ""
 
-#: ../../textpage.rst:305 346a48e9dc164f95a383ca075ec44282
+#: ../../textpage.rst:305 04010301eebf4c2dbf6989108e207ae9
 msgid ""
 "*(New in version 1.16.0):* *\"color\"* is the text color encoded in sRGB "
 "(int) format, e.g. 0xFF0000 for red. There are functions for converting "
@@ -1073,7 +1073,7 @@ msgstr ""
 " :meth:`sRGB_to_pdf` または（R、G、B）、:meth:`sRGB_to_rgb` "
 "（整数値で0から255の範囲）に変換するための関数があります。"
 
-#: ../../textpage.rst:307 01cb891c462347beb23cc803ba6f273d
+#: ../../textpage.rst:307 744bef29da2f4dbc90404a35ef0fd253
 msgid ""
 "*(New in v1.18.5):* *\"ascender\"* and *\"descender\"* are font "
 "properties, provided relative to :data:`fontsize` 1. Note that descender "
@@ -1084,11 +1084,11 @@ msgstr ""
 ":data:`fontsize` "
 "1に対して提供されます。ディセンダーは負の値であることに注意してください。以下の画像は、他の値やプロパティとの関係を示しています。"
 
-#: ../../textpage.rst:309 38509ecdb88249a89b1f87e100af2794
+#: ../../textpage.rst:309 e0a8a997405247f6bb89749ab0b624b7
 msgid "|history_end|"
 msgstr ""
 
-#: ../../textpage.rst:314 2ba023fe0c7d4f3a84c985d6d42257e0
+#: ../../textpage.rst:314 9b180b7db6ac43e489b8d8e9ccb31622
 msgid ""
 "These numbers may be used to compute the minimum height of a character "
 "(or span) -- as opposed to the standard height provided in the \"bbox\" "
@@ -1099,7 +1099,7 @@ msgstr ""
 "これらの数字は、文字（またはスパン）の最小の高さを計算するために使用できます。これは、実際には行の高さを表す「bbox」値ではなく、フォントサイズに完全に合わせるための高さを表します。次のコードは、スパンのbboxを、内部のテキストに完全に合わせる高さが"
 " **フォントサイズ** となるように再計算します："
 
-#: ../../textpage.rst:324 23459ad4eef14d39af6467b841bb249d
+#: ../../textpage.rst:324 91c353d85b0a45d7bde9987e275b50b5
 msgid ""
 "The above calculation may deliver a **larger** height! This may e.g. "
 "happen for OCRed documents, where the risk of all sorts of text artifacts"
@@ -1113,7 +1113,7 @@ msgstr ""
 ":data:`fontsize` から独立して、適切なbboxの高さを見つけ出そうとします。したがって、`span[\"bbox\"]` の高さが"
 " `span[\"size\"]` よりも大きいことを確認してください。"
 
-#: ../../textpage.rst:326 8a9f78a3ca49476bb09d47f7c0037fd2
+#: ../../textpage.rst:326 cfa2fe9816d741889a16e7a98228f45f
 msgid ""
 "You may request PyMuPDF to do all of the above automatically by executing"
 " `pymupdf.TOOLS.set_small_glyph_heights(True)`. This sets a global "
@@ -1123,48 +1123,48 @@ msgstr ""
 "PyMuPDFに対して、`pymupdf.TOOLS.set_small_glyph_heights(True)` "
 "を実行して、上記のすべてを自動的に実行するように依頼することができます。これは、すべての後続のテキスト検索とテキスト抽出が、縮小されたグリフの高さを基に行われるようにするためのグローバルパラメータを設定します。"
 
-#: ../../textpage.rst:328 4c2b61999a4e4a13b8d42222a75f0b77
+#: ../../textpage.rst:328 dcd3f3103b3a404ea59ed88e1020efbe
 msgid ""
 "The following shows the original span rectangle in red and the rectangle "
 "with re-computed height in blue."
 msgstr "以下は、元のspanの矩形を赤で、再計算された高さを持つ矩形を青で示しています。"
 
-#: ../../textpage.rst:334 de6eebad5e374780b4087dafc5a35cea
+#: ../../textpage.rst:334 c4897a84054b4b60ab66d79b8388e431
 msgid ""
 "*\"flags\"* is an integer, which represents font properties except for "
 "the first bit 0. They are to be interpreted like this:"
 msgstr "*\"flags\"* は、フォントのプロパティを表す整数で、最初のビット 0 を除いて次のように解釈されます："
 
-#: ../../textpage.rst:336 ba741a3fc759485985d49c19f01c9ef8
+#: ../../textpage.rst:336 817f541495b84011b646fb0f5a0c1eff
 #, fuzzy
 msgid ""
 "bit 0: superscripted (:data:`TEXT_FONT_SUPERSCRIPT`) -- not a font "
 "property, detected by MuPDF code."
 msgstr "bit 0: superscripted (2\\ :sup:`0`)  - フォントのプロパティではなく、MuPDFコードによって検出されます。"
 
-#: ../../textpage.rst:337 78e75a3016a143eebba37096ad39d511
+#: ../../textpage.rst:337 4966d75813f448898822b04faffbe380
 msgid "bit 1: italic (:data:`TEXT_FONT_ITALIC`)"
 msgstr ""
 
-#: ../../textpage.rst:338 dea957fa07fb47e58b4eaa819d064d78
+#: ../../textpage.rst:338 31205a9cd37941e0ac7c7fbbfb19ffc1
 #, fuzzy
 msgid "bit 2: serifed (:data:`TEXT_FONT_SERIFED`)"
 msgstr "ビット 2: セリフ付き (2\\ :sup:`2`)"
 
-#: ../../textpage.rst:339 9af423dfcf754de499eec516291b3dfa
+#: ../../textpage.rst:339 f887f5fcd078467cbd8ea212d8133aa3
 #, fuzzy
 msgid "bit 3: monospaced (:data:`TEXT_FONT_MONOSPACED`)"
 msgstr "ビット 3: モノスペース (2\\ :sup:`3`)"
 
-#: ../../textpage.rst:340 251453629796445893d21c28cc8124ea
+#: ../../textpage.rst:340 075ed56b276245c096a3204cc111339a
 msgid "bit 4: bold (:data:`TEXT_FONT_BOLD`)"
 msgstr ""
 
-#: ../../textpage.rst:342 59a6d01576154fe9bf8e8b9051b33213
+#: ../../textpage.rst:342 fafa4c4a530a43fa8278e455dd07640f
 msgid "Test these characteristics like so:"
 msgstr "これらの特性は、次のようにテストできます："
 
-#: ../../textpage.rst:348 bfc7d6a052ce4fce8790ede3a436fb69
+#: ../../textpage.rst:348 ffbc346b79aa4a6189253e08eeb6280f
 msgid ""
 "Bits 1 thru 4 are font properties, i.e. encoded in the font program. "
 "Please note, that this information is not necessarily correct or "
@@ -1173,94 +1173,94 @@ msgstr ""
 "ビット1からビット4までがフォントのプロパティであり、つまりフォントプログラムにエンコードされています。 "
 "ただし、この情報は必ずしも正確または完全ではないことに注意してください。フォントにはしばしば誤ったデータが含まれていることがあります。"
 
-#: ../../textpage.rst:350 4d1498d57d2b4c69ba82c3d86493fb97
+#: ../../textpage.rst:350 67a56b648e48459abc86b3d71dded7d7
 msgid ""
 "*\"char_flags\"* is an integer, which represents extra character "
 "properties:"
 msgstr ""
 
-#: ../../textpage.rst:352 3612fbd5dadd402d99e182ef3b916ea7
+#: ../../textpage.rst:352 16e54aeb7318448cb0edbbce096027cc
 msgid "bit 0: strikeout."
 msgstr ""
 
-#: ../../textpage.rst:353 3fdaa90226ad4e3dbe95664df8eea0cf
+#: ../../textpage.rst:353 f36bc128a5084f419c7b735cc7a5caeb
 msgid "bit 1: underline."
 msgstr ""
 
-#: ../../textpage.rst:354 0c3f086196de4719af885a8be8c7e0d0
+#: ../../textpage.rst:354 05f6a81ee7234929b145f42b0eaeb4ee
 msgid "bit 2: synthetic (always 0, see char dictionary)."
 msgstr ""
 
-#: ../../textpage.rst:355 8168d259a6994df58b08b6a5bb6e528d
+#: ../../textpage.rst:355 2d7d278b9b7b46479144808b701ed7da
 msgid "bit 3: filled."
 msgstr ""
 
-#: ../../textpage.rst:356 b15cbf775d8242179c6218dcf678dfbc
+#: ../../textpage.rst:356 a0b8d460dd8a42e69537652330a1f9ee
 msgid "bit 4: stroked."
 msgstr ""
 
-#: ../../textpage.rst:357 fe26904a6aef423cb032d941a3f16e7f
+#: ../../textpage.rst:357 430da53ed561403d90a8c2c28cc01a90
 msgid "bit 5: clipped."
 msgstr ""
 
-#: ../../textpage.rst:359 cc08341dee4841cdb9efce8f8328c72c
+#: ../../textpage.rst:359 26fc27f279ca42fba75113be40e54d40
 msgid ""
 "For example if not filled and not stroked (`if not (char_flags & 2**3 & "
 "2**4): ...`) then the text will be invisible."
 msgstr ""
 
-#: ../../textpage.rst:362 1a73125e6b5d4636bef571142a56d348
+#: ../../textpage.rst:362 f68e611505354310ab256d5f4ac755f3
 msgid "(`char_flags` is new in v1.25.2.)"
 msgstr ""
 
-#: ../../textpage.rst:366 fc0755117ea040d38d703aefe8a1d835
+#: ../../textpage.rst:366 2b6029a504d149d0b74200b8dd10b461
 msgid "Character Dictionary for :meth:`extractRAWDICT`"
 msgstr "文字のディクショナリ、:meth:`extractRAWDICT`"
 
-#: ../../textpage.rst:371 d5cbb8a9af1f4428896b1b7fc4d8c549
+#: ../../textpage.rst:371 e3322f02de66484cb59d9ddf2e914bcb
 msgid "character's left baseline point, :data:`point_like`"
 msgstr "文字の左ベースラインポイント、:data:`point_like`"
 
-#: ../../textpage.rst:372 a46239e4f25e455bb2cdf5860328b0d7
+#: ../../textpage.rst:372 3a206190a9b4495299d14480848ee306
 msgid "character rectangle, :data:`rect_like`"
 msgstr "文字の矩形、:data:`rect_like`"
 
-#: ../../textpage.rst:373 446a80c6a1ac4c898322c4e4c35aa223
+#: ../../textpage.rst:373 7925e02a5e07443895c900f6450205fa
 msgid "synthetic"
 msgstr ""
 
-#: ../../textpage.rst:373 739878748b6447ef82df79dedaf0f65a
+#: ../../textpage.rst:373 d557f7b009724b00a3418fb77e4943ce
 msgid "bool."
 msgstr ""
 
-#: ../../textpage.rst:374 698361d0ea704ea78d1c12e2544b28b4
+#: ../../textpage.rst:374 fb692a970116495a977cac2daff0d94b
 msgid "c"
 msgstr ""
 
-#: ../../textpage.rst:374 24b9cd869f7344bd90d6f40b1c3862d3
+#: ../../textpage.rst:374 30e9a39551314a14a169ee11d34c575f
 msgid "the character (unicode)"
 msgstr "文字（ユニコード）"
 
-#: ../../textpage.rst:377 9a4e847fd26a450ab6af91fa2f536982
+#: ../../textpage.rst:377 504a88fbf1324f19a3ed16c3f2c0c942
 msgid "(`synthetic` is new in v1.25.3.)"
 msgstr ""
 
-#: ../../textpage.rst:379 8ad57f9575ed4fa9bdfbde5224fb43a3
+#: ../../textpage.rst:379 9d820af6f3ac446a912245d16d5e7bdd
 msgid ""
 "This image shows the relationship between a character's bbox and its "
 "quad: |textpagechar|"
 msgstr "この画像は、文字のbboxとそのquadの関係を示しています：|textpagechar|"
 
-#: ../../textpage.rst:381 1917647d6d434b7e9f9f59d21e6be2b1
-#: 3f06e78ea445472d92030debab4e3b04
+#: ../../textpage.rst:381 64023f700298486f98b566eac340e37b
+#: 7901af22526f478cb0ba76a7cc56288e
 msgid "textpagechar"
 msgstr ""
 
-#: ../../textpage.rst:386 c5dd21ec4aaf4022b18a1dec50c7908d
+#: ../../textpage.rst:386 ab41f5e333004a04a46c0505e9d7bebf
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../textpage.rst:387 46ddf86e85364b05abc5c9ea6a706b17
+#: ../../textpage.rst:387 9c3377a336cd4477b8afbd4528d4dee0
 msgid ""
 "Image specifications for a PDF page are done in a page's (sub-) "
 ":data:`dictionary`, called `/Resources`. Resource dictionaries can be "
@@ -1274,7 +1274,7 @@ msgid ""
 "definition will show fonts and images that are actually used."
 msgstr ""
 
-#: ../../textpage.rst:389 63c6426e75ed40b49222361f407a4bec
+#: ../../textpage.rst:389 8ebe9e78accc4c87b80eb50757ed695f
 msgid ""
 "The coordinate systems of MuPDF and PDF are different in that MuPDF uses "
 "the page's top-left point as `(0, 0)`. In PDF, this is the bottom-left "
@@ -1283,7 +1283,15 @@ msgid ""
 "**negative** value indicates anti-clockwise rotation of the text."
 msgstr ""
 
-#: ../../footer.rst:60 a56c8b8ce8ae4441b082d7b78de8ab79
+#: ../../textpage.rst:391 9bfe3c4bcdac45eb9b746197c51d2a7a
+msgid ""
+"This value is always 96, the default of the PDF interpreter. It **does "
+"not reflect** the resolution of the image itself. If you need the image's"
+" resolution, use the :meth:`Pixmap.xres` and :meth:`Pixmap.yres` "
+"attributes of the :ref:`Pixmap` created from the returned image binary."
+msgstr ""
+
+#: ../../footer.rst:46 909bafb54f4646cd8842c5ccd34ceeef
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
