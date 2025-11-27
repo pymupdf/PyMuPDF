@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,35 +19,35 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 e25f415be312493ea3ae1f28db48fb1a
+#: ../../header.rst:-1 95c1ee7365714a268b45d71ca863b7ee
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 dccdc4856fd544a882af2b070c10a666
+#: ../../header.rst:-1 8dbea99845b74a23bde58d46198a17ac
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 6bd5a3c81bd94748ba267f88934f7963
+#: ../../header.rst:-1 cf3d095401604af48e44cc3a35d66bff
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../textwriter.rst:7 c6975d5fbc08457291e33247e41b0c83
+#: ../../textwriter.rst:7 e9730367b10a49359e1d45817a7f7880
 msgid "TextWriter"
 msgstr "TextWriter (テキストライター)"
 
-#: ../../textwriter.rst:9 1e02a43a34c840cb955678ee25bd31ce
+#: ../../textwriter.rst:9 cda3eb15a6fe4186b26bf8276092c97f
 msgid "|pdf_only_class|"
 msgstr "PDFのみ。"
 
-#: ../../textwriter.rst:11 11e7bf38655543ffa60d8816581dbabf
+#: ../../textwriter.rst:11 db627f8740eb4561a5527a9d4ca4e25f
 msgid "New in v1.16.18"
 msgstr "v1.16.18で新たに追加"
 
-#: ../../textwriter.rst:13 3c8bfbc5ff924a9eb9b6b94109ec34f9
+#: ../../textwriter.rst:13 67e48f18fa9440238b3a1969be763ace
 msgid ""
 "This class represents a MuPDF *text* object. The basic idea is to "
 "**decouple (1) text preparation, and (2) text output** to PDF pages."
@@ -55,7 +55,7 @@ msgstr ""
 "このクラスはMuPDFの *text* "
 "オブジェクトを表します。**基本的なアイデアは、（1）テキストの準備と（2）PDFページへのテキストの出力を切り離すことです** 。"
 
-#: ../../textwriter.rst:15 da54ba43f33e4678af8bf51e628f29df
+#: ../../textwriter.rst:15 5a301b5eac7846a6a95cae297b7806a2
 msgid ""
 "During **preparation**, a text writer stores any number of text pieces "
 "(\"spans\") together with their positions and individual font "
@@ -65,13 +65,13 @@ msgstr ""
 "**準備**中、テキストライターはテキストピース（「スパン」）を任意の数保存し、それぞれの位置と個別のフォント情報とともに保存します。ライターの準備されたコンテンツの"
 " **出力** は、互換性のあるページサイズを持つ任意のPDFページに複数回行われる可能性があります。"
 
-#: ../../textwriter.rst:17 f4c7ab10f0a34399b9c1dc1ad38e4600
+#: ../../textwriter.rst:17 7cf591fcc0cf40af9d587a72b702b960
 msgid ""
 "A text writer is an elegant alternative to methods "
 ":meth:`Page.insert_text` and friends:"
 msgstr "テキストライターは、:meth:`Page.insert_text` などと比較して、次の点で優れた代替手段です："
 
-#: ../../textwriter.rst:19 42ac247fde9442d0b8e6a634d87a2a00
+#: ../../textwriter.rst:19 8d88b6d0545142bc9885b1dcbb44a4ea
 msgid ""
 "**Improved text positioning:** Choose any point where insertion of text "
 "should start. Storing text returns the \"cursor position\" after the "
@@ -80,7 +80,7 @@ msgstr ""
 "**改良されたテキスト配置：** テキストを挿入する開始点を任意に選択できます。テキストの保存はスパンの *最後の文字の後* "
 "の「カーソル位置」を返します。"
 
-#: ../../textwriter.rst:20 f934f37c93a4447da9cfb972800a8e21
+#: ../../textwriter.rst:20 4014fff4490f449991524305bfef1c4b
 msgid ""
 "**Free font choice:** Each text span has its own font and "
 ":data:`fontsize`. This lets you easily switch when composing a larger "
@@ -89,7 +89,7 @@ msgstr ""
 "**自由なフォントの選択：** 各テキストスパンには独自のフォントと :data:`fontsize` "
 "があります。大きなテキストを作成する際に簡単に切り替えることができます。"
 
-#: ../../textwriter.rst:21 c3a1e5ba5ac246a0821a2de8b88cab5c
+#: ../../textwriter.rst:21 96e0cdf2386340edafe0ed3b9aa2a211
 msgid ""
 "**Automatic fallback fonts:** If a character is not supported by the "
 "chosen font, alternative fonts are automatically searched. This "
@@ -105,14 +105,14 @@ msgstr ""
 "**すべてのCJK**文字（中国語、日本語、韓国語）をサポートする **ユニバーサルフォント「Droid Sans Fallback "
 "Regular」** を提供します。"
 
-#: ../../textwriter.rst:22 4c231b43d07c45538b5adbc94bbc0cb1
+#: ../../textwriter.rst:22 89a8833cb85e46909d178dc372f5aaac
 msgid ""
 "**Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated "
 "support of Cyrillic and Greek characters **without specifying encoding.**"
 " Your text may be a mixture of Latin, Greek and Cyrillic."
 msgstr "キリル文字とギリシャ文字のサポート：PDFベース14フォントには、エンコーディングを指定せずにキリル文字とギリシャ文字の統合サポートがあります。テキストはラテン文字、ギリシャ文字、キリル文字の混合である可能性があります。"
 
-#: ../../textwriter.rst:23 719a06928f8c4e278b7cc35cdb535838
+#: ../../textwriter.rst:23 939bfd358cb14ee1ac3d682b4310030f
 msgid ""
 "**Transparency support:** Parameter *opacity* is supported. This offers a"
 " handy way to create watermark-style text."
@@ -120,7 +120,7 @@ msgstr ""
 "**透明度のサポート：** パラメータの *透明度* "
 "がサポートされています。これはウォーターマークスタイルのテキストを作成する便利な方法を提供します。"
 
-#: ../../textwriter.rst:24 a43dc70b42144ecaac47bf7487da71ce
+#: ../../textwriter.rst:24 36106b9c863b43c39d4d348af9680b3e
 msgid ""
 "**Justified text:** Supported for any font -- not just simple fonts as in"
 " :meth:`Page.insert_textbox`."
@@ -128,7 +128,7 @@ msgstr ""
 "**両端揃えのテキスト**： :meth:`Page.insert_textbox` "
 "のような単純なフォントだけでなく、すべてのフォントでサポートされています。"
 
-#: ../../textwriter.rst:25 eeff1d730fb54a3aa436c9443c2ea821
+#: ../../textwriter.rst:25 88d0bcdd76b94defb985b51bd7050a50
 msgid ""
 "**Reusability:** A TextWriter object exists independent from PDF pages. "
 "It can be written multiple times, either to the same or to other pages, "
@@ -138,11 +138,11 @@ msgstr ""
 "**再利用性：** "
 "テキストライターオブジェクトはPDFページとは独立して存在します。同じページまたは異なるページ、同じPDFまたは異なるPDFに、異なる色や透明度を選択して複数回書き込むことができます。"
 
-#: ../../textwriter.rst:27 6e5ca11e783d4ea3a50555b4a02fcd09
+#: ../../textwriter.rst:27 6ef8000439b141009aae765ba8c24479
 msgid "Using this object entails three steps:"
 msgstr "このオブジェクトを使用するには、次の3つのステップが必要です："
 
-#: ../../textwriter.rst:29 314e49bf63ea43dc95427576b7fc80a4
+#: ../../textwriter.rst:29 55dea84332984f3ca477041ec762edcf
 msgid ""
 "When **created**, a TextWriter requires a fixed **page rectangle** in "
 "relation to which it calculates text positions. A text writer can write "
@@ -151,7 +151,7 @@ msgstr ""
 "**作成** 時に、テキストライターはテキストの位置を計算するために関連する固定 **ページの矩形** "
 "を必要とします。テキストライターは、このサイズのページにのみ書き込むことができます。"
 
-#: ../../textwriter.rst:30 0d4841a7acae4e7bb3783b7074b74ff8
+#: ../../textwriter.rst:30 57f72fe6a49d41c7be7ed160f47f3019
 msgid ""
 "Store text in the TextWriter using methods :meth:`TextWriter.append`, "
 ":meth:`TextWriter.appendv` and :meth:`TextWriter.fill_textbox` as often "
@@ -161,11 +161,11 @@ msgstr ""
 ":meth:`TextWriter.append`、:meth:`TextWriter.appendv`、および "
 ":meth:`TextWriter.fill_textbox` メソッドで必要な回数だけ保存します。"
 
-#: ../../textwriter.rst:31 c8a2949e8a4948538a9b5dc92a01e0d0
+#: ../../textwriter.rst:31 ac5cfe5c0bf548bf8358a2cc4efa279b
 msgid "Output the TextWriter object on some PDF page(s)."
 msgstr "TextWriter オブジェクトをいくつかのPDFページに出力します。"
 
-#: ../../textwriter.rst:35 cf8b65d52fbb49a991fd273bb016bf4a
+#: ../../textwriter.rst:35 a70f239f39dc44bcbbcc7f367f4f04e8
 msgid ""
 "Starting with version 1.17.0, TextWriters **do support** text rotation "
 "via the *morph* parameter of :meth:`TextWriter.write_text`."
@@ -173,7 +173,7 @@ msgstr ""
 "バージョン1.17.0から、TextWriterは :meth:`TextWriter.write_text` の *morph* "
 "パラメータを介したテキストの回転を **サポートしています** 。"
 
-#: ../../textwriter.rst:37 508f78dbbb7447b1940f851703db0ab1
+#: ../../textwriter.rst:37 39efcbe7af8242d59a6e61a1577bd093
 msgid ""
 "There also exists :meth:`Page.write_text` which combines one or more "
 "TextWriters and jointly writes them to a given rectangle and with a given"
@@ -183,108 +183,108 @@ msgstr ""
 "も存在し、1つ以上のTextWriterを組み合わせて、指定された矩形と回転角に共同で書き込みます - "
 ":meth:`Page.show_pdf_page` のように。"
 
-#: ../../textwriter.rst:41 b9dde294925e4ffa8949f1fcd7efc0d6
+#: ../../textwriter.rst:41 58759c7fac7b4e859398a94c56641cf5
 msgid "**Method / Attribute**"
 msgstr "**メソッド / 属性**"
 
-#: ../../textwriter.rst:41 6874cb44f5fb40189f0e82c957eb93c2
+#: ../../textwriter.rst:41 f8b99b262c4e479daa04854b10a8ca62
 msgid "**Short Description**"
 msgstr "**短い説明**"
 
-#: ../../textwriter.rst:43 91a4db0d70e644b38347b983e8de2378
+#: ../../textwriter.rst:43 5aef1526d3ed401ebe84391dae14eb4e
 msgid ":meth:`~TextWriter.append`"
 msgstr ""
 
-#: ../../textwriter.rst:43 390f1d022b7c4d7eaa44addf02bd9541
+#: ../../textwriter.rst:43 8a1f849d010e4a069dd84d412203d33f
 msgid "Add text in horizontal write mode"
 msgstr "水平書き込みモードでテキストを追加します。"
 
-#: ../../textwriter.rst:44 0818893bc21040279507a817b4fe3e2f
+#: ../../textwriter.rst:44 a3aab120ca1545a79fce7af51ccd1964
 msgid ":meth:`~TextWriter.appendv`"
 msgstr ""
 
-#: ../../textwriter.rst:44 cc29cf869e3a4ddebaffec427cc86bfe
+#: ../../textwriter.rst:44 30601ff66d064e7bbc6b0711078114c1
 msgid "Add text in vertical write mode"
 msgstr "垂直書き込みモードでテキストを追加します。"
 
-#: ../../textwriter.rst:45 ca1023883a45422f8c1b21b28b0e3044
+#: ../../textwriter.rst:45 665726b1a2f74150b2cf20b54f5d3864
 msgid ":meth:`~TextWriter.fill_textbox`"
 msgstr ""
 
-#: ../../textwriter.rst:45 d5365f88499d403fb866da0ab00671c5
+#: ../../textwriter.rst:45 79bdf8fe196e481f9e0f7e6b6d83fa39
 msgid "Fill rectangle (horizontal write mode)"
 msgstr "矩形を埋めます（水平書き込みモード）。"
 
-#: ../../textwriter.rst:46 5b5d070b02f44d9fb33bd428ccb17934
+#: ../../textwriter.rst:46 50d2cf2d0f664964ad637397d702ba01
 msgid ":meth:`~TextWriter.write_text`"
 msgstr ""
 
-#: ../../textwriter.rst:46 613eabdf09fd469184886211223d59e7
+#: ../../textwriter.rst:46 e17f4b99e3a3451090107da06c63083d
 msgid "Output TextWriter to a PDF page"
 msgstr "TextWriterをPDFページに出力します。"
 
-#: ../../textwriter.rst:47 1a531a26cdb746f3857ef7fada50219e
+#: ../../textwriter.rst:47 b1dd0ce95c524931a45226c559b5fc7f
 msgid ":attr:`~TextWriter.color`"
 msgstr ""
 
-#: ../../textwriter.rst:47 29ba5a45348247229302210dbc130067
+#: ../../textwriter.rst:47 977d247f29344daebbc7eb2edad63dda
 msgid "Text color (can be changed)"
 msgstr "テキストの色（変更可能です）。"
 
-#: ../../textwriter.rst:48 188c20529cd945769c55331d971c9362
+#: ../../textwriter.rst:48 a702a69b27f04a1a8bf416872181b83c
 msgid ":attr:`~TextWriter.last_point`"
 msgstr ""
 
-#: ../../textwriter.rst:48 b4bc687b96754e70a6f3b3f0f2282776
+#: ../../textwriter.rst:48 9c6a85c298f542b0ad83608987c80d7c
 msgid "Last written character ends here"
 msgstr "最後に書かれた文字がここで終了します。"
 
-#: ../../textwriter.rst:49 5ecb99aea0944b4cbea149dcdd9ca21a
+#: ../../textwriter.rst:49 85bb365488064af39728ae2cff15a95e
 msgid ":attr:`~TextWriter.opacity`"
 msgstr ""
 
-#: ../../textwriter.rst:49 18659a4d57d74c8c8de94ce5ec865320
+#: ../../textwriter.rst:49 360143b334e144b188b4fc4606f37cd1
 msgid "Text opacity (can be changed)"
 msgstr "テキストの透明度（変更可能です）。"
 
-#: ../../textwriter.rst:50 4480e5d7099243dda1ca52a74d125365
+#: ../../textwriter.rst:50 44cf6996b53b4136925af2dd23e6d3c3
 msgid ":attr:`~TextWriter.rect`"
 msgstr ""
 
-#: ../../textwriter.rst:50 8fcf6c35ee0e40d5bc4e36c04a44edd9
+#: ../../textwriter.rst:50 a79f2dca7b614eaaa5682eae3f4fa368
 msgid "Page rectangle used by this TextWriter"
 msgstr "このTextWriterが使用するページの矩形。"
 
-#: ../../textwriter.rst:51 9693e129190248b583296d46677610e0
+#: ../../textwriter.rst:51 86888b68bbf045c8a8e10712005c4259
 msgid ":attr:`~TextWriter.text_rect`"
 msgstr ""
 
-#: ../../textwriter.rst:51 69eb3e220ad148129ada9f5080199b7f
+#: ../../textwriter.rst:51 cd277f06068040caa6fda7759192bbd3
 msgid "Area occupied so far"
 msgstr "現在までに占有された領域。"
 
-#: ../../textwriter.rst:55 ecbf87c3092c40e88b1686b77c83e7d2
+#: ../../textwriter.rst:55 07466a577be94bd3ab53ccdfc689e759
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../textwriter.rst 03eaec6ab7cf480595ca2a22f6965c0b
-#: 286e269d3d7e43ec95f9bc1551929f6f 33df58e1dd004b55aa255fcdc31b691c
-#: a60948696f864a7390141db86c5ebed8 f7f0df94f8fc4e4b88f8242397bdcbbe
+#: ../../textwriter.rst 0671bfe1c02041f88c29cf3ea4be264b
+#: 7841a29906a944f189e7e759b6592a97 7cb374b81c074ac69a19656e5756ce8c
+#: 800737d8455c4751bf6f9476b3e4a8df ffbf23da457b4c1fbab7452f6745e439
 msgid "Parameters"
 msgstr ""
 
-#: ../../textwriter.rst:61 bbcff21e7dce4c01a49526e7bfacc9e3
+#: ../../textwriter.rst:61 1156a360315c4f6cab4971ea0b50224f
 msgid "rectangle internally used for text positioning computations."
 msgstr "テキストの配置計算に内部的に使用される矩形。"
 
-#: ../../textwriter.rst:62 0df6eb5234844aada8962468bee150af
+#: ../../textwriter.rst:62 51fad4a4f8034a198c2666a029ac959b
 msgid ""
 "sets the transparency for the text to store here. Values outside the "
 "interval `[0, 1)` will be ignored. A value of e.g. 0.5 means 50% "
 "transparency."
 msgstr "ここに保存されるテキストの透明度を設定します。区間 `[0, 1)` 外の値は無視されます。例：0.5の場合、50％の透明度を意味します。"
 
-#: ../../textwriter.rst:63 9aba40bdb8d542fb939849ac1ea1b1df
+#: ../../textwriter.rst:63 6b628abb5ffe4a5585ddb2b56255b5dd
 msgid ""
 "the color of the text. All colors are specified as floats *0 <= color <= "
 "1*. A single float represents some gray level, a sequence implies the "
@@ -293,41 +293,41 @@ msgstr ""
 "テキストの色。すべての色は浮動小数点数 *0 <= color <= 1* "
 "として指定されます。単一の浮動小数点数は一定の灰色レベルを表し、シーケンスはその長さを介して色空間を示します。"
 
-#: ../../textwriter.rst:68 4a2e21d3e62e4b87aefffc34a94e609a
+#: ../../textwriter.rst:68 0fa13673da764fdaab29ebfad67bf44c
 msgid "*Changed in v1.18.9*"
 msgstr "*バージョン1.18.9で変更*"
 
 #: ../../textwriter.rst:69 ../../textwriter.rst:100
-#: 1044467fdfcd441f9b5bfa8e0e0e8130 1d08a5d40d214ab680cf8793d311258d
+#: 08713255cee94718b3bc26b0dda8f233 be3763dd7a294137b65bf5a1770830d3
 msgid "*Changed in v1.18.15*"
 msgstr "*バージョン1.18.15で変更*"
 
-#: ../../textwriter.rst:71 3ca6ee533b09435abe5ceddf7b7cb27a
+#: ../../textwriter.rst:71 6f8eddc35363416184aad7c44e5d01ef
 msgid "Add some new text in horizontal writing."
 msgstr "水平書き込みで新しいテキストを追加します。"
 
 #: ../../textwriter.rst:73 ../../textwriter.rst:104
-#: ab09fda39d3e4393a29ec59b69c0e1ea f5214f793d2744af9340193c95565897
+#: 31e8d87141cf44c5890e5151a73047f4 f7e1346516c8429f9cafb3010a03a215
 msgid "start position of the text, the bottom left point of the first character."
 msgstr "テキストの開始位置、最初の文字の左下の点です。"
 
-#: ../../textwriter.rst:74 4a82511a99cb44e9bf3d1a6b21723548
+#: ../../textwriter.rst:74 3b2200db94814c6b84f09e2a67431714
 msgid ""
 "a string of arbitrary length. It will be written starting at position "
 "\"pos\"."
 msgstr "任意の長さの文字列。位置「pos」から書き始められます。"
 
 #: ../../textwriter.rst:75 ../../textwriter.rst:106
-#: a5950a0164694f058048e1fe83c69aea ae30e02ec0124cb28f914a306f3c4a95
+#: 6080d699b79c4e7cabc81e6632904644 8f2fdb3f4ec442f4b7703714fb642f4c
 msgid "a :ref:`Font`. If omitted, `pymupdf.Font(\"helv\")` will be used."
 msgstr ":ref:`Font`。省略された場合、`pymupdf.Font(\"helv\")` が使用されます。"
 
-#: ../../textwriter.rst:76 d9a53946e7c24a4d99d8138582744c5b
+#: ../../textwriter.rst:76 09fbce8fe4ee46b0a95710e2b4761014
 msgid "the :data:`fontsize`, a positive number, default 11."
 msgstr ":data:`fontsize`、正の数、デフォルトは11です。"
 
 #: ../../textwriter.rst:77 ../../textwriter.rst:108
-#: 3873988af95148b7801a88eb7c01984c 4e3b9506d8504e24985ba55c6ec9282c
+#: 4483c3fec8c3452cac52b7d831f281c1 87ccb28c8f1b4453af79b92ad4c5aabd
 msgid ""
 "the language to use, e.g. \"en\" for English. Meaningful values should be"
 " compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future "
@@ -336,7 +336,7 @@ msgstr ""
 "使用する言語、例：英語の場合は \"en\"。意味のある値はISO "
 "639規格1、2、3、または5に準拠している必要があります。将来の使用を予約しています：現在はわかる限りでは何の効果もありません。"
 
-#: ../../textwriter.rst:78 55d4902125eb472292eb77593b90e7e5
+#: ../../textwriter.rst:78 d8bd68ad24da40269a51cc710d5053e8
 msgid ""
 "*(New in v1.18.9)* whether the text should be written from right to left."
 " Applicable for languages like Arabian or Hebrew. Default is ``False``. "
@@ -352,7 +352,7 @@ msgstr ""
 "は依然として最右の文字ですし、配置も行われません。そのため、代わりに :meth:`TextWriter.fill_textbox` "
 "を使用することがあります。"
 
-#: ../../textwriter.rst:79 f750558225c04c6da0549d0056048f3d
+#: ../../textwriter.rst:79 75daea05a2a449aa9e600dc6f54efa72
 msgid ""
 "*(New in v1.18.15)* look for the character's Small Capital version in the"
 " font. If present, take that value instead. Otherwise the original "
@@ -366,7 +366,7 @@ msgid ""
 "text:  .. image:: images/img-smallcaps.*"
 msgstr ""
 
-#: ../../textwriter.rst:79 432cbd7ed9054416a5191bfef24de2e8
+#: ../../textwriter.rst:79 46eb184e73ae4219ac1e4bed06322f56
 msgid ""
 "*(New in v1.18.15)* look for the character's Small Capital version in the"
 " font. If present, take that value instead. Otherwise the original "
@@ -376,17 +376,17 @@ msgstr ""
 "*（バージョン1.18.15で新機能）* "
 "フォント内の文字の小文字バージョンを探します。存在する場合、その値が使用されます。それ以外の場合、元の文字（このフォントまたはフォールバックフォント）が使用されます。フォールバックフォントは小文字バージョンを返しません。たとえば、次のスニペット::"
 
-#: ../../textwriter.rst:90 98e21ce1902441eeba6f19061e4f5493
+#: ../../textwriter.rst:90 973003c33fe84aa69d42e2c43c861a09
 msgid "will produce this PDF text:"
 msgstr "これにより、このPDFテキストが生成されます："
 
-#: ../../textwriter.rst 06f4faa84b0348aeaef09e3bcae38a60
-#: 21653364344e49fa8c3e3f9dd7eef9a2 998669305307407c96429cca0cb28abc
+#: ../../textwriter.rst 031973dcb92c46dfb30974b0b0277dbb
+#: 56067c1753344901a2a112d292086782 6fe2f7cc1d5b405588798ce1725db0d6
 msgid "Returns"
 msgstr "返り値："
 
 #: ../../textwriter.rst:95 ../../textwriter.rst:111
-#: cf5848704c4f45d5863be1781e9750c6 d5ee4999d6c340078760223118e71def
+#: 2916a5791a9446a1be47d9bdde016b5b 2d57d9c3e3404a1b8aaedf35dc4f6d7d
 msgid ""
 ":attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises "
 "an exception for an unsupported font -- checked via "
@@ -395,50 +395,50 @@ msgstr ""
 ":attr:`text_rect` および :attr:`last_point`。 *（v1.18.0 "
 "で変更）*：サポートされていないフォントの場合、:attr:`Font.is_writable` を介してチェックされた例外が発生します。"
 
-#: ../../textwriter.rst:102 22fef7a0a45f4133bb03c80510af77a3
+#: ../../textwriter.rst:102 53cbfa2552fa46b2837c5848f6ae7eed
 msgid "Add some new text in vertical, top-to-bottom writing."
 msgstr "縦書きの新しいテキストを追加します。"
 
-#: ../../textwriter.rst:105 475f2776fe6649fb848f5c4af040ce52
+#: ../../textwriter.rst:105 77e2561d4b4a448caf4a7b3ecbc624ce
 msgid "a string. It will be written starting at position \"pos\"."
 msgstr "文字列。 \"pos\" から開始して書き込まれます。"
 
-#: ../../textwriter.rst:107 d3f691c3b0a649a2a4f2f3c3dc3be7b5
+#: ../../textwriter.rst:107 1195a41741cd44ca8653fce3a3c8b23f
 msgid "the :data:`fontsize`, a positive float, default 11."
 msgstr ":data:`fontsize`、正の浮動小数点数、デフォルトは 11 です。"
 
 #: ../../textwriter.rst:109 ../../textwriter.rst:133
-#: 6c2e96448a5a4ca1859aaa376d058339 847d5cdaa04d419ebad9cc8d314008c3
+#: 48cdfcdb373b4a939b9ac2491aaf9f76 a007fa3bc26e4925bac3b3884fa1d6f4
 msgid "*(New in v1.18.15)* see :meth:`append`."
 msgstr "*（v1.18.15 で新しい）* 詳細は :meth:`append` を参照してください。"
 
-#: ../../textwriter.rst:115 47fff506b0d7424997914794a0ff7b05
+#: ../../textwriter.rst:115 131d2ddda39f47e5b8750ce4e02aacf1
 msgid ""
 "Changed in 1.17.3: New parameter `pos` to specify where to start writing "
 "within rectangle."
 msgstr "1.17.3で変更：新しいパラメーター `pos` を追加して、矩形内での書き込みを開始する位置を指定できるようにしました。"
 
-#: ../../textwriter.rst:116 a9c32b09c1a1455ab9d11b281da03e13
+#: ../../textwriter.rst:116 29062b4cba8b458c9715b63563932eea
 msgid ""
 "Changed in v1.18.9: Return list of lines which do not fit in rectangle. "
 "Support writing right-to-left (e.g. Arabian, Hebrew)."
 msgstr "v1.18.9で変更：矩形に収まらない行のリストを返すようにしました。右から左に書くサポートを追加（アラビア語、ヘブライ語など）。"
 
-#: ../../textwriter.rst:117 9650fa4cd27447cb858698c792a3ab60
+#: ../../textwriter.rst:117 1af15893d8c0406eaba47e8cbc605623
 msgid "Changed in v1.18.15: Prefer small caps if supported by the font."
 msgstr "v1.18.15で変更：フォントがサポートしている場合、小文字のテキストを優先します。"
 
-#: ../../textwriter.rst:119 f11687cd59084cd996b529b2ce12e6fc
+#: ../../textwriter.rst:119 557382b2514d472bbe73f5017c792395
 msgid ""
 "Fill a given rectangle with text in horizontal writing mode. This is a "
 "convenience method to use as an alternative for :meth:`append`."
 msgstr "指定された矩形を水平書きモードでテキストで埋めます。これは、:meth:`append` の代替手段として使用する便利な方法です。"
 
-#: ../../textwriter.rst:121 4bd2adc309254e8f89c23c963d1d2c8e
+#: ../../textwriter.rst:121 cef4e997c224414e95918704fa70b178
 msgid "the area to fill. No part of the text will appear outside of this."
 msgstr "埋める領域。テキストのいずれの部分もこれの外には表示されません。"
 
-#: ../../textwriter.rst:122 cf21ee09a6d347079e7e38b61a116f9e
+#: ../../textwriter.rst:122 eb9a1f87715c476190b440d505b21385
 msgid ""
 "the text. Can be specified as a (UTF-8) string or a list / tuple of "
 "strings. A string will first be converted to a list using *splitlines()*."
@@ -447,27 +447,27 @@ msgstr ""
 "テキスト。UTF-8文字列または文字列のリスト/タプルとして指定できます。文字列は最初に *splitlines()* "
 "を使用してリストに変換されます。各リストアイテムは新しい行で始まります（強制的な改行が行われます）。"
 
-#: ../../textwriter.rst:123 e58f8a40089740bb8f7e99547e3a52a9
+#: ../../textwriter.rst:123 adaa607ca4b34119b1413a21aa5d5703
 msgid ""
 "*(new in v1.17.3)* start storing at this point. Default is a point near "
 "rectangle top-left."
 msgstr "*（v1.17.3で新規）* このポイントから記憶を開始します。デフォルトは矩形の左上近くのポイントです。"
 
-#: ../../textwriter.rst:124 1bba1b52fabb4feba87ed2e1a93046e5
+#: ../../textwriter.rst:124 093d30283065429a8003316402078989
 msgid "the :ref:`Font`, default `pymupdf.Font(\"helv\")`."
 msgstr ":ref:`Font`、デフォルトは `pymupdf.Font(\"helv\")`。"
 
-#: ../../textwriter.rst:125 391f5afbac8343f4a221b7935e311d0c
+#: ../../textwriter.rst:125 fa67844b1bdc4fd5b33c77ea89ae7619
 msgid "the :data:`fontsize`."
 msgstr ":data:`fontsize`"
 
-#: ../../textwriter.rst:126 a627dc7fe51349409a7bb26273a7309e
+#: ../../textwriter.rst:126 a3f0cf660cc34b2aa6461b460ccc9fd7
 msgid ""
 "text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, "
 "TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY."
 msgstr "テキストの配置。TEXT_ALIGN_LEFT、TEXT_ALIGN_CENTER、TEXT_ALIGN_RIGHT、またはTEXT_ALIGN_JUSTIFYのいずれかを使用します。"
 
-#: ../../textwriter.rst:127 47a6880a61374d5b989b75ee244f39e0
+#: ../../textwriter.rst:127 fab2e37b003c4547a135db4871ab87f9
 msgid ""
 "*(New in v1.18.9)* whether the text should be written from right to left."
 " Applicable for languages like Arabian or Hebrew. Default is ``False``. "
@@ -479,35 +479,35 @@ msgstr ""
 "です。``True`` "
 "の場合、ラテン文字部分は自動的に反転されます。右寄せを希望する場合、引き続き配置を設定する必要があります（他の配置オプションも利用可能）。"
 
-#: ../../textwriter.rst:128 338fd2cfbb9f43eebe7aac794d285947
+#: ../../textwriter.rst:128 fbd4a0182852411d9c83784e6421be47
 msgid ""
 "on text overflow do nothing, warn, or raise an exception. Overflow text "
 "will never be written. **Changed in v1.18.9:**  * Default is ``None``. * "
 "The list of overflow lines will be returned."
 msgstr ""
 
-#: ../../textwriter.rst:128 40285c69fa6d4e098e7e7d65e3b57181
+#: ../../textwriter.rst:128 0e6db582f2eb4eb28e4c2efbd9fb40e1
 msgid ""
 "on text overflow do nothing, warn, or raise an exception. Overflow text "
 "will never be written. **Changed in v1.18.9:**"
 msgstr "テキストのオーバーフローがある場合、何もしない、警告する、または例外を発生させるかどうか。オーバーフローテキストは書き込まれません。**v1.18.9で変更：**"
 
-#: ../../textwriter.rst:130 5186e708cabe4ece8c4923a3be58faab
+#: ../../textwriter.rst:130 cdae6e2706854c9e826f849d936c11ee
 msgid "Default is ``None``."
 msgstr "デフォルトは ``None`` です。"
 
-#: ../../textwriter.rst:131 c9cd6684f8c94000b9768021a448a07e
+#: ../../textwriter.rst:131 1bda032411484b10b23479232b916047
 msgid "The list of overflow lines will be returned."
 msgstr "オーバーフローラインのリストが返されます。"
 
-#: ../../textwriter.rst 02670889aed04b008cecdb3c16c81c4f
-#: 7c2d0cb6d3334a7d9986dbc7d90386fd c372a91f4d4e402b9597012aa50ca7e8
-#: cccda959bb4042ddb338028cba7e741c e3365d51e8b74ffcb87857224abfc418
-#: fc009306fc80478fa00be99b10517dbf
+#: ../../textwriter.rst 035f3f34d091461bbe3cc1d030bfe153
+#: 1871d0ab981b44759c8973a335232ef3 6459020d5302480fb99a57af3fd39d02
+#: 92e14712db2944b694cdf765796b471d d0a0b9758d76412fb2a1f68276a1f782
+#: f3e6dee2f74245bfa95d18620e9bd73d
 msgid "Return type"
 msgstr ""
 
-#: ../../textwriter.rst:136 c60d734f21084a21b312d32fad9869bd
+#: ../../textwriter.rst:136 396c812b4c0346d69cbc578eaae29744
 msgid ""
 "*New in v1.18.9* -- List of lines that did not fit in the rectangle. Each"
 " item is a tuple `(text, length)` containing a string and its length (on "
@@ -516,7 +516,7 @@ msgstr ""
 "*v1.18.9で新規* -矩形に収まらなかった行のリスト。各アイテムは、文字列とそのページ上の長さ（長さ）を含むタプル `(text, "
 "length)` です。"
 
-#: ../../textwriter.rst:138 9d32a899d67a40d89e21fbfcbdcd9ed5
+#: ../../textwriter.rst:138 cd3a09fa82ee40e399e27a6aa0c1235d
 msgid ""
 "Use these methods as often as is required -- there is no technical limit "
 "(except memory constraints of your system). You can also mix "
@@ -529,23 +529,23 @@ msgstr ""
 "とテキストボックスを混在させ、それぞれ複数持つこともできます。テキストの配置は挿入ポイントによってのみ制御されます。したがって、特定の順序に従う必要はありません。*（v1.18.0で変更）*"
 " ：サポートされていないフォントに対して例外を発生させます - :attr:`Font.is_writable` をチェックします。"
 
-#: ../../textwriter.rst:143 9b878e0128ae4996b183a0f12430688d
+#: ../../textwriter.rst:143 54709b98b30a47ac89166f31faf2772a
 msgid ""
 "Write the TextWriter text to a page, which is the only mandatory "
 "parameter. The other parameters can be used to temporarily override the "
 "values used when the TextWriter was created."
 msgstr "TextWriterのテキストをページに書き込みます。これは唯一の必須パラメータで、TextWriterが作成されたときに使用される値を一時的にオーバーライドするために、他のパラメータを使用できます。"
 
-#: ../../textwriter.rst:145 8a08795ab37642d68b081669bd19dbbc
+#: ../../textwriter.rst:145 59f4fdcbbc44452680ba4c0c95aa5cff
 msgid "write to this :ref:`Page`."
 msgstr "この :ref:`Page` に書き込みます。"
 
 #: ../../textwriter.rst:146 ../../textwriter.rst:147
-#: 0c7ba4b4f32448bea8d4d9c48b58dd8a b66facab5aca402a89d3624b62c17c77
+#: 376b4dcec8264f3db2f6be76d778904b d45c4d5a07474ef4a0cd683fdd04bcdc
 msgid "override the value of the TextWriter for this output."
 msgstr "この出力のためにTextWriterの値をオーバーライドします。"
 
-#: ../../textwriter.rst:148 5006c8e264ca46c9ae272adfcfad10e1
+#: ../../textwriter.rst:148 ee07ac03480b41539d94053d359dd9d3
 msgid ""
 "modify the text appearance by applying a matrix to it. If provided, this "
 "must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and "
@@ -556,71 +556,72 @@ msgstr ""
 "としてシーケンスでなければなりません。point-like *fixpoint* とmatrix-like *matrix* "
 "を持っています。典型的な例は、テキストを *fixpoint* の周りで回転させることです。"
 
-#: ../../textwriter.rst:149 96e7ac37266f44a58e745502da479403
+#: ../../textwriter.rst:149 b45dc013b8e740f9bef33593ed5c8711
 msgid "put in foreground (default) or background."
 msgstr "前景（デフォルト）または背景に配置します。"
 
-#: ../../textwriter.rst:150 abbc850a979e43328c92e53ed0c00799
+#: ../../textwriter.rst:150 ba9cfbd9695340699d7179b74412ef18
 msgid "*(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`."
 msgstr "*（v1.18.4で新規）* :data:`OCG` または :data:`OCMD` の :data:`xref`。"
 
-#: ../../textwriter.rst:151 ce3186c3205140019f041e35d658b0da
+#: ../../textwriter.rst:151 9523549f48f246a3ae03b7bc5f901456
 msgid ""
 "The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).  "
 ".. image:: images/img-rendermode.*"
 msgstr ""
 
-#: ../../textwriter.rst:151 bdf45cf0c031489788a8ef24b687ca01
+#: ../../textwriter.rst:151 78528b40a6544fe0a046dee8ae6857ef
 msgid "The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible)."
 msgstr "PDF `Tr` 演算子の値。値：0（デフォルト）、1、2、3（不可視）。"
 
-#: ../../textwriter.rst:158 924bce3b23354b8db175a1030136ee4f
+#: ../../textwriter.rst:158 525f73853e924927ad796c65943a368d
 msgid "The area currently occupied."
 msgstr "現在占有されている領域。"
 
 #: ../../textwriter.rst:160 ../../textwriter.rst:184
-#: 597dadf1263f4100aa94f7e6fd0cac59 62859bc0002e476b909fd3314760c3c1
+#: ba565ed25cdd42f7862fcb93e757cf70 be5a7d304fd0479ea3d522fa0b628537
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../textwriter.rst:164 ebffb6e923b542319c374d9a3191c930
+#: ../../textwriter.rst:164 87ebb8ff55c24240abc1589af86e4a9a
 msgid ""
 "The \"cursor position\" -- a :ref:`Point` -- after the last written "
 "character (its bottom-right)."
 msgstr "最後に書かれた文字の後にある「カーソル位置」 - :ref:`Point` 形式。"
 
-#: ../../textwriter.rst:166 e627c94d443c4b15939dbb1da1fca6d0
+#: ../../textwriter.rst:166 ac55d30024ef4851bc1e890d44698e93
 msgid ":ref:`Point`"
 msgstr ""
 
-#: ../../textwriter.rst:170 638ab80764a4433eb9061f7de24a2339
+#: ../../textwriter.rst:170 3f90c9a1dc4c4511a85d2dd1d614e275
 msgid "The text opacity (modifiable)."
 msgstr "テキストの不透明度（変更可能）。"
 
-#: ../../textwriter.rst:176 fa5d197bd0d0412898c56c89dab163c3
+#: ../../textwriter.rst:176 40b6c71ad92443f69b941e2ae68ef65d
 msgid "The text color (modifiable)."
 msgstr "テキストの色（変更可能）。"
 
-#: ../../textwriter.rst:182 b8f24fda0c48472ea9bd3b6b36e082bb
+#: ../../textwriter.rst:182 c8c0cc26dcc643b4b7a36449cc37508b
 msgid ""
 "The page rectangle for which this TextWriter was created. Must not be "
 "modified."
 msgstr "このTextWriterが作成されたページの長方形。変更しないでください。"
 
-#: ../../textwriter.rst:187 f3460a6193964ea2b7e5342dbc10d518
+#: ../../textwriter.rst:187 96d56c1eedc9403da49260989a4dc7c5
+#, fuzzy
 msgid ""
-"To see some demo scripts dealing with TextWriter, have a look at `this "
-"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ "
-"repository."
+"To see some demo scripts dealing with TextWriter, have a look at `the "
+"TextWriter demo scripts <https://github.com/pymupdf/PyMuPDF-"
+"Utilities/tree/master/textwriter>`_."
 msgstr ""
 "TextWriterを扱うデモスクリプトを見るには、`この <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/tree/master/textwriter>`_ リポジトリをご覧ください。"
 
-#: ../../textwriter.rst:189 cbb1eaac8ab84ee0a53d167e003577b8
+#: ../../textwriter.rst:189 86f5ad85ef9f430798003667a5d4bba8
 msgid "Opacity and color apply to **all the text** in this object."
 msgstr "不透明度と色は、このオブジェクト内の **すべてのテキスト** に適用されます。"
 
-#: ../../textwriter.rst:190 6972b609e1cd4b0c957644b0b952f6fc
+#: ../../textwriter.rst:190 3fd56e7645674dd592624498a3b40033
 msgid ""
 "If you need different colors / transparency, you must create a separate "
 "TextWriter. Whenever you determine the color should change, simply append"
@@ -630,13 +631,13 @@ msgstr ""
 "異なる色/透明度が必要な場合、別々のTextWriterを作成する必要があります。色が変更されるべきと判断した場合、新しいテキストスパンの位置として前回返された"
 " :attr:`last_point` を使用して、対応するTextWriterにテキストを追加するだけです。"
 
-#: ../../textwriter.rst:191 e58f72984d7449c0a879797f11ece31c
+#: ../../textwriter.rst:191 473cca9e82e445e7a947ffeaead9f1d6
 msgid ""
 "Appending items or text boxes can occur in arbitrary order: only the "
 "position parameter controls where text appears."
 msgstr "アイテムまたはテキストボックスの追加は任意の順序で発生できます：テキストが表示される位置を制御するのは、位置パラメータのみです。"
 
-#: ../../textwriter.rst:192 6b3ca0a67cd044c7b212f261ae0e9c6a
+#: ../../textwriter.rst:192 e86c99a3e580410c80b33c1b9273d1e5
 msgid ""
 "Font and :data:`fontsize` can freely vary within the same TextWriter. "
 "This can be used to let text with different properties appear on the same"
@@ -647,7 +648,7 @@ msgstr ""
 "を自由に変更できます。これは、異なるプロパティを持つテキストが同じ表示される行に表示されるようにするために使用できます。posを適切に指定し、前に追加したアイテムの"
 " :attr:`last_point` に設定してください。"
 
-#: ../../textwriter.rst:193 29bd43da60cf48dabb0a63c140cd02b6
+#: ../../textwriter.rst:193 0dd912f04fa84ab7832bd944567f6dc1
 msgid ""
 "You can use the *pos* argument of :meth:`TextWriter.fill_textbox` to set "
 "the position of the first text character. This allows filling the same "
@@ -658,7 +659,7 @@ msgstr ""
 "引数を使用して、最初のテキスト文字の位置を設定できます。これにより、異なる :ref:`TextWriter` "
 "オブジェクトからのコンテンツを含む同じテキストボックスを埋めることができ、複数の色、不透明度などが可能になります。"
 
-#: ../../textwriter.rst:194 4657dfd571bd4f3bbc5bb5d038797d58
+#: ../../textwriter.rst:194 46ddcc45b9594214860870dcb571f619
 msgid ""
 "MuPDF does not support all fonts with this feature, e.g. no Type3 fonts. "
 "Starting with v1.18.0 this can be checked via the font attribute "
@@ -668,7 +669,7 @@ msgstr ""
 "MuPDFは、この機能を持つすべてのフォントをサポートしているわけではありません。たとえば、Type3フォントはサポートされていません。v1.18.0以降、:attr:`Font.is_writable`"
 " 属性を使用して、これを確認できます。この属性は、:ref:`TextWriter` メソッドを使用する際にもチェックされます。"
 
-#: ../../footer.rst:60 68cab4f97fcf4503932903f84bb59645
+#: ../../footer.rst:46 b6d5682a116d45b9b5a6850c9cfd6f9e
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 

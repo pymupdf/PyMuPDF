@@ -1,0 +1,243 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-26 17:04+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 55554f175cc249878ead6e3e984a2e8a
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 6aa2efac349e4bcab64dd67c0a0d5b13
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 fc386a5037ac4a0ba4239f1c51308e56
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:8 65880921881d4c9a95f25a114c1617cc
+msgid "PyMuPDF Layout"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:11 26826b75387e4aadb2a29e8f577d4b8a
+msgid ""
+"|PyMuPDF Layout| is a lightweight layout analysis extension for |PyMuPDF|"
+" that turns PDFs into clean, structured data with minimal setup. It’s "
+"fast, accurate, and efficient without any GPU requirement."
+msgstr "PyMuPDF Layout は、PyMuPDF 用の軽量なレイアウト解析拡張機能で、最小限のセットアップで PDF をクリーンで構造化されたデータに変換します。高速で正確かつ効率的であり、GPU を必要としません。"
+
+#: ../../pymupdf-layout/index.rst:13 20fc4e9d5eae44d58cced93202624c15
+msgid ""
+"It is an optional, but recommended, addition to the |PyMuPDF| library "
+"especially if you are required to more accurately extract structured data"
+" with better semantic information."
+msgstr "これは PyMuPDF ライブラリへのオプションですが推奨される追加機能であり、特により正確な意味情報を持つ構造化データの抽出が必要な場合に有用です。"
+
+#: ../../pymupdf-layout/index.rst:17 6cb4d2e97d464990a633d2defd97698e
+msgid "Installing"
+msgstr "インストール"
+
+#: ../../pymupdf-layout/index.rst:19 85aefd1baecd485b800f2238aba711c7
+msgid "Install from |PyPI| with::"
+msgstr "|PyPI|  からインストールするには::"
+
+#: ../../pymupdf-layout/index.rst:26 5e49fc1022b0491e968e6dac9a6ebd28
+msgid "Using"
+msgstr "使用方法"
+
+#: ../../pymupdf-layout/index.rst:29 c4caa7b3525f461385db5339599b8e02
+msgid ""
+"In nutshell, |PyMuPDF Layout| detects the layout to extract, but we need "
+"|PyMuPDF4LLM| for the API interface. This provides us with options to "
+"extract document content as |Markdown|, |JSON| or |TXT|."
+msgstr "簡単に言えば、PyMuPDF Layout は抽出するレイアウトを検出しますが、API インターフェースには PyMuPDF4LLM が必要です。これにより、ドキュメントコンテンツを Markdown、JSON、または TXT として抽出するオプションが提供されます。"
+
+#: ../../pymupdf-layout/index.rst:31 2851cd8bd3374a3c8fc60a4a0fe524e8
+msgid ""
+"Let's set up the Python coding environment to get started and open a PDF "
+"then we'll move on to the semantic data extraction."
+msgstr "それでは、始めるために Python コーディング環境をセットアップし、PDF を開いてから、セマンティックデータ抽出に進みましょう。"
+
+#: ../../pymupdf-layout/index.rst:34 6a1648fb91cc454788a795ffc391432a
+msgid "Register packages and open a PDF"
+msgstr "パッケージを登録して PDF を開く"
+
+#: ../../pymupdf-layout/index.rst:36 1ba188d096bc425abbfee2ba07430823
+msgid "First up let's import the libraries and open a sample document::"
+msgstr "まず、ライブラリをインポートしてサンプルドキュメントを開きましょう::"
+
+#: ../../pymupdf-layout/index.rst:42 d7900ddabe0644c09c53ba9fb57126b0
+msgid ""
+"Note, in the above code, that |PyMuPDF Layout| must be imported as shown "
+"and before importing |PyMuPDF4LLM| to activate |PyMuPDF|'s layout feature"
+" and make it available to |PyMuPDF4LLM|."
+msgstr "上記のコードでは、|PyMuPDF Layout| は示されているようにインポートする必要があり、|PyMuPDF| のレイアウト機能を有効にして |PyMuPDF4LLM| で利用可能にするために、|PyMuPDF4LLM| をインポートする前にインポートする必要があることに注意してください。"
+
+#: ../../pymupdf-layout/index.rst:44 7b66dd7c7a164f99b1fd0113f2ccf699
+msgid ""
+"Omitting the first line would cause execution of standard |PyMuPDF4LLM| -"
+" without the layout feature!"
+msgstr "最初の行を省略すると、レイアウト機能なしの標準 |PyMuPDF4LLM| が実行されます!"
+
+#: ../../pymupdf-layout/index.rst:47 a21b9bc7b3844b0ab455c3f364a2057f
+msgid "Extract the structured data"
+msgstr "構造化データを抽出する"
+
+#: ../../pymupdf-layout/index.rst:49 35bc60862bb24334a75b7dc95b60156f
+msgid ""
+"We've activated the |PyMuPDF Layout| library and we've loaded a document,"
+" next let's extract the structured data. This is now like a super-charged"
+" version of standard |PyMuPDF4LLM| with ``Layout`` working behind the "
+"scenes combining heuristics with machine learning - for better extraction"
+" results."
+msgstr "|PyMuPDF Layout| ライブラリを有効にし、ドキュメントを読み込みました。次に構造化データを抽出しましょう。これは、``Layout`` がバックグラウンドでヒューリスティックと機械学習を組み合わせて動作する、標準 |PyMuPDF4LLM| の強化版のようなもので、より良い抽出結果が得られます。"
+
+#: ../../pymupdf-layout/index.rst:52 8fabaa7045ea40bca50d9b6cf1904b2b
+msgid "Extract as Markdown"
+msgstr "Markdown として抽出"
+
+#: ../../pymupdf-layout/index.rst:60 253f86c879cd4cfda51045e1311a3cba
+msgid "Extract as JSON"
+msgstr "JSON として抽出"
+
+#: ../../pymupdf-layout/index.rst:68 8da4947d5b974f24803ba5ed16e8cd77
+msgid "Extract as TXT"
+msgstr "TXT として抽出"
+
+#: ../../pymupdf-layout/index.rst:76 5bbe37c28031413fa4f86978d66b0161
+msgid ""
+"Please refer top the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` for "
+"more."
+msgstr "詳細については、完全な :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` を参照してください。"
+
+#: ../../pymupdf-layout/index.rst:78 6eedc55b27574fb583b04a9b9f3e3f55
+msgid "Finally we can save the output to an external file as follows::"
+msgstr "最後に、次のように出力を外部ファイルに保存できます"
+
+#: ../../pymupdf-layout/index.rst:86 9bdb3f269e1c497e91d97cdc3a687bff
+msgid "Headers & Footers"
+msgstr "ヘッダーとフッター"
+
+#: ../../pymupdf-layout/index.rst:89 c239bc0bbbd64d318e6e8fdc55d1efbe
+msgid ""
+"Many documents will have header and footer information on each page of a "
+"PDF which you may or may not want to include. This information can be "
+"repetitive and simply not needed ( e.g. the same logo and document title "
+"or page number information is not always really important when it comes "
+"to extracting the document content )."
+msgstr "多くのドキュメントでは、PDF の各ページにヘッダーとフッター情報があり、これを含めたい場合と含めたくない場合があります。この情報は繰り返しになることがあり、単に不要な場合があります（例えば、同じロゴやドキュメントタイトル、ページ番号情報は、ドキュメントコンテンツを抽出する際に常に重要とは限りません）。"
+
+#: ../../pymupdf-layout/index.rst:91 ee2ea44ed53e4d95860be54bee8ead00
+msgid ""
+"|PyMuPDF Layout| is trained in detecting these typical document elements "
+"and able to omit them."
+msgstr "|PyMuPDF Layout| は、これらの典型的なドキュメント要素を検出するようにトレーニングされており、それらを省略することができます。"
+
+#: ../../pymupdf-layout/index.rst:93 2e53e75f3b83455ab9f885efaae230c7
+msgid ""
+"So in this case we can adjust our API calls to ignore these elements as "
+"follows::"
+msgstr "したがって、この場合、次のように API 呼び出しを調整してこれらの要素を無視できます::"
+
+#: ../../pymupdf-layout/index.rst:101 fc82782444984a34ab18e40f5123faeb
+msgid ""
+"Please note that page ``header`` / ``footer`` exclusion is not applicable"
+" to JSON output as it aims to always represent all data for the included "
+"pages. Please refer to the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>`"
+" for more."
+msgstr "``header`` / ``footer`` の除外は、含まれるページのすべてのデータを常に表現することを目的としているため、JSON 出力には適用されないことに注意してください。詳細については、完全な :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` を参照してください。"
+
+#: ../../pymupdf-layout/index.rst:104 a00239ede95b43319833ba01713ce8d7
+msgid "Extending Capability"
+msgstr "機能の拡張"
+
+#: ../../pymupdf-layout/index.rst:107 f3bec49e1ee042caad2ba1f1f8d07230
+msgid "Using with Pro"
+msgstr "PyMuPDF Pro との使用"
+
+#: ../../pymupdf-layout/index.rst:109 1a6a4c0ada2842d588768a849fe3c7f3
+msgid ""
+"We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Pro| and "
+"thus increase our capability by allowing Office documents to be provided "
+"as input files. In this case all we have to do is to add the import for "
+"|PyMuPDF Pro| and unlock it::"
+msgstr "|PyMuPDF Layout| を |PyMuPDF Pro| と連携させることで機能を拡張し、Office ドキュメントを入力ファイルとして提供できるようにすることで能力を向上させることができます。この場合、|PyMuPDF Pro| のインポートを追加してロックを解除するだけです::"
+
+#: ../../pymupdf-layout/index.rst:116 695ebd9778304b3da362108ea2e9695e
+msgid "Now we can happily load Office files and convert them as follows::"
+msgstr "これで、次のように Office ファイルを読み込んで変換できます::"
+
+#: ../../pymupdf-layout/index.rst:122 14fdcdcd4aab4335919c50efc4749185
+msgid "OCR support"
+msgstr "OCR サポート"
+
+#: ../../pymupdf-layout/index.rst:124 99eb4f65329d45c7bb6eaf035c255259
+msgid ""
+"The new layout-sensitive PyMuPDF4LLM version also evaluates whether a "
+"page would benefit from applying OCR to it. If its heuristics come to "
+"this conclusion, the built-in Tesseract-OCR module is automatically "
+"invoked. Its results are then handled like normal page content."
+msgstr "新しいレイアウト対応の PyMuPDF4LLM バージョンは、ページに OCR を適用することが有益かどうかも評価します。ヒューリスティックがこの結論に達した場合、組み込みの  **Tesseract-OCR**  モジュールが自動的に呼び出されます。その結果は、通常のページコンテンツと同様に処理されます。"
+
+#: ../../pymupdf-layout/index.rst:126 cdbf9a9f1f5341cc96aaaa1a6a74434f
+msgid ""
+"If a page contains (roughly) no text at all, but is covered with images "
+"or many character-sized vectors, a check is made using `OpenCV "
+"<https://pypi.org/project/opencv-python/>`_ whether text is *probably* "
+"detectable on the page at all. This is done to tell apart image-based "
+"text from ordinary pictures (like photographies)."
+msgstr "ページにテキストがほとんど含まれていないが、画像や多数の文字サイズのベクターで覆われている場合、`OpenCV <https://pypi.org/project/opencv-python/>`_ を使用して、ページ上でテキストが検出可能かどうかをチェックします。これは、画像ベースのテキストを通常の写真などの画像と区別するために行われます。"
+
+#: ../../pymupdf-layout/index.rst:128 8c8ba1c1b2bc4875b04cc60b98293a08
+msgid ""
+"If the page does contain text but too many characters are unreadable "
+"(like \"�����\"), OCR is also executed, but **for the affected text areas"
+" only** -- not the full page. This way, we avoid losing already existing "
+"text and other content like images and vectors."
+msgstr "ページにテキストが含まれているものの、読み取り不可能な文字（「�����」など）が多すぎる場合、OCR も実行されますが、影響を受けるテキスト領域のみが対象となり、ページ全体ではありません。これにより、既存のテキストや画像やベクターなどの他のコンテンツが失われるのを防ぎます。"
+
+#: ../../pymupdf-layout/index.rst:130 225a390ebce94321a090f94ab2165c16
+msgid ""
+"For these heuristics to work we need both, an existing Tesseract "
+"installation and the availability of OpenCV in the Python environment. If"
+" either is missing, no OCR is attempted at all."
+msgstr "これらのヒューリスティックが機能するには、Tesseract のインストールと Python 環境での OpenCV の利用可能性の両方が必要です。どちらか一方が欠けている場合、OCR はまったく試行されません。"
+
+#: ../../pymupdf-layout/index.rst:137 fddcc1ea96e64c658554704bb141490b
+msgid "|PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats"
+msgstr "|PyMuPDF Layout| と |PyMuPDF4LLM| のパラメータに関する注意事項"
+
+#: ../../pymupdf-layout/index.rst:139 b7f33df2c3974ea1bbead613286f3639
+msgid ""
+"If you have imported ``pymupdf.layout``, |PyMuPDF4LLM| changes its "
+"behavior in various areas quite significantly. New methods become "
+"available and also some features are no longer supported. Please visit "
+"`this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for"
+" a detailed description of the changes. That web site is being kept up to"
+" date while we continue to work on improvements."
+msgstr "``pymupdf.layout`` をインポートした場合、|PyMuPDF4LLM| はさまざまな領域でその動作を大幅に変更します。新しいメソッドが利用可能になり、一部の機能はサポートされなくなります。変更の詳細については、`このサイト <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ を参照してください。このウェブサイトは、改善作業を続けながら最新の状態に保たれています。"
+
+#: ../../footer.rst:46 fcc43bbf382644f6928a40bc9aea37c1
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+

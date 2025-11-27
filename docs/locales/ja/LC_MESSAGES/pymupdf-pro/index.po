@@ -1,0 +1,258 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) 2015-2025, Artifex
+# This file is distributed under the same license as the PyMuPDF package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.10.3\n"
+
+#: ../../header.rst:-1 ff337a9fa03e4fd6a3d7aaec4930912f
+msgid "Artifex"
+msgstr ""
+
+#: ../../header.rst:-1 b9e1a76b005b46c7a35e27ac36b668dd
+msgid ""
+"PyMuPDF is a high-performance Python library for data extraction, "
+"analysis, conversion & manipulation of PDF (and other) documents."
+msgstr ""
+
+#: ../../header.rst:-1 5b66ad60d8974f3fb8061286f4b23214
+msgid ""
+"PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
+"PDF Splitting, PDF Creation, Pyodide, PyScript"
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:8 07624f1e03dd463c99bf82f95b91a35e
+msgid "PyMuPDF Pro"
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:11 879666c817c94726a9df9e5880d5425a
+msgid "|PyMuPDF Pro| is a set of *commercial extensions* for |PyMuPDF|."
+msgstr "|PyMuPDF Pro| は、|PyMuPDF| 用の *商用拡張機能* セットです。"
+
+#: ../../pymupdf-pro/index.rst:13 ae90e3fd121f4e04a0a9ecd747514717
+msgid ""
+"Enhance |PyMuPDF| capability with **Office** document support & "
+"**RAG/LLM** integrations."
+msgstr "**Office** ドキュメントサポートと **RAG/LLM** 統合で |PyMuPDF| の機能を強化します。"
+
+#: ../../pymupdf-pro/index.rst:15 aed2c2f793d348d8bf6eb0811eecb47a
+msgid ""
+"Enables Office document handling, including ``doc``, ``docx``, ``hwp``, "
+"``hwpx``, ``ppt``, ``pptx``, ``xls``, ``xlsx``, and others."
+msgstr "``doc``、``docx``、``hwp``、``hwpx``、``ppt``、``pptx``、``xls``、``xlsx`` などの Office ドキュメント処理を可能にします。"
+
+#: ../../pymupdf-pro/index.rst:16 997a064abea1408d914a30cae0872289
+msgid "Supports text and table extraction, document conversion and more."
+msgstr "テキストと表の抽出、ドキュメント変換などをサポートします。"
+
+#: ../../pymupdf-pro/index.rst:17 7ee872ab1d5c4992b77ebbf8c3cf149c
+msgid "Includes the commercial version of |PyMuPDF4LLM|."
+msgstr "PyMuPDF4LLM の商用バージョンが含まれています。"
+
+#: ../../pymupdf-pro/index.rst:19 83cc2a9a8a854516b90d26d2841aad02
+msgid ""
+"To enquire about obtaining a commercial license, then `use this contact "
+"page <https://artifex.com/contact/>`_."
+msgstr "商用ライセンスの取得についてお問い合わせの場合は、`こちらのお問い合わせページをご利用ください <https://artifex.com/contact/>`_。"
+
+#: ../../pymupdf-pro/index.rst:24 f0a9c51213864c898871ca01453557e1
+msgid ""
+"A licensed version of |PyMuPDF Pro| also gives you a licensed version of "
+"|PyMuPDF4LLM|. If you are interested in using the |PyMuPDF4LLM| package "
+"you should install it separately."
+msgstr "|PyMuPDF Pro| のライセンス版には、|PyMuPDF4LLM| のライセンス版も含まれています。|PyMuPDF4LLM| パッケージの使用に興味がある場合は、個別にインストールする必要があります。"
+
+#: ../../pymupdf-pro/index.rst:28 4a1d503fea744f4ba62d54e186f02d87
+msgid "Platform support"
+msgstr "プラットフォームサポート"
+
+#: ../../pymupdf-pro/index.rst:30 78076f4c0458474f913d726a0fb0e0bc
+msgid "Available for these platforms only:"
+msgstr "以下のプラットフォームでのみ利用可能"
+
+#: ../../pymupdf-pro/index.rst:32 ed38f46c156840689524033bf7da829d
+msgid "Windows x86_64."
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:33 259897daea654cb8a90bc8e65c6e4f76
+msgid "Linux x86_64 (glibc)."
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:34 1923df7caa0b4f04a3b259b4c866ba6e
+msgid "MacOS x86_64."
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:35 fd5d8bf6fc12467a826ce8202a1d2ec3
+msgid "MacOS arm64."
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:39 f2952d3e2f47435bb640b83bd15721c4
+msgid "Office file support"
+msgstr "Office ファイルサポート"
+
+#: ../../pymupdf-pro/index.rst:41 7c38d85a3c164f3a90d869b52ef96eb1
+msgid ""
+"In addition to the `standard file types supported by PyMuPDF "
+"<Supported_File_Types>`, |PyMuPDF Pro| supports:"
+msgstr "`PyMuPDF がサポートする標準ファイルタイプ <Supported_File_Types>` に加えて、|PyMuPDF Pro| は以下をサポートします"
+
+#: ../../pymupdf-pro/index.rst:46 67438064f36f474186aeb4fbfb093d31
+msgid "**DOC/DOCX**"
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:47 9ab995c3f8214b9ab04698d96a84b4e2
+msgid "**XLS/XLSX**"
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:48 9e2c997d6ac44df79efb09f56a593cbb
+msgid "**PPT/PPTX**"
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:49 28e3c375094f40258eea347ffcaf5a8f
+msgid "**HWP/HWPX**"
+msgstr ""
+
+#: ../../pymupdf-pro/index.rst:66 9ccca49db9fb4df98d9464183c30d68c
+msgid "Usage"
+msgstr "使用方法"
+
+#: ../../pymupdf-pro/index.rst:69 edd61111e81a46198c9ef49a53e782b0
+msgid "Installation"
+msgstr "インストール"
+
+#: ../../pymupdf-pro/index.rst:71 f961577e8ffd49469227db2bbdcd9bb2
+msgid "Install via pip with:"
+msgstr "pip でインストールするには"
+
+#: ../../pymupdf-pro/index.rst:79 699e6bf8334b4cf8b23793ff0e45ccbf
+msgid "Loading an **Office** document"
+msgstr "Loading an **Office** document"
+
+#: ../../pymupdf-pro/index.rst:81 08e39b8bfc514665aafb5c1aa211bcfc
+msgid ""
+"Import |PyMuPDF Pro| and you can then reference **Office** documents "
+"directly, e.g.:"
+msgstr "|PyMuPDF Pro| をインポートすると、**Office** ドキュメントを直接参照できます。例えば:"
+
+#: ../../pymupdf-pro/index.rst:92 e21e201731344245a88c7e6bdd9c2dc2
+msgid ""
+"All standard |PyMuPDF| functionality is exposed as expected - |PyMuPDF "
+"Pro| handles the extended **Office** file types"
+msgstr "すべての標準 |PyMuPDF| 機能が期待どおりに公開されます - |PyMuPDF Pro| は拡張された **Office** ファイルタイプを処理します"
+
+#: ../../pymupdf-pro/index.rst:95 32d84f02e19a40b5bb42c1d26a81afe5
+msgid ""
+"From then on you can work with document pages just as you would do "
+"normally, but with respect to the `restrictions "
+"<PyMuPDFPro_Restrictions>`."
+msgstr "その後は、`制限事項 <PyMuPDFPro_Restrictions>` を考慮しながら、通常どおりドキュメントページを操作できます。"
+
+#: ../../pymupdf-pro/index.rst:99 36c298b59008468ab926c22842511b25
+msgid "Converting an **Office** document to |PDF|"
+msgstr "**Office** ドキュメントを |PDF| に変換する"
+
+#: ../../pymupdf-pro/index.rst:101 c01333a0e65f42d29d469ace26b3fd91
+msgid ""
+"The following code snippet can convert your **Office** document to |PDF| "
+"format:"
+msgstr "次のコードスニペットは、**Office** ドキュメントを |PDF| 形式に変換できます:"
+
+#: ../../pymupdf-pro/index.rst:119 cd5eb6eaf8094ced89572a48282454ca
+msgid "Restrictions"
+msgstr "制限事項"
+
+#: ../../pymupdf-pro/index.rst:122 badbfba0a2a0495290e9594585aaefc9
+msgid ""
+"|PyMuPDF Pro| functionality is restricted without a license key as "
+"follows:"
+msgstr "|PyMuPDF Pro| 機能は、ライセンスキーがない場合、次のように制限されます:"
+
+#: ../../pymupdf-pro/index.rst:124 0edbc072da504add956116e21d3eebde
+msgid "**Only the first 3 pages of any document will be available.**"
+msgstr "どのドキュメントでも最初の3ページのみが利用可能です。"
+
+#: ../../pymupdf-pro/index.rst:126 6fa9f0d4dec94b3db782dacdc632f5a0
+msgid ""
+"To unlock full functionality you should `obtain a trial key "
+"<https://pymupdf.pro/try-pro/>`_."
+msgstr "すべての機能のロックを解除するには、`トライアルキーを取得 <https://pymupdf.pro/try-pro/>`_ してください。"
+
+#: ../../pymupdf-pro/index.rst:132 ff0d00debbdb4746809d8750352f10bc
+msgid "Trial keys"
+msgstr "トライアルキー"
+
+#: ../../pymupdf-pro/index.rst:134 e689628360fa4b4497ccbb720dd0faca
+msgid ""
+"To obtain a license key `please fill out the form on this page "
+"<https://pymupdf.pro/try-pro/>`_. You will then have the trial key "
+"emailled to the address you submitted."
+msgstr "ライセンスキーを取得するには、`このページのフォームに記入 <https://pymupdf.pro/try-pro/>`_ してください。提出したアドレスにトライアルキーがメールで送信されます。"
+
+#: ../../pymupdf-pro/index.rst:138 b4af428798424c3baae4771829727b28
+msgid "Using a key"
+msgstr "Using a key"
+
+#: ../../pymupdf-pro/index.rst:141 6766aa2a1d144b81a15c3ad28ce403da
+msgid "Initialize |PyMuPDF Pro| with a key as follows:"
+msgstr "次のようにキーで |PyMuPDF Pro| を初期化します"
+
+#: ../../pymupdf-pro/index.rst:149 92e495f1e7934e1e83d346f56ab9833d
+msgid ""
+"This will allow you to evaluate the product for a limited time. If you "
+"want to use |PyMuPDF Pro| after this time you should then `enquire about "
+"obtaining a commercial license <https://artifex.com/products/pymupdf-"
+"pro/>`_."
+msgstr "これにより、限られた期間製品を評価できます。この期間後も |PyMuPDF Pro| を使用したい場合は、`商用ライセンスの取得についてお問い合わせ <https://artifex.com/products/pymupdf-pro/>`_ ください。"
+
+#: ../../pymupdf-pro/index.rst:153 a394162132a04de092aabb5d2fcbc814
+msgid "Fonts"
+msgstr "フォント"
+
+#: ../../pymupdf-pro/index.rst:155 8e2db8a260ac4b8597a804b55d7ab547
+msgid ""
+"By default `pymupdf.pro.unlock()` searches for all installed font "
+"directories."
+msgstr "デフォルトでは、`pymupdf.pro.unlock()` はインストールされているすべてのフォントディレクトリを検索します。"
+
+#: ../../pymupdf-pro/index.rst:157 e0cd7217fd79445ea7e79586abad31d1
+msgid "This can be controlled with keyword-only args:"
+msgstr "これは、キーワード専用引数で制御できます:"
+
+#: ../../pymupdf-pro/index.rst:159 879866813ec14fd08f5b249e833e7ee7
+msgid ""
+"`fontpath`: specific font directories, either as a list/tuple or "
+"`os.sep`-separated string. If None (the default), we use "
+"`os.environ['PYMUPDFPRO_FONT_PATH']` if set."
+msgstr "`fontpath`: 特定のフォントディレクトリ。リスト/タプルまたは `os.sep` で区切られた文字列として指定します。None（デフォルト）の場合、設定されていれば `os.environ['PYMUPDFPRO_FONT_PATH']` を使用します。"
+
+#: ../../pymupdf-pro/index.rst:161 5ca9e3934e6c4c91b603c12662c79cf6
+msgid ""
+"`fontpath_auto`: Whether to append system font directories. If None (the "
+"default) we use true if `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` is '1'."
+" If true we append all system font directories."
+msgstr "`fontpath_auto`: システムフォントディレクトリを追加するかどうか。None（デフォルト）の場合、`os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` が '1' であれば true を使用します。true の場合、すべてのシステムフォントディレクトリを追加します。"
+
+#: ../../pymupdf-pro/index.rst:165 5ecf267b5f8f4e68be5f69f1cbee4782
+msgid ""
+"Function `pymupdf.pro.get_fontpath()` returns a tuple of all font "
+"directories used by `unlock()`."
+msgstr "関数 `pymupdf.pro.get_fontpath()` は、`unlock()` で使用されるすべてのフォントディレクトリのタプルを返します。"
+
+#: ../../footer.rst:46 b26519c017c744e3b52c222b2633f6ed
+msgid "This documentation covers all versions up to |version|."
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
+

@@ -98,7 +98,7 @@ So in this case we can adjust our API calls to ignore these elements as follows:
 
 .. note::
 
-    Please note that page ``header`` / ``footer`` exclusion is not applicable to JSON output as it aims to always represent all data for the included pages. Please refer top the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` for more.
+    Please note that page ``header`` / ``footer`` exclusion is not applicable to JSON output as it aims to always represent all data for the included pages. Please refer to the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` for more.
 
 Extending Capability
 ----------------------------------
