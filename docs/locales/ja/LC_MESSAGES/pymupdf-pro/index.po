@@ -140,7 +140,7 @@ msgstr "pip でインストールするには"
 
 #: ../../pymupdf-pro/index.rst:79 699e6bf8334b4cf8b23793ff0e45ccbf
 msgid "Loading an **Office** document"
-msgstr "Loading an **Office** document"
+msgstr "**Office** ドキュメントを読み込む"
 
 #: ../../pymupdf-pro/index.rst:81 08e39b8bfc514665aafb5c1aa211bcfc
 msgid ""
@@ -204,7 +204,7 @@ msgstr "ライセンスキーを取得するには、`このページのフォ�
 
 #: ../../pymupdf-pro/index.rst:138 b4af428798424c3baae4771829727b28
 msgid "Using a key"
-msgstr "Using a key"
+msgstr "キーの使用"
 
 #: ../../pymupdf-pro/index.rst:141 6766aa2a1d144b81a15c3ad28ce403da
 msgid "Initialize |PyMuPDF Pro| with a key as follows:"
