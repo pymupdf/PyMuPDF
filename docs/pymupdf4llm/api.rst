@@ -76,7 +76,7 @@ The |PyMuPDF4LLM| API
 
     :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
 
-    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermdeiate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
     :arg bool embed_images: like `write_images`, but images will be included in the markdown text as base64-encoded strings. Mutually exclusive with `write_images` and ignores `image_path`. This may drastically increase the size of your markdown text.
 
@@ -148,7 +148,7 @@ The |PyMuPDF4LLM| API
 
     :arg bool write_images: when encountering images or vector graphics, images will be created from the respective page area and stored in the specified folder. |Markdown| references will be generated pointing to these images. Any text contained in these areas will not be included in the text output (but appear as part of the images). Therefore, if for instance your document has text written on full page images, make sure to set this parameter to `False`.
 
-        If using :ref:`PyMuPDF Layout <pympupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference.
+        If using :ref:`PyMuPDF Layout <pymupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference.
 
     :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
 

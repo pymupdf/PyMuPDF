@@ -193,11 +193,11 @@ msgstr "OCR サポート"
 
 #: ../../pymupdf-layout/index.rst:124 99eb4f65329d45c7bb6eaf035c255259
 msgid ""
-"The new layout-sensitive PyMuPDF4LLM version also evaluates whether a "
+"The new layout-sensitive |PyMuPDF4LLM| version also evaluates whether a "
 "page would benefit from applying OCR to it. If its heuristics come to "
 "this conclusion, the built-in Tesseract-OCR module is automatically "
 "invoked. Its results are then handled like normal page content."
-msgstr "新しいレイアウト対応の PyMuPDF4LLM バージョンは、ページに OCR を適用することが有益かどうかも評価します。ヒューリスティックがこの結論に達した場合、組み込みの  **Tesseract-OCR**  モジュールが自動的に呼び出されます。その結果は、通常のページコンテンツと同様に処理されます。"
+msgstr "新しいレイアウト対応の  |PyMuPDF4LLM|  バージョンは、ページに OCR を適用することが有益かどうかも評価します。ヒューリスティックがこの結論に達した場合、組み込みの  **Tesseract-OCR**  モジュールが自動的に呼び出されます。その結果は、通常のページコンテンツと同様に処理されます。"
 
 #: ../../pymupdf-layout/index.rst:126 cdbf9a9f1f5341cc96aaaa1a6a74434f
 msgid ""
@@ -205,7 +205,7 @@ msgid ""
 "or many character-sized vectors, a check is made using `OpenCV "
 "<https://pypi.org/project/opencv-python/>`_ whether text is *probably* "
 "detectable on the page at all. This is done to tell apart image-based "
-"text from ordinary pictures (like photographies)."
+"text from ordinary pictures (like photographs)."
 msgstr "ページにテキストがほとんど含まれていないが、画像や多数の文字サイズのベクターで覆われている場合、`OpenCV <https://pypi.org/project/opencv-python/>`_ を使用して、ページ上でテキストが検出可能かどうかをチェックします。これは、画像ベースのテキストを通常の写真などの画像と区別するために行われます。"
 
 #: ../../pymupdf-layout/index.rst:128 8c8ba1c1b2bc4875b04cc60b98293a08
@@ -218,10 +218,24 @@ msgstr "ページにテキストが含まれているものの、読み取り不
 
 #: ../../pymupdf-layout/index.rst:130 225a390ebce94321a090f94ab2165c16
 msgid ""
-"For these heuristics to work we need both, an existing Tesseract "
-"installation and the availability of OpenCV in the Python environment. If"
+"For these heuristics to work we need both, an existing :ref:`Tesseract installation <installation_ocr>` and the availability of `OpenCV <https://pypi.org/project/opencv-python/>`_ in the Python environment. If"
 " either is missing, no OCR is attempted at all."
-msgstr "これらのヒューリスティックが機能するには、Tesseract のインストールと Python 環境での OpenCV の利用可能性の両方が必要です。どちらか一方が欠けている場合、OCR はまったく試行されません。"
+msgstr "これらのヒューリスティックが機能するには、 :ref:`Tesseract installation <installation_ocr>` のインストールと Python 環境での `OpenCV <https://pypi.org/project/opencv-python/>`_ の利用可能性の両方が必要です。どちらか一方が欠けている場合、OCR はまったく試行されません。"
+
+msgid "The decision tree for whether OCR is actually used or not depends on the following:"
+msgstr "OCRが実際に使用されるかどうかの決定木は、以下に依存します"
+
+msgid ":ref:`PyMuPDF Layout is imported <pymupdf_layout_using>`"
+msgstr "PyMuPDF Layoutがインポートされている"
+
+msgid "In the :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` you have `use_ocr` enabled (this is set to `True` by default)"
+msgstr ":ref:`PyMuPDF4LLM API <pymupdf4llm-api>` で ``use_ocr`` が有効になっている（これはデフォルトで ``True`` に設定されています）"
+
+msgid ":ref:`Tesseract is correctly installed <installation_ocr>`"
+msgstr ":ref:`Tesseractが正しくインストールされている <installation_ocr>`"
+
+msgid "`OpenCV <https://pypi.org/project/opencv-python/>`_ is available in your Python environment"
+msgstr "`OpenCV <https://pypi.org/project/opencv-python/>`_ がPython環境で利用可能である"
 
 #: ../../pymupdf-layout/index.rst:137 fddcc1ea96e64c658554704bb141490b
 msgid "|PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats"
