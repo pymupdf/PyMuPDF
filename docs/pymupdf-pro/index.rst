@@ -2,7 +2,7 @@
 .. include:: ../header.rst
 
 
-.. _pymupdf-pro
+.. _pymupdf-pro:
 
 PyMuPDF Pro
 =============
