@@ -241,7 +241,7 @@ msgstr "「picture」バウンディングボックスの画像ファイルを�
 msgid "optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`."
 msgstr "オプションで、出力対象として考慮するページを指定します（注意:0ベースのページ番号を指定してください）。省略した場合（``None``）、すべてのページが処理されます。``0`` から ``page_count - 1`` の間の整数を含む任意の有効なPythonシーケンスを指定してください。"
 
-msgid "Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout`>."
+msgid "Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout>`."
 msgstr "レイアウトモードに関する更なる改善の背景と現状については、`このサイト <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ をご覧ください。"
 
 msgid "Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex`_ package. Please note that this package will **not automatically be installed** when installing **pymupdf4llm**."
