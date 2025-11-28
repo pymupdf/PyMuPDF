@@ -330,4 +330,9 @@ So for a working OCR functionality, make sure to complete this checklist:
      * Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
      * Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
+
+.. note::
+
+  Find out more on the `official documention for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
+
 .. include:: footer.rst

@@ -1,7 +1,7 @@
 
 .. include:: ../header.rst
 
-.. _pymupdf4llm
+.. _pymupdf4llm:
 
 
 PyMuPDF4LLM
@@ -9,7 +9,7 @@ PyMuPDF4LLM
 
 |PyMuPDF4LLM| is aimed to make it easier to extract |PDF| content in the format you need for **LLM** & **RAG** environments. It supports :ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex document output <extracting_as_llamaindex>`.
 
-When using |PyMuPDF4LLM| with PyMuPDF-Layout, page layout detection will be greatly improved. This is true for table detection, but also for the detection of page headers and footers, footnotes, list items and text paragraphs. In addition two new methods become available, `to_json()` and `to_text()`.
+When using |PyMuPDF4LLM| with PyMuPDF Layout, page layout detection will be greatly improved. This is true for table detection, but also for the detection of page headers and footers, footnotes, list items and text paragraphs. In addition two new methods become available, `to_json()` and `to_text()`.
 
 .. important::
 
@@ -22,8 +22,8 @@ Features
     - Support for image and vector graphics extraction (and inclusion of references in the MD text)
     - Support for page chunking output.
     - Direct support for output as :ref:`LlamaIndex Documents <extracting_as_llamaindex>`.
-    - In "layout mode": Support for plain text output similar to Markdown
-    - In "layout mode": Support for JSON output
+    - When used with :ref:`PyMuPDF Layout <pymupdf-layout>` : Support for plain text output similar to Markdown
+    - When used with :ref:`PyMuPDF Layout <pymupdf-layout>` : Support for JSON output
 
 
 Functionality
