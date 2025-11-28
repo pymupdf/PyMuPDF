@@ -202,7 +202,7 @@ The |PyMuPDF4LLM| API
 
 .. note::
 
-    Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout`>.
+    Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout>`.
 
 
 .. method:: LlamaMarkdownReader(*args, **kwargs)
