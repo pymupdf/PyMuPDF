@@ -333,6 +333,6 @@ So for a working OCR functionality, make sure to complete this checklist:
 
 .. note::
 
-  Find out more on the `official documention for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
+  Find out more on the `official documentation for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
 
 .. include:: footer.rst
