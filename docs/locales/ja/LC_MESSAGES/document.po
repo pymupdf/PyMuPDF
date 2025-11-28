@@ -1085,9 +1085,8 @@ msgid "**Class API**"
 msgstr "**クラスAPI**"
 
 #: ../../document.rst:174 b482340231f44738bb9cf3c571f4f7d5
-#, fuzzy
 msgid "Create a ``Document`` object."
-msgstr "*Document* オブジェクトを作成します。"
+msgstr "``Document`` オブジェクトを作成します。"
 
 #: ../../document.rst:176 1c55311b5fa64850a06598e2a8ce9a7c
 msgid "With default parameters, a **new empty PDF** document will be created."
@@ -1095,10 +1094,9 @@ msgstr "デフォルトのパラメータを使用すると、**新しい空の 
 
 #: ../../document.rst:177 22c55c2d255f491f89be960f4babb5e5
 msgid "If ``stream`` is given, then the document is created from memory."
-msgstr ""
+msgstr "``stream`` が指定された場合、ドキュメントはメモリから作成されます。"
 
 #: ../../document.rst:178 3a8f75233dd54040a52ad9ae44d26e74
-#, fuzzy
 msgid ""
 "If ``stream`` is `None`, then a document is created from the file given "
 "by ``filename``."
@@ -1154,7 +1152,11 @@ msgid ""
 "``filetype`` parameter is ignored, except when content inspection was "
 "unsuccessful. This is regularly the case for plain text types like "
 "\"txt\", \"html\", \"xml\" etc. with a wrong or missing file extension."
-msgstr ""
+msgstr ""ファイルパスを含むUTF-8文字列または ``pathlib.Path`` オブジェクトです。"
+"ドキュメントタイプは常にファイルの内容から判定されます。"
+"``filetype`` パラメータは、内容の検査が失敗した場合を除いて無視されます。"
+"これは、誤った、または欠落したファイル拡張子を持つ "
+"\"txt\"、\"html\"、\"xml\" などのプレーンテキストタイプでよくあるケースです。""
 
 #: ../../document.rst:182 42a021002ca24463805b8c682c3ef247
 msgid ""
@@ -1162,7 +1164,9 @@ msgid ""
 "from the data content. The ``filetype`` parameter is ignored, except when"
 " content inspection was unsuccessful. This is regularly the case for "
 "plain text types like \"txt\", \"html\", \"xml\" etc."
-msgstr ""
+msgstr ""ファイルデータを含むメモリ領域です。ドキュメントタイプは常にデータの内容から検出されます。"
+"``filetype`` パラメータは、内容の検査が失敗した場合を除いて無視されます。"
+"これは、\"txt\"、\"html\"、\"xml\" などのプレーンテキストタイプでよくあるケースです。""
 
 #: ../../document.rst:184 df0bacd926f548f7993192643669e3da
 msgid ""
@@ -1171,10 +1175,12 @@ msgid ""
 " etc. cannot be disambiguated by their content. When such files are "
 "provided in memory or being provided with the wrong file extension, this "
 "parameter **must** be used."
-msgstr ""
+msgstr ""ドキュメントのタイプを指定する文字列です。これは、ファイル内容の検査が失敗した場合にのみ必要です。"
+"\"txt\"、\"html\"、\"xml\" などのテキストタイプは、その内容によって識別することができません。"
+"このようなファイルがメモリ内で提供される場合、または誤ったファイル拡張子で提供される場合、"
+"このパラメータを **必ず** 使用してください。""
 
 #: ../../document.rst:186 78759e58f1034e9b8808547679e5f0c7
-#, fuzzy
 msgid ""
 "a rectangle specifying the desired page size. This parameter is only "
 "meaningful for documents with a variable page layout (\"reflowable\" "

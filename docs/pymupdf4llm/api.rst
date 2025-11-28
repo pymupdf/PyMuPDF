@@ -224,8 +224,7 @@ The |PyMuPDF4LLM| API
     
         Return appropriate markdown header prefix. This is either "" or a string of "#" characters followed by a space.
 
-        Given a text span from a "dict"" extraction, determine the
-        markdown header prefix string of 0 to n concatenated '#' characters.
+        Given a text span from a "dict" extraction, determine the markdown header prefix string of 0 to n concatenated '#' characters.
 
         :arg dict span: a dictionary containing the text span information. This is the same dictionary as returned by `page.get_text("dict")`.
 
@@ -332,8 +331,7 @@ This user function uses the document's Table of Contents -- under the assumption
 
         Create an object which uses the document's Table of Contents (TOC) to determine header levels. Upon object creation, the table of contents is read via the `Document.get_toc()` method. The TOC data is then used to determine header levels in the `to_markdown()` method.
 
-        This is an alternative to :class:`IdentifyHeaders`. Instead of running through the full document to identify font sizes, it uses the document's Table Of
-        Contents (TOC) to identify headers on pages. Like :class:`IdentifyHeaders`, this also is no guarantee to find headers, but for well-built Table of Contents, there is a good chance for more correctly identifying header lines on document pages than the font-size-based approach.
+        This is an alternative to :class:`IdentifyHeaders`. Instead of running through the full document to identify font sizes, it uses the document's Table Of Contents (TOC) to identify headers on pages. Like :class:`IdentifyHeaders`, this also is no guarantee to find headers, but for well-built Table of Contents, there is a good chance for more correctly identifying header lines on document pages than the font-size-based approach.
 
         It also has the advantage of being much faster than the font-size-based approach, as it does not execute a full document scan or even access any of the document pages.
 
