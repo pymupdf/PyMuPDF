@@ -37,11 +37,11 @@ msgstr ""
 
 #: ../../converting-files.rst:7 153e0c6c14bf4b8bac1dcdc565ac0f16
 msgid "Converting Files"
-msgstr ""
+msgstr "ファイルの変換"
 
 #: ../../converting-files.rst:12 9b1bc6f3061c4fd9a084829ef7554c37
 msgid "Files to PDF"
-msgstr ""
+msgstr "ファイルからPDFへ"
 
 #: ../../converting-files.rst:14 38d5a093dfc24e72b3627f1a2c952515
 msgid ""
@@ -49,52 +49,52 @@ msgid ""
 "converted to |PDF| by using the :meth:`Document.convert_to_pdf` method. "
 "This method returns a buffer of data which can then be utilized by "
 "|PyMuPDF| to create a new |PDF|."
-msgstr ""
+msgstr ":ref:`PyMuPDFでサポートされているドキュメントタイプ<HowToOpenAFile>` は、:meth:`Document.convert_to_pdf` メソッドを使用することで簡単に |PDF| に変換できます。このメソッドはデータバッファを返し、それを |PyMuPDF| が利用して新しい |PDF| を作成できます。"
 
 #: ../../converting-files.rst:18 ../../converting-files.rst:38
 #: ../../converting-files.rst:62 ../../converting-files.rst:82
 #: 2eff8f1c0f704e9d9e23a98078353847 7345723f19864e81be97447aab194cd9
 #: c3ae18efff164928b70b884d3a47caac ecdbf8cbbb2d46bc9bf312b716b264af
 msgid "**Example**"
-msgstr ""
+msgstr "**例**"
 
 #: ../../converting-files.rst:32 4e3eda1d4bff4593ae1f0333bcc47a5d
 msgid "PDF to SVG"
-msgstr ""
+msgstr "PDFからSVGへ"
 
 #: ../../converting-files.rst:34 d8f0e0e26f99486485d27038482b5558
 msgid ""
 "Technically, as SVG files cannot be multipage, we must export each page "
 "as an SVG."
-msgstr ""
+msgstr "技術的には、SVGファイルは複数ページを持つことができないため、各ページをSVGとしてエクスポートする必要があります。"
 
 #: ../../converting-files.rst:36 45efc8839a1b44e9a877335aa51df1b6
 msgid ""
 "To get an SVG representation of a page use the :meth:`Page.get_svg_image`"
 " method."
-msgstr ""
+msgstr "ページのSVG表現を取得するには、:meth:`Page.get_svg_image` メソッドを使用します。"
 
 #: ../../converting-files.rst:58 9249883d41654d3c8041c561743679c6
 msgid "PDF to Markdown"
-msgstr ""
+msgstr "PDFからMarkdownへ"
 
 #: ../../converting-files.rst:60 9d35a0dc74c742419817cfab8ac5fbb6
 msgid ""
 "By utlilizing the :doc:`PyMuPDF4LLM API <pymupdf4llm/api>` we are able to"
 " convert PDF to a Markdown representation."
-msgstr ""
+msgstr ":doc:`PyMuPDF4LLM API <pymupdf4llm/api>` を利用することで、PDFをMarkdown表現に変換できます。"
 
 #: ../../converting-files.rst:76 a8c608159d57471c89e55f3c44adafe2
 msgid "PDF to DOCX"
-msgstr ""
+msgstr "PDFからDOCXへ"
 
 #: ../../converting-files.rst:78 443eb3ec0d3a4ba89f8e4361a7607e16
 msgid ""
 "Use the pdf2docx_ library which uses |PyMuPDF| to provide document "
 "conversion from |PDF| to **DOCX** format."
-msgstr ""
+msgstr "|PyMuPDF| を使用してドキュメントを |PDF| から **DOCX** 形式に変換する pdf2docx_ ライブラリを使用します。"
 
 #: ../../footer.rst:46 bf92de7cbdc140fba9255f9a43b9932a
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
