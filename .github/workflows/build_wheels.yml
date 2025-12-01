@@ -84,8 +84,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        # 2024-05-08: Need to specify macos-13/14 to get x86_64/arm64.
-        os: [ubuntu-latest, windows-2019, macos-13, macos-14]
+        # 2024-05-08: Need to specify macos-15-intel/14 to get x86_64/arm64.
+        os: [ubuntu-latest, windows-2019, macos-15-intel, macos-14]
 
       # Avoid cancelling of all cibuildwheel runs after a single failure.
       fail-fast: false
