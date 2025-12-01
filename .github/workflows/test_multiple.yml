@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022, macos-13, macos-14]
+        os: [ubuntu-latest, windows-2022, macos-15-intel, macos-14]
         args: [
             '',
             '-m "git:--branch master https://github.com/ArtifexSoftware/mupdf"', 
