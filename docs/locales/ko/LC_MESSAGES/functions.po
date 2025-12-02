@@ -697,18 +697,17 @@ msgstr ""
 "인 경우에만 사용됩니다. 기본값은 `pymupdf` 입니다."
 
 #: ../../functions.rst:137 777f45cd7d524f84942d9fe412c18edd
-#, fuzzy
 msgid ""
 "If any `pylogging*` arg is not ``None``, we write to `Python's logging "
 "system <https://docs.python.org/3/library/logging.html>`_."
 msgstr ""
+"`pylogging*` 인수가 ``None``이 아니면 `Python의 로깅 시스템 <https://docs.python.org/3/library/logging.html>`_ 에 씁니다."
 
 #: ../../functions.rst:144 ../../functions.rst:156 ../../functions.rst:270
 #: 69f05cfe1b654ab19e0011a944260bec 7558bf3ff3b845559657a578039f1ef0
 #: c30fc7f1a9e343bbb4c5e4c8fbbfb032
-#, fuzzy
 msgid "*New in v1.17.4*"
-msgstr ""
+msgstr "*v1.17.4에서 새로 추가됨*"
 
 #: ../../functions.rst:146 895bc494383147339ecd407d7f8feece
 msgid ""
@@ -748,16 +747,15 @@ msgstr ""
 #: ../../functions.rst:211 0330c6db37ba44e7b01d3331832a082a
 #: 59756c59d51a4bf59c7c44211fc57b99 c8e9f36450234d3293d8445774911e5d
 #: d0ad94f8dbd24dd5adb1fc709cde1c9e
-#, fuzzy
 msgid "*New in v1.18.0*"
-msgstr ""
+msgstr "*v1.18.0에서 새로 추가됨*"
 
 #: ../../functions.rst:170 18f6f71df9e4437e91b15db0811f02e1
-#, fuzzy
 msgid ""
 "Return the unicode number of a glyph name based on the **Adobe Glyph "
 "List**."
 msgstr ""
+"**Adobe Glyph List**를 기반으로 글리프 이름의 유니코드 번호를 반환합니다."
 
 #: ../../functions.rst:172 2ea221eaae354e3a8696af8d26a6727c
 msgid ""
@@ -773,18 +771,18 @@ msgstr ""
 #: ../../functions.rst:177 ../../functions.rst:205 ../../functions.rst:218
 #: 8ae7164314a54d298a84c72740a19a67 bdcaf136335b4029a886ece439c7db85
 #: e4acb745507b430e8af6df66d695d76c
-#, fuzzy
 msgid ""
 "A similar functionality is provided by package `fontTools "
 "<https://pypi.org/project/fonttools/>`_ in its *agl* sub-package."
 msgstr ""
+"유사한 기능이 `fontTools <https://pypi.org/project/fonttools/>`_ 패키지의 *agl* 하위 패키지에서 제공됩니다."
 
 #: ../../functions.rst:185 75a5eea668644ca5ad66e78b8f46f33b
-#, fuzzy
 msgid ""
 "Return the glyph name of a unicode number, based on the **Adobe Glyph "
 "List**."
 msgstr ""
+"**Adobe Glyph List**를 기반으로 유니코드 번호의 글리프 이름을 반환합니다."
 
 #: ../../functions.rst:187 65f19a9b48e14e2caf273c0cd10e1127
 #: 96ee3f05d61747f7adbf5b5d3abd3e7a

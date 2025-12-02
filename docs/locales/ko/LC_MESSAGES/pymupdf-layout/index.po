@@ -233,26 +233,29 @@ msgid ""
 "The decision tree for whether OCR is actually used or not depends on the "
 "following:"
 msgstr ""
+"OCR이 실제로 사용되는지 여부에 대한 결정 트리는 다음에 따라 달라집니다:"
 
 #: ../../pymupdf-layout/index.rst:138 8cd3ca3cdb2c404eb48ad42a553220de
 msgid ":ref:`PyMuPDF Layout is imported <pymupdf_layout_using>`"
-msgstr ""
+msgstr ":ref:`PyMuPDF Layout이 가져와짐 <pymupdf_layout_using>`"
 
 #: ../../pymupdf-layout/index.rst:140 10ee5e795c7446e8b3403d85522a49cd
 msgid ""
 "In the :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` you have `use_ocr` "
 "enabled (this is set to `True` by default)"
 msgstr ""
+":ref:`PyMuPDF4LLM API <pymupdf4llm-api>` 에서 `use_ocr` 이 활성화되어 있음(기본값은 `True` 로 설정됨)"
 
 #: ../../pymupdf-layout/index.rst:142 a91c79870eec43b4b647375636f046ea
 msgid ":ref:`Tesseract is correctly installed <installation_ocr>`"
-msgstr ""
+msgstr ":ref:`Tesseract가 올바르게 설치됨 <installation_ocr>`"
 
 #: ../../pymupdf-layout/index.rst:144 32944c44045a42d29563e3e93a1b1d98
 msgid ""
 "`OpenCV <https://pypi.org/project/opencv-python/>`_ is available in your "
 "Python environment"
 msgstr ""
+"`OpenCV <https://pypi.org/project/opencv-python/>`_ 가 Python 환경에서 사용 가능함"
 
 #: ../../pymupdf-layout/index.rst:154 fddcc1ea96e64c658554704bb141490b
 msgid "|PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats"

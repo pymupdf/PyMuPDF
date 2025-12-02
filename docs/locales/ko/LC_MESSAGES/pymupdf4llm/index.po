@@ -55,6 +55,7 @@ msgid ""
 "paragraphs. In addition two new methods become available, `to_json()` and"
 " `to_text()`."
 msgstr ""
+"|PyMuPDF4LLM| 를 PyMuPDF Layout과 함께 사용하면 페이지 레이아웃 감지가 크게 향상됩니다. 이것은 테이블 감지뿐만 아니라 페이지 헤더 및 푸터, 각주, 목록 항목 및 텍스트 단락의 감지에도 해당합니다. 또한 두 가지 새로운 메서드 `to_json()` 및 `to_text()` 가 사용 가능해집니다."
 
 #: ../../pymupdf4llm/index.rst:16 50bf080e50e64ba58e973f0addf24d73
 msgid ""
@@ -92,12 +93,14 @@ msgid ""
 "When used with :ref:`PyMuPDF Layout <pymupdf-layout>` : Support for plain"
 " text output similar to Markdown"
 msgstr ""
+":ref:`PyMuPDF Layout <pymupdf-layout>` 와 함께 사용할 때: Markdown과 유사한 일반 텍스트 출력 지원"
 
 #: ../../pymupdf4llm/index.rst:26 345e944ae1c54464a70343f8ee2b62e9
 msgid ""
 "When used with :ref:`PyMuPDF Layout <pymupdf-layout>` : Support for JSON "
 "output"
 msgstr ""
+":ref:`PyMuPDF Layout <pymupdf-layout>` 와 함께 사용할 때: JSON 출력 지원"
 
 #: ../../pymupdf4llm/index.rst:30 90f6c12aacd14b7eba944b6c1e013ed5
 msgid "Functionality"
