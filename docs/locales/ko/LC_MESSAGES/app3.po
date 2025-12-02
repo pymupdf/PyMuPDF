@@ -482,23 +482,21 @@ msgid ""
 msgstr "회사 로고나 워터마크와 같은 동일한 이미지로 현재 문서의 일련의 페이지에 \"스탬프\"를 찍습니다."
 
 #: ../../app3.rst:258 31e6350216514a078362663c9f252a2f
-#, fuzzy
 msgid ""
 "Combine arbitrary input pages into one output page to support “booklet” "
 "or double-sided printing (known as \"4-up\", \"n-up\")."
 msgstr ""
-"임의의 입력 페이지를 하나의 출력 페이지로 결합하여 \"북렛\" 또는 양면 인쇄( \"4-up\", \"n-up\" 으로 알려짐)를"
-" 지원합니다."
+"임의의 입력 페이지를 하나의 출력 페이지로 결합하여 “북렛” 또는 양면 인쇄( \"4-up\", \"n-up\" 으로 알려짐)를 "
+"지원합니다."
 
 #: ../../app3.rst:259 9c80023be1d94d0cbbca8f1314af6a46
-#, fuzzy
 msgid ""
 "Split up (large) input pages into several arbitrary pieces. This is also "
 "called “posterization”, because you e.g. can split an A4 page "
 "horizontally and vertically, print the 4 pieces enlarged to separate A4 "
 "pages, and end up with an A2 version of your original page."
 msgstr ""
-"(큰) 입력 페이지를 여러 임의의 조각으로 분할합니다. 이것은 \"포스터화\"라고도 하며, 예를 들어 A4 페이지를 가로와 세로로 "
+"(큰) 입력 페이지를 여러 임의의 조각으로 분할합니다. 이것은 “포스터화”라고도 하며, 예를 들어 A4 페이지를 가로와 세로로 "
 "분할하고, 4개 조각을 확대하여 별도의 A4 페이지로 인쇄한 다음 원본 페이지의 A2 버전을 얻을 수 있기 때문입니다."
 
 #: ../../app3.rst:262 62098c390f3043009fc377ea8e54100a
@@ -534,7 +532,6 @@ msgid "`/Matrix` equals the identity matrix."
 msgstr "`/Matrix` 는 항등 행렬과 같습니다."
 
 #: ../../app3.rst:270 b88a10668d6143c8896ff880d6b0a465
-#, fuzzy
 msgid ""
 "`/Resources` equals that of the source page. This involves a “deep-copy” "
 "of hierarchically nested other objects (including fonts, images, etc.). "
@@ -542,7 +539,7 @@ msgid ""
 "technique functions."
 msgstr ""
 "`/Resources` 는 소스 페이지의 것과 같습니다. 이것은 계층적으로 중첩된 다른 객체(글꼴, 이미지 등 포함)의 "
-"\"deep-copy\" 를 포함합니다. 여기에 관련된 복잡성은 |MuPDF| 의 grafting [#f1]_ 기술 함수로 "
+"deep-copy” 를 포함합니다. 여기에 관련된 복잡성은 |MuPDF| 의 grafting [#f1]_ 기술 함수로 "
 "처리됩니다."
 
 #: ../../app3.rst:271 012404bf546e41f0a21925ebb840eb7d

@@ -2502,30 +2502,27 @@ msgstr "PDF 전용: 모든 페이지의 모든 객체 타입 텍스트, 이미�
 msgid ""
 "desired color space indicated by the number of color components: 1 = "
 "DeviceGRAY, 3 = DeviceRGB, 4 = DeviceCMYK."
-msgstr ""
+msgstr "색상 구성 요소 수로 표시되는 원하는 색상 공간: 1 = DeviceGRAY, 3 = DeviceRGB, 4 = DeviceCMYK."
 
 #: ../../document.rst:671 231bbb29ae294db0a5c6b91cedb5bc93
 msgid ""
 "The typical use case is 1 (DeviceGRAY) which converts the PDF to "
 "grayscale."
-msgstr ""
+msgstr "일반적인 사용 사례는 PDF를 그레이스케일로 변환하는 1 (DeviceGRAY) 입니다."
 
 #: ../../document.rst:676 25493f351a06440fb51cb6d332c4e8ab
-#, fuzzy
 msgid "New in v1.16.10"
-msgstr ""
+msgstr "v1.16.10에서 새로 추가됨"
 
 #: ../../document.rst:678 a43f270497744fba8c4c60e674ced034
-#, fuzzy
 msgid ""
 "PDF only: Provide a new copy of a page after finishing and updating all "
 "pending changes."
-msgstr ""
+msgstr "PDF 전용: 모든 보류 중인 변경 사항을 완료하고 업데이트한 후 페이지의 새 복사본을 제공합니다."
 
 #: ../../document.rst:680 eed0d5bbb0e34e5a98d5d7d1347f7563
-#, fuzzy
 msgid "page object."
-msgstr ""
+msgstr "페이지 객체."
 
 #: ../../document.rst:685 5859498b41324ff2904041f7a4135acf
 msgid ""
@@ -2537,12 +2534,16 @@ msgid ""
 "instates a fresh copy while keeping the object hierarchy \"document -> "
 "page -> annotations/widgets\" intact."
 msgstr ""
+"동일한 페이지의 새 복사본. 모든 보류 중인 업데이트(예: 주석 또는 위젯)가 완료되고 페이지의 새 복사본이 로드됩니다.  "
+".. note:: 일반적인 사용 사례에서 페이지 :ref:`Pixmap` 은 주석/위젯이 추가되거나 변경된 후에 가져와야 합니다. 모든 "
+"변경 사항이 페이지 구조에 반영되도록 하려면 이 메서드는 객체 계층 구조 \"document -> page -> "
+"annotations/widgets\" 를 그대로 유지하면서 새 복사본을 다시 설정합니다."
 
 #: ../../document.rst:685 669719b216f545c294672354612d11fa
 msgid ""
 "a new copy of the same page. All pending updates (e.g. to annotations or "
 "widgets) will be finalized and a fresh copy of the page will be loaded."
-msgstr ""
+msgstr "동일한 페이지의 새 복사본. 모든 보류 중인 업데이트(예: 주석 또는 위젯)가 완료되고 페이지의 새 복사본이 로드됩니다."
 
 #: ../../document.rst:687 c3492c9a84d2493fa5a46a354f97ebb6
 msgid ""
@@ -2552,11 +2553,13 @@ msgid ""
 "fresh copy while keeping the object hierarchy \"document -> page -> "
 "annotations/widgets\" intact."
 msgstr ""
+"일반적인 사용 사례에서 페이지 :ref:`Pixmap` 은 주석/위젯이 추가되거나 변경된 후에 가져와야 합니다. 모든 변경 사항이 "
+"페이지 구조에 반영되도록 하려면 이 메서드는 객체 계층 구조 \"document -> page -> annotations/widgets\" "
+"를 그대로 유지하면서 새 복사본을 다시 설정합니다."
 
 #: ../../document.rst:692 b7bb34b4f16946e28a2d3112f022c456
-#, fuzzy
 msgid "PDF only: Convert destination names into a Python dict."
-msgstr ""
+msgstr "PDF 전용: 대상 이름을 Python dict로 변환합니다."
 
 #: ../../document.rst:694 2d5cec850cd44110ab3c2074136bd4ce
 #, python-brace-format
@@ -2574,119 +2577,118 @@ msgid ""
 "'21154a7c20684ceb91f9c9adc3b677c40': {'page': -1, 'dest': '/XYZ 15.75 "
 "1486 0'},         ...     }"
 msgstr ""
+"다음 레이아웃을 가진 딕셔너리:  * *key*: (str) 이름. * *value*: (dict) 다음 레이아웃을 가진:     "
+"* \"page\": 대상 페이지 번호(0 기반). 페이지 번호를 찾을 수 없으면 -1.     * \"to\": (x, y) "
+"페이지의 대상 점. 현재 PDF 좌표계를 사용하며, 즉 점 (0,0)은 페이지의 왼쪽 아래입니다.     * \"zoom\": "
+"(float) 확대/축소 인수.     * \"dest\": (str) 페이지의 대상 위치가 \"/XYZ\" 로 제공되지 않았거나 "
+"페이지 번호를 찾을 수 없는 경우에만 존재합니다. 예제::      {         '__bookmark_1': {'page': 0, "
+"'to': (0.0, 541.0), 'zoom': 0.0},         '__bookmark_2': {'page': 0, 'to': "
+"(0.0, 481.45), 'zoom': 0.0},     }  또는::      {         "
+"'21154a7c20684ceb91f9c9adc3b677c40': {'page': -1, 'dest': '/XYZ 15.75 1486 "
+"0'},         ...     }"
 
 #: ../../document.rst:695 4a7ee4c9ba2a4d3a85f45e05d21d7585
-#, fuzzy
 msgid "A dictionary with the following layout:"
-msgstr ""
+msgstr "다음 레이아웃을 가진 딕셔너리:"
 
 #: ../../document.rst:697 c5edbf04328248a4b31185f38a0a9e88
 msgid "*key*: (str) the name."
-msgstr ""
+msgstr "*key*: (str) 이름."
 
 #: ../../document.rst:703 ce2e9cdb367e4116a485b2e37d0c68a9
-#, fuzzy
 msgid "*value*: (dict) with the following layout:"
-msgstr ""
+msgstr "*value*: (dict) 다음 레이아웃을 가진:"
 
 #: ../../document.rst:699 36f39015e34140bf9600dc4e0a7dd82a
 msgid "\"page\":  target page number (0-based). If no page number found -1."
-msgstr ""
+msgstr "\"page\": 대상 페이지 번호(0 기반). 페이지 번호를 찾을 수 없으면 -1."
 
 #: ../../document.rst:700 1febb4d93dd3459a9e791eb0783deebb
 msgid ""
 "\"to\": (x, y) target point on page. Currently in PDF coordinates, i.e. "
 "point (0,0) is the bottom-left of the page."
-msgstr ""
+msgstr "\"to\": (x, y) 페이지의 대상 점. 현재 PDF 좌표계를 사용하며, 즉 점 (0,0)은 페이지의 왼쪽 아래입니다."
 
 #: ../../document.rst:702 73ea9e5382d746798763ab0603096cbb
-#, fuzzy
 msgid "\"zoom\": (float) the zoom factor."
-msgstr ""
+msgstr "\"zoom\": (float) 확대/축소 인수."
 
 #: ../../document.rst:703 1238fa32b21742a79624b48be42151f8
 msgid ""
 "\"dest\": (str) only present if the target location on the page has not "
 "been provided as \"/XYZ\" or if no page number was found."
-msgstr ""
+msgstr "\"dest\": (str) 페이지의 대상 위치가 \"/XYZ\" 로 제공되지 않았거나 페이지 번호를 찾을 수 없는 경우에만 존재합니다."
 
 #: ../../document.rst:705 425fb4334a644c2db4c6eb473e93a78e
-#, fuzzy
 msgid "Examples::"
 msgstr "예제::"
 
 #: ../../document.rst:712 a20f62157adf4795a39385d09af8fd54
 msgid "or::"
-msgstr ""
+msgstr "또는::"
 
 #: ../../document.rst:719 7a833515e8cd42c897ce8167af8a9b8f
 msgid ""
 "All names found in the catalog under keys \"/Dests\" and \"/Names/Dests\""
 " are included."
-msgstr ""
+msgstr "카탈로그의 \"/Dests\" 및 \"/Names/Dests\" 키 아래에서 찾은 모든 이름이 포함됩니다."
 
 #: ../../document.rst:722 3a95051f6b30463e8c0e2ea68b6cc48f
-#, fuzzy
 msgid "New in v1.23.6"
-msgstr ""
+msgstr "v1.23.6에서 새로 추가됨"
 
 #: ../../document.rst:727 ../../document.rst:737 ../../document.rst:1166
 #: ../../document.rst:1176 ../../document.rst:1188
 #: 318e00602e594f4dbd1ab58104d6d6e6 8ce28861dec241f992672b27eed544d9
 #: cc7d97f955c543a69b42fb763c14b07f ccd76c30264f49b0b6bc13b131a26967
 #: d835c71b1d154bb2be4c1c8efc97af43
-#, fuzzy
 msgid "New in v1.17.7"
-msgstr ""
+msgstr "v1.17.7에서 새로 추가됨"
 
 #: ../../document.rst:729 1b80bd2d1f5a41419012ecb261a6db97
 msgid ""
 "PDF only: Return the unrotated page rectangle -- **without loading the "
 "page** (via :meth:`Document.load_page`). This is meant for internal "
 "purpose requiring best possible performance."
-msgstr ""
+msgstr "PDF 전용: 회전되지 않은 페이지 사각형을 반환합니다 -- **페이지를 로드하지 않고** (:meth:`Document.load_page` 를 통해). 최상의 성능이 필요한 내부 목적을 위한 것입니다."
 
 #: ../../document.rst:731 ../../document.rst:741
 #: 19f19a11c82e4a50907e74763e0e965d 8c2c15d72ebf4a9990d269ea811b7348
-#, fuzzy
 msgid "0-based page number."
-msgstr ""
+msgstr "0-기반 페이지 번호."
 
 #: ../../document.rst:733 a2e9807b52784408a6d2c65afb8f36de
 msgid ":ref:`Rect` of the page like :meth:`Page.rect`, but ignoring any rotation."
-msgstr ""
+msgstr ":meth:`Page.rect` 와 같은 페이지의 :ref:`Rect` 이지만 회전은 무시합니다."
 
 #: ../../document.rst:739 2d213ca7d8494aa7b9c8fd1b4e3d4dfd
-#, fuzzy
 msgid ""
 "PDF only: Return the :data:`xref` of the page -- **without loading the "
 "page** (via :meth:`Document.load_page`). This is meant for internal "
 "purpose requiring best possible performance."
-msgstr ""
+msgstr "PDF 전용: 페이지의 :data:`xref` 를 반환합니다 -- **페이지를 로드하지 않고** (:meth:`Document.load_page` 를 통해). 최상의 성능이 필요한 내부 목적을 위한 것입니다."
 
 #: ../../document.rst:743 da21a126d6f04c3abec953dfcc2675ad
-#, fuzzy
 msgid ":data:`xref` of the page like :attr:`Page.xref`."
-msgstr ""
+msgstr ":attr:`Page.xref` 와 같은 페이지의 :data:`xref`."
 
 #: ../../document.rst:747 71d4791dad1f4445aa3e3040d731738f
-#, fuzzy
 msgid "New in v1.16.4"
-msgstr ""
+msgstr "v1.16.4에서 새로 추가됨"
 
 #: ../../document.rst:749 b38a2716dd8c424d91d72f843b002a17
 msgid ""
 "A generator for a range of pages. Parameters have the same meaning as in "
 "the built-in function *range()*. Intended for expressions of the form "
 "*\"for page in doc.pages(start, stop, step): ...\"*."
-msgstr ""
+msgstr "페이지 범위에 대한 생성자. 매개변수는 내장 함수 *range()* 와 동일한 의미를 가집니다. *\"for page in doc.pages(start, stop, step): ...\"* 형식의 표현식을 위한 것입니다."
 
 #: ../../document.rst:751 616de960867c4972a74ce8066c419f0d
 msgid ""
 "start iteration with this page number. Default is zero, allowed values "
 "are `-∞ < start < page_count`. While this is negative, :attr:`page_count`"
 " is added **before** starting the iteration."
-msgstr ""
+msgstr "이 페이지 번호로 반복을 시작합니다. 기본값은 0이며, 허용되는 값은 `-∞ < start < page_count` 입니다. 이 값이 음수인 동안 반복을 시작하기 **전에** :attr:`page_count` 가 추가됩니다."
 
 #: ../../document.rst:752 ecb933c801174ce48e94a1c20e8f0c8f
 msgid ""
@@ -2695,13 +2697,13 @@ msgid ""
 "replaced** by the default. Negative values will cyclically emit the pages"
 " in reversed order. As with the built-in *range()*, this is the first "
 "page **not** returned."
-msgstr ""
+msgstr "이 페이지 번호에서 반복을 중지합니다. 기본값은 :attr:`page_count` 이며, 가능한 값은 `-∞ < stop <= page_count` 입니다. 더 큰 값은 기본값으로 **조용히 대체됩니다**. 음수 값은 역순으로 페이지를 순환적으로 생성합니다. 내장 *range()* 와 마찬가지로 이것은 **반환되지 않는** 첫 번째 페이지입니다."
 
 #: ../../document.rst:753 b9ce7f24cc314a7384140aaf41765dcd
 msgid ""
 "stepping value. Defaults are 1 if start < stop and -1 if start > stop. "
 "Zero is not allowed."
-msgstr ""
+msgstr "스텝 값. start < stop 이면 기본값은 1이고 start > stop 이면 -1입니다. 0은 허용되지 않습니다."
 
 #: ../../document.rst:755 c8272a49a7154ff28e5cd556509e8b79
 msgid ""
@@ -2715,8 +2717,12 @@ msgid ""
 "following page numbers are emitted: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, "
 "3."
 msgstr ""
-"마지막 페이지부터 시작하여 역순으로 페이지 -- 문서가 10페이지 미만이면 **반복적으로**. 따라서 4페이지 문서의 경우 다음 "
-"페이지 번호가 생성됩니다: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3."
+"문서의 페이지에 대한 생성기 반복자. 몇 가지 예:  * \"doc.pages()\" 는 모든 페이지를 생성합니다. * "
+"\"doc.pages(4, 9, 2)\" 는 페이지 4, 6, 8을 생성합니다. * \"doc.pages(0, None, 2)\" 는 "
+"짝수 번호의 모든 페이지를 생성합니다. * \"doc.pages(-2)\" 는 마지막 두 페이지를 생성합니다. * "
+"\"doc.pages(-1, -1)\" 는 역순으로 모든 페이지를 생성합니다. * \"doc.pages(-1, -10)\" 는 "
+"항상 마지막 페이지부터 시작하여 역순으로 10페이지를 생성합니다 -- 문서가 10페이지 미만이면 **반복적으로**. 따라서 4페이지 "
+"문서의 경우 다음 페이지 번호가 생성됩니다: 3, 2, 1, 0, 3, 2, 1, 0, 3, 2, 1, 0, 3."
 
 #: ../../document.rst:755 a4556cefb645478780d73c0fd90ce03a
 msgid "a generator iterator over the document's pages. Some examples:"
@@ -2798,6 +2804,20 @@ msgid ""
 "doc.insert_pdf(imgpdf)             # insert the image PDF >>> "
 "doc.save(\"allmyimages.pdf\")"
 msgstr ""
+"PDF 파일 이미지를 포함하는 Python *bytes* 객체. 내부적으로 `tobytes(garbage=4, "
+"deflate=True)` 를 사용하여 생성됩니다. :meth:`tobytes` 를 참조하세요. 디스크에 직접 출력하거나 PDF로 "
+"열 수 있습니다. 다음은 몇 가지 예제입니다::  >>> # XPS 파일을 PDF로 변환 >>> xps = "
+"pymupdf.open(\"some.xps\") >>> pdfbytes = xps.convert_to_pdf() >>> >>> # "
+"이렇게 하거나 --> >>> pdf = pymupdf.open(\"pdf\", pdfbytes) >>> "
+"pdf.save(\"some.pdf\") >>> >>> # 또는 이렇게 --> >>> pdfout = "
+"open(\"some.pdf\", \"wb\") >>> pdfout.tobytes(pdfbytes) >>> "
+"pdfout.close()  >>> # 이미지 파일을 PDF 페이지로 복사 >>> # 각 페이지는 이미지 크기를 가집니다 >>> "
+"doc = pymupdf.open()                     # 새 PDF >>> imglist = [ ... 이미지 파일 이름 ...] # "
+"예: 디렉토리 목록 >>> for img in imglist:         imgdoc=pymupdf.open(img)           # "
+"이미지를 문서로 열기         pdfbytes=imgdoc.convert_to_pdf()  # 1페이지 PDF 만들기         "
+"imgpdf=pymupdf.open(\"pdf\", pdfbytes)         "
+"doc.insert_pdf(imgpdf)             # 이미지 PDF 삽입 >>> "
+"doc.save(\"allmyimages.pdf\")"
 
 #: ../../document.rst:780 63c567b2ee504806a11908cc7eda7ddf
 msgid ""
@@ -2995,6 +3015,12 @@ msgid ""
 "('Type', 'Index', 'Size', 'W', 'Root', 'Info', 'ID', 'Length', 'Filter') "
 ">>>"
 msgstr ""
+"객체 :data:`xref` 에 있는 딕셔너리 키의 튜플. 예:  >>> from pprint import pprint >>> import "
+"pymupdf >>> doc=pymupdf.open(\"pymupdf.pdf\") >>> xref = doc.page_xref(0)  # "
+"페이지 0의 xref >>> pprint(doc.xref_get_keys(xref))  # 페이지의 기본 레벨 키 ('Type', "
+"'Contents', 'Resources', 'MediaBox', 'Parent') >>> pprint(doc.xref_get_keys(-1))  # "
+"트레일러의 기본 레벨 키 ('Type', 'Index', 'Size', 'W', 'Root', 'Info', 'ID', 'Length', "
+"'Filter') >>>"
 
 #: ../../document.rst:849 aa7dc5420dc345bf862b4a857d55b1c9
 msgid "a tuple of dictionary keys present in object :data:`xref`. Examples:"
@@ -4432,20 +4458,20 @@ msgstr "v1.18.11에서 새로 추가됨"
 msgid ""
 "PDF only: The same as :meth:`Document.save` but with changed defaults "
 "`deflate=True, garbage=3, use_objstms=1`."
-msgstr ""
+msgstr "PDF 전용: :meth:`Document.save` 와 동일하지만 기본값이 `deflate=True, garbage=3, use_objstms=1` 로 변경되었습니다."
 
 #: ../../document.rst:1340 2c12cc4ba1bf4213b676b7b14fcb2141
 msgid ""
 "PDF only: saves the document incrementally. This is a convenience "
 "abbreviation for ``doc.save(doc.name, incremental=True, "
 "encryption=PDF_ENCRYPT_KEEP)``."
-msgstr ""
+msgstr "PDF 전용: 문서를 증분적으로 저장합니다. ``doc.save(doc.name, incremental=True, encryption=PDF_ENCRYPT_KEEP)`` 의 편의 약어입니다."
 
 #: ../../document.rst:1344 4b41e922b391460dba7ebb7d4c02f035
 msgid ""
 "Saving incrementally may be required if the document contains verified "
 "signatures which would be invalidated by saving to a new file."
-msgstr ""
+msgstr "문서에 검증된 서명이 포함되어 있는 경우 새 파일로 저장하면 무효화되므로 증분 저장이 필요할 수 있습니다."
 
 #: ../../document.rst:1353 bd79b7c8680c4e8191eee4f9cb511e92
 msgid ""
@@ -4455,22 +4481,22 @@ msgid ""
 ":meth:`save`. Chapter :ref:`FAQ` contains an example for using this "
 "method as a pre-processor to `pdfrw "
 "<https://pypi.python.org/pypi/pdfrw/0.3>`_."
-msgstr ""
+msgstr "PDF 전용: 문서의 **현재 콘텐츠** 를 파일 대신 bytes 객체에 씁니다. 명백히 메모리 요구 사항에 주의해야 합니다. 매개변수의 의미는 :meth:`save` 와 정확히 동일합니다. :ref:`FAQ` 장에는 이 메서드를 `pdfrw <https://pypi.python.org/pypi/pdfrw/0.3>`_ 의 전처리기로 사용하는 예제가 포함되어 있습니다."
 
 #: ../../document.rst:1355 55f16e8ab0644d56bc5363e89919a50c
 msgid "*(Changed in v1.16.0)* for extended encryption support."
-msgstr ""
+msgstr "*(v1.16.0에서 변경됨)* 확장된 암호화 지원을 위해."
 
 #: ../../document.rst:1358 9f76330059a5422db75889fdc995f329
 msgid "a bytes object containing the complete document."
-msgstr ""
+msgstr "전체 문서를 포함하는 bytes 객체."
 
 #: ../../document.rst:1362 7dd8b6e2ab094eab8120755191d01969
 msgid ""
 "Search for \"text\" on page number \"pno\". Works exactly like the "
 "corresponding :meth:`Page.search_for`. Any integer `-∞ < pno < "
 "page_count` is acceptable."
-msgstr ""
+msgstr "페이지 번호 \"pno\" 에서 \"text\" 를 검색합니다. 해당 :meth:`Page.search_for` 와 정확히 동일하게 작동합니다. `-∞ < pno < page_count` 범위의 모든 정수가 허용됩니다."
 
 #: ../../document.rst:1380 43082a0a5f124b30970b917bb34650e5
 msgid ""
@@ -4479,53 +4505,52 @@ msgid ""
 "page number *start_at*. Value -1 indicates default values. All pages thus"
 " copied will be rotated as specified. Links, annotations and widgets can "
 "be excluded in the target, see below. All page numbers are 0-based."
-msgstr ""
+msgstr "PDF 전용: PDF 문서 *docsrc* 의 페이지 범위 **[from_page, to_page]** (둘 다 포함)를 현재 문서로 복사합니다. 삽입은 페이지 번호 *start_at* 에서 시작합니다. 값 -1은 기본값을 나타냅니다. 이렇게 복사된 모든 페이지는 지정된 대로 회전됩니다. 링크, 주석 및 위젯은 대상에서 제외할 수 있습니다. 아래를 참조하세요. 모든 페이지 번호는 0 기반입니다."
 
 #: ../../document.rst:1382 de74f0d7ddaa4321ba9b05f7e6782d7b
 msgid ""
 "An opened PDF *Document* which must not be the current document. However,"
 " it may refer to the same underlying file."
-msgstr ""
+msgstr "현재 문서가 아니어야 하는 열린 PDF *Document*. 그러나 동일한 기본 파일을 참조할 수 있습니다."
 
 #: ../../document.rst:1385 5d8c2339c1ed44d3a9fd29b7eac353d5
 msgid "First page number in *docsrc*. Default is zero."
-msgstr ""
+msgstr "*docsrc* 의 첫 번째 페이지 번호. 기본값은 0입니다."
 
 #: ../../document.rst:1387 b6f7dfe8073c4e1e93f59ad9c41b7a79
-#, fuzzy
 msgid "Last page number in *docsrc* to copy. Defaults to last page."
-msgstr ""
+msgstr "복사할 *docsrc* 의 마지막 페이지 번호. 기본값은 마지막 페이지입니다."
 
 #: ../../document.rst:1389 83d52f17fb0643119d37044f7ee4f12d
 msgid ""
 "First copied page, will become page number *start_at* in the target. "
 "Default -1 appends the page range to the end. If zero, the page range "
 "will be inserted before current first page."
-msgstr ""
+msgstr "첫 번째로 복사된 페이지는 대상에서 페이지 번호 *start_at* 이 됩니다. 기본값 -1은 페이지 범위를 끝에 추가합니다. 0이면 페이지 범위가 현재 첫 번째 페이지 앞에 삽입됩니다."
 
 #: ../../document.rst:1391 0ffa16d8a4b94f448bc2d8eefd7285f8
 msgid ""
 "All copied pages will be rotated by the provided value (degrees, integer "
 "multiple of 90)."
-msgstr ""
+msgstr "복사된 모든 페이지는 제공된 값(도, 90의 정수 배수)만큼 회전됩니다."
 
 #: ../../document.rst:1393 a4ca40c2a8a14fe587100c9363d2c340
 msgid ""
 "Choose whether (internal and external) links should be included in the "
 "copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal "
 "links to outside the copied page range are **always excluded**."
-msgstr ""
+msgstr "(내부 및 외부) 링크를 복사본에 포함할지 선택합니다. 기본값은 `True` 입니다. *명명된* 링크(:data:`LINK_NAMED`) 및 복사된 페이지 범위 외부로의 내부 링크는 **항상 제외됩니다**."
 
 #: ../../document.rst:1395 f7a2eb67861840798b4bcdaa41872471
 msgid "choose whether annotations should be included in the copy."
-msgstr ""
+msgstr "주석을 복사본에 포함할지 선택합니다."
 
 #: ../../document.rst:1397 d2e9e86dbc054d8595d70da1e19eb60a
 msgid ""
 "choose whether annotations should be included in the copy. If `True` and "
 "at least one of the source pages contains form fields, the target PDF "
 "will be turned into a Form PDF (if not already being one)."
-msgstr ""
+msgstr "주석을 복사본에 포함할지 선택합니다. `True` 이고 소스 페이지 중 하나 이상에 양식 필드가 포함되어 있으면 대상 PDF가 Form PDF로 전환됩니다(아직 그렇지 않은 경우)."
 
 #: ../../document.rst:1399 a148422f862e4b318976a18499787dd1
 msgid ""
@@ -4547,7 +4572,7 @@ msgstr ""
 msgid ""
 "*(New in version 1.25.5)* Choose how to handle duplicate root field names"
 " in the source pages. This parameter is ignored if `widgets=False`."
-msgstr ""
+msgstr "*(버전 1.25.5에서 새로 추가됨)* 소스 페이지에서 중복된 루트 필드 이름을 처리하는 방법을 선택합니다. `widgets=False` 이면 이 매개변수는 무시됩니다."
 
 #: ../../document.rst:1401 529b0cbb3d354c4ca55021b991023c34
 msgid ""
@@ -4555,7 +4580,7 @@ msgid ""
 " source root fields which have a duplicate in the target. For instance, "
 "if \"name\" already occurs in the target, the source widget's name will "
 "be changed to \"name [text]\" with a suitably chosen string \"text\"."
-msgstr ""
+msgstr "기본값은 ``False`` 이며, 대상에 중복이 있는 소스 루트 필드의 이름에 통합 문자열을 추가합니다. 예를 들어 \"name\" 이 이미 대상에 있으면 소스 위젯의 이름이 적절히 선택된 문자열 \"text\" 와 함께 \"name [text]\" 로 변경됩니다."
 
 #: ../../document.rst:1403 ff97b1ac50a4459b81ac03121569ae66
 msgid ""
@@ -4565,14 +4590,14 @@ msgid ""
 "into instances of the \"same\" widget: if e.g. one of the kids is "
 "changed, then all its instances will automatically inherit this change --"
 " no matter on which page they happen to be displayed."
-msgstr ""
+msgstr "``True`` 인 경우 소스와 대상에 중복 이름이 있는 루트 필드는 \"Parent\" 객체의 소위 \"Kids\" 로 변환됩니다(PDF 배열에 모든 자식 위젯을 나열). 이것은 효과적으로 이러한 자식을 \"동일한\" 위젯의 인스턴스로 만듭니다: 예를 들어 자식 중 하나가 변경되면 모든 인스턴스가 자동으로 이 변경을 상속받습니다 -- 어떤 페이지에 표시되든 상관없이."
 
 #: ../../document.rst:1405 952c23aab20d49af9f19214ea9c24063
 msgid ""
 "*(new in v1.17.7)* specify an interval size greater zero to see progress "
 "messages on `sys.stdout`. After each interval, a message like `Inserted "
 "30 of 47 pages.` will be printed."
-msgstr ""
+msgstr "*(v1.17.7에서 새로 추가됨)* `sys.stdout` 에 진행 메시지를 보려면 0보다 큰 간격 크기를 지정하세요. 각 간격 후에 `Inserted 30 of 47 pages.` 와 같은 메시지가 인쇄됩니다."
 
 #: ../../document.rst:1407 2ff6cf0ddbbf4801a6e1c4b587de1a46
 msgid ""
@@ -4857,22 +4882,19 @@ msgstr ""
 "제외한 모든 페이지를 삭제** 하면 훨씬 적은 시간이 필요합니다."
 
 #: ../../document.rst:1527 583a7be7f7604564b5aea9150f5f1a47
-#, fuzzy
 msgid "PDF only: Copy a page reference within the document."
-msgstr ""
+msgstr "PDF 전용: 문서 내에서 페이지 참조를 복사합니다."
 
 #: ../../document.rst:1529 796aa36a17194091986df564ff5cd031
-#, fuzzy
 msgid "the page to be copied. Must be in range `0 <= pno < page_count`."
-msgstr ""
+msgstr "복사할 페이지. `0 <= pno < page_count` 범위에 있어야 합니다."
 
 #: ../../document.rst:1531 ../../document.rst:1543
 #: 35e41025040645fdb1331ee178e2d324 715bba4c474e466bafbb9855293c69d5
-#, fuzzy
 msgid ""
 "the page number in front of which to copy. The default inserts **after** "
 "the last page."
-msgstr ""
+msgstr "복사할 페이지 앞의 페이지 번호. 기본값은 마지막 페이지 **뒤에** 삽입합니다."
 
 #: ../../document.rst:1533 f3183958d7134dc7a00e4bfe56a78abb
 msgid ""
@@ -4880,56 +4902,50 @@ msgid ""
 "page object, all copied pages will have identical attribute values, "
 "including the :attr:`Page.xref`. This implies that any changes to one of "
 "these copies will appear on all of them."
-msgstr ""
+msgstr "페이지 객체에 대한 새 **참조** 만 생성됩니다 -- 새 페이지 객체가 아닙니다. 모든 복사된 페이지는 :attr:`Page.xref` 를 포함하여 동일한 속성 값을 가집니다. 이것은 이러한 복사본 중 하나에 대한 변경 사항이 모두에 나타남을 의미합니다."
 
 #: ../../document.rst:1537 4f81f7087616448e9a2079171720cc5e
-#, fuzzy
 msgid "New in v1.14.17"
-msgstr ""
+msgstr "v1.14.17에서 새로 추가됨"
 
 #: ../../document.rst:1539 18edd22eb7b54b58973f27488646277d
-#, fuzzy
 msgid "PDF only: Make a full copy (duplicate) of a page."
-msgstr ""
+msgstr "PDF 전용: 페이지의 전체 복사본(중복)을 만듭니다."
 
 #: ../../document.rst:1541 2be6a8a3c6254c419fffe87ecf3bea2e
-#, fuzzy
 msgid "the page to be duplicated. Must be in range `0 <= pno < page_count`."
-msgstr ""
+msgstr "중복할 페이지. `0 <= pno < page_count` 범위에 있어야 합니다."
 
 #: ../../document.rst:1547 838d6b92f708488bb71ffb9c00ddf20e
 msgid ""
 "In contrast to :meth:`copy_page`, this method creates a new page object "
 "(with a new :data:`xref`), which can be changed independently from the "
 "original."
-msgstr ""
+msgstr ":meth:`copy_page` 와 달리 이 메서드는 원본과 독립적으로 변경할 수 있는 새 페이지 객체(새 :data:`xref` 포함)를 생성합니다."
 
 #: ../../document.rst:1549 bf6930ee99a14f56af7c4035128d0a3a
 msgid ""
 "Any Popup and \"IRT\" (\"in response to\") annotations are **not copied**"
 " to avoid potentially incorrect situations."
-msgstr ""
+msgstr "잠재적으로 잘못된 상황을 피하기 위해 모든 Popup 및 \"IRT\" (\"in response to\") 주석은 **복사되지 않습니다**."
 
 #: ../../document.rst:1553 03d410f070af4c8ab7946dea0b01ec41
 msgid "PDF only: Move (copy and then delete original) a page within the document."
-msgstr ""
+msgstr "PDF 전용: 문서 내에서 페이지를 이동합니다(복사한 다음 원본 삭제)."
 
 #: ../../document.rst:1555 4d77ecb443e649f9940a25cfef2a0225
-#, fuzzy
 msgid "the page to be moved. Must be in range `0 <= pno < page_count`."
-msgstr ""
+msgstr "이동할 페이지. `0 <= pno < page_count` 범위에 있어야 합니다."
 
 #: ../../document.rst:1557 33c20380a2314d1fbb336bedbe0804b3
-#, fuzzy
 msgid ""
 "the page number in front of which to insert the moved page. The default "
 "moves **after** the last page."
-msgstr ""
+msgstr "이동된 페이지를 삽입할 페이지 번호 앞. 기본값은 마지막 페이지 **뒤로** 이동합니다."
 
 #: ../../document.rst:1562 e1e656e24f2d412588299042a89712e5
-#, fuzzy
 msgid "New in v1.17.4"
-msgstr ""
+msgstr "v1.17.4에서 새로 추가됨"
 
 #: ../../document.rst:1564 2c50544aa3ca445cb7e7196d1afe9710
 msgid ""
@@ -4938,30 +4954,30 @@ msgid ""
 "and appearance dictionaries for all widget annotations in the document "
 "... Default value: false.\"* This may help controlling the behavior of "
 "some readers / viewers."
-msgstr ""
+msgstr "PDF 전용: Form PDF의 */NeedAppearances* 속성을 가져오거나 설정합니다. 인용: *\"(선택적) 문서의 모든 위젯 주석에 대한 appearance 스트림 및 appearance 딕셔너리를 구성할지 여부를 지정하는 플래그 ... 기본값: false.\"* 이것은 일부 리더/뷰어의 동작을 제어하는 데 도움이 될 수 있습니다."
 
 #: ../../document.rst:1566 b1652fd4ef124c6a9173defa2306862b
 msgid ""
 "set the property to this value. If omitted or `None`, inquire the current"
 " value."
-msgstr ""
+msgstr "속성을 이 값으로 설정합니다. 생략하거나 `None` 이면 현재 값을 조회합니다."
 
 #: ../../document.rst:1569 10db7e389c3443749906de632a038e80
 msgid ""
 "* None: not a Form PDF, or property not defined. * True / False: the "
 "value of the property (either just set or existing for inquiries). Has no"
 " effect if no Form PDF."
-msgstr ""
+msgstr "* None: Form PDF가 아니거나 속성이 정의되지 않음. * True / False: 속성의 값(방금 설정되었거나 조회를 위해 존재함). Form PDF가 없으면 효과가 없습니다."
 
 #: ../../document.rst:1570 20765c4d680e450db6d65401c2d563be
 msgid "None: not a Form PDF, or property not defined."
-msgstr ""
+msgstr "None: Form PDF가 아니거나 속성이 정의되지 않음."
 
 #: ../../document.rst:1571 34e43b74a8f24e9bbe54d44cf4d28ddf
 msgid ""
 "True / False: the value of the property (either just set or existing for "
 "inquiries). Has no effect if no Form PDF."
-msgstr ""
+msgstr "True / False: 속성의 값(방금 설정되었거나 조회를 위해 존재함). Form PDF가 없으면 효과가 없습니다."
 
 #: ../../document.rst:1577 cf26e7bb7e224490bc8cd693fdc457f9
 msgid ""
@@ -4969,7 +4985,7 @@ msgid ""
 "an optional PDF property: if not present (return value -1), no "
 "conclusions can be drawn -- the PDF creator may just not have bothered "
 "using it."
-msgstr ""
+msgstr "PDF 전용: 문서에 서명 필드가 포함되어 있는지 반환합니다. 이것은 선택적 PDF 속성입니다: 없으면(반환 값 -1) 결론을 내릴 수 없습니다 -- PDF 작성자가 사용하지 않았을 수 있습니다."
 
 #: ../../document.rst:1580 6cc1ff6a8526438793161934c9c4b4e9
 msgid ""
@@ -4978,72 +4994,70 @@ msgid ""
 "signatures that may be invalidated if the file is saved (written) in a "
 "way that alters its previous contents, as opposed to an incremental "
 "update."
-msgstr ""
+msgstr "* -1: Form PDF가 아님 / 기록된 서명 필드 없음 / *SigFlags* 없음. * 1: 최소한 하나의 서명 필드가 존재함. * 3: 증분 업데이트와 달리 이전 콘텐츠를 변경하는 방식으로 파일이 저장(쓰기)되면 무효화될 수 있는 서명을 포함함."
 
 #: ../../document.rst:1581 49e77b466a9c4b8cae591da940e7bb80
 msgid "-1: not a Form PDF / no signature fields recorded / no *SigFlags* found."
-msgstr ""
+msgstr "-1: Form PDF가 아님 / 기록된 서명 필드 없음 / *SigFlags* 없음."
 
 #: ../../document.rst:1582 3c2d9c0c66ac4186aabeb9505ef62861
 msgid "1: at least one signature field exists."
-msgstr ""
+msgstr "1: 최소한 하나의 서명 필드가 존재함."
 
 #: ../../document.rst:1583 eba9fbffaa5f4a66baada0b97bab393c
 msgid ""
 "3:  contains signatures that may be invalidated if the file is saved "
 "(written) in a way that alters its previous contents, as opposed to an "
 "incremental update."
-msgstr ""
+msgstr "3: 증분 업데이트와 달리 이전 콘텐츠를 변경하는 방식으로 파일이 저장(쓰기)되면 무효화될 수 있는 서명을 포함함."
 
 #: ../../document.rst:1592 4c7b6e1f922e4d48b1e2e0924cfcfbfb
 msgid ""
 "Changed in v1.14.16: The sequence of positional parameters \"name\" and "
 "\"buffer\" has been changed to comply with the call pattern of other "
 "functions."
-msgstr ""
+msgstr "v1.14.16에서 변경됨: 위치 매개변수 \"name\" 및 \"buffer\" 의 순서가 다른 함수의 호출 패턴을 준수하도록 변경되었습니다."
 
 #: ../../document.rst:1594 7bdd76ccfaa846f285fb18022d6c352b
 msgid ""
 "PDF only: Embed a new file. All string parameters except the name may be "
 "unicode (in previous versions, only ASCII worked correctly). File "
 "contents will be compressed (where beneficial)."
-msgstr ""
+msgstr "PDF 전용: 새 파일을 임베드합니다. 이름을 제외한 모든 문자열 매개변수는 유니코드일 수 있습니다(이전 버전에서는 ASCII만 올바르게 작동함). 파일 콘텐츠는 압축됩니다(유익한 경우)."
 
 #: ../../document.rst:1596 23a4029a12bf4c439ee7db0580ddba4b
 msgid "entry identifier, **must not already exist**."
-msgstr ""
+msgstr "항목 식별자, **이미 존재하지 않아야 합니다**."
 
 #: ../../document.rst:1597 617e80916a94448494c2f6a114b89372
-#, fuzzy
 msgid ""
 "file contents.  *(Changed in v1.14.13)* *io.BytesIO* is now also "
 "supported."
 msgstr ""
+"파일 콘텐츠.  *(v1.14.13에서 변경됨)* *io.BytesIO*도 이제 지원됩니다."
 
 #: ../../document.rst:1597 3a52550a9c2e4f309e3ccbc749fc6821
-#, fuzzy
 msgid "file contents."
-msgstr ""
+msgstr "파일 콘텐츠."
 
 #: ../../document.rst:1599 ../../document.rst:1673
 #: 3190704368d346e78d62a922fea40f03 80b30821875b4646a520a962f6d80271
-#, fuzzy
 msgid "*(Changed in v1.14.13)* *io.BytesIO* is now also supported."
-msgstr ""
+msgstr "*(v1.14.13에서 변경됨)* *io.BytesIO*도 이제 지원됩니다."
 
 #: ../../document.rst:1601 df2b2260b10b42a7838460af69e70ce1
 msgid "optional filename. Documentation only, will be set to *name* if `None`."
-msgstr ""
+msgstr "선택적 파일 이름. 문서화 전용이며, `None` 이면 *name* 으로 설정됩니다."
 
 #: ../../document.rst:1602 7e6e3e037eac466f85a5b54dfc900de1
 msgid ""
 "optional unicode filename. Documentation only, will be set to *filename* "
 "if `None`."
-msgstr ""
+msgstr "선택적 유니코드 파일 이름. 문서화 전용이며, `None` 이면 *filename* 으로 설정됩니다."
 
 #: ../../document.rst:1603 ec21943371c34b05a9a07bec862f7348
 msgid "optional description. Documentation only, will be set to *name* if `None`."
-msgstr ""
+msgstr "선택적 설명. 문서화 전용이며, `None` 이면 *name* 으로 설정됩니다."
 
 #: ../../document.rst:1606 5c90aa58601f4e04b3a8163fe1b2379a
 msgid ""
@@ -5051,18 +5065,17 @@ msgid ""
 "inserted file. In addition, the file object now will be automatically "
 "given the PDF keys `/CreationDate` and `/ModDate` based on the current "
 "date-time."
-msgstr ""
+msgstr "*(v1.18.13에서 변경됨)* 이 메서드는 이제 삽입된 파일의 :data:`xref` 를 반환합니다. 또한 파일 객체는 이제 현재 날짜-시간을 기반으로 PDF 키 `/CreationDate` 및 `/ModDate` 가 자동으로 지정됩니다."
 
 #: ../../document.rst:1611 f6b1d2e3c0d540b1b7de75e7fadb748e
 msgid ""
 "Changed in v1.14.16: This is now a method. In previous versions, this was"
 " a property."
-msgstr ""
+msgstr "v1.14.16에서 변경됨: 이것은 이제 메서드입니다. 이전 버전에서는 속성이었습니다."
 
 #: ../../document.rst:1613 8a7b9828613e4ae4990e91a063c9ee80
-#, fuzzy
 msgid "PDF only: Return the number of embedded files."
-msgstr ""
+msgstr "PDF 전용: 임베디드 파일 수를 반환합니다."
 
 #: ../../document.rst:1617 f19dbbc33b934e2896ad5cc8de4d62b0
 msgid ""
@@ -5574,14 +5587,12 @@ msgid "``width`` (*int*) image width"
 msgstr "``width`` (*int*) 이미지 너비"
 
 #: ../../document.rst:1810 f7b7383e8f814a7194b652803c9845a2
-#, fuzzy
 msgid "``height`` (*int*) image height"
-msgstr ""
+msgstr "``height`` (*int*) 이미지 높이"
 
 #: ../../document.rst:1811 9e360b497ea1447daa86fdd4699adf13
-#, fuzzy
 msgid "*colorspace* (*int*) the image's *colorspace.n* number."
-msgstr "``xref`` (*int*)는 이미지 객체 번호입니다"
+msgstr "*colorspace* (*int*) 이미지의 *colorspace.n* 번호."
 
 #: ../../document.rst:1812 abc5b215c0e6488e8744dcacf7a1c90e
 msgid "*cs-name* (*str*) the image's *colorspace.name*."
@@ -5600,9 +5611,8 @@ msgid ""
 msgstr ""
 
 #: ../../document.rst:1815 acf6f71949524192988704580634da36
-#, fuzzy
 msgid "*image* (*bytes*) image data, usable as image file content"
-msgstr ""
+msgstr "*image* (*bytes*) 이미지 파일 콘텐츠로 사용 가능한 이미지 데이터"
 
 #: ../../document.rst:1827 446e0551034642d5ab3cb8ab7b4ad447
 msgid ""
@@ -5626,9 +5636,8 @@ msgid ""
 msgstr ""
 
 #: ../../document.rst:1856 e236c029a3ea49058156a22bdd86f213
-#, fuzzy
 msgid "Changed in v1.19.4: return a dictionary if `named == True`."
-msgstr ""
+msgstr "v1.19.4에서 변경됨: `named == True`이면 딕셔너리를 반환합니다."
 
 #: ../../document.rst:1858 20899e634db84dc9930c742969c15306
 msgid ""
@@ -5692,9 +5701,8 @@ msgid ""
 msgstr ""
 
 #: ../../document.rst:1870 a82028b2f0544a189cb8c0f7b5c3cc92
-#, fuzzy
 msgid "Example:"
-msgstr "예제::"
+msgstr "예제:"
 
 #: ../../document.rst:1879 7435e3ad508d4986a5f8845543e7e0df
 msgid ""
@@ -5718,9 +5726,8 @@ msgid ""
 msgstr ""
 
 #: ../../document.rst:1890 cfbc337f74774c9e873b301a3cadb5af
-#, fuzzy
 msgid "PDF only: Return the :data:`xref` of the document's XML metadata."
-msgstr ""
+msgstr "PDF 전용: 문서의 XML 메타데이터의 :data:`xref`를 반환합니다."
 
 #: ../../document.rst:1899 0e955bcdf14d4dbcb8657f98cd3631f4
 msgid ""

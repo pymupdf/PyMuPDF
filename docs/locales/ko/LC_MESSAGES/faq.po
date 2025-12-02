@@ -40,9 +40,8 @@ msgid "FAQ"
 msgstr "자주 묻는 질문"
 
 #: ../../faq.rst:9 e705c9c730c74868ad8d1f1495bccfb2
-#, fuzzy
 msgid "A collection of recipes in “How-To” format for using PyMuPDF."
-msgstr "PyMuPDF 사용을 위한 \"사용 방법\" 형식의 레시피 모음입니다."
+msgstr "PyMuPDF 사용을 위한 “사용 방법” 형식의 레시피 모음입니다."
 
 #: ../../faq.rst:12 76435ac8e35648f08fd41ecd9c4cf967
 msgid "Please see:"

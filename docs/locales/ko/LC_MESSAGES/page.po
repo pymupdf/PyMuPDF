@@ -2092,6 +2092,7 @@ msgid ""
 " 3. Separate values can be specified instead for the dimensions, using "
 "`snap_x_tolerance` and `snap_y_tolerance`."
 msgstr ""
+"y 값의 차이가 이 값 이하인 두 개의 수평선은 하나로 **스냅** 됩니다. 수직선도 마찬가지입니다. 기본값은 3입니다. 이 값 대신 `snap_x_tolerance` 및 `snap_y_tolerance` 를 사용하여 차원별로 별도의 값을 지정할 수 있습니다."
 
 #: ../../page.rst:481 1bce671a9bde42b3bcb301e9dc7929e7
 msgid ""
@@ -2100,12 +2101,13 @@ msgid ""
 "this value, separate values can be specified for the dimensions using "
 "`join_x_tolerance` and `join_y_tolerance`."
 msgstr ""
+"끝점과 시작점의 차이가 이 값(포인트 단위) 이하인 경우 두 선이 하나로 **결합** 됩니다. 기본값은 3입니다. 이 값 대신 `join_x_tolerance` 및 `join_y_tolerance` 를 사용하여 차원별로 별도의 값을 지정할 수 있습니다."
 
 #: ../../page.rst:483 00e7c337bf764aa5a2eae76cdd16ae4a
 msgid ""
 "Ignore a line if its length does not exceed this value (points). Default "
 "is 3."
-msgstr ""
+msgstr "길이가 이 값(포인트 단위)을 초과하지 않으면 선을 무시합니다. 기본값은 3입니다."
 
 #: ../../page.rst:485 0be2257abf46430e99630f4f4a04f230
 msgid ""
@@ -2114,6 +2116,7 @@ msgid ""
 "of this value, separate values can be specified for the dimensions using "
 "`intersection_x_tolerance` and `intersection_y_tolerance`."
 msgstr ""
+"선을 셀 경계로 결합할 때 직교하는 선은 교차하는 것으로 간주되려면 이 값(포인트 단위) 이내에 있어야 합니다. 기본값은 3입니다. 이 값 대신 `intersection_x_tolerance` 및 `intersection_y_tolerance` 를 사용하여 차원별로 별도의 값을 지정할 수 있습니다."
 
 #: ../../page.rst:487 dedd15f25c9f481997ff9451f0f5eaf6
 msgid ""
@@ -2122,6 +2125,7 @@ msgid ""
 "separate values can be specified for the dimensions using "
 "`text_x_tolerance` and `text_y_tolerance`."
 msgstr ""
+"문자가 단어로 결합되는 것은 거리가 이 값(포인트 단위) 이하인 경우에만입니다. 기본값은 3입니다. 이 값 대신 `text_x_tolerance` 및 `text_y_tolerance` 를 사용하여 차원별로 별도의 값을 지정할 수 있습니다."
 
 #: ../../page.rst:489 f08fd2e9d00f4dac93ce2b4c53ec8d83
 msgid ""
@@ -2135,6 +2139,7 @@ msgid ""
 "minimum length and containment in the `clip` rectangle. Similarly, lines "
 "not parallel to any of the coordinate axes will be ignored."
 msgstr ""
+"\"lines\"(즉, :data:`point_like` 객체 쌍)의 리스트를 **추가** \"가상\" 벡터 그래픽으로 지정합니다. 이러한 선은 테이블 및/또는 셀 감지에 도움이 될 수 있으며 감지 전략에는 영향을 주지 않습니다. 특히 `horizontal_lines` 및 `vertical_lines` 매개변수와 달리 다른 방법으로 행이나 열을 감지하는 것을 방지하지 않습니다. 이러한 선은 결합, 스냅, 교차, 최소 길이 및 `clip` 사각형 내 포함 측면에서 \"실제\" 벡터 그래픽과 정확히 동일하게 처리됩니다. 마찬가지로 좌표축 중 어느 것과도 평행하지 않은 선은 무시됩니다."
 
 #: ../../page.rst:491 c0c00b0e2c6a4e68bc1e1d28b6fd62de
 msgid ""
@@ -2147,6 +2152,7 @@ msgid ""
 "like \"real\" vector graphics in terms of joining, snapping, "
 "intersecting, minimum length and containment in the `clip` rectangle."
 msgstr ""
+"사각형(:data:`rect_like` 객체)의 리스트를 **추가** \"가상\" 벡터 그래픽으로 지정합니다. 이러한 사각형은 테이블 및/또는 셀 감지에 도움이 될 수 있으며 감지 전략에는 영향을 주지 않습니다. 특히 `horizontal_lines` 및 `vertical_lines` 매개변수와 달리 다른 방법으로 행이나 열을 감지하는 것을 방지하지 않습니다. 이러한 사각형은 결합, 스냅, 교차, 최소 길이 및 `clip` 사각형 내 포함 측면에서 \"실제\" 벡터 그래픽과 정확히 동일하게 처리됩니다."
 
 #: ../../page.rst:493 af5ac1f1b1ad4b87b5c8e3c21cea5682
 msgid ""
@@ -2155,6 +2161,7 @@ msgid ""
 "to extract vector graphics itself. This is useful if the vector graphics "
 "are already available. This can save execution time significantly."
 msgstr ""
+":meth:`Page.get_drawings` 에서 반환되는 형식의 벡터 그래픽 리스트. 이 매개변수를 사용하면 메서드가 벡터 그래픽을 자체적으로 추출하지 않습니다. 벡터 그래픽이 이미 사용 가능한 경우 유용합니다. 이것은 실행 시간을 크게 절약할 수 있습니다."
 
 #: ../../page.rst:497 6a7b22cafaa94fd1903b1029979996b7
 msgid ""
@@ -3007,7 +3014,6 @@ msgid ""
 msgstr "텍스트는 임의의 언어를 포함할 수 있습니다 -- **오른쪽에서 왼쪽** 언어를 포함하여."
 
 #: ../../page.rst:820 cbe7429b65de417da4c1b1007c31de84
-#, fuzzy
 msgid ""
 "Scripts like `Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ and"
 " several others in Asia have a highly complex system of ligatures, where "
@@ -3015,6 +3021,7 @@ msgid ""
 "software package `HarfBuzz <https://harfbuzz.github.io/>`_ , to deal with"
 " these things and produce correct output."
 msgstr ""
+"`Devanagari <https://en.wikipedia.org/wiki/Devanagari>`_ 및 아시아의 여러 다른 스크립트는 두 개 이상의 유니코드가 함께 하나의 글리프를 생성하는 매우 복잡한 합자 시스템을 가지고 있습니다. Story는 이러한 것들을 처리하고 올바른 출력을 생성하기 위해 소프트웨어 패키지 `HarfBuzz <https://harfbuzz.github.io/>`_ 를 사용합니다."
 
 #: ../../page.rst:821 07bf7ced92754725909626e75183a002
 msgid ""
@@ -4115,7 +4122,7 @@ msgstr ""
 
 #: ../../page.rst:1443 8a3314318f1347968fec4dd7e161108f
 msgid "*str, list, dict*"
-msgstr ""
+msgstr "*str, list, dict*"
 
 #: ../../page.rst:1444 2fda8f36df9a4f43b757eb6b210d6ab2
 msgid ""
@@ -6189,15 +6196,15 @@ msgstr "페이지의 첫 번째 :ref:`Widget` 를 포함합니다(또는 ``None`
 
 #: ../../page.rst:2268 f1f4e48ddb894011aaba58e324077d17
 msgid "The page number."
-msgstr ""
+msgstr "페이지 번호."
 
 #: ../../page.rst:2274 598a6f8e2b214784be2c4567bd665784
 msgid "The owning document object."
-msgstr ""
+msgstr "소유 문서 객체."
 
 #: ../../page.rst:2276 fc47bb5d9a384a25988d0005179384a0
 msgid ":ref:`Document`"
-msgstr ""
+msgstr ":ref:`Document`"
 
 #: ../../page.rst:2281 903928ce2b2d4d85b69ddd0c2953a6cd
 msgid ""
@@ -6207,17 +6214,18 @@ msgstr ""
 
 #: ../../page.rst:2287 db6b044e10064b77a399ca9bf5685897
 msgid "The page's PDF :data:`xref`. Zero if not a PDF."
-msgstr ""
+msgstr "페이지의 PDF :data:`xref`. PDF가 아니면 0입니다."
 
 #: ../../page.rst:2296 65a9c883c60a4f44bbd31db4bb74e649
 msgid "Description of *get_links()* Entries"
-msgstr ""
+msgstr "*get_links()* 엔트리 설명"
 
 #: ../../page.rst:2297 b1b03f14b2234cd59a58aa04d3f31962
 msgid ""
 "Each entry of the :meth:`Page.get_links` list is a dictionary with the "
 "following keys:"
 msgstr ""
+":meth:`Page.get_links` 리스트의 각 엔트리는 다음 키를 가진 딕셔너리입니다:"
 
 #: ../../page.rst:2299 345a52ebe41749919aa7099360b3523d
 msgid ""
@@ -6225,6 +6233,7 @@ msgid ""
 "of *LINK_NONE*, *LINK_GOTO*, *LINK_GOTOR*, *LINK_LAUNCH*, or *LINK_URI*. "
 "For values and meaning of these names refer to :ref:`linkDest Kinds`."
 msgstr ""
+"*kind*: (필수) 링크 종류를 나타내는 정수. 이것은 *LINK_NONE*, *LINK_GOTO*, *LINK_GOTOR*, *LINK_LAUNCH* 또는 *LINK_URI* 중 하나입니다. 이러한 이름의 값과 의미는 :ref:`linkDest Kinds` 를 참조하세요."
 
 #: ../../page.rst:2301 8482a0ea9b60495a97834603a7ea0896
 msgid ""
@@ -6232,12 +6241,14 @@ msgid ""
 " the page's visible representation (where the cursor changes to a hand "
 "image, usually)."
 msgstr ""
+"*from*: (필수) 페이지의 보이는 표현에서 \"핫 스팟\" 위치를 설명하는 :ref:`Rect` (일반적으로 커서가 손 이미지로 변경되는 위치)."
 
 #: ../../page.rst:2303 67493fe07fbb4e2b991f920c746ec961
 msgid ""
 "*page*:  a 0-based integer indicating the destination page. Required for "
 "*LINK_GOTO* and *LINK_GOTOR*, else ignored."
 msgstr ""
+"*page*: 대상 페이지를 나타내는 0 기반 정수. *LINK_GOTO* 및 *LINK_GOTOR* 에 필요하며, 그렇지 않으면 무시됩니다."
 
 #: ../../page.rst:2305 80ba8c8c6a844419bb7b03b9b096f0cc
 msgid ""
@@ -6247,12 +6258,14 @@ msgid ""
 "required and the name must be defined in the PDF in order for this to "
 "work. Required for *LINK_GOTO* and *LINK_GOTOR*, else ignored."
 msgstr ""
+"*to*: 제공된 페이지의 대상 위치를 지정하는 *pymupdf.Point* (기본값은 *pymupdf.Point(0, 0)*) 또는 기호(간접) 이름. 간접 이름이 지정되면 *page = -1* 이 필요하며 이 이름이 작동하려면 PDF에 정의되어 있어야 합니다. *LINK_GOTO* 및 *LINK_GOTOR* 에 필요하며, 그렇지 않으면 무시됩니다."
 
 #: ../../page.rst:2307 e3a21fa1d4b54847a47036cdb423d96f
 msgid ""
 "*file*: a string specifying the destination file. Required for "
 "*LINK_GOTOR* and *LINK_LAUNCH*, else ignored."
 msgstr ""
+"*file*: 대상 파일을 지정하는 문자열. *LINK_GOTOR* 및 *LINK_LAUNCH* 에 필요하며, 그렇지 않으면 무시됩니다."
 
 #: ../../page.rst:2309 f1058b6ba67e46c2ad73d8fc9842241f
 msgid ""
@@ -6264,6 +6277,7 @@ msgid ""
 " and come to unwanted / unexpected conclusions about the intended URL "
 "type."
 msgstr ""
+"*uri*: 대상 인터넷 리소스를 지정하는 문자열. *LINK_URI* 에 필요하며, 그렇지 않으면 무시됩니다. URL의 하위 타입을 분류하는 명확한 하위 문자열로 이 문자열을 시작해야 합니다. 예: `\"http://\"`, `\"https://\"`, `\"file://\"`, `\"ftp://\"`, `\"mailto:\"` 등. 그렇지 않으면 브라우저가 텍스트를 해석하려고 시도하고 의도한 URL 타입에 대해 원하지 않거나 예상치 못한 결론에 도달할 수 있습니다."
 
 #: ../../page.rst:2311 fb92e47c1bcc495899578761acc32d09
 msgid ""
@@ -6274,22 +6288,25 @@ msgid ""
 "**any** of the links is not supported by MuPDF - see "
 ":ref:`notes_on_supporting_links`."
 msgstr ""
+":data:`xref`: 링크 객체의 PDF :data:`xref` 를 지정하는 정수. 이 항목을 어떤 방식으로도 변경하지 마세요. 링크 삭제 및 업데이트에 필요하며, 그렇지 않으면 무시됩니다. 비PDF 문서의 경우 이 항목은 *-1* 을 포함합니다. MuPDF에서 지원하지 않는 링크가 **하나라도** 있으면 *get_links()* 리스트의 **모든** 엔트리에 대해 *-1* 입니다 - :ref:`notes_on_supporting_links` 를 참조하세요."
 
 #: ../../page.rst:2316 5433fcbb259a455c9591df3957b3a3f8
 msgid "Notes on Supporting Links"
-msgstr ""
+msgstr "링크 지원에 대한 참고사항"
 
 #: ../../page.rst:2317 7408ebdf3c5c461f90ea45dc48374e34
 msgid ""
 "MuPDF's support for links has changed in **v1.10a**. These changes affect"
 " link types :data:`LINK_GOTO` and :data:`LINK_GOTOR`."
 msgstr ""
+"MuPDF의 링크 지원이 **v1.10a** 에서 변경되었습니다. 이러한 변경 사항은 링크 타입 :data:`LINK_GOTO` 및 :data:`LINK_GOTOR` 에 영향을 줍니다."
 
 #: ../../page.rst:2320 64771c6af29e451a9594551d29b5f876
 msgid ""
 "Reading (pertains to method *get_links()* and the *first_link* property "
 "chain)"
 msgstr ""
+"읽기 (*get_links()* 메서드 및 *first_link* 속성 체인과 관련)"
 
 #: ../../page.rst:2322 d23361bc3a824ef0bdd6ab8d1998480b
 msgid ""
@@ -6298,6 +6315,7 @@ msgid ""
 "destination details may either be given as page number (eventually "
 "including position information), or as an indirect destination."
 msgstr ""
+"MuPDF가 다른 파일에 대한 링크를 감지하면 *LINK_GOTOR* 또는 *LINK_LAUNCH* 링크 종류를 제공합니다. *LINK_GOTOR* 의 경우 대상 세부 정보는 페이지 번호(최종적으로 위치 정보 포함) 또는 간접 대상으로 제공될 수 있습니다."
 
 #: ../../page.rst:2324 5cc576ca82454037a175c38f660477ee
 msgid ""
@@ -6305,6 +6323,7 @@ msgid ""
 "-1*, and *link.dest.dest* will contain this name. The dictionaries in the"
 " *get_links()* list will contain this information as the *to* value."
 msgstr ""
+"간접 대상이 제공되면 이것은 *page = -1* 로 표시되며, *link.dest.dest* 에 이 이름이 포함됩니다. *get_links()* 리스트의 딕셔너리는 이 정보를 *to* 값으로 포함합니다."
 
 #: ../../page.rst:2326 0a44a885ed1c4110bb98fa9f94783d3a
 msgid ""
@@ -6314,10 +6333,11 @@ msgid ""
 "returned for internal links**, and undefined destinations will cause the "
 "link to be ignored."
 msgstr ""
+"**내부 링크는 항상** *LINK_GOTO* 종류입니다. 내부 링크가 간접 대상을 지정하면 **항상 해결** 되며 결과적인 직접 대상이 반환됩니다. 이름은 **내부 링크에 대해 절대 반환되지 않으며**, 정의되지 않은 대상은 링크가 무시되도록 합니다."
 
 #: ../../page.rst:2329 364ae5f61f534e0cb85fe46e668d9750
 msgid "Writing"
-msgstr ""
+msgstr "작성"
 
 #: ../../page.rst:2331 b3e125859d70416e8b18693ae72bc7c2
 msgid ""
@@ -6326,6 +6346,7 @@ msgid ""
 "indirect destinations for *LINK_GOTOR* **and** *LINK_GOTO* link kinds "
 "(pre *PDF 1.2* file formats are **not supported**)."
 msgstr ""
+"|PyMuPDF| 는 적절한 PDF 객체 **소스** 를 구성하고 작성하여 링크를 작성(업데이트, 삽입)합니다. 이것은 *LINK_GOTOR* **및** *LINK_GOTO* 링크 종류에 대해 간접 대상을 지정할 수 있게 합니다(*PDF 1.2* 이전 파일 형식은 **지원되지 않습니다**)."
 
 #: ../../page.rst:2333 e852dc9617584ee58517aec2dc16cf16
 msgid ""
@@ -6333,30 +6354,35 @@ msgid ""
 "link can later on not be found / read again with MuPDF / PyMuPDF. Other "
 "readers however **will** detect it, but flag it as erroneous."
 msgstr ""
+"*LINK_GOTO* 간접 대상이 정의되지 않은 이름을 지정하면 이 링크는 나중에 MuPDF / |PyMuPDF| 로 찾거나 다시 읽을 수 없습니다. 그러나 다른 리더는 **감지** 하지만 오류로 표시합니다."
 
 #: ../../page.rst:2335 3f1aee12b6824cf3b031cec169329f4a
 msgid ""
 "Indirect *LINK_GOTOR* destinations can in general of course not be "
 "checked for validity and are therefore **always accepted**."
 msgstr ""
+"간접 *LINK_GOTOR* 대상은 일반적으로 유효성을 확인할 수 없으므로 **항상 수락됩니다**."
 
 #: ../../page.rst:2337 a64fd9e78538459790a5e2a2c922d4ef
 msgid ""
 "**Example: How to insert a link pointing to another page in the same "
 "document**"
 msgstr ""
+"**예제: 동일한 문서의 다른 페이지를 가리키는 링크를 삽입하는 방법**"
 
 #: ../../page.rst:2339 66099395d24e4c07956dd70ca3e49b6d
 msgid ""
 "Determine the rectangle on the current page, where the link should be "
 "placed. This may be the bbox of an image or some text."
 msgstr ""
+"링크가 배치될 현재 페이지의 사각형을 결정합니다. 이것은 이미지 또는 일부 텍스트의 bbox일 수 있습니다."
 
 #: ../../page.rst:2341 eee66e0a08254b82833fe8c4bfea4c53
 msgid ""
 "Determine the target page number (\"pno\", 0-based) and a :ref:`Point` on"
 " it, where the link should be directed to."
 msgstr ""
+"대상 페이지 번호(\"pno\", 0 기반)와 링크가 향해야 할 그 위의 :ref:`Point` 를 결정합니다."
 
 #: ../../page.rst:2343 11f4142d175a4fb6b17070fcf3363118
 #, python-brace-format
@@ -6364,48 +6390,50 @@ msgid ""
 "Create a dictionary `d = {\"kind\": pymupdf.LINK_GOTO, \"page\": pno, "
 "\"from\": bbox, \"to\": point}`."
 msgstr ""
+"딕셔너리 `d = {\"kind\": pymupdf.LINK_GOTO, \"page\": pno, \"from\": bbox, \"to\": point}` 를 생성합니다."
 
 #: ../../page.rst:2345 a4dcca662bf242b3a856fe37acc0d604
 msgid "Execute `page.insert_link(d)`."
-msgstr ""
+msgstr "`page.insert_link(d)` 를 실행합니다."
 
 #: ../../page.rst:2349 0382665d56da4efb9be9ff4a73c4d746
 msgid "Homologous Methods of :ref:`Document` and :ref:`Page`"
-msgstr ""
+msgstr ":ref:`Document` 및 :ref:`Page` 의 동종 메서드"
 
 #: ../../page.rst:2350 e4415ec94f5448acbc079d4818b17baf
 msgid ""
 "This is an overview of homologous methods on the :ref:`Document` and on "
 "the :ref:`Page` level."
 msgstr ""
+"이것은 :ref:`Document` 및 :ref:`Page` 수준의 동종 메서드 개요입니다."
 
 #: ../../page.rst:2353 3ccac822355b4b54b940ed847bdcb0df
 msgid "**Document Level**"
-msgstr ""
+msgstr "**문서 수준**"
 
 #: ../../page.rst:2353 19b869eaaf114813a8abeb080e8aadd8
 msgid "**Page Level**"
-msgstr ""
+msgstr "**페이지 수준**"
 
 #: ../../page.rst:2355 e34587fd22b444f19d97e569757aced3
 msgid ":meth:`Document.get_page_fonts`"
-msgstr ""
+msgstr ":meth:`Document.get_page_fonts`"
 
 #: ../../page.rst:2356 9d5b4df7acc4415ca81db0fa50cdbc3a
 msgid ":meth:`Document.get_page_images`"
-msgstr ""
+msgstr ":meth:`Document.get_page_images`"
 
 #: ../../page.rst:2357 643565d4b5fb4159a0c4f6cb6eae52f1
 msgid ":meth:`Document.get_page_pixmap`"
-msgstr ""
+msgstr ":meth:`Document.get_page_pixmap`"
 
 #: ../../page.rst:2358 27b5577e8ff349ec8f0978b9cb964b62
 msgid ":meth:`Document.get_page_text`"
-msgstr ""
+msgstr ":meth:`Document.get_page_text`"
 
 #: ../../page.rst:2359 d901c33d20334d828b2167e39d71168c
 msgid ":meth:`Document.search_page_for`"
-msgstr ""
+msgstr ":meth:`Document.search_page_for`"
 
 #: ../../page.rst:2364 6719d58820ca4cbfb5fc796c06e1e36c
 msgid ""
@@ -6413,6 +6441,7 @@ msgid ""
 "are just wrappers for: *Document[pno].<page method>*. So they **load and "
 "discard the page** on each execution."
 msgstr ""
+"대부분의 문서 메서드(왼쪽 열)는 편의를 위해 존재하며, *Document[pno].<page method>* 의 래퍼일 뿐입니다. 따라서 각 실행마다 **페이지를 로드하고 버립니다**."
 
 #: ../../page.rst:2366 5ce80e9cea8e4daea36d8f585ac861c3
 msgid ""
@@ -6422,108 +6451,114 @@ msgid ""
 "as follows: `page.get_fonts` == "
 "`page.parent.get_page_fonts(page.number)`."
 msgstr ""
+"그러나 처음 두 메서드는 다르게 작동합니다. 페이지의 객체 정의 문장만 필요하며 - 페이지 자체는 **로드되지 않습니다**. 따라서 예를 들어 :meth:`Page.get_fonts` 는 반대 방향의 래퍼이며 다음과 같이 정의됩니다: `page.get_fonts` == `page.parent.get_page_fonts(page.number)`."
 
 #: ../../page.rst:2369 8622914e93ee422e8ed1fb18a52b3757
 msgid ""
 "When calling the :ref:`Document` equivalent methods then the page number "
 "is sent through as a parameter, e.g.:"
 msgstr ""
+":ref:`Document` 동등 메서드를 호출할 때 페이지 번호가 매개변수로 전달됩니다, 예:"
 
 #: ../../page.rst:2371 6841df7218244a1dbd5c84d575bf0c61
 msgid "`Document.get_page_images(pno)` or `Document.get_page_text(pno)`"
-msgstr ""
+msgstr "`Document.get_page_images(pno)` 또는 `Document.get_page_text(pno)`"
 
 #: ../../page.rst:2375 9f0d6803a3b34da2a35934a9f4067f2f
 msgid ""
 "The page number parameter, ``pno``, is a 0-based integer `-∞ < pno < "
 "page_count`."
 msgstr ""
+"페이지 번호 매개변수 ``pno`` 는 0 기반 정수 `-∞ < pno < page_count` 입니다."
 
 #: ../../page.rst:2382 c7a27a60878d4c9681777a0657f5bfea
 msgid "Tables and Related Classes"
-msgstr ""
+msgstr "테이블 및 관련 클래스"
 
 #: ../../page.rst:2384 c3180e51a3bd4b778434ca0ae6c63d89
 msgid ""
 "The `TableFinder` class is returned by :meth:`Page.find_tables` and has "
 "related classes as follows:"
 msgstr ""
+"`TableFinder` 클래스는 :meth:`Page.find_tables` 에 의해 반환되며 다음과 같은 관련 클래스가 있습니다:"
 
 #: ../../page.rst:2389 64a011721da24744a543ab64c5a17f12
 msgid ""
 "An object always returned by :meth:`Page.find_tables`. Attributes of "
 "interest:"
 msgstr ""
+":meth:`Page.find_tables` 에 의해 항상 반환되는 객체. 관심 있는 속성:"
 
 #: ../../page.rst:2393 d2d360b0c7714f6eb39099281199a836
 msgid ""
 "A list of :class:`Table` objects, each of which represents a table found "
 "on the page. An empty list if no tables are found."
 msgstr ""
+":class:`Table` 객체의 리스트로, 각각 페이지에서 찾은 테이블을 나타냅니다. 테이블을 찾지 못하면 빈 리스트입니다."
 
 #: ../../page.rst:2397 00907877ee1e4ab88a27a827ca45fd8d
 msgid "A reference to the :ref:`Page` object."
-msgstr ""
+msgstr ":ref:`Page` 객체에 대한 참조."
 
 #: ../../page.rst:2399 ../../page.rst:2411 4b46496341814f40addafebc3415c77d
 #: 6ccafe77babf49dda8f24e0fd508264d
 msgid ":ref:`Page`"
-msgstr ""
+msgstr ":ref:`Page`"
 
 #: ../../page.rst:2404 43201788a0d84d56b0b5c860766e84e2
 msgid "An object representing a table found on the page."
-msgstr ""
+msgstr "페이지에서 찾은 테이블을 나타내는 객체."
 
 #: ../../page.rst:2409 e91dd9e61a4844e68986275924bd2cd4
 msgid "A back-reference to the owning page."
-msgstr ""
+msgstr "소유 페이지에 대한 역참조."
 
 #: ../../page.rst:2415 820b3e94587549d5b34a3b7f1991677f
 msgid "An array of `Rect` objects for each cell in the table."
-msgstr ""
+msgstr "테이블의 각 셀에 대한 `Rect` 객체 배열."
 
 #: ../../page.rst:2417 ../../page.rst:2454 ../../page.rst:2461
 #: ../../page.rst:2498 ../../page.rst:2504 5fc25f510ea64ee1a073674ebe19775f
 #: 72a07ac5bc354429ba5e23029d97a6b2 7a63d658f0414ce6a03dc5da7b6480e6
 #: bd6ad1e8c71041faa53508d47736847a d1886569c90349efbb3e43f245bb097b
 msgid "list"
-msgstr ""
+msgstr "list"
 
 #: ../../page.rst:2422 56c6a33a1012473d92478e6bf2c37fc1
 msgid "A `TableHeader` object."
-msgstr ""
+msgstr "`TableHeader` 객체."
 
 #: ../../page.rst:2424 4469b33c46164b4db72edb980ccb08a5
 msgid "`TableHeader`"
-msgstr ""
+msgstr "`TableHeader`"
 
 #: ../../page.rst:2429 add249adfc084030b7eee6e9fb5a5a89
 msgid "The bounding box of all cells of the table header."
-msgstr ""
+msgstr "테이블 헤더의 모든 셀의 경계 상자."
 
 #: ../../page.rst:2438 2981f68aea22477086cc06adb314548f
 msgid "Number of rows in the table."
-msgstr ""
+msgstr "테이블의 행 수."
 
 #: ../../page.rst:2445 0d4f1e4b0c1541b9b30b52975b603789
 msgid "Number of columns in the table."
-msgstr ""
+msgstr "테이블의 열 수."
 
 #: ../../page.rst:2452 532d63f6689e48f08800ad2c8933c45c
 msgid "An array of `TableRow` objects for each row in the table."
-msgstr ""
+msgstr "테이블의 각 행에 대한 `TableRow` 객체 배열."
 
 #: ../../page.rst:2459 deb8a6d99ed24f249ad4d0d4fb8a73b4
 msgid "Extracts table cell text data into a list."
-msgstr ""
+msgstr "테이블 셀 텍스트 데이터를 리스트로 추출합니다."
 
 #: ../../page.rst:2465 75472d11e66d46b78b281cabdde38c94
 msgid "Extracts table data into Markdown text format."
-msgstr ""
+msgstr "테이블 데이터를 Markdown 텍스트 형식으로 추출합니다."
 
 #: ../../page.rst:2468 468354dc37774ae7aba42d9a80c27100
 msgid "If ``True`` then markdown syntax is removed from cell content."
-msgstr ""
+msgstr "``True`` 이면 셀 콘텐츠에서 markdown 구문이 제거됩니다."
 
 #: ../../page.rst:2469 aaa9083f16584794b6e61a2d29bfc670
 msgid ""
@@ -6531,10 +6566,11 @@ msgid ""
 "(columns) or left (rows) in an effort to approximate row and columns "
 "spans."
 msgstr ""
+"``True`` 이면 셀 콘텐츠 `None` 이 행 및 열 스팬을 근사화하기 위해 위(열) 또는 왼쪽(행)의 값으로 대체됩니다."
 
 #: ../../page.rst:2472 7a34d01dee7e4826a33b05a0a8bca9cc
 msgid "string"
-msgstr ""
+msgstr "string"
 
 #: ../../page.rst:2477 7562b710618a431c97aaa09d4f4b34a6
 msgid ""
@@ -6542,14 +6578,15 @@ msgid ""
 "`DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_ "
 "version of the table."
 msgstr ""
+"테이블의 `pandas DataFrame <https://pypi.org/project/pandas/>`_ `DataFrame <https://pandas.pydata.org/docs/reference/frame.html>`_ 버전을 반환합니다."
 
 #: ../../page.rst:2479 231c710e2ccf4932a300678886594ca6
 msgid "pandas DataFrame"
-msgstr ""
+msgstr "pandas DataFrame"
 
 #: ../../page.rst:2486 d3ce63902e7f477893ea546d16ae6490
 msgid "Dedicated class for table headers."
-msgstr ""
+msgstr "테이블 헤더를 위한 전용 클래스."
 
 #: ../../page.rst:2490 84e64f2efb644e2b821f471755bc37da
 msgid ""
@@ -6557,30 +6594,31 @@ msgid ""
 "given as a tuple (x0, y0, x1, y1). This rectangle contains all table "
 "header cells."
 msgstr ""
+"테이블 헤더에 속하는 셀의 합집합의 경계 상자로, 튜플 (x0, y0, x1, y1)로 제공됩니다. 이 사각형은 모든 테이블 헤더 셀을 포함합니다."
 
 #: ../../page.rst:2496 8f36b12f2fe14dbd8d044038a58b9af6
 msgid "A list of tuples for each bbox of a column header."
-msgstr ""
+msgstr "각 열 헤더의 bbox에 대한 튜플 리스트."
 
 #: ../../page.rst:2502 9f497b636e214ba0ab62649bdbe7787f
 msgid "A list of strings with column header text."
-msgstr ""
+msgstr "열 헤더 텍스트가 있는 문자열 리스트."
 
 #: ../../page.rst:2508 ae8dc88588404f08b28f6531661b7c8e
 msgid "A boolean indicating whether the header is outside the table cells."
-msgstr ""
+msgstr "헤더가 테이블 셀 밖에 있는지 여부를 나타내는 불리언."
 
 #: ../../page.rst:2510 d3b5a1c6519e465e89e91926ae0aea3c
 msgid "`bool`"
-msgstr ""
+msgstr "`bool`"
 
 #: ../../page.rst:2515 45925d07fc014a9a99de73f5c477ac73
 msgid "Dedicated class for table rows."
-msgstr ""
+msgstr "테이블 행을 위한 전용 클래스."
 
 #: ../../page.rst:2522 4f1b3b275c9c4913ab0f3b3cfbbec93b
 msgid "Footnotes"
-msgstr ""
+msgstr "각주"
 
 #: ../../page.rst:2523 35b460330e4249f49081cee02ccc6687
 msgid ""
@@ -6588,6 +6626,7 @@ msgid ""
 "reference (as it was supported by PyMuPDF versions earlier than 1.14), "
 "this will continue to work."
 msgstr ""
+"기존 코드가 이미 설치된 기본 이름을 폰트 참조로 사용하는 경우(1.14 이전 |PyMuPDF| 버전에서 지원되었던 것처럼), 이것은 계속 작동합니다."
 
 #: ../../page.rst:2525 1f07318c687247dabdd707f1eaccb7bf
 msgid ""
@@ -6598,18 +6637,21 @@ msgid ""
 "installed base fonts, thus providing an option to be displayable with "
 "your specific PDF viewer."
 msgstr ""
+"모든 PDF 리더 소프트웨어(인터넷 브라우저 및 오피스 소프트웨어 포함)가 이러한 모든 폰트를 표시하는 것은 아닙니다. 표시하더라도 **세리프** 및 **비세리프** 버전 간의 차이는 거의 눈에 띄지 않을 수 있습니다. 하지만 세리프 및 비세리프 버전은 다른 설치된 기본 폰트로 이어지므로 특정 PDF 뷰어에서 표시 가능한 옵션을 제공합니다."
 
 #: ../../page.rst:2527 d9d100e5a3b64091a183af6296efa37c
 msgid ""
 "Not all PDF readers display these fonts at all. Some others do, but use a"
 " wrong character spacing, etc."
 msgstr ""
+"모든 PDF 리더가 이러한 폰트를 표시하는 것은 아닙니다. 일부는 표시하지만 잘못된 문자 간격 등을 사용합니다."
 
 #: ../../page.rst:2529 35028b7ef49143b4816821764f1b95cf
 msgid ""
 "You are generally free to choose any of the :ref:`mupdficons` you "
 "consider adequate."
 msgstr ""
+"일반적으로 적절하다고 생각하는 :ref:`mupdficons` 중 하나를 자유롭게 선택할 수 있습니다."
 
 #: ../../page.rst:2531 5b91f7ee061349e9ab8627329a680560
 msgid ""
@@ -6618,6 +6660,7 @@ msgid ""
 "potentially being invisible or only partially visible if the cropbox "
 "(representing the visible page part) is smaller."
 msgstr ""
+"이전 알고리즘은 이미지를 이 교차점으로 **축소**시켰습니다. 이제 이미지는 :attr:`Page.mediabox` 의 어디에나 있을 수 있으며, cropbox(보이는 페이지 부분을 나타냄)가 더 작으면 보이지 않거나 부분적으로만 보일 수 있습니다."
 
 #: ../../page.rst:2533 bb430f8f65514d70b8096713c386f20f
 msgid ""
@@ -6626,6 +6669,7 @@ msgid ""
 " function of that method will convert these objects to normal page "
 "content. Then use :meth:`Page.show_pdf_page` with the converted PDF page."
 msgstr ""
+"대상 페이지에서 주석이나 필드도 보려면 :meth:`Document.bake` 를 사용하여 소스 PDF를 변환할 수 있습니다. 해당 메서드의 기본 MuPDF 함수는 이러한 객체를 일반 페이지 콘텐츠로 변환합니다. 그런 다음 변환된 PDF 페이지와 함께 :meth:`Page.show_pdf_page` 를 사용하세요."
 
 #: ../../page.rst:2535 77c93b6fd9f24046b632e932a9401d83
 msgid ""
@@ -6638,6 +6682,7 @@ msgid ""
 "for \"re\" (rectangle) items in the past. Adding the orientation "
 "parameter now delivers the missing information."
 msgstr ""
+"PDF에서 일부 선이나 곡선으로 둘러싸인 영역은 \"orientation\"(방향)이라는 속성을 가질 수 있습니다. 이것은 여러 영역이 겹칠 때 해당 영역의 채우기 색상을 켜거나 끄는 데 중요합니다 - \"non-zero winding number\" 규칙을 사용하는 :meth:`Shape.finish` 메서드의 논의를 참조하세요. 선으로 둘러싸인 곡선, 사각형, 삼각형 및 기타 모양의 방향은 항상 감지 가능했지만, 과거에는 \"re\"(사각형) 항목에 대해 이것이 불가능했습니다. orientation 매개변수를 추가하면 이제 누락된 정보를 제공합니다."
 
 #: ../../page.rst:2537 5b3e04359c58461c9c342889056d8ac3
 msgid ""
@@ -6650,6 +6695,7 @@ msgid ""
 "words ends with a hyphen, it will only be found by text searching if "
 "hyphenation is switched off."
 msgstr ""
+"하이픈 감지는 단순히 줄의 마지막 문자가 \"-\"이면 연속 문자로 간주된다는 의미입니다. 해당 문자는 기본 플래그 설정으로 텍스트 검색에서 찾을 수 없습니다. MuPDF *line* 이 항상 예상하는 것과 같지 않을 수 있습니다: 과도하게 큰 간격(예: 텍스트 정당화로 인한)으로 구분된 단어는 별도의 MuPDF 줄을 구성할 수 있습니다. 그러면 이러한 단어 중 하나가 하이픈으로 끝나면 하이픈이 꺼져 있을 때만 텍스트 검색에서 찾을 수 있습니다."
 
 #: ../../page.rst:2539 d8f8e96dd085414a812fda2806633c43
 msgid ""
@@ -6659,6 +6705,7 @@ msgid ""
 "then this will not be retained on the target: they will become "
 "unconditionally visible."
 msgstr ""
+"소스 페이지 내의 객체(이미지, 텍스트 또는 그림 등)는 소유 페이지가 대상 PDF 내에서 OC 제어 하에 있는지 여부를 절대 인식하지 않습니다. 소스 페이지 객체가 소스 PDF에서 OC 제어되는 경우 이것은 대상에서 유지되지 않습니다: 무조건 표시됩니다."
 
 #: ../../page.rst:2541 ce46471c609a4a6182a93a337f577978
 msgid ""
@@ -6667,8 +6714,9 @@ msgid ""
 " resolution, use the :meth:`Pixmap.xres` and :meth:`Pixmap.yres` "
 "attributes of the :ref:`Pixmap` created from the image binary."
 msgstr ""
+"이 값은 항상 96이며 PDF 인터프리터의 기본값입니다. 이것은 **이미지 자체의 해상도를 반영하지 않습니다**. 이미지의 해상도가 필요하면 이미지 바이너리에서 생성된 :ref:`Pixmap` 의 :meth:`Pixmap.xres` 및 :meth:`Pixmap.yres` 속성을 사용하세요."
 
 #: ../../footer.rst:57 48ae480fd42d45a79c92e95ead866afc
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 
