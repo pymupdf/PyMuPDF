@@ -444,8 +444,6 @@ To delete a page from a document, do the following:
 
 To delete a multiple pages from a document, do the following:
 
-.. raw:: html
-
 .. code-block:: python
 
     import pymupdf
@@ -670,7 +668,7 @@ To add a blank page, do the following:
 Inserting Pages with Text Content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using the :meth:`Document.insert_page` method also inserts a new page and accepts the same `width` and `height` parameters. But it lets you also insert arbitrary text into the new page and returns the number of inserted lines.
+Using the :meth:`Document.insert_page` method also inserts a new page and accepts the same ``width`` and ``height`` parameters. But it lets you also insert arbitrary text into the new page and returns the number of inserted lines.
 
 .. code-block:: python
 

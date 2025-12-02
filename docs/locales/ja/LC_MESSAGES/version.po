@@ -19,33 +19,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../version.rst:3 d1fbe6ff1d5549fb8be875f6d37c584b
+#: ../../version.rst:1 d1fbe6ff1d5549fb8be875f6d37c584b
 msgid "This documentation covers PyMuPDF |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
-#: ../../version.rst:5 133bf913bb004c8ca82964184ed7628c
+#: ../../version.rst:3 133bf913bb004c8ca82964184ed7628c
 msgid ""
-"The major and minor versions of |PyMuPDF| and |MuPDF| will always be the "
-"same. Only the third qualifier (patch level) may deviate from that of "
-"|MuPDF|."
-msgstr ""
-"|PyMuPDF| と |MuPDF| のメジャーおよびマイナーバージョンは常に同じになります。第三の修飾子（パッチレベル）のみが |MuPDF|"
-" のものと異なる場合があります。"
+"The major and minor versions of PyMuPDF and MuPDF will always be the same. Only the third qualifier (patch level) may deviate from that of MuPDF."
+msgstr "PyMuPDF と MuPDF のメジャーおよびマイナーバージョンは常に同じになります。第三の修飾子（パッチレベル）のみが MuPDF のものと異なる場合があります。"
 
-#: ../../version.rst:7 994720d99f72419ebd711b2cf71dcefb
+#: ../../version.rst:5 994720d99f72419ebd711b2cf71dcefb
 msgid ""
 "Typically PyMuPDF is released more frequently than MuPDF so it will often"
 " be the case that the patch level of PyMuPDF will be greater than the "
 "embedded MuPDF."
-msgstr ""
+msgstr "通常、PyMuPDFはMuPDFよりも頻繁にリリースされるため、PyMuPDFのパッチレベルが組み込まれたMuPDFのパッチレベルよりも大きくなることがよくあります。"
 
-#: ../../version.rst:11 371aa251e8314b9aad7c870f54636f80
+#: ../../version.rst:9 371aa251e8314b9aad7c870f54636f80
 msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
-msgstr ""
+msgstr "例えば、PyMuPDF-1.24.5にはMuPDF-1.24.2が含まれています。"
 
-#: ../../version.rst:13 7c7d7d87d7e14441959c236fee7d2ee5
+#: ../../version.rst:11 7c7d7d87d7e14441959c236fee7d2ee5
 msgid "Also see `pymupdf_version` and `mupdf_version`."
-msgstr ""
+msgstr "pymupdf_versionとmupdf_versionも参照してください。"
 
 #~ msgid ""
 #~ "This documentation covers **PyMuPDF "
