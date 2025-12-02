@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-12-02 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 bc107b9bc1f9411db1b06a2b9a73ce64
+#: ../../header.rst:-1 96029ef0e2b04d549d1dd8636b516591
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 d7d772a2db0344ea81f7e2d671249a0d
+#: ../../header.rst:-1 2e20adf971da4adf8ade567b89099694
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 3d75e7a13d97463585cb89b8a4cf50e2
+#: ../../header.rst:-1 e225975277fd4141bab6dfb2babcab67
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -563,7 +563,13 @@ msgid ""
 "ocr/4.00/tessdata`"
 msgstr ""
 
-#: ../../footer.rst:46 04ec8ea4e7e743ab9f77de31a752358a
+#: ../../installation.rst:336 a123b1fc6a474985b09b2e4de3759541
+msgid ""
+"Find out more on the `official documentation for installing Tesseract "
+"website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_."
+msgstr ""
+
+#: ../../footer.rst:48 04ec8ea4e7e743ab9f77de31a752358a
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-12-02 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 f7b025d9345a4b48b8e13575dce4b5f6
+#: ../../header.rst:-1 909f9969c815483692de0eeae2b2c6b8
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 096cfd3146e049549b47ca986e5fb8b9
+#: ../../header.rst:-1 7c546c172c3049238925a5d3d154deac
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 54780494620e4f37a46301389f9e346c
+#: ../../header.rst:-1 d775abfe51ed4aae97e87841af09650c
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -50,8 +50,8 @@ msgstr ""
 #: ../../the-basics.rst:27 ../../the-basics.rst:58 ../../the-basics.rst:119
 #: ../../the-basics.rst:149 ../../the-basics.rst:199 ../../the-basics.rst:249
 #: ../../the-basics.rst:287 ../../the-basics.rst:377 ../../the-basics.rst:416
-#: ../../the-basics.rst:467 ../../the-basics.rst:553 ../../the-basics.rst:638
-#: ../../the-basics.rst:694 ../../the-basics.rst:886 ../../the-basics.rst:1070
+#: ../../the-basics.rst:465 ../../the-basics.rst:551 ../../the-basics.rst:636
+#: ../../the-basics.rst:692 ../../the-basics.rst:884 ../../the-basics.rst:1068
 #: 0068950bcad54023968e3f762f5f517f 05774a0919aa4c5c9c36f6bac5d452ef
 #: 0e7e23d4b7bc416cae884504c277d711 1225e0c609dc479ca2f4b881424a32ac
 #: 2222ebbac6364d5b9b08e76451ddf9a1 47f2b0f15354473b88fd164c09ab6f50
@@ -108,11 +108,11 @@ msgstr ""
 #: ../../the-basics.rst:71 ../../the-basics.rst:123 ../../the-basics.rst:153
 #: ../../the-basics.rst:208 ../../the-basics.rst:255 ../../the-basics.rst:291
 #: ../../the-basics.rst:318 ../../the-basics.rst:343 ../../the-basics.rst:383
-#: ../../the-basics.rst:420 ../../the-basics.rst:474 ../../the-basics.rst:500
-#: ../../the-basics.rst:527 ../../the-basics.rst:608 ../../the-basics.rst:659
-#: ../../the-basics.rst:698 ../../the-basics.rst:762 ../../the-basics.rst:821
-#: ../../the-basics.rst:898 ../../the-basics.rst:928 ../../the-basics.rst:964
-#: ../../the-basics.rst:990 ../../the-basics.rst:1074
+#: ../../the-basics.rst:420 ../../the-basics.rst:472 ../../the-basics.rst:498
+#: ../../the-basics.rst:525 ../../the-basics.rst:606 ../../the-basics.rst:657
+#: ../../the-basics.rst:696 ../../the-basics.rst:760 ../../the-basics.rst:819
+#: ../../the-basics.rst:896 ../../the-basics.rst:926 ../../the-basics.rst:962
+#: ../../the-basics.rst:988 ../../the-basics.rst:1072
 #: 07855b8e74cf474bb2c22f4ea1486b77 14463d4aca01470b9aeb4b607b17f5c9
 #: 1c3978a5519a4d36b5e656a91c01ecdf 2c0ea7a221bc482c9799c3a352cb1eb9
 #: 5c80f9f1865449309e09d88d691bb68a 5efa802d04ed4ed89cd05d92421170f6
@@ -372,82 +372,82 @@ msgstr ""
 msgid "To delete a multiple pages from a document, do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:459 2a651424c7104dda8fccdeb738d8f3d4
+#: ../../the-basics.rst:457 2a651424c7104dda8fccdeb738d8f3d4
 msgid "What happens if I delete a page referred to by bookmarks or hyperlinks?"
 msgstr ""
 
-#: ../../the-basics.rst:461 268000ef67c644459cb4d5f0f21c3a0f
+#: ../../the-basics.rst:459 268000ef67c644459cb4d5f0f21c3a0f
 msgid ""
 "A bookmark (entry in the Table of Contents) will become inactive and will"
 " no longer navigate to any page."
 msgstr ""
 
-#: ../../the-basics.rst:463 c9da611cc8bd48d69c43c3418cd4dba8
+#: ../../the-basics.rst:461 c9da611cc8bd48d69c43c3418cd4dba8
 msgid ""
 "A hyperlink will be removed from the page that contains it. The visible "
 "content on that page will not otherwise be changed in any way."
 msgstr ""
 
-#: ../../the-basics.rst:469 691f875a941741d08cb1049a5fd7fea0
+#: ../../the-basics.rst:467 691f875a941741d08cb1049a5fd7fea0
 msgid ""
 "The page index is zero-based, so to delete page 10 of a document you "
 "would do the following `doc.delete_page(9)`."
 msgstr ""
 
-#: ../../the-basics.rst:471 471029bcec864d5c83b56258d14c9a6b
+#: ../../the-basics.rst:469 471029bcec864d5c83b56258d14c9a6b
 msgid ""
 "Similarly, `doc.delete_pages(from_page=9, to_page=14)` will delete pages "
 "10 - 15 inclusive."
 msgstr ""
 
-#: ../../the-basics.rst:476 a6edabe8375f47aab6ecea141c9de9ef
+#: ../../the-basics.rst:474 a6edabe8375f47aab6ecea141c9de9ef
 msgid ":meth:`Document.delete_page`"
 msgstr ""
 
-#: ../../the-basics.rst:477 dc08fba2f443449d9604c358be0f59b2
+#: ../../the-basics.rst:475 dc08fba2f443449d9604c358be0f59b2
 msgid ":meth:`Document.delete_pages`"
 msgstr ""
 
-#: ../../the-basics.rst:485 94049f92c8ad4d6b8b0024d436ab9235
+#: ../../the-basics.rst:483 94049f92c8ad4d6b8b0024d436ab9235
 msgid "Re-Arranging Pages"
 msgstr ""
 
-#: ../../the-basics.rst:487 82cc8c6d56974119a12c0c709d30c2d0
+#: ../../the-basics.rst:485 82cc8c6d56974119a12c0c709d30c2d0
 msgid "To change the sequence of pages, i.e. re-arrange pages, do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:502 4c1a980fdd2442ae896528a2b043b4d7
+#: ../../the-basics.rst:500 4c1a980fdd2442ae896528a2b043b4d7
 msgid ":meth:`Document.move_page`"
 msgstr ""
 
-#: ../../the-basics.rst:511 1b6a6d6430b64d2fa81c618aa5a36c2a
+#: ../../the-basics.rst:509 1b6a6d6430b64d2fa81c618aa5a36c2a
 msgid "Copying Pages"
 msgstr ""
 
-#: ../../the-basics.rst:514 703c6c326a244e3f95a5f9308a4db9f8
+#: ../../the-basics.rst:512 703c6c326a244e3f95a5f9308a4db9f8
 msgid "To copy pages, do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:529 e0f411a53f464a6cb29477e745869390
+#: ../../the-basics.rst:527 e0f411a53f464a6cb29477e745869390
 msgid ":meth:`Document.copy_page`"
 msgstr ""
 
-#: ../../the-basics.rst:537 3f3ac486797b4e59a03d43dfd13d0ae9
+#: ../../the-basics.rst:535 3f3ac486797b4e59a03d43dfd13d0ae9
 msgid "Selecting Pages"
 msgstr ""
 
-#: ../../the-basics.rst:540 c5e43d6789904283afdfc2c3e31f4b3e
+#: ../../the-basics.rst:538 c5e43d6789904283afdfc2c3e31f4b3e
 msgid "To select pages, do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:555 0c1c3c72d9c542d5a9fd994ca426390d
+#: ../../the-basics.rst:553 0c1c3c72d9c542d5a9fd994ca426390d
 msgid ""
 "With |PyMuPDF| you have all options to copy, move, delete or re-arrange "
 "the pages of a |PDF|. Intuitive methods exist that allow you to do this "
 "on a page-by-page level, like the :meth:`Document.copy_page` method."
 msgstr ""
 
-#: ../../the-basics.rst:557 99b4ed9af68646628e27f7fd50ed6026
+#: ../../the-basics.rst:555 99b4ed9af68646628e27f7fd50ed6026
 msgid ""
 "Or you alternatively prepare a complete new page layout in form of a "
 ":title:`Python` sequence, that contains the page numbers you want, in the"
@@ -455,61 +455,61 @@ msgid ""
 "following may illustrate what can be done with :meth:`Document.select`"
 msgstr ""
 
-#: ../../the-basics.rst:564 6807a098f55f41e08049ad773d010494
+#: ../../the-basics.rst:562 6807a098f55f41e08049ad773d010494
 msgid ""
 "Now let's prepare a PDF for double-sided printing (on a printer not "
 "directly supporting this):"
 msgstr ""
 
-#: ../../the-basics.rst:566 2bd6434b882a4d8db3c304ffbd3aa687
+#: ../../the-basics.rst:564 2bd6434b882a4d8db3c304ffbd3aa687
 msgid ""
 "The number of pages is given by `len(doc)` (equal to `doc.page_count`). "
 "The following lists represent the even and the odd page numbers, "
 "respectively:"
 msgstr ""
 
-#: ../../the-basics.rst:573 293d86f017734a8ebc3c3f116fd93ed9
+#: ../../the-basics.rst:571 293d86f017734a8ebc3c3f116fd93ed9
 msgid ""
 "This snippet creates the respective sub documents which can then be used "
 "to print the document:"
 msgstr ""
 
-#: ../../the-basics.rst:585 7c03acb1833d4a7e835b8d14d71d52a1
+#: ../../the-basics.rst:583 7c03acb1833d4a7e835b8d14d71d52a1
 msgid ""
 "For more information also have a look at this Wiki `article "
 "<https://github.com/pymupdf/PyMuPDF/wiki/Rearranging-Pages-of-a-PDF>`_."
 msgstr ""
 
-#: ../../the-basics.rst:588 54ec68649c0e4b609bbc4f4ad4e005cb
+#: ../../the-basics.rst:586 54ec68649c0e4b609bbc4f4ad4e005cb
 msgid ""
 "The following example will reverse the order of all pages (**extremely "
 "fast:** sub-second time for the 756 pages of the :ref:`AdobeManual`):"
 msgstr ""
 
-#: ../../the-basics.rst:598 bb40e1408cac4faa8820273561325390
+#: ../../the-basics.rst:596 bb40e1408cac4faa8820273561325390
 msgid ""
 "This snippet duplicates the PDF with itself so that it will contain the "
 "pages *0, 1, ..., n, 0, 1, ..., n* **(extremely fast and without "
 "noticeably increasing the file size!)**:"
 msgstr ""
 
-#: ../../the-basics.rst:610 2c346b1ac6fe452d96ab804a995e9039
+#: ../../the-basics.rst:608 2c346b1ac6fe452d96ab804a995e9039
 msgid ":meth:`Document.select`"
 msgstr ""
 
-#: ../../the-basics.rst:621 0c4e94066fe44ad499c54211fe16aae6
+#: ../../the-basics.rst:619 0c4e94066fe44ad499c54211fe16aae6
 msgid "Adding Blank Pages"
 msgstr ""
 
-#: ../../the-basics.rst:623 b2cff0e96799476d884ceb9a27a0a394
+#: ../../the-basics.rst:621 b2cff0e96799476d884ceb9a27a0a394
 msgid "To add a blank page, do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:640 ce36fc6b536c46d4b1f018b19e714a4d
+#: ../../the-basics.rst:638 ce36fc6b536c46d4b1f018b19e714a4d
 msgid "Use this to create the page with another pre-defined paper format:"
 msgstr ""
 
-#: ../../the-basics.rst:648 7d2dc00bc025437295e6e7ac8de51e61
+#: ../../the-basics.rst:646 7d2dc00bc025437295e6e7ac8de51e61
 msgid ""
 "The convenience function :meth:`paper_size` knows over 40 industry "
 "standard paper formats to choose from. To see them, inspect dictionary "
@@ -518,33 +518,33 @@ msgid ""
 "you append \"-L\" to the format name, the landscape version is returned."
 msgstr ""
 
-#: ../../the-basics.rst:650 b44282f4ada544d1b18a337f793bbdfb
+#: ../../the-basics.rst:648 b44282f4ada544d1b18a337f793bbdfb
 msgid ""
 "Here is a 3-liner that creates a |PDF|: with one empty page. Its file "
 "size is 460 bytes:"
 msgstr ""
 
-#: ../../the-basics.rst:661 af312c05560c44ba8fb88cf29ece1e12
+#: ../../the-basics.rst:659 af312c05560c44ba8fb88cf29ece1e12
 msgid ":meth:`Document.new_page`"
 msgstr ""
 
-#: ../../the-basics.rst:662 055ca7bfd52e46bda58c8e862bd8e592
+#: ../../the-basics.rst:660 055ca7bfd52e46bda58c8e862bd8e592
 msgid ":attr:`paperSizes`"
 msgstr ""
 
-#: ../../the-basics.rst:671 6ec80ca2c8344ab1b10072ee1e7ecfdf
+#: ../../the-basics.rst:669 6ec80ca2c8344ab1b10072ee1e7ecfdf
 msgid "Inserting Pages with Text Content"
 msgstr ""
 
-#: ../../the-basics.rst:673 7c9a1501fb5d405a9f5ad46a99f0b474
+#: ../../the-basics.rst:671 7c9a1501fb5d405a9f5ad46a99f0b474
 msgid ""
 "Using the :meth:`Document.insert_page` method also inserts a new page and"
-" accepts the same `width` and `height` parameters. But it lets you also "
-"insert arbitrary text into the new page and returns the number of "
+" accepts the same ``width`` and ``height`` parameters. But it lets you "
+"also insert arbitrary text into the new page and returns the number of "
 "inserted lines."
 msgstr ""
 
-#: ../../the-basics.rst:696 815fd32c08dc43ed939c0022fe0cb355
+#: ../../the-basics.rst:694 815fd32c08dc43ed939c0022fe0cb355
 msgid ""
 "The text parameter can be a (sequence of) string (assuming UTF-8 "
 "encoding). Insertion will start at :ref:`Point` (50, 72), which is one "
@@ -552,15 +552,15 @@ msgid ""
 "inserted text lines is returned."
 msgstr ""
 
-#: ../../the-basics.rst:700 ee1877c30f20440d928f255b6b27ec30
+#: ../../the-basics.rst:698 ee1877c30f20440d928f255b6b27ec30
 msgid ":meth:`Document.insert_page`"
 msgstr ""
 
-#: ../../the-basics.rst:711 3399cdc8dfc44101b644bcf9d0619529
+#: ../../the-basics.rst:709 3399cdc8dfc44101b644bcf9d0619529
 msgid "Splitting Single Pages"
 msgstr ""
 
-#: ../../the-basics.rst:713 1f3717fc854a40d5a0fd9753b49a88a0
+#: ../../the-basics.rst:711 1f3717fc854a40d5a0fd9753b49a88a0
 msgid ""
 "This deals with splitting up pages of a |PDF| in arbitrary pieces. For "
 "example, you may have a |PDF| with *Letter* format pages which you want "
@@ -569,98 +569,98 @@ msgid ""
 "again."
 msgstr ""
 
-#: ../../the-basics.rst:756 ../../the-basics.rst:814
+#: ../../the-basics.rst:754 ../../the-basics.rst:812
 #: 0ece8212e7b845609bb12d9e90ea10a7 e15f29ebe62e4a60a0bbbb8de5608f21
 msgid "Example:"
 msgstr ""
 
-#: ../../the-basics.rst:764 ../../the-basics.rst:823
+#: ../../the-basics.rst:762 ../../the-basics.rst:821
 #: aca3faccb4c045c097b9959629642eef b75fa5b0807b4f56bffef5b96e756cdd
 msgid ":meth:`Page.cropbox_position`"
 msgstr ""
 
-#: ../../the-basics.rst:765 ../../the-basics.rst:824
+#: ../../the-basics.rst:763 ../../the-basics.rst:822
 #: 0ffa92661611435b91fb6a7e14df8701 2322a38c63f947d589e9b2ec7f1f17f2
 msgid ":meth:`Page.show_pdf_page`"
 msgstr ""
 
-#: ../../the-basics.rst:775 e866676a9e9f4db28f98f0921db8b45f
+#: ../../the-basics.rst:773 e866676a9e9f4db28f98f0921db8b45f
 msgid "Combining Single Pages"
 msgstr ""
 
-#: ../../the-basics.rst:777 66702d857bfe496f8bd6f6120c0c5137
+#: ../../the-basics.rst:775 66702d857bfe496f8bd6f6120c0c5137
 msgid ""
 "This deals with joining |PDF| pages to form a new |PDF| with pages each "
 "combining two or four original ones (also called \"2-up\", \"4-up\", "
 "etc.). This could be used to create booklets or thumbnail-like overviews."
 msgstr ""
 
-#: ../../the-basics.rst:833 dd61fd34be574893bee88166ee3d19f3
+#: ../../the-basics.rst:831 dd61fd34be574893bee88166ee3d19f3
 msgid "|PDF| Encryption & Decryption"
 msgstr ""
 
-#: ../../the-basics.rst:836 16ea9b1cd9f949fdab48b3c4210a4d72
+#: ../../the-basics.rst:834 16ea9b1cd9f949fdab48b3c4210a4d72
 msgid ""
 "Starting with version 1.16.0, |PDF| decryption and encryption (using "
 "passwords) are fully supported. You can do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:838 3b6def2609e44c32be069c6362839e2f
+#: ../../the-basics.rst:836 3b6def2609e44c32be069c6362839e2f
 msgid ""
 "Check whether a document is password protected / (still) encrypted "
 "(:attr:`Document.needs_pass`, :attr:`Document.is_encrypted`)."
 msgstr ""
 
-#: ../../the-basics.rst:839 ce41ab81ce8b4386a83878a416a7940a
+#: ../../the-basics.rst:837 ce41ab81ce8b4386a83878a416a7940a
 msgid "Gain access authorization to a document (:meth:`Document.authenticate`)."
 msgstr ""
 
-#: ../../the-basics.rst:840 b189a7d59fa543a19cf3c17b16f8d694
+#: ../../the-basics.rst:838 b189a7d59fa543a19cf3c17b16f8d694
 msgid ""
 "Set encryption details for PDF files using :meth:`Document.save` or "
 ":meth:`Document.write` and"
 msgstr ""
 
-#: ../../the-basics.rst:842 d636f0b456a045fe96ded79e540924a6
+#: ../../the-basics.rst:840 d636f0b456a045fe96ded79e540924a6
 msgid "decrypt or encrypt the content"
 msgstr ""
 
-#: ../../the-basics.rst:843 c02d51458a324504be651a75c4b42da7
+#: ../../the-basics.rst:841 c02d51458a324504be651a75c4b42da7
 msgid "set password(s)"
 msgstr ""
 
-#: ../../the-basics.rst:844 a9dbedfc3d3840d2b0ddef263073ee71
+#: ../../the-basics.rst:842 a9dbedfc3d3840d2b0ddef263073ee71
 msgid "set the encryption method"
 msgstr ""
 
-#: ../../the-basics.rst:845 8613c50a6710457fb64b656501a9ed53
+#: ../../the-basics.rst:843 8613c50a6710457fb64b656501a9ed53
 msgid "set permission details"
 msgstr ""
 
-#: ../../the-basics.rst:847 4d78b28e7d8c479bb687ad0b04fea32f
+#: ../../the-basics.rst:845 4d78b28e7d8c479bb687ad0b04fea32f
 msgid "A PDF document may have two different passwords:"
 msgstr ""
 
-#: ../../the-basics.rst:849 17b762c8cf4d4efba56eae14ccf0e0e6
+#: ../../the-basics.rst:847 17b762c8cf4d4efba56eae14ccf0e0e6
 msgid ""
 "The **owner password** provides full access rights, including changing "
 "passwords, encryption method, or permission detail."
 msgstr ""
 
-#: ../../the-basics.rst:850 25b92c66fe7843978232636bf038bea9
+#: ../../the-basics.rst:848 25b92c66fe7843978232636bf038bea9
 msgid ""
 "The **user password** provides access to document content according to "
 "the established permission details. If present, opening the |PDF| in a "
 "viewer will require providing it."
 msgstr ""
 
-#: ../../the-basics.rst:852 1fc241ab15944159a3e960c912753d85
+#: ../../the-basics.rst:850 1fc241ab15944159a3e960c912753d85
 msgid ""
 "Method :meth:`Document.authenticate` will automatically establish access "
 "rights according to the password used."
 msgstr ""
 
-#: ../../the-basics.rst:854 5a8ee082646145f0af795201a5cf3f2c
+#: ../../the-basics.rst:852 5a8ee082646145f0af795201a5cf3f2c
 msgid ""
 "The following snippet creates a new |PDF| and encrypts it with separate "
 "user and owner passwords. Permissions are granted to print, copy and "
@@ -668,85 +668,85 @@ msgid ""
 "user password."
 msgstr ""
 
-#: ../../the-basics.rst:888 bc1d33f5c72f4b7c91414475ea9319ad
+#: ../../the-basics.rst:886 bc1d33f5c72f4b7c91414475ea9319ad
 msgid ""
 "Opening this document with some viewer (Nitro Reader 5) reflects these "
 "settings:"
 msgstr ""
 
-#: ../../the-basics.rst:892 8d0714fc6e9b483da17392fad5a08ef9
+#: ../../the-basics.rst:890 8d0714fc6e9b483da17392fad5a08ef9
 msgid ""
 "**Decrypting** will automatically happen on save as before when no "
 "encryption parameters are provided."
 msgstr ""
 
-#: ../../the-basics.rst:894 5ad13206208e4f04ab1f73c460b95b06
+#: ../../the-basics.rst:892 5ad13206208e4f04ab1f73c460b95b06
 msgid ""
 "To **keep the encryption method** of a PDF save it using "
 "`encryption=pymupdf.PDF_ENCRYPT_KEEP`. If `doc.can_save_incrementally() "
 "== True`, an incremental save is also possible."
 msgstr ""
 
-#: ../../the-basics.rst:896 ea683283b4ae4990996434cbfc824108
+#: ../../the-basics.rst:894 ea683283b4ae4990996434cbfc824108
 msgid ""
 "To **change the encryption method** specify the full range of options "
 "above (`encryption`, `owner_pw`, `user_pw`, `permissions`). An "
 "incremental save is **not possible** in this case."
 msgstr ""
 
-#: ../../the-basics.rst:900 6b214aa29bc543f4acbac8c3cd3481b0
+#: ../../the-basics.rst:898 6b214aa29bc543f4acbac8c3cd3481b0
 msgid ":meth:`Document.save`"
 msgstr ""
 
-#: ../../the-basics.rst:909 a57f259ce92445d6a5d6c2862dc3cf54
+#: ../../the-basics.rst:907 a57f259ce92445d6a5d6c2862dc3cf54
 msgid "Extracting Tables from a :title:`Page`"
 msgstr ""
 
-#: ../../the-basics.rst:911 6f9e7f86d5ac46e3b9825c17b82571e4
+#: ../../the-basics.rst:909 6f9e7f86d5ac46e3b9825c17b82571e4
 msgid "Tables can be found and extracted from any document :ref:`Page`."
 msgstr ""
 
-#: ../../the-basics.rst:930 b7494b5442a14995a5d2119082615ca8
+#: ../../the-basics.rst:928 b7494b5442a14995a5d2119082615ca8
 msgid ":meth:`Page.find_tables`"
 msgstr ""
 
-#: ../../the-basics.rst:935 c890052d477340849a65eeee67960e53
+#: ../../the-basics.rst:933 c890052d477340849a65eeee67960e53
 msgid ""
 "There is also the `pdf2docx extract tables method`_ which is capable of "
 "table extraction if you prefer."
 msgstr ""
 
-#: ../../the-basics.rst:944 a282cebe140b45f5b2ed5299e377820a
+#: ../../the-basics.rst:942 a282cebe140b45f5b2ed5299e377820a
 msgid "Getting Page Links"
 msgstr ""
 
-#: ../../the-basics.rst:946 65729bc707934b5eb43017e9a7ccf13f
+#: ../../the-basics.rst:944 65729bc707934b5eb43017e9a7ccf13f
 msgid "Links can be extracted from a :ref:`Page` to return :ref:`Link` objects."
 msgstr ""
 
-#: ../../the-basics.rst:966 a413c62db71c4a03bcf604d1cbb23495
+#: ../../the-basics.rst:964 a413c62db71c4a03bcf604d1cbb23495
 msgid ":meth:`Page.first_link`"
 msgstr ""
 
-#: ../../the-basics.rst:975 9c52975671c8427abba8f3c2386f6cfd
+#: ../../the-basics.rst:973 9c52975671c8427abba8f3c2386f6cfd
 msgid "Getting All Annotations from a Document"
 msgstr ""
 
-#: ../../the-basics.rst:977 6c049fc7e04c48738c8b0a947179c35a
+#: ../../the-basics.rst:975 6c049fc7e04c48738c8b0a947179c35a
 msgid ""
 "Annotations (:ref:`Annot`) on pages can be retrieved with the "
 "`page.annots()` method."
 msgstr ""
 
-#: ../../the-basics.rst:992 02ac755f074b4ae28b2dde5d67b4474f
+#: ../../the-basics.rst:990 02ac755f074b4ae28b2dde5d67b4474f
 msgid ":meth:`Page.annots`"
 msgstr ""
 
-#: ../../the-basics.rst:1002 3d4556c1d28240f2aa6a1c395fc1a1a9
+#: ../../the-basics.rst:1000 3d4556c1d28240f2aa6a1c395fc1a1a9
 msgid "Redacting content from a |PDF|"
 msgstr ""
 
-#: ../../the-basics.rst:1004 d99eb5ab89464e8d97d4fc7e46651604
+#: ../../the-basics.rst:1002 d99eb5ab89464e8d97d4fc7e46651604
 msgid ""
 "Redactions are special types of annotations which can be marked onto a "
 "document page to denote an area on the page which should be securely "
@@ -755,53 +755,63 @@ msgid ""
 "is securely removed."
 msgstr ""
 
-#: ../../the-basics.rst:1006 223f6cd8cecb4da98e5dd318031c8fda
+#: ../../the-basics.rst:1004 223f6cd8cecb4da98e5dd318031c8fda
 msgid ""
 "For example if we wanted to redact all instances of the name \"Jane Doe\""
 " from a document we could do the following:"
 msgstr ""
 
-#: ../../the-basics.rst:1034 62dd2d2bb85640b2b62115053f61669a
+#: ../../the-basics.rst:1032 62dd2d2bb85640b2b62115053f61669a
 msgid ""
 "Another example could be redacting an area of a page, but not to redact "
 "any line art (i.e. vector graphics) within the defined area, by setting a"
 " parameter flag as follows:"
 msgstr ""
 
-#: ../../the-basics.rst:1065 d9d9f830754d466387849b71b4085d14
+#: ../../the-basics.rst:1063 d9d9f830754d466387849b71b4085d14
 msgid ""
 "Once a redacted version of a document is saved then the redacted content "
 "in the |PDF| is *irretrievable*. Thus, a redacted area in a document "
 "removes text and graphics completely from that area."
 msgstr ""
 
-#: ../../the-basics.rst:1072 946a2796985d485fb5e2ed7acc4289e8
+#: ../../the-basics.rst:1070 946a2796985d485fb5e2ed7acc4289e8
 msgid ""
 "The are a few options for creating and applying redactions to a page, for"
 " the full API details to understand the parameters to control these "
 "options refer to the API reference."
 msgstr ""
 
-#: ../../the-basics.rst:1076 548f9c1e5ac243f8b4055e2a34c65166
+#: ../../the-basics.rst:1074 548f9c1e5ac243f8b4055e2a34c65166
 msgid ":meth:`Page.add_redact_annot`"
 msgstr ""
 
-#: ../../the-basics.rst:1078 47c9ad1997a44ad7b9d0ef477ee10755
+#: ../../the-basics.rst:1076 47c9ad1997a44ad7b9d0ef477ee10755
 msgid ":meth:`Page.apply_redactions`"
 msgstr ""
 
-#: ../../the-basics.rst:1088 1a162b81c4bf4f65abc57893d5ffe457
+#: ../../the-basics.rst:1086 1a162b81c4bf4f65abc57893d5ffe457
 msgid "Converting PDF Documents"
 msgstr ""
 
-#: ../../the-basics.rst:1090 72cd004015184e5c91130763bcf42e8b
+#: ../../the-basics.rst:1088 72cd004015184e5c91130763bcf42e8b
 msgid ""
 "We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-"
 "docx** library to provide simple document conversion from |PDF| to "
 "**DOCX** format."
 msgstr ""
 
-#: ../../footer.rst:46 3e0afdfbfd574b1daaa229594686200d
+#: ../../footer.rst:48 3e0afdfbfd574b1daaa229594686200d
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
+
+#~ msgid ""
+#~ "Using the :meth:`Document.insert_page` method "
+#~ "also inserts a new page and "
+#~ "accepts the same `width` and `height`"
+#~ " parameters. But it lets you also "
+#~ "insert arbitrary text into the new "
+#~ "page and returns the number of "
+#~ "inserted lines."
+#~ msgstr ""
 
