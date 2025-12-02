@@ -1,3 +1,5 @@
+.. _documentation_footer:
+
 ----
 
 .. raw:: html

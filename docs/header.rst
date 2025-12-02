@@ -28,10 +28,6 @@
 
     <cite>PyMuPDF Pro</cite>
 
-.. |PDF| raw:: html
-
-    <cite>PDF</cite>
-
 .. |PyMuPDF4LLM| raw:: html
 
     <cite>PyMuPDF4LLM</cite>
@@ -39,6 +35,14 @@
 .. |PyMuPDF Layout| raw:: html
 
     <cite>PyMuPDF Layout</cite>
+
+.. |MuPDF| raw:: html
+
+    <cite>MuPDF</cite>
+
+.. |PDF| raw:: html
+
+    <cite>PDF</cite>
 
 .. |Markdown| raw:: html
 
@@ -51,14 +55,6 @@
 .. |TXT| raw:: html
 
     <cite>TXT</cite>
-
-.. |MuPDF| raw:: html
-
-    <cite>MuPDF</cite>
-
-.. |PDF| raw:: html
-
-    <cite>PDF</cite>
 
 .. |AGPL| raw:: html
 
