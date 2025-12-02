@@ -21,37 +21,37 @@ msgstr ""
 
 #: ../../header.rst:-1 26b7c00502e4429388cabf9a042f5238
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 7a2feb7c7c9a4331ab92ee52778c6ed3
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 6f902b541af847b1b3f894dde5be9209
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../faq.rst:7 6ac2612360e64fa9b4c17369cb8c60f3
 msgid "FAQ"
-msgstr ""
+msgstr "자주 묻는 질문"
 
 #: ../../faq.rst:9 dcceb2d26f344dca90e1cf158b5648f4
-msgid "A collection of recipes in “How-To” format for using PyMuPDF."
-msgstr ""
+msgid "A collection of recipes in "How-To" format for using PyMuPDF."
+msgstr "PyMuPDF 사용을 위한 "사용 방법" 형식의 레시피 모음입니다."
 
 #: ../../faq.rst:12 5c72bd18a4a24c00a6a60585bc9f17d3
 msgid "Please see:"
-msgstr ""
+msgstr "다음을 참조하세요:"
 
 #: ../../faq.rst:14 9b73bbc3abad40ddbe598984f532aa9d
 msgid ":ref:`Recipes: Table of Contents<RecipesTOC>`"
-msgstr ""
+msgstr ":ref:`레시피: 목차<RecipesTOC>`"
 
 #: ../../footer.rst:46 c31113147f904375bfc8ba0a1e1c1959
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

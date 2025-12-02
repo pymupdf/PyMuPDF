@@ -21,40 +21,40 @@ msgstr ""
 
 #: ../../header.rst:-1 f427b4b5c89c434aa431d0105a3b4ced
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 25ffbcd722b944a087a274a8e9d2f119
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 29a19d98cec64f3488930f81e11e93e7
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../recipes-optional-content.rst:7 700c319fd483491eb9c651ce164689cf
 msgid "Optional Content Support"
-msgstr ""
+msgstr "선택적 콘텐츠 지원"
 
 #: ../../recipes-optional-content.rst:9 5ecf5ebcfe42415bb96d754f39769237
 msgid ""
 "This document explains PyMuPDF's support of the PDF concept **\"Optional "
 "Content\"**."
-msgstr ""
+msgstr "이 문서는 |PyMuPDF| 가 지원하는 PDF 개념 **\"선택적 콘텐츠\"** 에 대해 설명합니다."
 
 #: ../../recipes-optional-content.rst:12 2d6ce70234fa4a51b645e6eb697c23c1
 msgid "Introduction: The Optional Content Concept"
-msgstr ""
+msgstr "소개: 선택적 콘텐츠 개념"
 
 #: ../../recipes-optional-content.rst:13 a1bba7af8cee41cabc8aa14f83c25097
 msgid ""
 "*Optional Content* in PDF is a way to show or hide parts of a document "
 "based on certain conditions: Parameters that can be set to ON or to OFF "
 "when using a supporting PDF consumer (viewer), or programmatically."
-msgstr ""
+msgstr "PDF의 *선택적 콘텐츠* 는 특정 조건에 따라 문서의 일부를 표시하거나 숨기는 방법입니다. 지원하는 PDF 소비자(뷰어)를 사용할 때 또는 프로그래밍 방식으로 ON 또는 OFF로 설정할 수 있는 매개변수입니다."
 
 #: ../../recipes-optional-content.rst:15 cab765ef09a444c5baccc6ecba041e6e
 msgid ""
@@ -65,20 +65,20 @@ msgid ""
 "automatically switching between different zooming levels. Other use cases"
 " may be to automatically show different detail levels when displaying a "
 "document on screen as opposed to printing it."
-msgstr ""
+msgstr "이 기능은 CAD 도면, 레이어 아트워크, 지도, 다국어 문서와 같은 항목에서 유용합니다. 일반적인 용도에는 지리적 지도, 기술 장치, 건축 설계 등과 같은 복잡한 벡터 그래픽의 세부 정보 표시 또는 숨기기, 다양한 확대/축소 수준 간의 자동 전환이 포함됩니다. 다른 사용 사례는 문서를 인쇄하는 것과 달리 화면에 표시할 때 자동으로 다른 세부 수준을 표시하는 것일 수 있습니다."
 
 #: ../../recipes-optional-content.rst:17 a3cf8bb5edc04658bcc5b018e1302847
 msgid ""
 "Special PDF objects, so-called **Optional Content Groups** (OCGs) are "
 "used to define these different *layers* of content."
-msgstr ""
+msgstr "특수 PDF 객체인 **선택적 콘텐츠 그룹** (OCG)을 사용하여 이러한 다양한 콘텐츠 *레이어* 를 정의합니다."
 
 #: ../../recipes-optional-content.rst:19 11067de9260f444189d97ae6ae624654
 msgid ""
 "Assigning an OCG to a \"normal\" PDF object (like a text or an image) "
 "causes that object to be visible or hidden, depending on the current "
 "state of the assigned OCG."
-msgstr ""
+msgstr "OCG를 \"일반\" PDF 객체(텍스트 또는 이미지 등)에 할당하면 할당된 OCG의 현재 상태에 따라 해당 객체가 표시되거나 숨겨집니다."
 
 #: ../../recipes-optional-content.rst:21 95e830e21e764c0a949cb7ed0a33fc95
 msgid ""
@@ -89,21 +89,21 @@ msgid ""
 " configurations (via the PDF viewer or programmatically) causes a "
 "corresponding visibility change of all affected PDF objects throughout "
 "the document."
-msgstr ""
+msgstr "PDF의 선택적 콘텐츠 전체 구성을 쉽게 정의하기 위해 OCG는 **OC 구성** 이라는 상위 수준 그룹으로 구성할 수 있습니다. 각 구성은 각 OCG의 원하는 초기 표시 상태와 함께 OCG 컬렉션입니다. 이러한 구성 중 하나를 선택하면(PDF 뷰어를 통해 또는 프로그래밍 방식으로) 문서 전체에서 영향을 받는 모든 PDF 객체의 표시 상태가 해당 상태로 변경됩니다."
 
 #: ../../recipes-optional-content.rst:23 b707fd22852842e89a0e8e78a296ef39
 msgid "Except for the default one, OC Configurations are optional."
-msgstr ""
+msgstr "기본 구성 외에는 OC 구성은 선택 사항입니다."
 
 #: ../../recipes-optional-content.rst:25 0844d7f44e964e409fefe8c054f52b6d
 msgid ""
 "For more explanations and additional background please refer to PDF "
 "specification manuals."
-msgstr ""
+msgstr "자세한 설명과 추가 배경 정보는 PDF 사양 매뉴얼을 참조하세요."
 
 #: ../../recipes-optional-content.rst:28 6133510bc73140a4b17bbf8cda929189
 msgid "PyMuPDF Support for PDF Optional Content"
-msgstr ""
+msgstr "PDF 선택적 콘텐츠에 대한 |PyMuPDF| 지원"
 
 #: ../../recipes-optional-content.rst:29 ee3f36d2819e41d2aeabc811bdfcddb2
 msgid ""
@@ -111,24 +111,24 @@ msgid ""
 "Option Content Groups, Configurations, maintaining the assignment of OCGs"
 " to PDF objects and programmatically switching between OC Configurations "
 "and the visibility states of each single OCG."
-msgstr ""
+msgstr "|PyMuPDF| 는 선택적 콘텐츠 그룹 및 구성의 보기, 정의, 변경, 삭제, OCG를 PDF 객체에 할당하는 것의 유지, OC 구성 간의 프로그래밍 방식 전환 및 각 단일 OCG의 표시 상태에 대한 완전한 지원을 제공합니다."
 
 #: ../../recipes-optional-content.rst:32 6c810e8459dd45b499132c9ef8a2ec30
 msgid "How to Add Optional Content"
-msgstr ""
+msgstr "선택적 콘텐츠 추가 방법"
 
 #: ../../recipes-optional-content.rst:33 ddc6af20e120444c8d6bcbef96f4ab41
 msgid ""
 "This is as simple as adding an Optional Content Group, OCG, to a PDF: "
 ":meth:`Document.add_ocg`."
-msgstr ""
+msgstr "PDF에 선택적 콘텐츠 그룹(OCG)을 추가하는 것만큼 간단합니다: :meth:`Document.add_ocg`."
 
 #: ../../recipes-optional-content.rst:35 247da2498372479cbcf5c1e211c93b70
 msgid ""
 "If previously the PDF had no OC support at all, the required setup (like "
 "defining the default OC Configuration) will be done at this point "
 "automatically."
-msgstr ""
+msgstr "이전에 PDF에 OC 지원이 전혀 없었다면, 필요한 설정(기본 OC 구성 정의 등)이 이 시점에서 자동으로 수행됩니다."
 
 #: ../../recipes-optional-content.rst:37 f3673e60584d40d08730a4d5183a4393
 msgid ""
@@ -136,7 +136,7 @@ msgid ""
 "associate (mark) any PDF object with it, that you want to make dependent "
 "on this OCG's state. For example, you can insert an image on a page and "
 "refer to the xref like this::"
-msgstr ""
+msgstr "이 메서드는 생성된 OCG의 :data:`xref` 를 반환합니다. 이 xref를 사용하여 이 OCG의 상태에 종속되도록 만들고자 하는 모든 PDF 객체를 연결(표시)합니다. 예를 들어, 페이지에 이미지를 삽입하고 다음과 같이 xref를 참조할 수 있습니다::"
 
 #: ../../recipes-optional-content.rst:41 f4a0a4f56cf343ce93de964daa847414
 msgid ""
@@ -146,37 +146,37 @@ msgid ""
 "(in-) visible everywhere throughout the document if the OCG's state is "
 "\"ON\", respectively \"OFF\". You can also assign a different OCG with "
 "this method."
-msgstr ""
+msgstr "**기존** 이미지를 OCG의 제어 하에 두려면 먼저 이미지의 xref 번호(여기서는 `img_xref` 라고 함)를 찾은 다음 `doc.set_oc(img_xref, xref)` 를 수행해야 합니다. 그 후 OCG의 상태가 \"ON\" 또는 \"OFF\"이면 이미지는 문서 전체에서 (비)표시됩니다. 이 메서드를 사용하여 다른 OCG를 할당할 수도 있습니다."
 
 #: ../../recipes-optional-content.rst:43 876cc7ea11954c498741a87e7e7f2e81
 msgid "To **remove** an OCG from an image, do `doc.set_oc(img_xref, 0)`."
-msgstr ""
+msgstr "이미지에서 OCG를 **제거** 하려면 `doc.set_oc(img_xref, 0)` 를 수행하세요."
 
 #: ../../recipes-optional-content.rst:45 148754aebd804196a3832628dcd22df6
 msgid ""
 "One single OCG can be assigned to multiple PDF objects to control their "
 "visibility."
-msgstr ""
+msgstr "단일 OCG를 여러 PDF 객체에 할당하여 표시 여부를 제어할 수 있습니다."
 
 #: ../../recipes-optional-content.rst:48 654180253edf46a797c215677cb22eba
 msgid "How to Define Complex Optional Content Conditions"
-msgstr ""
+msgstr "복잡한 선택적 콘텐츠 조건 정의 방법"
 
 #: ../../recipes-optional-content.rst:50 be5af920b1f64a559cac7f324ea6f913
 msgid ""
 "Sophisticated logical conditions can be established to address complex "
 "visibility needs."
-msgstr ""
+msgstr "복잡한 표시 요구사항을 해결하기 위해 정교한 논리 조건을 설정할 수 있습니다."
 
 #: ../../recipes-optional-content.rst:52 78345b4a7695447a871af9b3d7dc1352
 msgid ""
 "For example, you might want to create a multi-language document, so the "
 "user may switch between languages as required."
-msgstr ""
+msgstr "예를 들어, 사용자가 필요에 따라 언어를 전환할 수 있도록 다국어 문서를 만들 수 있습니다."
 
 #: ../../recipes-optional-content.rst:54 2975f48b256e4d7f954291ed0f71b2e4
 msgid "Please have a look at `this Jupyter Notebook`_ and execute it as desired."
-msgstr ""
+msgstr "`this Jupyter Notebook`_ 을 확인하고 원하는 대로 실행하세요."
 
 #: ../../recipes-optional-content.rst:56 5a66d6db462b491488acb6e94488a590
 msgid ""
@@ -184,9 +184,9 @@ msgid ""
 "multiple OCGs with ON/OFF states that are connected by some kind of "
 "logical relationship -- but it should give you an impression of what is "
 "possible and how to plan your next steps."
-msgstr ""
+msgstr "물론 요구사항이 더 복잡할 수 있으며 논리적 관계로 연결된 여러 ON/OFF 상태의 OCG를 포함할 수 있지만, 가능한 것과 다음 단계를 계획하는 방법에 대한 인상을 제공해야 합니다."
 
 #: ../../footer.rst:46 348e850342ec47b1a57c9045cb6713c3
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

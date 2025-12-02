@@ -21,29 +21,29 @@ msgstr ""
 
 #: ../../version.rst:1 d1fbe6ff1d5549fb8be875f6d37c584b
 msgid "This documentation covers PyMuPDF |version|."
-msgstr ""
+msgstr "이 문서는 PyMuPDF |version| 을 다룹니다."
 
 #: ../../version.rst:3 133bf913bb004c8ca82964184ed7628c
 msgid ""
 "The major and minor versions of PyMuPDF and MuPDF will always be the "
 "same. Only the third qualifier (patch level) may deviate from that of "
 "MuPDF."
-msgstr ""
+msgstr "|PyMuPDF| 와 |MuPDF| 의 주 버전과 부 버전은 항상 동일합니다. 세 번째 한정자(패치 레벨)만 |MuPDF| 와 다를 수 있습니다."
 
 #: ../../version.rst:5 994720d99f72419ebd711b2cf71dcefb
 msgid ""
 "Typically PyMuPDF is released more frequently than MuPDF so it will often"
 " be the case that the patch level of PyMuPDF will be greater than the "
 "embedded MuPDF."
-msgstr ""
+msgstr "일반적으로 PyMuPDF는 MuPDF보다 더 자주 릴리스되므로, PyMuPDF의 패치 레벨이 내장된 MuPDF보다 높은 경우가 많습니다."
 
 #: ../../version.rst:9 371aa251e8314b9aad7c870f54636f80
 msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
-msgstr ""
+msgstr "예를 들어 PyMuPDF-1.24.5는 MuPDF-1.24.2를 포함합니다."
 
 #: ../../version.rst:11 7c7d7d87d7e14441959c236fee7d2ee5
 msgid "Also see `pymupdf_version` and `mupdf_version`."
-msgstr ""
+msgstr "`pymupdf_version` 및 `mupdf_version` 도 참조하세요."
 
 #~ msgid ""
 #~ "The major and minor versions of "

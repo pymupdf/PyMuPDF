@@ -21,61 +21,61 @@ msgstr ""
 
 #: ../../header.rst:-1 7e6f40d7964249e79b04c3d1e97663f7
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 0b0e7728efd643f2af88f9a10132b4db
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 fcd448c0f08b44ca81698f910e7f182b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../recipes-multiprocessing.rst:17 c6783e6e6a79406dbcc4279e7db0acff
 msgid "Multiprocessing"
-msgstr ""
+msgstr "멀티프로세싱"
 
 #: ../../recipes-multiprocessing.rst:19 3440ee5e309146219a07e286636ee246
 msgid ""
 "|PyMuPDF| does not support running on multiple threads - doing so may "
 "cause incorrect behaviour or even crash Python itself."
-msgstr ""
+msgstr "|PyMuPDF| 는 여러 스레드에서 실행을 지원하지 않습니다. 그렇게 하면 잘못된 동작이 발생하거나 Python 자체가 충돌할 수 있습니다."
 
 #: ../../recipes-multiprocessing.rst:21 c2e5df4ee4234d12ae3febd77e85fbe3
 msgid ""
 "However, there is the option to use :title:`Python's` *multiprocessing* "
 "module in a variety of ways."
-msgstr ""
+msgstr "하지만 :title:`Python의` *multiprocessing* 모듈을 다양한 방법으로 사용할 수 있는 옵션이 있습니다."
 
 #: ../../recipes-multiprocessing.rst:23 bf58d753cc3b40d7a405acc1f719c73c
 msgid ""
 "If you are looking to speed up page-oriented processing for a large "
 "document, use this script as a starting point. It should be at least "
 "twice as fast as the corresponding sequential processing."
-msgstr ""
+msgstr "큰 문서에 대한 페이지 지향 처리를 가속화하려면 이 스크립트를 시작점으로 사용하세요. 해당 순차 처리보다 최소 2배 빠르게 동작해야 합니다."
 
 #: ../../recipes-multiprocessing.rst:26 ../../recipes-multiprocessing.rst:37
 #: c80ee239863c4c828445463631c1e884 f7c061f68ffd4ceeb32612aadf8d455e
 msgid "|toggleStart|"
-msgstr ""
+msgstr "|toggleStart|"
 
 #: ../../recipes-multiprocessing.rst:31 ../../recipes-multiprocessing.rst:42
 #: 591531fd1bc740dcb7a6d96399fe0ae1 71adac329d5748839c5c665b80e4d71d
 msgid "|toggleEnd|"
-msgstr ""
+msgstr "|toggleEnd|"
 
 #: ../../recipes-multiprocessing.rst:34 29a0399816a94d87be2670a44b7590db
 msgid ""
 "Here is a more complex example involving inter-process communication "
 "between a main process (showing a GUI) and a child process doing "
 "|PyMuPDF| access to a document."
-msgstr ""
+msgstr "다음은 메인 프로세스(GUI 표시)와 문서에 대한 |PyMuPDF| 액세스를 수행하는 자식 프로세스 간의 프로세스 간 통신을 포함하는 더 복잡한 예제입니다."
 
 #: ../../footer.rst:46 bd8b258b125f42cda799e69f58599037
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

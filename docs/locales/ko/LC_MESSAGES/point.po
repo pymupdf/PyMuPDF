@@ -21,149 +21,149 @@ msgstr ""
 
 #: ../../header.rst:-1 ff7f2bbd27574c06a12cfe0f8feaa292
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 a938f9fbdec343399166b697412bd381
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 9b1b01d63ee048cba25d12397c4cbc9c
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../point.rst:7 14b832da77494838a52695d7ed883865
 msgid "Point"
-msgstr ""
+msgstr "Point"
 
 #: ../../point.rst:9 ee92bfad50f840c592179ff205c48652
 msgid ""
 "*Point* represents a point in the plane, defined by its x and y "
 "coordinates."
-msgstr ""
+msgstr "*Point* 는 x 및 y 좌표로 정의되는 평면상의 점을 나타냅니다."
 
 #: ../../point.rst:12 d95d005e957741acbcc453b2978ab474
 msgid "**Attribute / Method**"
-msgstr ""
+msgstr "**속성 / 메서드**"
 
 #: ../../point.rst:12 6cc17250feda46f3895c61daf01ae9ef
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../point.rst:14 41c8142652234b88ac19813753d3307e
 msgid ":meth:`Point.distance_to`"
-msgstr ""
+msgstr ":meth:`Point.distance_to`"
 
 #: ../../point.rst:14 261845b5a5b24bf0b064101ff507b23b
 msgid "calculate distance to point or rect"
-msgstr ""
+msgstr "점 또는 사각형까지의 거리 계산"
 
 #: ../../point.rst:15 4aa6b4f0719c46e498b43fe18d24f3eb
 msgid ":meth:`Point.norm`"
-msgstr ""
+msgstr ":meth:`Point.norm`"
 
 #: ../../point.rst:15 bb965571d49042f990f2ce83a5b1d501
 msgid "the Euclidean norm"
-msgstr ""
+msgstr "유클리드 노름"
 
 #: ../../point.rst:16 8fa73d7331154012aedebe7f5f583ef0
 msgid ":meth:`Point.transform`"
-msgstr ""
+msgstr ":meth:`Point.transform`"
 
 #: ../../point.rst:16 513606c9c9c24e929a77cffeb961406c
 msgid "transform point with a matrix"
-msgstr ""
+msgstr "행렬로 점 변환"
 
 #: ../../point.rst:17 2cb5652a207046aabd4833605b0db9a7
 msgid ":attr:`Point.abs_unit`"
-msgstr ""
+msgstr ":attr:`Point.abs_unit`"
 
 #: ../../point.rst:17 a5938582888c4a3bb9c18a1c3f20c2e8
 msgid "same as unit, but positive coordinates"
-msgstr ""
+msgstr "unit과 동일하지만 좌표가 양수"
 
 #: ../../point.rst:18 3e5b94700abd4e9f9ee59f420160e03b
 msgid ":attr:`Point.unit`"
-msgstr ""
+msgstr ":attr:`Point.unit`"
 
 #: ../../point.rst:18 2b7bbc4e8d9b49fd90eba605096d6695
 msgid "point coordinates divided by *abs(point)*"
-msgstr ""
+msgstr "*abs(point)* 로 나눈 점 좌표"
 
 #: ../../point.rst:19 31b75b9a5271468b91957b2b1e4f4cdc
 msgid ":attr:`Point.x`"
-msgstr ""
+msgstr ":attr:`Point.x`"
 
 #: ../../point.rst:19 62613a63800c42a9b2e4b7e25ce06a1b
 msgid "the X-coordinate"
-msgstr ""
+msgstr "X 좌표"
 
 #: ../../point.rst:20 03bda37b4f4e43d5b2c87664d47e7c88
 msgid ":attr:`Point.y`"
-msgstr ""
+msgstr ":attr:`Point.y`"
 
 #: ../../point.rst:20 1f7a039317c9403b9eef49abcffc3c17
 msgid "the Y-coordinate"
-msgstr ""
+msgstr "Y 좌표"
 
 #: ../../point.rst:23 226585c9d32d4bdda8ea50151987bb6f
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../point.rst:35 52e6fd50060a435cbcd1ea5ea07199d9
 msgid "Overloaded constructors."
-msgstr ""
+msgstr "오버로드된 생성자."
 
 #: ../../point.rst:37 858213bf59564a6493343f329aa59c60
 msgid "Without parameters, *Point(0, 0)* will be created."
-msgstr ""
+msgstr "매개변수 없이 *Point(0, 0)* 이 생성됩니다."
 
 #: ../../point.rst:39 fe4c165d5aa24d3a979783344bfd9ac0
 msgid ""
 "With another point specified, a **new copy** will be created, "
 "\"sequence\" is a Python sequence of 2 numbers (see "
 ":ref:`SequenceTypes`)."
-msgstr ""
+msgstr "다른 점이 지정되면 **새 복사본** 이 생성됩니다. \"sequence\"는 2개의 숫자로 구성된 Python 시퀀스입니다(:ref:`SequenceTypes` 참조)."
 
 #: ../../point.rst 0eddda1bb6c54ccaa7d284736b29da50
 #: 3b9ed60226ef48f0a657c5ba46c27350 c7f85b4fbec2467896a422f72188865d
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../point.rst:41 97152760b7ba410cb622804600ef1a35
 msgid "x coordinate of the point"
-msgstr ""
+msgstr "점의 x 좌표"
 
 #: ../../point.rst:43 7926764c81784f70845fd05cb89d5865
 msgid "y coordinate of the point"
-msgstr ""
+msgstr "점의 y 좌표"
 
 #: ../../point.rst:47 5c3faa24b7e144068803db83b33fe793
 msgid ""
 "Calculate the distance to *x*, which may be :data:`point_like` or "
 ":data:`rect_like`. The distance is given in units of either pixels "
 "(default), inches, centimeters or millimeters."
-msgstr ""
+msgstr "*x* 까지의 거리를 계산합니다. *x* 는 :data:`point_like` 또는 :data:`rect_like` 일 수 있습니다. 거리는 픽셀(기본값), 인치, 센티미터 또는 밀리미터 단위로 제공됩니다."
 
 #: ../../point.rst:49 44d8777c04344d47bc4a9242808880d1
 msgid "to which to compute the distance."
-msgstr ""
+msgstr "거리를 계산할 대상."
 
 #: ../../point.rst:51 91e44f65560e4211accb6c725eebfdd6
 msgid "the unit to be measured in. One of \"px\", \"in\", \"cm\", \"mm\"."
-msgstr ""
+msgstr "측정 단위. \"px\", \"in\", \"cm\", \"mm\" 중 하나."
 
 #: ../../point.rst 64687f2c94ef4b5ba2750e3eb184ad05
 #: cd80063c5dc9498cbbdd25b759d31cdb
 msgid "Return type"
-msgstr ""
+msgstr "반환 유형"
 
 #: ../../point.rst a750839310d34c5d887db8268777489a
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../point.rst:54 bc0f187b31f44a7181e31d08f7c53a82
 msgid ""
@@ -171,49 +171,49 @@ msgid ""
 "is the length of the shortest line connecting to one of the rectangle "
 "sides * is calculated to the **finite version** of it * is zero if it "
 "**contains** the point"
-msgstr ""
+msgstr "*x* 까지의 거리. 이것이 :data:`rect_like` 인 경우, 거리는 * 사각형의 한 변에 연결하는 가장 짧은 선의 길이 * **유한 버전** 에 대해 계산됨 * 점을 **포함** 하면 0"
 
 #: ../../point.rst:54 ae37d128ae1440f3bbd8ed1ea99f2152
 msgid "the distance to *x*. If this is :data:`rect_like`, then the distance"
-msgstr ""
+msgstr "*x* 까지의 거리. 이것이 :data:`rect_like` 인 경우, 거리는"
 
 #: ../../point.rst:56 9ee6925c977945fe973ed9ab955366b2
 msgid ""
 "is the length of the shortest line connecting to one of the rectangle "
 "sides"
-msgstr ""
+msgstr "사각형의 한 변에 연결하는 가장 짧은 선의 길이"
 
 #: ../../point.rst:57 3081d399626b49c987de03dbfa3d0ff5
 msgid "is calculated to the **finite version** of it"
-msgstr ""
+msgstr "그것의 **유한 버전** 에 대해 계산됨"
 
 #: ../../point.rst:58 c71eaa596c2c423b862c9e70cb89f044
 msgid "is zero if it **contains** the point"
-msgstr ""
+msgstr "점을 **포함** 하면 0"
 
 #: ../../point.rst:62 a6403033f7bf44a591174a022d0fdf1c
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "버전 1.16.0에서 새로 추가됨"
 
 #: ../../point.rst:64 7ece798ec8144d4692eb9a2959a40823
 msgid ""
 "Return the Euclidean norm (the length) of the point as a vector. Equals "
 "result of function *abs()*."
-msgstr ""
+msgstr "점의 유클리드 노름(길이)을 벡터로 반환합니다. 함수 *abs()* 의 결과와 같습니다."
 
 #: ../../point.rst:68 f946cd0be509442bb0d77202325e2f96
 msgid "Apply a matrix to the point and replace it with the result."
-msgstr ""
+msgstr "점에 행렬을 적용하고 결과로 대체합니다."
 
 #: ../../point.rst:70 97f1624c012a40e1b233376529f768b0
 msgid "The matrix to be applied."
-msgstr ""
+msgstr "적용할 행렬."
 
 #: ../../point.rst:72 ../../point.rst:80 ../../point.rst:86
 #: 18880915c78345d4a3e9807be13f50b7 52b88570e26b4eb5b5d6335523021f5f
 #: aab72bb00a464b30aa87b8638935ebd6
 msgid ":ref:`Point`"
-msgstr ""
+msgstr ":ref:`Point`"
 
 #: ../../point.rst:76 348afd234c5c4c98ba5a47b9d5463fbb
 msgid ""
@@ -222,46 +222,46 @@ msgid ""
 "direction as the point does. Its x, resp. y values are equal to the "
 "cosine, resp. sine of the angle this vector (and the point itself) has "
 "with the x axis."
-msgstr ""
+msgstr "각 좌표를 *norm(point)*, 점에서 (0,0)까지의 거리로 나눈 결과입니다. 이것은 점과 같은 방향을 가리키는 길이 1의 벡터입니다. x, 각각 y 값은 이 벡터(및 점 자체)가 x축과 이루는 각도의 코사인, 각각 사인과 같습니다."
 
 #: ../../point.rst 68c8e993f1924162940b72535b1ce094
 #: 74cca4c04a7c48d1a05b1cef455309b7 8ab750f04c354beda9b8193eb29e148a
 #: c3fab6e7e5714f6cb98f51b356a62c80
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../point.rst:84 1c2c3c05d9164c73a34b01b96b77e536
 msgid ""
 "Same as :attr:`unit` above, replacing the coordinates with their absolute"
 " values."
-msgstr ""
+msgstr "위의 :attr:`unit` 과 동일하지만 좌표를 절댓값으로 대체합니다."
 
 #: ../../point.rst:90 fd219a7540914e5ea48f7ac85865752a
 msgid "The x coordinate"
-msgstr ""
+msgstr "x 좌표"
 
 #: ../../point.rst:92 ../../point.rst:98 2782c521357b46fcb493227c412705b4
 #: 7c544b58e0744796b55d935cf4074748
 msgid "float"
-msgstr ""
+msgstr "float"
 
 #: ../../point.rst:96 49f24b3a0ef74f0c936055a979a0c047
 msgid "The y coordinate"
-msgstr ""
+msgstr "y 좌표"
 
 #: ../../point.rst:102 89afd299e213428fb3ff2efbf34ee8cf
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
-msgstr ""
+msgstr "이 클래스는 Python 시퀀스 프로토콜을 따르므로 구성 요소는 인덱스를 통해 액세스할 수도 있습니다. :ref:`SequenceTypes` 도 참조하세요."
 
 #: ../../point.rst:103 211bda314be541968172253f25a72895
 msgid ""
 "Rectangles can be used with arithmetic operators -- see chapter "
 ":ref:`Algebra`."
-msgstr ""
+msgstr "사각형은 산술 연산자와 함께 사용할 수 있습니다 -- :ref:`Algebra` 장을 참조하세요."
 
 #: ../../footer.rst:46 065c44f95f8c488584785e74c127cd30
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

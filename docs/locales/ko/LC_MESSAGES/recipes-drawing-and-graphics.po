@@ -21,54 +21,54 @@ msgstr ""
 
 #: ../../header.rst:-1 a59582325d1e4587841306a803482970
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 90e5418f2a4041ddb379751a155076c1
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 cbdc25861a8d484890d2227e3494b661
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../recipes-drawing-and-graphics.rst:7 dab2a6c85f334d099e76c1c25fc379f3
 msgid "Drawing and Graphics"
-msgstr ""
+msgstr "그리기 및 그래픽"
 
 #: ../../recipes-drawing-and-graphics.rst:11 a70f821282c64602b5f57347f8a0bae4
 msgid ""
 "When the terms \"Drawings\" or \"Graphics\" are mentioned here we are "
 "referring to \"Vector Graphics\" or \"Line Art\"."
-msgstr ""
+msgstr "여기서 \"Drawings\" 또는 \"Graphics\"라는 용어가 언급될 때는 \"벡터 그래픽\" 또는 \"선화\"를 의미합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:13 93510784237c4c4b885dc832f8aaeb1f
 msgid "Therefore please consider these terms as being synonymous!"
-msgstr ""
+msgstr "따라서 이러한 용어를 동의어로 간주하세요!"
 
 #: ../../recipes-drawing-and-graphics.rst:16 df755690b5be464ab98f1f6014fc5132
 msgid ""
 "PDF files support elementary drawing operations as part of their syntax. "
 "These are **vector graphics** and include basic geometrical objects like "
 "lines, curves, circles, rectangles including specifying colors."
-msgstr ""
+msgstr "PDF 파일은 구문의 일부로 기본 그리기 작업을 지원합니다. 이것들은 **벡터 그래픽** 이며 선, 곡선, 원, 사각형과 같은 기본 기하학적 객체를 포함하며 색상 지정도 포함합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:18 a7dfbdbdeeb54c68afa0bbf219b2f3ba
 msgid ""
 "The syntax for such operations is defined in \"A Operator Summary\" on "
 "page 643 of the :ref:`AdobeManual`. Specifying these operators for a PDF "
 "page happens in its :data:`contents` objects."
-msgstr ""
+msgstr "이러한 작업의 구문은 :ref:`AdobeManual` 의 643페이지의 \"A Operator Summary\"에 정의되어 있습니다. PDF 페이지에 대한 이러한 연산자 지정은 해당 :data:`contents` 객체에서 수행됩니다."
 
 #: ../../recipes-drawing-and-graphics.rst:20 463f264141f64e68b6fbe2cd2f02fbbb
 msgid ""
 "|PyMuPDF| implements a large part of the available features via its "
 ":ref:`Shape` class, which is comparable to notions like \"canvas\" in "
 "other packages (e.g. `reportlab <https://pypi.org/project/reportlab/>`_)."
-msgstr ""
+msgstr "|PyMuPDF| 는 :ref:`Shape` 클래스를 통해 사용 가능한 기능의 대부분을 구현하며, 이는 다른 패키지(예: `reportlab <https://pypi.org/project/reportlab/>`_)의 \"canvas\"와 같은 개념과 유사합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:22 d166a046958a49a8a28311049458c79a
 msgid ""
@@ -77,7 +77,7 @@ msgid ""
 "methods that perform drawing operations on the page's area. For example, "
 "`last_point = shape.draw_rect(rect)` draws a rectangle along the borders "
 "of a suitably defined `rect = pymupdf.Rect(...)`."
-msgstr ""
+msgstr "Shape는 항상 **페이지의 자식** 으로 생성되며, 일반적으로 `shape = page.new_shape()` 와 같은 명령으로 생성됩니다. 이 클래스는 페이지 영역에서 그리기 작업을 수행하는 여러 메서드를 정의합니다. 예를 들어, `last_point = shape.draw_rect(rect)` 는 적절히 정의된 `rect = pymupdf.Rect(...)` 의 경계를 따라 사각형을 그립니다."
 
 #: ../../recipes-drawing-and-graphics.rst:24 4b3375c816d64b008ab7d1854be54f7a
 msgid ""
@@ -85,7 +85,7 @@ msgid ""
 "operation ended (\"last point\"). Every such elementary drawing requires "
 "a subsequent :meth:`Shape.finish` to \"close\" it, but there may be "
 "multiple drawings which have one common ``finish()`` method."
-msgstr ""
+msgstr "반환된 *last_point* 는 **항상** 그리기 작업이 끝난 :ref:`Point` (\"마지막 점\")입니다. 이러한 모든 기본 그리기는 \"닫기\"를 위해 후속 :meth:`Shape.finish` 가 필요하지만, 하나의 공통 ``finish()`` 메서드를 가진 여러 그리기가 있을 수 있습니다."
 
 #: ../../recipes-drawing-and-graphics.rst:26 f14edc2fb2be4ab8ba19ffdb3740738d
 msgid ""
@@ -95,25 +95,25 @@ msgid ""
 "<https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/shapes/shapes_and_symbols.py>`_ which demonstrate "
 "how this works."
-msgstr ""
+msgstr "실제로 :meth:`Shape.finish` 는 앞선 그리기 작업 그룹을 하나의 잠재적으로 복잡한 그래픽 객체로 형성하도록 *정의* 합니다. |PyMuPDF| 는 이것이 어떻게 작동하는지 보여주는 `shapes_and_symbols.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/shapes/shapes_and_symbols.py>`_ 에 여러 사전 정의된 그래픽을 제공합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:28 c9bdfffa82e64c1d8431f654e9925619
 msgid ""
 "If you import this script, you can also directly use its graphics as in "
 "the following example::"
-msgstr ""
+msgstr "이 스크립트를 가져오면 다음 예제와 같이 그래픽을 직접 사용할 수도 있습니다::"
 
 #: ../../recipes-drawing-and-graphics.rst:86 e4c7e6930be54525bd756ddc32d931d2
 msgid "This is the script's outcome:"
-msgstr ""
+msgstr "이것은 스크립트의 결과입니다:"
 
 #: ../../recipes-drawing-and-graphics.rst:97 63f4873345ad4432a9dcf2f213c921ca
 msgid "How to Extract Drawings"
-msgstr ""
+msgstr "그리기 추출 방법"
 
 #: ../../recipes-drawing-and-graphics.rst:99 c269bccda59e4ce1be7bfbb7665979a2
 msgid "New in v1.18.0"
-msgstr ""
+msgstr "v1.18.0의 새로운 기능"
 
 #: ../../recipes-drawing-and-graphics.rst:101 99437db9d3344f56937dc3ef539d724e
 msgid ""
@@ -121,7 +121,7 @@ msgid ""
 "as a list of dictionaries. Interestingly, this is possible for :ref:`all "
 "supported document types<Supported_File_Types>` -- not just PDF: so you "
 "can use it for XPS, EPUB and others as well."
-msgstr ""
+msgstr "페이지에서 발행한 그리기 명령(**벡터 그래픽**)은 딕셔너리 목록으로 추출할 수 있습니다. 흥미롭게도 이것은 :ref:`모든 지원 문서 유형<Supported_File_Types>` 에 대해 가능합니다. PDF뿐만 아니라 XPS, EPUB 등에도 사용할 수 있습니다."
 
 #: ../../recipes-drawing-and-graphics.rst:103 9746769ddda943309de190bcae0ff9fe
 msgid ""
@@ -130,7 +130,7 @@ msgid ""
 "called a \"path\" -- represents a separate drawing -- it may be simple "
 "like a single line, or a complex combination of lines and curves "
 "representing one of the shapes of the previous section."
-msgstr ""
+msgstr "페이지 메서드 :meth:`Page.get_drawings()` 는 그리기 명령에 액세스하여 Python 딕셔너리 목록으로 변환합니다. 각 딕셔너리( \"path\" 라고 함)는 별도의 그리기를 나타냅니다. 단일 선과 같이 간단할 수도 있고, 이전 섹션의 모양 중 하나를 나타내는 선과 곡선의 복잡한 조합일 수도 있습니다."
 
 #: ../../recipes-drawing-and-graphics.rst:105 3a7f618513034c8e9ef3833145ea41c1
 msgid ""
@@ -138,20 +138,20 @@ msgid ""
 "by the :ref:`Shape` class and its methods. Here is an example for a page "
 "with one path, that draws a red-bordered yellow circle inside rectangle "
 "`Rect(100, 100, 200, 200)`::"
-msgstr ""
+msgstr "*path* 딕셔너리는 :ref:`Shape` 클래스와 그 메서드에서 쉽게 사용할 수 있도록 설계되었습니다. 다음은 하나의 경로를 가진 페이지의 예로, `Rect(100, 100, 200, 200)` 내부에 빨간색 테두리의 노란색 원을 그립니다::"
 
 #: ../../recipes-drawing-and-graphics.rst:140 0de0ff2bcd1b4aa4bc87691ca4f375c5
 msgid ""
 "You need (at least) 4 Bézier curves (of 3rd order) to draw a circle with "
 "acceptable precision. See this `Wikipedia article "
 "<https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ for some background."
-msgstr ""
+msgstr "허용 가능한 정밀도로 원을 그리려면 (최소한) 4개의 3차 베지어 곡선이 필요합니다. 배경 정보는 이 `Wikipedia article <https://en.wikipedia.org/wiki/B%C3%A9zier_curve>`_ 를 참조하세요."
 
 #: ../../recipes-drawing-and-graphics.rst:143 b621ef3cc79448109301a7679857a685
 msgid ""
 "The following is a code snippet which extracts the drawings of a page and"
 " re-draws them on a new page::"
-msgstr ""
+msgstr "다음은 페이지의 그리기를 추출하여 새 페이지에 다시 그리는 코드 스니펫입니다::"
 
 #: ../../recipes-drawing-and-graphics.rst:194 f4c89adbb0a8490d8e03b50a712dcc58
 msgid ""
@@ -159,80 +159,80 @@ msgid ""
 "class. With one exception: For technical reasons `lineCap` is a tuple of "
 "3 numbers here, whereas it is an integer in :ref:`Shape` (and in PDF). So"
 " we simply take the maximum value of that tuple."
-msgstr ""
+msgstr "보시다시피, :ref:`Shape` 클래스와 높은 일치 수준이 있습니다. 한 가지 예외가 있습니다. 기술적 이유로 여기서는 `lineCap` 이 3개의 숫자 튜플이지만, :ref:`Shape` (및 PDF)에서는 정수입니다. 따라서 해당 튜플의 최대값을 사용합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:196 782e233251fb459883d5a1434c5a2365
 msgid ""
 "Here is a comparison between input and output of an example page, created"
 " by the previous script:"
-msgstr ""
+msgstr "다음은 이전 스크립트로 생성된 예제 페이지의 입력과 출력 비교입니다:"
 
 #: ../../recipes-drawing-and-graphics.rst:201 ceca22c756464670adafb8f59a266f9f
 msgid ""
 "The reconstruction of graphics, like shown here, is not perfect. The "
 "following aspects will not be reproduced as of this version:"
-msgstr ""
+msgstr "여기에 표시된 것과 같은 그래픽 재구성은 완벽하지 않습니다. 다음 측면은 이 버전에서 재현되지 않습니다:"
 
 #: ../../recipes-drawing-and-graphics.rst:203 4859b04375644a9da37b4c2c286032e9
 msgid ""
 "Page definitions can be complex and include instructions for not showing "
 "/ hiding certain areas to keep them invisible. Things like this are "
 "ignored by :meth:`Page.get_drawings` - it will always return all paths."
-msgstr ""
+msgstr "페이지 정의는 복잡할 수 있으며 특정 영역을 보이지 않게 유지하기 위해 표시하지 않거나 숨기는 지시를 포함할 수 있습니다. 이러한 사항은 :meth:`Page.get_drawings` 에 의해 무시됩니다. 항상 모든 경로를 반환합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:205 0823be3f9f0b4512b042dd4c974406ca
 msgid ""
 "You can use the path list to make your own lists of e.g. all lines or all"
 " rectangles on the page and subselect them by criteria, like color or "
 "position on the page etc."
-msgstr ""
+msgstr "경로 목록을 사용하여 예를 들어 페이지의 모든 선 또는 모든 사각형 목록을 만들고 색상이나 페이지의 위치 등의 기준으로 하위 선택할 수 있습니다."
 
 #: ../../recipes-drawing-and-graphics.rst:210 882f949ade2d4b528fbe0a18f15aa51e
 msgid "How to Delete Drawings"
-msgstr ""
+msgstr "그리기 삭제 방법"
 
 #: ../../recipes-drawing-and-graphics.rst:212 d9a69d70bb29499381afbb9347fa3ec5
 msgid ""
 "To delete drawings/vector graphics we must use a :ref:`Redaction "
 "Annotation <The_Basics_Redacting>` with the bounding box of the drawing "
 "and then **add and apply** a redaction to it to delete it."
-msgstr ""
+msgstr "그리기/벡터 그래픽을 삭제하려면 그리기의 경계 상자를 사용하여 :ref:`Redaction Annotation <The_Basics_Redacting>` 을 사용한 다음 **추가하고 적용** 하여 삭제해야 합니다."
 
 #: ../../recipes-drawing-and-graphics.rst:215 486d33c08c624da1ba4d3f8b61cf54e2
 msgid ""
 "The following code shows an example of deleting the first drawing found "
 "on the page::"
-msgstr ""
+msgstr "다음 코드는 페이지에서 찾은 첫 번째 그리기를 삭제하는 예제를 보여줍니다::"
 
 #: ../../recipes-drawing-and-graphics.rst:225 74954d428a74469bae0a628b09803ec9
 msgid ""
 "See :meth:`Page.apply_redactions` for the parameter options which can be "
 "sent - you are able to apply deletion options to image, drawing and text "
 "objects which are bound by the annotation area."
-msgstr ""
+msgstr "전송할 수 있는 매개변수 옵션은 :meth:`Page.apply_redactions` 를 참조하세요. 주석 영역에 의해 경계가 지정된 이미지, 그리기 및 텍스트 객체에 삭제 옵션을 적용할 수 있습니다."
 
 #: ../../recipes-drawing-and-graphics.rst:229 0e3b851a469b4f34b686a303776ff667
 msgid "How to Draw Graphics"
-msgstr ""
+msgstr "그래픽 그리기 방법"
 
 #: ../../recipes-drawing-and-graphics.rst:231 903bdff31610401eba4df3faa0747295
 msgid ""
 "Drawing graphics is as simple as calling the type of :meth:`Drawing "
 "Method <Page.draw_line>` you may want. You can draw graphics directly on "
 "pages or within shape objects."
-msgstr ""
+msgstr "그래픽을 그리는 것은 원하는 :meth:`Drawing Method <Page.draw_line>` 유형을 호출하는 것만큼 간단합니다. 페이지에 직접 또는 shape 객체 내에서 그래픽을 그릴 수 있습니다."
 
 #: ../../recipes-drawing-and-graphics.rst:234 c8c7da7541804af39da538bd86a48706
 msgid "For example, to draw a circle::"
-msgstr ""
+msgstr "예를 들어, 원을 그리려면::"
 
 #: ../../recipes-drawing-and-graphics.rst:245 a58742fee8a64d88a569cc24aa989eac
 msgid ""
 "The :ref:`Shape` object can be used to combine multiple drawings that "
 "should receive common properties as specified by :meth:`Shape.finish`."
-msgstr ""
+msgstr ":ref:`Shape` 객체는 :meth:`Shape.finish` 에서 지정한 공통 속성을 받아야 하는 여러 그리기를 결합하는 데 사용할 수 있습니다."
 
 #: ../../footer.rst:46 b08a651f11954075811284b1a70b5a8c
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

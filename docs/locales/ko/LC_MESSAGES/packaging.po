@@ -21,182 +21,182 @@ msgstr ""
 
 #: ../../header.rst:-1 3c04d07515a94932a13a95ebeb03dd64
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 bfe728bc4ddc474bb035cd55e714eabf
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 cdf2aaae85c74803bd7026f6e124be96
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../packaging.rst:5 348e8764195645e2bf7ae0ae58e6672e
 msgid "Packaging for Linux distributions"
-msgstr ""
+msgstr "Linux 배포판용 패키징"
 
 #: ../../packaging.rst:9 cb613445a87e445abba22e57ddb58ec7
 msgid "Requirements"
-msgstr ""
+msgstr "요구사항"
 
 #: ../../packaging.rst:11 b36b1e7d3fc94b0d9d5c31f4cae79c63
 msgid "Python"
-msgstr ""
+msgstr "Python"
 
 #: ../../packaging.rst:12 4edcec2efc2d4308ad735f013faa422e
 msgid "MuPDF checkout (including submodules)."
-msgstr ""
+msgstr "|MuPDF| 체크아웃(서브모듈 포함)."
 
 #: ../../packaging.rst:13 c463c998f736479f892c6b4c57f77d89
 msgid "PyMuPDF checkout."
-msgstr ""
+msgstr "|PyMuPDF| 체크아웃."
 
 #: ../../packaging.rst:14 dbadca79b99f4a80ace5240c78bde785
 msgid "System packages listed in `scripts/sysinstall.py:g_sys_packages`."
-msgstr ""
+msgstr "`scripts/sysinstall.py:g_sys_packages` 에 나열된 시스템 패키지."
 
 #: ../../packaging.rst:15 760e1814501643e8ba68b67bc653f179
 msgid "Python packages listed in `pyproject.toml`."
-msgstr ""
+msgstr "`pyproject.toml` 에 나열된 Python 패키지."
 
 #: ../../packaging.rst:17 7b5ae3db64eb472daed8e6bad3fbf7ac
 msgid "Extra requirements for running tests:"
-msgstr ""
+msgstr "테스트 실행을 위한 추가 요구사항:"
 
 #: ../../packaging.rst:19 c7033e7fd7804ba48daa32be3ccdaa7b
 msgid "Python packages listed in `scripts/gh_release.py:test_packages`."
-msgstr ""
+msgstr "`scripts/gh_release.py:test_packages` 에 나열된 Python 패키지."
 
 #: ../../packaging.rst:23 d087313018614125b4e745ef56fc63d1
 msgid "General steps"
-msgstr ""
+msgstr "일반적인 단계"
 
 #: ../../packaging.rst:25 ff845be31dc6431c907ec57f88327d5f
 msgid "Build and install MuPDF:"
-msgstr ""
+msgstr "|MuPDF| 빌드 및 설치:"
 
 #: ../../packaging.rst:27 22584c396cc342bfba772fe8c81ac949
 msgid "Install required system packages."
-msgstr ""
+msgstr "필요한 시스템 패키지를 설치합니다."
 
 #: ../../packaging.rst:28 f7c3f08a80c141d49a7a07a13474c1bb
 msgid ""
 "Run `make install-shared-python` on MuPDF's `Makefile` with at least "
 "these make variables:"
-msgstr ""
+msgstr "|MuPDF| 의 `Makefile` 에서 최소한 다음 make 변수를 사용하여 `make install-shared-python` 을 실행합니다:"
 
 #: ../../packaging.rst:31 9d49af42c3a74272b78d5e68b8a53863
 msgid "`DESTDIR` set to the install directory, e.g. `/`."
-msgstr ""
+msgstr "`DESTDIR` 를 설치 디렉토리로 설정합니다. 예: `/`."
 
 #: ../../packaging.rst:33 c80bf2b5d6aa48a3ab8da81dcde780cb
 msgid ""
 "`prefix` set to location relative to DESTDIR, such as `/usr/local` or "
 "`/usr`. Must start with `/`."
-msgstr ""
+msgstr "`prefix` 를 DESTDIR에 상대적인 위치로 설정합니다. 예: `/usr/local` 또는 `/usr`. `/` 로 시작해야 합니다."
 
 #: ../../packaging.rst:35 11c2299023db4fb19e56a64ef4be5424
 msgid "`USE_SYSTEM_LIBS=yes`."
-msgstr ""
+msgstr "`USE_SYSTEM_LIBS=yes`."
 
 #: ../../packaging.rst:36 1384b7538ae5481a97b504d24690c056
 msgid "`HAVE_LEPTONICA=yes`."
-msgstr ""
+msgstr "`HAVE_LEPTONICA=yes`."
 
 #: ../../packaging.rst:37 06ed0058c43d461db82d505a23ca7094
 msgid "`HAVE_TESSERACT=yes`."
-msgstr ""
+msgstr "`HAVE_TESSERACT=yes`."
 
 #: ../../packaging.rst:39 b3644dcc2c5943bf888d7f8e9dc9edcc
 msgid "Build and install PyMuPDF:"
-msgstr ""
+msgstr "|PyMuPDF| 빌드 및 설치:"
 
 #: ../../packaging.rst:42 dcf39ffe359c4c03b4de4f59838ee0f0
 msgid ""
 "Run `pip install ./PyMuPDF` or `pip wheel ./PyMuPDF` with at least these "
 "environment variables:"
-msgstr ""
+msgstr "최소한 다음 환경 변수를 사용하여 `pip install ./PyMuPDF` 또는 `pip wheel ./PyMuPDF` 를 실행합니다:"
 
 #: ../../packaging.rst:46 93b07ed437f44924bb31820bb149fa1f
 msgid ""
 "`PYMUPDF_SETUP_MUPDF_BUILD=` (empty string) to prevent download and build"
 " of hard-coded MuPDF release."
-msgstr ""
+msgstr "`PYMUPDF_SETUP_MUPDF_BUILD=` (빈 문자열)을 설정하여 하드코딩된 |MuPDF| 릴리스의 다운로드 및 빌드를 방지합니다."
 
 #: ../../packaging.rst:49 9ca48e9bfca64481b10e5c28ce400a6a
 msgid ""
 "`CFLAGS`, `CXXFLAGS` and `LDFLAGS` set to allow visibility of the "
 "installed MuPDF headers and shared libraries."
-msgstr ""
+msgstr "`CFLAGS`, `CXXFLAGS` 및 `LDFLAGS` 를 설정하여 설치된 |MuPDF| 헤더 및 공유 라이브러리의 가시성을 허용합니다."
 
 #: ../../packaging.rst:52 4361b9dfe3094baeaee44b1e98a85735
 msgid "Run PyMuPDF tests:"
-msgstr ""
+msgstr "|PyMuPDF| 테스트 실행:"
 
 #: ../../packaging.rst:54 31da2ee092e74396895c9811cd72275d
 msgid "Ensure required Python packages are available."
-msgstr ""
+msgstr "필요한 Python 패키지를 사용할 수 있는지 확인합니다."
 
 #: ../../packaging.rst:56 027bc04d851d4711a60c825c34fd582c
 msgid "Run `pytest -k \"not test_color_count and not test_3050\" PyMuPDF`"
-msgstr ""
+msgstr "`pytest -k \"not test_color_count and not test_3050\" PyMuPDF` 를 실행합니다"
 
 #: ../../packaging.rst:58 c29cbb8f2791439fb47faf2ea2080ca8
 msgid ""
 "Test `test_color_count` is known fail if MuPDF is not built with "
 "PyMuPDF's custom config.h."
-msgstr ""
+msgstr "`test_color_count` 테스트는 |MuPDF| 가 |PyMuPDF| 의 사용자 정의 config.h로 빌드되지 않은 경우 실패하는 것으로 알려져 있습니다."
 
 #: ../../packaging.rst:59 366f92e009ee412b9ee326e53365c80b
 msgid ""
 "Test `test_3050` is known to fail if MuPDF is built without its own "
 "third-party libraries."
-msgstr ""
+msgstr "`test_3050` 테스트는 |MuPDF| 가 자체 서드파티 라이브러리 없이 빌드된 경우 실패하는 것으로 알려져 있습니다."
 
 #: ../../packaging.rst:63 dc265d226e3549d395d1ee9b84d7e9b7
 msgid "Use of scripts/sysinstall.py"
-msgstr ""
+msgstr "scripts/sysinstall.py 사용"
 
 #: ../../packaging.rst:65 c5ccd53c72ae43e2a8514ab3361d7530
 msgid ""
 "`scripts/sysinstall.py` provides a useful example of build, install and "
 "test commands that are known to to work, because it is run regularly by "
 "Github action `.github/workflows/test_sysinstall.yml`."
-msgstr ""
+msgstr "`scripts/sysinstall.py` 는 GitHub 액션 `.github/workflows/test_sysinstall.yml` 에 의해 정기적으로 실행되기 때문에 작동하는 것으로 알려진 빌드, 설치 및 테스트 명령의 유용한 예제를 제공합니다."
 
 #: ../../packaging.rst:69 82d7e8c0cbc44e7ba2c922716b3572df
 msgid "Run with `-h` or look at the doc-string to see detailed usage information."
-msgstr ""
+msgstr "`-h` 옵션으로 실행하거나 doc-string을 확인하여 자세한 사용 정보를 확인하세요."
 
 #: ../../packaging.rst:70 3e72131ea5f546a3b3328a8e07d2f12c
 msgid "It uses Debian-style `apt` commands to install system packages."
-msgstr ""
+msgstr "시스템 패키지를 설치하는 데 Debian 스타일의 `apt` 명령을 사용합니다."
 
 #: ../../packaging.rst:71 d7d9461807534464806ed713797d4c4a
 msgid "By default it assumes local git checkouts `mupdf/` and `PyMuPDF/`."
-msgstr ""
+msgstr "기본적으로 로컬 git 체크아웃 `mupdf/` 및 `PyMuPDF/` 를 가정합니다."
 
 #: ../../packaging.rst:73 ef0294479d1943c0b9a9320a2d3a26d5
 msgid ""
 "To run a full build, install and test for both a local fake root and the "
 "system root:"
-msgstr ""
+msgstr "로컬 가짜 루트와 시스템 루트 모두에 대해 전체 빌드, 설치 및 테스트를 실행하려면:"
 
 #: ../../packaging.rst:81 541b01cd5c274ffdb287b2e4615b1dcc
 msgid "To see what commands would be run without actually running them:"
-msgstr ""
+msgstr "실제로 실행하지 않고 실행될 명령을 보려면:"
 
 #: ../../packaging.rst:89 a1980a6d8b4e4ff483c5461aa5c7c9a2
 msgid "See also"
-msgstr ""
+msgstr "참고"
 
 #: ../../packaging.rst:92 8dfdf3477c0c47799dc0f20fc9645ebe
 msgid ""
 "`setup.py`'s initial doc-comment has detailed information about the "
 "environment variables used when building PyMuPDF."
-msgstr ""
+msgstr "`setup.py` 의 초기 doc-comment에는 |PyMuPDF| 를 빌드할 때 사용되는 환경 변수에 대한 자세한 정보가 포함되어 있습니다."
 

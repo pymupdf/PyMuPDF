@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 f61795372a914927a8bb8d2bc7871cd0
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 b6c88945ca3e433796ac09242bcafb92
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 f29d92f907804c35aff5269176052c3a
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../link.rst:7 a2ac83b843064d1690148214e4e62cab
 msgid "Link"
-msgstr ""
+msgstr "Link"
 
 #: ../../link.rst:8 e3ca00a770434f0896694fc8c2dc8e8d
 msgid ""
@@ -45,7 +45,7 @@ msgid ""
 "internet). Links exist per document page, and they are forward-chained to"
 " each other, starting from an initial link which is accessible by the "
 ":attr:`Page.first_link` property."
-msgstr ""
+msgstr "어딘가(이 문서, 다른 문서, 인터넷)를 가리키는 포인터를 나타냅니다. 링크는 문서 페이지마다 존재하며, :attr:`Page.first_link` 속성으로 접근할 수 있는 초기 링크에서 시작하여 서로 순방향으로 연결됩니다."
 
 #: ../../link.rst:10 55f719cc6bfa4e1dbdf8bba301fe4110
 msgid ""
@@ -54,131 +54,131 @@ msgid ""
 "change, etc.), then so does every of its existing link objects -- an "
 "exception is raised saying that the object is \"orphaned\", whenever a "
 "link property or method is accessed."
-msgstr ""
+msgstr "링크와 해당 페이지 사이에는 부모-자식 관계가 있습니다. 페이지 객체가 사용 불가능해지면(문서 닫힘, 문서 구조 변경 등) 해당 페이지의 모든 기존 링크 객체도 사용 불가능해집니다 -- 링크 속성이나 메서드에 접근할 때마다 객체가 \"고아\" 상태라는 예외가 발생합니다."
 
 #: ../../link.rst:13 a4193e607a9145218508afeabe0b4c2e
 msgid "**Attribute**"
-msgstr ""
+msgstr "**속성**"
 
 #: ../../link.rst:13 af32ee5e21764bdab065a26b66230ad7
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../link.rst:15 9f4a2508022d463a93f91c3406c08ab1
 msgid ":meth:`Link.set_border`"
-msgstr ""
+msgstr ":meth:`Link.set_border`"
 
 #: ../../link.rst:15 6a3d66278e124793bee041fb82bd823a
 msgid "modify border properties"
-msgstr ""
+msgstr "테두리 속성 수정"
 
 #: ../../link.rst:16 ca6e0ec1d2e5409894887ce466dd9c14
 msgid ":meth:`Link.set_colors`"
-msgstr ""
+msgstr ":meth:`Link.set_colors`"
 
 #: ../../link.rst:16 ebd1bee66f204d6bbd8e54086d79f55f
 msgid "modify color properties"
-msgstr ""
+msgstr "색상 속성 수정"
 
 #: ../../link.rst:17 111ec52301b74aac956f980fdfcaf35a
 msgid ":meth:`Link.set_flags`"
-msgstr ""
+msgstr ":meth:`Link.set_flags`"
 
 #: ../../link.rst:17 502cb7c9642642f293df7c93f92a2fd6
 msgid "modify link flags"
-msgstr ""
+msgstr "링크 플래그 수정"
 
 #: ../../link.rst:18 489cb6995acd4a8f9459e84f8e29671e
 msgid ":attr:`Link.border`"
-msgstr ""
+msgstr ":attr:`Link.border`"
 
 #: ../../link.rst:18 c61da7b8553c4f35b0de3f5b60a3f9e9
 msgid "border characteristics"
-msgstr ""
+msgstr "테두리 특성"
 
 #: ../../link.rst:19 5a1564c23ae44405bedf7e18c649d130
 msgid ":attr:`Link.colors`"
-msgstr ""
+msgstr ":attr:`Link.colors`"
 
 #: ../../link.rst:19 01a00d5d838a47e3964be170b4b2aca4
 msgid "border line color"
-msgstr ""
+msgstr "테두리 선 색상"
 
 #: ../../link.rst:20 df6c0ef2a13f47b28ec2cb2b88f5decf
 msgid ":attr:`Link.dest`"
-msgstr ""
+msgstr ":attr:`Link.dest`"
 
 #: ../../link.rst:20 2d7f3af920794e158f2472af28c69a4c
 msgid "points to destination details"
-msgstr ""
+msgstr "대상 세부 정보를 가리킴"
 
 #: ../../link.rst:21 c858c9ac8f3148deb29f863be9b27de6
 msgid ":attr:`Link.is_external`"
-msgstr ""
+msgstr ":attr:`Link.is_external`"
 
 #: ../../link.rst:21 df77568aba6c4d24babf4d0d97c19d54
 msgid "checks if the link is an external destination"
-msgstr ""
+msgstr "링크가 외부 대상인지 확인"
 
 #: ../../link.rst:22 09dcfdc3988d4ab0bb1b56be72905b8a
 msgid ":attr:`Link.flags`"
-msgstr ""
+msgstr ":attr:`Link.flags`"
 
 #: ../../link.rst:22 0fb0e2e7ae3944e6aa9886cccd29ba57
 msgid "link annotation flags"
-msgstr ""
+msgstr "링크 주석 플래그"
 
 #: ../../link.rst:23 8b3432b79e804e8a8467829f70a5504d
 msgid ":attr:`Link.next`"
-msgstr ""
+msgstr ":attr:`Link.next`"
 
 #: ../../link.rst:23 482fbb3ecd0442a8bb0a43de75382822
 msgid "points to next link"
-msgstr ""
+msgstr "다음 링크를 가리킴"
 
 #: ../../link.rst:24 7baaa58c6b184381b9aba640162dfe9b
 msgid ":attr:`Link.rect`"
-msgstr ""
+msgstr ":attr:`Link.rect`"
 
 #: ../../link.rst:24 0e0788e18be94b5784f4c8a3d0c8590b
 msgid "clickable area in untransformed coordinates"
-msgstr ""
+msgstr "변환되지 않은 좌표에서 클릭 가능한 영역"
 
 #: ../../link.rst:25 e8df77ad16fe4114a80eff4b8240b89c
 msgid ":attr:`Link.uri`"
-msgstr ""
+msgstr ":attr:`Link.uri`"
 
 #: ../../link.rst:25 502ec4ee36504004bd39daf295626fbc
 msgid "link destination"
-msgstr ""
+msgstr "링크 대상"
 
 #: ../../link.rst:26 d17729b40a80480caa127d310a3450c2
 msgid ":attr:`Link.xref`"
-msgstr ""
+msgstr ":attr:`Link.xref`"
 
 #: ../../link.rst:26 678f619f97a244a0a539107e973f3986
 msgid ":data:`xref` number of the entry"
-msgstr ""
+msgstr "항목의 :data:`xref` 번호"
 
 #: ../../link.rst:29 f76011eb2dd2424bba83dfb242a73eb3
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../link.rst:35 e01c9234e1b24ef4a42fe98da9e3b5b8
 msgid "PDF only: Change border width and dashing properties."
-msgstr ""
+msgstr "PDF 전용: 테두리 너비 및 점선 속성 변경."
 
 #: ../../link.rst:37 00c3ab6e292048be95d9d1e26a0319ce
 msgid ""
 "*(Changed in version 1.16.9)* Allow specification without using a "
 "dictionary. The direct parameters are used if *border* is not a "
 "dictionary."
-msgstr ""
+msgstr "*(버전 1.16.9에서 변경됨)* 딕셔너리를 사용하지 않고 지정을 허용합니다. *border* 가 딕셔너리가 아니면 직접 매개변수가 사용됩니다."
 
 #: ../../link.rst 00e8660458ca4df49c759966985d7ccf
 #: 4560ff2f8db3457ea45107e432c3e7ee
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../link.rst:39 9210f90061d54d20bb40b7811a63e193
 msgid ""
@@ -187,17 +187,17 @@ msgid ""
 " Omitted keys will leave the resp. property unchanged. To e.g. remove "
 "dashing use: *\"dashes\": []*. If dashes is not an empty sequence, "
 "\"style\" will automatically be set to \"D\" (dashed)."
-msgstr ""
+msgstr ":attr:`border` 속성에 의해 반환되는 딕셔너리로, 키 *\"width\"*(*float*), *\"style\"*(*str*) 및 *\"dashes\"*(*sequence*)를 가집니다. 생략된 키는 해당 속성을 변경하지 않습니다. 예를 들어 점선을 제거하려면: *\"dashes\": []* 를 사용하세요. dashes가 빈 시퀀스가 아니면 \"style\"이 자동으로 \"D\"(점선)로 설정됩니다."
 
 #: ../../link.rst:41 ../../link.rst:42 ../../link.rst:43 ../../link.rst:54
 #: 0f652b3dc1754811b0fd20b619f58221 2a2addfc429e4856a5b9d38ccc565155
 #: 4b687a46789e46148cf496194b0b604d 6666190d7e824106bd77ad41db6f0b41
 msgid "see above."
-msgstr ""
+msgstr "위를 참조하세요."
 
 #: ../../link.rst:47 8657681111dc457788d3482a31e7fd86
 msgid "PDF only: Changes the \"stroke\" color."
-msgstr ""
+msgstr "PDF 전용: \"stroke\" 색상 변경."
 
 #: ../../link.rst:49 a9f5e77a06364c1a8e73536a14d852c9
 msgid ""
@@ -205,13 +205,13 @@ msgid ""
 "support fill colors**. However, to keep a consistent API, we do allow "
 "specifying a `fill=` parameter like with all annotations, which will be "
 "ignored with a warning."
-msgstr ""
+msgstr "PDF에서 링크는 기술적으로 주석의 하위 유형이며 **채우기 색상을 지원하지 않습니다**. 그러나 일관된 API를 유지하기 위해 모든 주석과 마찬가지로 `fill=` 매개변수를 지정할 수 있지만 경고와 함께 무시됩니다."
 
 #: ../../link.rst:51 2f9965cf55cc4fa69cb5dc350c17ad09
 msgid ""
 "*(Changed in version 1.16.9)* Allow colors to be directly set. These "
 "parameters are used if *colors* is not a dictionary."
-msgstr ""
+msgstr "*(버전 1.16.9에서 변경됨)* 색상을 직접 설정할 수 있도록 허용합니다. *colors* 가 딕셔너리가 아니면 이 매개변수가 사용됩니다."
 
 #: ../../link.rst:53 d1bb1f867e02444ebfbb4a94573959bf
 msgid ""
@@ -219,25 +219,25 @@ msgid ""
 "keys and values see below. The most practical way should be to first make"
 " a copy of the *colors* property and then modify this dictionary as "
 "required."
-msgstr ""
+msgstr "색상 사양을 포함하는 딕셔너리. 허용되는 딕셔너리 키와 값은 아래를 참조하세요. 가장 실용적인 방법은 먼저 *colors* 속성의 복사본을 만든 다음 필요에 따라 이 딕셔너리를 수정하는 것입니다."
 
 #: ../../link.rst:58 ../../link.rst:65 986b15f24ea54de580c0c662299fe12d
 #: bb27f8be006d4918acba2be1f77e4ee4
 msgid "*New in v1.18.16*"
-msgstr ""
+msgstr "*v1.18.16에서 새로 추가됨*"
 
 #: ../../link.rst:60 df2a5f5ab5654a15a59600eb3536f242
 msgid ""
 "Set the PDF `/F` property of the link annotation. See "
 ":meth:`Annot.set_flags` for details. If not a PDF, this method is a no-"
 "op."
-msgstr ""
+msgstr "링크 주석의 PDF `/F` 속성을 설정합니다. 자세한 내용은 :meth:`Annot.set_flags` 를 참조하세요. PDF가 아니면 이 메서드는 아무 작업도 수행하지 않습니다."
 
 #: ../../link.rst:67 e8cfa36461074dacb4c30dea81b83979
 msgid ""
 "Return the link annotation flags, an integer (see :attr:`Annot.flags` for"
 " details). Zero if not a PDF."
-msgstr ""
+msgstr "링크 주석 플래그를 반환합니다. 정수입니다(자세한 내용은 :attr:`Annot.flags` 참조). PDF가 아니면 0입니다."
 
 #: ../../link.rst:72 004a6c2778ec462eb43f612d6513adde
 msgid ""
@@ -249,25 +249,25 @@ msgid ""
 "colorspace: 1 = GRAY, 3 = RGB, 4 = CMYK. So `(1.0, 0.0, 0.0)` stands for "
 "RGB color red. The value of each float *f* is mapped to the integer value"
 " *i* in range 0 to 255 via the computation *f = i / 255*."
-msgstr ""
+msgstr "PDF에만 의미가 있음: `0 <= float <= 1` 범위의 두 float 튜플 딕셔너리로 *stroke* 및 내부(*fill*) 색상을 지정합니다. PDF가 아니면 ``None`` 이 반환됩니다. 위에서 언급한 대로 링크의 채우기 색상은 항상 `None` 입니다. stroke 색상은 링크 사각형의 테두리에 사용됩니다. 튜플의 길이는 암시적으로 색 공간을 결정합니다: 1 = GRAY, 3 = RGB, 4 = CMYK. 따라서 `(1.0, 0.0, 0.0)` 은 RGB 색상 빨강을 나타냅니다. 각 float *f* 의 값은 계산 *f = i / 255* 를 통해 0에서 255 범위의 정수 값 *i* 에 매핑됩니다."
 
 #: ../../link.rst 114960dc31e14f46bd090eb9728c77c2
 #: 4fbd9899261b4dcebb25e7595add5438
 msgid "Return type"
-msgstr ""
+msgstr "반환 유형"
 
 #: ../../link.rst:78 3cbc8f0469d241929e34c352e5745bc1
 msgid ""
 "Meaningful for PDF only: A dictionary containing border characteristics. "
 "It will be ``None`` for non-PDFs and an empty dictionary if no border "
 "information exists. The following keys can occur:"
-msgstr ""
+msgstr "PDF에만 의미가 있음: 테두리 특성을 포함하는 딕셔너리. 비-PDF의 경우 ``None`` 이고 테두리 정보가 없으면 빈 딕셔너리입니다. 다음 키가 나타날 수 있습니다:"
 
 #: ../../link.rst:80 c1ab318b501a47688d2fc6b081566c84
 msgid ""
 "*width* -- a float indicating the border thickness in points. The value "
 "is -1.0 if no width is specified."
-msgstr ""
+msgstr "*width* -- 포인트 단위의 테두리 두께를 나타내는 float. 너비가 지정되지 않으면 값은 -1.0입니다."
 
 #: ../../link.rst:82 ee2605f02f554ef69ce01c7ce647b5c6
 msgid ""
@@ -275,7 +275,7 @@ msgid ""
 "means no dashes, *[n]* means equal on-off lengths of *n* points, longer "
 "lists will be interpreted as specifying alternating on-off length values."
 " See the :ref:`AdobeManual` page 126 for more detail."
-msgstr ""
+msgstr "*dashes* -- 선 점선 패턴을 지정하는 정수 시퀀스. *[]* 는 점선 없음을 의미하고, *[n]* 는 *n* 포인트의 동일한 on-off 길이를 의미하며, 더 긴 목록은 교대로 on-off 길이 값을 지정하는 것으로 해석됩니다. 자세한 내용은 :ref:`AdobeManual` 126페이지를 참조하세요."
 
 #: ../../link.rst:84 b4b27c2220234e3c9f0da44681173211
 msgid ""
@@ -286,38 +286,38 @@ msgid ""
 "of the page, *I* (Inset) = a simulated engraved rectangle that appears to"
 " be recessed below the surface of the page, *U* (Underline) = a single "
 "line along the bottom of the annotation rectangle."
-msgstr ""
+msgstr "*style* -- 1바이트 테두리 스타일: *S*(Solid) = 주석을 둘러싸는 실선 사각형, *D*(Dashed) = 링크를 둘러싸는 점선 사각형, 점선 패턴은 *dashes* 항목으로 지정됨, *B*(Beveled) = 페이지 표면 위로 올라온 것처럼 보이는 시뮬레이션된 볼록한 사각형, *I*(Inset) = 페이지 표면 아래로 들어간 것처럼 보이는 시뮬레이션된 각인된 사각형, *U*(Underline) = 주석 사각형 하단을 따라가는 단일 선."
 
 #: ../../link.rst:90 052b846ac7bf4348bb05373fe93c7f66
 msgid "The area that can be clicked in untransformed coordinates."
-msgstr ""
+msgstr "변환되지 않은 좌표에서 클릭할 수 있는 영역."
 
 #: ../../link.rst 278b7dd100364049a9a0f8a608dfe200
 #: 5b8584b479504935a82003972fba8296 91cdff8cf9e5471f8c8c7ebd105a9694
 #: 92b24b7f7b1d434bab261bfbfc850087 a7dd1626e8024de0a8394b7ac58b00dc
 #: b3fc6b24eede40c5a5ff68c9552eb5d3
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../link.rst:92 b6cde768d2b448d3918fcc2629f09e45
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../link.rst:96 9cbf66013e07421da625a37f62f421af
 msgid ""
 "A bool specifying whether the link target is outside of the current "
 "document."
-msgstr ""
+msgstr "링크 대상이 현재 문서 외부에 있는지 여부를 지정하는 bool입니다."
 
 #: ../../link.rst:98 3bf7415e10f64b17a00d1894d75abd4d
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../link.rst:102 7722949c512e472da9f50b38d703a9f0
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with property `is_external`:"
-msgstr ""
+msgstr "링크 대상을 지정하는 문자열입니다. 이 속성의 의미는 `is_external` 속성과 함께 평가해야 합니다:"
 
 #: ../../link.rst:106 8a85f4db122a4632acda8a79099ab276
 msgid ""
@@ -326,7 +326,7 @@ msgid ""
 "similar), another file (`uri` starts with \"file:\" or \"file://\") or "
 "some other service like an e-mail address (`uri` starts with "
 "``mailto:``)."
-msgstr ""
+msgstr "`is_external` 이 true: `uri` 는 현재 PDF 외부의 대상을 가리키며, 인터넷 리소스(`uri` 가 ``http://`` 또는 유사한 것으로 시작), 다른 파일(`uri` 가 \"file:\" 또는 \"file://\"로 시작) 또는 이메일 주소와 같은 기타 서비스(`uri` 가 ``mailto:`` 로 시작)일 수 있습니다."
 
 #: ../../link.rst:112 aa85a467ae894a49801187d31376da42
 msgid ""
@@ -336,37 +336,37 @@ msgid ""
 "format varies for other document types, for example "
 "\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
 "document."
-msgstr ""
+msgstr "`is_external` 이 false: `uri` 는 `None` 이거나 내부 위치를 가리킵니다. PDF 문서의 경우, 이것은 1부터 시작하는(!) 페이지 번호 *nnnn* 을 나타내는 *#nnnn* 이거나 이름이 지정된 위치여야 합니다. 형식은 다른 문서 유형에 따라 다릅니다. 예를 들어 XPS 문서의 페이지 번호 2(1부터 시작)의 경우 \"../FixedDoc.fdoc#PG_2_LNK_1\"입니다."
 
 #: ../../link.rst:119 169f5e74d4d248acaf39fe0e78f64c8c
 msgid "str"
-msgstr ""
+msgstr "str"
 
 #: ../../link.rst:123 b896a257acf94231987101c53ec2a3ee
 msgid "An integer specifying the PDF :data:`xref`. Zero if not a PDF."
-msgstr ""
+msgstr "PDF :data:`xref` 를 지정하는 정수입니다. PDF가 아니면 0입니다."
 
 #: ../../link.rst:125 0a7066aaee624b82bdccf14c63cbeb5a
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../link.rst:129 3d5c16c89c01444b862176bdfbe17241
 msgid "The next link or ``None``."
-msgstr ""
+msgstr "다음 링크 또는 ``None``."
 
 #: ../../link.rst:131 aeff8c341c48462292eba7bef8c73eeb
 msgid "*Link*"
-msgstr ""
+msgstr "*Link*"
 
 #: ../../link.rst:135 bc9d0756ee4e4e0c8f03bde2e4a58991
 msgid "The link destination details object."
-msgstr ""
+msgstr "링크 대상 세부 정보 객체."
 
 #: ../../link.rst:137 9b93286e15e64f8f9bc75c6e2a1305bb
 msgid ":ref:`linkDest`"
-msgstr ""
+msgstr ":ref:`linkDest`"
 
 #: ../../footer.rst:46 74c752369b354d73af2f7c11e7b19f1f
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

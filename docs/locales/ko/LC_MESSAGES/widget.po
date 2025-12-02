@@ -21,27 +21,27 @@ msgstr ""
 
 #: ../../header.rst:-1 9be7fe8ece684722b20723502ba6e81a
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 4fd0b4c61f30429d928c92ebb1081bc3
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 8395c05a667445b68d678e31a6c9296f
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../widget.rst:7 b5bf7834aa6d4acc80837502b85e97c1
 msgid "Widget"
-msgstr ""
+msgstr "Widget (위젯)"
 
 #: ../../widget.rst:9 db658752009445c5a3459712f6b25c8f
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "|pdf_only_class|"
 
 #: ../../widget.rst:11 d1312e8bf60148598975d49439011b6c
 msgid ""
@@ -50,14 +50,14 @@ msgid ""
 "Fields technically are a special case of PDF annotations, which allow "
 "users with limited permissions to enter information in a PDF. This is "
 "primarily used for filling out forms."
-msgstr ""
+msgstr "이 클래스는 PDF 폼 필드(또한 \"위젯\"이라고도 함)를 나타냅니다. 이 문서 전체에서 이 용어들을 동의어로 사용합니다. 필드는 기술적으로 PDF 주석의 특수한 경우이며, 제한된 권한을 가진 사용자가 PDF에 정보를 입력할 수 있게 합니다. 이것은 주로 양식 작성에 사용됩니다."
 
 #: ../../widget.rst:13 6befe4905ed146a2ab8cfd92d1d923bc
 msgid ""
 "Like annotations, widgets live on PDF pages. Similar to annotations, the "
 "first widget on a page is accessible via :attr:`Page.first_widget` and "
 "subsequent widgets can be accessed via the :attr:`Widget.next` property."
-msgstr ""
+msgstr "주석과 마찬가지로 위젯은 PDF 페이지에 존재합니다. 주석과 유사하게, 페이지의 첫 번째 위젯은 :attr:`Page.first_widget` 를 통해 접근할 수 있으며, 이후 위젯은 :attr:`Widget.next` 속성을 통해 접근할 수 있습니다."
 
 #: ../../widget.rst:15 f5dcbec91e9446b1bc886ab894d9b27c
 msgid ""
@@ -67,7 +67,7 @@ msgid ""
 "of-important-objects-in-pymupdf>`_ for details. This is relevant "
 "especially when updating the widget: this will fail if the original page "
 "object is no longer available."
-msgstr ""
+msgstr "주석과 마찬가지로 위젯도 페이지를 사용할 수 없게 되면 페이지와의 연결을 잃습니다. 자세한 내용은 `여기 <https://pymupdf.readthedocs.io/en/latest/app3.html#ensuring-consistency-of-important-objects-in-pymupdf>`_ 를 참조하세요. 이것은 특히 위젯을 업데이트할 때 관련이 있습니다: 원본 페이지 객체를 더 이상 사용할 수 없으면 실패합니다."
 
 #: ../../widget.rst:17 23ea64f7e0164b6788a0c02783469bef
 msgid ""
@@ -79,15 +79,15 @@ msgid ""
 " This design decision is purely internal to MuPDF; technically, links, "
 "annotations and fields have a lot in common and also continue to share "
 "the better part of their code within (Py-) MuPDF."
-msgstr ""
+msgstr "*(버전 1.16.0에서 변경)* |MuPDF| 는 더 이상 위젯을 일반 주석의 하위 집합으로 처리하지 않습니다. 결과적으로 :attr:`Page.first_annot` 및 :meth:`Annot.next` 는 **위젯이 아닌 주석만** 제공하며, 페이지에 폼 필드만 존재하는 경우 ``None`` 이 됩니다. 반대로 :attr:`Page.first_widget` 및 :meth:`Widget.next` 는 위젯만 표시합니다. 이 설계 결정은 순전히 |MuPDF| 내부적인 것입니다. 기술적으로 링크, 주석 및 필드는 많은 공통점이 있으며 (Py-) |MuPDF| 내에서 코드의 대부분을 계속 공유합니다."
 
 #: ../../widget.rst:20 4c382afc381347e990494e4d0e1c78f7
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../widget.rst:26 f56bf175166444f7920a252639d09199
 msgid "*New in version 1.18.15*"
-msgstr ""
+msgstr "*버전 1.18.15에서 새로 추가됨*"
 
 #: ../../widget.rst:28 00cee4b5b9734e0484ff17718afb7614
 msgid ""
@@ -95,36 +95,36 @@ msgid ""
 "button field may have. While the 'Off' state usually is also named like "
 "so, the 'On' state is often given a name relating to the functional "
 "context, for example 'Yes', 'Female', etc."
-msgstr ""
+msgstr "버튼 필드가 가질 수 있는 On/Off(즉, 선택/클릭 여부) 상태의 이름을 반환합니다. 'Off' 상태는 일반적으로 그렇게 명명되지만, 'On' 상태는 기능적 맥락과 관련된 이름(예: 'Yes', 'Female' 등)이 자주 지정됩니다."
 
 #: ../../widget.rst:30 7d6a3ae94e2742d5a84bf396789e24e1
 msgid ""
 "This method helps finding out the possible values of :attr:`field_value` "
 "in these cases."
-msgstr ""
+msgstr "이 메서드는 이러한 경우 :attr:`field_value` 의 가능한 값을 찾는 데 도움이 됩니다."
 
 #: ../../widget.rst 3ba59739b0504accbfb45a04c8b24a7f
 #: ac61f1c8af7547ca9e4696981cd7c001
 msgid "returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../widget.rst:32 dc0ef726c74e4a249337ee6f20cdd308
 msgid ""
 "a dictionary with the names of 'On' and 'Off' for the *normal* and the "
 "*pressed-down* appearance of button widgets. The following example shows "
 "that the \"selected\" value is \"Male\":"
-msgstr ""
+msgstr "*normal* 및 *pressed-down* 모양의 버튼 위젯에 대한 'On' 및 'Off' 이름을 가진 딕셔너리. 다음 예제는 \"selected\" 값이 \"Male\"임을 보여줍니다:"
 
 #: ../../widget.rst:40 dca66819e96f4f19a12d511c1409a188
 msgid "New in version 1.22.2"
-msgstr ""
+msgstr "버전 1.22.2에서 새로 추가됨"
 
 #: ../../widget.rst:42 72cfa1c4a4794fdebcf176d87534ed11
 msgid ""
 "Return the value of the \"ON\" state of check boxes and radio buttons. "
 "For check boxes this is always the value \"Yes\". For radio buttons, this"
 " is the value to select / activate the button."
-msgstr ""
+msgstr "체크박스 및 라디오 버튼의 \"ON\" 상태 값을 반환합니다. 체크박스의 경우 이것은 항상 \"Yes\" 값입니다. 라디오 버튼의 경우 이것은 버튼을 선택/활성화하는 값입니다."
 
 #: ../../widget.rst:44 ef6612006aa6463b9f062200357220e8
 msgid ""
@@ -132,23 +132,23 @@ msgid ""
 "radiobutton fields, always `None` is returned. For check boxes the return"
 " is `True`. For radio buttons this is the value \"Male\" in the following"
 " example:"
-msgstr ""
+msgstr "버튼을 \"selected\"로 설정하는 값. 체크박스가 아니고 라디오 버튼이 아닌 필드의 경우 항상 `None` 이 반환됩니다. 체크박스의 경우 반환값은 `True` 입니다. 라디오 버튼의 경우 다음 예제에서 값은 \"Male\"입니다:"
 
 #: ../../widget.rst:51 149007e65bf84de18e2eb1c2afe8bf71
 msgid ""
 "So for check boxes and radio buttons, the recommended method to set them "
 "to \"selected\", or to check the state is the following:"
-msgstr ""
+msgstr "따라서 체크박스 및 라디오 버튼의 경우 \"selected\"로 설정하거나 상태를 확인하는 권장 방법은 다음과 같습니다:"
 
 #: ../../widget.rst:60 9b42ee70ae144a8b92f71cf466956b05
 msgid ""
 "After any changes to a widget, this **method must be used** to reflect "
 "changes in the PDF [#f1]_."
-msgstr ""
+msgstr "위젯에 대한 변경 사항이 있은 후, PDF에 변경 사항을 반영하려면 이 **메서드를 사용해야 합니다** [#f1]_."
 
 #: ../../widget.rst f9afde507f67494fbafed9da093edc2c
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../widget.rst:62 4a0049c3506c40d99e4aba3b7c10c027
 msgid ""
@@ -157,25 +157,25 @@ msgid ""
 "array. This provides a convenient way to -- for example -- set all "
 "instances of the widget to read-only, no matter on which page they may "
 "occur [#f2]_."
-msgstr ""
+msgstr "``True`` 인 경우 위젯의 :attr:`Widget.field_flags` 가 ``Parent`` 객체(존재하는 경우)와 ``Kids`` 배열에 명명된 모든 위젯에 복사됩니다. 이를 통해 예를 들어 위젯의 모든 인스턴스를 읽기 전용으로 설정할 수 있는 편리한 방법을 제공합니다. 어떤 페이지에 나타나든 상관없이 [#f2]_."
 
 #: ../../widget.rst:66 ad4e8312e49447b68aa62039c7138968
 msgid ""
 "Reset the field's value to its default -- if defined -- or remove it. Do "
 "not forget to issue :meth:`update` afterwards."
-msgstr ""
+msgstr "필드 값을 기본값으로 재설정합니다(정의된 경우) 또는 제거합니다. 이후 :meth:`update` 를 호출하는 것을 잊지 마세요."
 
 #: ../../widget.rst:70 ac472167a7e14f4290ac8a193c79160c
 msgid ""
 "Point to the next form field on the page. The last widget returns "
 "``None``."
-msgstr ""
+msgstr "페이지의 다음 폼 필드를 가리킵니다. 마지막 위젯은 ``None`` 을 반환합니다."
 
 #: ../../widget.rst:74 1f2d580b4eca4c468f4a0e6592281c85
 msgid ""
 "A list of up to 4 floats defining the field's border color. Default value"
 " is ``None`` which causes border style and border width to be ignored."
-msgstr ""
+msgstr "필드의 테두리 색상을 정의하는 최대 4개의 float 목록. 기본값은 ``None`` 으로, 테두리 스타일과 테두리 너비가 무시됩니다."
 
 #: ../../widget.rst:78 4d75daab990241b7a3b26a0e4ab3a3f3
 msgid ""
@@ -183,124 +183,124 @@ msgid ""
 ":attr:`Annot.border`. Default is \"s\" (\"Solid\") -- a continuous line. "
 "Only the first character (upper or lower case) will be regarded when "
 "creating a widget."
-msgstr ""
+msgstr "필드 테두리의 선 스타일을 정의하는 문자열. :attr:`Annot.border` 를 참조하세요. 기본값은 \"s\"(\"Solid\") -- 연속선입니다. 위젯을 생성할 때 첫 번째 문자(대문자 또는 소문자)만 고려됩니다."
 
 #: ../../widget.rst:82 a3b4c3bbfb544efd99ac42ab92c5d596
 msgid "A float defining the width of the border line. Default is 1."
-msgstr ""
+msgstr "테두리 선의 너비를 정의하는 float. 기본값은 1입니다."
 
 #: ../../widget.rst:86 8abf38d7b6a540acb99b929363d614c3
 msgid ""
 "A list/tuple of integers defining the dash properties of the border line."
 " This is only meaningful if *border_style == \"D\"* and "
 ":attr:`border_color` is provided."
-msgstr ""
+msgstr "테두리 선의 대시 속성을 정의하는 정수 목록/튜플. *border_style == \"D\"* 이고 :attr:`border_color` 가 제공된 경우에만 의미가 있습니다."
 
 #: ../../widget.rst:90 89fa9c260a8c49f0b07ea1b251cece4e
 msgid ""
 "Python sequence of strings defining the valid choices of list boxes and "
 "combo boxes. For these widget types, this property is mandatory and must "
 "contain at least two items. Ignored for other types."
-msgstr ""
+msgstr "리스트 박스 및 콤보 박스의 유효한 선택 항목을 정의하는 문자열의 Python 시퀀스. 이러한 위젯 유형의 경우 이 속성은 필수이며 최소 두 개의 항목을 포함해야 합니다. 다른 유형에서는 무시됩니다."
 
 #: ../../widget.rst:94 d429d2ef1dd644d79f98b280f55ad276
 msgid ""
 "A mandatory string defining the field's name. No checking for duplicates "
 "takes place."
-msgstr ""
+msgstr "필드 이름을 정의하는 필수 문자열. 중복 확인은 수행되지 않습니다."
 
 #: ../../widget.rst:98 3e1f3a12889b40cdb2687c5e1e275082
 msgid ""
 "An optional string containing an \"alternate\" field name. Typically used"
 " for any notes, help on field usage, etc. Default is the field name."
-msgstr ""
+msgstr "\"대체\" 필드 이름을 포함하는 선택적 문자열. 일반적으로 필드 사용에 대한 메모, 도움말 등에 사용됩니다. 기본값은 필드 이름입니다."
 
 #: ../../widget.rst:102 02bb3f5a570947e98e225720d915a4b5
 msgid "The value of the field."
-msgstr ""
+msgstr "필드의 값."
 
 #: ../../widget.rst:106 159866e898664171a44d8b61241d2731
 msgid ""
 "An integer defining a large amount of properties of a field. Be careful "
 "when changing this attribute as this may change the field type."
-msgstr ""
+msgstr "필드의 많은 속성을 정의하는 정수. 이 속성을 변경할 때는 주의하세요. 필드 유형이 변경될 수 있습니다."
 
 #: ../../widget.rst:110 62966a5f68404db5822a72647d202b90
 msgid ""
 "A mandatory integer defining the field type. This is a value in the range"
 " of 0 to 6. It cannot be changed when updating the widget."
-msgstr ""
+msgstr "필드 유형을 정의하는 필수 정수. 이것은 0부터 6까지의 범위 값입니다. 위젯을 업데이트할 때 변경할 수 없습니다."
 
 #: ../../widget.rst:114 a9fbed37d8be4f51b900e87522083cb4
 msgid "A string describing (and derived from) the field type."
-msgstr ""
+msgstr "필드 유형을 설명하는(및 필드 유형에서 파생된) 문자열."
 
 #: ../../widget.rst:118 0893214230bb4b998907cfb864bf8047
 msgid "A list of up to 4 floats defining the field's background color."
-msgstr ""
+msgstr "필드의 배경색을 정의하는 최대 4개의 float 목록."
 
 #: ../../widget.rst:122 864cf589b08549bca7920c38f91caa48
 msgid "The caption string of a button-type field."
-msgstr ""
+msgstr "버튼 유형 필드의 캡션 문자열."
 
 #: ../../widget.rst:126 d1ed58b8e9784d0f9f5368aa781d8db2
 msgid "A bool indicating the signing status of a signature field, else ``None``."
-msgstr ""
+msgstr "서명 필드의 서명 상태를 나타내는 bool, 그렇지 않으면 ``None``."
 
 #: ../../widget.rst:130 fd9f9f5619ec4ae69d780dcfdcaf1cf5
 msgid "The rectangle containing the field."
-msgstr ""
+msgstr "필드를 포함하는 사각형."
 
 #: ../../widget.rst:134 32a4055906494c169f91575f408fd75e
 msgid ""
 "A list of **1, 3 or 4 floats** defining the text color. Default value is "
 "black (`[0, 0, 0]`)."
-msgstr ""
+msgstr "텍스트 색상을 정의하는 **1, 3 또는 4개의 float** 목록. 기본값은 검은색(`[0, 0, 0]`)입니다."
 
 #: ../../widget.rst:138 f951f27a175047e6ad58a7ee9d45d202
 msgid ""
 "A string defining the font to be used. Default and replacement for "
 "invalid values is *\"Helv\"*. For valid font reference names see the "
 "table below."
-msgstr ""
+msgstr "사용할 글꼴을 정의하는 문자열. 기본값 및 잘못된 값의 대체값은 *\"Helv\"* 입니다. 유효한 글꼴 참조 이름은 아래 표를 참조하세요."
 
 #: ../../widget.rst:142 93d6bab5e8ed4964b445aaff3f5a666e
 msgid ""
 "A float defining the text :data:`fontsize`. Default value is zero, which "
 "causes PDF viewer software to dynamically choose a size suitable for the "
 "annotation's rectangle and text amount."
-msgstr ""
+msgstr "텍스트 :data:`fontsize` 를 정의하는 float. 기본값은 0이며, PDF 뷰어 소프트웨어가 주석의 사각형과 텍스트 양에 적합한 크기를 동적으로 선택하도록 합니다."
 
 #: ../../widget.rst:146 a1ded660efa640cd9b872d5a1fffdb1f
 msgid ""
 "An integer defining the maximum number of text characters. PDF viewers "
 "will (should) not accept a longer text."
-msgstr ""
+msgstr "텍스트 문자의 최대 개수를 정의하는 정수. PDF 뷰어는 더 긴 텍스트를 받아들이지 않습니다(받아들이지 않아야 합니다)."
 
 #: ../../widget.rst:150 68eac259cd954e619832866bde7c37e3
 msgid ""
 "An integer defining acceptable text types (e.g. numeric, date, time, "
 "etc.). For reference only for the time being -- will be ignored when "
 "creating or updating widgets."
-msgstr ""
+msgstr "허용 가능한 텍스트 유형(예: 숫자, 날짜, 시간 등)을 정의하는 정수. 현재는 참고용으로만 사용되며 위젯을 생성하거나 업데이트할 때 무시됩니다."
 
 #: ../../widget.rst:154 9df210c84ecd4845b952f6d3cc9195cc
 msgid "The PDF :data:`xref` of the widget."
-msgstr ""
+msgstr "위젯의 PDF :data:`xref`."
 
 #: ../../widget.rst:158 ../../widget.rst:164 ../../widget.rst:170
 #: ../../widget.rst:176 ../../widget.rst:182 6ac3abf289404eeaafe2d71129cccf4f
 #: 8034826ba5bf458fa878c3dfe0dcb46e 8155dfc13cad413eb75cd134942ce80a
 #: b8eb6a539c4941e6b3212dc4474dfd75 c5b33ed64c7043db966de5404c881830
 msgid "New in version 1.16.12"
-msgstr ""
+msgstr "버전 1.16.12에서 새로 추가됨"
 
 #: ../../widget.rst:160 27f8421d8a374cd587fc385b05348e06
 msgid ""
 "JavaScript text (unicode) for an action associated with the widget, or "
 "``None``. This is the only script action supported for **button type** "
 "widgets."
-msgstr ""
+msgstr "위젯과 연결된 동작에 대한 JavaScript 텍스트(유니코드) 또는 ``None``. 이것은 **버튼 유형** 위젯에서 지원하는 유일한 스크립트 동작입니다."
 
 #: ../../widget.rst:166 bbc99abeab574327895dbdfadb016871
 msgid ""
@@ -308,62 +308,62 @@ msgid ""
 "stroke into a text field or combo box or modifies the selection in a "
 "scrollable list box. This action can check the keystroke for validity and"
 " reject or modify it. ``None`` if not present."
-msgstr ""
+msgstr "사용자가 텍스트 필드나 콤보 박스에 키 입력을 하거나 스크롤 가능한 리스트 박스에서 선택을 수정할 때 실행할 JavaScript 텍스트(유니코드). 이 동작은 키 입력의 유효성을 확인하고 거부하거나 수정할 수 있습니다. 존재하지 않으면 ``None``."
 
 #: ../../widget.rst:172 49c953662fc846e4ab3a5754771075d5
 msgid ""
 "JavaScript text (unicode) to be performed before the field is formatted "
 "to display its current value. This action can modify the field’s value "
 "before formatting. ``None`` if not present."
-msgstr ""
+msgstr "필드가 현재 값을 표시하기 위해 포맷되기 전에 실행할 JavaScript 텍스트(유니코드). 이 동작은 포맷하기 전에 필드 값을 수정할 수 있습니다. 존재하지 않으면 ``None``."
 
 #: ../../widget.rst:178 f099a7380085444088d138037fc88009
 msgid ""
 "JavaScript text (unicode) to be performed when the field’s value is "
 "changed. This action can check the new value for validity. ``None`` if "
 "not present."
-msgstr ""
+msgstr "필드 값이 변경될 때 실행할 JavaScript 텍스트(유니코드). 이 동작은 새 값의 유효성을 확인할 수 있습니다. 존재하지 않으면 ``None``."
 
 #: ../../widget.rst:184 195412bc8f7645c7af94839cbeef56c7
 msgid ""
 "JavaScript text (unicode) to be performed to recalculate the value of "
 "this field when that of another field changes. ``None`` if not present."
-msgstr ""
+msgstr "다른 필드의 값이 변경될 때 이 필드의 값을 다시 계산하기 위해 실행할 JavaScript 텍스트(유니코드). 존재하지 않으면 ``None``."
 
 #: ../../widget.rst:188 ../../widget.rst:194 be53028b2eeb496e91e645ddedbecf73
 #: caaac82450ae43fd84f1684ee16cc1aa
 msgid "New in version 1.22.6"
-msgstr ""
+msgstr "버전 1.22.6에서 새로 추가됨"
 
 #: ../../widget.rst:190 66757bee21264b4591997469672bf407
 msgid ""
 "JavaScript text (unicode) to be performed on losing the focus of this "
 "field. ``None`` if not present."
-msgstr ""
+msgstr "이 필드의 포커스를 잃을 때 실행할 JavaScript 텍스트(유니코드). 존재하지 않으면 ``None``."
 
 #: ../../widget.rst:196 6d86df2f110242b9b322d96488384f39
 msgid ""
 "JavaScript text (unicode) to be performed on focusing this field. "
 "``None`` if not present."
-msgstr ""
+msgstr "이 필드에 포커스를 맞출 때 실행할 JavaScript 텍스트(유니코드). 존재하지 않으면 ``None``."
 
 #: ../../widget.rst:200 31230d72253b4583a09b8159f40329f4
 msgid "For **adding** or **changing** one of the above scripts,"
-msgstr ""
+msgstr "위의 스크립트 중 하나를 **추가** 하거나 **변경** 하려면,"
 
 #: ../../widget.rst:201 3d2a3d82396442afb52dfc4cdd423495
 msgid ""
 "just put the appropriate JavaScript source code in the widget attribute. "
 "To **remove** a script, set the respective attribute to ``None``."
-msgstr ""
+msgstr "위젯 속성에 적절한 JavaScript 소스 코드를 넣으세요. 스크립트를 **제거** 하려면 해당 속성을 ``None`` 으로 설정하세요."
 
 #: ../../widget.rst:204 8ae6388eebe44c248ddac814e91ade75
 msgid "Button fields only support :attr:`script`."
-msgstr ""
+msgstr "버튼 필드는 :attr:`script` 만 지원합니다."
 
 #: ../../widget.rst:205 eaf4aaf730aa470bac28fa589c1d9a75
 msgid "Other script entries will automatically be set to ``None``."
-msgstr ""
+msgstr "다른 스크립트 항목은 자동으로 ``None`` 으로 설정됩니다."
 
 #: ../../widget.rst:207 1574012d10e54a92850485e41d1ffedf
 msgid ""
@@ -374,11 +374,11 @@ msgid ""
 "example, if you want to add a text field representing a date, you may "
 "want to store the following scripts. They will ensure pattern-compatible "
 "date formats and display date pickers in supporting viewers::"
-msgstr ""
+msgstr "다양한 필드 유형에 대한 Adobe의 표준 스크립트에 대한 많은 정보가 포함된 `이 매뉴얼 <https://experienceleague.adobe.com/docs/experience-manager-learn/assets/FormsAPIReference.pdf?lang=en>`_ 을 살펴보는 것이 좋습니다. 예를 들어, 날짜를 나타내는 텍스트 필드를 추가하려면 다음 스크립트를 저장할 수 있습니다. 이것들은 패턴 호환 날짜 형식을 보장하고 지원하는 뷰어에서 날짜 선택기를 표시합니다::"
 
 #: ../../widget.rst:219 c65b215c2ad34e7488b15662ebd4d3bb
 msgid "Standard Fonts for Widgets"
-msgstr ""
+msgstr "위젯용 표준 글꼴"
 
 #: ../../widget.rst:220 cdad1a06914d4e0096cf6f84a03b0434
 msgid ""
@@ -390,133 +390,133 @@ msgid ""
 " choose one in the first table column (upper and lower case supported), "
 "**or** one of the already existing form fonts. In the latter case, "
 "spelling must exactly match."
-msgstr ""
+msgstr "위젯은 자체 리소스 객체 ``/DR`` 를 사용합니다. 위젯 리소스 객체는 최소한 ``/Font`` 객체를 포함해야 합니다. 위젯 글꼴은 페이지 글꼴과 독립적입니다. 현재 다음 고정 참조 이름을 사용하여 14개의 PDF 기본 글꼴을 지원하거나, 이미 존재하는 필드 글꼴의 이름을 사용합니다. 새 위젯이나 변경된 위젯에 대한 텍스트 글꼴을 지정할 때 **첫 번째 테이블 열에서 하나를 선택하거나** (대소문자 지원), **이미 존재하는 폼 글꼴 중 하나를 선택** 하세요. 후자의 경우 철자가 정확히 일치해야 합니다."
 
 #: ../../widget.rst:222 7fd5734a55b445cc854e109cbc203e17
 msgid ""
 "To find out already existing field fonts, inspect the list "
 ":attr:`Document.FormFonts`."
-msgstr ""
+msgstr "이미 존재하는 필드 글꼴을 확인하려면 :attr:`Document.FormFonts` 목록을 검사하세요."
 
 #: ../../widget.rst:225 989af4e78c0847918dbff49079157c49
 msgid "**Reference**"
-msgstr ""
+msgstr "**참조**"
 
 #: ../../widget.rst:225 2a3d30a6f94b40939fd222ac5505a0c3
 msgid "**Base14 Fontname**"
-msgstr ""
+msgstr "**Base14 글꼴 이름**"
 
 #: ../../widget.rst:227 352a551d7b7d4200932f4f74ab639993
 msgid "CoBI"
-msgstr ""
+msgstr "CoBI"
 
 #: ../../widget.rst:227 97b97d88ac2049608397f18450ce94f9
 msgid "Courier-BoldOblique"
-msgstr ""
+msgstr "Courier-BoldOblique"
 
 #: ../../widget.rst:228 5784d31036e8451ea00333ebfc861db7
 msgid "CoBo"
-msgstr ""
+msgstr "CoBo"
 
 #: ../../widget.rst:228 f62fddbdd0ec4ca5a7de461de53b6f58
 msgid "Courier-Bold"
-msgstr ""
+msgstr "Courier-Bold"
 
 #: ../../widget.rst:229 7b2ab33a398843e2b2becf0f64045392
 msgid "CoIt"
-msgstr ""
+msgstr "CoIt"
 
 #: ../../widget.rst:229 053e2cadb71446e3938febe4ef984f31
 msgid "Courier-Oblique"
-msgstr ""
+msgstr "Courier-Oblique"
 
 #: ../../widget.rst:230 4f7d11706d4b41ec968dff1ac8fb677f
 msgid "Cour"
-msgstr ""
+msgstr "Cour"
 
 #: ../../widget.rst:230 bc034dde385b406280bef75f575a2672
 msgid "Courier"
-msgstr ""
+msgstr "Courier"
 
 #: ../../widget.rst:231 ff774f899f274ee5a81ee1e6d1959b8c
 msgid "HeBI"
-msgstr ""
+msgstr "HeBI"
 
 #: ../../widget.rst:231 172ee9521a2348cd9f506babd8af5f10
 msgid "Helvetica-BoldOblique"
-msgstr ""
+msgstr "Helvetica-BoldOblique"
 
 #: ../../widget.rst:232 79d0f51c58f54f67a759e45d17d9ffc6
 msgid "HeBo"
-msgstr ""
+msgstr "HeBo"
 
 #: ../../widget.rst:232 467053b50fdf4b6a970d48f6d4cc2e1a
 msgid "Helvetica-Bold"
-msgstr ""
+msgstr "Helvetica-Bold"
 
 #: ../../widget.rst:233 5abb199e534a4b2985760322156b7819
 msgid "HeIt"
-msgstr ""
+msgstr "HeIt"
 
 #: ../../widget.rst:233 8d472db0bc5a44caa9de71c566f7cb7e
 msgid "Helvetica-Oblique"
-msgstr ""
+msgstr "Helvetica-Oblique"
 
 #: ../../widget.rst:234 d03174f7c84045ea9ef98507a09fa344
 msgid "Helv"
-msgstr ""
+msgstr "Helv"
 
 #: ../../widget.rst:234 bbec46b6db884fb29167ffc50a0c7dcb
 msgid "Helvetica **(default)**"
-msgstr ""
+msgstr "Helvetica **(기본값)**"
 
 #: ../../widget.rst:235 cd1c089129784daeb903d5ef116ea70b
 msgid "Symb"
-msgstr ""
+msgstr "Symb"
 
 #: ../../widget.rst:235 81ad28b580f44ba78513b1abebbc40bc
 msgid "Symbol"
-msgstr ""
+msgstr "Symbol"
 
 #: ../../widget.rst:236 de4c92826dc94244b1b8ef026ab90a2e
 msgid "TiBI"
-msgstr ""
+msgstr "TiBI"
 
 #: ../../widget.rst:236 3dc417d13f2d4a6cbb1233643dc93f65
 msgid "Times-BoldItalic"
-msgstr ""
+msgstr "Times-BoldItalic"
 
 #: ../../widget.rst:237 43969ece08334ca685bd92f021cd1884
 msgid "TiBo"
-msgstr ""
+msgstr "TiBo"
 
 #: ../../widget.rst:237 32b0cc34477144ffb88eb7565f2a0533
 msgid "Times-Bold"
-msgstr ""
+msgstr "Times-Bold"
 
 #: ../../widget.rst:238 a1252968a11c4601b7341a5c9ad95394
 msgid "TiIt"
-msgstr ""
+msgstr "TiIt"
 
 #: ../../widget.rst:238 8cdd804d025940c8b5d05a9397419bdc
 msgid "Times-Italic"
-msgstr ""
+msgstr "Times-Italic"
 
 #: ../../widget.rst:239 4d07f298c6d14909b518fad20ea5e681
 msgid "TiRo"
-msgstr ""
+msgstr "TiRo"
 
 #: ../../widget.rst:239 b7c540028a3d4cedb72159dba9849432
 msgid "Times-Roman"
-msgstr ""
+msgstr "Times-Roman"
 
 #: ../../widget.rst:240 58ea0b46026f4588b999a9ca93163980
 msgid "ZaDb"
-msgstr ""
+msgstr "ZaDb"
 
 #: ../../widget.rst:240 2e0483edf38749a1928b25d20ab9055a
 msgid "ZapfDingbats"
-msgstr ""
+msgstr "ZapfDingbats"
 
 #: ../../widget.rst:243 a31f0eb06f284c738ae3404fb14e5e42
 msgid ""
@@ -524,37 +524,37 @@ msgid ""
 "recommend using ``ZaDb`` (\"ZapfDingbats\") and :data:`fontsize` 0 for "
 "check boxes: typical viewers will put a correctly sized tickmark in the "
 "field's rectangle, when it is clicked."
-msgstr ""
+msgstr "일반적으로 모든 위젯에 대해 어떤 글꼴이든 자유롭게 사용할 수 있습니다. 그러나 체크박스의 경우 ``ZaDb`` (\"ZapfDingbats\") 및 :data:`fontsize` 0을 사용하는 것을 권장합니다: 일반적인 뷰어는 클릭할 때 필드의 사각형에 올바른 크기의 체크 표시를 넣습니다."
 
 #: ../../widget.rst:246 25ed10dbd2a14216bbd4ed04f57c98cd
 msgid "Supported Widget Types"
-msgstr ""
+msgstr "지원되는 위젯 유형"
 
 #: ../../widget.rst:247 8cb59d1d5bd14f098f5fc408b8849853
 msgid ""
 "PyMuPDF supports the creation and update of many, but not all widget "
 "types."
-msgstr ""
+msgstr "|PyMuPDF| 는 많은 위젯 유형의 생성 및 업데이트를 지원하지만, 모든 위젯 유형을 지원하는 것은 아닙니다."
 
 #: ../../widget.rst:249 8461bca05ec547fabc82884dedd125bb
 msgid "text (`PDF_WIDGET_TYPE_TEXT`)"
-msgstr ""
+msgstr "텍스트 (`PDF_WIDGET_TYPE_TEXT`)"
 
 #: ../../widget.rst:250 4c1a2929bc174c79bd4b539f47d803f2
 msgid "push button (`PDF_WIDGET_TYPE_BUTTON`)"
-msgstr ""
+msgstr "푸시 버튼 (`PDF_WIDGET_TYPE_BUTTON`)"
 
 #: ../../widget.rst:251 c8546d5d5e834b6bb9bf78579650d52d
 msgid "check box (`PDF_WIDGET_TYPE_CHECKBOX`)"
-msgstr ""
+msgstr "체크박스 (`PDF_WIDGET_TYPE_CHECKBOX`)"
 
 #: ../../widget.rst:252 90c82cab0fe4443ab3b6c96bde056ab8
 msgid "combo box (`PDF_WIDGET_TYPE_COMBOBOX`)"
-msgstr ""
+msgstr "콤보 박스 (`PDF_WIDGET_TYPE_COMBOBOX`)"
 
 #: ../../widget.rst:253 466344d91d064ed5a8d839e9b95d1988
 msgid "list box (`PDF_WIDGET_TYPE_LISTBOX`)"
-msgstr ""
+msgstr "리스트 박스 (`PDF_WIDGET_TYPE_LISTBOX`)"
 
 #: ../../widget.rst:254 315046b3a75448dd80a03dc3287c68fe
 msgid ""
@@ -567,17 +567,17 @@ msgid ""
 "owning button group. Selecting a radio button may be done by either "
 "assigning `True` or `field.on_state()` to the field value. **De-"
 "selecting** the button should be done assigning `False`."
-msgstr ""
+msgstr "라디오 버튼 (`PDF_WIDGET_TYPE_RADIOBUTTON`): |PyMuPDF| 는 현재 (상호 연결된) 라디오 버튼 그룹의 **생성** 을 지원하지 않습니다. 한 버튼을 설정하면 그룹의 다른 버튼이 자동으로 해제됩니다. 위젯 객체는 버튼 그룹의 존재를 반영하지 않습니다. 그러나: 라디오 버튼을 일관되게 선택(또는 선택 해제)하는 것은 지원됩니다. 여기에는 소유 버튼 그룹에서 유지되는 값을 올바르게 설정하는 것이 포함됩니다. 라디오 버튼을 선택하는 것은 필드 값에 `True` 또는 `field.on_state()` 를 할당하여 수행할 수 있습니다. 버튼 **선택 해제** 는 `False` 를 할당하여 수행해야 합니다."
 
 #: ../../widget.rst:255 b7ca95506bb743bf8bc9d51686c700fc
 msgid ""
 "signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or "
 "creation of signatures."
-msgstr ""
+msgstr "서명 (`PDF_WIDGET_TYPE_SIGNATURE`) **읽기 전용** -- 서명 업데이트 또는 생성 없음."
 
 #: ../../widget.rst:258 b53b3f3d840749208db6e32b83f6d04d
 msgid "Footnotes"
-msgstr ""
+msgstr "각주"
 
 #: ../../widget.rst:259 3eaba62dde8347e2a386454b987a2ed7
 msgid ""
@@ -585,7 +585,7 @@ msgid ""
 "pixmap), make sure to reload the page first. Either close and re-open the"
 " document, or load another page first, or simply do `page = "
 "doc.reload_page(page)`."
-msgstr ""
+msgstr "새 필드나 업데이트된 필드에 다시 접근하려는 경우(예: 픽스맵 생성) 먼저 페이지를 다시 로드해야 합니다. 문서를 닫고 다시 열거나, 다른 페이지를 먼저 로드하거나, 간단히 `page = doc.reload_page(page)` 를 수행하세요."
 
 #: ../../widget.rst:261 148f6fb2b3f74450a3f794e012c04772
 msgid ""
@@ -600,9 +600,9 @@ msgid ""
 "``sync_flags`` extends this to :attr:`Widget.field_flags`. This cannot be"
 " automated in the same way as for the field value to allow for more "
 "flexibility."
-msgstr ""
+msgstr "다른 목적 중에서 ``Parent`` 객체는 필드의 여러 발생(같은 페이지 또는 다른 페이지에)을 용이하게 하는 데에도 사용됩니다. 이 ``Parent`` 객체의 ``Kids`` 배열은 동일한 필드의 \"복사본\"인 모든 위젯의 교차 참조를 포함합니다. \"kid\" 위젯의 필드 값이 변경될 때마다 다른 모든 kids도 즉시 업데이트됩니다. 이것은 같은 필드의 여러 복사본을 처리하는 매우 효율적인 방법입니다. 예를 들어 양식 작성에 사용됩니다. 이 동시 업데이트는 :attr:`Widget.field value` 에 대해서만 발생합니다. 새 매개변수 ``sync_flags`` 는 이를 :attr:`Widget.field_flags` 로 확장합니다. 더 많은 유연성을 허용하기 위해 필드 값과 동일한 방식으로 자동화할 수 없습니다."
 
 #: ../../footer.rst:46 00e495d1b07b4fb7afe8b0b3fc2b91b4
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

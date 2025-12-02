@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 db41752d7d77475b91dce6987192b03e
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 9d1395b42c0242c2937c063ec31289da
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c674fa9ee73a4fcf888b701a69a14f4a
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../device.rst:7 d8f699f2197d4cccb1a32e36349536c8
 msgid "Device"
-msgstr ""
+msgstr "Device (디바이스)"
 
 #: ../../device.rst:9 c03889a987f445ea84d79f3d5abfb84d
 msgid ""
@@ -45,39 +45,39 @@ msgid ""
 "\"device\". Devices are the basis for everything that can be done with a "
 "page: rendering, text extraction and searching. The device type is "
 "determined by the selected construction method."
-msgstr ""
+msgstr "다양한 형식 핸들러(pdf, xps 등)는 페이지를 \"디바이스\"로 해석합니다. 디바이스는 페이지로 수행할 수 있는 모든 작업(렌더링, 텍스트 추출, 검색)의 기반입니다. 디바이스 유형은 선택한 생성 방법에 의해 결정됩니다."
 
 #: ../../device.rst:11 5997f573701045499919ec1f18ab7518
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../device.rst:17 4b9fd079e127474e94506fe9eadb79d7
 msgid "Constructor for either a pixel map or a display list device."
-msgstr ""
+msgstr "픽셀 맵 또는 디스플레이 리스트 디바이스의 생성자."
 
 #: ../../device.rst 3029384c54544ad783072064ea96675d
 #: ca7a504aacc440719aba0931b7724c60
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../device.rst:19 9b095106055b4d568344ac7d142034f3
 msgid "either a ``Pixmap`` or  a ``DisplayList``."
-msgstr ""
+msgstr "``Pixmap`` 또는 ``DisplayList`` 중 하나."
 
 #: ../../device.rst:22 30003de713004e58977091af11644238
 msgid ""
 "An optional `IRect` for ``Pixmap`` devices to restrict rendering to a "
 "certain area of the page. If the complete page is required, specify "
 "``None``. For display list devices, this parameter must be omitted."
-msgstr ""
+msgstr "``Pixmap`` 디바이스의 선택적 `IRect` 로, 페이지의 특정 영역으로 렌더링을 제한합니다. 전체 페이지가 필요한 경우 ``None`` 을 지정하세요. 디스플레이 리스트 디바이스의 경우 이 매개변수는 생략해야 합니다."
 
 #: ../../device.rst:27 5a3223623124424ba115721d21086469
 msgid "Constructor for a text page device."
-msgstr ""
+msgstr "텍스트 페이지 디바이스의 생성자."
 
 #: ../../device.rst:29 8f77a7687a804d458ddb9a4be4624d77
 msgid "``TextPage`` object"
-msgstr ""
+msgstr "``TextPage`` 객체"
 
 #: ../../device.rst:32 53c8b35c8b0e4e488b05cfbe1c988a0d
 msgid ""
@@ -85,9 +85,9 @@ msgid ""
 "options can be coded into this parameter, see :ref:`TextPreserve`. To set"
 " these options use something like `flags=0 | TEXT_PRESERVE_LIGATURES | "
 "...`."
-msgstr ""
+msgstr "텍스트가 텍스트 페이지로 파싱되는 방식을 제어하는 플래그입니다. 현재 3가지 옵션을 이 매개변수에 코딩할 수 있으며, :ref:`TextPreserve` 를 참조하세요. 이러한 옵션을 설정하려면 `flags=0 | TEXT_PRESERVE_LIGATURES | ...` 와 같은 형식을 사용하세요."
 
 #: ../../footer.rst:46 233763b8ff7c42718f2a5b6285c3802f
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

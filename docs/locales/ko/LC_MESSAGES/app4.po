@@ -21,33 +21,33 @@ msgstr ""
 
 #: ../../header.rst:-1 613ca8dee3af4e18aee8824f32d62bd7
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 3fb1879bb92640d0b871ed41914b2b0d
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 5800ad4c0c8f4aea8589a92458f2afe9
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../app4.rst:14 452ac8cb00694e9abeae5f9e25ddebf6
 msgid "Appendix 4: Performance Comparison Methodology"
-msgstr ""
+msgstr "부록 4: 성능 비교 방법론"
 
 #: ../../app4.rst:16 14ceae9e1c7f4b8f8a0319fbb991a23c
 msgid ""
 "This article documents the approach to measure :title:`PyMuPDF's` "
 "performance and the tools and example files used to do comparisons."
-msgstr ""
+msgstr "이 문서는 :title:`PyMuPDF's` 성능을 측정하는 접근 방식과 비교에 사용된 도구 및 예제 파일을 설명합니다."
 
 #: ../../app4.rst:18 707cf837e27a4490be01f4ff59f3d6e7
 msgid "The following three sections deal with different performance aspects:"
-msgstr ""
+msgstr "다음 세 섹션은 다양한 성능 측면을 다룹니다:"
 
 #: ../../app4.rst:20 19bf7499dda54ae094b5f694a8ea950f
 msgid ""
@@ -55,13 +55,13 @@ msgid ""
 " :title:`PDFs`, then writing them to an output file. Because the same "
 "basic activities are also used for joining (merging) :title:`PDFs`, the "
 "results also apply to these use cases."
-msgstr ""
+msgstr ":ref:`Document Copying<app4_copying>` - 이것은 :title:`PDFs` 를 열고 파싱한 다음 출력 파일에 쓰는 것을 포함합니다. 동일한 기본 활동이 :title:`PDFs` 를 결합(병합)하는 데도 사용되므로, 결과는 이러한 사용 사례에도 적용됩니다."
 
 #: ../../app4.rst:21 8902b7d3bdf44cdeb0a02ebaeb788364
 msgid ""
 ":ref:`Text Extraction<app4_text_extraction>` - This extracts plain text "
 "from :title:`PDFs` and writes it to an output text file."
-msgstr ""
+msgstr ":ref:`Text Extraction<app4_text_extraction>` - 이것은 :title:`PDFs` 에서 일반 텍스트를 추출하고 출력 텍스트 파일에 씁니다."
 
 #: ../../app4.rst:22 c9e28e548b684c15b6fc6c839fb268d0
 msgid ""
@@ -70,7 +70,7 @@ msgid ""
 "prerequisite for using a tool in :title:`Python GUI` scripts to scroll "
 "through documents. We have chosen a medium-quality (resolution 150 DPI) "
 "version."
-msgstr ""
+msgstr ":ref:`Page Rendering<app4_page_rendering>` - 이것은 |PDF| 페이지를 페이지와 동일하게 보이는 이미지 파일로 변환합니다. 이 기능은 :title:`Python GUI` 스크립트에서 문서를 스크롤하기 위해 도구를 사용하는 기본 전제 조건입니다. 중간 품질(해상도 150 DPI) 버전을 선택했습니다."
 
 #: ../../app4.rst:24 d8c56f0cbbb4415497587ade558105c9
 msgid ""
@@ -80,92 +80,92 @@ msgid ""
 "This cannot be avoided because tools other than |PyMuPDF| do not offer "
 "the option to e.g., separate the image **creation** step from the "
 "following step, which **writes** the image into a file."
-msgstr ""
+msgstr "모든 경우에 |PDF| 구조를 처리하는 실제 속도가 직접 측정되지 않는다는 점에 유의하세요: 대신 타이밍에는 운영 체제의 파일 시스템에 파일을 쓰는 데 걸리는 시간도 포함됩니다. |PyMuPDF| 이외의 도구는 예를 들어 이미지 **생성** 단계를 이미지를 파일에 **쓰는** 다음 단계와 분리하는 옵션을 제공하지 않기 때문에 이것을 피할 수 없습니다."
 
 #: ../../app4.rst:26 c95dca0ce6a24b9cbb4e54005da736be
 msgid ""
 "So all timings documented include a common, OS-oriented base effort. "
 "Therefore, performance **differences per tool are actually larger** than "
 "the numbers suggest."
-msgstr ""
+msgstr "따라서 문서화된 모든 타이밍에는 공통 OS 지향 기본 작업이 포함됩니다. 따라서 도구별 성능 **차이는 실제로 숫자가 시사하는 것보다 큽니다**."
 
 #: ../../app4.rst:33 5c8d1822086844e0b5b6e63e24468509
 msgid "Files used"
-msgstr ""
+msgstr "사용된 파일"
 
 #: ../../app4.rst:35 2439752153d84180a23a0e99527d8073
 msgid ""
 "A set of eight files is used for the performance testing. With each file "
 "we have the following information:"
-msgstr ""
+msgstr "성능 테스트에 8개의 파일 세트가 사용됩니다. 각 파일에 대해 다음 정보가 있습니다:"
 
 #: ../../app4.rst:37 b31835ad665241aebc8bce9496462a0b
 msgid "**Name** of the file and download **link**."
-msgstr ""
+msgstr "파일의 **이름** 및 다운로드 **링크**."
 
 #: ../../app4.rst:38 01b0b7ddaf6342b6acea40fc10548232
 msgid "**Size** in bytes."
-msgstr ""
+msgstr "바이트 단위의 **크기**."
 
 #: ../../app4.rst:39 5cefe438dda843c68dd254d3911dbf09
 msgid "Total number of **pages** in file."
-msgstr ""
+msgstr "파일의 총 **페이지** 수."
 
 #: ../../app4.rst:40 245d148da06d4becad20aec51e1fd3bf
 msgid "Total number of bookmarks (**Table of Contents** entries)."
-msgstr ""
+msgstr "책갈피(**목차** 항목)의 총 수."
 
 #: ../../app4.rst:41 ff1a2993e3254f7686a848f577c48582
 msgid "Total number of **links**."
-msgstr ""
+msgstr "**링크** 의 총 수."
 
 #: ../../app4.rst:42 fb20f6986d82495e9890d8753eb1f276
 msgid "**KB size** per page."
-msgstr ""
+msgstr "페이지당 **KB 크기**."
 
 #: ../../app4.rst:43 1224aaf0dfde40e1a5c3bc91ef4011ff
 msgid ""
 "**Textsize per page** is the amount text in the whole file in KB, divided"
 " by the number of pages."
-msgstr ""
+msgstr "**페이지당 텍스트 크기** 는 전체 파일의 텍스트 양(KB)을 페이지 수로 나눈 값입니다."
 
 #: ../../app4.rst:44 8ceb2129883142a09c9d4d383789ed99
 msgid "Any **notes** to generally describe the type of file."
-msgstr ""
+msgstr "파일 유형을 일반적으로 설명하는 **참고 사항**."
 
 #: ../../app4.rst:50 ../../app4.rst:217 ../../app4.rst:295 ../../app4.rst:407
 #: 1b162242a4a54f7dafcae32349b4ed33 930f7531af8b4c2db858b7c3c63f1c57
 #: b459ef8255c34d8bb8f10527b5b13ae0 dd23f2e000014a6ebfbb0df71f4f4550
 msgid "**Name**"
-msgstr ""
+msgstr "**이름**"
 
 #: ../../app4.rst:51 651fc5cd40134ce993378901eaed782d
 msgid "**Size (bytes)**"
-msgstr ""
+msgstr "**크기 (바이트)**"
 
 #: ../../app4.rst:52 830651a701b543dd92495f528872e442
 msgid "**Pages**"
-msgstr ""
+msgstr "**페이지**"
 
 #: ../../app4.rst:53 ad04afd00ac744a8b7c099d48dcdc0c3
 msgid "**TOC size**"
-msgstr ""
+msgstr "**목차 크기**"
 
 #: ../../app4.rst:54 4286cb4118494c3c97aa7190ce52bbe1
 msgid "**Links**"
-msgstr ""
+msgstr "**링크**"
 
 #: ../../app4.rst:55 dfccc56073594677aaaf87774c57e911
 msgid "**KB/page**"
-msgstr ""
+msgstr "**KB/페이지**"
 
 #: ../../app4.rst:56 85615f3120044a3d8f55f0e03fbe8400
 msgid "**Textsize/page**"
-msgstr ""
+msgstr "**텍스트 크기/페이지**"
 
 #: ../../app4.rst:57 2ed30a8ee08e4381913a180905dc4905
 msgid "**Notes**"
-msgstr ""
+msgstr "**참고 사항**"
 
 #: ../../app4.rst:58 81403b323ce2471990b6addcb9d327ed
 msgid "`adobe.pdf`"
@@ -403,39 +403,39 @@ msgstr ""
 
 #: ../../app4.rst:121 513e58b0ccf547edaf2e1b8d4fc09391
 msgid "single page, graphics oriented, large file size"
-msgstr ""
+msgstr "단일 페이지, 그래픽 지향, 큰 파일 크기"
 
 #: ../../app4.rst:127 b1d1466a4d4f46ee97f9c0c14866930d
 msgid ""
 "**adobe.pdf** and **pymupdf.pdf** are clearly text oriented, **artifex-"
 "website.pdf** and **sample-50-MB-pdf-file.pdf** are graphics oriented. "
 "Other files are a mix of both."
-msgstr ""
+msgstr "**adobe.pdf** 와 **pymupdf.pdf** 는 명확히 텍스트 지향적이며, **artifex-website.pdf** 와 **sample-50-MB-pdf-file.pdf** 는 그래픽 지향적입니다. 다른 파일들은 둘 다의 혼합입니다."
 
 #: ../../app4.rst:131 a46db6b46cbd476c9aa08e828b1899a9
 msgid "Tools used"
-msgstr ""
+msgstr "사용된 도구"
 
 #: ../../app4.rst:133 eff071706abe45db98dc970ba599955e
 msgid ""
 "In each section, the same fixed set of |PDF| files is being processed by "
 "a set of tools. The set of tools used per performance aspect however "
 "varies, depending on the supported tool features."
-msgstr ""
+msgstr "각 섹션에서 동일한 고정된 |PDF| 파일 세트가 도구 세트에 의해 처리됩니다. 그러나 성능 측면별로 사용되는 도구 세트는 지원되는 도구 기능에 따라 다릅니다."
 
 #: ../../app4.rst:135 e7ff37e32cbd4cdc993c645e7658d227
 msgid ""
 "All tools are either platform independent, or at least can run on both, "
 ":title:`Windows` and :title:`Unix` / :title:`Linux`."
-msgstr ""
+msgstr "모든 도구는 플랫폼 독립적이거나 최소한 :title:`Windows` 와 :title:`Unix` / :title:`Linux` 모두에서 실행할 수 있습니다."
 
 #: ../../app4.rst:141 7507beef7859479e94a8fa9cce614373
 msgid "**Tool**"
-msgstr ""
+msgstr "**도구**"
 
 #: ../../app4.rst:142 7e5c5082ee244cc1850b389fa76d162b
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../app4.rst:143 ../../app4.rst:172 ../../app4.rst:218 ../../app4.rst:296
 #: ../../app4.rst:368 ../../app4.rst:408 51f2639233354454a2be6c8cf943caae
@@ -443,69 +443,69 @@ msgstr ""
 #: cf82339face445409b1cb2230b1cf737 e2f4e337aa6f46ff9d1a57a84bd40231
 #: ea0496359fd4419f88ac295b9d5a7c35
 msgid "|PyMuPDF|"
-msgstr ""
+msgstr "|PyMuPDF|"
 
 #: ../../app4.rst:144 265dd2b9a51a4748ae710d0a7781b16c
 msgid "The tool of this manual."
-msgstr ""
+msgstr "이 매뉴얼의 도구."
 
 #: ../../app4.rst:145 0d7018f04c2d4b8b91e09d879a94c489
 msgid "PDFrw_"
-msgstr ""
+msgstr "PDFrw_"
 
 #: ../../app4.rst:146 1871dfbb59ed44559c1143b8f664ab3b
 msgid ""
 "A pure :title:`Python` tool, being used by :title:`rst2pdf`, has "
 "interface to :title:`ReportLab`."
-msgstr ""
+msgstr ":title:`rst2pdf` 에서 사용되는 순수 :title:`Python` 도구로, :title:`ReportLab` 에 대한 인터페이스를 가집니다."
 
 #: ../../app4.rst:147 db3dc67db0384a4caf25ec3159cc9e8c
 msgid "PyPDF2_"
-msgstr ""
+msgstr "PyPDF2_"
 
 #: ../../app4.rst:148 f00f0472c11846dd8a6d1cb0ac0237bf
 msgid "A pure :title:`Python` tool with a large function set."
-msgstr ""
+msgstr "큰 함수 집합을 가진 순수 :title:`Python` 도구."
 
 #: ../../app4.rst:149 719bb221eb5b4d34a21a977bfddfa966
 msgid "PDFMiner_"
-msgstr ""
+msgstr "PDFMiner_"
 
 #: ../../app4.rst:150 7c679bd2a294494c86c754ffaddb5cf3
 msgid "A pure :title:`Python` to extract text and other data from |PDF|."
-msgstr ""
+msgstr "|PDF| 에서 텍스트 및 기타 데이터를 추출하는 순수 :title:`Python`."
 
 #: ../../app4.rst:151 ef3100ff8d5049009f9896ca197346c5
 msgid "XPDF_"
-msgstr ""
+msgstr "XPDF_"
 
 #: ../../app4.rst:152 89c9c95eccee414e90d74c494ef8fa0c
 msgid "A command line utility with multiple functions."
-msgstr ""
+msgstr "여러 기능을 가진 명령줄 유틸리티."
 
 #: ../../app4.rst:153 3ac8573211c94c1996a3f39372a5c365
 msgid "PikePDF_"
-msgstr ""
+msgstr "PikePDF_"
 
 #: ../../app4.rst:154 ad269cc30d2f43dbbd44e72f1cfa24e9
 msgid ""
 "A :title:`Python` package similar to :title:`PDFrw`, but based on "
 ":title:`C++` library :title:`QPDF`."
-msgstr ""
+msgstr ":title:`PDFrw` 와 유사한 :title:`Python` 패키지이지만, :title:`C++` 라이브러리 :title:`QPDF` 를 기반으로 합니다."
 
 #: ../../app4.rst:155 f7a4dbe832784e9c80a9bec19efd26e4
 msgid "PDF2JPG_"
-msgstr ""
+msgstr "PDF2JPG_"
 
 #: ../../app4.rst:156 2354f030ddfb48028e2dc5dcdca588bf
 msgid ""
 "A :title:`Python` package specialized on rendering |PDF| pages to "
 ":title:`JPG` images."
-msgstr ""
+msgstr "|PDF| 페이지를 :title:`JPG` 이미지로 렌더링하는 데 특화된 :title:`Python` 패키지."
 
 #: ../../app4.rst:164 20ec5781714e43979415d31bca6e4d91
 msgid "Copying / Joining / Merging"
-msgstr ""
+msgstr "복사 / 결합 / 병합"
 
 #: ../../app4.rst:166 24e5ae35daf74ce5af40e0c2fc945067
 msgid ""
@@ -515,36 +515,36 @@ msgid ""
 "one go, front to end. :title:`PDFrw` too, has a *lazy* strategy for "
 "parsing, meaning it only parses those parts of a document that are "
 "required in any moment."
-msgstr ""
+msgstr "|PDF| 파일을 읽고 내용을 추가 처리하기 위해 파싱하는 속도는 얼마나 빠른가? 순수 파싱 성능은 직접 비교할 수 없습니다. 왜냐하면 배치 유틸리티는 항상 요청된 작업을 처음부터 끝까지 한 번에 완전히 실행하기 때문입니다. :title:`PDFrw` 도 *지연* 파싱 전략을 가지며, 이는 언제든지 필요한 문서 부분만 파싱한다는 의미입니다."
 
 #: ../../app4.rst:168 9030ee0b64da48c4b6ba3563a6fe7da8
 msgid ""
 "To find an answer to the question, we therefore measure the time to copy "
 "a |PDF| file to an output file with each tool, and do nothing else."
-msgstr ""
+msgstr "이 질문에 대한 답을 찾기 위해, 각 도구로 |PDF| 파일을 출력 파일에 복사하는 데 걸리는 시간을 측정하고 다른 작업은 수행하지 않습니다."
 
 #: ../../app4.rst:170 ../../app4.rst:365 75c4e9d6b0f94276ad4a46e7ca064b4c
 #: d29245da53b44d4c931cdfd53a686bcb
 msgid "These are the :title:`Python` commands for how each tool is used:"
-msgstr ""
+msgstr "각 도구를 사용하는 방법에 대한 :title:`Python` 명령은 다음과 같습니다:"
 
 #: ../../app4.rst:180 40554a7aac2c4529a5cea2cb201adc33
 msgid ":title:`PDFrw`"
-msgstr ""
+msgstr ":title:`PDFrw`"
 
 #: ../../app4.rst:190 2027a14c030c4dafa9b213b842921038
 msgid ":title:`PikePDF`"
-msgstr ""
+msgstr ":title:`PikePDF`"
 
 #: ../../app4.rst:198 0554b1918f0442929d092d7d1aa8c6db
 msgid ":title:`PyPDF2`"
-msgstr ""
+msgstr ":title:`PyPDF2`"
 
 #: ../../app4.rst:210 ../../app4.rst:288 ../../app4.rst:399
 #: 0cc77d5085aa42b092a9d28c9f9b93d1 2151ed94f39e42489d9407b0a8ac0ccb
 #: 8e952a6e6d1d46499282ea93f770529c
 msgid "**Observations**"
-msgstr ""
+msgstr "**관찰 결과**"
 
 #: ../../app4.rst:212 ../../app4.rst:290 ../../app4.rst:401
 #: 190b33a2a1264d58900d557c11876da4 2995f439d6cb495da4b80e31d49c47a7
@@ -552,20 +552,20 @@ msgstr ""
 msgid ""
 "These are our run time findings in **seconds** along with a base rate "
 "summary compared to |PyMuPDF|:"
-msgstr ""
+msgstr "다음은 **초** 단위의 실행 시간 결과와 |PyMuPDF| 와 비교한 기준 비율 요약입니다:"
 
 #: ../../app4.rst:219 a51de26a6852481a8e70a53e96187379
 msgid "**PDFrw**"
-msgstr ""
+msgstr "**PDFrw**"
 
 #: ../../app4.rst:220 933434ca403749c0a4f630ffec63fbf0
 msgid "**PikePDF**"
-msgstr ""
+msgstr "**PikePDF**"
 
 #: ../../app4.rst:221 ../../app4.rst:298 93a77920ab2f426481a1d5037c17135f
 #: a5fda08d4d34464ba81569732331f63c
 msgid "**PyPDF2**"
-msgstr ""
+msgstr "**PyPDF2**"
 
 #: ../../app4.rst:222 ../../app4.rst:300 ../../app4.rst:411
 #: 5544726c03fb43a2afaa6c61866bba6a 5ade818fb72c4831ad8691c9cf811c78
@@ -745,7 +745,7 @@ msgstr ""
 #: 147889494a0342d39c8d7bc589e777a1 9dde60202b154d62bb5dc5da1b8f3eb4
 #: dcdc53ddede34633afbb78b8cb474780
 msgid "**Total**"
-msgstr ""
+msgstr "**총계**"
 
 #: ../../app4.rst:263 482ff9ef77514db0a3105d43540c6a79
 msgid "**3.05**"
@@ -767,7 +767,7 @@ msgstr ""
 #: 39d408ac310b429a9f4630de549c0218 b1cedcb976d7467cb64b4a03e059059f
 #: d60f7ab07be042e9ac4f315656e9d80e
 msgid "**Rate compared to PyMuPDF**"
-msgstr ""
+msgstr "**PyMuPDF 와 비교한 비율**"
 
 #: ../../app4.rst:273 ../../app4.rst:351 ../../app4.rst:452
 #: 5fe241f7da6f4f1287b2ef598e77e63a a1eabf390faf4118b9fbf1c23bcaa970
@@ -789,23 +789,23 @@ msgstr ""
 
 #: ../../app4.rst:283 1cd4fd60fed8493aa0180e6aced6f887
 msgid "Text Extraction"
-msgstr ""
+msgstr "텍스트 추출"
 
 #: ../../app4.rst:285 43ec059052ef49239504e79c59d48792
 msgid ""
 "The following table shows plain text extraction durations. All tools have"
 " been used with their most basic functionality - i.e. no layout re-"
 "arrangements, etc."
-msgstr ""
+msgstr "다음 표는 일반 텍스트 추출 기간을 보여줍니다. 모든 도구는 가장 기본적인 기능으로 사용되었습니다 -- 즉, 레이아웃 재배치 등이 없습니다."
 
 #: ../../app4.rst:297 ../../app4.rst:409 493d81649a04476aa7e157c8155e8816
 #: c7a4bc884d3e4b39ab49157d277af5e6
 msgid "**XPDF**"
-msgstr ""
+msgstr "**XPDF**"
 
 #: ../../app4.rst:299 55447e13f7cc43598fde158caf1adfbf
 msgid "**PDFMiner**"
-msgstr ""
+msgstr "**PDFMiner**"
 
 #: ../../app4.rst:301 71ff39c17b764e46a725f342a082f147
 msgid "2.01"
@@ -961,25 +961,25 @@ msgstr ""
 
 #: ../../app4.rst:360 00b592ac57f64130a8654c00830f154e
 msgid "Page Rendering"
-msgstr ""
+msgstr "페이지 렌더링"
 
 #: ../../app4.rst:362 f5119aaf183e4f4eb483e9c337c88488
 msgid ""
 "We have tested rendering speed of |PyMuPDF| against :title:`pdf2jpg` and "
 ":title:`XPDF` at a resolution of 150 DPI,"
-msgstr ""
+msgstr "150 DPI 해상도에서 :title:`pdf2jpg` 및 :title:`XPDF` 와 비교하여 |PyMuPDF| 의 렌더링 속도를 테스트했습니다,"
 
 #: ../../app4.rst:382 02cf04dabcd44b9998f6e4e25bbca5ee
 msgid ":title:`XPDF`"
-msgstr ""
+msgstr ":title:`XPDF`"
 
 #: ../../app4.rst:389 90770272b10c416e84826a42e1c212cc
 msgid ":title:`PDF2JPG`"
-msgstr ""
+msgstr ":title:`PDF2JPG`"
 
 #: ../../app4.rst:410 c717d43cc70e48e98e87edcf403d8b03
 msgid "**PDF2JPG**"
-msgstr ""
+msgstr "**PDF2JPG**"
 
 #: ../../app4.rst:412 da606418caee4a099a285d88fdee4bcb
 msgid "51.33"
@@ -1099,5 +1099,5 @@ msgstr ""
 
 #: ../../footer.rst:46 6f6b539ff34a4640ab8af9e5deaeacb0
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

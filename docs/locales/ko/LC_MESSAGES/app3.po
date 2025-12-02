@@ -21,40 +21,40 @@ msgstr ""
 
 #: ../../header.rst:-1 6a4f4d9aba284482b17f5158db768103
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 ca8dbdbe51984f3d841ffa5414e59d9f
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 acc2a6d07e304bfeb3e884b734b79031
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../app3.rst:7 635cfbba07cc4d7fafc89714611a9318
 msgid "Appendix 3: Assorted Technical Information"
-msgstr ""
+msgstr "부록 3: 기타 기술 정보"
 
 #: ../../app3.rst:8 4769a2a2c2d84bf2b3ee95f7b4bf80e3
 msgid ""
 "This section deals with various technical topics, that are not "
 "necessarily related to each other."
-msgstr ""
+msgstr "이 섹션은 서로 관련이 없을 수 있는 다양한 기술 주제를 다룹니다."
 
 #: ../../app3.rst:15 ec8a4400984a477ca650493b54e8d584
 msgid "Image Transformation Matrix"
-msgstr ""
+msgstr "이미지 변환 행렬"
 
 #: ../../app3.rst:16 e34c11954ed74384aadeee4920e21331
 msgid ""
 "Starting with version 1.18.11, the image transformation matrix is "
 "returned by some methods for text and image extraction: "
 ":meth:`Page.get_text` and :meth:`Page.get_image_bbox`."
-msgstr ""
+msgstr "버전 1.18.11부터 이미지 변환 행렬은 텍스트 및 이미지 추출을 위한 일부 메서드에서 반환됩니다: :meth:`Page.get_text` 및 :meth:`Page.get_image_bbox`."
 
 #: ../../app3.rst:18 b72e0ef8b41e494489563ac4faed2c68
 msgid ""
@@ -63,39 +63,39 @@ msgid ""
 "on some document page. By inspecting the image's bbox on the page and "
 "this matrix, one can determine for example, whether and how the image is "
 "displayed scaled or rotated on a page."
-msgstr ""
+msgstr "변환 행렬은 이미지가 문서 페이지의 사각형(그 \"경계 상자\" = \"bbox\")에 맞도록 변환된 방법에 대한 정보를 포함합니다. 페이지의 이미지 bbox와 이 행렬을 검사하면 예를 들어 이미지가 페이지에서 확대/축소되거나 회전되어 표시되는지 여부와 방법을 결정할 수 있습니다."
 
 #: ../../app3.rst:20 d13c3c9d78be4c7baf9efb9708ddda02
 msgid ""
 "The relationship between image dimension and its bbox on a page is the "
 "following:"
-msgstr ""
+msgstr "이미지 크기와 페이지의 bbox 간의 관계는 다음과 같습니다:"
 
 #: ../../app3.rst:24 24589c9043924415af09f8353878e2fa
 msgid "Using the original image's width and height,"
-msgstr ""
+msgstr "원본 이미지의 너비와 높이를 사용하여,"
 
 #: ../../app3.rst:23 5fcd053e3c4745e3ac9752cf844e3899
 msgid "define the image rectangle `imgrect = pymupdf.Rect(0, 0, width, height)`"
-msgstr ""
+msgstr "이미지 사각형을 정의합니다 `imgrect = pymupdf.Rect(0, 0, width, height)`"
 
 #: ../../app3.rst:24 7a8b751ef2f84e4eb0d4f3bffd76a9ba
 msgid ""
 "define the \"shrink matrix\" `shrink = pymupdf.Matrix(1/width, 0, 0, "
 "1/height, 0, 0)`."
-msgstr ""
+msgstr "\"축소 행렬\"을 정의합니다 `shrink = pymupdf.Matrix(1/width, 0, 0, 1/height, 0, 0)`."
 
 #: ../../app3.rst:26 be4e302d72a047d9ad89310d107eb3e3
 msgid ""
 "Transforming the image rectangle with its shrink matrix, will result in "
 "the unit rectangle: `imgrect * shrink = pymupdf.Rect(0, 0, 1, 1)`."
-msgstr ""
+msgstr "이미지 사각형을 축소 행렬로 변환하면 단위 사각형이 됩니다: `imgrect * shrink = pymupdf.Rect(0, 0, 1, 1)`."
 
 #: ../../app3.rst:28 cd872603d2774c46a06dda3917faa61c
 msgid ""
 "Using the image **transformation matrix** \"transform\", the following "
 "steps will compute the bbox::"
-msgstr ""
+msgstr "이미지 **변환 행렬** \"transform\"을 사용하면 다음 단계로 bbox를 계산합니다::"
 
 #: ../../app3.rst:34 b2fb7d53a3f8485390e8070c74877726
 msgid ""
@@ -103,11 +103,11 @@ msgid ""
 "information about what happened to the image rectangle to make it fit "
 "into the bbox on the page: rotation, scaling of its sides and translation"
 " of its origin. Let us look at an example:"
-msgstr ""
+msgstr "행렬 곱 `shrink * transform` 을 검사하면 이미지 사각형이 페이지의 bbox에 맞도록 변환된 방법에 대한 모든 정보(회전, 변의 크기 조정 및 원점 이동)를 알 수 있습니다. 예제를 살펴보겠습니다:"
 
 #: ../../app3.rst:71 5677aee6873b459a93e06865c3302434
 msgid "PDF Base 14 Fonts"
-msgstr ""
+msgstr "PDF Base 14 글꼴"
 
 #: ../../app3.rst:72 3df5aeca5c3f4ccf9325390f51398b06
 msgid ""
@@ -116,7 +116,7 @@ msgid ""
 "their full names amd their abbreviations in lower case to the full font "
 "basename. Wherever a **fontname** must be provided in PyMuPDF, any **key "
 "or value** from the dictionary may be used::"
-msgstr ""
+msgstr "다음 14개의 내장 글꼴 이름은 **모든 PDF 뷰어** 애플리케이션에서 지원되어야 합니다. 이들은 딕셔너리로 제공되며, 전체 이름과 소문자 약어를 전체 글꼴 기본 이름에 매핑합니다. |PyMuPDF| 에서 **fontname** 을 제공해야 하는 곳에서는 딕셔너리의 **키 또는 값** 을 사용할 수 있습니다::"
 
 #: ../../app3.rst:105 a5f070fd9c6546bfa33ed69a6639683e
 msgid ""
@@ -124,17 +124,17 @@ msgid ""
 "correctly and completely -- this is especially true for Symbol and "
 "ZapfDingbats. Also, the glyph (visual) images will be specific to every "
 "reader."
-msgstr ""
+msgstr "의무와 달리 모든 PDF 뷰어가 이러한 글꼴을 올바르고 완전하게 지원하는 것은 아닙니다 -- 이것은 특히 Symbol과 ZapfDingbats에 해당합니다. 또한 글리프(시각적) 이미지는 각 리더에 따라 다를 수 있습니다."
 
 #: ../../app3.rst:107 6842b8433a9547b6a82435e36e06fb70
 msgid ""
 "To see how these fonts can be used -- including the **CJK built-in** "
 "fonts -- look at the table in :meth:`Page.insert_font`."
-msgstr ""
+msgstr "이러한 글꼴을 사용하는 방법을 보려면 -- **CJK 내장** 글꼴을 포함하여 -- :meth:`Page.insert_font` 의 표를 참조하세요."
 
 #: ../../app3.rst:114 e3268f776b5a4b06a629bf9f9c25828c
 msgid "Adobe PDF References"
-msgstr ""
+msgstr "Adobe PDF 참조"
 
 #: ../../app3.rst:116 17a3fab0bc0d4dcc9ab758228d6be220
 msgid ""
@@ -142,11 +142,11 @@ msgid ""
 "throughout this documentation. It can be viewed and downloaded from "
 "`opensource.adobe.com <https://opensource.adobe.com/dc-acrobat-sdk-"
 "docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_."
-msgstr ""
+msgstr "Adobe에서 발행한 이 PDF Reference 매뉴얼은 이 문서 전반에 걸쳐 자주 인용됩니다. `opensource.adobe.com <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_ 에서 볼 수 있고 다운로드할 수 있습니다."
 
 #: ../../app3.rst:125 c4f0367b9f574635971bdcbd0d2ca6fb
 msgid "Using Python Sequences as Arguments in PyMuPDF"
-msgstr ""
+msgstr "|PyMuPDF| 에서 Python 시퀀스를 인수로 사용하기"
 
 #: ../../app3.rst:126 3d89e490fbf7457284a6ae3fcc59d506
 msgid ""
@@ -154,60 +154,60 @@ msgid ""
 "values, other Python **sequence types** are also allowed. Python classes "
 "are said to implement the **sequence protocol**, if they have a "
 "`__getitem__()` method."
-msgstr ""
+msgstr "|PyMuPDF| 객체와 메서드가 숫자 값의 Python **list** 를 요구할 때, 다른 Python **시퀀스 타입** 도 허용됩니다. Python 클래스는 `__getitem__()` 메서드를 가지고 있으면 **시퀀스 프로토콜** 을 구현한다고 합니다."
 
 #: ../../app3.rst:128 bd7b31cc19e54f17857367f55587a14e
 msgid ""
 "This basically means, you can interchangeably use Python *list* or "
 "*tuple* or even *array.array*, *numpy.array* and *bytearray* types in "
 "these cases."
-msgstr ""
+msgstr "기본적으로 이것은 이러한 경우에 Python *list* 또는 *tuple* 또는 *array.array*, *numpy.array* 및 *bytearray* 타입을 상호 교환하여 사용할 수 있음을 의미합니다."
 
 #: ../../app3.rst:130 cc50a15ebc1a45c3ba30d1d2615eeb1b
 msgid "For example, specifying a sequence `\"s\"` in any of the following ways"
-msgstr ""
+msgstr "예를 들어, 다음 방법 중 하나로 시퀀스 `\"s\"` 를 지정하면"
 
 #: ../../app3.rst:132 ba9e965ec2384d4aaaacc84791926237
 msgid "`s = [1, 2]` -- a list"
-msgstr ""
+msgstr "`s = [1, 2]` -- 리스트"
 
 #: ../../app3.rst:133 a1b8ab6b13fe41159b6b656dd7debae0
 msgid "`s = (1, 2)` -- a tuple"
-msgstr ""
+msgstr "`s = (1, 2)` -- 튜플"
 
 #: ../../app3.rst:134 c68b9c09194b47c78b57fa6656c1ffea
 msgid "`s = array.array(\"i\", (1, 2))` -- an array.array"
-msgstr ""
+msgstr "`s = array.array(\"i\", (1, 2))` -- array.array"
 
 #: ../../app3.rst:135 3a8427a9db4d4436a94ddb0536f292f1
 msgid "`s = numpy.array((1, 2))` -- a numpy array"
-msgstr ""
+msgstr "`s = numpy.array((1, 2))` -- numpy 배열"
 
 #: ../../app3.rst:136 33fa18c1c81f441890f097d10863edf5
 msgid "`s = bytearray((1, 2))` -- a bytearray"
-msgstr ""
+msgstr "`s = bytearray((1, 2))` -- bytearray"
 
 #: ../../app3.rst:138 723f57c7a65942108b9add6c3d6123e3
 msgid "will make it usable in the following example expressions:"
-msgstr ""
+msgstr "다음 예제 표현식에서 사용할 수 있습니다:"
 
 #: ../../app3.rst:140 7e8310592817456db2c249694ee67e4c
 msgid "`pymupdf.Point(s)`"
-msgstr ""
+msgstr "`pymupdf.Point(s)`"
 
 #: ../../app3.rst:141 ef9f88aff26342c1b8b682b45b03735a
 msgid "`pymupdf.Point(x, y) + s`"
-msgstr ""
+msgstr "`pymupdf.Point(x, y) + s`"
 
 #: ../../app3.rst:142 0a05dd917a434de3b831f92af1f206d8
 msgid "`doc.select(s)`"
-msgstr ""
+msgstr "`doc.select(s)`"
 
 #: ../../app3.rst:144 e7823b7a8a1642dea3763c0d1fcf75df
 msgid ""
 "Similarly with all geometry objects :ref:`Rect`, :ref:`IRect`, "
 ":ref:`Matrix` and :ref:`Point`."
-msgstr ""
+msgstr "모든 기하 객체 :ref:`Rect`, :ref:`IRect`, :ref:`Matrix` 및 :ref:`Point` 에도 마찬가지입니다."
 
 #: ../../app3.rst:146 e62989d3437d4c809e933779b0b4f916
 msgid ""
@@ -216,18 +216,18 @@ msgid ""
 "freely used where numerical sequences can be used, e.g. as arguments for "
 "functions like *list()*, *tuple()*, *array.array()* or *numpy.array()*. "
 "Look at the following snippet to see this work."
-msgstr ""
+msgstr "모든 |PyMuPDF| 기하 클래스 자체가 시퀀스의 특수한 경우이므로, 이들은(:ref:`Quad` 제외 -- 아래 참조) 숫자 시퀀스를 사용할 수 있는 곳에서 자유롭게 사용할 수 있습니다. 예를 들어 *list()*, *tuple()*, *array.array()* 또는 *numpy.array()* 와 같은 함수의 인수로 사용할 수 있습니다. 이것이 작동하는 것을 보려면 다음 코드 조각을 참조하세요."
 
 #: ../../app3.rst:163 cd48dbd7918c44989e77808c4e3d2273
 msgid ""
 ":ref:`Quad` is a Python sequence object as well and has a length of 4. "
 "Its items however are :data:`point_like` -- not numbers. Therefore, the "
 "above remarks do not apply."
-msgstr ""
+msgstr ":ref:`Quad` 도 Python 시퀀스 객체이며 길이가 4입니다. 그러나 항목은 :data:`point_like` 입니다 -- 숫자가 아닙니다. 따라서 위의 설명은 적용되지 않습니다."
 
 #: ../../app3.rst:170 a239cac6134847fa88f5fdc763bc0034
 msgid "Ensuring Consistency of Important Objects in PyMuPDF"
-msgstr ""
+msgstr "|PyMuPDF| 에서 중요한 객체의 일관성 보장"
 
 #: ../../app3.rst:171 94db2c4ab30441ca82c022e184f57bf9
 msgid ""
@@ -235,7 +235,7 @@ msgid ""
 "effort has been invested by MuPDF's creators to approximate some sort of "
 "an object-oriented behavior, they certainly could not overcome basic "
 "shortcomings of the C language in that respect."
-msgstr ""
+msgstr "|PyMuPDF| 는 C 라이브러리 |MuPDF| 에 대한 Python 바인딩입니다. |MuPDF| 의 제작자들이 객체 지향적 동작을 근사하기 위해 많은 노력을 기울였지만, C 언어의 기본적인 한계를 극복할 수는 없었습니다."
 
 #: ../../app3.rst:173 7cf69b3e065341f0a20a77da785f6027
 msgid ""
@@ -243,14 +243,14 @@ msgid ""
 " interface code between PyMuPDF and MuPDF consists of two basic files: "
 "*pymupdf.py* and *fitz_wrap.c*. They are created by the excellent SWIG "
 "tool for each new version."
-msgstr ""
+msgstr "반면 Python은 OO 모델을 매우 깔끔하게 구현합니다. |PyMuPDF| 와 |MuPDF| 사이의 인터페이스 코드는 두 개의 기본 파일로 구성됩니다: *pymupdf.py* 와 *fitz_wrap.c*. 이들은 각 새 버전에 대해 우수한 SWIG 도구로 생성됩니다."
 
 #: ../../app3.rst:175 05bb51a7321b4ecd8dc9585c3e3f3b8c
 msgid ""
 "When you use one of PyMuPDF's objects or methods, this will result in "
 "execution of some code in *pymupdf.py*, which in turn will call some C "
 "code compiled with *fitz_wrap.c*."
-msgstr ""
+msgstr "|PyMuPDF| 의 객체나 메서드 중 하나를 사용하면 *pymupdf.py* 의 일부 코드가 실행되고, 이것은 차례로 *fitz_wrap.c* 로 컴파일된 일부 C 코드를 호출합니다."
 
 #: ../../app3.rst:177 0d437950b2ba4e1cbdfd6ccd5a4b5f4b
 msgid ""
@@ -261,14 +261,14 @@ msgid ""
 "Or, less obvious: **never access** a page or any of its children (links "
 "or annotations) after you have executed one of the document methods "
 "*select()*, *delete_page()*, *insert_page()* ... and more."
-msgstr ""
+msgstr "SWIG가 Python과 C 레벨을 동기화하기 위해 많은 노력을 기울이기 때문에, 특정 규칙 집합을 엄격히 따르면 모든 것이 잘 작동합니다. 예를 들어: 소유 :ref:`Document` 를 닫았거나(또는 삭제하거나 ``None`` 으로 설정한 후) :ref:`Page` 객체에 **절대 액세스하지 마세요**. 또는 덜 명확한 경우: 문서 메서드 *select()*, *delete_page()*, *insert_page()* 등을 실행한 후 페이지나 그 자식(링크 또는 주석)에 **절대 액세스하지 마세요**."
 
 #: ../../app3.rst:179 740cda1605364f24b13938ce08977597
 msgid ""
 "But just no longer accessing invalidated objects is actually not enough: "
 "They should rather be actively deleted entirely, to also free C-level "
 "resources (meaning allocated memory)."
-msgstr ""
+msgstr "그러나 무효화된 객체에 더 이상 액세스하지 않는 것만으로는 충분하지 않습니다: C 레벨 리소스(할당된 메모리)도 해제하기 위해 완전히 삭제해야 합니다."
 
 #: ../../app3.rst:181 9f8e966b70d34ecfabbaf171069a4cca
 msgid ""
@@ -277,24 +277,24 @@ msgid ""
 "also between a page and its links / annotations. To maintain a consistent"
 " situation, any of the above actions must lead to a complete reset -- in "
 "**Python and, synchronously, in C**."
-msgstr ""
+msgstr "이러한 규칙의 이유는 문서와 그 페이지 사이, 그리고 페이지와 그 링크/주석 사이에 계층적 2단계 일대다 관계가 있다는 사실에 있습니다. 일관된 상황을 유지하기 위해 위의 작업 중 하나라도 완전한 재설정으로 이어져야 합니다 -- **Python과 동기적으로 C에서**."
 
 #: ../../app3.rst:183 a7f44e6e345e43358b3a79b7c052cd44
 msgid "SWIG cannot know about this and consequently does not do it."
-msgstr ""
+msgstr "SWIG는 이것을 알 수 없으므로 결과적으로 이를 수행하지 않습니다."
 
 #: ../../app3.rst:185 9f2723ebd7904acaa02811c5490da7a1
 msgid ""
 "The required logic has therefore been built into PyMuPDF itself in the "
 "following way."
-msgstr ""
+msgstr "따라서 필요한 로직이 다음과 같은 방식으로 |PyMuPDF| 자체에 내장되었습니다."
 
 #: ../../app3.rst:187 fd908d3774f14df1b4fb95b1d9afb2f4
 msgid ""
 "If a page \"loses\" its owning document or is being deleted itself, all "
 "of its currently existing annotations and links will be made unusable in "
 "Python, and their C-level counterparts will be deleted and deallocated."
-msgstr ""
+msgstr "페이지가 소유 문서를 \"잃거나\" 자체적으로 삭제되면, 현재 존재하는 모든 주석과 링크가 Python에서 사용할 수 없게 되고, C 레벨의 대응 항목이 삭제되고 할당 해제됩니다."
 
 #: ../../app3.rst:189 25e9288e71cb47e586bca43a0f860fb2
 msgid ""
@@ -304,20 +304,20 @@ msgid ""
 " will take place. \"Structure changes\" include methods like *select()*, "
 "*delePage()*, *insert_page()*, *insert_pdf()* and so on: all of these "
 "will result in a cascade of object deletions."
-msgstr ""
+msgstr "문서가 닫히거나(또는 삭제되거나 ``None`` 으로 설정되거나) 구조가 변경되면, 마찬가지로 현재 존재하는 모든 페이지와 그 자식이 사용할 수 없게 되고, 해당 C 레벨 삭제가 발생합니다. \"구조 변경\"에는 *select()*, *delete_page()*, *insert_page()*, *insert_pdf()* 등의 메서드가 포함됩니다: 이들 모두 객체 삭제의 연쇄를 초래합니다."
 
 #: ../../app3.rst:191 54df808609fb4f028e086d3d8e9d2f3b
 msgid ""
 "The programmer will normally not realize any of this. If he, however, "
 "tries to access invalidated objects, exceptions will be raised."
-msgstr ""
+msgstr "프로그래머는 일반적으로 이것을 인식하지 못합니다. 그러나 무효화된 객체에 액세스하려고 하면 예외가 발생합니다."
 
 #: ../../app3.rst:193 563eaa2415b64daabefd0a63dca2bd34
 msgid ""
 "Invalidated objects cannot be directly deleted as with Python statements "
 "like *del page* or *page = None*, etc. Instead, their *__del__* method "
 "must be invoked."
-msgstr ""
+msgstr "무효화된 객체는 *del page* 또는 *page = None* 등의 Python 문으로 직접 삭제할 수 없습니다. 대신 *__del__* 메서드를 호출해야 합니다."
 
 #: ../../app3.rst:195 e5c1f65e4ac6489ca69e7ebe7b57195c
 msgid ""
@@ -326,15 +326,15 @@ msgid ""
 "application level: if *obj.parent == None* then the object's parent is "
 "gone, and any reference to its properties or methods will raise an "
 "exception informing about this \"orphaned\" state."
-msgstr ""
+msgstr "모든 페이지, 링크 및 주석은 소유 객체를 가리키는 *parent* 속성을 가집니다. 이것은 애플리케이션 레벨에서 확인할 수 있는 속성입니다: *obj.parent == None* 이면 객체의 부모가 사라진 것이며, 속성이나 메서드에 대한 참조는 이 \"고아\" 상태에 대해 알리는 예외를 발생시킵니다."
 
 #: ../../app3.rst:197 d631125a6585402abe79abea78f9a828
 msgid "A sample session:"
-msgstr ""
+msgstr "샘플 세션:"
 
 #: ../../app3.rst:214 9f74080977604195aab03d9e5d402dd0
 msgid "This shows the cascading effect:"
-msgstr ""
+msgstr "이것은 연쇄 효과를 보여줍니다:"
 
 #: ../../app3.rst:231 2b8666687af94a81ad4c68af9a5f9e6b
 msgid ""
@@ -343,50 +343,50 @@ msgid ""
 "doc.get_toc()*, and later close or change the document, then this cannot "
 "and does not change variable *toc* in any way. It is your responsibility "
 "to refresh such variables as required."
-msgstr ""
+msgstr "위의 관계 외부의 객체는 이 메커니즘에 포함되지 않습니다. 예를 들어 *toc = doc.get_toc()* 로 목차를 만든 후 문서를 닫거나 변경하면, 이것은 변수 *toc* 를 어떤 방식으로도 변경할 수 없고 변경하지 않습니다. 필요에 따라 이러한 변수를 새로 고치는 것은 사용자의 책임입니다."
 
 #: ../../app3.rst:238 d3876be10a3649c3b2ab6f5d57c69ce0
 msgid "Design of Method :meth:`Page.show_pdf_page`"
-msgstr ""
+msgstr "메서드 :meth:`Page.show_pdf_page` 의 설계"
 
 #: ../../app3.rst:241 3180435e0924483181b1a26a8cba5f32
 msgid "Purpose and Capabilities"
-msgstr ""
+msgstr "목적 및 기능"
 
 #: ../../app3.rst:243 bf37b033f7ca48c58de17d9d2051b74d
 msgid ""
 "The method displays an image of a (\"source\") page of another PDF "
 "document within a specified rectangle of the current (\"containing\", "
 "\"target\") page."
-msgstr ""
+msgstr "이 메서드는 다른 PDF 문서의 (\"소스\") 페이지 이미지를 현재 (\"포함\", \"대상\") 페이지의 지정된 사각형 내에 표시합니다."
 
 #: ../../app3.rst:245 6f60a372555246208767f53ea2bfd820
 msgid ""
 "**In contrast** to :meth:`Page.insert_image`, this display is vector-"
 "based and hence remains accurate across zooming levels."
-msgstr ""
+msgstr ":meth:`Page.insert_image` 와 **대조적으로**, 이 표시는 벡터 기반이므로 확대/축소 수준에서도 정확하게 유지됩니다."
 
 #: ../../app3.rst:246 998a98e328ec42aba32d728c2b4334e4
 msgid ""
 "**Just like** :meth:`Page.insert_image`, the size of the display is "
 "adjusted to the given rectangle."
-msgstr ""
+msgstr ":meth:`Page.insert_image` 와 **마찬가지로**, 표시 크기는 주어진 사각형에 맞게 조정됩니다."
 
 #: ../../app3.rst:248 e75e8ccc88234308a5ec9fa48fa086f2
 msgid "The following variations of the display are currently supported:"
-msgstr ""
+msgstr "다음과 같은 표시 변형이 현재 지원됩니다:"
 
 #: ../../app3.rst:250 d8cc5e5d21b84c21b682d4ab99c0d9df
 msgid ""
 "Bool parameter `\"keep_proportion\"` controls whether to maintain the "
 "aspect ratio (default) or not."
-msgstr ""
+msgstr "Bool 매개변수 `\"keep_proportion\"` 은 종횡비를 유지할지 여부를 제어합니다(기본값)."
 
 #: ../../app3.rst:251 186e450479084963890fe9da769fab60
 msgid ""
 "Rectangle parameter `\"clip\"` restricts the visible part of the source "
 "page rectangle. Default is the full page."
-msgstr ""
+msgstr "사각형 매개변수 `\"clip\"` 은 소스 페이지 사각형의 보이는 부분을 제한합니다. 기본값은 전체 페이지입니다."
 
 #: ../../app3.rst:252 4f399ef693d44c11953293c07415b9ae
 msgid ""
@@ -394,48 +394,48 @@ msgid ""
 " If the angle is not an integer multiple of 90, only 2 of the 4 corners "
 "may be positioned on the target border if also `\"keep_proportion\"` is "
 "true."
-msgstr ""
+msgstr "float `\"rotation\"` 은 표시를 임의의 각도(도)로 회전시킵니다. 각도가 90의 정수 배가 아니고 `\"keep_proportion\"` 도 true인 경우, 4개 모서리 중 2개만 대상 경계에 위치할 수 있습니다."
 
 #: ../../app3.rst:253 64850af2d5454c3b8c0cc5f82512df49
 msgid ""
 "Bool parameter `\"overlay\"` controls whether to put the image on top "
 "(foreground, default) of current page content or not (background)."
-msgstr ""
+msgstr "Bool 매개변수 `\"overlay\"` 는 이미지를 현재 페이지 콘텐츠 위(전경, 기본값)에 배치할지 여부를 제어합니다(배경)."
 
 #: ../../app3.rst:255 7e80998882b74dbd8a0af43da85cb0d4
 msgid "Use cases include (but are not limited to) the following:"
-msgstr ""
+msgstr "사용 사례에는 다음이 포함됩니다(이에 국한되지 않음):"
 
 #: ../../app3.rst:257 996173b99261405f88be22fdbd55394b
 msgid ""
 "\"Stamp\" a series of pages of the current document with the same image, "
 "like a company logo or a watermark."
-msgstr ""
+msgstr "회사 로고나 워터마크와 같은 동일한 이미지로 현재 문서의 일련의 페이지에 \"스탬프\"를 찍습니다."
 
 #: ../../app3.rst:258 1c47493c9a7d4b9f86bf2e065fad544e
 msgid ""
-"Combine arbitrary input pages into one output page to support “booklet” "
+"Combine arbitrary input pages into one output page to support "booklet" "
 "or double-sided printing (known as \"4-up\", \"n-up\")."
-msgstr ""
+msgstr "임의의 입력 페이지를 하나의 출력 페이지로 결합하여 \"북렛\" 또는 양면 인쇄( \"4-up\", \"n-up\" 으로 알려짐)를 지원합니다."
 
 #: ../../app3.rst:259 7e5cd1ef35154a02b0bee17ee2806729
 msgid ""
 "Split up (large) input pages into several arbitrary pieces. This is also "
-"called “posterization”, because you e.g. can split an A4 page "
+"called "posterization", because you e.g. can split an A4 page "
 "horizontally and vertically, print the 4 pieces enlarged to separate A4 "
 "pages, and end up with an A2 version of your original page."
-msgstr ""
+msgstr "(큰) 입력 페이지를 여러 임의의 조각으로 분할합니다. 이것은 \"포스터화\"라고도 하며, 예를 들어 A4 페이지를 가로와 세로로 분할하고, 4개 조각을 확대하여 별도의 A4 페이지로 인쇄한 다음 원본 페이지의 A2 버전을 얻을 수 있기 때문입니다."
 
 #: ../../app3.rst:262 b540c10d38674f279374416c7ec65281
 msgid "Technical Implementation"
-msgstr ""
+msgstr "기술적 구현"
 
 #: ../../app3.rst:264 69b731e1cb1b4b1f82341ad0baeff00b
 msgid ""
 "This is done using PDF **\"Form XObjects\"**, see section 8.10 on page "
 "217 of :ref:`AdobeManual`. On execution of a :meth:`Page.show_pdf_page`, "
 "the following things happen:"
-msgstr ""
+msgstr "이것은 PDF **\"Form XObjects\"** 를 사용하여 수행됩니다. :ref:`AdobeManual` 의 217페이지 섹션 8.10을 참조하세요. :meth:`Page.show_pdf_page` 를 실행하면 다음이 발생합니다:"
 
 #: ../../app3.rst:266 50910b81c885485fadb624aecb9e1577
 msgid ""
@@ -443,165 +443,165 @@ msgid ""
 "source document are copied over to the target document, jointly creating "
 "a new **Form XObject** with the following properties. The PDF "
 ":data:`xref` number of this object is returned by the method."
-msgstr ""
+msgstr "소스 문서의 소스 페이지의 :data:`resources` 및 :data:`contents` 객체가 대상 문서로 복사되어 다음 속성을 가진 새로운 **Form XObject** 를 공동으로 생성합니다. 이 객체의 PDF :data:`xref` 번호는 메서드에 의해 반환됩니다."
 
 #: ../../app3.rst:268 a1333276b2c34164b105e04d7d4d2515
 msgid "`/BBox` equals `/Mediabox` of the source page"
-msgstr ""
+msgstr "`/BBox` 는 소스 페이지의 `/Mediabox` 와 같습니다"
 
 #: ../../app3.rst:269 fbe66f56505f421dad721b5efa325673
 msgid "`/Matrix` equals the identity matrix."
-msgstr ""
+msgstr "`/Matrix` 는 항등 행렬과 같습니다."
 
 #: ../../app3.rst:270 3a867e67f3d843608d9857ad1253fa34
 msgid ""
-"`/Resources` equals that of the source page. This involves a “deep-copy” "
+"`/Resources` equals that of the source page. This involves a "deep-copy" "
 "of hierarchically nested other objects (including fonts, images, etc.). "
 "The complexity involved here is covered by MuPDF's grafting [#f1]_ "
 "technique functions."
-msgstr ""
+msgstr "`/Resources` 는 소스 페이지의 것과 같습니다. 이것은 계층적으로 중첩된 다른 객체(글꼴, 이미지 등 포함)의 \"deep-copy\" 를 포함합니다. 여기에 관련된 복잡성은 |MuPDF| 의 grafting [#f1]_ 기술 함수로 처리됩니다."
 
 #: ../../app3.rst:271 1a49d5440ba142cf9172da9514e3c857
 msgid ""
 "This is a stream object type, and its stream is an exact copy of the "
 "combined data of the source page's :data:`contents` objects."
-msgstr ""
+msgstr "이것은 스트림 객체 타입이며, 그 스트림은 소스 페이지의 :data:`contents` 객체의 결합된 데이터의 정확한 복사본입니다."
 
 #: ../../app3.rst:273 dd47a3e1e5374c23ae28df502b54d8a4
 msgid ""
 "This Form XObject is only executed once per shown source page. Subsequent"
 " displays of the same source page will skip this step and only create "
 "\"pointer\" Form XObjects (done in next step) to this object."
-msgstr ""
+msgstr "이 Form XObject는 표시된 소스 페이지당 한 번만 실행됩니다. 동일한 소스 페이지의 후속 표시는 이 단계를 건너뛰고 이 객체에 대한 \"포인터\" Form XObjects만 생성합니다(다음 단계에서 수행)."
 
 #: ../../app3.rst:275 42724012ec184801b99998826eed3a72
 msgid ""
 "A second **Form XObject** is then created which the target page uses to "
 "invoke the display. This object has the following properties:"
-msgstr ""
+msgstr "그런 다음 대상 페이지가 표시를 호출하는 데 사용하는 두 번째 **Form XObject** 가 생성됩니다. 이 객체는 다음 속성을 가집니다:"
 
 #: ../../app3.rst:277 e03b9eae952d4d1bb6e04da71d195465
 msgid "`/BBox` equals the `/CropBox` of the source page (or `\"clip\"`)."
-msgstr ""
+msgstr "`/BBox` 는 소스 페이지의 `/CropBox` (또는 `\"clip\"`)와 같습니다."
 
 #: ../../app3.rst:278 1749263652a44611a4af6fbe1690c814
 msgid "`/Matrix` represents the mapping of `/BBox` to the target rectangle."
-msgstr ""
+msgstr "`/Matrix` 는 `/BBox` 를 대상 사각형으로 매핑하는 것을 나타냅니다."
 
 #: ../../app3.rst:279 4fb0197364cf4a88b015f8fa5d6d6ff2
 msgid ""
 "`/XObject` references the previous Form XObject via the fixed name "
 "`fullpage`."
-msgstr ""
+msgstr "`/XObject` 는 고정된 이름 `fullpage` 를 통해 이전 Form XObject를 참조합니다."
 
 #: ../../app3.rst:280 a3736f591c254b8a801d28e108cec9a8
 msgid ""
 "The stream of this object contains exactly one fixed statement: "
 "`/fullpage Do`."
-msgstr ""
+msgstr "이 객체의 스트림은 정확히 하나의 고정된 문을 포함합니다: `/fullpage Do`."
 
 #: ../../app3.rst:281 5d63f1c31a56424b8903208d2ac3af39
 msgid ""
 "If the method's `\"oc\"` argument is given, its value is assigned to this"
 " Form XObject as `/OC`."
-msgstr ""
+msgstr "메서드의 `\"oc\"` 인수가 주어지면, 그 값이 이 Form XObject에 `/OC` 로 할당됩니다."
 
 #: ../../app3.rst:283 e5c4f530e1134086bac2da1f45b4d894
 msgid ""
 "The :data:`resources` and :data:`contents` objects of the target page are"
 " now modified as follows."
-msgstr ""
+msgstr "대상 페이지의 :data:`resources` 및 :data:`contents` 객체는 다음과 같이 수정됩니다."
 
 #: ../../app3.rst:285 d81644bc7b114307a984f10eed9801e7
 msgid ""
 "Add an entry to the `/XObject` dictionary of `/Resources` with the name "
 "`fzFrm<n>` (with n chosen such that this entry is unique on the page)."
-msgstr ""
+msgstr "`/Resources` 의 `/XObject` 딕셔너리에 `fzFrm<n>` 이라는 이름으로 항목을 추가합니다(n은 이 항목이 페이지에서 고유하도록 선택됨)."
 
 #: ../../app3.rst:286 ff1f4fdf2e59413da229698f3921b8d0
 msgid ""
 "Depending on `\"overlay\"`, prepend or append a new object to the page's "
 "`/Contents` array, containing the statement `q /fzFrm<n> Do Q`."
-msgstr ""
+msgstr "`\"overlay\"` 에 따라 페이지의 `/Contents` 배열에 `q /fzFrm<n> Do Q` 문을 포함하는 새 객체를 앞에 추가하거나 뒤에 추가합니다."
 
 #: ../../app3.rst:288 01882ae84bb54534ba3c6ab5ca61b114
 msgid "This design approach ensures that:"
-msgstr ""
+msgstr "이 설계 접근 방식은 다음을 보장합니다:"
 
 #: ../../app3.rst:290 b9976fb7daeb4b6291c769ba97d9ac06
 msgid ""
 "The (potentially large) source page is only copied once to the target "
 "PDF. Only small \"pointer\" Form XObjects objects are created per each "
 "target page to show the source page."
-msgstr ""
+msgstr "(잠재적으로 큰) 소스 페이지는 대상 PDF에 한 번만 복사됩니다. 소스 페이지를 표시하기 위해 각 대상 페이지당 작은 \"포인터\" Form XObjects 객체만 생성됩니다."
 
 #: ../../app3.rst:291 521ab75e321e488ca9676c4ce898d1b3
 msgid ""
 "Each referring target page can have its own `\"oc\"` parameter to control"
 " the source page's visibility individually."
-msgstr ""
+msgstr "각 참조 대상 페이지는 소스 페이지의 가시성을 개별적으로 제어하기 위해 자체 `\"oc\"` 매개변수를 가질 수 있습니다."
 
 #: ../../app3.rst:298 05bf5b83ea6142389d3172a05aa36f27
 msgid "Diagnostics"
-msgstr ""
+msgstr "진단"
 
 #: ../../app3.rst:303 b856bdfa521a4448b19dc8a507f2c401
 msgid "|PyMuPDF| messages"
-msgstr ""
+msgstr "|PyMuPDF| 메시지"
 
 #: ../../app3.rst:305 85b5e6f89d3649809ada540c8eea82a1
 msgid "|PyMuPDF| has a Message system for showing text diagnostics."
-msgstr ""
+msgstr "|PyMuPDF| 는 텍스트 진단을 표시하기 위한 메시지 시스템을 가지고 있습니다."
 
 #: ../../app3.rst:307 4c84b6f861ea48f3a8e09715aebfc6d9
 msgid ""
 "By default messages are written to `sys.stdout`. This can be controlled "
 "in two ways:"
-msgstr ""
+msgstr "기본적으로 메시지는 `sys.stdout` 에 기록됩니다. 이것은 두 가지 방법으로 제어할 수 있습니다:"
 
 #: ../../app3.rst:311 74ccaa7010d84feaaff8d9a38c69b5f1
 msgid "Set environment variable `PYMUPDF_MESSAGE` before |PyMuPDF| is imported."
-msgstr ""
+msgstr "|PyMuPDF| 를 가져오기 전에 환경 변수 `PYMUPDF_MESSAGE` 를 설정합니다."
 
 #: ../../app3.rst:314 2f88318d369944be868c62a39006cca7
 msgid "Call `set_messages()`:"
-msgstr ""
+msgstr "`set_messages()` 를 호출합니다:"
 
 #: ../../app3.rst:318 e5c533c2a71c4b608f529bfb4df7afb2
 msgid "|MuPDF| errors and warnings"
-msgstr ""
+msgstr "|MuPDF| 오류 및 경고"
 
 #: ../../app3.rst:320 1523d23bbbce45f1a25c851f5b69abf0
 msgid "|MuPDF| generates text errors and warnings."
-msgstr ""
+msgstr "|MuPDF| 는 텍스트 오류 및 경고를 생성합니다."
 
 #: ../../app3.rst:323 adb68bfb91384894b21b746a73dd6bc0
 msgid ""
 "These errors and warnings are appended to an internal list, accessible "
 "with `Tools.mupdf_warnings()`. Also see `Tools.reset_mupdf_warnings()`."
-msgstr ""
+msgstr "이러한 오류 및 경고는 내부 목록에 추가되며, `Tools.mupdf_warnings()` 로 액세스할 수 있습니다. `Tools.reset_mupdf_warnings()` 도 참조하세요."
 
 #: ../../app3.rst:327 79324fa6e32d42af95e9abf26233099a
 msgid ""
 "By default these errors and warnings are also sent to the |PyMuPDF| "
 "message system."
-msgstr ""
+msgstr "기본적으로 이러한 오류 및 경고는 |PyMuPDF| 메시지 시스템에도 전송됩니다."
 
 #: ../../app3.rst:330 a71ef1ec2b084888adf04787091192a1
 msgid ""
 "This can be controlled with `mupdf_display_errors()` and "
 "`mupdf_display_warnings()`."
-msgstr ""
+msgstr "이것은 `mupdf_display_errors()` 및 `mupdf_display_warnings()` 로 제어할 수 있습니다."
 
 #: ../../app3.rst:334 83b10651533947bc9bd63e655367d81e
 msgid ""
 "These messages are prefixed with `MuPDF error:` and `MuPDF warning:` "
 "respectively."
-msgstr ""
+msgstr "이러한 메시지는 각각 `MuPDF error:` 및 `MuPDF warning:` 접두사가 붙습니다."
 
 #: ../../app3.rst:337 943f00a7c2a849f483525f7b3653f6a0
 msgid "Some |MuPDF| errors may lead to Python exceptions."
-msgstr ""
+msgstr "일부 |MuPDF| 오류는 Python 예외를 유발할 수 있습니다."
 
 #: ../../app3.rst:339 0cdf1f5474fa4616a11df5f246a531a1
 msgid ""
@@ -611,15 +611,15 @@ msgid ""
 "later be saved incrementally. Checking the :attr:`Document.is_dirty` "
 "attribute at this point also indicates that during `pymupdf.open` the "
 "document had to be repaired:"
-msgstr ""
+msgstr "**복구 가능한 오류** 에 대한 예제 출력입니다. 손상된 PDF를 열고 있지만 |MuPDF| 는 이를 복구할 수 있고 발생한 일에 대한 약간의 정보를 제공합니다. 그런 다음 문서를 나중에 증분 저장할 수 있는지 확인하는 방법을 설명합니다. 이 시점에서 :attr:`Document.is_dirty` 속성을 확인하면 `pymupdf.open` 중에 문서를 복구해야 했음을 나타냅니다:"
 
 #: ../../app3.rst:360 af0558fd6f8c4501a41d850a84d3da7b
 msgid "Example output for an **unrecoverable error**:"
-msgstr ""
+msgstr "**복구 불가능한 오류** 에 대한 예제 출력:"
 
 #: ../../app3.rst:378 01987f6b7c4e4b13a325bf16dc6d2fda
 msgid "Coordinates"
-msgstr ""
+msgstr "좌표"
 
 #: ../../app3.rst:381 cc111c4761774e13839c570b6a760b94
 msgid ""
@@ -628,7 +628,7 @@ msgid ""
 "some location, like a corner of a rectangle (:ref:`Rect`), a :ref:`Point`"
 " and so forth. The two values usually are floats, but there a objects "
 "like images which only allow them to be integers."
-msgstr ""
+msgstr "이것은 이 문서에서 가장 자주 사용되는 용어 중 하나입니다. **좌표** 는 일반적으로 사각형의 모서리(:ref:`Rect`), :ref:`Point` 등과 같은 위치를 나타내는 숫자 쌍 `(x, y)` 를 의미합니다. 두 값은 일반적으로 float이지만, 정수만 허용하는 이미지와 같은 객체도 있습니다."
 
 #: ../../app3.rst:383 8e23a5ba1da047d88532eda8f671451a
 msgid ""
@@ -636,7 +636,7 @@ msgid ""
 "*reference* point for ``x`` and ``y`` - in other words, we must know "
 "where location `(0, 0)` is positioned. Once `(0, 0)` (the \"origin\") is "
 "known, we speak of a \"coordinate system\"."
-msgstr ""
+msgstr "실제로 좌표의 위치를 *찾으려면*, ``x`` 와 ``y`` 의 *참조* 점도 알아야 합니다 -- 즉, 위치 `(0, 0)` 이 어디에 있는지 알아야 합니다. `(0, 0)` (\"원점\")이 알려지면 \"좌표계\"라고 말합니다."
 
 #: ../../app3.rst:385 5720add281a54277b7a0232978fa8662
 msgid ""
@@ -650,11 +650,11 @@ msgid ""
 "inverse of a transformation matrix can be used to revert the "
 "transformation. Much like multiplying by some factor, say 3, can be "
 "reverted by dividing the result by 3 (or multiplying it with 1/3)."
-msgstr ""
+msgstr "문서 처리에는 여러 좌표계가 존재합니다. 예를 들어, PDF 페이지와 그것으로부터 생성된 이미지의 좌표계는 **다릅니다**. 따라서 한 시스템에서 다른 시스템으로 좌표를 *변환* 하는 방법이 필요합니다(때로는 역으로도). 이것이 :ref:`Matrix` 의 작업입니다. 이것은 점이나 사각형과 \"곱할\" 수 있는 인수처럼 작동하여 다른 좌표계에서 해당 점/사각형을 제공하는 수학 함수입니다. 변환 행렬의 역행렬을 사용하여 변환을 되돌릴 수 있습니다. 예를 들어 3을 곱하는 것을 결과를 3으로 나누거나(또는 1/3을 곱함)하여 되돌릴 수 있는 것과 매우 유사합니다."
 
 #: ../../app3.rst:388 9bd43359dae34a3db3ed2502539abb9f
 msgid "Coordinates and Images"
-msgstr ""
+msgstr "좌표 및 이미지"
 
 #: ../../app3.rst:390 ef142876a50648b88ce6825a05daf149
 msgid ""
@@ -664,7 +664,7 @@ msgid ""
 "*downwards*. For every image, there is only a **finite number** of "
 "coordinates, namely `width * height`. A location in an image is also "
 "called a \"pixel\"."
-msgstr ""
+msgstr "이미지는 정수 좌표를 가진 좌표계를 가집니다. 원점 `(0, 0)` 은 왼쪽 위 점입니다. ``x`` 값은 `range(width)` 에 있어야 하고, ``y`` 값은 `range(height)` 에 있어야 합니다. 따라서 *아래로* 가면 ``y`` 값이 *증가* 합니다. 모든 이미지에 대해 **유한한 수** 의 좌표만 있습니다. 즉, `width * height` 입니다. 이미지의 위치는 \"픽셀\"이라고도 합니다."
 
 #: ../../app3.rst:392 a43cf286a2d14b4892269df18f857b1b
 msgid ""
@@ -674,26 +674,26 @@ msgid ""
 "printed size of some image, we therefore must divide its width and its "
 "height by the corresponding DPI values (there may separate ones for width"
 " and for height) and will get the respective number of inches."
-msgstr ""
+msgstr "예를 들어 인쇄할 때 이미지가 **얼마나 큰지** (센티미터 또는 인치)는 추가 정보인 \"해상도\"에 따라 다릅니다. 이것은 **DPI** (인치당 도트 또는 인치당 픽셀)로 측정됩니다. 따라서 이미지의 인쇄 크기를 찾으려면 너비와 높이를 해당 DPI 값으로 나누어야 하며(너비와 높이에 대해 별도의 값이 있을 수 있음) 각각의 인치 수를 얻을 수 있습니다."
 
 #: ../../app3.rst:396 b694fe03ac784433945a778cd53034f2
 msgid "Origin Point, Point Size and Y-Axis"
-msgstr ""
+msgstr "원점, 포인트 크기 및 Y축"
 
 #: ../../app3.rst:398 a92885d699744510b39176e360fb8a63
 msgid ""
 "In |PDF|, the origin `(0, 0)` of a page is located at its **bottom-left "
 "point**. In |MuPDF|, the origin `(0, 0)` of a page is located at its "
 "**top-left point**."
-msgstr ""
+msgstr "|PDF| 에서 페이지의 원점 `(0, 0)` 은 **왼쪽 아래 점** 에 있습니다. |MuPDF| 에서 페이지의 원점 `(0, 0)` 은 **왼쪽 위 점** 에 있습니다."
 
 #: ../../app3.rst:403 b0a22dfe25a8493dbcd9b65008507920
 msgid "Coordinates are float numbers and measured in **points**, where:"
-msgstr ""
+msgstr "좌표는 float 숫자이며 **포인트** 단위로 측정됩니다. 여기서:"
 
 #: ../../app3.rst:405 68d51777bcaf4642b1031f9dc960cd29
 msgid "**one point equals 1/72 inches**."
-msgstr ""
+msgstr "**1포인트는 1/72인치** 와 같습니다."
 
 #: ../../app3.rst:407 756d6701c9f747b9830a3c7d01111f53
 msgid ""
@@ -704,14 +704,14 @@ msgid ""
 "points upwards**. Now we know our document size the |MuPDF| coordinate "
 "system for the bottom right would be coordinate `(612, 792)` (and for "
 "|PDF| this coordinate would then be `(612,0)`)."
-msgstr ""
+msgstr "일반적인 문서 페이지 크기는 **ISO A4** 및 **Letter** 입니다. **Letter** 페이지는 **8.5 x 11인치** 크기를 가지며, 이는 **612 x 792 포인트** 에 해당합니다. |PDF| 좌표계에서 **Letter** 페이지의 왼쪽 위 점은 **y축이 위를 가리키므로** 좌표 `(0, 792)` 를 가집니다. 이제 문서 크기를 알았으므로 |MuPDF| 좌표계에서 오른쪽 아래는 좌표 `(612, 792)` 가 됩니다(|PDF| 에서는 이 좌표가 `(612,0)` 이 됩니다)."
 
 #: ../../app3.rst:409 50dac25ebb9848779eb3bff43cb168dc
 msgid ""
 "Theoretically, there are **infinitely many** coordinate positions on a "
 "|PDF| page. In practice however, at most the first 5 decimal places are "
 "sufficient for a reasonable precision."
-msgstr ""
+msgstr "이론적으로 |PDF| 페이지에는 **무한히 많은** 좌표 위치가 있습니다. 그러나 실제로는 합리적인 정밀도를 위해 최대 처음 5자리 소수점이면 충분합니다."
 
 #: ../../app3.rst:412 e630dd4abdb84c43b0315dfb4e77cef8
 msgid ""
@@ -722,7 +722,7 @@ msgid ""
 "being the **top-left** point of any document page. **The y-axis points "
 "downwards**, like with images. Coordinates in |MuPDF| in any case are "
 "floats, like in |PDF|."
-msgstr ""
+msgstr "|MuPDF| 에서는 여러 문서 형식이 지원됩니다 -- |PDF| 는 **12개 이상의 다른 형식** 중 하나일 뿐입니다. 이미지도 |MuPDF| 에서 문서로 지원됩니다(따라서 일반적으로 한 페이지를 가짐). 이것이 |MuPDF| 가 원점 `(0, 0)` 이 모든 문서 페이지의 **왼쪽 위** 점인 좌표계를 사용하는 이유 중 하나입니다. **y축은 아래를 가리킵니다**, 이미지와 마찬가지입니다. |MuPDF| 의 좌표는 어떤 경우든 |PDF| 와 마찬가지로 float입니다."
 
 #: ../../app3.rst:414 a69f66be61c5411c909b4daed6378f6c
 msgid ""
@@ -734,11 +734,11 @@ msgid ""
 "to compute a rectangle's PDF coordinates. In this way we can conveniently"
 " find that `Rect(0, 0, 100, 100)` in |MuPDF| is the same as `Rect(0, 692,"
 " 100, 792)` in |PDF|. See this code snippet::"
-msgstr ""
+msgstr "예를 들어 |MuPDF| (따라서 |PyMuPDF| )에서 `Rect(0, 0, 100, 100)` 사각형은 길이가 100포인트(= 1.39인치 또는 3.53센티미터)인 변을 가진 정사각형입니다. 왼쪽 위 모서리가 원점입니다. 두 좌표계 |PDF| 와 |MuPDF| 사이를 전환하려면 모든 :ref:`Page` 객체는 :attr:`Page.transformation_matrix` 를 가집니다. 그 역행렬을 사용하여 사각형의 PDF 좌표를 계산할 수 있습니다. 이렇게 하면 |MuPDF| 의 `Rect(0, 0, 100, 100)` 이 |PDF| 의 `Rect(0, 692, 100, 792)` 와 같다는 것을 편리하게 찾을 수 있습니다. 이 코드 조각을 참조하세요::"
 
 #: ../../app3.rst:425 0358a41bcfde49298c244a781732a9cc
 msgid "Footnotes"
-msgstr ""
+msgstr "각주"
 
 #: ../../app3.rst:426 2a940ba3cc664855b3afbb56eaefdade
 msgid ""
@@ -753,14 +753,14 @@ msgid ""
 "referenced data, like images and fonts. However, you may still want to "
 "consider using garbage collection (option 4) in any of the following "
 "cases:"
-msgstr ""
+msgstr "|MuPDF| 는 PDF 문서 간에 객체를 \"deep-copying\" 하는 것을 지원합니다. 대상에서 중복 데이터를 피하기 위해 스크래치패드 형태의 소위 \"graftmaps\" 를 사용합니다: 복사할 각 객체에 대해 그 :data:`xref` 번호가 graftmap에서 조회됩니다. 발견되면 복사가 건너뜁니다. 그렇지 않으면 새로운 :data:`xref` 가 기록되고 복사가 수행됩니다. |PyMuPDF| 는 지금까지 두 곳에서 이 기술을 사용합니다: :meth:`Document.insert_pdf` 및 :meth:`Page.show_pdf_page`. 이 프로세스는 빠르고 매우 효율적입니다. 왜냐하면 이미지와 글꼴과 같은 일반적으로 크고 자주 참조되는 데이터의 여러 복사본을 방지하기 때문입니다. 그러나 다음 경우 중 하나에서 가비지 수집(옵션 4)을 사용하는 것을 고려할 수 있습니다:"
 
 #: ../../app3.rst:428 12291c684340429ebe3dfc12d79126a2
 msgid ""
 "The target PDF is not new / empty: grafting does not check for resources "
 "that already existed (e.g. images, fonts) in the target document before "
 "opening it."
-msgstr ""
+msgstr "대상 PDF가 새 것이 아니거나 비어 있지 않음: grafting은 문서를 열기 전에 대상 문서에 이미 존재했던 리소스(예: 이미지, 글꼴)를 확인하지 않습니다."
 
 #: ../../app3.rst:429 85b00d1ae84a4e159e1accdfa5034bdc
 msgid ""
@@ -768,9 +768,9 @@ msgid ""
 "grafting occurs **within one source** PDF only, not across multiple. So "
 "if e.g. the same image exists in pages from different source PDFs, then "
 "this will not be detected until garbage collection."
-msgstr ""
+msgstr "하나 이상의 소스 문서에 대해 :meth:`Page.show_pdf_page` 사용: 각 grafting은 여러 문서에 걸쳐서가 아니라 **하나의 소스** PDF 내에서만 발생합니다. 따라서 예를 들어 다른 소스 PDF의 페이지에 동일한 이미지가 존재하면, 가비지 수집까지 이것이 감지되지 않습니다."
 
 #: ../../footer.rst:46 2a972e62f98f45208da9b9eaf1158726
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 0eb4a369e5b94c7489997eb18eb43347
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 d0b7be7b87414f0dacea935473d04f43
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 caca777a734049198ad1a788ab3304f9
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../znames.rst:7 083b7e0a5a2b460f8da6d411d620371a
 msgid "Deprecated Names"
-msgstr ""
+msgstr "사용 중단된 이름"
 
 #: ../../znames.rst:9 e3a203bb6f834ba0a39fa9d32da05a58
 msgid ""
@@ -47,14 +47,14 @@ msgid ""
 "increase in classes, methods and properties. In too many cases, this has "
 "led to non-intuitive, illogical and ugly names, difficult to memorize or "
 "guess."
-msgstr ""
+msgstr "메서드와 속성의 원래 명명 규칙은 \"camelCase\"였습니다. 2013년경 생성 이후 PyMuPDF에서 기능이 크게 증가했고, 이에 따라 클래스, 메서드, 속성도 증가했습니다. 많은 경우 직관적이지 않고 논리적이지 않으며 기억하거나 추측하기 어려운 이름이 생겼습니다."
 
 #: ../../znames.rst:11 d001aeecdacb4bd59a62961dbc1370dd
 msgid ""
 "A few versions ago, I therefore decided to shift gears and switch to a "
 "\"snake_cased\" naming standard. This was a major effort, which needed a "
 "step-wise approach. I think am done with it now (version 1.18.14)."
-msgstr ""
+msgstr "몇 버전 전, 단계적 접근이 필요한 큰 작업이었지만 \"snake_cased\" 명명 표준으로 전환하기로 했습니다. 이제는 완료된 것으로 봅니다(버전 1.18.14)."
 
 #: ../../znames.rst:14 6f07346687c14dbb83e38186df94b743
 msgid ""
@@ -62,20 +62,20 @@ msgid ""
 "example, property `pageCount` became `page_count` in the :ref:`Document` "
 "class. There also are less obvious name changes, e.g. method `getPNGdata`"
 " was renamed to `tobytes` in the :ref:`Pixmap` class."
-msgstr ""
+msgstr "다음 목록은 사용 중단된 이름을 새 버전에 매핑합니다. 예를 들어, 속성 `pageCount` 는 :ref:`Document` 클래스에서 `page_count` 가 되었습니다. 덜 명확한 이름 변경도 있습니다. 예를 들어 메서드 `getPNGdata` 는 :ref:`Pixmap` 클래스에서 `tobytes` 로 이름이 변경되었습니다."
 
 #: ../../znames.rst:16 cc7e51d7a5144cd290ff0b79249d442c
 msgid ""
 "Names of classes (camel case) and package-wide constants (the majority is"
 " upper case) remain untouched."
-msgstr ""
+msgstr "클래스 이름(카멜 케이스)과 패키지 전체 상수(대부분 대문자)는 변경되지 않았습니다."
 
 #: ../../znames.rst:18 6e79bdebc3d2434394db7e65ce997c71
 msgid ""
 "Old names will remain available as deprecated aliases through MuPDF "
 "version 1.19.0 and **be removed** in the version that follows it - "
 "probably version 1.20.0, but this depends on upstream decisions (MuPDF)."
-msgstr ""
+msgstr "이전 이름은 MuPDF 버전 1.19.0까지 사용 중단된 별칭으로 사용 가능하며, 그 이후 버전(아마도 버전 1.20.0이지만, 이는 상류 결정(MuPDF)에 따라 다름)에서 **제거됩니다**."
 
 #: ../../znames.rst:20 dbf4b6c8f3134ca596bd0a822ffd2e9b
 msgid ""
@@ -83,14 +83,14 @@ msgid ""
 "`sys.stderr` like `Deprecation: 'newPage' removed from class 'Document' "
 "after v1.19.0 - use 'new_page'.` when aliased methods are being used. "
 "Using a deprecated property will not cause this type of warning."
-msgstr ""
+msgstr "버전 1.19.0부터 별칭 메서드가 사용될 때 `sys.stderr` 에 `Deprecation: 'newPage' removed from class 'Document' after v1.19.0 - use 'new_page'.` 와 같은 사용 중단 경고를 발행합니다. 사용 중단된 속성을 사용해도 이 유형의 경고는 발생하지 않습니다."
 
 #: ../../znames.rst:22 2f0d5cce9e2e4f5e8541eb4b6fc686ed
 msgid ""
 "Starting immediately, all deprecated objects (methods and properties) "
 "will show a copy of the original's docstring, **prefixed** with the "
 "deprecation message, for example::"
-msgstr ""
+msgstr "즉시부터 모든 사용 중단된 객체(메서드 및 속성)는 원본의 docstring 복사본을 표시하며, 사용 중단 메시지가 **접두사** 로 붙습니다. 예:"
 
 #: ../../znames.rst:39 8e4f2cae0e38499bbf0543f4bdfb1885
 msgid ""
@@ -100,9 +100,9 @@ msgid ""
 "folder as argument. If a folder is supplied, all its Python files and "
 "those of its subfolders are changed. Optionally, backups of the scripts "
 "can be taken."
-msgstr ""
+msgstr "스크립트에서 대량 이름 변경을 수행하는 데 사용할 수 있는 유틸리티 스크립트 `alias-changer.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/alias-changer.py>`_ 가 있습니다. 단일 파일 또는 폴더를 인수로 받습니다. 폴더가 제공되면 해당 폴더의 모든 Python 파일과 하위 폴더의 파일이 변경됩니다. 선택적으로 스크립트의 백업을 만들 수 있습니다."
 
 #: ../../footer.rst:46 52ab1685187a4ce284f0a14818fcf934
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

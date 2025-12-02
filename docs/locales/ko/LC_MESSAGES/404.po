@@ -21,33 +21,33 @@ msgstr ""
 
 #: ../../header-404.rst:-1 a1916335a5274785a49dd5e339d92fe7
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header-404.rst:-1 5d84ec96284f4e3f94e9c1b238269f04
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header-404.rst:-1 4576f08a21cd47f79352fb20f6583d87
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../404.rst:4 924f32c8351f4a62978ec14c16c351b5
 msgid "404!"
-msgstr ""
+msgstr "404!"
 
 #: ../../404.rst:7 6d3e16ada64f4502aa193e221a595c34
 msgid "**This page is not available.**"
-msgstr ""
+msgstr "**이 페이지를 사용할 수 없습니다.**"
 
 #: ../../404.rst:10 dbddaa0e43f144ebbea819e2466410b9
 msgid "Please use the menu or search to find what you are looking for."
-msgstr ""
+msgstr "메뉴 또는 검색을 사용하여 찾고 있는 내용을 검색해 주세요."
 
 #: ../../footer.rst:46 a4c037a234b44cbe8461dba8e47036a1
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

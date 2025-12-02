@@ -21,50 +21,50 @@ msgstr ""
 
 #: ../../header.rst:-1 d08d3d2cd62e4347ae2805cfcc06a70f
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 739bd76d85de44ed9317676c5473c0c4
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 4c57e05fc77144dfb8faf379a03cc56b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../glossary.rst:7 28cd3665c98c4ea997db495f331f026c
 msgid "Glossary"
-msgstr ""
+msgstr "용어집"
 
 #: ../../glossary.rst:11 586bce9bf00e4c89b0241028b3c7ff08
 msgid ""
 "This is an essential general mathematical / geometrical term for "
 "understanding this documentation. Please see this section for a more "
 "detailed discussion: :ref:`Coordinates`."
-msgstr ""
+msgstr "이것은 이 문서를 이해하기 위한 필수적인 일반적인 수학/기하학 용어입니다. 자세한 내용은 :ref:`Coordinates` 섹션을 참조하세요."
 
 #: ../../glossary.rst:15 6bb8cff798704bbb98656190f68b478d
 msgid "A Python sequence of 6 numbers."
-msgstr ""
+msgstr "6개의 숫자로 구성된 Python 시퀀스입니다."
 
 #: ../../glossary.rst:19 4be6452df2ab4c31adadf519dd1f3f3d
 msgid "A Python sequence of 4 numbers."
-msgstr ""
+msgstr "4개의 숫자로 구성된 Python 시퀀스입니다."
 
 #: ../../glossary.rst:23 4f04da6f55df426d9a81f7ddd5cf35a4
 msgid "A Python sequence of 4 integers."
-msgstr ""
+msgstr "4개의 정수로 구성된 Python 시퀀스입니다."
 
 #: ../../glossary.rst:27 0816befe649d4c23ac61285cc1d4c68a
 msgid "A Python sequence of 2 numbers."
-msgstr ""
+msgstr "2개의 숫자로 구성된 Python 시퀀스입니다."
 
 #: ../../glossary.rst:31 4b252ecf18494010ac1b4abf8318014b
 msgid "A Python sequence of 4 :data:`point_like` items."
-msgstr ""
+msgstr "4개의 :data:`point_like` 항목으로 구성된 Python 시퀀스입니다."
 
 #: ../../glossary.rst:35 08979edc495d4e0c8fb3091ac014aeb6
 msgid ""
@@ -73,7 +73,7 @@ msgid ""
 "example be specified only once or in some node(s) of the :data:`pagetree`"
 " and will then be taken as value for all *kids*, that do not specify "
 "their own value."
-msgstr ""
+msgstr "PDF의 여러 값은 부모-자식 관계에서 하위 객체에 상속될 수 있습니다. 예를 들어 페이지의 mediabox(물리적 크기)는 한 번만 지정되거나 :data:`pagetree` 의 일부 노드에 지정될 수 있으며, 자체 값을 지정하지 않는 모든 *자식* 에 대한 값으로 사용됩니다."
 
 #: ../../glossary.rst:41 bd92584d9672427a92de7ae2ca2c9ef5
 msgid ""
@@ -88,25 +88,25 @@ msgid ""
 "MuPDF transforms y coordinates such that the **top** border is the point "
 "of reference. This can sometimes be confusing -- you may for example "
 "encounter a situation like this one:"
-msgstr ""
+msgstr "물리적 페이지 크기를 지정하는 4개의 float로 구성된 PDF 배열입니다 -- (:data:`inheritable`, 필수). 이 사각형은 추가로 지정할 수 있는 다른 모든 PDF 페이지 사각형(CropBox, TrimBox, ArtBox, BleedBox)을 포함해야 합니다. 자세한 내용은 :ref:`AdobeManual` 을 참조하세요. MediaBox는 MuPDF와 PDF 좌표계 간에 차이가 없는 유일한 사각형입니다: :attr:`Page.mediabox` 는 항상 페이지 객체 정의의 `/MediaBox` 키와 동일한 좌표를 표시합니다. 다른 모든 사각형의 경우, MuPDF는 **상단** 경계가 기준점이 되도록 y 좌표를 변환합니다. 이로 인해 때때로 혼란스러울 수 있습니다 -- 예를 들어 다음과 같은 상황을 만날 수 있습니다:"
 
 #: ../../glossary.rst:43 c84f72a1ef1a493db58b9912d0b5c864
 msgid ""
 "The page definition contains the following identical values: `/MediaBox ["
 " 36 45 607.5 765 ]`, `/CropBox [ 36 45 607.5 765 ]`."
-msgstr ""
+msgstr "페이지 정의에는 다음과 같은 동일한 값이 포함되어 있습니다: `/MediaBox [ 36 45 607.5 765 ]`, `/CropBox [ 36 45 607.5 765 ]`."
 
 #: ../../glossary.rst:44 a0a14effa0694f848b4b68f6433c6e41
 msgid ""
 "PyMuPDF accordingly shows `page.mediabox = Rect(36.0, 45.0, 607.5, "
 "765.0)`."
-msgstr ""
+msgstr "따라서 PyMuPDF는 `page.mediabox = Rect(36.0, 45.0, 607.5, 765.0)` 을 표시합니다."
 
 #: ../../glossary.rst:45 6452ee0315854e7a8d8c7b5ceae4b2f4
 msgid ""
 "**BUT:** `page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)`, because the two "
 "y-coordinates have been transformed (45 subtracted from both of them)."
-msgstr ""
+msgstr "**하지만:** `page.cropbox = Rect(36.0, 0.0, 607.5, 720.0)` 입니다. 두 y 좌표가 변환되었기 때문입니다(둘 다에서 45가 빼졌습니다)."
 
 #: ../../glossary.rst:49 54bb2fd6606f42b0b61698e8f5e4264f
 msgid ""
@@ -116,7 +116,7 @@ msgid ""
 "**not affected** if the page is rotated -- in contrast to "
 ":attr:`Page.rect`. Also, other than the page rectangle, the top-left "
 "corner of the cropbox may or may not be *(0, 0)*."
-msgstr ""
+msgstr "페이지의 보이는 영역을 지정하는 4개의 float로 구성된 PDF 배열입니다 -- (:data:`inheritable`, 선택 사항). TrimBox, ArtBox 및 BleedBox의 기본값입니다. 없으면 MediaBox를 기본값으로 사용합니다. 이 값은 페이지가 회전되어도 **영향을 받지 않습니다** -- :attr:`Page.rect` 와 대조됩니다. 또한 페이지 사각형과 달리 cropbox의 왼쪽 상단 모서리는 *(0, 0)* 일 수도 있고 아닐 수도 있습니다."
 
 #: ../../glossary.rst:54 32d13994ea71438cba097ae7ab179529
 msgid ""
@@ -124,7 +124,7 @@ msgid ""
 "containing document-wide parameters and pointers to many other "
 "information. Its :data:`xref` is returned by "
 ":meth:`Document.pdf_catalog`."
-msgstr ""
+msgstr "문서 전체 매개변수와 다른 많은 정보에 대한 포인터를 포함하는 중앙 PDF :data:`dictionary` 입니다 -- \"root\"라고도 합니다. 그 :data:`xref` 는 :meth:`Document.pdf_catalog` 에 의해 반환됩니다."
 
 #: ../../glossary.rst:58 5758183571814745904de85f3da96f2c
 msgid ""
@@ -133,14 +133,14 @@ msgid ""
 "this dictionary, you will find things like the xrefs of the catalog and "
 "the metadata, the number of :data:`xref` numbers, etc. Here is the "
 "definition of the PDF spec:"
-msgstr ""
+msgstr "더 정확히 말하면, **PDF trailer** 는 :data:`dictionary` 형식의 정보를 포함합니다. 일반적으로 파일의 끝에 위치합니다. 이 사전에는 카탈로그 및 메타데이터의 xref, :data:`xref` 번호의 개수 등이 포함됩니다. PDF 사양의 정의는 다음과 같습니다:"
 
 #: ../../glossary.rst:60 0d85c5a6d7454c289824fc58d0a6fdef
 msgid ""
 "*\"The trailer of a PDF file enables an application reading the file to "
 "quickly find the cross-reference table and certain special objects. "
 "Applications should read a PDF file from its end.\"*"
-msgstr ""
+msgstr "*\"PDF 파일의 trailer는 파일을 읽는 애플리케이션이 교차 참조 테이블과 특정 특수 객체를 빠르게 찾을 수 있게 합니다. 애플리케이션은 PDF 파일을 끝에서부터 읽어야 합니다.\"*"
 
 #: ../../glossary.rst:62 5e0b8a538504497aa555e757cfa9f113
 msgid ""
@@ -148,7 +148,7 @@ msgid ""
 ":meth:`Document.xref_object`, :meth:`Document.xref_get_key` and "
 ":meth:`Document.xref_get_keys` with `-1` instead of a positive xref "
 "number."
-msgstr ""
+msgstr "PyMuPDF에서 trailer에 액세스하려면 일반 메서드 :meth:`Document.xref_object`, :meth:`Document.xref_get_key` 및 :meth:`Document.xref_get_keys` 를 양수 xref 번호 대신 `-1` 과 함께 사용하세요."
 
 #: ../../glossary.rst:66 96ea53e1526e4f31b6a7cd5ebbeef7a7
 msgid ""
@@ -164,17 +164,17 @@ msgid ""
 " concatenated string). It should be noted that there are more stream "
 "object types which use the same syntax: e.g. appearance dictionaries "
 "associated with annotations and Form XObjects."
-msgstr ""
+msgstr "**content stream** 은 첨부된 :data:`stream` 이 있는 PDF :data:`object` 로, 그 데이터는 페이지에 그려질 그래픽 요소를 설명하는 명령 시퀀스로 구성됩니다. :ref:`AdobeManual` 의 19페이지 \"Stream Objects\"를 참조하세요. 이러한 스트림에서 사용되는 미니 언어의 개요는 :ref:`AdobeManual` 의 643페이지 \"Operator Summary\" 장을 참조하세요. PDF :data:`page` 는 0개에서 여러 개의 contents 객체를 가질 수 있습니다. 없으면 페이지가 비어 있습니다(하지만 여전히 주석을 표시할 수 있습니다). 여러 개가 있으면 하나의 객체에 명령이 있는 것처럼 순차적으로 해석됩니다(즉, 연결된 문자열처럼). 동일한 구문을 사용하는 더 많은 스트림 객체 유형이 있습니다: 예를 들어 주석 및 Form XObject와 연결된 appearance dictionary."
 
 #: ../../glossary.rst:68 789ecf52493843de99d4baf64aac0706
 msgid "PyMuPDF provides a number of methods to deal with contents of PDF pages:"
-msgstr ""
+msgstr "PyMuPDF는 PDF 페이지의 콘텐츠를 처리하기 위한 여러 메서드를 제공합니다:"
 
 #: ../../glossary.rst:70 7af31d456e6049c781db775b0d937ce4
 msgid ""
 ":meth:`Page.read_contents()` -- reads and concatenates all page contents "
 "into one `bytes` object."
-msgstr ""
+msgstr ":meth:`Page.read_contents()` -- 모든 페이지 콘텐츠를 읽어서 하나의 `bytes` 객체로 연결합니다."
 
 #: ../../glossary.rst:71 ed6a3af3341c4060a1e4a75572b4ddd5
 msgid ""
@@ -183,7 +183,7 @@ msgid ""
 " one `/Contents` object will exist. In addition, page :data:`resources` "
 "will have been synchronized with it such that it will contain exactly "
 "those images, fonts and other objects that the page actually references."
-msgstr ""
+msgstr ":meth:`Page.clean_contents()` -- 모든 페이지 콘텐츠를 읽고, 연결하고, 구문을 정리하는 MuPDF 함수의 래퍼입니다. 이후에는 하나의 `/Contents` 객체만 존재합니다. 또한 페이지 :data:`resources` 가 동기화되어 페이지가 실제로 참조하는 이미지, 글꼴 및 기타 객체만 정확히 포함됩니다."
 
 #: ../../glossary.rst:72 b5f192573e604b7ab3a23459f4ff8d28
 msgid ""
@@ -191,13 +191,13 @@ msgid ""
 " page's :data:`contents` objects. May be empty. Use "
 ":meth:`Document.xref_stream()` with one of these xrefs to read the resp. "
 "contents section."
-msgstr ""
+msgstr ":meth:`Page.get_contents()` -- 페이지의 :data:`contents` 객체의 :data:`xref` 번호 목록을 반환합니다. 비어 있을 수 있습니다. 이러한 xref 중 하나와 함께 :meth:`Document.xref_stream()` 을 사용하여 해당 콘텐츠 섹션을 읽으세요."
 
 #: ../../glossary.rst:73 1999ff45a4f744478c87ada7170c63a7
 msgid ""
 ":meth:`Page.set_contents()` -- set a page's `/Contents` key to the "
 "provided :data:`xref` number."
-msgstr ""
+msgstr ":meth:`Page.set_contents()` -- 페이지의 `/Contents` 키를 제공된 :data:`xref` 번호로 설정합니다."
 
 #: ../../glossary.rst:77 a33fe5bd332e49fbac0209663f12f749
 msgid ""
@@ -207,7 +207,7 @@ msgid ""
 " dictionary appears as a sub-dictionary in the object definition under "
 "the key */Resources*. Being an inheritable object type, there may exist "
 "\"parent\" resources for all pages or certain subsets of pages."
-msgstr ""
+msgstr "PDF :data:`page` 에 필요한 리소스(이미지 또는 글꼴 등)에 대한 참조를 포함하는 :data:`dictionary` 입니다(필수, 상속 가능, :ref:`AdobeManual` p. 81) 및 특정 다른 객체(Form XObject). 이 사전은 키 */Resources* 아래의 객체 정의에 하위 사전으로 나타납니다. 상속 가능한 객체 유형이므로 모든 페이지 또는 특정 페이지 하위 집합에 대한 \"부모\" 리소스가 존재할 수 있습니다."
 
 #: ../../glossary.rst:81 d54465f90aea45f4be640dcb0dd409ab
 msgid ""
@@ -218,20 +218,20 @@ msgid ""
 "be a name (...). The value can be any kind of object, including another "
 "dictionary. A dictionary entry whose value is null (...) is equivalent to"
 " an absent entry.\" (:ref:`AdobeManual` p. 18)."
-msgstr ""
+msgstr "동일한 이름의 Python 개념과 어느 정도 비교할 수 있는 PDF :data:`object` 유형입니다: \"dictionary 객체는 dictionary의 항목으로 알려진 객체 쌍을 포함하는 연관 테이블입니다. 각 항목의 첫 번째 요소는 키이고 두 번째 요소는 값입니다. 키는 이름이어야 합니다(...). 값은 다른 dictionary를 포함하여 모든 종류의 객체일 수 있습니다. 값이 null인 dictionary 항목(...)은 없는 항목과 동일합니다.\" (:ref:`AdobeManual` p. 18)."
 
 #: ../../glossary.rst:83 f8dd50a4a4dd44b2ab3811dde6bd8cf3
 msgid ""
 "Dictionaries are the most important :data:`object` type in PDF. Here is "
 "an example (describing a :data:`page`)::"
-msgstr ""
+msgstr "Dictionary는 PDF에서 가장 중요한 :data:`object` 유형입니다. 다음은 예제입니다(:data:`page` 설명)::"
 
 #: ../../glossary.rst:102 b9f82bb7035946b4804cfd94101fd4c4
 msgid ""
 "*Contents*, *Type*, *MediaBox*, etc. are **keys**, *40 0 R*, *Page*, *[0 "
 "0 595.32 841.92]*, etc. are the respective **values**. The strings "
 "*\"<<\"* and *\">>\"* are used to enclose object definitions."
-msgstr ""
+msgstr "*Contents*, *Type*, *MediaBox* 등은 **키** 이고, *40 0 R*, *Page*, *[0 0 595.32 841.92]* 등은 각각의 **값** 입니다. 문자열 *\"<<\"* 및 *\">>\"* 는 객체 정의를 묶는 데 사용됩니다."
 
 #: ../../glossary.rst:104 b635f1dd09be42db81dc681669f2d25d
 msgid ""
@@ -239,13 +239,13 @@ msgid ""
 "*Resources* has an object as its value, which in turn is a dictionary "
 "with keys like *ExtGState* (with the value *<</R7 26 0 R>>*, which is "
 "another dictionary), etc."
-msgstr ""
+msgstr "이 예제는 **중첩된** dictionary 값의 구문도 보여줍니다: *Resources* 는 그 값으로 객체를 가지며, 이 객체는 *ExtGState*(값은 *<</R7 26 0 R>>* 로, 또 다른 dictionary)와 같은 키를 가진 dictionary입니다."
 
 #: ../../glossary.rst:108 acf84ed282d0488ca9ec42cb7a8b05cd
 msgid ""
 "A PDF page is a :data:`dictionary` object which defines one page in a "
 "PDF, see :ref:`AdobeManual` p. 71."
-msgstr ""
+msgstr "PDF 페이지는 PDF의 한 페이지를 정의하는 :data:`dictionary` 객체입니다. :ref:`AdobeManual` p. 71을 참조하세요."
 
 #: ../../glossary.rst:112 2e0101c6f2df4a99a2a341fe77b08849
 msgid ""
@@ -255,7 +255,7 @@ msgid ""
 " quickly open a document containing thousands of pages. The tree contains"
 " nodes of two types: intermediate nodes, called page tree nodes, and leaf"
 " nodes, called page objects. (:ref:`AdobeManual` p. 75)."
-msgstr ""
+msgstr "문서의 페이지는 페이지 트리라고 하는 구조를 통해 액세스되며, 이는 문서의 페이지 순서를 정의합니다. 트리 구조를 사용하면 제한된 메모리만 사용하여 수천 페이지를 포함하는 문서를 빠르게 열 수 있습니다. 트리에는 두 가지 유형의 노드가 포함됩니다: 중간 노드(페이지 트리 노드라고 함)와 리프 노드(페이지 객체라고 함). (:ref:`AdobeManual` p. 75)."
 
 #: ../../glossary.rst:114 4d06cfcc4e614225ae5861c899219585
 msgid ""
@@ -264,7 +264,7 @@ msgid ""
 "(\"page trees\") for faster access to any single page. In relation to the"
 " total number of pages, this can reduce the average page access time by "
 "page number from a linear to some logarithmic order of magnitude."
-msgstr ""
+msgstr "모든 페이지 참조를 하나의 배열에 나열하는 것이 가능하지만, 많은 페이지가 있는 PDF는 단일 페이지에 더 빠르게 액세스하기 위해 *균형 트리* 구조(\"페이지 트리\")를 사용하여 생성되는 경우가 많습니다. 전체 페이지 수와 관련하여, 이를 통해 페이지 번호별 평균 페이지 액세스 시간을 선형에서 대수적 크기 순서로 줄일 수 있습니다."
 
 #: ../../glossary.rst:116 01db9b917bcc4cb89215ac102dda29c9
 msgid ""
@@ -272,7 +272,7 @@ msgid ""
 "independently from what may or may not be present in the document file. "
 "This array is indexed by page number and therefore much faster than even "
 "the access via a perfectly balanced page tree."
-msgstr ""
+msgstr "빠른 페이지 액세스를 위해 MuPDF는 문서 파일에 있을 수도 있고 없을 수도 있는 것과 독립적으로 메모리에서 자체 배열을 사용할 수 있습니다. 이 배열은 페이지 번호로 인덱싱되므로 완벽하게 균형 잡힌 페이지 트리를 통한 액세스보다 훨씬 빠릅니다."
 
 #: ../../glossary.rst:120 387b50e08c0a4411b5174a213523a1c0
 msgid ""
@@ -287,7 +287,7 @@ msgid ""
 " a label. This label is then called *indirect* object. PyMuPDF supports "
 "retrieving definitions of indirect objects via their cross reference "
 "number via :meth:`Document.xref_object`."
-msgstr ""
+msgstr "Python과 유사하게, PDF는 *object* 개념을 지원하며, 8가지 기본 유형이 있습니다: 불리언 값(\"true\" 또는 \"false\"), 정수 및 실수, 문자열(**항상** 괄호로 묶임 -- \"()\" 또는 16진수를 나타내는 \"<>\"), 이름(항상 \"/\"로 시작해야 함, 예: `/Contents`), 배열(괄호 \"[]\"로 묶임), dictionary(괄호 \"<<>>\"로 묶임), 스트림(키워드 \"stream\" / \"endstream\"로 묶임), null 객체(\"null\") (:ref:`AdobeManual` p. 13). 객체는 레이블을 할당하여 식별 가능하게 만들 수 있습니다. 이 레이블은 *indirect* 객체라고 합니다. PyMuPDF는 :meth:`Document.xref_object` 를 통해 교차 참조 번호로 indirect 객체의 정의를 검색하는 것을 지원합니다."
 
 #: ../../glossary.rst:124 06fab8191ebd49d98a31a5d42c048ce5
 msgid ""
@@ -300,21 +300,21 @@ msgid ""
 "descriptions, are represented as streams.\" \"A stream consists of a "
 ":data:`dictionary` followed by zero or more bytes bracketed between the "
 "keywords *stream* and *endstream*\"::"
-msgstr ""
+msgstr "Python *bytes* 와 유사한 바이트 시퀀스가 뒤따르는 PDF :data:`dictionary` :data:`object` 유형입니다. \"그러나 PDF 애플리케이션은 스트림을 점진적으로 읽을 수 있지만 문자열은 전체를 읽어야 합니다. 또한 스트림은 무제한 길이일 수 있지만 문자열은 구현 제한이 적용됩니다. 이러한 이유로 이미지 및 페이지 설명과 같이 잠재적으로 많은 양의 데이터를 가진 객체는 스트림으로 표현됩니다.\" \"스트림은 키워드 *stream* 과 *endstream* 사이에 괄호로 묶인 0개 이상의 바이트가 뒤따르는 :data:`dictionary` 로 구성됩니다\"::"
 
 #: ../../glossary.rst:135 8dc0a34bf972472abef68fc3fe378101
 msgid ""
 "See :ref:`AdobeManual` p. 19. PyMuPDF supports retrieving stream content "
 "via :meth:`Document.xref_stream`. Use :meth:`Document.is_stream` to "
 "determine whether an object is of stream type."
-msgstr ""
+msgstr ":ref:`AdobeManual` p. 19를 참조하세요. PyMuPDF는 :meth:`Document.xref_stream` 을 통해 스트림 콘텐츠를 검색하는 것을 지원합니다. 객체가 스트림 유형인지 확인하려면 :meth:`Document.is_stream` 을 사용하세요."
 
 #: ../../glossary.rst:139 d4686fb4f3814da3a119b81f119de382
 msgid ""
 "A mathematical notion meaning a vector of norm (\"length\") 1 -- usually "
 "the Euclidean norm is implied. In PyMuPDF, this term is restricted to "
 ":ref:`Point` objects, see :attr:`Point.unit`."
-msgstr ""
+msgstr "노름(\"길이\")이 1인 벡터를 의미하는 수학적 개념입니다 -- 일반적으로 유클리드 노름을 의미합니다. PyMuPDF에서 이 용어는 :ref:`Point` 객체로 제한됩니다. :attr:`Point.unit` 을 참조하세요."
 
 #: ../../glossary.rst:143 e286649e7ce1436db8fbb7e65637ba3a
 msgid ""
@@ -327,13 +327,13 @@ msgid ""
 "PyMuPDF classes have an :data:`xref` attribute (which is zero for non-"
 "PDFs), and one can find out the total number of objects in a PDF via "
 ":meth:`Document.xref_length` *- 1*."
-msgstr ""
+msgstr "교차 참조 번호의 약어: PDF의 객체에 대한 고유한 정수 식별자입니다. 각 PDF에는 빠른 조회를 위해 각 객체의 상대 위치를 저장하는 교차 참조 테이블이 있습니다(물리적으로 여러 개의 별도 세그먼트로 구성될 수 있음). 교차 참조 테이블은 기존 객체 수보다 하나 더 긴 항목을 가집니다: 항목 0은 예약되어 있으며 어떤 방식으로도 사용해서는 안 됩니다. 많은 PyMuPDF 클래스에는 :data:`xref` 속성이 있습니다(비PDF의 경우 0). :meth:`Document.xref_length` *- 1* 을 통해 PDF의 객체 총 수를 확인할 수 있습니다."
 
 #: ../../glossary.rst:148 6aa968ee6fb249d1bc62117c164aba0c
 msgid ""
 "When referring to font size this metric is measured in points where 1 "
 "inch = 72 points."
-msgstr ""
+msgstr "글꼴 크기를 나타낼 때 이 측정값은 포인트로 측정되며, 1인치 = 72포인트입니다."
 
 #: ../../glossary.rst:152 8c31d4e0a1d44b928122302b18a161d4
 msgid ""
@@ -345,7 +345,7 @@ msgid ""
 "in the input (like non-positive values or values exceeding 4800), it will"
 " use \"sane\" defaults instead. The usual default value is 96, but it may"
 " also be 72 in some cases (e.g. for JPX images)."
-msgstr ""
+msgstr "이미지 및 :ref:`Pixmap` 객체는 각 방향(수평 및 수직)에서 \"인치당 도트 수\"인 dpi로 제공되는 해상도 정보를 포함할 수 있습니다. MuPDF가 파일 또는 PDF 객체에서 이미지를 읽을 때 이 정보를 구문 분석하여 각각 :attr:`Pixmap.xres`, :attr:`Pixmap.yres` 에 넣습니다. 입력에서 의미 있는 정보를 찾지 못하면(양수가 아닌 값 또는 4800을 초과하는 값 등) 대신 \"적절한\" 기본값을 사용합니다. 일반적인 기본값은 96이지만 일부 경우(예: JPX 이미지)에는 72일 수도 있습니다."
 
 #: ../../glossary.rst:156 3e01cf857dca416c8faa34ba7d94265e
 msgid ""
@@ -356,7 +356,7 @@ msgid ""
 "required, an array listing all optional content groups, (2) `/D`, "
 "required, the default optional content configuration dictionary (OCCD), "
 "(3) `/Configs`, optional, an array of alternative OCCDs."
-msgstr ""
+msgstr "선택적 콘텐츠 속성 dictionary - PDF :data:`catalog` 의 하위 :data:`dictionary`. 선택적 콘텐츠 정보를 저장하는 중앙 위치이며, 키 `/OCProperties` 로 식별됩니다. 이 dictionary에는 두 개의 필수 항목과 하나의 선택적 항목이 있습니다: (1) `/OCGs`, 필수, 모든 선택적 콘텐츠 그룹을 나열하는 배열, (2) `/D`, 필수, 기본 선택적 콘텐츠 구성 dictionary(OCCD), (3) `/Configs`, 선택, 대체 OCCD 배열."
 
 #: ../../glossary.rst:161 428928e7e81c403491625f300bc7e77c
 msgid ""
@@ -368,7 +368,7 @@ msgid ""
 "is always activated. Viewer should offer a way to switch between the "
 "`/D`, or one of the optional configurations contained in array "
 "`/Configs`."
-msgstr ""
+msgstr "선택적 콘텐츠 구성 dictionary - PDF :data:`OCPD` 내부의 PDF :data:`dictionary`. OCG의 ON/OFF 상태 설정과 PDF 뷰어 프로그램에 표시되는 방식을 저장합니다. 구성을 선택하는 것은 일시적인 대량 표시 상태 변경을 빠르게 달성하는 방법입니다. PDF를 연 후 :data:`OCPD` 의 `/D` 구성이 항상 활성화됩니다. 뷰어는 `/D` 또는 배열 `/Configs` 에 포함된 선택적 구성 중 하나 사이를 전환하는 방법을 제공해야 합니다."
 
 #: ../../glossary.rst:166 01fc3682e86d471d815772b433b66de6
 msgid ""
@@ -378,7 +378,7 @@ msgid ""
 "can simultaneously be shown or hidden by setting their OCG to ON or OFF. "
 "This can be achieved via the user interface provided by many PDF viewers "
 "(Adobe Acrobat), or programmatically."
-msgstr ""
+msgstr "선택적 콘텐츠 그룹 -- 이미지 또는 주석과 같은 다른 PDF 객체의 표시를 제어하는 데 사용되는 :data:`dictionary` 객체. 정의된 페이지와 무관하게 동일한 OCG를 가진 객체는 OCG를 ON 또는 OFF로 설정하여 동시에 표시하거나 숨길 수 있습니다. 이는 많은 PDF 뷰어(Adobe Acrobat)가 제공하는 사용자 인터페이스를 통해 또는 프로그래밍 방식으로 달성할 수 있습니다."
 
 #: ../../glossary.rst:170 63d877bcd5ef46dbb557f06da22dff6e
 msgid ""
@@ -387,7 +387,7 @@ msgid ""
 "visibility of an OCMD is **computed:** it is a logical expression, which "
 "uses the state of one or more OCGs to produce a boolean value. The "
 "expression's result is interpreted as ON (true) or OFF (false)."
-msgstr ""
+msgstr "선택적 콘텐츠 멤버십 dictionary -- :data:`OCG` 처럼 사용할 수 있는 :data:`dictionary` 객체: 표시 상태가 있습니다. OCMD의 표시는 **계산됩니다:** 하나 이상의 OCG 상태를 사용하여 불리언 값을 생성하는 논리식입니다. 식의 결과는 ON(true) 또는 OFF(false)로 해석됩니다."
 
 #: ../../glossary.rst:174 7685086584e0476aa01c94592195fd87
 msgid ""
@@ -397,9 +397,9 @@ msgid ""
 "text extractions, there is the option to either return the corresponding "
 "unicode unchanged, or split ligatures up into their constituent parts: "
 "\"fi\" ==> \"f\" + \"i\", etc."
-msgstr ""
+msgstr "일부 빈번한 문자 조합은 더 고급 글꼴에서 자체 특수 글리프로 표현됩니다. 일반적인 예는 \"fi\", \"fl\", \"ffi\", \"ffl\"입니다. 이러한 복합체를 *ligature* 라고 합니다. PyMuPDF 텍스트 추출에서는 해당 유니코드를 변경하지 않고 반환하거나 ligature를 구성 요소로 분할하는 옵션이 있습니다: \"fi\" ==> \"f\" + \"i\" 등."
 
 #: ../../footer.rst:46 55f27ea4f801402884fd2fc89352730f
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

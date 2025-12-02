@@ -21,27 +21,27 @@ msgstr ""
 
 #: ../../header.rst:-1 e188dde9abe149bc8995bf7a6a0bc7d6
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 3cb714fa525c44bbbbd491bc8f62336e
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c23c7d47fe3e429dbde810adabc353b6
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../font.rst:7 d2748ea1ae9940f6b22b259ae4533e13
 msgid "Font"
-msgstr ""
+msgstr "Font"
 
 #: ../../font.rst:9 3bf53a70d692484eaabd5afc3aab44c8
 msgid "New in v1.16.18"
-msgstr ""
+msgstr "*v1.16.18의 새로운 기능*"
 
 #: ../../font.rst:11 4c18f6c0f2b6494fbf226048ecce0907
 msgid ""
@@ -50,22 +50,22 @@ msgid ""
 "new :meth:`Page.write_text`. Currently, it has no connection to how fonts"
 " are used in methods :meth:`Page.insert_text` or "
 ":meth:`Page.insert_textbox`, respectively."
-msgstr ""
+msgstr "이 클래스는 |MuPDF| 에서 정의된 글꼴(``fz_font_s`` 구조)을 나타냅니다. 새로운 클래스 :ref:`TextWriter` 및 새로운 :meth:`Page.write_text` 에 필요합니다. 현재는 :meth:`Page.insert_text` 또는 :meth:`Page.insert_textbox` 메서드에서 글꼴이 사용되는 방식과 연결되어 있지 않습니다."
 
 #: ../../font.rst:13 2125868871f645fb9fa0d4390f116a1a
 msgid ""
 "A ``Font`` object also contains useful general information, like the font"
 " bbox, the number of defined glyphs, glyph names or the ``bbox`` of a "
 "single glyph."
-msgstr ""
+msgstr "``Font`` 객체는 글꼴 bbox, 정의된 글리프 수, 글리프 이름 또는 단일 글리프의 ``bbox`` 와 같은 유용한 일반 정보도 포함합니다."
 
 #: ../../font.rst:17 842b44a70bf34b07ac2692aa84a193da
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**Method / Attribute**"
 
 #: ../../font.rst:17 f69a466cefe443c3855949e5cc5ffcd6
 msgid "**Short Description**"
-msgstr ""
+msgstr "**Short Description**"
 
 #: ../../font.rst:19 1bba986439da408a84c24de22da3768d
 msgid ":meth:`~Font.glyph_advance`"
@@ -73,7 +73,7 @@ msgstr ""
 
 #: ../../font.rst:19 627a6c4218dd4762ae098709cdb920ad
 msgid "Width of a character"
-msgstr ""
+msgstr "문자 너비"
 
 #: ../../font.rst:20 6ca041bd76a54c949510e2ed77ca58f0
 msgid ":meth:`~Font.glyph_bbox`"
@@ -81,7 +81,7 @@ msgstr ""
 
 #: ../../font.rst:20 d9fb542d691c44a19873b891f02b7812
 msgid "Glyph rectangle"
-msgstr ""
+msgstr "글리프 사각형"
 
 #: ../../font.rst:21 e7791392edbd4e5d9094df1b320d2c5b
 msgid ":meth:`~Font.glyph_name_to_unicode`"
@@ -89,7 +89,7 @@ msgstr ""
 
 #: ../../font.rst:21 13f06c680aba44698114079c036bcdba
 msgid "Get unicode from glyph name"
-msgstr ""
+msgstr "글리프 이름에서 유니코드 가져오기"
 
 #: ../../font.rst:22 c04368ada6c341f093c2f4872cd5cd52
 msgid ":meth:`~Font.has_glyph`"
@@ -97,7 +97,7 @@ msgstr ""
 
 #: ../../font.rst:22 689634c88d144bef9223b78f39009eda
 msgid "Return glyph id of unicode"
-msgstr ""
+msgstr "유니코드의 글리프 ID 반환"
 
 #: ../../font.rst:23 a369a0e87b4340168dce9cd130684d3c
 msgid ":meth:`~Font.text_length`"
@@ -105,7 +105,7 @@ msgstr ""
 
 #: ../../font.rst:23 f20e22d5c6534f99a10aad9ab98d9ae3
 msgid "Compute string length"
-msgstr ""
+msgstr "문자열 길이 계산"
 
 #: ../../font.rst:24 d46c723021014de19f30cce31dd6fa83
 msgid ":meth:`~Font.char_lengths`"
@@ -113,7 +113,7 @@ msgstr ""
 
 #: ../../font.rst:24 2c939c616c2a45d19cef1d2e9148c5f8
 msgid "Tuple of char widths of a string"
-msgstr ""
+msgstr "문자열의 문자 너비 튜플"
 
 #: ../../font.rst:25 30fcbf0fac8c4137ac05697051b7a487
 msgid ":meth:`~Font.unicode_to_glyph_name`"
@@ -121,7 +121,7 @@ msgstr ""
 
 #: ../../font.rst:25 96a805868d65421593f69cabcbdff444
 msgid "Get glyph name of a unicode"
-msgstr ""
+msgstr "유니코드의 글리프 이름 가져오기"
 
 #: ../../font.rst:26 556560ade52f45878ccd9247ed48b124
 msgid ":meth:`~Font.valid_codepoints`"
@@ -129,7 +129,7 @@ msgstr ""
 
 #: ../../font.rst:26 f98352016c9a420597ecdc2d4da47bcd
 msgid "Array of supported unicodes"
-msgstr ""
+msgstr "지원되는 유니코드 배열"
 
 #: ../../font.rst:27 8046f6ca0658408896ffec620e7c19d2
 msgid ":attr:`~Font.ascender`"
@@ -137,7 +137,7 @@ msgstr ""
 
 #: ../../font.rst:27 bdef6c925fd24cd6a8bd423203561e10
 msgid "Font ascender"
-msgstr ""
+msgstr "글꼴 상승부"
 
 #: ../../font.rst:28 b9972b7d50024c5f92aae461b95e9b9d
 msgid ":attr:`~Font.descender`"
@@ -145,7 +145,7 @@ msgstr ""
 
 #: ../../font.rst:28 333b36880ce240299a20b8d485071b31
 msgid "Font descender"
-msgstr ""
+msgstr "글꼴 하강부"
 
 #: ../../font.rst:29 1ca68d63143c41ae9afaf82231bb0b98
 msgid ":attr:`~Font.bbox`"
@@ -153,7 +153,7 @@ msgstr ""
 
 #: ../../font.rst:29 88947fe258eb49d5a4bcd7f9262d6f64
 msgid "Font rectangle"
-msgstr ""
+msgstr "글꼴 사각형"
 
 #: ../../font.rst:30 70204c08ad4f48bfb90c610ace5e2f16
 msgid ":attr:`~Font.buffer`"
@@ -161,7 +161,7 @@ msgstr ""
 
 #: ../../font.rst:30 d8dc88a830a143b69cf9198d43a1d8be
 msgid "Copy of the font's binary image"
-msgstr ""
+msgstr "글꼴의 바이너리 이미지 복사본"
 
 #: ../../font.rst:31 087ab4d9b8c245329f433d0e0bc1dae2
 msgid ":attr:`~Font.flags`"
@@ -169,7 +169,7 @@ msgstr ""
 
 #: ../../font.rst:31 b08397d234cf4d828c277f81b7e5797c
 msgid "Collection of font properties"
-msgstr ""
+msgstr "글꼴 속성 모음"
 
 #: ../../font.rst:32 1b9e053341ba4bf29f37614365fca44e
 msgid ":attr:`~Font.glyph_count`"
@@ -177,7 +177,7 @@ msgstr ""
 
 #: ../../font.rst:32 9266fb9484fe42618bd4b861302ec139
 msgid "Number of supported glyphs"
-msgstr ""
+msgstr "지원되는 글리프 수"
 
 #: ../../font.rst:33 a1a23dee533f4eb9a0253e7ed4dc2160
 msgid ":attr:`~Font.name`"
@@ -185,7 +185,7 @@ msgstr ""
 
 #: ../../font.rst:33 f7c44ea05506418686745a0a8b4ccf1e
 msgid "Name of font"
-msgstr ""
+msgstr "글꼴 이름"
 
 #: ../../font.rst:34 4d8600344c934dca966561b9b23705a3
 msgid ":attr:`~Font.is_bold`"
@@ -193,7 +193,7 @@ msgstr ""
 
 #: ../../font.rst:34 42bd831f9b604a58adec9428f2799d4a
 msgid "`True` if bold"
-msgstr ""
+msgstr "굵게이면 `True`"
 
 #: ../../font.rst:35 4fd252e5611e4f25ad7279f120909cc1
 msgid ":attr:`~Font.is_monospaced`"
@@ -201,7 +201,7 @@ msgstr ""
 
 #: ../../font.rst:35 53567d475247479ebe27771a05253749
 msgid "`True` if mono-spaced"
-msgstr ""
+msgstr "고정폭이면 `True`"
 
 #: ../../font.rst:36 386c083d80e24cd8889a76d1ed0d655e
 msgid ":attr:`~Font.is_serif`"
@@ -209,7 +209,7 @@ msgstr ""
 
 #: ../../font.rst:36 dc515a68d8984513880dd9652137056b
 msgid "`True` if serif, `False` if sans-serif"
-msgstr ""
+msgstr "세리프이면 `True`, 산세리프이면 `False`"
 
 #: ../../font.rst:37 ef38964ab5634a4a8afc1a4043834bcb
 msgid ":attr:`~Font.is_italic`"
@@ -217,11 +217,11 @@ msgstr ""
 
 #: ../../font.rst:37 6ab8b6017630445e8a8d73bd87250888
 msgid "`True` if italic"
-msgstr ""
+msgstr "이탤릭이면 `True`"
 
 #: ../../font.rst:41 ef6bc7e0d9cf42848d2ea5ec97cad0e8
 msgid "**Class API**"
-msgstr ""
+msgstr "**Class API**"
 
 #: ../../font.rst:60 07b4413b01ae4ae89132a4d69299fcff
 msgid ""
@@ -229,7 +229,7 @@ msgid ""
 " which most closely resembles the requirements. Not all parameters are "
 "ever required -- see the below pseudo code explaining the logic how the "
 "parameters are evaluated."
-msgstr ""
+msgstr "Font 생성자. 많은 매개변수는 요구사항에 가장 가까운 글꼴을 찾는 데 사용됩니다. 모든 매개변수가 항상 필요한 것은 아닙니다 -- 매개변수가 평가되는 방식의 논리를 설명하는 아래 의사 코드를 참조하세요."
 
 #: ../../font.rst 51829dd751b848658d1ba228b94ce1de
 #: 6865a3bfb8444b439d877a9d8a59cb0a 722fbb72278d4e3e8bb0df13f398859a
@@ -237,7 +237,7 @@ msgstr ""
 #: c931f89accb14562827a19ea990df0aa f0f58970e4794ad2b4f9ab161b976692
 #: f42510c818544c6180a85f87a852dd28
 msgid "Parameters"
-msgstr ""
+msgstr "Parameters"
 
 #: ../../font.rst:62 b7c66967af094eed88e4cd0bfa9c0b59
 msgid ""
@@ -247,39 +247,39 @@ msgid ""
 "installed `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, "
 "there are also new \"reserved\" fontnames available, which are listed in "
 ":attr:`fitz_fonts` and in the table further down."
-msgstr ""
+msgstr ":ref:`Base-14-Fonts` 또는 CJK 글꼴 이름 중 하나. (올바른 철자를 주의하세요) \"Arial\", \"Times\", \"Times Roman\"과 같은 몇 가지 다른 이름도 가능합니다. *(v1.17.5에서 변경됨)* `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 를 설치한 경우, :attr:`fitz_fonts` 및 아래 표에 나열된 새로운 \"예약된\" 글꼴 이름도 사용할 수 있습니다."
 
 #: ../../font.rst:62 4f54e9a21f4e4cdd94eb896e84a11207
 msgid ""
 "one of the :ref:`Base-14-Fonts` or CJK fontnames. Also possible are a "
 "select few other names like (watch the correct spelling): \"Arial\", "
 "\"Times\", \"Times Roman\"."
-msgstr ""
+msgstr ":ref:`Base-14-Fonts` 또는 CJK 글꼴 이름 중 하나. (올바른 철자를 주의하세요) \"Arial\", \"Times\", \"Times Roman\"과 같은 몇 가지 다른 이름도 가능합니다."
 
 #: ../../font.rst:64 33128ec921644adcb669eed87f58d1ad
 msgid "*(Changed in v1.17.5)*"
-msgstr ""
+msgstr "*(v1.17.5에서 변경됨)*"
 
 #: ../../font.rst:66 2580ac163f6d40a6a97df2667e044b70
 msgid ""
 "If you have installed `pymupdf-fonts <https://pypi.org/project/pymupdf-"
 "fonts/>`_, there are also new \"reserved\" fontnames available, which are"
 " listed in :attr:`fitz_fonts` and in the table further down."
-msgstr ""
+msgstr "`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 를 설치한 경우, :attr:`fitz_fonts` 및 아래 표에 나열된 새로운 \"예약된\" 글꼴 이름도 사용할 수 있습니다."
 
 #: ../../font.rst:68 0115b8805a994350b1e9b88652d9c671
 msgid "the filename of a fontfile somewhere on your system [#f1]_."
-msgstr ""
+msgstr "시스템 어딘가에 있는 글꼴 파일의 파일 이름 [#f1]_."
 
 #: ../../font.rst:69 855671c475ce4d4a95574d50da436fa8
 msgid "a fontfile loaded in memory [#f1]_."
-msgstr ""
+msgstr "메모리에 로드된 글꼴 파일 [#f1]_."
 
 #: ../../font.rst:70 b4cd7e175eb14d658f5faa379b3ef701
 msgid ""
 "the number of a UCDN script. Currently supported in PyMuPDF are numbers "
 "24, and 32 through 35."
-msgstr ""
+msgstr "UCDN 스크립트 번호. 현재 |PyMuPDF| 에서 지원되는 번호는 24, 32부터 35까지입니다."
 
 #: ../../font.rst:71 d5a5fc15ea7c4e1b8d26964a61b402e8
 msgid ""
@@ -287,23 +287,23 @@ msgid ""
 "(simplified Chinese), \"ja\" (Japanese) and \"ko\" (Korean). Otherwise, "
 "all ISO 639 codes from the subsets 1, 2, 3 and 5 are also possible, but "
 "are currently documentary only."
-msgstr ""
+msgstr "\"zh-Hant\"(번체 중국어), \"zh-Hans\"(간체 중국어), \"ja\"(일본어), \"ko\"(한국어) 값 중 하나. 그렇지 않으면 하위 집합 1, 2, 3 및 5의 모든 ISO 639 코드도 가능하지만 현재는 문서화만 되어 있습니다."
 
 #: ../../font.rst:72 5b0e786be58c4a09a48eacc61882197e
 msgid "an alternative selector for one of the CJK fonts."
-msgstr ""
+msgstr "CJK 글꼴 중 하나에 대한 대체 선택자."
 
 #: ../../font.rst:73 6af1f2fb252e4071bab746f2ad57c01d
 msgid "look for a bold font."
-msgstr ""
+msgstr "굵은 글꼴을 찾습니다."
 
 #: ../../font.rst:74 6f2bffef2aa94c92b00fa9cf6d97a283
 msgid "look for an italic font."
-msgstr ""
+msgstr "이탤릭 글꼴을 찾습니다."
 
 #: ../../font.rst:75 23ca0f2751ed4b2f834236f7e744dd36
 msgid "look for a serifed font."
-msgstr ""
+msgstr "세리프 글꼴을 찾습니다."
 
 #: ../../font.rst 1d22b29a05e741f387368f96870d4c1b
 #: 1e8b6f0bc4da4c4db71fcd4ce33f7f4d 1ebfff0006a54633b2e48a4cf728c55b
@@ -311,7 +311,7 @@ msgstr ""
 #: 3b8e58b5a2034fddbba0b9f34d785351 425ebf256d4842928912c98469178b2e
 #: 455992af6eea4168919f71ca6e0a63e9 7512b5e1267b491c80d9886fcb846c91
 msgid "Returns"
-msgstr ""
+msgstr "Returns"
 
 #: ../../font.rst:77 d564d7e503224782b914ea4c4d4bd55b
 msgid ""
@@ -332,66 +332,66 @@ msgstr ""
 msgid ""
 "a |MuPDF| font if successful. This is the overall sequence of checks to "
 "determine an appropriate font:"
-msgstr ""
+msgstr "성공하면 |MuPDF| 글꼴. 적절한 글꼴을 결정하기 위한 전체 확인 순서는 다음과 같습니다:"
 
 #: ../../font.rst:80 580ec24b97e749299e613764ef3403c6
 msgid "Argument"
-msgstr ""
+msgstr "Argument"
 
 #: ../../font.rst:80 c41ca6b5584649b586f676f06f22549b
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #: ../../font.rst:82 98333181f4584c9c8bca13c85c415262
 msgid "fontfile?"
-msgstr ""
+msgstr "fontfile?"
 
 #: ../../font.rst:82 73d6da924f634bc7b6e4fe044072fe6d
 msgid "Create font from file, exception if failure."
-msgstr ""
+msgstr "파일에서 글꼴 생성, 실패 시 예외 발생."
 
 #: ../../font.rst:83 130073b0bea44ffc890479cdb5f5340d
 msgid "fontbuffer?"
-msgstr ""
+msgstr "fontbuffer?"
 
 #: ../../font.rst:83 a74986c74e6843eea78fcc35d447c3a2
 msgid "Create font from buffer, exception if failure."
-msgstr ""
+msgstr "버퍼에서 글꼴 생성, 실패 시 예외 발생."
 
 #: ../../font.rst:84 29919d8588f5493dafda4cfe7f0555b1
 msgid "ordering>=0"
-msgstr ""
+msgstr "ordering>=0"
 
 #: ../../font.rst:84 3f0b6b784f1742238213e67a82078abf
 msgid "Create universal font, always succeeds."
-msgstr ""
+msgstr "범용 글꼴 생성, 항상 성공."
 
 #: ../../font.rst:85 fe70636ee76b429da54199e913507119
 msgid "fontname?"
-msgstr ""
+msgstr "fontname?"
 
 #: ../../font.rst:85 a411aeb787b5416f854bb729f143e0b6
 msgid ""
 "Create a Base-14 font, universal font, or font provided by `pymupdf-fonts"
 " <https://pypi.org/project/pymupdf-fonts/>`_. See table below."
-msgstr ""
+msgstr "Base-14 글꼴, 범용 글꼴 또는 `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 에서 제공하는 글꼴을 생성합니다. 아래 표를 참조하세요."
 
 #: ../../font.rst:92 d6d370d9961e418c8c6a25a191d46651
 msgid ""
 "With the usual reserved names \"helv\", \"tiro\", etc., you will create "
 "fonts with the expected names \"Helvetica\", \"Times-Roman\" and so on. "
 "**However**, and in contrast to :meth:`Page.insert_font` and friends,"
-msgstr ""
+msgstr "일반적인 예약된 이름 \"helv\", \"tiro\" 등을 사용하면 예상되는 이름 \"Helvetica\", \"Times-Roman\" 등의 글꼴이 생성됩니다. **그러나** :meth:`Page.insert_font` 및 유사한 메서드와 달리,"
 
 #: ../../font.rst:94 31fed8debc7c42ca9166ee0b1ef74c98
 msgid "a font file will **always** be embedded in your PDF,"
-msgstr ""
+msgstr "글꼴 파일이 **항상** PDF에 임베드됩니다,"
 
 #: ../../font.rst:95 9b3d8892b4424474889b2416ef13836b
 msgid ""
 "Greek and Cyrillic characters are supported without needing the "
 "*encoding* parameter."
-msgstr ""
+msgstr "그리스 문자 및 키릴 문자는 *encoding* 매개변수 없이 지원됩니다."
 
 #: ../../font.rst:97 c07988cc48644ac8846d43cf555ae595
 msgid ""
@@ -400,7 +400,7 @@ msgid ""
 " **\"Droid Sans Fallback Regular\"**. This font supports **all Chinese, "
 "Japanese, Korean and Latin characters**, including Greek and Cyrillic. "
 "This is a sans-serif font."
-msgstr ""
+msgstr "*ordering >= 0* 또는 글꼴 이름 \"cjk\", \"china-t\", \"china-s\", \"japan\" 또는 \"korea\"를 사용하면 **항상 동일한 \"범용\"** 글꼴 **\"Droid Sans Fallback Regular\"** 이 생성됩니다. 이 글꼴은 그리스 문자 및 키릴 문자를 포함하여 **모든 중국어, 일본어, 한국어 및 라틴 문자** 를 지원합니다. 이것은 산세리프 글꼴입니다."
 
 #: ../../font.rst:99 6db4519008e44ee682c2a27e4d316f4b
 msgid ""
@@ -409,7 +409,7 @@ msgid ""
 "relatively large and adds about 1.65 MB (compressed) to your PDF file "
 "size. If you do not need CJK support, stick with specifying \"helv\", "
 "\"tiro\" etc., and you will get away with about 35 KB compressed."
-msgstr ""
+msgstr "실제로 **\"Droid Sans Fallback Regular\"** 외에 다른 산세리프 글꼴이 필요한 경우는 거의 없습니다. **다만** 이 글꼴 파일은 상대적으로 크며 PDF 파일 크기에 약 1.65 MB(압축됨)를 추가합니다. CJK 지원이 필요하지 않다면 \"helv\", \"tiro\" 등을 지정하고 약 35 KB(압축됨)로 처리할 수 있습니다."
 
 #: ../../font.rst:101 79c699cd0e0a44828e95752e5f6f2ebe
 msgid ""
@@ -418,7 +418,7 @@ msgid ""
 "significantly (by a factor of up to three) speeds up execution: MuPDF "
 "will always find any character in this single font and never needs to "
 "check fallbacks."
-msgstr ""
+msgstr "CJK와 라틴 텍스트가 혼합되어 있다는 것을 **알고** 있다면, `Font(\"cjk\")` 를 사용하는 것을 고려하세요. 이것은 모든 것을 지원하며 실행 속도를 크게(최대 3배까지) 향상시킵니다: MuPDF는 항상 이 단일 글꼴에서 모든 문자를 찾을 수 있으며 대체 글꼴을 확인할 필요가 없습니다."
 
 #: ../../font.rst:103 71613c830de34e6f9ecdf39faec59a38
 msgid ""
@@ -426,7 +426,7 @@ msgid ""
 "to also write CJK characters: MuPDF detects this situation and silently "
 "falls back to the universal font (which will then of course also be "
 "embedded in your PDF)."
-msgstr ""
+msgstr "그러나 다른 글꼴을 사용하는 경우에도 CJK 문자를 자동으로 쓸 수 있습니다: MuPDF는 이 상황을 감지하고 자동으로 범용 글꼴로 대체합니다(그러면 물론 PDF에도 임베드됩니다)."
 
 #: ../../font.rst:105 f904db70b3d246e1b10894809cb39326
 msgid ""
@@ -440,44 +440,44 @@ msgid ""
 "Sans Fallback\" size (compressed 400 KB vs. 1.65 MB) -- **and** it "
 "provides the weights bold, italic, bold-italic -- which the universal "
 "font doesn't."
-msgstr ""
+msgstr "*(v1.17.5의 새로운 기능)* 선택적으로, `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ (`pip install pymupdf-fonts`)를 설치하면 일부 새로운 \"예약된\" 글꼴 이름 코드를 사용할 수 있습니다. **\"Fira Mono\"**는 고정폭 산세리프 글꼴 세트이고 **FiraGO**는 모든 라틴 문자(키릴 문자 및 그리스 문자 포함)와 태국어, 아랍어, 히브리어 및 데바나가리어를 지원하는 또 다른 비세리프 \"범용\" 글꼴 세트입니다 -- 하지만 CJK 언어는 지원하지 않습니다. FiraGO 글꼴의 크기는 \"Droid Sans Fallback\" 크기의 1/4에 불과합니다(압축 시 400 KB vs. 1.65 MB) -- **그리고** 굵게, 이탤릭, 굵은 이탤릭 가중치를 제공합니다 -- 범용 글꼴은 제공하지 않습니다."
 
 #: ../../font.rst:107 51115005ef5b45048d055b7507f8bde1
 msgid ""
 "**\"Space Mono\"** is another nice and small mono-spaced font from Google"
 " Fonts, which supports Latin Extended characters and comes with all 4 "
 "important weights."
-msgstr ""
+msgstr "**\"Space Mono\"** 는 Google Fonts의 또 다른 좋고 작은 고정폭 글꼴로, Latin Extended 문자를 지원하며 모든 4가지 중요한 가중치를 제공합니다."
 
 #: ../../font.rst:109 96727739a91940c6a331ed087081f309
 msgid ""
 "The following table maps a fontname code to the corresponding font. For "
 "the current content of the package please see its documentation:"
-msgstr ""
+msgstr "다음 표는 글꼴 이름 코드를 해당 글꼴에 매핑합니다. 패키지의 현재 내용은 해당 문서를 참조하세요:"
 
 #: ../../font.rst:112 1a8503b417cf4c8fada552e8610a6e75
 msgid "Code"
-msgstr ""
+msgstr "Code"
 
 #: ../../font.rst:112 2d8f3f6732334560b3d503193be52bed
 msgid "Fontname"
-msgstr ""
+msgstr "Fontname"
 
 #: ../../font.rst:112 c74b2b12e6aa454b8f2dbb4143ffd7bf
 msgid "New in"
-msgstr ""
+msgstr "New in"
 
 #: ../../font.rst:112 09250ac84f2f444481bee3de0bd29007
 msgid "Comment"
-msgstr ""
+msgstr "Comment"
 
 #: ../../font.rst:114 3092d884950f4b6eb710a9de0dd03966
 msgid "figo"
-msgstr ""
+msgstr "figo"
 
 #: ../../font.rst:114 660c171a6c564814aecb4286056ec31a
 msgid "FiraGO Regular"
-msgstr ""
+msgstr "FiraGO Regular"
 
 #: ../../font.rst:114 ../../font.rst:115 ../../font.rst:116 ../../font.rst:117
 #: ../../font.rst:118 ../../font.rst:119 3e80c8fdb0dd48d780069b2449ee507f
@@ -485,222 +485,222 @@ msgstr ""
 #: 794afaec71784e91b7e817f22ead4ffe baa94f214aea4d77a1a5fad071d449f1
 #: ed541c0c11684da3bebb342489caa3cb
 msgid "v1.0.0"
-msgstr ""
+msgstr "v1.0.0"
 
 #: ../../font.rst:114 aababde120ff4dbcbe21832121ff155b
 msgid "narrower than Helvetica"
-msgstr ""
+msgstr "Helvetica보다 좁음"
 
 #: ../../font.rst:115 01a9c98efef34d0aba6ba3fa0d37813b
 msgid "figbo"
-msgstr ""
+msgstr "figbo"
 
 #: ../../font.rst:115 b83719e8b5724cd69e516c29b9367ebb
 msgid "FiraGO Bold"
-msgstr ""
+msgstr "FiraGO Bold"
 
 #: ../../font.rst:116 4bbe563434c7425796dc77766d23c9c8
 msgid "figit"
-msgstr ""
+msgstr "figit"
 
 #: ../../font.rst:116 480523c94e564e26be18e84adb38e861
 msgid "FiraGO Italic"
-msgstr ""
+msgstr "FiraGO Italic"
 
 #: ../../font.rst:117 1e31c41d5df44c4fb09a83fdbd89e06d
 msgid "figbi"
-msgstr ""
+msgstr "figbi"
 
 #: ../../font.rst:117 0e71b818d3cd4256a6f49c7416f6b1ca
 msgid "FiraGO Bold Italic"
-msgstr ""
+msgstr "FiraGO Bold Italic"
 
 #: ../../font.rst:118 7137d532bea243b482a7189e3a3286f8
 msgid "fimo"
-msgstr ""
+msgstr "fimo"
 
 #: ../../font.rst:118 d52c3785bf6c4c6c9fa414b6953b3c21
 msgid "Fira Mono Regular"
-msgstr ""
+msgstr "Fira Mono Regular"
 
 #: ../../font.rst:119 a6bb6a057367406e8c6451c50221bd10
 msgid "fimbo"
-msgstr ""
+msgstr "fimbo"
 
 #: ../../font.rst:119 a9be831c53d643c381182387817e7347
 msgid "Fira Mono Bold"
-msgstr ""
+msgstr "Fira Mono Bold"
 
 #: ../../font.rst:120 2ff90048652c45d8ad808bd8e873a930
 msgid "spacemo"
-msgstr ""
+msgstr "spacemo"
 
 #: ../../font.rst:120 10b17a9bdac441b2a4af57265d22e503
 msgid "Space Mono Regular"
-msgstr ""
+msgstr "Space Mono Regular"
 
 #: ../../font.rst:120 ../../font.rst:121 ../../font.rst:122 ../../font.rst:123
 #: 71f76d3cde6b47a3b8a7a0a571913454 74e5c245413f43a1b0bcd54884d11f9b
 #: 811a2ce8ecf443c3b7c4a0009f550f69 ad9d314c839645d1b264c21f9d500a5d
 msgid "v1.0.1"
-msgstr ""
+msgstr "v1.0.1"
 
 #: ../../font.rst:121 cc6628c7c246454785eae18aa76df135
 msgid "spacembo"
-msgstr ""
+msgstr "spacembo"
 
 #: ../../font.rst:121 899d31ca415d4d60a771344775afb052
 msgid "Space Mono Bold"
-msgstr ""
+msgstr "Space Mono Bold"
 
 #: ../../font.rst:122 0fa8a8df23aa46a18ebc85a45faef555
 msgid "spacemit"
-msgstr ""
+msgstr "spacemit"
 
 #: ../../font.rst:122 121e740c51fa4e13b45b780076fdc770
 msgid "Space Mono Italic"
-msgstr ""
+msgstr "Space Mono Italic"
 
 #: ../../font.rst:123 8c761931925c4c9080802855c8de2158
 msgid "spacembi"
-msgstr ""
+msgstr "spacembi"
 
 #: ../../font.rst:123 c294981796074117b39f66e1d0fc697f
 msgid "Space Mono Bold-Italic"
-msgstr ""
+msgstr "Space Mono Bold-Italic"
 
 #: ../../font.rst:124 fb3d22993d774962addb0d5e18962566
 msgid "math"
-msgstr ""
+msgstr "math"
 
 #: ../../font.rst:124 d72ffadba17c47d98e45bad69d43f48a
 msgid "Noto Sans Math Regular"
-msgstr ""
+msgstr "Noto Sans Math Regular"
 
 #: ../../font.rst:124 ../../font.rst:125 ../../font.rst:126 ../../font.rst:127
 #: 4a51871589de44a49f3d817a3e4641ca a1e187ea3001421b848c3e15b2da294f
 #: c7f9419b4b474f9990c0e7b2548b89bd f44b20960c864e1a812db6b82ccc7b01
 msgid "v1.0.2"
-msgstr ""
+msgstr "v1.0.2"
 
 #: ../../font.rst:124 3527017ccae847e198b6aa3fd407bf86
 msgid "math symbols"
-msgstr ""
+msgstr "수학 기호"
 
 #: ../../font.rst:125 f0c044192be8422bbb062dcfe3fa3867
 msgid "music"
-msgstr ""
+msgstr "music"
 
 #: ../../font.rst:125 5091921f86b8478b884595a229b30799
 msgid "Noto Music Regular"
-msgstr ""
+msgstr "Noto Music Regular"
 
 #: ../../font.rst:125 0cfb05fc68a6412895e997a6f27ab557
 msgid "musical symbols"
-msgstr ""
+msgstr "음악 기호"
 
 #: ../../font.rst:126 198d0ac76851400696fd7bfe7e9c60b3
 msgid "symbol1"
-msgstr ""
+msgstr "symbol1"
 
 #: ../../font.rst:126 8bf74ea20b3d41c081691ba396ba7ec2
 msgid "Noto Sans Symbols Regular"
-msgstr ""
+msgstr "Noto Sans Symbols Regular"
 
 #: ../../font.rst:126 96ef9a86cd4c4af9ad70de3493072981
 msgid "replacement for \"symb\""
-msgstr ""
+msgstr "\"symb\"의 대체"
 
 #: ../../font.rst:127 4eae35b6626f44edb67bbd03f28f00d6
 msgid "symbol2"
-msgstr ""
+msgstr "symbol2"
 
 #: ../../font.rst:127 b1fdca63e3d74dd29efec985e0b244dc
 msgid "Noto Sans Symbols2 Regular"
-msgstr ""
+msgstr "Noto Sans Symbols2 Regular"
 
 #: ../../font.rst:127 0bd6d32f20eb48dd988041621b3d5200
 msgid "extended symbol set"
-msgstr ""
+msgstr "확장 기호 세트"
 
 #: ../../font.rst:128 aa751e08f13849d1a55e72c6aebf8f49
 msgid "notos"
-msgstr ""
+msgstr "notos"
 
 #: ../../font.rst:128 89dea662c0eb4c7eb232a7fdba6ebc9a
 msgid "Noto Sans Regular"
-msgstr ""
+msgstr "Noto Sans Regular"
 
 #: ../../font.rst:128 ../../font.rst:129 ../../font.rst:130 ../../font.rst:131
 #: 459d3d0e43ff4bf5aa61c68e8e685e29 67cb7c095cf74781840d29e84aa0034b
 #: 91a98cec9643445d9d588f6c148714f4 d8bd23d980b1436583464316e47308db
 msgid "v1.0.3"
-msgstr ""
+msgstr "v1.0.3"
 
 #: ../../font.rst:128 6b98b595462b4d478057da307cdea30a
 msgid "alternative to Helvetica"
-msgstr ""
+msgstr "Helvetica의 대체"
 
 #: ../../font.rst:129 691a807af162494ab0b5af4186c9110c
 msgid "notosit"
-msgstr ""
+msgstr "notosit"
 
 #: ../../font.rst:129 24201a800ba0419c9bee4bf90edf8825
 msgid "Noto Sans Italic"
-msgstr ""
+msgstr "Noto Sans Italic"
 
 #: ../../font.rst:130 4dd91c5ba63544bba1ceb32e1fdefd55
 msgid "notosbo"
-msgstr ""
+msgstr "notosbo"
 
 #: ../../font.rst:130 ff244216f5904a4697fcab3f6d021a6a
 msgid "Noto Sans Bold"
-msgstr ""
+msgstr "Noto Sans Bold"
 
 #: ../../font.rst:131 aa8c2e1781f54593b3331c086c19b814
 msgid "notosbi"
-msgstr ""
+msgstr "notosbi"
 
 #: ../../font.rst:131 6857edcacab24c27817264bb11d9bdad
 msgid "Noto Sans BoldItalic"
-msgstr ""
+msgstr "Noto Sans BoldItalic"
 
 #: ../../font.rst:141 2a37a1a4a1aa4945b8df8dbf7e64e154
 msgid ""
 "Check whether the unicode ``chr`` exists in the font or (option) some "
 "fallback font. May be used to check whether any \"TOFU\" symbols will "
 "appear on output."
-msgstr ""
+msgstr "유니코드 ``chr`` 가 글꼴 또는 (선택적으로) 일부 대체 글꼴에 존재하는지 확인합니다. 출력에 \"TOFU\" 기호가 나타날지 확인하는 데 사용할 수 있습니다."
 
 #: ../../font.rst:143 009b9aeb3f9944d596e9f49f9899c324
 msgid "the unicode of the character (i.e. ``ord()``)."
-msgstr ""
+msgstr "문자의 유니코드(즉, ``ord()``)."
 
 #: ../../font.rst:144 a8641b2b63ec4b07875c388e202271b9
 msgid "the language -- currently unused."
-msgstr ""
+msgstr "언어 -- 현재 사용되지 않음."
 
 #: ../../font.rst:145 1bf9dc08f5954b5f965c6b5ea1570763
 msgid "the UCDN script number."
-msgstr ""
+msgstr "UCDN 스크립트 번호."
 
 #: ../../font.rst:146 c652199037ea41779589cd7c702796e7
 msgid ""
 "*(new in v1.17.5)* perform an extended search in fallback fonts or "
 "restrict to current font (default)."
-msgstr ""
+msgstr "*(v1.17.5의 새로운 기능)* 대체 글꼴에서 확장 검색을 수행하거나 현재 글꼴로 제한합니다(기본값)."
 
 #: ../../font.rst:147 97e5feeeb43a4af0bb9163c00cad3e2b
 msgid "*(changed in 1.17.7)* the glyph number. Zero indicates no glyph found."
-msgstr ""
+msgstr "*(1.17.7에서 변경됨)* 글리프 번호. 0은 글리프를 찾지 못했음을 나타냅니다."
 
 #: ../../font.rst:151 fed10a374e2445d1be29d1f78a496de5
 msgid "New in v1.17.5"
-msgstr ""
+msgstr "v1.17.5에서 새로 추가됨"
 
 #: ../../font.rst:153 290f44f3033a469e89d5444b5d3ec4f9
 msgid "Return an array of unicodes supported by this font."
-msgstr ""
+msgstr "이 글꼴이 지원하는 유니코드 배열을 반환합니다."
 
 #: ../../font.rst:155 ab16e827b27d4022b45b4c90a328da02
 #, python-format
@@ -723,18 +723,18 @@ msgid ""
 "I.e. ``chr()`` of every item in this array has a glyph in the font "
 "without using fallbacks. This is an example display of the supported "
 "glyphs:"
-msgstr ""
+msgstr "길이가 최대 :attr:`Font.glyph_count` 인 ``array.array`` [#f2]_. 즉, 이 배열의 모든 항목의 ``chr()`` 는 대체 글꼴을 사용하지 않고 글꼴에 글리프를 가집니다. 지원되는 글리프의 예제 표시는 다음과 같습니다:"
 
 #: ../../font.rst:183 c5ad65fa71a74dd9a63ab09809f0f9cf
 msgid ""
 "This method only returns meaningful data for fonts having a CMAP "
 "(character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array"
 " will have length 1 and contain zero only."
-msgstr ""
+msgstr "이 메서드는 CMAP(문자 맵, charmap, `/ToUnicode` PDF 키)가 있는 글꼴에 대해서만 의미 있는 데이터를 반환합니다. 그렇지 않으면 이 배열의 길이는 1이고 0만 포함합니다."
 
 #: ../../font.rst:192 af8b042889b54a38b2a5ddd689449328
 msgid "Calculate the \"width\" of the character's glyph (visual representation)."
-msgstr ""
+msgstr "문자 글리프의 \"너비\"를 계산합니다(시각적 표현)."
 
 #: ../../font.rst:194 c1f6c6b34907404e97ad72617e0fc346
 msgid ""
@@ -742,29 +742,29 @@ msgid ""
 "itself. Again, this should normally work even if a character is not "
 "supported by that font, because fallback fonts will be checked where "
 "necessary."
-msgstr ""
+msgstr "문자의 유니코드 번호. 문자 자체가 아닌 ``ord()`` 를 사용하세요. 다시 말하지만, 글꼴이 문자를 지원하지 않더라도 일반적으로 작동해야 합니다. 필요한 경우 대체 글꼴이 확인되기 때문입니다."
 
 #: ../../font.rst:195 e838a07682d84a869e2fa1cc89abf58a
 msgid "write mode, ``0`` = horizontal, ``1`` = vertical."
-msgstr ""
+msgstr "쓰기 모드, ``0`` = 가로, ``1`` = 세로."
 
 #: ../../font.rst:197 2dc7e2ceacbb4ef690b919a430d04d1b
 msgid "The other parameters are not in use currently."
-msgstr ""
+msgstr "다른 매개변수는 현재 사용되지 않습니다."
 
 #: ../../font.rst:199 e8423a5397284db1919f456052773ded
 msgid "a float representing the glyph's width relative to **fontsize 1**."
-msgstr ""
+msgstr "**fontsize 1** 에 상대적인 글리프 너비를 나타내는 float."
 
 #: ../../font.rst:203 47dc9dab1b4c4cb8b9e6a069008d81b1
 msgid ""
 "Return the unicode value for a given glyph name. Use it in conjunction "
 "with `chr()` if you want to output e.g. a certain symbol."
-msgstr ""
+msgstr "주어진 글리프 이름에 대한 유니코드 값을 반환합니다. 예를 들어 특정 기호를 출력하려면 `chr()` 와 함께 사용하세요."
 
 #: ../../font.rst:205 749831c099134aa7bf7ffe282b0836b5
 msgid "The name of the glyph."
-msgstr ""
+msgstr "글리프의 이름."
 
 #: ../../font.rst:207 377293d9901943dbb4c7c31c7985c7d9
 msgid ""
@@ -785,29 +785,29 @@ msgid ""
 "List <https://github.com/adobe-type-tools/agl-"
 "aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names "
 "and their unicode numbers. Example:"
-msgstr ""
+msgstr "유니코드 정수, 또는 이름을 알 수 없는 경우 65533 = 0xFFFD. 예: `font.glyph_name_to_unicode(\"Sigma\") = 931`, `font.glyph_name_to_unicode(\"sigma\") = 963`. 글리프 이름과 유니코드 번호 목록은 `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ 출판물을 참조하세요. 예:"
 
 #: ../../font.rst:219 ceed99f4b1f641ae9879e4ef9b43cfcf
 msgid "The glyph rectangle relative to :data:`fontsize` 1."
-msgstr ""
+msgstr ":data:`fontsize` 1에 상대적인 글리프 사각형."
 
 #: ../../font.rst:221 9803fc558ea94924824b3c6f36f33ce5
 msgid "``ord()`` of the character."
-msgstr ""
+msgstr "문자의 ``ord()``."
 
 #: ../../font.rst:223 cae0a18260bf47dcb9d033363ab5176b
 msgid "a :ref:`Rect`."
-msgstr ""
+msgstr ":ref:`Rect`."
 
 #: ../../font.rst:228 c530486f148348589a870c1a6fad982d
 msgid "Show the name of the character's glyph."
-msgstr ""
+msgstr "문자 글리프의 이름을 표시합니다."
 
 #: ../../font.rst:230 b33374c8c5234c618bbb03b5c25bd99b
 msgid ""
 "the unicode number of the character. Use ``ord()``, not the character "
 "itself."
-msgstr ""
+msgstr "문자의 유니코드 번호. 문자 자체가 아닌 ``ord()`` 를 사용하세요."
 
 #: ../../font.rst:232 39265ca9c3774508a81f7b6c33627e8d
 msgid ""
@@ -824,7 +824,7 @@ msgstr ""
 msgid ""
 "a string representing the glyph's name. E.g. `font.glyph_name(ord(\"#\"))"
 " = \"numbersign\"`. For an invalid code \".notfound\" is returned."
-msgstr ""
+msgstr "글리프 이름을 나타내는 문자열. 예: `font.glyph_name(ord(\"#\")) = \"numbersign\"`. 잘못된 코드의 경우 \".notfound\"가 반환됩니다."
 
 #: ../../font.rst:234 20712f7e063243888f6395b18c3acae8
 msgid ""
@@ -832,27 +832,27 @@ msgid ""
 " no longer depend on a font and instead retrieve information from the "
 "**Adobe Glyph List**. Also available as `pymupdf.unicode_to_glyph_name()`"
 " and resp. `pymupdf.glyph_name_to_unicode()`."
-msgstr ""
+msgstr "*(v1.18.0에서 변경됨)* 이 메서드와 :meth:`Font.glyph_name_to_unicode` 는 더 이상 글꼴에 의존하지 않으며 대신 **Adobe Glyph List** 에서 정보를 검색합니다. `pymupdf.unicode_to_glyph_name()` 및 각각 `pymupdf.glyph_name_to_unicode()` 로도 사용할 수 있습니다."
 
 #: ../../font.rst:241 38b6209e6a4344a8b3be848dc476755c
 msgid "Calculate the length in points of a unicode string."
-msgstr ""
+msgstr "유니코드 문자열의 포인트 단위 길이를 계산합니다."
 
 #: ../../font.rst:243 142ac4b87bb644ffa8514275b3e51007
 msgid ""
 "There is a functional overlap with :meth:`get_text_length` for Base-14 "
 "fonts only."
-msgstr ""
+msgstr "Base-14 글꼴에 대해서만 :meth:`get_text_length` 와 기능적 중복이 있습니다."
 
 #: ../../font.rst:245 ../../font.rst:269 7c8abec195d7425ab74856419d327b59
 #: f31ddd69af474ca98115ec49230627cf
 msgid "a text string, UTF-8 encoded."
-msgstr ""
+msgstr "UTF-8로 인코딩된 텍스트 문자열."
 
 #: ../../font.rst:247 ../../font.rst:271 280e2e6390a84299b1eb50742751cc45
 #: 5880b72ffefe4073a534b44ef82aa00b
 msgid "the :data:`fontsize`."
-msgstr ""
+msgstr ":data:`fontsize`."
 
 #: ../../font.rst 24af9fb41f6d40be800f9d6a56909af0
 #: 375fd3e160764b6f97a1b86fc740fe8a 465db7792c4b472f806017a0d364f367
@@ -861,7 +861,7 @@ msgstr ""
 #: b579c7fff96e4c608f8eb22666e2666d d2e13bff74024b768ddd4405202d6cab
 #: d3196a22363c47ecb37dd5972f00334e
 msgid "Return type"
-msgstr ""
+msgstr "Return type"
 
 #: ../../font.rst:251 ec7a7979f9e7418fbdceaeee4f29b39d
 msgid ""
@@ -884,7 +884,7 @@ msgid ""
 "the length of the string in points when stored in the PDF. If a character"
 " is not contained in the font, it will automatically be looked up in a "
 "fallback font."
-msgstr ""
+msgstr "PDF에 저장될 때 포인트 단위의 문자열 길이. 글꼴에 문자가 포함되어 있지 않으면 자동으로 대체 글꼴에서 찾습니다."
 
 #: ../../font.rst:253 57ccdf4bd0474e3280e1cdda9d041027
 msgid ""
@@ -892,15 +892,15 @@ msgid ""
 ":meth:`Font.glyph_advance`. For performance reasons, it has been "
 "rewritten in C for v1.18.14. To compute the width of a single character, "
 "you can now use either of the following without performance penalty:"
-msgstr ""
+msgstr "이 메서드는 원래 :meth:`Font.glyph_advance` 호출을 기반으로 Python에서 구현되었습니다. 성능상의 이유로 v1.18.14에서 C로 다시 작성되었습니다. 단일 문자의 너비를 계산하려면 성능 저하 없이 다음 중 하나를 사용할 수 있습니다:"
 
 #: ../../font.rst:255 b485562f46994ef3a76ed0ba8f486f14
 msgid "`font.glyph_advance(ord(\"Ä\")) * fontsize`"
-msgstr ""
+msgstr "`font.glyph_advance(ord(\"Ä\")) * fontsize`"
 
 #: ../../font.rst:256 7b3106bb9bf0498198809c557ab60339
 msgid "`font.text_length(\"Ä\", fontsize=fontsize)`"
-msgstr ""
+msgstr "`font.text_length(\"Ä\", fontsize=fontsize)`"
 
 #: ../../font.rst:258 3724b3d50f664946b0d42d8fab2f84f6
 msgid ""
@@ -908,15 +908,15 @@ msgid ""
 "advantage compared to the previous implementation: instead of about 0.5 "
 "microseconds for each character, only 12.5 nanoseconds are required for "
 "the second and subsequent ones."
-msgstr ""
+msgstr "다중 문자 문자열의 경우, 이 메서드는 이전 구현과 비교하여 큰 성능 이점을 제공합니다: 각 문자에 대해 약 0.5 마이크로초 대신 두 번째 및 이후 문자에는 12.5 나노초만 필요합니다."
 
 #: ../../font.rst:265 aafd060e84e541abbe7b30af94aa8ded
 msgid "*New in v1.18.14*"
-msgstr ""
+msgstr "*v1.18.14에서 새로 추가됨*"
 
 #: ../../font.rst:267 7decb74d1d39477b9462d29370e42a35
 msgid "Sequence of character lengths in points of a unicode string."
-msgstr ""
+msgstr "유니코드 문자열의 포인트 단위 문자 길이 시퀀스."
 
 #: ../../font.rst:275 76401a090dc249fcab049f83b6f83cee
 msgid ""
@@ -942,42 +942,42 @@ msgid ""
 "characters. This is a high speed method, used e.g. in "
 ":meth:`TextWriter.fill_textbox`. The following is true (allowing rounding"
 " errors): `font.text_length(text) == sum(font.char_lengths(text))`."
-msgstr ""
+msgstr "PDF에 저장될 때 문자열 문자의 포인트 단위 길이. :meth:`Font.text_length` 를 단일 문자로 분해한 것처럼 작동합니다. 이것은 고속 메서드이며 예를 들어 :meth:`TextWriter.fill_textbox` 에서 사용됩니다. 다음이 참입니다(반올림 오류 허용): `font.text_length(text) == sum(font.char_lengths(text))`."
 
 #: ../../font.rst:297 d80b29e9dd8c454da9c51b26d9cad2fe
 msgid "New in v1.17.6"
-msgstr ""
+msgstr "v1.17.6에서 새로 추가됨"
 
 #: ../../font.rst:299 30834747dcfd4dc48a79f57ad356cdd3
 msgid "Copy of the binary font file content."
-msgstr ""
+msgstr "바이너리 글꼴 파일 내용의 복사본."
 
 #: ../../font.rst:305 71cd13ec6bab4c46bb9c7dbb8108fb63
 msgid ""
 "A dictionary with various font properties, each represented as bools. "
 "Example for Helvetica::"
-msgstr ""
+msgstr "각각 bool로 표현되는 다양한 글꼴 속성의 딕셔너리. Helvetica의 예::"
 
 #: ../../font.rst:325 dbe85241cd3a4910a0da84236fc69d03
 msgid "Name of the font. May be \"\" or \"(null)\"."
-msgstr ""
+msgstr "글꼴 이름. \"\" 또는 \"(null)\"일 수 있습니다."
 
 #: ../../font.rst:329 190864bf642d4836b3e8ed0493dc4672
 msgid "The font bbox. This is the maximum of its glyph bboxes."
-msgstr ""
+msgstr "글꼴 bbox. 이것은 글리프 bbox의 최대값입니다."
 
 #: ../../font.rst:331 33b968a3b28241e9a604dd232bd3bf7c
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../font.rst:337 38e95b49eec642f784ca39d58b0b40df
 msgid "The number of glyphs defined in the font."
-msgstr ""
+msgstr "글꼴에 정의된 글리프 수."
 
 #: ../../font.rst:341 ../../font.rst:349 aa9a0f03418b4adba2109af305a941e1
 #: b18be968a53743bdb4bdab316af4c374
 msgid "New in v1.18.0"
-msgstr ""
+msgstr "v1.18.0에서 새로 추가됨"
 
 #: ../../font.rst:343 d3c64bfaff7540aa857c6dcc2fc2b0a0
 msgid ""
@@ -986,7 +986,7 @@ msgid ""
 "Please note that there is a difference to the strict definition: our "
 "value includes everything above the baseline -- not just the height "
 "difference between upper case \"A\" and and lower case \"a\"."
-msgstr ""
+msgstr "글꼴의 상승부 값, 자세한 내용은 `ascender typography <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ 를 참조하세요. 엄격한 정의와 차이가 있음을 참고하세요: 우리의 값은 기준선 위의 모든 것을 포함합니다 -- 대문자 \"A\"와 소문자 \"a\" 사이의 높이 차이만이 아닙니다."
 
 #: ../../font.rst:351 7fba1bd77fd74cc1abdb335fe3269fbc
 msgid ""
@@ -997,32 +997,32 @@ msgid ""
 "`ascender - descender` is the total height, that every glyph of the font "
 "fits into. This is true at least for most fonts -- as always, there are "
 "exceptions, especially for calligraphic fonts, etc."
-msgstr ""
+msgstr "글꼴의 하강부 값, 자세한 내용은 `descender typography <https://en.wikipedia.org/wiki/Descender>`_ 를 참조하세요. 이 값은 항상 음수이며 일부 글리프가 기준선 아래로 내려가는 부분입니다. 예를 들어 \"g\" 또는 \"y\". 결과적으로 `ascender - descender` 값은 글꼴의 모든 글리프가 들어맞는 전체 높이입니다. 이것은 적어도 대부분의 글꼴에 대해 참입니다 -- 항상 그렇듯이 예외가 있으며, 특히 필기체 글꼴 등에 해당합니다."
 
 #: ../../font.rst:363 4ffede0fc21c4b5fa0f667a903b92e93
 msgid ""
 "A number of attributes with obvious meanings. Reflect some values of the "
 ":attr:`Font.flags` dictionary."
-msgstr ""
+msgstr "명확한 의미를 가진 여러 속성. :attr:`Font.flags` 딕셔너리의 일부 값을 반영합니다."
 
 #: ../../font.rst:368 4bd92baafe77479faa63b31082e0c69a
 msgid "Footnotes"
-msgstr ""
+msgstr "Footnotes"
 
 #: ../../font.rst:369 d66637c72e2b45aea7edd3cb116ec328
 msgid ""
 "MuPDF does not support all fontfiles with this feature and will raise "
 "exceptions like *\"mupdf: FT_New_Memory_Face((null)): unknown file "
 "format\"*, if it encounters issues."
-msgstr ""
+msgstr "MuPDF는 이 기능을 가진 모든 글꼴 파일을 지원하지 않으며 문제가 발생하면 *\"mupdf: FT_New_Memory_Face((null)): unknown file format\"* 과 같은 예외를 발생시킵니다."
 
 #: ../../font.rst:371 7213fcc59c214e508d3da6221ec0d21a
 msgid ""
 "The built-in Python module `array` has been chosen for its speed and low "
 "memory requirement."
-msgstr ""
+msgstr "내장 Python 모듈 `array` 는 속도와 낮은 메모리 요구 사항 때문에 선택되었습니다."
 
 #: ../../footer.rst:46 3dc04747492b4b4bac6e2c6af8d83002
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version|까지의 모든 버전을 다룹니다."
 

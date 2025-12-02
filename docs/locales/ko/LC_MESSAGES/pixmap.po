@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 77cdad9d379a4a459fb8f61a5126752b
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 32cc68ce63c240bdb7a2fdfe4d927af7
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 db64d0baaca745e7910c08e63ef36441
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../pixmap.rst:7 e0494509a30b4c1991cc5e57de63e15b
 msgid "Pixmap"
-msgstr ""
+msgstr "Pixmap"
 
 #: ../../pixmap.rst:9 32dd6915408a408ea1d9db1812927e46
 msgid ""
@@ -45,62 +45,62 @@ msgid ""
 "capabilities. They represent plane rectangular sets of pixels. Each pixel"
 " is described by a number of bytes (\"components\") defining its color, "
 "plus an optional alpha byte defining its transparency."
-msgstr ""
+msgstr "픽스맵(\"pixel maps\")은 MuPDF의 렌더링 기능의 핵심 객체입니다. 평면 사각형 픽셀 집합을 나타냅니다. 각 픽셀은 색상을 정의하는 여러 바이트(\"components\")와 투명도를 정의하는 선택적 알파 바이트로 설명됩니다."
 
 #: ../../pixmap.rst:11 0ae7623584d34b0793a6b1689e2e9ff9
 msgid ""
 "In PyMuPDF, there exist several ways to create a pixmap. Except the first"
 " one, all of them are available as overloaded constructors. A pixmap can "
 "be created ..."
-msgstr ""
+msgstr "PyMuPDF에서는 픽스맵을 생성하는 여러 방법이 있습니다. 첫 번째를 제외하고 모두 오버로드된 생성자로 사용할 수 있습니다. 픽스맵은 다음에서 생성할 수 있습니다..."
 
 #: ../../pixmap.rst:13 73ba045692a74b84a13ce27f369588ef
 msgid "from a document page (method :meth:`Page.get_pixmap`)"
-msgstr ""
+msgstr "문서 페이지에서 (메서드 :meth:`Page.get_pixmap`)"
 
 #: ../../pixmap.rst:14 d9db8727d6f34c5ea67a95212b48a901
 msgid "empty, based on :ref:`Colorspace` and :ref:`IRect` information"
-msgstr ""
+msgstr ":ref:`Colorspace` 및 :ref:`IRect` 정보를 기반으로 빈 픽스맵"
 
 #: ../../pixmap.rst:15 3bd37a5d119449b79b2df8e6183899b2
 msgid "from a file"
-msgstr ""
+msgstr "파일에서"
 
 #: ../../pixmap.rst:16 6c2ae5d2cf9e4e9c8a85876940ac2c65
 msgid "from an in-memory image"
-msgstr ""
+msgstr "메모리 내 이미지에서"
 
 #: ../../pixmap.rst:17 985854117e77421ab5c08305ad9a7ebc
 msgid "from a memory area of plain pixels"
-msgstr ""
+msgstr "일반 픽셀의 메모리 영역에서"
 
 #: ../../pixmap.rst:18 51817c0b224a4d79becc251812e52d59
 msgid "from an image inside a PDF document"
-msgstr ""
+msgstr "PDF 문서 내의 이미지에서"
 
 #: ../../pixmap.rst:19 c50a8dabd5de4315af9f49bd6f4e3300
 msgid "as a copy of another pixmap"
-msgstr ""
+msgstr "다른 픽스맵의 복사본으로"
 
 #: ../../pixmap.rst:21 a40603d11eae465f98c51d914e3f60f0
 msgid ""
 "A number of image formats is supported as input for points 3. and 4. "
 "above. See section :ref:`ImageFiles`."
-msgstr ""
+msgstr "위의 3번과 4번 항목에 대한 입력으로 여러 이미지 형식이 지원됩니다. :ref:`ImageFiles` 섹션을 참조하세요."
 
 #: ../../pixmap.rst:23 3bdce298316f4c59aea2dcf926ba360d
 msgid ""
 "Have a look at the :ref:`FAQ` section to see some pixmap usage \"at "
 "work\"."
-msgstr ""
+msgstr ":ref:`FAQ` 섹션을 확인하여 픽스맵 사용 예제를 살펴보세요."
 
 #: ../../pixmap.rst:26 c77d9f0a0ac441569275429f77da5352
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**Method / Attribute**"
 
 #: ../../pixmap.rst:26 0c5aa62f906e4af38c4f3f15dbd58acb
 msgid "**Short Description**"
-msgstr ""
+msgstr "**Short Description**"
 
 #: ../../pixmap.rst:28 2202b52b548143ffb14aef4ce3088e4e
 msgid ":meth:`Pixmap.clear_with`"
@@ -108,7 +108,7 @@ msgstr ""
 
 #: ../../pixmap.rst:28 f8c6fd586d294e3194f9966984db1cd7
 msgid "clear parts of the pixmap"
-msgstr ""
+msgstr "픽스맵의 일부 지우기"
 
 #: ../../pixmap.rst:29 74887257fa9a4ce4bccdc2c054561ab8
 msgid ":meth:`Pixmap.color_count`"
@@ -116,7 +116,7 @@ msgstr ""
 
 #: ../../pixmap.rst:29 266d94deb7124050adc51b2d0925c285
 msgid "determine used colors"
-msgstr ""
+msgstr "사용된 색상 확인"
 
 #: ../../pixmap.rst:30 6fa71e0e57754c778d2a793a2d4b5e0c
 msgid ":meth:`Pixmap.color_topusage`"
@@ -124,7 +124,7 @@ msgstr ""
 
 #: ../../pixmap.rst:30 40a15ae449a04a5fa2c777c1ac0a6175
 msgid "determine share of most used color"
-msgstr ""
+msgstr "가장 많이 사용된 색상의 비율 확인"
 
 #: ../../pixmap.rst:31 b915ce033980496eb00292ada4fbcca5
 msgid ":meth:`Pixmap.copy`"
@@ -132,7 +132,7 @@ msgstr ""
 
 #: ../../pixmap.rst:31 8e57cd2829fa414abc482e80c6d4c4d9
 msgid "copy parts of another pixmap"
-msgstr ""
+msgstr "다른 픽스맵의 일부 복사"
 
 #: ../../pixmap.rst:32 112981a34c4348f8ad862d81cdc02514
 msgid ":meth:`Pixmap.gamma_with`"
@@ -140,7 +140,7 @@ msgstr ""
 
 #: ../../pixmap.rst:32 f42a9b37c4ac4000a006188d993c87e5
 msgid "apply a gamma factor to the pixmap"
-msgstr ""
+msgstr "픽스맵에 감마 계수 적용"
 
 #: ../../pixmap.rst:33 01c950df9e2145aa8d39d7760c67ad87
 msgid ":meth:`Pixmap.invert_irect`"
@@ -148,7 +148,7 @@ msgstr ""
 
 #: ../../pixmap.rst:33 8fd44b50652147ff824e5fc414ff6a30
 msgid "invert the pixels of a given area"
-msgstr ""
+msgstr "주어진 영역의 픽셀 반전"
 
 #: ../../pixmap.rst:34 516fe80e3c4a459a81a150dc6a462f8e
 msgid ":meth:`Pixmap.pdfocr_save`"
@@ -157,7 +157,7 @@ msgstr ""
 #: ../../pixmap.rst:34 ../../pixmap.rst:35 67e410a8f8c842c1944b038c5708de2d
 #: f38b40a1d99c4c509644c872d19b87e2
 msgid "save the pixmap as an OCRed 1-page PDF"
-msgstr ""
+msgstr "픽스맵을 OCR된 1페이지 PDF로 저장"
 
 #: ../../pixmap.rst:35 be86eecb9ae84058896ab1db4a2fcab1
 msgid ":meth:`Pixmap.pdfocr_tobytes`"
@@ -169,7 +169,7 @@ msgstr ""
 
 #: ../../pixmap.rst:36 6075a73ecdcb46979d4b836f39403d5f
 msgid "create a Pillow Image"
-msgstr ""
+msgstr "Pillow 이미지 생성"
 
 #: ../../pixmap.rst:37 c71cca896c4e47509c4fa0e362fa044c
 msgid ":meth:`Pixmap.pil_save`"
@@ -177,7 +177,7 @@ msgstr ""
 
 #: ../../pixmap.rst:37 4be536342cb047aeb0a6b64adbba1e9a
 msgid "save as a Pillow Image"
-msgstr ""
+msgstr "Pillow 이미지로 저장"
 
 #: ../../pixmap.rst:38 52b8400d5cce434b87e23399f61d2117
 msgid ":meth:`Pixmap.pil_tobytes`"
@@ -185,7 +185,7 @@ msgstr ""
 
 #: ../../pixmap.rst:38 bafc4631127f4561936ab5d1e6403a2d
 msgid "write to `bytes` as a Pillow Image"
-msgstr ""
+msgstr "Pillow 이미지로 `bytes` 에 쓰기"
 
 #: ../../pixmap.rst:39 4002db687ffc4feabe3a41f2274b7804
 msgid ":meth:`Pixmap.pixel`"
@@ -193,7 +193,7 @@ msgstr ""
 
 #: ../../pixmap.rst:39 efb78dfb56524049a7580e3a15723114
 msgid "return the value of a pixel"
-msgstr ""
+msgstr "픽셀 값 반환"
 
 #: ../../pixmap.rst:40 e0ffa2a456944476bb6984b064566f95
 msgid ":meth:`Pixmap.save`"
@@ -201,7 +201,7 @@ msgstr ""
 
 #: ../../pixmap.rst:40 7f4131a6b70d41cd802f09e3f4f6f11f
 msgid "save the pixmap in a variety of formats"
-msgstr ""
+msgstr "다양한 형식으로 픽스맵 저장"
 
 #: ../../pixmap.rst:41 23956dccd6e94052aef51929b1c393dc
 msgid ":meth:`Pixmap.set_alpha`"
@@ -209,7 +209,7 @@ msgstr ""
 
 #: ../../pixmap.rst:41 3979119c35f341c694e03dd5db7a0115
 msgid "set alpha values"
-msgstr ""
+msgstr "알파 값 설정"
 
 #: ../../pixmap.rst:42 80aa084bf73c4f61abbf2f808d42bdcd
 msgid ":meth:`Pixmap.set_dpi`"
@@ -217,7 +217,7 @@ msgstr ""
 
 #: ../../pixmap.rst:42 881510d8c71545b59d91fb5dac173605
 msgid "set the image resolution"
-msgstr ""
+msgstr "이미지 해상도 설정"
 
 #: ../../pixmap.rst:43 af00886d005e4a1890d7b7789b93e7e7
 msgid ":meth:`Pixmap.set_origin`"
@@ -225,7 +225,7 @@ msgstr ""
 
 #: ../../pixmap.rst:43 7e6045d9838046cea1cd1fcb38a15dab
 msgid "set pixmap x,y values"
-msgstr ""
+msgstr "픽스맵 x, y 값 설정"
 
 #: ../../pixmap.rst:44 cb25eecee8af4917ab427d3cf303152f
 msgid ":meth:`Pixmap.set_pixel`"
@@ -233,7 +233,7 @@ msgstr ""
 
 #: ../../pixmap.rst:44 23d1909be60a4b269aaec2547ae2aa05
 msgid "set color and alpha of a pixel"
-msgstr ""
+msgstr "픽셀의 색상 및 알파 설정"
 
 #: ../../pixmap.rst:45 72b4d710dc894939936c377380bbc22e
 msgid ":meth:`Pixmap.set_rect`"
@@ -241,7 +241,7 @@ msgstr ""
 
 #: ../../pixmap.rst:45 0f7af78460a4450da9d9108517b4d4c4
 msgid "set color and alpha of all pixels in a rectangle"
-msgstr ""
+msgstr "사각형 내 모든 픽셀의 색상 및 알파 설정"
 
 #: ../../pixmap.rst:46 b791b993ad61409eaef1d0b360847ffc
 msgid ":meth:`Pixmap.shrink`"
@@ -249,7 +249,7 @@ msgstr ""
 
 #: ../../pixmap.rst:46 38e21b2c7aa8493e8bb7266e1e835f69
 msgid "reduce size keeping proportions"
-msgstr ""
+msgstr "비율을 유지하면서 크기 축소"
 
 #: ../../pixmap.rst:47 be56d7fc15e24cf2826c82badd69df56
 msgid ":meth:`Pixmap.tint_with`"
@@ -257,7 +257,7 @@ msgstr ""
 
 #: ../../pixmap.rst:47 d5a1e740218c41ceb31d912cae43599f
 msgid "tint the pixmap"
-msgstr ""
+msgstr "픽스맵에 틴트 적용"
 
 #: ../../pixmap.rst:48 408bd07e5e004c53845a34ccb73684f6
 msgid ":meth:`Pixmap.tobytes`"
@@ -265,7 +265,7 @@ msgstr ""
 
 #: ../../pixmap.rst:48 dbfd2cd88a2e40689877d688108593b5
 msgid "return a memory area in a variety of formats"
-msgstr ""
+msgstr "다양한 형식으로 메모리 영역 반환"
 
 #: ../../pixmap.rst:49 73ad7e8e412146939a933bc554653bd9
 msgid ":meth:`Pixmap.warp`"
@@ -273,7 +273,7 @@ msgstr ""
 
 #: ../../pixmap.rst:49 27dcdd34ccd6434c8be2f3d0cab9f361
 msgid "return a pixmap made from a quad inside"
-msgstr ""
+msgstr "내부의 quad로 만든 픽스맵 반환"
 
 #: ../../pixmap.rst:50 85defbb4523445e9bfc92785c42fcb0b
 msgid ":attr:`Pixmap.alpha`"
@@ -281,7 +281,7 @@ msgstr ""
 
 #: ../../pixmap.rst:50 f9f7e74d1a854ce584726e3236d915a4
 msgid "transparency indicator"
-msgstr ""
+msgstr "투명도 표시기"
 
 #: ../../pixmap.rst:51 fbf1760092864dcf8f5566ac85074c05
 msgid ":attr:`Pixmap.colorspace`"
@@ -289,7 +289,7 @@ msgstr ""
 
 #: ../../pixmap.rst:51 48b501a974724e6cadfe58ebbfebeb9a
 msgid "pixmap's :ref:`Colorspace`"
-msgstr ""
+msgstr "픽스맵의 :ref:`Colorspace`"
 
 #: ../../pixmap.rst:52 b766c11c9d60491bb1cd9e4c8cfd9751
 msgid ":attr:`Pixmap.digest`"
@@ -297,7 +297,7 @@ msgstr ""
 
 #: ../../pixmap.rst:52 3d7b532618f3451896efe2d64d4ffdfe
 msgid "MD5 hashcode of the pixmap"
-msgstr ""
+msgstr "픽스맵의 MD5 해시코드"
 
 #: ../../pixmap.rst:53 76675540ad27482bada64b6a598d25f9
 msgid ":attr:`Pixmap.height`"
@@ -305,7 +305,7 @@ msgstr ""
 
 #: ../../pixmap.rst:53 3c22531079e34fa79dddc4e586d958e6
 msgid "pixmap height"
-msgstr ""
+msgstr "픽스맵 높이"
 
 #: ../../pixmap.rst:54 9182d024c67b490b9fe7855b4f5715d0
 msgid ":attr:`Pixmap.interpolate`"
@@ -313,7 +313,7 @@ msgstr ""
 
 #: ../../pixmap.rst:54 3688b5e0286840669d320a95bc5a17fb
 msgid "interpolation method indicator"
-msgstr ""
+msgstr "보간 방법 표시기"
 
 #: ../../pixmap.rst:55 b7b0a90b1ba846e89b22db0ed4553281
 msgid ":attr:`Pixmap.is_monochrome`"
@@ -321,7 +321,7 @@ msgstr ""
 
 #: ../../pixmap.rst:55 df352c76b67546089f124cbd0e5babb1
 msgid "check if only black and white occur"
-msgstr ""
+msgstr "흑백만 있는지 확인"
 
 #: ../../pixmap.rst:56 a17ad0a90a7d413c9fb8b1aa83257598
 msgid ":attr:`Pixmap.is_unicolor`"
@@ -329,7 +329,7 @@ msgstr ""
 
 #: ../../pixmap.rst:56 81dfed8a598641f6ae936549b0e7f7ba
 msgid "check if only one color occurs"
-msgstr ""
+msgstr "단일 색상만 있는지 확인"
 
 #: ../../pixmap.rst:57 abd7ff4e70754c9daef32d9525250608
 msgid ":attr:`Pixmap.irect`"
@@ -337,7 +337,7 @@ msgstr ""
 
 #: ../../pixmap.rst:57 2791b580e848470a814a376d6e220255
 msgid ":ref:`IRect` of the pixmap"
-msgstr ""
+msgstr "픽스맵의 :ref:`IRect`"
 
 #: ../../pixmap.rst:58 2fec6f3a895d4409b0e482a40f200f22
 msgid ":attr:`Pixmap.n`"
@@ -345,7 +345,7 @@ msgstr ""
 
 #: ../../pixmap.rst:58 c7b79f65d4494cdb897cc22abe8eff21
 msgid "bytes per pixel"
-msgstr ""
+msgstr "픽셀당 바이트"
 
 #: ../../pixmap.rst:59 743bc8e881d44773b5fcf7beffc6a3fa
 msgid ":attr:`Pixmap.samples_mv`"
@@ -353,7 +353,7 @@ msgstr ""
 
 #: ../../pixmap.rst:59 4179ce00d1e746b295e577083af074b0
 msgid "`memoryview` of pixel area"
-msgstr ""
+msgstr "픽셀 영역의 `memoryview`"
 
 #: ../../pixmap.rst:60 c5ff63d0faaa4137832a944521ce8069
 msgid ":attr:`Pixmap.samples_ptr`"
@@ -361,7 +361,7 @@ msgstr ""
 
 #: ../../pixmap.rst:60 8116e2e6a5fe470082d7fbdca4673935
 msgid "Python pointer to pixel area"
-msgstr ""
+msgstr "픽셀 영역에 대한 Python 포인터"
 
 #: ../../pixmap.rst:61 2abc33dc84a348c6ad9b8da90c57e531
 msgid ":attr:`Pixmap.samples`"
@@ -369,7 +369,7 @@ msgstr ""
 
 #: ../../pixmap.rst:61 060cb94948d84088a5cf7c6d4319fea3
 msgid "`bytes` copy of pixel area"
-msgstr ""
+msgstr "픽셀 영역의 `bytes` 복사본"
 
 #: ../../pixmap.rst:62 d41ed2ab508249d0ae96e3145e92258b
 msgid ":attr:`Pixmap.size`"
@@ -377,7 +377,7 @@ msgstr ""
 
 #: ../../pixmap.rst:62 cfe014376f9745ea9c2ce0e7a11bb369
 msgid "pixmap's total length"
-msgstr ""
+msgstr "픽스맵의 전체 길이"
 
 #: ../../pixmap.rst:63 34fea4631d014515b7406f2f5bb813bc
 msgid ":attr:`Pixmap.stride`"
@@ -385,7 +385,7 @@ msgstr ""
 
 #: ../../pixmap.rst:63 5a29f36af34340aea9cba617eed85cc6
 msgid "size of one image row"
-msgstr ""
+msgstr "이미지 한 행의 크기"
 
 #: ../../pixmap.rst:64 62ed9c389676438299a427713f0f7b08
 msgid ":attr:`Pixmap.width`"
@@ -393,7 +393,7 @@ msgstr ""
 
 #: ../../pixmap.rst:64 70e7618e0783483ea97302b042784152
 msgid "pixmap width"
-msgstr ""
+msgstr "픽스맵 너비"
 
 #: ../../pixmap.rst:65 e62961e6786e48c796a2e5a23a76654f
 msgid ":attr:`Pixmap.x`"
@@ -401,7 +401,7 @@ msgstr ""
 
 #: ../../pixmap.rst:65 4e8faa2fe6154453bf50951bfbcbfa0e
 msgid "X-coordinate of top-left corner"
-msgstr ""
+msgstr "왼쪽 위 모서리의 X 좌표"
 
 #: ../../pixmap.rst:66 d69ccf0ae1844b88aaff3eb7fbfa1973
 msgid ":attr:`Pixmap.xres`"
@@ -409,7 +409,7 @@ msgstr ""
 
 #: ../../pixmap.rst:66 a1ecbc77214845fea2e4c6cee89a8ce8
 msgid "resolution in X-direction"
-msgstr ""
+msgstr "X 방향 해상도"
 
 #: ../../pixmap.rst:67 83ca1188acde43af9c9f6c742f8c9fcb
 msgid ":attr:`Pixmap.y`"
@@ -417,7 +417,7 @@ msgstr ""
 
 #: ../../pixmap.rst:67 b0432d623ef4473aa3515de8b215d9f5
 msgid "Y-coordinate of top-left corner"
-msgstr ""
+msgstr "왼쪽 위 모서리의 Y 좌표"
 
 #: ../../pixmap.rst:68 b704d755356e4e53903e4306cb1850d6
 msgid ":attr:`Pixmap.yres`"
@@ -425,11 +425,11 @@ msgstr ""
 
 #: ../../pixmap.rst:68 857aeb5083a44b1795d1ede13f95021f
 msgid "resolution in Y-direction"
-msgstr ""
+msgstr "Y 방향 해상도"
 
 #: ../../pixmap.rst:71 a006e37a45ad4ed88da3603714dc9820
 msgid "**Class API**"
-msgstr ""
+msgstr "**Class API**"
 
 #: ../../pixmap.rst:77 046bff7f68fe47dc89b42ec79b63be49
 msgid ""
@@ -438,7 +438,7 @@ msgid ""
 " pixmap, and its width and height are *irect.width* resp. *irect.height*."
 " Note that the image area is **not initialized** and will contain crap "
 "data -- use eg. :meth:`clear_with` or :meth:`set_rect` to be sure."
-msgstr ""
+msgstr "**새 빈 픽스맵:** 사각형으로 지정된 크기와 원점으로 빈 픽스맵을 생성합니다. 따라서 *irect.top_left* 는 픽스맵의 왼쪽 위 모서리를 지정하고, 너비와 높이는 각각 *irect.width* 및 *irect.height* 입니다. 이미지 영역은 **초기화되지 않으며** 쓰레기 데이터를 포함합니다 -- 예를 들어 :meth:`clear_with` 또는 :meth:`set_rect` 를 사용하여 확실히 하세요."
 
 #: ../../pixmap.rst 02b0fea3d9c34817aad000ad9f071590
 #: 054aba92b788492e988045fb104e4481 0eb0df83e45a406cb560af5072cdff86
@@ -456,124 +456,124 @@ msgstr ""
 #: f1bff3e4b66c4afca6ae66a014ac0fc1 f2e0f5d755134588846f75c89c28b5af
 #: f8a2e37bd2ef4ca79bf827a1a3fe8e70
 msgid "Parameters"
-msgstr ""
+msgstr "Parameters"
 
 #: ../../pixmap.rst:79 56321802a9014c348fa2d20d4294c9f2
 msgid "colorspace."
-msgstr ""
+msgstr "색상 공간."
 
 #: ../../pixmap.rst:82 3753a76b227f496eb369ca2d40057f0c
 msgid "The pixmap's position and dimension."
-msgstr ""
+msgstr "픽스맵의 위치 및 크기."
 
 #: ../../pixmap.rst:84 0f1256f4866c4a888d73cefe035cfb17
 msgid ""
 "Specifies whether transparency bytes should be included. Default is "
 "``False``."
-msgstr ""
+msgstr "투명도 바이트를 포함할지 여부를 지정합니다. 기본값은 ``False`` 입니다."
 
 #: ../../pixmap.rst:88 b9326c334f6345fdaf185501bfa27892
 msgid ""
 "**Copy and set colorspace:** Copy *source* pixmap converting colorspace. "
 "Any colorspace combination is possible, but source colorspace must not be"
 " ``None``."
-msgstr ""
+msgstr "**복사 및 색상 공간 설정:** 색상 공간을 변환하여 *source* 픽스맵을 복사합니다. 모든 색상 공간 조합이 가능하지만 소스 색상 공간은 ``None`` 이 아니어야 합니다."
 
 #: ../../pixmap.rst:90 97014f607fba4a5cb553297120c90034
 msgid ""
 "desired **target** colorspace. This **may also be** ``None``. In this "
 "case, a \"masking\" pixmap is created: its :attr:`Pixmap.samples` will "
 "consist of the source's alpha bytes only."
-msgstr ""
+msgstr "원하는 **대상** 색상 공간. 이것은 ``None`` 일 수도 있습니다. 이 경우 \"마스킹\" 픽스맵이 생성됩니다: :attr:`Pixmap.samples` 는 소스의 알파 바이트만으로 구성됩니다."
 
 #: ../../pixmap.rst:93 ../../pixmap.rst:112 36ef86e1d48d4c5a9dd2bf95b2fd7b14
 #: 52423174b9b746d2840bdc738fa82069
 msgid "the source pixmap."
-msgstr ""
+msgstr "소스 픽스맵."
 
 #: ../../pixmap.rst:98 1df405a79ae244d1a01b677a84951540
 msgid "New in v1.18.18"
-msgstr ""
+msgstr "v1.18.18에서 새로 추가됨"
 
 #: ../../pixmap.rst:100 dac52c1c940a488587523e971b8678bb
 msgid ""
 "**Copy and add image mask:** Copy *source* pixmap, add an alpha channel "
 "with transparency data from a mask pixmap."
-msgstr ""
+msgstr "**복사 및 이미지 마스크 추가:** *source* 픽스맵을 복사하고 마스크 픽스맵의 투명도 데이터로 알파 채널을 추가합니다."
 
 #: ../../pixmap.rst:102 760c74ba53044cbcbdf31aee15f90bca
 msgid "pixmap without alpha channel."
-msgstr ""
+msgstr "알파 채널이 없는 픽스맵."
 
 #: ../../pixmap.rst:105 46e5c3640fcf48d382edee1c823984e6
 msgid "a mask pixmap. Must be a graysale pixmap."
-msgstr ""
+msgstr "마스크 픽스맵. 그레이스케일 픽스맵이어야 합니다."
 
 #: ../../pixmap.rst:110 d9ec3e84c0ea4239b426990e4164290e
 msgid ""
 "**Copy and scale:** Copy *source* pixmap, scaling new width and height "
 "values -- the image will appear stretched or shrunk accordingly. Supports"
 " partial copying. The source colorspace may be ``None``."
-msgstr ""
+msgstr "**복사 및 크기 조정:** *source* 픽스맵을 복사하고 새로운 너비와 높이 값을 조정합니다 -- 이미지는 그에 따라 늘어나거나 줄어듭니다. 부분 복사를 지원합니다. 소스 색상 공간은 ``None`` 일 수 있습니다."
 
 #: ../../pixmap.rst:115 682ea20bf52b4efe901eaeac97e98829
 msgid "desired target width."
-msgstr ""
+msgstr "원하는 대상 너비."
 
 #: ../../pixmap.rst:117 3bf8da6692aa4465bad88ed923353c01
 msgid "desired target height."
-msgstr ""
+msgstr "원하는 대상 높이."
 
 #: ../../pixmap.rst:119 7aa6286551464fc79c589f402e5f4064
 msgid "restrict the resulting pixmap to this region of the **scaled** pixmap."
-msgstr ""
+msgstr "결과 픽스맵을 **크기 조정된** 픽스맵의 이 영역으로 제한합니다."
 
 #: ../../pixmap.rst:121 3be7525712a64bad8e5cc168ff57efeb
 msgid ""
 "If width or height do not *represent* integers (i.e. `value.is_integer() "
 "!= True`), then the resulting pixmap **will have an alpha channel**."
-msgstr ""
+msgstr "너비 또는 높이가 정수를 *나타내지* 않으면(즉, `value.is_integer() != True`), 결과 픽스맵은 **알파 채널을 가집니다**."
 
 #: ../../pixmap.rst:125 fcd3877dc9924a5098cb10a1fec25153
 msgid ""
 "**Copy and add or drop alpha:** Copy *source* and add or drop its alpha "
 "channel. Identical copy if *alpha* equals *source.alpha*. If an alpha "
 "channel is added, its values will be set to 255."
-msgstr ""
+msgstr "**복사 및 알파 추가 또는 제거:** *source* 를 복사하고 알파 채널을 추가하거나 제거합니다. *alpha* 가 *source.alpha* 와 같으면 동일한 복사본입니다. 알파 채널이 추가되면 값은 255로 설정됩니다."
 
 #: ../../pixmap.rst:127 ../../pixmap.rst:305 29341e581eda460c9963b056957f0057
 #: 6755e67f1ebd4c6397a96a8387727fc0
 msgid "source pixmap."
-msgstr ""
+msgstr "소스 픽스맵."
 
 #: ../../pixmap.rst:130 c616e3541c6f481680da4d95d038b5f5
 msgid ""
 "whether the target will have an alpha channel, default and mandatory if "
 "source colorspace is ``None``."
-msgstr ""
+msgstr "대상이 알파 채널을 가질지 여부, 소스 색상 공간이 ``None`` 이면 기본값이며 필수입니다."
 
 #: ../../pixmap.rst:132 df4cef61a1c149a39965a6f332bf9f2c
 msgid ""
 "A typical use includes separation of color and transparency bytes in "
 "separate pixmaps. Some applications require this like e.g. "
 "*wx.Bitmap.FromBufferAndAlpha()* of *wxPython*:"
-msgstr ""
+msgstr "일반적인 사용에는 별도의 픽스맵에서 색상 및 투명도 바이트를 분리하는 것이 포함됩니다. 일부 애플리케이션은 예를 들어 *wxPython* 의 *wx.Bitmap.FromBufferAndAlpha()* 와 같이 이를 요구합니다:"
 
 #: ../../pixmap.rst:142 154d69621fb94872a7ad34eae19ef7aa
 msgid ""
 "**From a file:** Create a pixmap from *filename*. All properties are "
 "inferred from the input. The origin of the resulting pixmap is *(0, 0)*."
-msgstr ""
+msgstr "**파일에서:** *filename* 에서 픽스맵을 생성합니다. 모든 속성은 입력에서 추론됩니다. 결과 픽스맵의 원점은 *(0, 0)* 입니다."
 
 #: ../../pixmap.rst:144 aedb335cf31242c6807afec841343b05
 msgid "Path of the image file."
-msgstr ""
+msgstr "이미지 파일의 경로."
 
 #: ../../pixmap.rst:148 e21d860e62cb466b8dcd5c58ecd8816a
 msgid ""
 "**From memory:** Create a pixmap from a memory area. All properties are "
 "inferred from the input. The origin of the resulting pixmap is *(0, 0)*."
-msgstr ""
+msgstr "**메모리에서:** 메모리 영역에서 픽스맵을 생성합니다. 모든 속성은 입력에서 추론됩니다. 결과 픽스맵의 원점은 *(0, 0)* 입니다."
 
 #: ../../pixmap.rst:150 74221d3aec5f41afae36e2b37ac8dfc7
 msgid ""
@@ -590,11 +590,11 @@ msgid ""
 "*stream = bytearray(open('image.file', 'rb').read())*. Type *bytes* is "
 "supported in **Python 3 only**, because *bytes == str* in Python 2 and "
 "the method will interpret the stream as a filename."
-msgstr ""
+msgstr "완전하고 유효한 이미지를 포함하는 데이터. 예를 들어 *stream = bytearray(open('image.file', 'rb').read())* 로 생성되었을 수 있습니다. *bytes* 타입은 **Python 3에서만** 지원됩니다. Python 2에서는 *bytes == str* 이므로 메서드가 스트림을 파일 이름으로 해석합니다."
 
 #: ../../pixmap.rst:152 a162db2d5e5f46a092952a708f6e5469
 msgid "*Changed in version 1.14.13:* *io.BytesIO* is now also supported."
-msgstr ""
+msgstr "*버전 1.14.13에서 변경됨:* 이제 *io.BytesIO* 도 지원됩니다."
 
 #: ../../pixmap.rst:157 016950d3c686415a993d228b20deed87
 msgid ""
@@ -603,19 +603,19 @@ msgid ""
 "*alpha* parameters. The origin of the resulting pixmap is *(0, 0)*. This "
 "method is useful when raw image data are provided by some other program "
 "-- see :ref:`FAQ`."
-msgstr ""
+msgstr "**일반 픽셀에서:** *samples* 에서 픽스맵을 생성합니다. 각 픽셀은 *colorspace* 및 *alpha* 매개변수에 의해 제어되는 여러 바이트로 표현되어야 합니다. 결과 픽스맵의 원점은 *(0, 0)* 입니다. 이 메서드는 다른 프로그램에서 원시 이미지 데이터가 제공될 때 유용합니다 -- :ref:`FAQ` 를 참조하세요."
 
 #: ../../pixmap.rst:159 cda1965dbe524b2f958354d3bf86203d
 msgid "Colorspace of image."
-msgstr ""
+msgstr "이미지의 색상 공간."
 
 #: ../../pixmap.rst:162 e4ca43e6639b433195a95bc4b9cff17c
 msgid "image width"
-msgstr ""
+msgstr "이미지 너비"
 
 #: ../../pixmap.rst:164 e6bd73524bf443928467e7d153097052
 msgid "image height"
-msgstr ""
+msgstr "이미지 높이"
 
 #: ../../pixmap.rst:166 bc04c5ee0a2f4c219321973a46ca1fec
 msgid ""
@@ -629,30 +629,30 @@ msgstr ""
 msgid ""
 "an area containing all pixels of the image. Must include alpha values if "
 "specified."
-msgstr ""
+msgstr "이미지의 모든 픽셀을 포함하는 영역. 지정된 경우 알파 값을 포함해야 합니다."
 
 #: ../../pixmap.rst:168 94da32783c284a7c9e5cd26b1aa7aead
 msgid ""
 "*Changed in version 1.14.13:* (1) *io.BytesIO* can now also be used. (2) "
 "Data are now **copied** to the pixmap, so may safely be deleted or become"
 " unavailable."
-msgstr ""
+msgstr "*버전 1.14.13에서 변경됨:* (1) 이제 *io.BytesIO* 도 사용할 수 있습니다. (2) 데이터가 이제 픽스맵에 **복사** 되므로 안전하게 삭제하거나 사용할 수 없게 만들 수 있습니다."
 
 #: ../../pixmap.rst:170 92e53d092aa1464db50b36eb7899219d
 msgid "whether a transparency channel is included."
-msgstr ""
+msgstr "투명도 채널이 포함되는지 여부."
 
 #: ../../pixmap.rst:174 d35de668e91d424ebf94418d892dcbd6
 msgid ""
 "The following equation **must be true**: *(colorspace.n + alpha) * width "
 "* height == len(samples)*."
-msgstr ""
+msgstr "다음 방정식이 **참이어야 합니다**: *(colorspace.n + alpha) * width * height == len(samples)*."
 
 #: ../../pixmap.rst:175 1c597631a5304c869da76bb9d81e6ed9
 msgid ""
 "Starting with version 1.14.13, the samples data are **copied** to the "
 "pixmap."
-msgstr ""
+msgstr "버전 1.14.13부터 samples 데이터가 픽스맵에 **복사** 됩니다."
 
 #: ../../pixmap.rst:180 5c8af01ebb9141c4b8de801dd3f3356e
 msgid ""
@@ -663,22 +663,22 @@ msgid ""
 "and `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo"
 "/extract-img2.py>`_ to see how this can be used to recover all of a PDF's"
 " images."
-msgstr ""
+msgstr "**PDF 이미지에서:** :data:`xref` 로 식별되는 |PDF| *doc* 에 **포함된** 이미지에서 픽스맵을 생성합니다. 모든 픽스맵 속성은 이미지에 의해 설정됩니다. `extract-img1.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img1.py>`_ 및 `extract-img2.py <https://github.com/pymupdf/PyMuPDF/tree/master/demo/extract-img2.py>`_ 를 확인하여 이것을 사용하여 PDF의 모든 이미지를 복구하는 방법을 참조하세요."
 
 #: ../../pixmap.rst:182 83027e8baba3428f9138b9272d50b7c5
 msgid "an opened |PDF| document."
-msgstr ""
+msgstr "열린 |PDF| 문서."
 
 #: ../../pixmap.rst:185 1d115e0cbe8d45c1a12b21ba961b218c
 msgid ""
 "the :data:`xref` of an image object. For example, you can make a list of "
 "images used on a particular page with :meth:`Document.get_page_images`, "
 "which also shows the :data:`xref` numbers of each image."
-msgstr ""
+msgstr "이미지 객체의 :data:`xref`. 예를 들어 :meth:`Document.get_page_images` 를 사용하여 특정 페이지에서 사용된 이미지 목록을 만들 수 있으며, 이것은 각 이미지의 :data:`xref` 번호도 표시합니다."
 
 #: ../../pixmap.rst:189 af2a4e8f44da46f9b6b2a58073bb2cfc
 msgid "Initialize the samples area."
-msgstr ""
+msgstr "samples 영역을 초기화합니다."
 
 #: ../../pixmap.rst:191 e9fa66fe4f434c59baeea5e2c721a40d
 msgid ""
@@ -686,113 +686,113 @@ msgid ""
 "pixel will be set to this value, while alpha will be set to 255 (non-"
 "transparent) if present. If omitted, then all bytes (including any alpha)"
 " are cleared to *0x00*."
-msgstr ""
+msgstr "지정된 경우 0부터 255까지의 값이 유효합니다. 각 픽셀의 각 색상 바이트는 이 값으로 설정되고, 알파가 있으면 255(불투명)로 설정됩니다. 생략하면 모든 바이트(알파 포함)가 *0x00* 으로 지워집니다."
 
 #: ../../pixmap.rst:193 bb47605a216946dba119a8bf60a6dcdd
 msgid ""
 "the area to be cleared. Omit to clear the whole pixmap. Can only be "
 "specified, if *value* is also specified."
-msgstr ""
+msgstr "지울 영역. 생략하면 전체 픽스맵을 지웁니다. *value* 도 지정된 경우에만 지정할 수 있습니다."
 
 #: ../../pixmap.rst:197 78bf5b67f38f46178532a1e37e7ddd72
 msgid ""
 "Colorize a pixmap by replacing black and / or white with colors given as "
 "**sRGB integer** values. Only colorspaces :data:`CS_GRAY` and "
 ":data:`CS_RGB` are supported, others are ignored with a warning."
-msgstr ""
+msgstr "**sRGB 정수** 값으로 주어진 색상으로 검은색 및/또는 흰색을 교체하여 픽스맵을 색칠합니다. 색상 공간 :data:`CS_GRAY` 및 :data:`CS_RGB` 만 지원되며, 다른 것은 경고와 함께 무시됩니다."
 
 #: ../../pixmap.rst:199 abae57d0723b4345a89b12f880d933fa
 msgid ""
 "If the colorspace is :data:`CS_GRAY`, the average *(red + green + "
 "blue)/3* will be taken. The pixmap will be changed in place."
-msgstr ""
+msgstr "색상 공간이 :data:`CS_GRAY` 인 경우 평균 *(red + green + blue)/3* 이 사용됩니다. 픽스맵은 제자리에서 변경됩니다."
 
 #: ../../pixmap.rst:201 04577dadbfbc43a3abbe3d997f6561ab
 msgid "replace black with this value. Specifying 0x000000 makes no changes."
-msgstr ""
+msgstr "검은색을 이 값으로 교체합니다. 0x000000을 지정하면 변경되지 않습니다."
 
 #: ../../pixmap.rst:202 43f498ae78e443a28b06bdcc72789414
 msgid "replace white with this value. Specifying 0xFFFFFF makes no changes."
-msgstr ""
+msgstr "흰색을 이 값으로 교체합니다. 0xFFFFFF를 지정하면 변경되지 않습니다."
 
 #: ../../pixmap.rst:204 391411e29bc24c0183271fc962fc85ae
 msgid "Examples:"
-msgstr ""
+msgstr "Examples:"
 
 #: ../../pixmap.rst:206 6e89c521384c4c5bbc9619d3efe8b909
 msgid "`tint_with(0x000000, 0xFFFFFF)` is a no-op."
-msgstr ""
+msgstr "`tint_with(0x000000, 0xFFFFFF)` 는 no-op입니다."
 
 #: ../../pixmap.rst:207 64e6d46367ef4feca63cb7fb163d6b63
 msgid ""
 "`tint_with(0x00FF00, 0xFFFFFF)` changes black to green, leaves white "
 "intact."
-msgstr ""
+msgstr "`tint_with(0x00FF00, 0xFFFFFF)` 는 검은색을 녹색으로 변경하고 흰색은 그대로 둡니다."
 
 #: ../../pixmap.rst:208 8ea3f30122264c92b50ec935ec42fc3c
 msgid "`tint_with(0xFF0000, 0x0000FF)` changes black to red and white to blue."
-msgstr ""
+msgstr "`tint_with(0xFF0000, 0x0000FF)` 는 검은색을 빨간색으로, 흰색을 파란색으로 변경합니다."
 
 #: ../../pixmap.rst:213 ca2f9c12e08649b5870ae3ad64eacd72
 msgid ""
 "Apply a gamma factor to a pixmap, i.e. lighten or darken it. Pixmaps with"
 " colorspace ``None`` are ignored with a warning."
-msgstr ""
+msgstr "픽스맵에 감마 계수를 적용합니다. 즉, 밝게 하거나 어둡게 합니다. 색상 공간이 ``None`` 인 픽스맵은 경고와 함께 무시됩니다."
 
 #: ../../pixmap.rst:215 f4c36ad3313f4088882a49b8ff1847ec
 msgid ""
 "*gamma = 1.0* does nothing, *gamma < 1.0* lightens, *gamma > 1.0* darkens"
 " the image."
-msgstr ""
+msgstr "*gamma = 1.0* 은 아무것도 하지 않으며, *gamma < 1.0* 은 밝게 하고, *gamma > 1.0* 은 이미지를 어둡게 합니다."
 
 #: ../../pixmap.rst:219 8543630bd8134fbfbad3e241950d6cea
 msgid ""
 "Shrink the pixmap by dividing both, its width and height by 2\\ "
 ":sup:``n``."
-msgstr ""
+msgstr "너비와 높이를 모두 2\\ :sup:``n`` 으로 나누어 픽스맵을 축소합니다."
 
 #: ../../pixmap.rst:221 30c7f5ad783249949e9748a49eb7d9f9
 msgid ""
 "determines the new pixmap (samples) size. For example, a value of 2 "
 "divides width and height by 4 and thus results in a size of one 16\\ "
 ":sup:`th` of the original. Values less than 1 are ignored with a warning."
-msgstr ""
+msgstr "새 픽스맵(samples) 크기를 결정합니다. 예를 들어 값 2는 너비와 높이를 4로 나누어 원본의 16\\ :sup:`분의 1` 크기로 만듭니다. 1보다 작은 값은 경고와 함께 무시됩니다."
 
 #: ../../pixmap.rst:223 f45f17093df4420cb6fbc619648afd22
 msgid ""
 "Use this methods to reduce a pixmap's size retaining its proportion. The "
 "pixmap is changed \"in place\". If you want to keep original and also "
 "have more granular choices, use the resp. copy constructor above."
-msgstr ""
+msgstr "이 메서드를 사용하여 비율을 유지하면서 픽스맵의 크기를 줄입니다. 픽스맵은 \"제자리에서\" 변경됩니다. 원본을 유지하고 더 세밀한 선택을 원하면 위의 해당 복사 생성자를 사용하세요."
 
 #: ../../pixmap.rst:227 1455e6653c744eeba403a49f543d6fab
 msgid ""
 "*New in version:: 1.14.5:* Return the value of the pixel at location (x, "
 "y) (column, line)."
-msgstr ""
+msgstr "*버전 1.14.5의 새로운 기능:* 위치 (x, y)(열, 줄)의 픽셀 값을 반환합니다."
 
 #: ../../pixmap.rst:229 ../../pixmap.rst:239 4665e9dd65654240abe6ee77bae37183
 #: ffb7d135ed9a41f1b4f0bfa146d6de82
 msgid "the column number of the pixel. Must be in `range(pix.width)`."
-msgstr ""
+msgstr "픽셀의 열 번호. `range(pix.width)` 에 있어야 합니다."
 
 #: ../../pixmap.rst:230 f1efa4c149644cc680d5348ad2c2e068
 msgid "the line number of the pixel, Must be in `range(pix.height)`."
-msgstr ""
+msgstr "픽셀의 줄 번호. `range(pix.height)` 에 있어야 합니다."
 
 #: ../../pixmap.rst 369baee8d7234ef2ab7f82e75e9111ad
 #: a81a4cbd70ad4e0b8fb189a247cfcaaf b3a66cf736f24daea703147e167c320f
 #: cc865d958a3d4c81b2cbd3d3f814714b d2546977b027475993b2df887c1cb6e8
 #: e81aa1c04aa6419da09b400752672904 eb0378b2f08a49a0af740a769d1a6087
 msgid "Return type"
-msgstr ""
+msgstr "Return type"
 
 #: ../../pixmap.rst 186871c10cae496984d33e4181c189b0
 #: 24ba23b408644b24bd9aa5c5c7695c13 375a4a43a898465fa252490979e2f154
 #: 44939b8c082c4f128aecb10f802bce36 8183d07de46a4c909fc8ff25a1c13b5e
 #: 82dd9565faa544cf8799ce6981d78e02 a7c02e0b9035405a9f75f61d1ef8a011
 msgid "Returns"
-msgstr ""
+msgstr "Returns"
 
 #: ../../pixmap.rst:233 1c117c2f7320435ab28104a0c9e6b3f0
 msgid ""
@@ -800,55 +800,55 @@ msgid ""
 "content depend on the pixmap's colorspace and the presence of an alpha. "
 "For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are "
 "integers in `range(256)`."
-msgstr ""
+msgstr "색상 값 및 잠재적으로 알파 값의 목록. 길이와 내용은 픽스맵의 색상 공간과 알파의 존재에 따라 다릅니다. RGBA 픽스맵의 경우 결과는 예를 들어 *[r, g, b, a]* 가 됩니다. 모든 항목은 `range(256)` 의 정수입니다."
 
 #: ../../pixmap.rst:237 4e3d50e363f54e7da5ab00f4aa58fec5
 msgid ""
 "*New in version 1.14.7:* Manipulate the pixel at location (x, y) (column,"
 " line)."
-msgstr ""
+msgstr "*버전 1.14.7의 새로운 기능:* 위치 (x, y)(열, 줄)의 픽셀을 조작합니다."
 
 #: ../../pixmap.rst:240 0dcca10c1c4c4b58b61746cd5da73f43
 msgid "the line number of the pixel. Must be in `range(pix.height)`."
-msgstr ""
+msgstr "픽셀의 줄 번호. `range(pix.height)` 에 있어야 합니다."
 
 #: ../../pixmap.rst:241 eee0a54112754d7db4a0e21facaf19c8
 msgid ""
 "the desired pixel value given as a sequence of integers in `range(256)`. "
 "The length of the sequence must equal :attr:`Pixmap.n`, which includes "
 "any alpha byte."
-msgstr ""
+msgstr "`range(256)` 의 정수 시퀀스로 주어진 원하는 픽셀 값. 시퀀스의 길이는 알파 바이트를 포함하여 :attr:`Pixmap.n` 과 같아야 합니다."
 
 #: ../../pixmap.rst:245 223fcf7f54984d26a1a64657ed00a81d
 msgid "*New in version 1.14.8:* Set the pixels of a rectangle to a value."
-msgstr ""
+msgstr "*버전 1.14.8의 새로운 기능:* 사각형의 픽셀을 값으로 설정합니다."
 
 #: ../../pixmap.rst:247 95d0f97710ba444391fd993ca732bc02
 msgid ""
 "the rectangle to be filled with the value. The actual area is the "
 "intersection of this parameter and :attr:`Pixmap.irect`. For an empty "
 "intersection (or an invalid parameter), no change will happen."
-msgstr ""
+msgstr "값으로 채울 사각형. 실제 영역은 이 매개변수와 :attr:`Pixmap.irect` 의 교집합입니다. 빈 교집합(또는 잘못된 매개변수)의 경우 변경이 발생하지 않습니다."
 
 #: ../../pixmap.rst:248 a8fe7a3cf13a40e6a5abc4a65a481906
 msgid ""
 "the desired value, given as a sequence of integers in `range(256)`. The "
 "length of the sequence must equal :attr:`Pixmap.n`, which includes any "
 "alpha byte."
-msgstr ""
+msgstr "`range(256)` 의 정수 시퀀스로 주어진 원하는 값. 시퀀스의 길이는 알파 바이트를 포함하여 :attr:`Pixmap.n` 과 같아야 합니다."
 
 #: ../../pixmap.rst:251 ef594268cf964435b0f7fae7229908c8
 msgid ""
 "``False`` if the rectangle was invalid or had an empty intersection with "
 ":attr:`Pixmap.irect`, else ``True``."
-msgstr ""
+msgstr "사각형이 유효하지 않거나 :attr:`Pixmap.irect` 와 빈 교집합이 있으면 ``False``, 그렇지 않으면 ``True``."
 
 #: ../../pixmap.rst:255 bcf6532518a34f9c87fe6473f29b283c
 msgid ""
 "This method is equivalent to :meth:`Pixmap.set_pixel` executed for each "
 "pixel in the rectangle, but is obviously **very much faster** if many "
 "pixels are involved."
-msgstr ""
+msgstr "이 메서드는 사각형의 각 픽셀에 대해 실행되는 :meth:`Pixmap.set_pixel` 과 동일하지만 많은 픽셀이 관련된 경우 **훨씬 빠릅니다**."
 
 #: ../../pixmap.rst:256 bc5f1b513a0f4c4fa649296505adae7c
 msgid ""
@@ -856,53 +856,53 @@ msgid ""
 "initialize a pixmap with a certain color like this: "
 "*pix.set_rect(pix.irect, (255, 255, 0))* (RGB example, colors the "
 "complete pixmap with yellow)."
-msgstr ""
+msgstr "이 메서드는 :meth:`Pixmap.clear_with` 와 유사하게 사용하여 픽스맵을 특정 색상으로 초기화할 수 있습니다: *pix.set_rect(pix.irect, (255, 255, 0))* (RGB 예제, 전체 픽스맵을 노란색으로 칠함)."
 
 #: ../../pixmap.rst:260 a513c003abe849829c11fe1447ebad4c
 msgid "New in v1.17.7"
-msgstr ""
+msgstr "v1.17.7에서 새로 추가됨"
 
 #: ../../pixmap.rst:262 0b7cc0a788dd40cb8acfbdb60fc95d01
 msgid "Set the x and y values of the pixmap's top-left point."
-msgstr ""
+msgstr "픽스맵의 왼쪽 위 점의 x 및 y 값을 설정합니다."
 
 #: ../../pixmap.rst:264 235e6e23b0b24739bc80e81e21526714
 msgid "x coordinate"
-msgstr ""
+msgstr "x 좌표"
 
 #: ../../pixmap.rst:265 6abac422a54b4e5bb66a4859637f5a69
 msgid "y coordinate"
-msgstr ""
+msgstr "y 좌표"
 
 #: ../../pixmap.rst:270 c5527c1032f044a2a640143d01653c61
 msgid "New in v1.16.17"
-msgstr ""
+msgstr "v1.16.17에서 새로 추가됨"
 
 #: ../../pixmap.rst:272 f49f9e8464474d7cbf7a85f1ba506a82
 msgid ""
 "Changed in v1.18.0: When saving as a PNG image, these values will be "
 "stored now."
-msgstr ""
+msgstr "v1.18.0에서 변경됨: PNG 이미지로 저장할 때 이 값들이 이제 저장됩니다."
 
 #: ../../pixmap.rst:274 a468673bcf8b49a68b788fd8ae23b5d5
 msgid "Set the resolution (dpi) in x and y direction."
-msgstr ""
+msgstr "x 및 y 방향의 해상도(dpi)를 설정합니다."
 
 #: ../../pixmap.rst:276 0ac91572ffc64e2bba64b0279d3fc7a3
 msgid "resolution in x direction."
-msgstr ""
+msgstr "x 방향 해상도."
 
 #: ../../pixmap.rst:277 1eb356ec57454ca9815ab72ead63956f
 msgid "resolution in y direction."
-msgstr ""
+msgstr "y 방향 해상도."
 
 #: ../../pixmap.rst:282 8623995d2c004b0ba2caf470042846f1
 msgid "Changed in v 1.18.13"
-msgstr ""
+msgstr "v1.18.13에서 변경됨"
 
 #: ../../pixmap.rst:284 82d487067f8d4ced9ef11d081f5e4ce8
 msgid "Change the alpha values. The pixmap must have an alpha channel."
-msgstr ""
+msgstr "알파 값을 변경합니다. 픽스맵은 알파 채널을 가져야 합니다."
 
 #: ../../pixmap.rst:286 c98fe169c19c487481ca55cd0633f3f8
 msgid ""
@@ -910,13 +910,13 @@ msgid ""
 "height*. If omitted (`None`), all alpha values are set to 255 (no "
 "transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also "
 "accepted."
-msgstr ""
+msgstr "새 알파 값. 제공된 경우 길이는 최소 *width * height* 여야 합니다. 생략(`None`)하면 모든 알파 값이 255(투명도 없음)로 설정됩니다. *버전 1.14.13에서 변경됨:* 이제 *io.BytesIO* 도 허용됩니다."
 
 #: ../../pixmap.rst:287 e94c3d6b68c141e2b61b6f54ab717d33
 msgid ""
 "*New in v1.18.13:* whether to premultiply color components with the alpha"
 " value."
-msgstr ""
+msgstr "*v1.18.13의 새로운 기능:* 색상 구성 요소를 알파 값으로 사전 곱셈할지 여부."
 
 #: ../../pixmap.rst:288 fbe9e806927d460389c858b14d4f3644
 msgid ""
@@ -924,17 +924,17 @@ msgid ""
 "sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. "
 "Default is ``None``. For example, a typical choice for RGB would be "
 "`opaque=(255, 255, 255)` (white)."
-msgstr ""
+msgstr "알파 값을 무시하고 이 색상을 완전히 투명하게 설정합니다. :attr:`Pixmap.n` 길이의 `range(256)` 정수 시퀀스. 기본값은 ``None`` 입니다. 예를 들어 RGB의 일반적인 선택은 `opaque=(255, 255, 255)`(흰색)입니다."
 
 #: ../../pixmap.rst:293 e617ef83731c4689a35511a90c29ceeb
 msgid ""
 "Invert the color of all pixels in :ref:`IRect` *irect*. Will have no "
 "effect if colorspace is ``None``."
-msgstr ""
+msgstr ":ref:`IRect` *irect* 의 모든 픽셀 색상을 반전합니다. 색상 공간이 ``None`` 이면 효과가 없습니다."
 
 #: ../../pixmap.rst:295 b9d38a022bef44f89d241d1964237fbb
 msgid "The area to be inverted. Omit to invert everything."
-msgstr ""
+msgstr "반전할 영역. 생략하면 모든 것을 반전합니다."
 
 #: ../../pixmap.rst:299 e764fb3df0324f5187dbb68ba9a917ba
 msgid ""
@@ -943,7 +943,7 @@ msgid ""
 "have :data:`CS_GRAY` or :data:`CS_RGB` colorspaces, but they currently "
 "**must** have the same alpha property [#f2]_. The copy mechanism "
 "automatically adjusts discrepancies between source and target like so:"
-msgstr ""
+msgstr "*source* 픽스맵의 *irect* 부분을 이 픽스맵의 해당 영역에 복사합니다. 두 픽스맵은 다른 크기를 가질 수 있으며 각각 :data:`CS_GRAY` 또는 :data:`CS_RGB` 색상 공간을 가질 수 있지만 현재 **반드시** 동일한 알파 속성을 가져야 합니다 [#f2]_. 복사 메커니즘은 다음과 같이 소스와 대상 간의 차이를 자동으로 조정합니다:"
 
 #: ../../pixmap.rst:301 e270f22850b84663930783d1f33ca33c
 msgid ""
@@ -951,7 +951,7 @@ msgid ""
 "value will be put into each of the three rgb component bytes. If the "
 "other way round, *(r + g + b) / 3* will be taken as the gray-shade value "
 "of the target."
-msgstr ""
+msgstr ":data:`CS_GRAY` 에서 :data:`CS_RGB` 로 복사하는 경우, 소스 그레이 음영 값이 세 개의 RGB 구성 요소 바이트 각각에 배치됩니다. 반대의 경우, *(r + g + b) / 3* 이 대상의 그레이 음영 값으로 사용됩니다."
 
 #: ../../pixmap.rst:303 e29fc4caf130461db1843ba16fe4fc72
 msgid ""
@@ -962,31 +962,31 @@ msgid ""
 ":meth:`Pixmap.set_origin`). Then the corresponding data of this "
 "intersection are copied. If the intersection is empty, nothing will "
 "happen."
-msgstr ""
+msgstr "*irect* 와 대상 픽스맵의 사각형 사이에서 먼저 \"교집합\"이 계산됩니다. 이것은 사각형 좌표와 현재 속성 값 :attr:`Pixmap.x` 및 :attr:`Pixmap.y` (이 목적을 위해 :meth:`Pixmap.set_origin` 을 통해 자유롭게 수정할 수 있음)를 고려합니다. 그런 다음 이 교집합의 해당 데이터가 복사됩니다. 교집합이 비어 있으면 아무 일도 발생하지 않습니다."
 
 #: ../../pixmap.rst:308 fb1b535c8adc44baa4c729c25fec3e14
 msgid "The area to be copied."
-msgstr ""
+msgstr "복사할 영역."
 
 #: ../../pixmap.rst:310 82448c014aa543b68e66cec1b07f3d96
 msgid ""
 "Example: Suppose you have two pixmaps, `pix1` and `pix2` and you want to "
 "copy the lower right quarter of `pix2` to `pix1` such that it starts at "
 "the top-left point of `pix1`. Use the following snippet::"
-msgstr ""
+msgstr "예제: 두 개의 픽스맵 `pix1` 과 `pix2` 가 있고 `pix2` 의 오른쪽 아래 사분면을 `pix1` 의 왼쪽 위 지점에서 시작하도록 `pix1` 에 복사하려는 경우 다음 스니펫을 사용하세요::"
 
 #: ../../pixmap.rst:329 7fbfff308f9d4627a4a6f2fc60e1651e
 msgid ""
 "Changed in v1.22.0: Added **direct support of JPEG** images. Image "
 "quality can be controlled via parameter \"jpg_quality\"."
-msgstr ""
+msgstr "v1.22.0에서 변경됨: **JPEG 이미지 직접 지원** 이 추가되었습니다. 이미지 품질은 \"jpg_quality\" 매개변수를 통해 제어할 수 있습니다."
 
 #: ../../pixmap.rst:331 97bd54f9e597471292898030e2002c7a
 msgid ""
 "Save pixmap as an image file. Depending on the output chosen, only some "
 "or all colorspaces are supported and different file extensions can be "
 "chosen. Please see the table below."
-msgstr ""
+msgstr "픽스맵을 이미지 파일로 저장합니다. 선택한 출력에 따라 일부 또는 모든 색상 공간이 지원되며 다른 파일 확장자를 선택할 수 있습니다. 아래 표를 참조하세요."
 
 #: ../../pixmap.rst:333 9cbb39acd6fd43c7b4231f63399b34d8
 msgid ""
@@ -994,14 +994,14 @@ msgid ""
 "or as a Python file object. In the latter two cases, the filename is "
 "taken from the resp. object. The filename's extension determines the "
 "image format, which can be overruled by the output parameter."
-msgstr ""
+msgstr "저장할 파일. 문자열, ``pathlib.Path`` 또는 Python 파일 객체로 제공할 수 있습니다. 후자 두 경우에는 파일 이름이 해당 객체에서 가져옵니다. 파일 이름의 확장자는 이미지 형식을 결정하며, output 매개변수로 재정의할 수 있습니다."
 
 #: ../../pixmap.rst:335 a8f9fb30eb6f4e129ccdb1eb4dfb2d50
 msgid ""
 "The desired image format. The default is the filename's extension. If "
 "both, this value and the file extension are unsupported, an exception is "
 "raised. For possible values see :ref:`PixmapOutput`."
-msgstr ""
+msgstr "원하는 이미지 형식. 기본값은 파일 이름의 확장자입니다. 이 값과 파일 확장자가 모두 지원되지 않으면 예외가 발생합니다. 가능한 값은 :ref:`PixmapOutput` 을 참조하세요."
 
 #: ../../pixmap.rst:336 ../../pixmap.rst:346 57c5e89d61b643828893b09c1506e81c
 #: a4031bcffabf4809bb9b3450054f39ec
@@ -1009,68 +1009,68 @@ msgid ""
 "The desired image quality, default 95. Only applies to JPEG images, else "
 "ignored. This parameter trades quality against file size. A value of 98 "
 "is close to lossless. Higher values should not lead to better quality."
-msgstr ""
+msgstr "원하는 이미지 품질, 기본값 95. JPEG 이미지에만 적용되며, 그렇지 않으면 무시됩니다. 이 매개변수는 품질과 파일 크기를 교환합니다. 값 98은 무손실에 가깝습니다. 더 높은 값이 더 나은 품질로 이어지지는 않습니다."
 
 #: ../../pixmap.rst 31830ae4676c49a29f6eda0ec74b2cc7
 #: 35f861d76f76416f84ca4a6cfbb9ba36 9e7d20d2ebff48a5a2f12a7bb9cb207f
 #: 9e8d92287683474c8894ca359bc0df3c eaa3f51d3c63445d921c804b8d264fba
 msgid "Raises"
-msgstr ""
+msgstr "Raises"
 
 #: ../../pixmap.rst:338 ../../pixmap.rst:348 74c8c07d5a4d429180ebc61a6dc88b40
 #: 888fc652cefb483cbc631acba45b2a8c
 msgid "For unsupported image formats."
-msgstr ""
+msgstr "지원되지 않는 이미지 형식의 경우."
 
 #: ../../pixmap.rst:342 3e89ee831b4744b2a7778a6f2ab7d705
 msgid ""
 "New in version 1.14.5: Return the pixmap as a *bytes* memory object of "
 "the specified format -- similar to :meth:`save`."
-msgstr ""
+msgstr "버전 1.14.5의 새로운 기능: 지정된 형식의 *bytes* 메모리 객체로 픽스맵을 반환합니다 -- :meth:`save` 와 유사합니다."
 
 #: ../../pixmap.rst:343 4dff4d1183ff44f2a456ec123ddad67f
 msgid ""
 "Changed in v1.22.0: Added **direct JPEG support**. Image quality can be "
 "influenced via new parameter \"jpg_quality\"."
-msgstr ""
+msgstr "v1.22.0에서 변경됨: **직접 JPEG 지원** 이 추가되었습니다. 이미지 품질은 새로운 매개변수 \"jpg_quality\"를 통해 조정할 수 있습니다."
 
 #: ../../pixmap.rst:345 17d9ad6bf1cd4d0caaf174d46a29b286
 msgid ""
 "The desired image format. The default is \"png\". For possible values see"
 " :ref:`PixmapOutput`."
-msgstr ""
+msgstr "원하는 이미지 형식. 기본값은 \"png\"입니다. 가능한 값은 :ref:`PixmapOutput` 을 참조하세요."
 
 #: ../../pixmap.rst:351 7a4a3392440c413b9549ddfd80aa09e8
 msgid ""
 "The requested image format. The default is \"png\". For other possible "
 "values see :ref:`PixmapOutput`."
-msgstr ""
+msgstr "요청된 이미지 형식. 기본값은 \"png\"입니다. 다른 가능한 값은 :ref:`PixmapOutput` 을 참조하세요."
 
 #: ../../pixmap.rst:355 ../../pixmap.rst:370 024249ef113f468bba659314559663a8
 #: 3ebc661e655c4894a0780bd40d34f1b9
 msgid "New in v1.19.0"
-msgstr ""
+msgstr "v1.19.0에서 새로 추가됨"
 
 #: ../../pixmap.rst:357 ../../pixmap.rst:372 98399e67142a4ab4bfa0146bb6a938e0
 #: fde150994fb44c0dac805e2d7807ae53
 msgid "Changed in v1.22.5: Support of new parameter for Tesseract's tessdata."
-msgstr ""
+msgstr "v1.22.5에서 변경됨: Tesseract의 tessdata에 대한 새로운 매개변수 지원."
 
 #: ../../pixmap.rst:359 7e216757569f4c4ebb1b9d88f2858c00
 msgid ""
 "Perform text recognition using Tesseract and save the image as a 1-page "
 "PDF with an OCR text layer."
-msgstr ""
+msgstr "Tesseract를 사용하여 텍스트 인식을 수행하고 이미지를 OCR 텍스트 레이어가 있는 1페이지 PDF로 저장합니다."
 
 #: ../../pixmap.rst:361 9e480852cca4498d8cb34f674e078760
 msgid ""
 "identifies the file to save to. May be either a string or a pointer to a "
 "file opened with \"wb\" (includes `io.BytesIO()` objects)."
-msgstr ""
+msgstr "저장할 파일을 식별합니다. 문자열 또는 \"wb\"로 열린 파일에 대한 포인터(`io.BytesIO()` 객체 포함)일 수 있습니다."
 
 #: ../../pixmap.rst:362 739251505f694c69af4730ee2d8f7848
 msgid "whether to compress the resulting PDF, default is `True`."
-msgstr ""
+msgstr "결과 PDF를 압축할지 여부, 기본값은 `True` 입니다."
 
 #: ../../pixmap.rst:363 8c1c54fe56a34bf19f07465936ed9f10
 msgid ""
@@ -1078,27 +1078,27 @@ msgid ""
 " format. Default is \"eng\" for English. Use \"+\"-separated Tesseract "
 "language codes for multiple languages, like \"eng+spa\" for English and "
 "Spanish."
-msgstr ""
+msgstr "이미지에 나타나는 언어. Tesseract 형식으로 지정해야 합니다. 기본값은 영어의 경우 \"eng\"입니다. 여러 언어의 경우 \"+\"로 구분된 Tesseract 언어 코드를 사용하세요(예: 영어와 스페인어의 경우 \"eng+spa\")."
 
 #: ../../pixmap.rst:364 fcca47fa76a9459cbec299e7f148dec6
 msgid ""
 "folder name of Tesseract's language support. If omitted, this information"
 " must be present as environment variable `TESSDATA_PREFIX`."
-msgstr ""
+msgstr "Tesseract의 언어 지원 폴더 이름. 생략된 경우 이 정보는 환경 변수 `TESSDATA_PREFIX` 로 존재해야 합니다."
 
 #: ../../pixmap.rst:366 21a4cf67602b4076b49b985e8aa0c66b
 msgid ""
 "**Will fail** if Tesseract is not installed or if the environment "
 "variable \"TESSDATA_PREFIX\" is not set to the `tessdata` folder name and"
 " not provided as parameter."
-msgstr ""
+msgstr "Tesseract가 설치되지 않았거나 환경 변수 \"TESSDATA_PREFIX\"가 `tessdata` 폴더 이름으로 설정되지 않고 매개변수로 제공되지 않으면 **실패합니다**."
 
 #: ../../pixmap.rst:374 32b8acd13d9f48e1bfd79ab1023be929
 msgid ""
 "Perform text recognition using Tesseract and convert the image to a "
 "1-page PDF with an OCR text layer. Internally invokes "
 ":meth:`Pixmap.pdfocr_save`."
-msgstr ""
+msgstr "Tesseract를 사용하여 텍스트 인식을 수행하고 이미지를 OCR 텍스트 레이어가 있는 1페이지 PDF로 변환합니다. 내부적으로 :meth:`Pixmap.pdfocr_save` 를 호출합니다."
 
 #: ../../pixmap.rst:376 9e005bf6ab3440c085ee1193ba601f87
 msgid ""
@@ -1119,54 +1119,54 @@ msgid ""
 "A 1-page PDF file in memory. Could be opened like "
 "`doc=pymupdf.open(\"pdf\", pix.pdfocr_tobytes())`, and text extractions "
 "could be performed on its `page=doc[0]`."
-msgstr ""
+msgstr "메모리의 1페이지 PDF 파일. `doc=pymupdf.open(\"pdf\", pix.pdfocr_tobytes())` 와 같이 열 수 있으며, `page=doc[0]` 에서 텍스트 추출을 수행할 수 있습니다."
 
 #: ../../pixmap.rst:380 2cd418d767ef4149b35f4d0415d14af1
 msgid ""
 "Another possible use is insertion into some pdf. The following snippet "
 "reads the images of a folder and stores them as pages in a new PDF that "
 "contain an OCR text layer::"
-msgstr ""
+msgstr "다른 가능한 사용법은 일부 PDF에 삽입하는 것입니다. 다음 스니펫은 폴더의 이미지를 읽어 OCR 텍스트 레이어가 포함된 새 PDF의 페이지로 저장합니다::"
 
 #: ../../pixmap.rst:394 efc06e14189c4871827c5261c0623dfa
 msgid "Create a Pillow Image from the pixmap. PIL / Pillow must be installed."
-msgstr ""
+msgstr "픽스맵에서 Pillow 이미지를 생성합니다. PIL / Pillow가 설치되어 있어야 합니다."
 
 #: ../../pixmap.rst:396 ../../pixmap.rst:416 ../../pixmap.rst:424
 #: 3df2560f6e804a789cc70c26deec880b 8087c1edcca942f186efe9ad6be77c16
 #: 85c874d70f274112a51bc6ce56e6e197
 msgid "if Pillow is not installed."
-msgstr ""
+msgstr "Pillow가 설치되지 않은 경우."
 
 #: ../../pixmap.rst:397 69708896f8e44f9eb5a130326ae36b80
 msgid "a ``PIL.Image`` object"
-msgstr ""
+msgstr "``PIL.Image`` 객체"
 
 #: ../../pixmap.rst:401 3f77a2ee05134b31a570bc40ff704b87
 msgid ""
 "Write the pixmap as an image file using Pillow. Use this method for "
 "output unsupported by MuPDF. Examples are"
-msgstr ""
+msgstr "Pillow를 사용하여 픽스맵을 이미지 파일로 씁니다. MuPDF에서 지원하지 않는 출력에 이 메서드를 사용하세요. 예는 다음과 같습니다"
 
 #: ../../pixmap.rst:403 8f8925fd0a1e4868840945ccf3b35017
 msgid "Formats JPX, J2K, WebP, etc."
-msgstr ""
+msgstr "JPX, J2K, WebP 등의 형식."
 
 #: ../../pixmap.rst:404 bd17d3e24fb740469efea4743e5ffb78
 msgid "Storing EXIF information."
-msgstr ""
+msgstr "EXIF 정보 저장."
 
 #: ../../pixmap.rst:405 d7d0bc56bfcb4f179b7f00d2ad59c255
 msgid ""
 "If you do not provide dpi information, the values *xres*, *yres* stored "
 "with the pixmap are automatically used."
-msgstr ""
+msgstr "dpi 정보를 제공하지 않으면 픽스맵에 저장된 *xres*, *yres* 값이 자동으로 사용됩니다."
 
 #: ../../pixmap.rst:407 20bf1e69dd5147b9a108ab328fe2657e
 msgid ""
 "A simple example: `pix.pil_save(\"some.webp\", optimize=True, dpi=(150, "
 "150))`."
-msgstr ""
+msgstr "간단한 예제: `pix.pil_save(\"some.webp\", optimize=True, dpi=(150, 150))`."
 
 #: ../../pixmap.rst:409 71799e7c62324bbea016ae30eafbc021
 msgid ""
@@ -1176,22 +1176,22 @@ msgid ""
 "premultiplication, set this parameter to `True`. To learn about some "
 "background, e.g. look for `\"Premultiplied alpha\" on this page "
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
-msgstr ""
+msgstr "픽스맵의 색상 공간이 투명도가 있는 RGB인 경우, 알파 값이 이미 색상 구성 요소 빨강/녹색/파랑(소위 \"사전 곱셈\")에 곱해져 있을 수도 있고 아닐 수도 있습니다. 사전 곱셈을 취소하려면 이 매개변수를 `True` 로 설정하세요. 배경에 대한 자세한 내용은 예를 들어 이 페이지 <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 `\"Premultiplied alpha\"` 를 찾아보세요."
 
 #: ../../pixmap.rst:412 c5f67c82cc1b4a078d120281dc779a59
 msgid "For details on other parameters see the Pillow documentation."
-msgstr ""
+msgstr "다른 매개변수에 대한 자세한 내용은 Pillow 문서를 참조하세요."
 
 #: ../../pixmap.rst:414 d3f2fde19b034f09971604debcf8e6dc
 msgid ""
 "Since v1.22.0, PyMuPDF supports JPEG output directly. We recommended to "
 "no longer use this method for JPEG output -- for performance reasons and "
 "for avoiding unnecessary external dependencies."
-msgstr ""
+msgstr "v1.22.0부터 PyMuPDF는 JPEG 출력을 직접 지원합니다. 성능상의 이유와 불필요한 외부 종속성을 피하기 위해 JPEG 출력에는 이 메서드를 더 이상 사용하지 않는 것을 권장합니다."
 
 #: ../../pixmap.rst:420 835e9bbf2bc047f2b9657ca7741ec37e
 msgid "New in v1.17.3"
-msgstr ""
+msgstr "v1.17.3에서 새로 추가됨"
 
 #: ../../pixmap.rst:422 d0177a551753414586749bf415cf6080
 msgid ""
@@ -1199,39 +1199,39 @@ msgid ""
 "For example `stream = pix.pil_tobytes(format=\"WEBP\", optimize=True, "
 "dpi=(150, 150))`. Also see above. For details on other parameters see the"
 " Pillow documentation."
-msgstr ""
+msgstr "Pillow를 사용하여 지정된 형식의 bytes 객체로 이미지를 반환합니다. 예를 들어 `stream = pix.pil_tobytes(format=\"WEBP\", optimize=True, dpi=(150, 150))`. 위 내용도 참조하세요. 다른 매개변수에 대한 자세한 내용은 Pillow 문서를 참조하세요."
 
 #: ../../pixmap.rst:431 ../../pixmap.rst:466 68173364cda84dab84fa461435fdec56
 #: b156a10f58714dae92ca5c3163c24112
 msgid "New in v1.19.3"
-msgstr ""
+msgstr "v1.19.3에서 새로 추가됨"
 
 #: ../../pixmap.rst:433 129930765e83498b8cb4362c41d7fb9a
 msgid ""
 "Return a new pixmap by \"warping\" the quad such that the quad corners "
 "become the new pixmap's corners. The target pixmap's `irect` will be `(0,"
 " 0, width, height)`."
-msgstr ""
+msgstr "quad를 \"왜곡\"하여 quad 모서리가 새 픽스맵의 모서리가 되도록 새 픽스맵을 반환합니다. 대상 픽스맵의 `irect` 는 `(0, 0, width, height)` 가 됩니다."
 
 #: ../../pixmap.rst:435 6c6e2bf54f6c4c1cbd3c172dbbfb7712
 msgid ""
 "a convex quad with coordinates inside :attr:`Pixmap.irect` (including the"
 " border points)."
-msgstr ""
+msgstr ":attr:`Pixmap.irect` 내부(경계 점 포함)에 좌표가 있는 볼록 quad."
 
 #: ../../pixmap.rst:436 e9644c03761249019390c475ce09eeb9
 msgid "desired resulting width."
-msgstr ""
+msgstr "원하는 결과 너비."
 
 #: ../../pixmap.rst:437 5af3c5ce964244d9ac8c1210ae145777
 msgid "desired resulting height."
-msgstr ""
+msgstr "원하는 결과 높이."
 
 #: ../../pixmap.rst:438 23af53d676c943ab8270f1f4eb3e15f8
 msgid ""
 "A new pixmap where the quad corners are mapped to the pixmap corners in a"
 " clockwise fashion: `quad.ul -> irect.tl`, `quad.ur -> irect.tr`, etc."
-msgstr ""
+msgstr "quad 모서리가 시계 방향으로 픽스맵 모서리에 매핑된 새 픽스맵: `quad.ul -> irect.tl`, `quad.ur -> irect.tr` 등."
 
 #: ../../pixmap.rst:439 c3fb88fba3f7447889bc2174e90ed4ed
 msgid ""
@@ -1241,34 +1241,34 @@ msgstr ""
 
 #: ../../pixmap.rst:439 8eb4c765b10a4af0b07fe6d1cd7386d2
 msgid ":ref:`Pixmap`"
-msgstr ""
+msgstr ":ref:`Pixmap`"
 
 #: ../../pixmap.rst:448 ../../pixmap.rst:505 ../../pixmap.rst:514
 #: 00c62e32e38c4d82895121b426757269 0149558efd01426095beb5bf88035b73
 #: 5c3eedb1091c4eb1af8d1010e7f2b3f0
 msgid "New in v1.19.2"
-msgstr ""
+msgstr "v1.19.2에서 새로 추가됨"
 
 #: ../../pixmap.rst:449 b8fe5dd5d0294610a99db8d7ebd6deec
 msgid "Changed in v1.19.3"
-msgstr ""
+msgstr "v1.19.3에서 변경됨"
 
 #: ../../pixmap.rst:451 c2da2a6121594d6c8b3f4e6e7d643cee
 msgid "Determine the pixmap's unique colors and their count."
-msgstr ""
+msgstr "픽스맵의 고유 색상과 개수를 확인합니다."
 
 #: ../../pixmap.rst:453 992445f66d104d8c89ac2f8297c8e9c4
 msgid ""
 "*(changed in v1.19.3)* If `True` return a dictionary of color pixels and "
 "their usage count, else just the number of unique colors."
-msgstr ""
+msgstr "*(v1.19.3에서 변경됨)* `True` 이면 색상 픽셀과 사용 횟수의 딕셔너리를 반환하고, 그렇지 않으면 고유 색상의 개수만 반환합니다."
 
 #: ../../pixmap.rst:454 db2ea4eae7a1492dad41fae7951b0160
 msgid ""
 "a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels "
 "are considered. This allows inspecting sub-rectangles of a given pixmap "
 "directly -- instead of building sub-pixmaps."
-msgstr ""
+msgstr ":attr:`Pixmap.irect` 내부의 사각형. 제공된 경우 해당 픽셀만 고려됩니다. 이를 통해 하위 픽스맵을 구축하는 대신 주어진 픽스맵의 하위 사각형을 직접 검사할 수 있습니다."
 
 #: ../../pixmap.rst:456 61a615b057024b7a9b6ac7fe5ff849ab
 msgid ""
@@ -1285,36 +1285,36 @@ msgstr ""
 msgid ""
 "either the number of colors, or a dictionary with the items `pixel: "
 "count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`."
-msgstr ""
+msgstr "색상 개수 또는 `pixel: count` 항목이 있는 딕셔너리. 픽셀 키는 :attr:`Pixmap.n` 길이의 `bytes` 객체입니다."
 
 #: ../../pixmap.rst:458 d7bdc5a53abc43d6a1041953b5c0c526
 msgid ""
 "To recover the **tuple** of a pixel, use `tuple(colors.keys()[i])` for "
 "the i-th item."
-msgstr ""
+msgstr "픽셀의 **튜플** 을 복구하려면 i번째 항목에 대해 `tuple(colors.keys()[i])` 를 사용하세요."
 
 #: ../../pixmap.rst:460 260f96dbe8c04ab1a25159255b8b79a7
 msgid ""
 "The response time depends on the pixmap's samples size and may be more "
 "than a second for very large pixmaps."
-msgstr ""
+msgstr "응답 시간은 픽스맵의 samples 크기에 따라 달라지며 매우 큰 픽스맵의 경우 1초 이상 걸릴 수 있습니다."
 
 #: ../../pixmap.rst:461 1b987ef794b6454eb0d9366a05344070
 msgid ""
 "Where applicable, pixels with different alpha values will be treated as "
 "different colors."
-msgstr ""
+msgstr "해당되는 경우 다른 알파 값을 가진 픽셀은 다른 색상으로 처리됩니다."
 
 #: ../../pixmap.rst:468 2b6490adea534fa6a8de4eaf1edb354a
 msgid "Return the most frequently used color and its relative frequency."
-msgstr ""
+msgstr "가장 자주 사용되는 색상과 상대적 빈도를 반환합니다."
 
 #: ../../pixmap.rst:470 485c7c5b4da94258b242db7b59b19b53
 msgid ""
 "A rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels "
 "are considered. This allows inspecting sub-rectangles of a given pixmap "
 "directly -- instead of building sub-pixmaps."
-msgstr ""
+msgstr ":attr:`Pixmap.irect` 내부의 사각형. 제공된 경우 해당 픽셀만 고려됩니다. 이를 통해 하위 픽스맵을 구축하는 대신 주어진 픽스맵의 하위 사각형을 직접 검사할 수 있습니다."
 
 #: ../../pixmap.rst:472 9110208e27134f02a9b9bcdc7700add8
 #, python-format
@@ -1323,11 +1323,11 @@ msgid ""
 "value of the color. Use this to decide if the image is \"almost\" "
 "unicolor: a response `(0.95, b\"\\x00\\x00\\x00\")` means that 95% of all"
 " pixels are black. See an example here :ref:`RecipesImages_P`."
-msgstr ""
+msgstr "`0 < ratio <= 1` 이고 *pixel* 이 색상의 픽셀 값인 튜플 `(ratio, pixel)`. 이를 사용하여 이미지가 \"거의\" 단색인지 결정하세요: 응답 `(0.95, b\"\\x00\\x00\\x00\")` 는 모든 픽셀의 95%가 검은색임을 의미합니다. 예제는 :ref:`RecipesImages_P` 를 참조하세요."
 
 #: ../../pixmap.rst:477 5e93c19118c44e4598fc55ffb9cd04f6
 msgid "Indicates whether the pixmap contains transparency information."
-msgstr ""
+msgstr "픽스맵에 투명도 정보가 포함되어 있는지 나타냅니다."
 
 #: ../../pixmap.rst 09340208613f48af95d9e1d2a3ef91fa
 #: 0cc2b878ea234bfe8d91795141e3924d 0ff51066858f4faaad58612b0fbd5896
@@ -1353,7 +1353,7 @@ msgstr ""
 msgid ""
 "The MD5 hashcode (16 bytes) of the pixmap. This is a technical value used"
 " for unique identifications."
-msgstr ""
+msgstr "픽스맵의 MD5 해시코드(16바이트). 고유 식별에 사용되는 기술적 값입니다."
 
 #: ../../pixmap.rst:485 ../../pixmap.rst:537 d353d95ffd0249c9985587a89eec06f3
 #: fe9d2fb1853646c9bb567d4a448e58de
@@ -1365,7 +1365,7 @@ msgid ""
 "The colorspace of the pixmap. This value may be ``None`` if the image is "
 "to be treated as a so-called *image mask* or *stencil mask* (currently "
 "happens for extracted PDF document images only)."
-msgstr ""
+msgstr "픽스맵의 색상 공간. 이미지가 소위 *이미지 마스크* 또는 *스텐실 마스크*로 처리되는 경우(현재 추출된 PDF 문서 이미지에만 적용) 이 값은 ``None`` 일 수 있습니다."
 
 #: ../../pixmap.rst:491 b6cfc944281042b38f313e221d8208ee
 msgid ":ref:`Colorspace`"
@@ -1376,7 +1376,7 @@ msgid ""
 "Contains the length of one row of image data in :attr:`Pixmap.samples`. "
 "This is primarily used for calculation purposes. The following "
 "expressions are true:"
-msgstr ""
+msgstr ":attr:`Pixmap.samples` 의 이미지 데이터 한 행의 길이를 포함합니다. 주로 계산 목적으로 사용됩니다. 다음 표현식이 참입니다:"
 
 #: ../../pixmap.rst:497 9ef5987d2b004c03a37ac85ebe94eb90
 msgid "`len(samples) == height * stride`"
@@ -1400,17 +1400,17 @@ msgstr ""
 
 #: ../../pixmap.rst:507 8695567f63d74993b36963cb05639cf6
 msgid "Is `True` for a gray pixmap which only has the colors black and white."
-msgstr ""
+msgstr "검은색과 흰색만 있는 그레이 픽스맵에 대해 `True` 입니다."
 
 #: ../../pixmap.rst:516 b44722fd47e341cb9f851ef65e077148
 msgid ""
 "Is `True` if all pixels are identical (any colorspace). Where applicable,"
 " pixels with different alpha values will be treated as different colors."
-msgstr ""
+msgstr "모든 픽셀이 동일한 경우(모든 색상 공간) `True` 입니다. 해당되는 경우 다른 알파 값을 가진 픽셀은 다른 색상으로 처리됩니다."
 
 #: ../../pixmap.rst:523 6f074461eb274b3388c6956012c6f942
 msgid "Contains the :ref:`IRect` of the pixmap."
-msgstr ""
+msgstr "픽스맵의 :ref:`IRect` 를 포함합니다."
 
 #: ../../pixmap.rst:525 8f50d53afc654b528e20564902041ddb
 msgid ":ref:`IRect`"
@@ -1425,14 +1425,14 @@ msgid ""
 "an RGBA colorspace this means, *samples* is a sequence of bytes like "
 "*..., R, G, B, A, ...*, and the four byte values R, G, B, A define one "
 "pixel."
-msgstr ""
+msgstr "모든 픽셀의 색상 및 (:attr:`Pixmap.alpha` 가 true인 경우) 투명도 값. `width * height * n` 바이트 영역입니다. 각 n 바이트는 하나의 픽셀을 정의합니다. 연속된 각 n 바이트는 스캔라인 순서로 또 다른 픽셀을 생성합니다. 후속 스캔라인은 패딩 없이 서로 이어집니다. 예를 들어 RGBA 색상 공간의 경우, *samples* 는 *..., R, G, B, A, ...* 와 같은 바이트 시퀀스이며, 네 개의 바이트 값 R, G, B, A가 하나의 픽셀을 정의합니다."
 
 #: ../../pixmap.rst:531 4d2c9332a9384bb2ac55549aea165f04
 msgid ""
 "This area can be passed to other graphics libraries like PIL (Python "
 "Imaging Library) to do additional processing like saving the pixmap in "
 "other image formats."
-msgstr ""
+msgstr "이 영역은 PIL(Python Imaging Library)과 같은 다른 그래픽 라이브러리에 전달하여 다른 이미지 형식으로 픽스맵을 저장하는 등의 추가 처리를 수행할 수 있습니다."
 
 #: ../../pixmap.rst:534 44ba67d25a5246c9b5c0fd86fc515d65
 msgid ""
@@ -1441,19 +1441,19 @@ msgid ""
 "example an RGB-rendered letter page has a samples size of almost 1.4 MB. "
 "So consider assigning a new variable to it or use the `memoryview` "
 "version :attr:`Pixmap.samples_mv` (new in v1.18.17)."
-msgstr ""
+msgstr "기본 데이터는 일반적으로 **큰** 메모리 영역이며, 이 속성에 접근할 때마다 `bytes` 복사본이 생성됩니다: 예를 들어 RGB로 렌더링된 레터 페이지는 samples 크기가 거의 1.4MB입니다. 따라서 새 변수에 할당하거나 `memoryview` 버전 :attr:`Pixmap.samples_mv`(v1.18.17에서 새로 추가됨)를 사용하세요."
 
 #: ../../pixmap.rst:535 028c2991fa3746d8ba4fcb1363e0ac36
 msgid ""
 "Any changes to the underlying data are available only after accessing "
 "this attribute again. This is different from using the memoryview "
 "version."
-msgstr ""
+msgstr "기본 데이터에 대한 모든 변경 사항은 이 속성에 다시 접근한 후에만 사용할 수 있습니다. 이것은 memoryview 버전을 사용하는 것과 다릅니다."
 
 #: ../../pixmap.rst:541 ../../pixmap.rst:563 6231b732cd664d9ea3f80fe04f0151c9
 #: a54baa772ece47f4b743977662b324a4
 msgid "New in v1.18.17"
-msgstr ""
+msgstr "v1.18.17에서 새로 추가됨"
 
 #: ../../pixmap.rst:543 090480ef9ce349efab292a2a0fe883b7
 msgid ""
@@ -1461,13 +1461,13 @@ msgid ""
 "built pointing to the memory in the pixmap -- not from a copy of it. So "
 "its creation speed is independent from the pixmap size, and any changes "
 "to pixels will be available immediately."
-msgstr ""
+msgstr ":attr:`Pixmap.samples` 와 유사하지만 Python `memoryview` 형식입니다. 픽스맵의 메모리를 가리키도록 구축됩니다 -- 복사본이 아닙니다. 따라서 생성 속도는 픽스맵 크기와 무관하며 픽셀에 대한 모든 변경 사항이 즉시 사용 가능합니다."
 
 #: ../../pixmap.rst:545 93fdd4817c6d451593bce44eed03a5c1
 msgid ""
 "Copies like `bytearray(pix.samples_mv)`, or `bytes(pixmap.samples_mv)` "
 "are equivalent to and can be used in place of `pix.samples`."
-msgstr ""
+msgstr "`bytearray(pix.samples_mv)` 또는 `bytes(pixmap.samples_mv)` 와 같은 복사본은 `pix.samples` 와 동일하며 대신 사용할 수 있습니다."
 
 #: ../../pixmap.rst:547 a15d8e7edd204441a7b9a76052a64fac
 msgid "We also have `len(pix.samples) == len(pix.samples_mv)`."
@@ -1477,13 +1477,13 @@ msgstr ""
 msgid ""
 "Look at this example from a 2 MB JPEG: the memoryview is **ten thousand "
 "times faster**::"
-msgstr ""
+msgstr "2MB JPEG의 이 예제를 보세요: memoryview가 **만 배 빠릅니다**::"
 
 #: ../../pixmap.rst:556 4d36f9e0a4af4491be38efa57f54faf8
 msgid ""
 "After the Pixmap has been destroyed, any attempt to use the memoryview "
 "will fail with ValueError."
-msgstr ""
+msgstr "Pixmap이 파괴된 후 memoryview를 사용하려는 시도는 ValueError로 실패합니다."
 
 #: ../../pixmap.rst:559 91107ae487b14fe0b83a14f571082c55
 msgid "memoryview"
@@ -1495,47 +1495,47 @@ msgid ""
 " can be used by supporting applications (such as PyQt) to directly "
 "address the samples area and thus build their images extremely fast. For "
 "example::"
-msgstr ""
+msgstr "픽셀 영역에 대한 Python 포인터. 이것은 지원 애플리케이션(예: PyQt)이 samples 영역을 직접 주소 지정하여 이미지를 매우 빠르게 구축할 수 있도록 하는 특수 정수 형식입니다. 예제::"
 
 #: ../../pixmap.rst:570 92d9db2f39614549b2c8a9605c681e0b
 msgid ""
 "Both of the above lead to the same Qt image, but (2) can be **many "
 "hundred times faster**, because it avoids an additional copy of the pixel"
 " area."
-msgstr ""
+msgstr "위의 두 가지 모두 동일한 Qt 이미지를 생성하지만 (2)는 픽셀 영역의 추가 복사를 피하기 때문에 **수백 배 빠를 수 있습니다**."
 
 #: ../../pixmap.rst:572 37f284851e024d87b4ae3d3f4b495885
 msgid ""
 "Warning: after the Pixmap has been destroyed, the Python pointer will be "
 "invalid and attempting to use it may crash the Python interpreter."
-msgstr ""
+msgstr "경고: Pixmap이 파괴된 후 Python 포인터는 무효화되며 사용을 시도하면 Python 인터프리터가 충돌할 수 있습니다."
 
 #: ../../pixmap.rst:579 ad8485f478d04d1791c23f7e6c8cf984
 msgid ""
 "Contains *len(pixmap)*. This will generally equal *len(pix.samples)* plus"
 " some platform-specific value for defining other attributes of the "
 "object."
-msgstr ""
+msgstr "*len(pixmap)* 을 포함합니다. 이것은 일반적으로 *len(pix.samples)* 에 객체의 다른 속성을 정의하는 플랫폼별 값을 더한 것과 같습니다."
 
 #: ../../pixmap.rst:587 c1796fc010774081b59146b900edf924
 msgid "Width of the region in pixels."
-msgstr ""
+msgstr "픽셀 단위의 영역 너비."
 
 #: ../../pixmap.rst:595 d21ef5432611489797b4691400ea9d15
 msgid "Height of the region in pixels."
-msgstr ""
+msgstr "픽셀 단위의 영역 높이."
 
 #: ../../pixmap.rst:601 5f88d51c88864babb326d12c5da3c8b4
 msgid ""
 "X-coordinate of top-left corner in pixels. Cannot directly be changed -- "
 "use :meth:`Pixmap.set_origin`."
-msgstr ""
+msgstr "픽셀 단위의 왼쪽 위 모서리 X 좌표. 직접 변경할 수 없습니다 -- :meth:`Pixmap.set_origin` 을 사용하세요."
 
 #: ../../pixmap.rst:607 d82f9559530f4ed3a33c06c66cd24f3c
 msgid ""
 "Y-coordinate of top-left corner in pixels. Cannot directly be changed -- "
 "use :meth:`Pixmap.set_origin`."
-msgstr ""
+msgstr "픽셀 단위의 왼쪽 위 모서리 Y 좌표. 직접 변경할 수 없습니다 -- :meth:`Pixmap.set_origin` 을 사용하세요."
 
 #: ../../pixmap.rst:613 26e889e8aa564bbea3553b3d55151e83
 msgid ""
@@ -1543,32 +1543,32 @@ msgid ""
 "alpha. If colorspace is not ``None`` (stencil masks), then *Pixmap.n - "
 "Pixmap.alpha == pixmap.colorspace.n* is true. If colorspace is ``None``, "
 "then *n == alpha == 1*."
-msgstr ""
+msgstr "픽셀당 구성 요소 수. 이 숫자는 색상 공간과 알파에 따라 다릅니다. 색상 공간이 ``None`` 이 아니면(스텐실 마스크) *Pixmap.n - Pixmap.alpha == pixmap.colorspace.n* 이 참입니다. 색상 공간이 ``None`` 이면 *n == alpha == 1* 입니다."
 
 #: ../../pixmap.rst:619 ddc7c2c6d915466a8673711ed573419a
 msgid ""
 "Horizontal resolution in dpi (dots per inch). Please also see "
 ":data:`resolution`. Cannot directly be changed -- use "
 ":meth:`Pixmap.set_dpi`."
-msgstr ""
+msgstr "dpi(인치당 도트) 단위의 수평 해상도. :data:`resolution` 도 참조하세요. 직접 변경할 수 없습니다 -- :meth:`Pixmap.set_dpi` 를 사용하세요."
 
 #: ../../pixmap.rst:625 5952023fee854e3f82d65f1dbcc33361
 msgid ""
 "Vertical resolution in dpi (dots per inch). Please also see "
 ":data:`resolution`. Cannot directly be changed -- use "
 ":meth:`Pixmap.set_dpi`."
-msgstr ""
+msgstr "dpi(인치당 도트) 단위의 수직 해상도. :data:`resolution` 도 참조하세요. 직접 변경할 수 없습니다 -- :meth:`Pixmap.set_dpi` 를 사용하세요."
 
 #: ../../pixmap.rst:631 966a193e7ae14efe944c435e65718b73
 msgid ""
 "An information-only boolean flag set to ``True`` if the image will be "
 "drawn using \"linear interpolation\". If ``False`` \"nearest neighbour "
 "sampling\" will be used."
-msgstr ""
+msgstr "이미지가 \"선형 보간\"을 사용하여 그려지면 ``True`` 로 설정되는 정보 전용 불리언 플래그. ``False`` 이면 \"최근접 샘플링\"이 사용됩니다."
 
 #: ../../pixmap.rst:638 32f8505442184689838784d6630b61ca
 msgid "Supported Input Image Formats"
-msgstr ""
+msgstr "지원되는 입력 이미지 형식"
 
 #: ../../pixmap.rst:639 708fca4db2a64b96a2de83796cd396e7
 msgid ""
@@ -1576,13 +1576,13 @@ msgid ""
 " **BMP, JPEG, GIF, TIFF, JXR, JPX**, **PNG**, **PAM** and all of the "
 "**Portable Anymap** family (**PBM, PGM, PNM, PPM**). This support is two-"
 "fold:"
-msgstr ""
+msgstr "다음 파일 유형은 픽스맵을 구성하기 위한 **입력** 으로 지원됩니다: **BMP, JPEG, GIF, TIFF, JXR, JPX**, **PNG**, **PAM** 및 모든 **Portable Anymap** 패밀리(**PBM, PGM, PNM, PPM**). 이 지원은 두 가지 방식입니다:"
 
 #: ../../pixmap.rst:641 4f4eb0bb22404ab184bf7ed8014abcc3
 msgid ""
 "Directly create a pixmap with *Pixmap(filename)* or *Pixmap(byterray)*. "
 "The pixmap will then have properties as determined by the image."
-msgstr ""
+msgstr "*Pixmap(filename)* 또는 *Pixmap(bytearray)* 로 직접 픽스맵을 생성합니다. 픽스맵은 이미지에 의해 결정된 속성을 갖게 됩니다."
 
 #: ../../pixmap.rst:643 1f9a875b37444d988033c769493f20e4
 msgid ""
@@ -1590,18 +1590,18 @@ msgid ""
 "a document containing one single page. Creating a pixmap of this page "
 "offers all the options available in this context: apply a matrix, choose "
 "colorspace and alpha, confine the pixmap to a clip area, etc."
-msgstr ""
+msgstr "*pymupdf.open(...)* 로 이러한 파일을 엽니다. 결과는 단일 페이지를 포함하는 문서로 나타납니다. 이 페이지의 픽스맵을 생성하면 이 컨텍스트에서 사용 가능한 모든 옵션을 제공합니다: 행렬 적용, 색상 공간 및 알파 선택, 픽스맵을 클립 영역으로 제한 등."
 
 #: ../../pixmap.rst:645 b8da58f972e349c099d429016189277f
 msgid ""
 "**SVG images** are only supported via method 2 above, not directly as "
 "pixmaps. But remember: the result of this is a **raster image** as is "
 "always the case with pixmaps [#f1]_."
-msgstr ""
+msgstr "**SVG 이미지** 는 위의 방법 2를 통해서만 지원되며 픽스맵으로 직접 지원되지 않습니다. 하지만 기억하세요: 이것의 결과는 픽스맵의 경우처럼 항상 **래스터 이미지** 입니다 [#f1]_."
 
 #: ../../pixmap.rst:650 5eb573904fb7401cb281c16fb4549f3a
 msgid "Supported Output Image Formats"
-msgstr ""
+msgstr "지원되는 출력 이미지 형식"
 
 #: ../../pixmap.rst:651 e4357173b7ec40d892ee19fcd4f3b83d
 msgid ""
@@ -1611,7 +1611,7 @@ msgid ""
 "string identifying the desired format (**Format** column below). Please "
 "note that not all combinations of pixmap colorspace, transparency support"
 " (alpha) and image format are possible."
-msgstr ""
+msgstr "다수의 이미지 **출력** 형식이 지원됩니다. 이미지를 파일에 직접 쓰기(:meth:`Pixmap.save`) 또는 bytes 객체 생성(:meth:`Pixmap.tobytes`) 중 선택할 수 있습니다. 두 메서드 모두 원하는 형식을 식별하는 문자열(아래 **Format** 열)을 허용합니다. 픽스맵 색상 공간, 투명도 지원(알파) 및 이미지 형식의 모든 조합이 가능한 것은 아닙니다."
 
 #: ../../pixmap.rst:654 4dbea7a06e2b4187a123a1c604d44efe
 msgid "**Format**"
@@ -1774,21 +1774,21 @@ msgid ""
 "Not all image file types are supported (or at least common) on all OS "
 "platforms. E.g. PAM and the Portable Anymap formats are rare or even "
 "unknown on Windows."
-msgstr ""
+msgstr "모든 OS 플랫폼에서 모든 이미지 파일 유형이 지원되거나 일반적이지는 않습니다. 예를 들어 PAM 및 Portable Anymap 형식은 Windows에서 드물거나 알려지지 않았습니다."
 
 #: ../../pixmap.rst:669 ac24d0029a85434e89d87aea3c768299
 msgid ""
 "Especially pertaining to CMYK colorspaces, you can always convert a CMYK "
 "pixmap to an RGB pixmap with *rgb_pix = pymupdf.Pixmap(pymupdf.csRGB, "
 "cmyk_pix)* and then save that in the desired format."
-msgstr ""
+msgstr "특히 CMYK 색상 공간에 대해 항상 *rgb_pix = pymupdf.Pixmap(pymupdf.csRGB, cmyk_pix)* 로 CMYK 픽스맵을 RGB 픽스맵으로 변환한 다음 원하는 형식으로 저장할 수 있습니다."
 
 #: ../../pixmap.rst:670 0d389b2c11cb4b7dbad0be0409dbf4dc
 msgid ""
 "As can be seen, MuPDF's image support range is different for input and "
 "output. Among those supported both ways, PNG and JPEG are probably the "
 "most popular."
-msgstr ""
+msgstr "볼 수 있듯이 MuPDF의 이미지 지원 범위는 입력과 출력에 따라 다릅니다. 양쪽 모두 지원되는 것 중에서 PNG와 JPEG가 가장 인기 있을 것입니다."
 
 #: ../../pixmap.rst:671 78fe092f468843e984dee90661b2dbac
 msgid ""
@@ -1796,11 +1796,11 @@ msgid ""
 "*PhotoImage* method like this: *tkimg = "
 "tkinter.PhotoImage(data=pix.tobytes(\"ppm\"))* (also see the tutorial). "
 "This is **very** fast (**60 times** faster than PNG)."
-msgstr ""
+msgstr "tkinter의 *PhotoImage* 메서드에 입력으로 \"ppm\" 형식을 사용하는 것도 권장합니다: *tkimg = tkinter.PhotoImage(data=pix.tobytes(\"ppm\"))* (튜토리얼도 참조). 이것은 **매우** 빠릅니다(PNG보다 **60배** 빠름)."
 
 #: ../../pixmap.rst:676 ae8dd148bf7a4c1ea2de109295f929f5
 msgid "Footnotes"
-msgstr ""
+msgstr "Footnotes"
 
 #: ../../pixmap.rst:677 b53f5a80a69a41dea8df4b23d4e4be3d
 msgid ""
@@ -1812,7 +1812,7 @@ msgid ""
 "<https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_"
 " or the Java solution `Apache Batik <https://github.com/apache/batik>`_. "
 "Have a look at our Wiki for more examples."
-msgstr ""
+msgstr "SVG에서 **벡터 이미지** 가 필요한 경우 먼저 PDF로 변환해야 합니다. :meth:`Document.convert_to_pdf` 를 시도해보세요. 이것으로 충분하지 않으면 Python 패키지 `svglib <https://pypi.org/project/svglib>`_, `CairoSVG <https://pypi.org/project/cairosvg>`_, `Uniconvertor <https://sk1project.net/modules.php?name=Products&product=uniconvertor&op=download>`_ 또는 Java 솔루션 `Apache Batik <https://github.com/apache/batik>`_ 과 같은 다른 SVG-to-PDF 변환 도구를 찾아보세요. 더 많은 예제는 Wiki를 참조하세요."
 
 #: ../../pixmap.rst:679 7efc30a117974783984b2f586a774632
 msgid ""

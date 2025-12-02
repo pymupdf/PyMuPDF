@@ -21,19 +21,19 @@ msgstr ""
 
 #: ../../header.rst:-1 f19dada9348f4b02a8e7f37161295aed
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 3a2fd52dfdbe4ef0ba2277d3dc5ce9cd
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 6457f182efd342f9971c29ded21b19cd
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../about.rst:10 6bf350a1548242f08f4231816b75ae9e
 msgid "Features Comparison"
@@ -41,48 +41,48 @@ msgstr "기능 비교"
 
 #: ../../about.rst:16 e6e0680f36684a24b35c48e7756b8ee2
 msgid "Feature Matrix"
-msgstr "기능 매트릭스"
+msgstr "기능 비교표"
 
 #: ../../about.rst:18 fdad9ebd21e342da9d1b6b35ca5ad4e9
 msgid ""
 "The following table illustrates how |PyMuPDF| compares with other typical"
 " solutions."
-msgstr "다음 표는  |PyMuPDF| 가 다른 일반적인 솔루션들과 어떻게 비교되는지 보여줍니다."
+msgstr "다음 표는 |PyMuPDF| 가 다른 일반적인 솔루션과 어떻게 비교되는지 보여줍니다."
 
 #: ../../about.rst:47 5f1d6f3b09ac43e1ae7043dc7a879c02
 msgid ""
 "A note about **Office** document types (DOCX, XLXS, PPTX) and **Hangul** "
 "documents (HWPX). These documents can be loaded into |PyMuPDF| and you "
 "will receive a :ref:`Document <Document>` object."
-msgstr ""
+msgstr "**Office** 문서 유형(DOCX, XLXS, PPTX) 및 **한글** 문서(HWPX)에 대한 참고사항입니다. 이러한 문서는 |PyMuPDF| 에 로드할 수 있으며 :ref:`Document <Document>` 객체를 받게 됩니다."
 
 #: ../../about.rst:49 9add749bf1d7451aabfcb79190677ddb
 msgid "There are some caveats:"
-msgstr ""
+msgstr "다음과 같은 주의사항이 있습니다:"
 
 #: ../../about.rst:52 a610a8b3f5cf4333938a9e7a75157f1d
 msgid "we convert the input to **HTML** to layout the content."
-msgstr ""
+msgstr "내용을 배치하기 위해 입력을 **HTML** 로 변환합니다."
 
 #: ../../about.rst:53 a71abef4bb604e3b8f1065200afb7907
 msgid "because of this the original page separation has gone."
-msgstr ""
+msgstr "이로 인해 원본 페이지 구분이 사라집니다."
 
 #: ../../about.rst:55 255d6618e34f4f11ae7a1a0f54f57322
 msgid ""
 "When saving out the result any faithful representation of the original "
 "layout cannot be expected."
-msgstr ""
+msgstr "결과를 저장할 때 원본 레이아웃의 정확한 표현을 기대할 수 없습니다."
 
 #: ../../about.rst:57 59954cbab9914471b64ad43b7eb7a58b
 msgid ""
 "Therefore input files are mostly in a form that's useful for text "
 "extraction."
-msgstr ""
+msgstr "따라서 입력 파일은 주로 텍스트 추출에 유용한 형태입니다."
 
 #: ../../about.rst:65 f3ad21fdc6c841f090824af510994edb
 msgid "Performance"
-msgstr ""
+msgstr "성능"
 
 #: ../../about.rst:69 482ba1a4696f429da50d900517f9001b
 msgid ""
@@ -90,21 +90,21 @@ msgid ""
 "with a fixed set of :ref:`8 PDFs with a total of 7,031 "
 "pages<Appendix4_Files_Used>` containing text & images is used to obtain "
 "performance timings."
-msgstr ""
+msgstr "다양한 작업에 대해 |PyMuPDF| 성능을 벤치마크하기 위해 텍스트와 이미지가 포함된 :ref:`총 7,031페이지의 8개 PDF 파일<Appendix4_Files_Used>` 로 구성된 고정된 테스트 스위트를 사용하여 성능 타이밍을 측정합니다."
 
 #: ../../about.rst:72 11c5e7e482204c7682f05223297c6488
 msgid "Here are current results, grouped by task:"
-msgstr ""
+msgstr "다음은 작업별로 그룹화된 현재 결과입니다:"
 
 #: ../../about.rst:81 9f36f4db74ab492ba26cc4fb9946f818
 msgid ""
 "For more detail regarding the methodology for these performance timings "
 "see: :ref:`Performance Comparison Methodology<Appendix4>`."
-msgstr ""
+msgstr "이러한 성능 타이밍 방법론에 대한 자세한 내용은 :ref:`성능 비교 방법론<Appendix4>` 을 참조하세요."
 
 #: ../../about.rst:89 e86ca33131a544e8a4cc0821737a9a86
 msgid "License and Copyright"
-msgstr ""
+msgstr "라이선스 및 저작권"
 
 #: ../../about.rst:93 061c6a01a19c40198fd34033af39cc6d
 msgid ""
@@ -118,50 +118,50 @@ msgid ""
 "<https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-"
 "pymupdf&utm_medium=rtd&utm_content=inline-link>`_ for more information "
 "regarding a commercial license."
-msgstr ""
+msgstr "|PyMuPDF| 와 |MuPDF| 는 이제 오픈소스 |AGPL| 및 상용 라이선스 계약 모두에서 사용할 수 있습니다. 사용 사례가 라이선스 지침을 준수하는지 확인하려면 배포 자료(COPYING 파일) 및 `GNU 라이선스 페이지 <https://www.gnu.org/licenses/agpl-3.0.html>`_ 에서 제공되는 |AGPL| 라이선스 계약 전문을 읽어보세요. |AGPL| 의 요구사항을 충족할 수 없다고 판단되는 경우, 상용 라이선스에 대한 자세한 정보는 `Artifex <https://artifex.com/contact/pymupdf-inquiry.php?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline-link>`_ 에 문의하세요."
 
 #: ../../about.rst:111 0cf7adfbbbe6404aae5016ba8cf4ca79
 msgid ""
 ":title:`Artifex` is the exclusive commercial licensing agent for "
 ":title:`MuPDF`."
-msgstr ""
+msgstr ":title:`Artifex` 는 :title:`MuPDF` 의 독점 상용 라이선스 대리인입니다."
 
 #: ../../about.rst:113 1206bde366264e91900de44a990e7b13
 msgid ""
 ":title:`Artifex`, the :title:`Artifex` logo, :title:`MuPDF`, and the "
 ":title:`MuPDF` logo are registered trademarks of :title:`Artifex Software"
 " Inc.`"
-msgstr ""
+msgstr ":title:`Artifex`, :title:`Artifex` 로고, :title:`MuPDF`, :title:`MuPDF` 로고는 :title:`Artifex Software Inc.` 의 등록 상표입니다."
 
 #: ../../version.rst:1 b23f02d66d164eb195ed6512c8e9ff6c
 msgid "This documentation covers PyMuPDF |version|."
-msgstr ""
+msgstr "이 문서는 PyMuPDF |version| 을 다룹니다."
 
 #: ../../version.rst:3 ca881a8c265b46618c644701ea14c695
 msgid ""
 "The major and minor versions of PyMuPDF and MuPDF will always be the "
 "same. Only the third qualifier (patch level) may deviate from that of "
 "MuPDF."
-msgstr ""
+msgstr "PyMuPDF와 MuPDF의 주 버전과 부 버전은 항상 동일합니다. 세 번째 한정자(패치 레벨)만 |MuPDF| 와 다를 수 있습니다."
 
 #: ../../version.rst:5 a91d12805e42498fb4eebcb3f7923eb8
 msgid ""
 "Typically PyMuPDF is released more frequently than MuPDF so it will often"
 " be the case that the patch level of PyMuPDF will be greater than the "
 "embedded MuPDF."
-msgstr ""
+msgstr "일반적으로 PyMuPDF는 MuPDF보다 더 자주 릴리스되므로, PyMuPDF의 패치 레벨이 내장된 MuPDF보다 높은 경우가 많습니다."
 
 #: ../../version.rst:9 2e3b5e5955fc4cba8aafc25d3d650e7a
 msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
-msgstr ""
+msgstr "예를 들어 PyMuPDF-1.24.5는 MuPDF-1.24.2를 포함합니다."
 
 #: ../../version.rst:11 a60af2aa03494194b19ecf8e3bc095fc
 msgid "Also see `pymupdf_version` and `mupdf_version`."
-msgstr ""
+msgstr "`pymupdf_version` 및 `mupdf_version` 도 참조하세요."
 
 #: ../../footer.rst:48 ea2d1136af82416baa3286db6ed38f96
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 
 #~ msgid ""
 #~ "The major and minor versions of "

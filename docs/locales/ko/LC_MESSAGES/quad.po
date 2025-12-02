@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 7ec5d7130739408fa2694ff0c2ad75d3
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 5fae259f7fcf42cbb62f1d73baa02e63
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 0cf03cc6db804a65815e8d1e0054e12a
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../quad.rst:7 aa798d4be0214b06853be544b0785b84
 msgid "Quad"
-msgstr ""
+msgstr "Quad"
 
 #: ../../quad.rst:9 664d52df82ff48e2a329b6746b58b2b1
 msgid ""
@@ -45,7 +45,7 @@ msgid ""
 " or \"tetragon\") in the plane, defined as a sequence of four "
 ":ref:`Point` objects ul, ur, ll, lr (conveniently called upper left, "
 "upper right, lower left, lower right)."
-msgstr ""
+msgstr "평면상의 사각형(또는 \"사변형\" 또는 \"사각형\"이라고도 함)을 나타내며, ul, ur, ll, lr(편의상 왼쪽 위, 오른쪽 위, 왼쪽 아래, 오른쪽 아래라고 함)의 4개의 :ref:`Point` 객체 시퀀스로 정의됩니다."
 
 #: ../../quad.rst:11 08d263b5866442108b7f33e20416a234
 msgid ""
@@ -55,7 +55,7 @@ msgid ""
 "in several draw methods (like :meth:`Page.draw_quad` / "
 ":meth:`Shape.draw_quad`, :meth:`Page.draw_oval`/ "
 ":meth:`Shape.draw_quad`)."
-msgstr ""
+msgstr "Quad는 텍스트 검색 메서드(:meth:`Page.search_for`)의 결과로 **얻을 수 있으며**, 텍스트 마커 주석을 정의하는 데 **사용됩니다** (예: :meth:`Page.add_squiggly_annot` 및 관련 메서드 참조). 또한 여러 그리기 메서드(예: :meth:`Page.draw_quad` / :meth:`Shape.draw_quad`, :meth:`Page.draw_oval` / :meth:`Shape.draw_quad`)에서 사용됩니다."
 
 #: ../../quad.rst:15 30cb7b59b1ae4a5ea08731a41542f6bb
 msgid ""
@@ -65,186 +65,186 @@ msgid ""
 "again enclose angles of 90 degrees. Property :attr:`Quad.is_rectangular` "
 "checks whether a quad can be thought of being the result of such an "
 "operation."
-msgstr ""
+msgstr "사각형의 모서리가 **회전**, **확대/축소** 또는 **이동** :ref:`Matrix` 로 변환되면 결과 quad는 **직사각형** (= 사각형과 합동)입니다. 즉, 모든 모서리가 다시 90도 각도를 이룹니다. 속성 :attr:`Quad.is_rectangular` 는 quad가 이러한 작업의 결과로 간주될 수 있는지 확인합니다."
 
 #: ../../quad.rst:17 3be08077e5cf46e193ba24399731c728
 msgid ""
 "This is not true for all matrices: e.g. shear matrices produce "
 "parallelograms, and non-invertible matrices deliver \"degenerate\" "
 "tetragons like triangles or lines."
-msgstr ""
+msgstr "이것은 모든 행렬에 대해 참이 아닙니다: 예를 들어, 기울이기 행렬은 평행사변형을 생성하고, 역행렬이 없는 행렬은 삼각형이나 선과 같은 \"퇴화된\" 사각형을 제공합니다."
 
 #: ../../quad.rst:19 223f177e5a564f43be092c227d86b112
 msgid ""
 "Attribute :attr:`Quad.rect` obtains the enveloping rectangle. Vice versa,"
 " rectangles now have attributes :attr:`Rect.quad`, resp. "
 ":attr:`IRect.quad` to obtain their respective tetragon versions."
-msgstr ""
+msgstr "속성 :attr:`Quad.rect` 는 둘러싸는 사각형을 얻습니다. 반대로, 사각형은 이제 속성 :attr:`Rect.quad`, 각각 :attr:`IRect.quad` 를 가지고 있어 각각의 사각형 버전을 얻을 수 있습니다."
 
 #: ../../quad.rst:23 3934fff4cce44ebfac69ca1f1e02500e
 msgid "**Methods / Attributes**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../quad.rst:23 cdb016a40be44d93a40ab88520ffa8b3
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../quad.rst:25 791c2e6dfad84f60a324d45c361eb49f
 msgid ":meth:`Quad.transform`"
-msgstr ""
+msgstr ":meth:`Quad.transform`"
 
 #: ../../quad.rst:25 b4219d71eccb4873b81cc4d2cbcb6cbb
 msgid "transform with a matrix"
-msgstr ""
+msgstr "행렬로 변환"
 
 #: ../../quad.rst:26 adeda9365d014af99747c1b84d16d245
 msgid ":meth:`Quad.morph`"
-msgstr ""
+msgstr ":meth:`Quad.morph`"
 
 #: ../../quad.rst:26 fcecfd74d9564866958a61afa427072d
 msgid "transform with a point and matrix"
-msgstr ""
+msgstr "점과 행렬로 변환"
 
 #: ../../quad.rst:27 939ee16703a748c1b7562657da6cc054
 msgid ":attr:`Quad.ul`"
-msgstr ""
+msgstr ":attr:`Quad.ul`"
 
 #: ../../quad.rst:27 e89af93b74ba463e80523ab573be725d
 msgid "upper left point"
-msgstr ""
+msgstr "왼쪽 위 점"
 
 #: ../../quad.rst:28 cab5b3be90554379aae89e7da8ea19e5
 msgid ":attr:`Quad.ur`"
-msgstr ""
+msgstr ":attr:`Quad.ur`"
 
 #: ../../quad.rst:28 5f2493216d724836b99e69bb3f2c6ffd
 msgid "upper right point"
-msgstr ""
+msgstr "오른쪽 위 점"
 
 #: ../../quad.rst:29 d6e7980c18a64485b0f538f30d29d060
 msgid ":attr:`Quad.ll`"
-msgstr ""
+msgstr ":attr:`Quad.ll`"
 
 #: ../../quad.rst:29 00ae622c1ee44e99a8dd8ddb76e02b2a
 msgid "lower left point"
-msgstr ""
+msgstr "왼쪽 아래 점"
 
 #: ../../quad.rst:30 39a814307b8d4e799ac5cab34bed4f55
 msgid ":attr:`Quad.lr`"
-msgstr ""
+msgstr ":attr:`Quad.lr`"
 
 #: ../../quad.rst:30 880af62ca8a04aae96037daa38ab12b2
 msgid "lower right point"
-msgstr ""
+msgstr "오른쪽 아래 점"
 
 #: ../../quad.rst:31 31a8eb5ee9dd4eaf98509da0c412ccfa
 msgid ":attr:`Quad.is_convex`"
-msgstr ""
+msgstr ":attr:`Quad.is_convex`"
 
 #: ../../quad.rst:31 c28042739b2a4b60ac6c42f30bd29401
 msgid "true if quad is a convex set"
-msgstr ""
+msgstr "quad가 볼록 집합이면 true"
 
 #: ../../quad.rst:32 37497d0521974f6b87502804c9456f9d
 msgid ":attr:`Quad.is_empty`"
-msgstr ""
+msgstr ":attr:`Quad.is_empty`"
 
 #: ../../quad.rst:32 b051739d6773420e9d1042cf4501fe9e
 msgid "true if quad is an empty set"
-msgstr ""
+msgstr "quad가 빈 집합이면 true"
 
 #: ../../quad.rst:33 c7afddefaf7f4476977d2523faf20cbc
 msgid ":attr:`Quad.is_rectangular`"
-msgstr ""
+msgstr ":attr:`Quad.is_rectangular`"
 
 #: ../../quad.rst:33 df9d56bff733427dbe82f9bab5bba633
 msgid "true if quad is congruent to a rectangle"
-msgstr ""
+msgstr "quad가 사각형과 합동이면 true"
 
 #: ../../quad.rst:34 bfba7ccca7e84436b2db6a654b9e7208
 msgid ":attr:`Quad.rect`"
-msgstr ""
+msgstr ":attr:`Quad.rect`"
 
 #: ../../quad.rst:34 bcc943456152458291d460cd5fc66400
 msgid "smallest containing :ref:`Rect`"
-msgstr ""
+msgstr "포함하는 가장 작은 :ref:`Rect`"
 
 #: ../../quad.rst:35 9d18f5ed25604421a134ad9c5338e2a8
 msgid ":attr:`Quad.width`"
-msgstr ""
+msgstr ":attr:`Quad.width`"
 
 #: ../../quad.rst:35 3d617c28106542cf93d65cd246bb2ee6
 msgid "the longest width value"
-msgstr ""
+msgstr "가장 긴 너비 값"
 
 #: ../../quad.rst:36 86896dcc8bb845459987fab77ae2fc7e
 msgid ":attr:`Quad.height`"
-msgstr ""
+msgstr ":attr:`Quad.height`"
 
 #: ../../quad.rst:36 b00633cc845d40ea8282c89246c89ab9
 msgid "the longest height value"
-msgstr ""
+msgstr "가장 긴 높이 값"
 
 #: ../../quad.rst:39 963eed1326d34022aab68a6721f147e1
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../quad.rst:51 045248fd98ef41c9a3e88a5e995d0c01
 msgid ""
 "Overloaded constructors: \"ul\", \"ur\", \"ll\", \"lr\" stand for "
 ":data:`point_like` objects (the four corners), \"sequence\" is a Python "
 "sequence with four :data:`point_like` objects."
-msgstr ""
+msgstr "오버로드된 생성자: \"ul\", \"ur\", \"ll\", \"lr\"는 :data:`point_like` 객체(4개의 모서리)를 나타내며, \"sequence\"는 4개의 :data:`point_like` 객체를 가진 Python 시퀀스입니다."
 
 #: ../../quad.rst:53 5af6b11b5ecb4ff19bf862fa90a4a4f2
 msgid "If \"quad\" is specified, the constructor creates a **new copy** of it."
-msgstr ""
+msgstr "\"quad\"가 지정되면 생성자는 그것의 **새 복사본** 을 만듭니다."
 
 #: ../../quad.rst:55 cea0afbfe7e446829d6109aee4dc330a
 msgid ""
 "Without parameters, a quad consisting of 4 copies of *Point(0, 0)* is "
 "created."
-msgstr ""
+msgstr "매개변수 없이 *Point(0, 0)* 의 4개 복사본으로 구성된 quad가 생성됩니다."
 
 #: ../../quad.rst:60 4b16d0be6f9a461f93515a13f6ac07ef
 msgid ""
 "Modify the quadrilateral by transforming each of its corners with a "
 "matrix."
-msgstr ""
+msgstr "각 모서리를 행렬로 변환하여 사각형을 수정합니다."
 
 #: ../../quad.rst 6ad7d5776f2748a380465099b165536d
 #: fcc95d04edce488f83cc252a7323652c
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../quad.rst:62 ../../quad.rst:69 bed48ffd731349bcb867f40fcbaf8a68
 #: fa657693f6094b69ba8adf946f1d9d4d
 msgid "the matrix."
-msgstr ""
+msgstr "행렬."
 
 #: ../../quad.rst:66 d449536aa4364cfa8d454ab5552538de
 msgid ""
 "*(New in version 1.17.0)* \"Morph\" the quad with a matrix-like using a "
 "point-like as fixed point."
-msgstr ""
+msgstr "*(버전 1.17.0에서 새로 추가됨)* 고정점으로 점과 유사한 것을 사용하여 행렬과 유사한 것으로 quad를 \"변형\"합니다."
 
 #: ../../quad.rst:68 1bc5f7ab62ff46dca6c4085984b1973e
 msgid "the point."
-msgstr ""
+msgstr "점."
 
 #: ../../quad.rst f004f07cfc6543989140c9a712f8318b
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../quad.rst:70 2314249ac3bf4d48af9f5d0c9918f092
 msgid "a new quad (no operation if this is the infinite quad)."
-msgstr ""
+msgstr "새 quad(이것이 무한 quad인 경우 작업 없음)."
 
 #: ../../quad.rst:75 790caa78886e4aa0a8e169a3884a528c
 msgid ""
 "The smallest rectangle containing the quad, represented by the blue area "
 "in the following picture."
-msgstr ""
+msgstr "quad를 포함하는 가장 작은 사각형으로, 다음 그림의 파란색 영역으로 표시됩니다."
 
 #: ../../quad.rst 23306adcb7c441c6b4a06d25179f70ff
 #: 29fcd747f839470f9cd452054f5ad2c6 2f60233b58254ddc83846169e9b77814
@@ -253,49 +253,49 @@ msgstr ""
 #: da27d9920c9247c7b07901d41c25a765 e54af6598b2446f9a18abddbfb930bf4
 #: f5aba2a5d1a04f22b723d0c816c0e825
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../quad.rst:79 7cca1627db0a4c789cb2bfbe34594522
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../quad.rst:83 db740f8e958d416fac479f484e53e7f5
 msgid "Upper left point."
-msgstr ""
+msgstr "왼쪽 위 점."
 
 #: ../../quad.rst:85 ../../quad.rst:91 ../../quad.rst:97 ../../quad.rst:103
 #: 1c8574d31d0343ca90a64a220a722491 325b06978c6644afb11af209b53aef75
 #: 5c193b8c51574a7388be59a99ec9f306 70ea90d3bd5645b8bca7b2e0a066b329
 msgid ":ref:`Point`"
-msgstr ""
+msgstr ":ref:`Point`"
 
 #: ../../quad.rst:89 21467c9a895c4e438d7cb0faf4be00ce
 msgid "Upper right point."
-msgstr ""
+msgstr "오른쪽 위 점."
 
 #: ../../quad.rst:95 b82ee98f3f134593b40af259336342d3
 msgid "Lower left point."
-msgstr ""
+msgstr "왼쪽 아래 점."
 
 #: ../../quad.rst:101 da89c966391948d895f518fc03b9f064
 msgid "Lower right point."
-msgstr ""
+msgstr "오른쪽 아래 점."
 
 #: ../../quad.rst:107 bb5e071792a14d5c9526c8dc57993167
 msgid "New in version 1.16.1"
-msgstr ""
+msgstr "버전 1.16.1에서 새로 추가됨"
 
 #: ../../quad.rst:109 91bd8cd76c9c4afcbb037ddb9059df47
 msgid ""
 "Checks if for any two points of the quad, all points on their connecting "
 "line also belong to the quad."
-msgstr ""
+msgstr "quad의 임의의 두 점에 대해, 연결선 위의 모든 점도 quad에 속하는지 확인합니다."
 
 #: ../../quad.rst:114 ../../quad.rst:120 ../../quad.rst:126
 #: 5ae88b9907fb467f84267387a790a3c5 920999ae2e69406995af71a6dae1e8a6
 #: a538f6fd994649c1a7d2009e3e9276f3
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../quad.rst:118 c068cc4b85364edea719e7d034e85295
 msgid ""
@@ -303,40 +303,40 @@ msgid ""
 "four corners are on the same line. If this is false, the quad may still "
 "be degenerate or not look like a tetragon at all (triangles, "
 "parallelograms, trapezoids, ...)."
-msgstr ""
+msgstr "둘러싸인 영역이 0이면 True입니다. 이는 4개의 모서리 중 최소 3개가 같은 선상에 있음을 의미합니다. 이것이 false이면 quad는 여전히 퇴화되었거나 사각형처럼 보이지 않을 수 있습니다(삼각형, 평행사변형, 사다리꼴 등)."
 
 #: ../../quad.rst:124 9f5e063e47c247c890c6956b98921d91
 msgid ""
 "True if all corner angles are 90 degrees. This implies that the quad is "
 "**convex and not empty**."
-msgstr ""
+msgstr "모든 모서리 각도가 90도이면 True입니다. 이것은 quad가 **볼록하고 비어 있지 않음** 을 의미합니다."
 
 #: ../../quad.rst:130 71ec407d1b0f4aa4a81edef402aa24df
 msgid "The maximum length of the top and the bottom side."
-msgstr ""
+msgstr "위쪽과 아래쪽 변의 최대 길이."
 
 #: ../../quad.rst:132 ../../quad.rst:138 2ffdd79a0a92446bbaf89d3ea83f1e43
 #: e2e1c5c2ebd0423190583a8ee05f1a84
 msgid "float"
-msgstr ""
+msgstr "float"
 
 #: ../../quad.rst:136 4c1f38db1cd34add898f6bdf1977db1a
 msgid "The maximum length of the left and the right side."
-msgstr ""
+msgstr "왼쪽과 오른쪽 변의 최대 길이."
 
 #: ../../quad.rst:141 9db22e1b205244fea68bc9fa262c3a44
 msgid "Remark"
-msgstr ""
+msgstr "참고"
 
 #: ../../quad.rst:142 b1fa23555ac34b80a5bf47ad6ba54cb7
 msgid ""
 "This class adheres to the sequence protocol, so components can be dealt "
 "with via their indices, too. Also refer to :ref:`SequenceTypes`."
-msgstr ""
+msgstr "이 클래스는 시퀀스 프로토콜을 따르므로 구성 요소는 인덱스를 통해 처리할 수도 있습니다. :ref:`SequenceTypes` 도 참조하세요."
 
 #: ../../quad.rst:145 cf59f6059ec346a4adf6477b2af26440
 msgid "Algebra and Containment Checks"
-msgstr ""
+msgstr "대수 및 포함 확인"
 
 #: ../../quad.rst:146 d1da8ae52c66485c81bd76a086dda1ed
 msgid ""
@@ -344,15 +344,15 @@ msgid ""
 "the other geometry object -- the respective restrictions have been "
 "lifted. In particular, all the following combinations of containment "
 "checking are now possible:"
-msgstr ""
+msgstr "v1.19.6부터 quad는 다른 기하 객체처럼 대수 표현식에서 사용할 수 있습니다 -- 해당 제한이 해제되었습니다. 특히, 다음 포함 확인 조합이 모두 가능합니다:"
 
 #: ../../quad.rst:148 de141e1e28bb41bab1a153f2f74dec9c
 msgid "`{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}`"
-msgstr ""
+msgstr "`{Point | IRect | Rect | Quad} in {IRect | Rect | Quad}`"
 
 #: ../../quad.rst:150 7822fe7129d44ee09c76eff91fe1b539
 msgid "Please note the following interesting detail:"
-msgstr ""
+msgstr "다음 흥미로운 세부 사항을 참고하세요:"
 
 #: ../../quad.rst:152 323318c4e76344b0a9f47f1f586de2c4
 msgid ""
@@ -361,9 +361,9 @@ msgid ""
 " edge do not belong to it -- including the respective corners. But for "
 "quads there exists no such notion like \"openness\", so we have the "
 "following somewhat surprising implication:"
-msgstr ""
+msgstr "사각형의 경우, 왼쪽 위 점만 속합니다. v1.19.0부터 사각형은 \"열림\"으로 정의되어 아래쪽과 오른쪽 가장자리는 속하지 않습니다 -- 해당 모서리 포함. 하지만 quad에는 \"열림\"과 같은 개념이 없으므로 다음과 같은 다소 놀라운 함의가 있습니다:"
 
 #: ../../footer.rst:46 e7b27ac0bf7e4265b14be6be7b5ca967
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

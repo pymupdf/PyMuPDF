@@ -21,529 +21,529 @@ msgstr ""
 
 #: ../../header.rst:-1 9bc3699c82af49c8b1df7fe13214a7b5
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 326238c0829940fabc392be468cf2397
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 050fa15499a34569a9fd77b259465298
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../xml-class.rst:7 7539bb52127547af984aad658b4cfb92
 msgid "Xml"
-msgstr ""
+msgstr "Xml"
 
 #: ../../xml-class.rst:11 69918b04ded7433cafdc59a4cd3b47d7
 msgid "New in v1.21.0"
-msgstr ""
+msgstr "v1.21.0 에서 새로 추가됨"
 
 #: ../../xml-class.rst:13 701eb0771c3d48bfa320b9448a73332b
 msgid ""
 "This represents an HTML or an XML node. It is a helper class intended to "
 "access the DOM (Document Object Model) content of a :ref:`Story` object."
-msgstr ""
+msgstr "이것은 HTML 또는 XML 노드를 나타냅니다. :ref:`Story` 객체의 DOM(Document Object Model) 콘텐츠에 액세스하기 위한 헬퍼 클래스입니다."
 
 #: ../../xml-class.rst:15 650bf51115434e7790ea30f9fd0bb7d7
 msgid ""
 "There is no need to ever directly construct an :ref:`Xml` object: after "
 "creating a :ref:`Story`, simply take :attr:`Story.body` -- which is an "
 "Xml node -- and use it to navigate your way through the story's DOM."
-msgstr ""
+msgstr ":ref:`Xml` 객체를 직접 생성할 필요는 없습니다: :ref:`Story` 를 생성한 후 단순히 :attr:`Story.body` (Xml 노드)를 가져와 스토리의 DOM을 탐색하는 데 사용하세요."
 
 #: ../../xml-class.rst:19 cf40a558798c4fbd8a72c27c44432134
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../xml-class.rst:19 fb064b9b3de54836a65897651c2b23e7
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../xml-class.rst:21 e78c7cff21934e9799758e2681885d59
 msgid ":meth:`~.add_bullet_list`"
-msgstr ""
+msgstr ":meth:`~.add_bullet_list`"
 
 #: ../../xml-class.rst:21 4073ca2339474772a59d8cd2f6c9929e
 msgid "Add a :htmlTag:`ul` tag - bulleted list, context manager."
-msgstr ""
+msgstr ":htmlTag:`ul` 태그 추가 - 불릿 목록, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:22 42afb4855a364bb5a7ee0ff4f980142e
 msgid ":meth:`~.add_codeblock`"
-msgstr ""
+msgstr ":meth:`~.add_codeblock`"
 
 #: ../../xml-class.rst:22 63b440c548b84d47862d2ad1f1981743
 msgid "Add a :htmlTag:`pre` tag, context manager."
-msgstr ""
+msgstr ":htmlTag:`pre` 태그 추가, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:23 8e3607a7f041426fbc845b4c6a9ae096
 msgid ":meth:`~.add_description_list`"
-msgstr ""
+msgstr ":meth:`~.add_description_list`"
 
 #: ../../xml-class.rst:23 7629f4b770e34ccbad2fb9fdd3dcc9c2
 msgid "Add a :htmlTag:`dl` tag, context manager."
-msgstr ""
+msgstr ":htmlTag:`dl` 태그 추가, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:24 2331abc8ed194fbb98cd0182804a342d
 msgid ":meth:`~.add_division`"
-msgstr ""
+msgstr ":meth:`~.add_division`"
 
 #: ../../xml-class.rst:24 87f6077df46b419cafefc73a835bac19
-msgid "add a :htmlTag:`div` tag (renamed from “section”), context manager."
-msgstr ""
+msgid "add a :htmlTag:`div` tag (renamed from "section"), context manager."
+msgstr ":htmlTag:`div` 태그 추가("section"에서 이름 변경), 컨텍스트 매니저."
 
 #: ../../xml-class.rst:25 925b77ace63e499b89b3bec1a66f73ea
 msgid ":meth:`~.add_header`"
-msgstr ""
+msgstr ":meth:`~.add_header`"
 
 #: ../../xml-class.rst:25 720b6d400ec443eba12a19c4c15e56be
 msgid "Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager."
-msgstr ""
+msgstr "헤더 태그 추가(:htmlTag:`h1` ~ :htmlTag:`h6` 중 하나), 컨텍스트 매니저."
 
 #: ../../xml-class.rst:26 eaa38653ffd94b3db76df39d6295fdc8
 msgid ":meth:`~.add_horizontal_line`"
-msgstr ""
+msgstr ":meth:`~.add_horizontal_line`"
 
 #: ../../xml-class.rst:26 a63a5897e97c42babb68572cfcfe82bc
 msgid "Add a :htmlTag:`hr` tag."
-msgstr ""
+msgstr ":htmlTag:`hr` 태그 추가."
 
 #: ../../xml-class.rst:27 b6f6a42fc89d48b38d896ea993d6f1e6
 msgid ":meth:`~.add_image`"
-msgstr ""
+msgstr ":meth:`~.add_image`"
 
 #: ../../xml-class.rst:27 5373ac70d619448680766ec6a39acfab
 msgid "Add a :htmlTag:`img` tag."
-msgstr ""
+msgstr ":htmlTag:`img` 태그 추가."
 
 #: ../../xml-class.rst:28 ce704c9a05ac4c59a02e1a7228a107d8
 msgid ":meth:`~.add_link`"
-msgstr ""
+msgstr ":meth:`~.add_link`"
 
 #: ../../xml-class.rst:28 866729d3f92f46b5b5050d74efe8b5cf
 msgid "Add a :htmlTag:`a` tag."
-msgstr ""
+msgstr ":htmlTag:`a` 태그 추가."
 
 #: ../../xml-class.rst:29 71e847fed4e7459c8e769511a02ef5b8
 msgid ":meth:`~.add_number_list`"
-msgstr ""
+msgstr ":meth:`~.add_number_list`"
 
 #: ../../xml-class.rst:29 a46aa17f1d1f45d8898477a87ff3b5d1
 msgid "Add a :htmlTag:`ol` tag, context manager."
-msgstr ""
+msgstr ":htmlTag:`ol` 태그 추가, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:30 de6a8f56bf954b939a2062d06ed2ffe8
 msgid ":meth:`~.add_paragraph`"
-msgstr ""
+msgstr ":meth:`~.add_paragraph`"
 
 #: ../../xml-class.rst:30 0bcc2cb10d0c4fd6bb3867ebb07872c5
 msgid "Add a :htmlTag:`p` tag."
-msgstr ""
+msgstr ":htmlTag:`p` 태그 추가."
 
 #: ../../xml-class.rst:31 4406855a42c346f8aa73b01f948cfe52
 msgid ":meth:`~.add_span`"
-msgstr ""
+msgstr ":meth:`~.add_span`"
 
 #: ../../xml-class.rst:31 1eadbc2d97d449d988ab2794879e3bf4
 msgid "Add a :htmlTag:`span` tag, context manager."
-msgstr ""
+msgstr ":htmlTag:`span` 태그 추가, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:32 10b12cf26309427f89d2d544e249c8a7
 msgid ":meth:`~.add_subscript`"
-msgstr ""
+msgstr ":meth:`~.add_subscript`"
 
 #: ../../xml-class.rst:32 7dd123f6a64b4aa099e9a52c82b30045
 msgid ""
 "Add subscript text(:htmlTag:`sub` tag) - inline element, treated like "
 "text."
-msgstr ""
+msgstr "아래첨자 텍스트 추가(:htmlTag:`sub` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:33 de4883604bc7468e9377ecec6f43e967
 msgid ":meth:`~.add_superscript`"
-msgstr ""
+msgstr ":meth:`~.add_superscript`"
 
 #: ../../xml-class.rst:33 bfdbc3b97efd4e3582ffbbd52091f942
 msgid ""
 "Add subscript text (:htmlTag:`sup` tag) - inline element, treated like "
 "text."
-msgstr ""
+msgstr "위첨자 텍스트 추가(:htmlTag:`sup` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:34 06e5244a2e6743fd9c3d655ed3660e26
 msgid ":meth:`~.add_code`"
-msgstr ""
+msgstr ":meth:`~.add_code`"
 
 #: ../../xml-class.rst:34 ../../xml-class.rst:35 ../../xml-class.rst:36
 #: ../../xml-class.rst:37 71a231e6482d429a809a97b5dcd97c68
 #: 774ac2c4b60a4ae3b7a6d68ee5d1bdea b6821fb5425047c9874368c5c1972e38
 #: f0583fc28b774b69beeaddbe640ae558
 msgid "Add code text (:htmlTag:`code` tag) - inline element, treated like text."
-msgstr ""
+msgstr "코드 텍스트 추가(:htmlTag:`code` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:35 73c73171c8554952a9f1e9319b796f08
 msgid ":meth:`~.add_var`"
-msgstr ""
+msgstr ":meth:`~.add_var`"
 
 #: ../../xml-class.rst:36 f593a824878e4e74bc4566535b5054f5
 msgid ":meth:`~.add_samp`"
-msgstr ""
+msgstr ":meth:`~.add_samp`"
 
 #: ../../xml-class.rst:37 273c407a402d44adb958afeb1212ea43
 msgid ":meth:`~.add_kbd`"
-msgstr ""
+msgstr ":meth:`~.add_kbd`"
 
 #: ../../xml-class.rst:38 17bafeb602d745cbb40f2f75a48f3779
 msgid ":meth:`~.add_text`"
-msgstr ""
+msgstr ":meth:`~.add_text`"
 
 #: ../../xml-class.rst:38 ../../xml-class.rst:162
 #: 39fe57b6ab4a45358f606b2aed299e68 e043e37cf5b94d67a2582ea0b74a31b1
 msgid "Add a text string. Line breaks ``\\n`` are honored as :htmlTag:`br` tags."
-msgstr ""
+msgstr "텍스트 문자열 추가. 줄바꿈 ``\\n`` 은 :htmlTag:`br` 태그로 처리됩니다."
 
 #: ../../xml-class.rst:39 5696aceb71e6487aba73473972dbfe08
 msgid ":meth:`~.append_child`"
-msgstr ""
+msgstr ":meth:`~.append_child`"
 
 #: ../../xml-class.rst:39 a9589f5c6e09425a808f5e6073a4e37c
 msgid "Append a child node."
-msgstr ""
+msgstr "자식 노드를 추가합니다."
 
 #: ../../xml-class.rst:40 eee20ca8fefd43f2b810d09f844b9572
 msgid ":meth:`~.clone`"
-msgstr ""
+msgstr ":meth:`~.clone`"
 
 #: ../../xml-class.rst:40 397f2e9e26664a2ba88d3d931a8461ed
 msgid "Make a copy if this node."
-msgstr ""
+msgstr "이 노드의 복사본을 만듭니다."
 
 #: ../../xml-class.rst:41 7cc5d81732194edd964b9ecedca6a6e6
 msgid ":meth:`~.create_element`"
-msgstr ""
+msgstr ":meth:`~.create_element`"
 
 #: ../../xml-class.rst:41 77b33e435fb74f0cba25782b92faa883
 msgid "Make a new node with a given tag name."
-msgstr ""
+msgstr "주어진 태그 이름으로 새 노드를 만듭니다."
 
 #: ../../xml-class.rst:42 893b3a532b644a4682535c9f8ba1cd88
 msgid ":meth:`~.create_text_node`"
-msgstr ""
+msgstr ":meth:`~.create_text_node`"
 
 #: ../../xml-class.rst:42 ../../xml-class.rst:306
 #: 852761f667764aca8cf306c687632a47 bfdec0120fc345f1888e2301350d2b31
 msgid "Create direct text for the current node."
-msgstr ""
+msgstr "현재 노드에 대한 직접 텍스트를 생성합니다."
 
 #: ../../xml-class.rst:43 624514bea7a74d5483c624263ca273f1
 msgid ":meth:`~.find`"
-msgstr ""
+msgstr ":meth:`~.find`"
 
 #: ../../xml-class.rst:43 30101fec0f2043428d06155ab746f88a
 msgid "Find a sub-node with given properties."
-msgstr ""
+msgstr "주어진 속성을 가진 하위 노드를 찾습니다."
 
 #: ../../xml-class.rst:44 5c39afc942714c20ba3425fc35e759bd
 msgid ":meth:`~.find_next`"
-msgstr ""
+msgstr ":meth:`~.find_next`"
 
 #: ../../xml-class.rst:44 537686d3196148fd8f556fb760788f08
 msgid "Repeat previous \"find\" with the same criteria."
-msgstr ""
+msgstr "동일한 기준으로 이전 \"find\" 를 반복합니다."
 
 #: ../../xml-class.rst:45 c9c16b8e293d420ab20c63e69a52d33a
 msgid ":meth:`~.insert_after`"
-msgstr ""
+msgstr ":meth:`~.insert_after`"
 
 #: ../../xml-class.rst:45 9203ddd2bde641e3b1682aca7200b06b
 msgid "Insert an element after current node."
-msgstr ""
+msgstr "현재 노드 뒤에 요소를 삽입합니다."
 
 #: ../../xml-class.rst:46 df9f60af548040e2acd6c6a20980a110
 msgid ":meth:`~.insert_before`"
-msgstr ""
+msgstr ":meth:`~.insert_before`"
 
 #: ../../xml-class.rst:46 dc4fce41210744cfaf0c95d6aa831c18
 msgid "Insert an element before current node."
-msgstr ""
+msgstr "현재 노드 앞에 요소를 삽입합니다."
 
 #: ../../xml-class.rst:47 2b82b7c677bb4945be75049a8969b1b6
 msgid ":meth:`~.remove`"
-msgstr ""
+msgstr ":meth:`~.remove`"
 
 #: ../../xml-class.rst:47 b5fe4505db6d41c480d47bddef4cf52e
 msgid "Remove this node."
-msgstr ""
+msgstr "이 노드를 제거합니다."
 
 #: ../../xml-class.rst:48 f33a29d728f347659819597b9939e554
 msgid ":meth:`~.set_align`"
-msgstr ""
+msgstr ":meth:`~.set_align`"
 
 #: ../../xml-class.rst:48 289d9bcffcb6493d807fc143be1dc232
 msgid "Set the alignment using a CSS style spec. Only works for block-level tags."
-msgstr ""
+msgstr "CSS 스타일 사양을 사용하여 정렬을 설정합니다. 블록 레벨 태그에만 작동합니다."
 
 #: ../../xml-class.rst:49 f5378dd097d847ce96657a999ab7114a
 msgid ":meth:`~.set_attribute`"
-msgstr ""
+msgstr ":meth:`~.set_attribute`"
 
 #: ../../xml-class.rst:49 ../../xml-class.rst:172
 #: 1814a357c0ed44e2b9a5355fa2f28270 6492db795dcd4ea482ffc67b547ece9f
 msgid "Set an arbitrary key to some value (which may be empty)."
-msgstr ""
+msgstr "임의의 키를 일부 값(비어 있을 수 있음)으로 설정합니다."
 
 #: ../../xml-class.rst:50 73208c8fe2ba4dd2a71a852fd9b952a4
 msgid ":meth:`~.set_bgcolor`"
-msgstr ""
+msgstr ":meth:`~.set_bgcolor`"
 
 #: ../../xml-class.rst:50 ../../xml-class.rst:199
 #: 0aba92f0ec714f9f9e1a4fc6337b11a9 766786fc29af4bfe8751a6998dd4c96f
 msgid "Set the background color. Only works for block-level tags."
-msgstr ""
+msgstr "배경색을 설정합니다. 블록 레벨 태그에만 작동합니다."
 
 #: ../../xml-class.rst:51 09762db5cf824a718700722ce57cae1a
 msgid ":meth:`~.set_bold`"
-msgstr ""
+msgstr ":meth:`~.set_bold`"
 
 #: ../../xml-class.rst:51 ../../xml-class.rst:205
 #: 02cb247379cf41b8a7bdc6b9c8986250 d7e5ee2fe5be41508c6b731ff74f9ddc
 msgid "Set bold on or off or to some string value."
-msgstr ""
+msgstr "굵게를 켜거나 끄거나 일부 문자열 값으로 설정합니다."
 
 #: ../../xml-class.rst:52 2a1024abf59c406b95d76d4dad068061
 msgid ":meth:`~.set_color`"
-msgstr ""
+msgstr ":meth:`~.set_color`"
 
 #: ../../xml-class.rst:52 5daf275c40c94edf959fa5a44e4caffd
 msgid "Set text color."
-msgstr ""
+msgstr "텍스트 색상을 설정합니다."
 
 #: ../../xml-class.rst:53 9a70ba2b81a54311a2dcee0192747a4d
 msgid ":meth:`~.set_columns`"
-msgstr ""
+msgstr ":meth:`~.set_columns`"
 
 #: ../../xml-class.rst:53 f2bad300933849d7a83712ce8d8acba0
 msgid "Set the number of columns. Argument may be any valid number or string."
-msgstr ""
+msgstr "열 수를 설정합니다. 인수는 유효한 숫자 또는 문자열일 수 있습니다."
 
 #: ../../xml-class.rst:54 f5cb73e293d84c2593b223b987f3a245
 msgid ":meth:`~.set_font`"
-msgstr ""
+msgstr ":meth:`~.set_font`"
 
 #: ../../xml-class.rst:54 4e8c68cac8e4421398691c001e143897
-msgid "Set the font-family, e.g. “sans-serif”."
-msgstr ""
+msgid "Set the font-family, e.g. "sans-serif"."
+msgstr "글꼴 패밀리를 설정합니다. 예: "sans-serif"."
 
 #: ../../xml-class.rst:55 dd2ab54a599548b8a3567fc16473df0a
 msgid ":meth:`~.set_fontsize`"
-msgstr ""
+msgstr ":meth:`~.set_fontsize`"
 
 #: ../../xml-class.rst:55 460f5f62de7a4ef2894a131015155780
 msgid "Set the font size. Either a float or a valid HTML/CSS string."
-msgstr ""
+msgstr "글꼴 크기를 설정합니다. float 또는 유효한 HTML/CSS 문자열입니다."
 
 #: ../../xml-class.rst:56 c24030b2539d481e9ee5585d1e45a101
 msgid ":meth:`~.set_id`"
-msgstr ""
+msgstr ":meth:`~.set_id`"
 
 #: ../../xml-class.rst:56 c1a2bbd206c64d51b6ce8e6fba7afae9
 msgid "Set a :htmlTag:`id`. A check for uniqueness is performed."
-msgstr ""
+msgstr ":htmlTag:`id` 를 설정합니다. 고유성 검사가 수행됩니다."
 
 #: ../../xml-class.rst:57 19d42012842a4657b3d0c55161c2f510
 msgid ":meth:`~.set_italic`"
-msgstr ""
+msgstr ":meth:`~.set_italic`"
 
 #: ../../xml-class.rst:57 79e8cd4b75b447dcaf86dc611bfd6a80
 msgid "Set italic on or off or to some string value."
-msgstr ""
+msgstr "기울임꼴을 켜거나 끄거나 일부 문자열 값으로 설정합니다."
 
 #: ../../xml-class.rst:58 44b35de9ea08474c9147300a0afc6450
 msgid ":meth:`~.set_leading`"
-msgstr ""
+msgstr ":meth:`~.set_leading`"
 
 #: ../../xml-class.rst:58 ../../xml-class.rst:249
 #: 38ffd73528514393b5fa0a83385774f7 de2651e329c0412bb1d14f2173456714
 msgid ""
 "Set inter-block text distance (`-mupdf-leading`), only works on block-"
 "level nodes."
-msgstr ""
+msgstr "블록 간 텍스트 거리(`-mupdf-leading`)를 설정합니다. 블록 레벨 노드에만 작동합니다."
 
 #: ../../xml-class.rst:59 e4a9d8224ddf439db8e8f6e24fdb7767
 msgid ":meth:`~.set_lineheight`"
-msgstr ""
+msgstr ":meth:`~.set_lineheight`"
 
 #: ../../xml-class.rst:59 433ad772d7bb4426b0d39eba7f6759a2
 msgid "Set height of a line. Float like 1.5, which sets to `1.5 * fontsize`."
-msgstr ""
+msgstr "줄 높이를 설정합니다. 1.5와 같은 float는 `1.5 * fontsize` 로 설정됩니다."
 
 #: ../../xml-class.rst:60 c2b91a86c2894a5e831c7cbd43f37c80
 msgid ":meth:`~.set_margins`"
-msgstr ""
+msgstr ":meth:`~.set_margins`"
 
 #: ../../xml-class.rst:60 82df52bdba464711b98314ee57ae0d93
 msgid "Set the margin(s), float or string with up to 4 values."
-msgstr ""
+msgstr "여백을 설정합니다. 최대 4개의 값을 가진 float 또는 문자열입니다."
 
 #: ../../xml-class.rst:61 168a45e0043a4b048a5c7670725fc426
 msgid ":meth:`~.set_pagebreak_after`"
-msgstr ""
+msgstr ":meth:`~.set_pagebreak_after`"
 
 #: ../../xml-class.rst:61 ../../xml-class.rst:267
 #: b6747164bb71457d90a190b5cf480397 ddfd826cae5544718fe1aa5d53c23a89
 msgid "Insert a page break after this node."
-msgstr ""
+msgstr "이 노드 뒤에 페이지 나누기를 삽입합니다."
 
 #: ../../xml-class.rst:62 d8426c25df0b42d497a60c8fd3aebec5
 msgid ":meth:`~.set_pagebreak_before`"
-msgstr ""
+msgstr ":meth:`~.set_pagebreak_before`"
 
 #: ../../xml-class.rst:62 ../../xml-class.rst:271
 #: 2ed3ee7979a147a28b3336a5c139fa26 9b95ee2877aa4ae5b4ef25e4293b592f
 msgid "Insert a page break before this node."
-msgstr ""
+msgstr "이 노드 앞에 페이지 나누기를 삽입합니다."
 
 #: ../../xml-class.rst:63 0bbec4f8c36441edb6459ee34ab62648
 msgid ":meth:`~.set_properties`"
-msgstr ""
+msgstr ":meth:`~.set_properties`"
 
 #: ../../xml-class.rst:63 40444fbe8f064c23bd58e34d6f14ea1c
 msgid "Set any or all desired properties in one call."
-msgstr ""
+msgstr "한 번의 호출로 원하는 모든 속성을 설정합니다."
 
 #: ../../xml-class.rst:64 c1e79c3c529647d08705d27a389c9923
 msgid ":meth:`~.add_style`"
-msgstr ""
+msgstr ":meth:`~.add_style`"
 
 #: ../../xml-class.rst:64 77bd7ceb193541c4947123335f26d16f
-msgid "Set (add) a “style” that is not supported by its own `set_` method."
-msgstr ""
+msgid "Set (add) a "style" that is not supported by its own `set_` method."
+msgstr "자체 `set_` 메서드로 지원되지 않는 "style" 을 설정(추가)합니다."
 
 #: ../../xml-class.rst:65 41ad2d1f0b1d40229cea9747269b25ab
 msgid ":meth:`~.add_class`"
-msgstr ""
+msgstr ":meth:`~.add_class`"
 
 #: ../../xml-class.rst:65 96578b87b27b460c9bf2d9efa981eb61
-msgid "Set (add) a “class” attribute."
-msgstr ""
+msgid "Set (add) a "class" attribute."
+msgstr ""class" 속성을 설정(추가)합니다."
 
 #: ../../xml-class.rst:66 89c5d6f6e058468293782417c3e94def
 msgid ":meth:`~.set_text_indent`"
-msgstr ""
+msgstr ":meth:`~.set_text_indent`"
 
 #: ../../xml-class.rst:66 7c1f2fd1462449ff90ddf0f757199edf
 msgid ""
 "Set indentation for first textblock line. Only works for block-level "
 "nodes."
-msgstr ""
+msgstr "첫 번째 텍스트 블록 줄의 들여쓰기를 설정합니다. 블록 레벨 노드에만 작동합니다."
 
 #: ../../xml-class.rst:67 72ab40c71f664eb8a56fd757221a367f
 msgid ":attr:`~.tagname`"
-msgstr ""
+msgstr ":attr:`~.tagname`"
 
 #: ../../xml-class.rst:67 ../../xml-class.rst:370
 #: 4b07f06d00824419babf7bf40fb65c85 66c0edfd4d6d4a1999d2178ca42a8757
 msgid "Either the HTML tag name like :htmlTag:`p` or `None` if a text node."
-msgstr ""
+msgstr ":htmlTag:`p` 와 같은 HTML 태그 이름이거나 텍스트 노드인 경우 `None` 입니다."
 
 #: ../../xml-class.rst:68 ea015551c0d747b1852ab24eb94cad14
 msgid ":attr:`~.text`"
-msgstr ""
+msgstr ":attr:`~.text`"
 
 #: ../../xml-class.rst:68 ../../xml-class.rst:374
 #: c3f5e31031c54b1e930260f43e6be0fc cb38a9c4ef35438a85aced5101afb7a6
 msgid "Either the node's text or `None` if a tag node."
-msgstr ""
+msgstr "노드의 텍스트이거나 태그 노드인 경우 `None` 입니다."
 
 #: ../../xml-class.rst:69 752c527b6d7d4b12aec52a36461733ac
 msgid ":attr:`~.is_text`"
-msgstr ""
+msgstr ":attr:`~.is_text`"
 
 #: ../../xml-class.rst:69 7f2454ce70d247559d3f5e6eae53562a
 msgid "Check if the node is a text."
-msgstr ""
+msgstr "노드가 텍스트인지 확인합니다."
 
 #: ../../xml-class.rst:70 1bee2aa60bf9453083bcadfacfb8be41
 msgid ":attr:`~.first_child`"
-msgstr ""
+msgstr ":attr:`~.first_child`"
 
 #: ../../xml-class.rst:70 ../../xml-class.rst:382
 #: 320d6a189e5f4b909fcc81b1c7eea929 39ca3a0836484a45b0f4118ed2f543a9
 msgid "Contains the first node one level below this one (or `None`)."
-msgstr ""
+msgstr "이 노드보다 한 단계 아래의 첫 번째 노드를 포함합니다(또는 `None`)."
 
 #: ../../xml-class.rst:71 0cc3911f891b40008b81fbdd77555d23
 msgid ":attr:`~.last_child`"
-msgstr ""
+msgstr ":attr:`~.last_child`"
 
 #: ../../xml-class.rst:71 ../../xml-class.rst:386
 #: a7088ac1bc6b4553ae8926b7c0229f6a c798e3695bca4932a01d7d08afd5f68e
 msgid "Contains the last node one level below this one (or `None`)."
-msgstr ""
+msgstr "이 노드보다 한 단계 아래의 마지막 노드를 포함합니다(또는 `None`)."
 
 #: ../../xml-class.rst:72 a55fd7ae669d40778dc10035cd16136f
 msgid ":attr:`~.next`"
-msgstr ""
+msgstr ":attr:`~.next`"
 
 #: ../../xml-class.rst:72 ../../xml-class.rst:390
 #: 0a1b07cfeb4547bc9c8eb66220b51859 1594bd77ea1742818cc3686d1368a882
 msgid "The next node at the same level (or `None`)."
-msgstr ""
+msgstr "같은 레벨의 다음 노드(또는 `None`)."
 
 #: ../../xml-class.rst:73 3486238a07154ef78a502dbf58be4824
 msgid ":attr:`~.previous`"
-msgstr ""
+msgstr ":attr:`~.previous`"
 
 #: ../../xml-class.rst:73 ../../xml-class.rst:394
 #: 4d3a63d266e64b0197dad3f7c0d9cc45 72a4097f399d429bb3a1c8aafccecb21
 msgid "The previous node at the same level."
-msgstr ""
+msgstr "같은 레벨의 이전 노드."
 
 #: ../../xml-class.rst:74 f9b1df7efd3d4d10bb406eaba4295f05
 msgid ":attr:`~.root`"
-msgstr ""
+msgstr ":attr:`~.root`"
 
 #: ../../xml-class.rst:74 ../../xml-class.rst:398
 #: bfd73bf27d05422aaddeafca50d7a8b6 f32aae02b0764bacb0f76cc2143b791b
 msgid "The top node of the DOM, which hence has the tagname :htmlTag:`html`."
-msgstr ""
+msgstr "DOM의 최상위 노드로, 따라서 태그 이름이 :htmlTag:`html` 입니다."
 
 #: ../../xml-class.rst:79 04c90c00f0a947559dcf40c4890dca12
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../xml-class.rst:85 78730e0cda88494983058b058e9e9d05
 msgid ""
 "Add an :htmlTag:`ul` tag - bulleted list, context manager. See `ul "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_."
-msgstr ""
+msgstr ":htmlTag:`ul` 태그 추가 - 불릿 목록, 컨텍스트 매니저. `ul <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/ul>`_ 를 참조하세요."
 
 #: ../../xml-class.rst:89 4f29c89ccbfd4ebb87fe36bb3b143b3c
 msgid ""
 "Add a :htmlTag:`pre` tag, context manager. See `pre "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre>`_."
-msgstr ""
+msgstr ":htmlTag:`pre` 태그 추가, 컨텍스트 매니저. `pre <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/pre>`_ 를 참조하세요."
 
 #: ../../xml-class.rst:93 679cd9edd9ed4afba4ff714af8036e0a
 msgid ""
 "Add a :htmlTag:`dl` tag, context manager. See `dl "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl>`_."
-msgstr ""
+msgstr ":htmlTag:`dl` 태그 추가, 컨텍스트 매니저. `dl <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dl>`_ 를 참조하세요."
 
 #: ../../xml-class.rst:97 03e27d350d674d08ad2c44040f814f40
 msgid ""
 "Add a :htmlTag:`div` tag, context manager. See `div "
 "<https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_."
-msgstr ""
+msgstr ":htmlTag:`div` 태그 추가, 컨텍스트 매니저. `div <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_ 를 참조하세요."
 
 #: ../../xml-class.rst:101 f64e22d6332f479b986b6021758b3b15
 msgid ""
 "Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context "
 "manager. See `headings <https://developer.mozilla.org/en-"
 "US/docs/Web/HTML/Element/Heading_Elements>`_."
-msgstr ""
+msgstr "헤더 태그 추가(:htmlTag:`h1` ~ :htmlTag:`h6` 중 하나), 컨텍스트 매니저. `headings <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements>`_ 를 참조하세요."
 
 #: ../../xml-class.rst 065c93b2667f4b59bc0005d8ee418d8e
 #: 0c0a56039e054d99b2a70bf8dd35baee 0f0a8df2cba44726bec15ed750efb16e
@@ -560,29 +560,29 @@ msgstr ""
 #: cf5c3947ed904cf7a110a9133cc0cbf2 e443cd6dc92b463b9aae5951fefa7923
 #: eda27fed7cd14102af44b6d779aa08bd fa812988f52149b688bb626370a17c9b
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../xml-class.rst:103 d3fcc399e60b42c0bdff62809c41bda6
 msgid "a value 1 - 6."
-msgstr ""
+msgstr "1 - 6 사이의 값."
 
 #: ../../xml-class.rst:107 aa6f32332828484d9fd7c76b918eb637
 msgid ""
 "Add a :htmlTag:`hr` tag. See `hr <https://developer.mozilla.org/en-"
 "US/docs/Web/HTML/Element/hr>`_."
-msgstr ""
+msgstr ":htmlTag:`hr` 태그 추가. `hr <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr>`_ 를 참조하세요."
 
 #: ../../xml-class.rst:111 8a7ecb8e64aa4ef78928e81ad5978135
 msgid ""
 "Add an :htmlTag:`img` tag. This causes the inclusion of the named image "
 "in the DOM."
-msgstr ""
+msgstr ":htmlTag:`img` 태그 추가. 이것은 DOM에 명명된 이미지를 포함시킵니다."
 
 #: ../../xml-class.rst:113 b364cd57a22047b1841b3478e4211748
 msgid ""
 "the filename of the image. This **must be the member name** of some entry"
 " of the :ref:`Archive` parameter of the :ref:`Story` constructor."
-msgstr ""
+msgstr "이미지의 파일명. 이것은 :ref:`Story` 생성자의 :ref:`Archive` 매개변수 항목의 **멤버 이름** 이어야 합니다."
 
 #: ../../xml-class.rst:114 feffa4db8ba749cbb80b8956ec59a8fd
 msgid ""
@@ -590,7 +590,7 @@ msgid ""
 "\"30%\". A percentage value refers to the width of the specified `where` "
 "rectangle in :meth:`Story.place`. If this value is provided and `height` "
 "is omitted, the image will be included keeping its aspect ratio."
-msgstr ""
+msgstr "제공된 경우 절대(int) 값 또는 \"30%\" 와 같은 백분율 문자열입니다. 백분율 값은 :meth:`Story.place` 의 지정된 `where` 사각형의 너비를 나타냅니다. 이 값이 제공되고 `height` 가 생략되면 이미지는 종횡비를 유지하면서 포함됩니다."
 
 #: ../../xml-class.rst:115 297ebbb18a1d4119bf9749589e7e9e4e
 msgid ""
@@ -598,221 +598,221 @@ msgid ""
 "\"30%\". A percentage value refers to the height of the specified `where`"
 " rectangle in :meth:`Story.place`. If this value is provided and `width` "
 "is omitted, the image's aspect ratio will be honored."
-msgstr ""
+msgstr "제공된 경우 절대(int) 값 또는 \"30%\" 와 같은 백분율 문자열입니다. 백분율 값은 :meth:`Story.place` 의 지정된 `where` 사각형의 높이를 나타냅니다. 이 값이 제공되고 `width` 가 생략되면 이미지의 종횡비가 유지됩니다."
 
 #: ../../xml-class.rst:119 d974d7965d9e4aaebf7e34b4412b977d
 msgid "Add an :htmlTag:`a` tag - inline element, treated like text."
-msgstr ""
+msgstr ":htmlTag:`a` 태그 추가 - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:121 88cda2b7ced649b08f3b9caab400a13f
 msgid "the URL target."
-msgstr ""
+msgstr "URL 대상."
 
 #: ../../xml-class.rst:122 01b3f8e929ec4382b026f5024c8e461b
 msgid "the text to display. If omitted, the `href` text is shown instead."
-msgstr ""
+msgstr "표시할 텍스트. 생략하면 `href` 텍스트가 대신 표시됩니다."
 
 #: ../../xml-class.rst:126 38a8de21bb334e30a4a2375a71fba139
 msgid "Add an :htmlTag:`ol` tag, context manager."
-msgstr ""
+msgstr ":htmlTag:`ol` 태그 추가, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:130 7efd1c5e1e974d669fc2925b573e2841
 msgid "Add a :htmlTag:`p` tag, context manager."
-msgstr ""
+msgstr ":htmlTag:`p` 태그 추가, 컨텍스트 매니저."
 
 #: ../../xml-class.rst:134 c28c4b6bf3094deaa1ac7d2708055377
 msgid "Add a :htmlTag:`span` tag, context manager. See `span`_"
-msgstr ""
+msgstr ":htmlTag:`span` 태그 추가, 컨텍스트 매니저. `span`_ 를 참조하세요"
 
 #: ../../xml-class.rst:138 9a0db462abc049d99bfebaa8f494b1dd
 msgid ""
 "Add \"subscript\" text(:htmlTag:`sub` tag) - inline element, treated like"
 " text."
-msgstr ""
+msgstr "\"아래첨자\" 텍스트 추가(:htmlTag:`sub` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:142 5eb3622bf42541978d83a6f83b4b1812
 msgid ""
 "Add \"superscript\" text (:htmlTag:`sup` tag) - inline element, treated "
 "like text."
-msgstr ""
+msgstr "\"위첨자\" 텍스트 추가(:htmlTag:`sup` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:146 e0c253e931424beabdbe9a4cc102ff2b
 msgid ""
 "Add \"code\" text (:htmlTag:`code` tag) - inline element, treated like "
 "text."
-msgstr ""
+msgstr "\"코드\" 텍스트 추가(:htmlTag:`code` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:150 487abd903ffe4968a0b3edddbf781aab
 msgid ""
 "Add \"variable\" text (:htmlTag:`var` tag) - inline element, treated like"
 " text."
-msgstr ""
+msgstr "\"변수\" 텍스트 추가(:htmlTag:`var` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:154 511f5e07831d43b98c9cd52460fadbfc
 msgid ""
 "Add \"sample output\" text (:htmlTag:`samp` tag) - inline element, "
 "treated like text."
-msgstr ""
+msgstr "\"샘플 출력\" 텍스트 추가(:htmlTag:`samp` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:158 148acc227ed543ada9eb80f9e3361148
 msgid ""
 "Add \"keyboard input\" text (:htmlTag:`kbd` tag) - inline element, "
 "treated like text."
-msgstr ""
+msgstr "\"키보드 입력\" 텍스트 추가(:htmlTag:`kbd` 태그) - 인라인 요소, 텍스트처럼 처리됩니다."
 
 #: ../../xml-class.rst:166 e4fd83f3113444fa892754d2cd229f16
 msgid "Set the text alignment. Only works for block-level tags."
-msgstr ""
+msgstr "텍스트 정렬을 설정합니다. 블록 레벨 태그에만 작동합니다."
 
 #: ../../xml-class.rst:168 80569a79f1374591a9cbef4bf9a3554b
 msgid ""
 "either one of the :ref:`TextAlign` or the `text-align "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/text-align>`_ values."
-msgstr ""
+msgstr ":ref:`TextAlign` 중 하나 또는 `text-align <https://developer.mozilla.org/en-US/docs/Web/CSS/text-align>`_ 값."
 
 #: ../../xml-class.rst:174 ../../xml-class.rst:187 ../../xml-class.rst:195
 #: 63ec265f02574038be39ffd12857e1e6 8653d6040fce4304b9283b10c63c2a0d
 #: effdb08d08d64ad69f7156445ad85f24
 msgid "the name of the attribute."
-msgstr ""
+msgstr "속성의 이름."
 
 #: ../../xml-class.rst:175 79eb35ff54564e498350c87ded4ab7b7
 msgid "the (optional) value of the attribute."
-msgstr ""
+msgstr "속성의 (선택적) 값."
 
 #: ../../xml-class.rst:179 a2933af8cb7a40b19b6dbea4b44ff85f
 msgid "Retrieve all attributes of the current nodes as a dictionary."
-msgstr ""
+msgstr "현재 노드의 모든 속성을 딕셔너리로 검색합니다."
 
 #: ../../xml-class.rst 32037a4115c54269bed963a9419700ba
 #: 514e402f7fa346968ad90659db7f2e01 a394ddf7dbba4fabb6abe4d9a2494e7e
 #: a8bc581bad6e47c491f2e0bcf268e024 d1475ecbf73a4bd192f538e82597cff8
 #: ef0dfc6236be412da3e165b06927dfea f8bdb32d37f64c87b60bb023b68db4cb
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../xml-class.rst:181 06c6f148cb9342faadd6c3f69b513064
 msgid "a dictionary with the attributes and their values of the node."
-msgstr ""
+msgstr "노드의 속성과 값이 있는 딕셔너리."
 
 #: ../../xml-class.rst:185 7d985017baee4025a15c386fbc54a679
 msgid "Get the attribute value of `key`."
-msgstr ""
+msgstr "`key` 의 속성 값을 가져옵니다."
 
 #: ../../xml-class.rst:189 e58d4bc58a864aac9df9458c3c692295
 msgid "a string with the value of `key`."
-msgstr ""
+msgstr "`key` 의 값을 가진 문자열."
 
 #: ../../xml-class.rst:193 eecf70453d9b436f95de9f883d149934
 msgid "Remove the attribute `key` from the node."
-msgstr ""
+msgstr "노드에서 속성 `key` 를 제거합니다."
 
 #: ../../xml-class.rst:201 57c7564c7d1d49d99080b1d8e3cdf22b
 msgid ""
 "either an RGB value like (255, 0, 0) (for \"red\") or a valid "
 "`background-color <https://developer.mozilla.org/en-US/docs/Web/CSS"
 "/background-color>`_ value."
-msgstr ""
+msgstr "(255, 0, 0)(\"red\"의 경우)와 같은 RGB 값 또는 유효한 `background-color <https://developer.mozilla.org/en-US/docs/Web/CSS/background-color>`_ 값."
 
 #: ../../xml-class.rst:207 07cc41a72c11401e83da8ae6811ccb19
 msgid ""
 "`True`, `False` or a valid `font-weight <https://developer.mozilla.org"
 "/en-US/docs/Web/CSS/font-weight>`_ value."
-msgstr ""
+msgstr "`True`, `False` 또는 유효한 `font-weight <https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight>`_ 값."
 
 #: ../../xml-class.rst:211 322f90617c804bb383193f215f5dde9f
 msgid "Set the color of the text following."
-msgstr ""
+msgstr "다음 텍스트의 색상을 설정합니다."
 
 #: ../../xml-class.rst:213 13738c9e497c45e794028a25ca07431e
 msgid ""
 "either an RGB value like (255, 0, 0) (for \"red\") or a valid `color "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/color_value>`_ value."
-msgstr ""
+msgstr "(255, 0, 0)(\"red\"의 경우)와 같은 RGB 값 또는 유효한 `color <https://developer.mozilla.org/en-US/docs/Web/CSS/color_value>`_ 값."
 
 #: ../../xml-class.rst:217 ef2c0e22c6604e62ba8209606b4b1975
 msgid "Set the number of columns."
-msgstr ""
+msgstr "열 수를 설정합니다."
 
 #: ../../xml-class.rst:219 d06d790826214f6699bc65ae803b9462
 msgid ""
 "a valid `columns <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/columns>`_ value."
-msgstr ""
+msgstr "유효한 `columns <https://developer.mozilla.org/en-US/docs/Web/CSS/columns>`_ 값."
 
 #: ../../xml-class.rst:221 000fd611f95c464f8f11a5a4598a606a
 msgid "Currently ignored - supported in a future MuPDF version."
-msgstr ""
+msgstr "현재 무시됨 - 향후 MuPDF 버전에서 지원됩니다."
 
 #: ../../xml-class.rst:225 fde30f65a0f442f6855556915da1c562
 msgid "Set the font-family."
-msgstr ""
+msgstr "글꼴 패밀리를 설정합니다."
 
 #: ../../xml-class.rst:227 bfb2bd55581945cabecbcb5b056be723
 msgid "e.g. \"sans-serif\"."
-msgstr ""
+msgstr "예: \"sans-serif\"."
 
 #: ../../xml-class.rst:231 085198158cb2442389b728fc435b56d7
 msgid "Set the font size for text following."
-msgstr ""
+msgstr "다음 텍스트의 글꼴 크기를 설정합니다."
 
 #: ../../xml-class.rst:233 53f7e1e14eb44cb0b45fe5b86c6d03cc
 msgid ""
 "a float or a valid `font-size <https://developer.mozilla.org/en-"
 "US/docs/Web/CSS/font-size>`_ value."
-msgstr ""
+msgstr "float 또는 유효한 `font-size <https://developer.mozilla.org/en-US/docs/Web/CSS/font-size>`_ 값."
 
 #: ../../xml-class.rst:237 9930a2a780534ef5a9103c07de7c9fef
 msgid ""
 "Set a :htmlTag:`id`. This serves as a unique identification of the node "
 "within the DOM. Use it to easily locate the node to inspect or modify it."
 " A check for uniqueness is performed."
-msgstr ""
+msgstr ":htmlTag:`id` 를 설정합니다. 이것은 DOM 내에서 노드의 고유 식별자 역할을 합니다. 노드를 쉽게 찾아 검사하거나 수정하는 데 사용하세요. 고유성 검사가 수행됩니다."
 
 #: ../../xml-class.rst:239 801cf634ae524f6cad153eaa722f43ad
 msgid "id string of the node."
-msgstr ""
+msgstr "노드의 id 문자열."
 
 #: ../../xml-class.rst:243 f65729a2c4b74d829046318ef936f1c2
 msgid "Set italic on or off or to some string value for the text following it."
-msgstr ""
+msgstr "다음 텍스트에 대해 기울임꼴을 켜거나 끄거나 일부 문자열 값으로 설정합니다."
 
 #: ../../xml-class.rst:245 149ad466119a4542a2c87b3bee16a879
 msgid ""
 "`True`, `False` or some valid `font-style <https://developer.mozilla.org"
 "/en-US/docs/Web/CSS/font-style>`_ value."
-msgstr ""
+msgstr "`True`, `False` 또는 유효한 `font-style <https://developer.mozilla.org/en-US/docs/Web/CSS/font-style>`_ 값."
 
 #: ../../xml-class.rst:251 1d31490b64ab4d07ad99879f7cb90dbb
 msgid "the distance in points to the previous block."
-msgstr ""
+msgstr "이전 블록까지의 거리(포인트 단위)."
 
 #: ../../xml-class.rst:255 b2b8c642e624457a89cc502c77f83eb6
 msgid "Set height of a line."
-msgstr ""
+msgstr "줄 높이를 설정합니다."
 
 #: ../../xml-class.rst:257 1391850946a446399568957cef3c7105
 msgid ""
 "a float like 1.5 (which sets to `1.5 * fontsize`), or some valid `line-"
 "height <https://developer.mozilla.org/en-US/docs/Web/CSS/line-height>`_ "
 "value."
-msgstr ""
+msgstr "1.5와 같은 float(`1.5 * fontsize` 로 설정됨) 또는 유효한 `line-height <https://developer.mozilla.org/en-US/docs/Web/CSS/line-height>`_ 값."
 
 #: ../../xml-class.rst:261 c131738521f44bc1a5a34f3ba742e01a
 msgid "Set the margin(s)."
-msgstr ""
+msgstr "여백을 설정합니다."
 
 #: ../../xml-class.rst:263 ec3773235e6f4255ada57ef6228fe619
 msgid ""
 "float or string with up to 4 values. See `CSS documentation "
 "<https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_."
-msgstr ""
+msgstr "최대 4개의 값을 가진 float 또는 문자열. `CSS documentation <https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_ 를 참조하세요."
 
 #: ../../xml-class.rst:275 8fbca28b57f64486b5b56c863f4cbe11
 msgid ""
 "Set any or all desired properties in one call. The meaning of argument "
 "values equal the values of the corresponding `set_` methods."
-msgstr ""
+msgstr "한 번의 호출로 원하는 모든 속성을 설정합니다. 인수 값의 의미는 해당 `set_` 메서드의 값과 같습니다."
 
 #: ../../xml-class.rst:277 a14842df5ad24d31b94dd60fec7103a9
 msgid ""
@@ -820,195 +820,195 @@ msgid ""
 "whereas every `set_` method generates a new :htmlTag:`span` below the "
 "current node that has the respective property. So to e.g. \"globally\" "
 "set some property for the :htmlTag:`body`, this method must be used."
-msgstr ""
+msgstr "이 메서드로 설정된 속성은 노드에 직접 연결되지만, 모든 `set_` 메서드는 해당 속성을 가진 새 :htmlTag:`span` 을 현재 노드 아래에 생성합니다. 따라서 예를 들어 :htmlTag:`body` 에 대해 일부 속성을 \"전역적으로\" 설정하려면 이 메서드를 사용해야 합니다."
 
 #: ../../xml-class.rst:281 5da4e32a2695451ca00a8a86bab4541b
 msgid "Set (add) some style attribute not supported by its own `set_` method."
-msgstr ""
+msgstr "자체 `set_` 메서드로 지원되지 않는 일부 스타일 속성을 설정(추가)합니다."
 
 #: ../../xml-class.rst:283 6392305b5a7e471fa1c1d69022c6bd2c
 msgid "any valid CSS style value."
-msgstr ""
+msgstr "유효한 CSS 스타일 값."
 
 #: ../../xml-class.rst:287 c0bf1c8061944e968296465505764685
 msgid "Set (add) some \"class\" attribute."
-msgstr ""
+msgstr "\"class\" 속성을 설정(추가)합니다."
 
 #: ../../xml-class.rst:289 9889f5cc48754a19aca80a823fcb4332
 msgid ""
 "the name of the class. Must have been defined in either the HTML or the "
 "CSS source of the DOM."
-msgstr ""
+msgstr "클래스의 이름. DOM의 HTML 또는 CSS 소스에 정의되어 있어야 합니다."
 
 #: ../../xml-class.rst:293 ed0b59c949334c3fa17dc81324af792c
 msgid ""
 "Set indentation for the first textblock line. Only works for block-level "
 "nodes."
-msgstr ""
+msgstr "첫 번째 텍스트 블록 줄의 들여쓰기를 설정합니다. 블록 레벨 노드에만 작동합니다."
 
 #: ../../xml-class.rst:295 538f9c84b65f484a93b95b4d0606fb41
 msgid ""
 "a valid `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS"
 "/text-indent>`_ value. Please note that negative values do not work."
-msgstr ""
+msgstr "유효한 `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS/text-indent>`_ 값. 음수 값은 작동하지 않습니다."
 
 #: ../../xml-class.rst:300 d3a718c0c70d49049aebc80cc901669d
 msgid ""
 "Append a child node. This is a low-level method used by other methods "
 "like :meth:`Xml.add_paragraph`."
-msgstr ""
+msgstr "자식 노드를 추가합니다. 이것은 :meth:`Xml.add_paragraph` 와 같은 다른 메서드에서 사용하는 저수준 메서드입니다."
 
 #: ../../xml-class.rst:302 e7b73c698ba84cbdab245a96fa97fe50
 msgid "the :ref:`Xml` node to append."
-msgstr ""
+msgstr "추가할 :ref:`Xml` 노드."
 
 #: ../../xml-class.rst:308 eee163ad3bf946fc8d1c06451560b1f6
 msgid "the text to append."
-msgstr ""
+msgstr "추가할 텍스트."
 
 #: ../../xml-class.rst 48ca1cf827424632b6df8b1f61aff2d8
 #: 5a467a48aece48f5af3c2d9dd6a79a6a 79a19d1a83304de78df5ae63b3cf011d
 #: 9b7aa1d2e710481dbbd51c4d42edee22
 msgid "Return type"
-msgstr ""
+msgstr "반환 타입"
 
 #: ../../xml-class.rst:310 ../../xml-class.rst:319
 #: 32c303fb0dac4363930ab76a9fae8a4f 53681ecca3f3467fb5fae3cbacb510bb
 msgid ":ref:`Xml`"
-msgstr ""
+msgstr ":ref:`Xml`"
 
 #: ../../xml-class.rst:311 499726c017994824bde748a90a928f34
 msgid "the created element."
-msgstr ""
+msgstr "생성된 요소."
 
 #: ../../xml-class.rst:315 0c1436ead4e64f169d82559ac30aafde
 msgid ""
 "Create a new node with a given tag. This a low-level method used by other"
 " methods like :meth:`Xml.add_paragraph`."
-msgstr ""
+msgstr "주어진 태그로 새 노드를 생성합니다. 이것은 :meth:`Xml.add_paragraph` 와 같은 다른 메서드에서 사용하는 저수준 메서드입니다."
 
 #: ../../xml-class.rst:317 650c0522f68e46f79b7b78e749ef099f
 msgid "the element tag."
-msgstr ""
+msgstr "요소 태그."
 
 #: ../../xml-class.rst:320 c2e4eca0854f4f44904ae958cc1b512a
 msgid ""
 "the created element. To actually bind it to the DOM, use "
 ":meth:`Xml.append_child`."
-msgstr ""
+msgstr "생성된 요소. 실제로 DOM에 바인딩하려면 :meth:`Xml.append_child` 를 사용하세요."
 
 #: ../../xml-class.rst:324 389df01cef2c4d66b9de220b4cc87ca6
 msgid "Insert the given element `elem` before this node."
-msgstr ""
+msgstr "주어진 요소 `elem` 을 이 노드 앞에 삽입합니다."
 
 #: ../../xml-class.rst:326 ../../xml-class.rst:332
 #: 1ed21b3334994d7bbbc9764862bcf4f6 600cfd70bbe74df6877a4b86b38f1ebb
 msgid "some :ref:`Xml` element."
-msgstr ""
+msgstr "일부 :ref:`Xml` 요소."
 
 #: ../../xml-class.rst:330 e5458cc6669144b7bfdf2343f0c21e74
 msgid "Insert the given element `elem` after this node."
-msgstr ""
+msgstr "주어진 요소 `elem` 을 이 노드 뒤에 삽입합니다."
 
 #: ../../xml-class.rst:336 42abfb8ab4174455a80a025ce97bd50c
 msgid ""
 "Make a copy of this node, which then may be appended (using "
 ":meth:`Xml.append_child`) or inserted (using one of "
 ":meth:`Xml.insert_before`, :meth:`Xml.insert_after`) in this DOM."
-msgstr ""
+msgstr "이 노드의 복사본을 만듭니다. 그런 다음 이 DOM에 추가( :meth:`Xml.append_child` 사용)하거나 삽입( :meth:`Xml.insert_before`, :meth:`Xml.insert_after` 중 하나 사용)할 수 있습니다."
 
 #: ../../xml-class.rst:338 b5252a0bf4364fae8cf35e1e9e7d0383
 msgid "the clone (:ref:`Xml`) of the current node."
-msgstr ""
+msgstr "현재 노드의 복제본(:ref:`Xml`)."
 
 #: ../../xml-class.rst:342 362b5a14f7fd43b8a4be84f6b6759549
 msgid "Remove this node from the DOM."
-msgstr ""
+msgstr "이 노드를 DOM에서 제거합니다."
 
 #: ../../xml-class.rst:347 87f726733b6b4164ae7d762eb87f82f9
 msgid "For debugging purposes, print this node's structure in a simplified form."
-msgstr ""
+msgstr "디버깅 목적으로 이 노드의 구조를 간소화된 형태로 출력합니다."
 
 #: ../../xml-class.rst:351 ba4e72c688cb4136b4f2819b163f141d
 msgid ""
 "Under the current node, find the first node with the given `tag`, "
 "attribute `att` and value `match`."
-msgstr ""
+msgstr "현재 노드 아래에서 주어진 `tag`, 속성 `att` 및 값 `match` 를 가진 첫 번째 노드를 찾습니다."
 
 #: ../../xml-class.rst:353 0eb8c23c7e404d0f8266bdd5afc90f1d
 msgid "restrict search to this tag. May be `None` for unrestricted searches."
-msgstr ""
+msgstr "이 태그로 검색을 제한합니다. 제한 없는 검색의 경우 `None` 일 수 있습니다."
 
 #: ../../xml-class.rst:354 e85128004d5248e39422fe39444ba26e
 msgid "check this attribute. May be `None`."
-msgstr ""
+msgstr "이 속성을 확인합니다. `None` 일 수 있습니다."
 
 #: ../../xml-class.rst:355 3a104232d8d8490bb8bb68707170fe0d
 msgid "the desired attribute value to match. May be `None`."
-msgstr ""
+msgstr "일치시킬 원하는 속성 값. `None` 일 수 있습니다."
 
 #: ../../xml-class.rst:357 ../../xml-class.rst:364
 #: 5f386373c6214610aa33071db5466757 e29314d184624c83a397fe0d6ece01d9
 msgid ":ref:`Xml`."
-msgstr ""
+msgstr ":ref:`Xml`."
 
 #: ../../xml-class.rst:358 38c0470acdf04c86abfcedf9fe0c0b47
 msgid "`None` if nothing found, otherwise the first matching node."
-msgstr ""
+msgstr "찾은 것이 없으면 `None`, 그렇지 않으면 첫 번째 일치하는 노드."
 
 #: ../../xml-class.rst:362 27dc6f1158ee4ae1ab5b5ee699711efb
 msgid ""
 "Continue a previous :meth:`Xml.find` (or :meth:`find_next`) with the same"
 " values."
-msgstr ""
+msgstr "동일한 값으로 이전 :meth:`Xml.find` (또는 :meth:`find_next`) 를 계속합니다."
 
 #: ../../xml-class.rst:365 abf8144df2e74b2691806ff1de2952fe
 msgid "`None` if none more found, otherwise the next matching node."
-msgstr ""
+msgstr "더 이상 찾은 것이 없으면 `None`, 그렇지 않으면 다음 일치하는 노드."
 
 #: ../../xml-class.rst:378 40847870fc8148d0813cf916ab8843c0
 msgid "Check if a text node."
-msgstr ""
+msgstr "텍스트 노드인지 확인합니다."
 
 #: ../../xml-class.rst:402 53dbcceafddb48ffb942b33e36196bd8
 msgid "Setting Text properties"
-msgstr ""
+msgstr "텍스트 속성 설정"
 
 #: ../../xml-class.rst:404 dc2cc7b945f844119dedecfe84cdf6dc
 msgid ""
 "In HTML tags can be nested such that innermost text **inherits "
 "properties** from the tag enveloping its parent tag. For example "
 "`<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>`."
-msgstr ""
+msgstr "HTML에서 태그는 가장 안쪽 텍스트가 부모 태그를 감싸는 태그로부터 **속성을 상속** 하도록 중첩될 수 있습니다. 예: `<p><b>some bold text<i>this is bold and italic</i></b>regular text</p>`."
 
 #: ../../xml-class.rst:406 170b31327e6942bab73827a94f772b2b
 msgid ""
 "To achieve the same effect, methods like :meth:`Xml.set_bold` and "
 ":meth:`Xml.set_italic` each open a temporary :htmlTag:`span` with the "
 "desired property underneath the current node."
-msgstr ""
+msgstr "동일한 효과를 얻기 위해 :meth:`Xml.set_bold` 및 :meth:`Xml.set_italic` 와 같은 메서드는 각각 현재 노드 아래에 원하는 속성을 가진 임시 :htmlTag:`span` 을 엽니다."
 
 #: ../../xml-class.rst:408 1589a3ff75a54034bb3aba5ae73b9048
 msgid ""
 "In addition, these methods return there parent node, so they can be "
 "concatenated with each other."
-msgstr ""
+msgstr "또한 이러한 메서드는 부모 노드를 반환하므로 서로 연결할 수 있습니다."
 
 #: ../../xml-class.rst:413 9aac54ddfa0142bfb1e6966cbe1b4b1a
 msgid "Context Manager support"
-msgstr ""
+msgstr "컨텍스트 매니저 지원"
 
 #: ../../xml-class.rst:414 37fa0cacd232431c8502088e2fd24017
 msgid "The standard way to add nodes to a DOM is this::"
-msgstr ""
+msgstr "DOM에 노드를 추가하는 표준 방법은 다음과 같습니다::"
 
 #: ../../xml-class.rst:427 8b079fb6a7d7433681981c09a7afe0b8
 msgid ""
 "Methods that are flagged as \"context managers\" can conveniently be used"
 " in this way::"
-msgstr ""
+msgstr "\"컨텍스트 매니저\" 로 표시된 메서드는 다음과 같이 편리하게 사용할 수 있습니다::"
 
 #: ../../footer.rst:46 28d16ed4d4324a5fa5f2b048fb351902
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

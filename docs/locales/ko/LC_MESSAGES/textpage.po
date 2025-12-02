@@ -21,29 +21,29 @@ msgstr ""
 
 #: ../../header.rst:-1 a689d6f014ae4b3e996f4ea1430fd7e2
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 fcaf663acdd64264ba54a9b09a7a053d
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 2384969b3a1a48ecb481ced21413e4ab
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../textpage.rst:7 b50883dcbbd2424db737f428b4204dc7
 msgid "TextPage"
-msgstr ""
+msgstr "TextPage"
 
 #: ../../textpage.rst:9 6e81bba1ccf7481d8fc21ba0651cd715
 msgid ""
 "This class represents text and images shown on a document page. All "
 ":ref:`MuPDF document types<Supported_File_Types>` are supported."
-msgstr ""
+msgstr "이 클래스는 문서 페이지에 표시된 텍스트와 이미지를 나타냅니다. 모든 :ref:`MuPDF 문서 타입<Supported_File_Types>` 이 지원됩니다."
 
 #: ../../textpage.rst:11 214a6f0b55b94183bb1a4fee5b003e96
 msgid ""
@@ -52,175 +52,175 @@ msgid ""
 "in this class, there exist wrappers in :ref:`Page` which are handier to "
 "use. The last column of this table shows these corresponding :ref:`Page` "
 "methods."
-msgstr ""
+msgstr "텍스트 페이지를 생성하는 일반적인 방법은 :meth:`DisplayList.get_textpage` 와 :meth:`Page.get_textpage` 입니다. 이 클래스의 메서드 세트가 제한적이므로, 더 편리하게 사용할 수 있는 :ref:`Page` 에 래퍼가 존재합니다. 이 테이블의 마지막 열은 이러한 해당 :ref:`Page` 메서드를 보여줍니다."
 
 #: ../../textpage.rst:13 8974c23cb16b4aa1b56189eff275c6fe
 msgid "For a description of what this class is all about, see Appendix 2."
-msgstr ""
+msgstr "이 클래스에 대한 설명은 부록 2를 참조하세요."
 
 #: ../../textpage.rst:16 a2ef271a41f24f089f82cb6c12de5544
 msgid "**Method**"
-msgstr ""
+msgstr "**메서드**"
 
 #: ../../textpage.rst:16 5b00ef707e3f4637b40a48d5d422e544
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../textpage.rst:16 c508a7963cbb4c77ab691615841f72fb
 msgid "page get_text or search method"
-msgstr ""
+msgstr "페이지 get_text 또는 search 메서드"
 
 #: ../../textpage.rst:18 24790f911d6d4af491f3f0d4a90c5e4e
 msgid ":meth:`~.extractText`"
-msgstr ""
+msgstr ":meth:`~.extractText`"
 
 #: ../../textpage.rst:18 56f3e18347124df290f5bb60a9c6ab6f
 msgid "extract plain text"
-msgstr ""
+msgstr "일반 텍스트 추출"
 
 #: ../../textpage.rst:18 ../../textpage.rst:19 292888a082e041b8820ab5b47243fa82
 #: 587fc832f8b941329c209fc49dd67b0b
 msgid "\"text\""
-msgstr ""
+msgstr "\"text\""
 
 #: ../../textpage.rst:19 062786889a8a4ad586cea1bcbfa2bb0d
 msgid ":meth:`~.extractTEXT`"
-msgstr ""
+msgstr ":meth:`~.extractTEXT`"
 
 #: ../../textpage.rst:19 e0b7b72c38c746a4b7c512c66b738f1c
 msgid "synonym of previous"
-msgstr ""
+msgstr "이전의 동의어"
 
 #: ../../textpage.rst:20 98ed5aa1b9884de7858b147ee2bd2f0c
 msgid ":meth:`~.extractBLOCKS`"
-msgstr ""
+msgstr ":meth:`~.extractBLOCKS`"
 
 #: ../../textpage.rst:20 35f208a1af3c4c5c8f17069788e702ca
 msgid "plain text grouped in blocks"
-msgstr ""
+msgstr "블록으로 그룹화된 일반 텍스트"
 
 #: ../../textpage.rst:20 6318f67c8f964981b4a354142092e102
 msgid "\"blocks\""
-msgstr ""
+msgstr "\"blocks\""
 
 #: ../../textpage.rst:21 07a1408ddaf24b158ac6dc5d9fcc8115
 msgid ":meth:`~.extractWORDS`"
-msgstr ""
+msgstr ":meth:`~.extractWORDS`"
 
 #: ../../textpage.rst:21 52e0458f76ee4231a07829bb051b29ac
 msgid "all words with their bbox"
-msgstr ""
+msgstr "바운딩 박스를 포함한 모든 단어"
 
 #: ../../textpage.rst:21 2efe7bf211e74dc4a731d81393a6e10c
 msgid "\"words\""
-msgstr ""
+msgstr "\"words\""
 
 #: ../../textpage.rst:22 7c9da76988c243e0b79a0f2a5c23cee7
 msgid ":meth:`~.extractHTML`"
-msgstr ""
+msgstr ":meth:`~.extractHTML`"
 
 #: ../../textpage.rst:22 269dcb92057443e096b0cd366dd7ba29
 msgid "page content in HTML format"
-msgstr ""
+msgstr "HTML 형식의 페이지 콘텐츠"
 
 #: ../../textpage.rst:22 d24ee0e44d5c45e59f125aacaccf3465
 msgid "\"html\""
-msgstr ""
+msgstr "\"html\""
 
 #: ../../textpage.rst:23 388abf5016ba455c959cdd56009a4499
 msgid ":meth:`~.extractXHTML`"
-msgstr ""
+msgstr ":meth:`~.extractXHTML`"
 
 #: ../../textpage.rst:23 b09f5acedceb4611bc7ea51121eb9bb2
 msgid "page content in XHTML format"
-msgstr ""
+msgstr "XHTML 형식의 페이지 콘텐츠"
 
 #: ../../textpage.rst:23 416a7019408e492da02693ffd6949a7a
 msgid "\"xhtml\""
-msgstr ""
+msgstr "\"xhtml\""
 
 #: ../../textpage.rst:24 ee85d9810eff41caa760d9ffb2a4fed2
 msgid ":meth:`~.extractXML`"
-msgstr ""
+msgstr ":meth:`~.extractXML`"
 
 #: ../../textpage.rst:24 8ab1b023d2cc42b6ae74cb3b92b8d797
 msgid "page text in XML format"
-msgstr ""
+msgstr "XML 형식의 페이지 텍스트"
 
 #: ../../textpage.rst:24 fd3d4026c2c045b6a5dc724cd3c1cd16
 msgid "\"xml\""
-msgstr ""
+msgstr "\"xml\""
 
 #: ../../textpage.rst:25 a0d67d42d20d483ba2dc7c60232c4262
 msgid ":meth:`~.extractDICT`"
-msgstr ""
+msgstr ":meth:`~.extractDICT`"
 
 #: ../../textpage.rst:25 ../../textpage.rst:27 1867105a7ef841cd809711e47e335c93
 #: 8cfc8dba8d384e489e2948bcbd7adaca
 msgid "page content in *dict* format"
-msgstr ""
+msgstr "*dict* 형식의 페이지 콘텐츠"
 
 #: ../../textpage.rst:25 8159466e656146a38f47f43f6bdcb810
 msgid "\"dict\""
-msgstr ""
+msgstr "\"dict\""
 
 #: ../../textpage.rst:26 1d75b88f1edb442898ea8017de3492d7
 msgid ":meth:`~.extractJSON`"
-msgstr ""
+msgstr ":meth:`~.extractJSON`"
 
 #: ../../textpage.rst:26 ../../textpage.rst:28 7480fba67d534ecc8956acf7902d5aed
 #: 82d01a9dbb1d488198ecd836fed442ff
 msgid "page content in JSON format"
-msgstr ""
+msgstr "JSON 형식의 페이지 콘텐츠"
 
 #: ../../textpage.rst:26 78d2d0b851b240db8420aa1f8c823676
 msgid "\"json\""
-msgstr ""
+msgstr "\"json\""
 
 #: ../../textpage.rst:27 1ade4b09c9674544bb58977574f5d593
 msgid ":meth:`~.extractRAWDICT`"
-msgstr ""
+msgstr ":meth:`~.extractRAWDICT`"
 
 #: ../../textpage.rst:27 3155e2902bcd4713aa47e4919ec46081
 msgid "\"rawdict\""
-msgstr ""
+msgstr "\"rawdict\""
 
 #: ../../textpage.rst:28 b5f0e031790f497694abb5caa6eee204
 msgid ":meth:`~.extractRAWJSON`"
-msgstr ""
+msgstr ":meth:`~.extractRAWJSON`"
 
 #: ../../textpage.rst:28 9b7e2e49823242bf83ea6a25986488d0
 msgid "\"rawjson\""
-msgstr ""
+msgstr "\"rawjson\""
 
 #: ../../textpage.rst:29 c2c9458e9c4a490087a519b61ecc5b19
 msgid ":meth:`~.search`"
-msgstr ""
+msgstr ":meth:`~.search`"
 
 #: ../../textpage.rst:29 ee8c8a71aa524335969fbb8af60b211e
 msgid "Search for a string in the page"
-msgstr ""
+msgstr "페이지에서 문자열 검색"
 
 #: ../../textpage.rst:29 f79465ca7ff14a0a80fc365911c70bf6
 msgid ":meth:`Page.search_for`"
-msgstr ""
+msgstr ":meth:`Page.search_for`"
 
 #: ../../textpage.rst:32 083eef252c154937ae0bc85aa81aff68
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../textpage.rst:40 f33111b086ad4d72980c782edd305dd0
 msgid ""
 "Return a string of the page's complete text. The text is UTF-8 unicode "
 "and in the same sequence as specified at the time of document creation."
-msgstr ""
+msgstr "페이지의 전체 텍스트 문자열을 반환합니다. 텍스트는 UTF-8 유니코드이며 문서 생성 시 지정된 순서와 동일합니다."
 
 #: ../../textpage.rst 3e9d1669f2fe4f15ab3177563f0420e3
 #: 4bd4b9fa21ed426188fe213d2241f4ac 720def9977a743fdb77d7caeb93f8e63
 #: aea747bd7d624e70bc7def00d62df838 ca24753a6b21474daba199227cbdb7cd
 #: d0072bc05d7144aca56767bfde82c6a9 e1647eb182054d70be24b2cc9c6381ca
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../textpage.rst:42 ../../textpage.rst:85 ../../textpage.rst:93
 #: ../../textpage.rst:113 ../../textpage.rst:121
@@ -231,7 +231,7 @@ msgid ""
 "(new in v1.19.1) sort the output by vertical, then horizontal "
 "coordinates. In many cases, this should suffice to generate a \"natural\""
 " reading order."
-msgstr ""
+msgstr "(v1.19.1에서 새로 추가됨) 출력을 수직 좌표, 그 다음 수평 좌표로 정렬합니다. 많은 경우 이것으로 \"자연스러운\" 읽기 순서를 생성할 수 있습니다."
 
 #: ../../textpage.rst 07f5f0a7fa5f4efbb1093cd496e1425a
 #: 0f27872a10dd46fda6c8e7ecaf77c92b 34621dc4778249c49fbd4c5f8fd2fd39
@@ -240,42 +240,42 @@ msgstr ""
 #: c0b2e445162446e1b4a2e0eb834ac7ca f3b8d685f26e44edbe5e23bac745020d
 #: f63537f76faf47c884089748bdcbcd8b f8803c61a6fc41fe89a08237112d6d49
 msgid "Return type"
-msgstr ""
+msgstr "반환 타입"
 
 #: ../../textpage.rst:49 63307d556a584ea19173a54596c7f880
 msgid ""
 "Textpage content as a list of text lines grouped by block. Each list "
 "items looks like this::"
-msgstr ""
+msgstr "블록별로 그룹화된 텍스트 줄 목록으로 된 텍스트 페이지 콘텐츠. 각 목록 항목은 다음과 같습니다::"
 
 #: ../../textpage.rst:53 78718be495234f9dbfa93e48e16d1e13
 msgid ""
 "The first four entries are the block's bbox coordinates, *block_type* is "
 "1 for an image block, 0 for text. *block_no* is the block sequence "
 "number. Multiple text lines are joined via line breaks."
-msgstr ""
+msgstr "처음 네 개 항목은 블록의 bbox 좌표이며, *block_type* 은 이미지 블록의 경우 1, 텍스트의 경우 0입니다. *block_no* 는 블록 시퀀스 번호입니다. 여러 텍스트 줄은 줄바꿈으로 연결됩니다."
 
 #: ../../textpage.rst:55 12f402e2e12346f8b7dd871f590f3197
 msgid ""
 "For an image block, its bbox and a text line with some image meta "
 "information is included -- **not the image content**."
-msgstr ""
+msgstr "이미지 블록의 경우 bbox와 일부 이미지 메타 정보가 포함된 텍스트 줄이 포함됩니다. **이미지 콘텐츠는 포함되지 않습니다**."
 
 #: ../../textpage.rst:57 fb2f6c324124423bb74dbd2e4b974806
 msgid ""
 "This is a high-speed method with just enough information to output plain "
 "text in desired reading sequence."
-msgstr ""
+msgstr "원하는 읽기 순서로 일반 텍스트를 출력하기에 충분한 정보를 제공하는 고속 메서드입니다."
 
 #: ../../textpage.rst:63 cfb05f044359435fb061d158cb6ef21e
 msgid "Changed in v1.23.5: added `delimiters` parameter"
-msgstr ""
+msgstr "v1.23.5에서 변경됨: `delimiters` 매개변수 추가"
 
 #: ../../textpage.rst:65 e3116b1baa374ce2b67b6002aaae107d
 msgid ""
 "Textpage content as a list of single words with bbox information. An item"
 " of this list looks like this::"
-msgstr ""
+msgstr "bbox 정보가 있는 단일 단어 목록으로 된 텍스트 페이지 콘텐츠. 이 목록의 항목은 다음과 같습니다::"
 
 #: ../../textpage.rst:69 6f56fac0469e45afa313a96110815e53
 msgid ""
@@ -288,13 +288,13 @@ msgid ""
 "`\"outlook\"`, `\"com\"` will be returned. Other possible uses include "
 "ignoring punctuation characters `delimiters=string.punctuation`. The "
 "\"word\" strings will not contain any delimiting character."
-msgstr ""
+msgstr "(v1.23.5에서 새로 추가됨) 이러한 문자를 *추가* 단어 구분자로 사용합니다. 기본적으로 모든 공백(줄바꿈 없는 공백 `0xA0` 포함)은 단어의 시작과 끝을 나타냅니다. 이제 이를 유발하는 더 많은 문자를 지정할 수 있습니다. 예를 들어 기본값은 `\"john.doe@outlook.com\"` 을 **하나의** 단어로 반환합니다. `delimiters=\"@.\"` 를 지정하면 **네 개의** 단어 `\"john\"`, `\"doe\"`, `\"outlook\"`, `\"com\"` 이 반환됩니다. 다른 가능한 용도로는 구두점 문자 무시 `delimiters=string.punctuation` 가 있습니다. \"word\" 문자열에는 구분 문자가 포함되지 않습니다."
 
 #: ../../textpage.rst:71 f122cb9dbcfb43fb8cd911d4aabb4817
 msgid ""
 "This is a high-speed method which e.g. allows extracting text from within"
 " given areas or recovering the text reading sequence."
-msgstr ""
+msgstr "이것은 예를 들어 주어진 영역 내에서 텍스트를 추출하거나 텍스트 읽기 순서를 복구할 수 있게 하는 고속 메서드입니다."
 
 #: ../../textpage.rst:77 9fd59d1b4ce240e7ab72d24d4bfe0b1d
 msgid ""
@@ -303,13 +303,13 @@ msgid ""
 "(encoded as base64 strings). You need an HTML package to interpret the "
 "output in Python. Your internet browser should be able to adequately "
 "display this information, but see :ref:`HTMLQuality`."
-msgstr ""
+msgstr "HTML 형식의 문자열로 된 텍스트 페이지 콘텐츠. 이 버전은 완전한 서식 및 위치 정보를 포함합니다. 이미지가 포함됩니다(base64 문자열로 인코딩됨). Python에서 출력을 해석하려면 HTML 패키지가 필요합니다. 인터넷 브라우저가 이 정보를 적절히 표시할 수 있어야 하지만 :ref:`HTMLQuality` 를 참조하세요."
 
 #: ../../textpage.rst:83 a07e225c4bf3412585128a2fb86b8200
 msgid ""
 "Textpage content as a Python dictionary. Provides same information detail"
 " as HTML. See below for the structure."
-msgstr ""
+msgstr "Python 딕셔너리로 된 텍스트 페이지 콘텐츠. HTML과 동일한 정보 세부 사항을 제공합니다. 구조는 아래를 참조하세요."
 
 #: ../../textpage.rst:91 3c7dcaacfe924c9ab076958b43f75600
 msgid ""
@@ -318,7 +318,7 @@ msgid ""
 "compatibility. You will probably use this method ever only for outputting"
 " the result to some file. The  method detects binary image data and "
 "converts them to base64 encoded strings."
-msgstr ""
+msgstr "JSON 문자열로 된 텍스트 페이지 콘텐츠. `json.dumps(TextPage.extractDICT())` 로 생성됩니다. 하위 호환성을 위해 포함되었습니다. 이 메서드는 아마도 결과를 파일로 출력하는 용도로만 사용할 것입니다. 이 메서드는 바이너리 이미지 데이터를 감지하고 base64 인코딩된 문자열로 변환합니다."
 
 #: ../../textpage.rst:99 87f36a88ced6410383dcdafa2979eae5
 msgid ""
@@ -326,7 +326,7 @@ msgid ""
 "comparable with :meth:`extractTEXT`, but also contains images (base64 "
 "encoded). This method makes no attempt to re-create the original visual "
 "appearance."
-msgstr ""
+msgstr "XHTML 형식의 문자열로 된 텍스트 페이지 콘텐츠. 텍스트 정보 세부 사항은 :meth:`extractTEXT` 와 유사하지만 이미지도 포함합니다(base64 인코딩됨). 이 메서드는 원본 시각적 모양을 재현하려고 시도하지 않습니다."
 
 #: ../../textpage.rst:105 ce4a584473674c4e91533c25a532fe15
 msgid ""
@@ -334,7 +334,7 @@ msgid ""
 "formatting information about every single character on the page: font, "
 "size, line, paragraph, location, color, etc. Contains no images. You need"
 " an XML package to interpret the output in Python."
-msgstr ""
+msgstr "XML 형식의 문자열로 된 텍스트 페이지 콘텐츠. 이것은 페이지의 모든 단일 문자에 대한 완전한 서식 정보를 포함합니다: 글꼴, 크기, 줄, 단락, 위치, 색상 등. 이미지는 포함되지 않습니다. Python에서 출력을 해석하려면 XML 패키지가 필요합니다."
 
 #: ../../textpage.rst:111 53dc5f5e5cc04c54a952877ba4755541
 msgid ""
@@ -343,7 +343,7 @@ msgid ""
 "(including any images). It provides additional detail down to each "
 "character, which makes using XML obsolete in many cases. See below for "
 "the structure."
-msgstr ""
+msgstr "Python 딕셔너리로 된 텍스트 페이지 콘텐츠. 기술적으로 :meth:`extractDICT` 와 유사하며, 해당 정보를 하위 집합으로 포함합니다(이미지 포함). 각 문자까지 추가 세부 정보를 제공하므로 많은 경우 XML 사용을 불필요하게 만듭니다. 구조는 아래를 참조하세요."
 
 #: ../../textpage.rst:119 33863035deb9499b8feb6d00b3064acb
 msgid ""
@@ -351,30 +351,30 @@ msgid ""
 "`json.dumps(TextPage.extractRAWDICT())`. You will probably use this "
 "method ever only for outputting the result to some file. The  method "
 "detects binary image data and converts them to base64 encoded strings."
-msgstr ""
+msgstr "JSON 문자열로 된 텍스트 페이지 콘텐츠. `json.dumps(TextPage.extractRAWDICT())` 로 생성됩니다. 이 메서드는 아마도 결과를 파일로 출력하는 용도로만 사용할 것입니다. 이 메서드는 바이너리 이미지 데이터를 감지하고 base64 인코딩된 문자열로 변환합니다."
 
 #: ../../textpage.rst:127 209053b84b6545e3994a163287facefa
 msgid "Changed in v1.18.2"
-msgstr ""
+msgstr "v1.18.2에서 변경됨"
 
 #: ../../textpage.rst:129 05ffbacb61c7489882f082b48886e8d5
 msgid "Search for *string* and return a list of found locations."
-msgstr ""
+msgstr "*string* 을 검색하고 찾은 위치 목록을 반환합니다."
 
 #: ../../textpage.rst:131 c71683b946f54d84aff575da2005613b
 msgid ""
 "the string to search for. Upper and lower cases will all match if needle "
 "consists of ASCII letters only -- it does not yet work for \"Ä\" versus "
 "\"ä\", etc."
-msgstr ""
+msgstr "검색할 문자열. needle이 ASCII 문자로만 구성된 경우 대소문자가 모두 일치합니다. \"Ä\" 와 \"ä\" 등에는 아직 작동하지 않습니다."
 
 #: ../../textpage.rst:132 0f1af98486ec43429066d8c48e3dc958
 msgid "return quadrilaterals instead of rectangles."
-msgstr ""
+msgstr "사각형 대신 사각형을 반환합니다."
 
 #: ../../textpage.rst 943e3f54b51f470ba6d34411ccdabcd3
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../textpage.rst:134 89e19eb80ccd4b318611f268b0f75d7e
 msgid ""
@@ -385,15 +385,15 @@ msgid ""
 "**now supports dehyphenation**, so it will find e.g. \"method\", even if "
 "it was hyphenated in two parts \"meth-\" and \"od\" across two lines. The"
 " two returned rectangles will contain \"meth\" (no hyphen) and \"od\"."
-msgstr ""
+msgstr ":ref:`Rect` 또는 :ref:`Quad` 객체 목록으로, 각각 찾은 *needle* 발생을 둘러쌉니다. 검색 문자열에 공백이 포함될 수 있으므로 해당 부분이 다른 줄에서 발견될 수 있습니다. 이 경우 둘 이상의 사각형(또는 사각형)이 반환됩니다. **(v1.18.2에서 변경됨)** 이 메서드는 **이제 하이픈 제거를 지원** 하므로 두 줄에 걸쳐 \"meth-\" 와 \"od\" 로 하이픈 처리된 경우에도 예를 들어 \"method\" 를 찾을 수 있습니다. 반환된 두 사각형에는 \"meth\" (하이픈 없음)와 \"od\" 가 포함됩니다."
 
 #: ../../textpage.rst:136 c134a9fb178648ae8bab433d54e37e2b
 msgid "**Overview of changes in v1.18.2:**"
-msgstr ""
+msgstr "**v1.18.2의 변경 사항 개요:**"
 
 #: ../../textpage.rst:138 d9a3438955224e5685de548903667d74
 msgid "The `hit_max` parameter has been removed: all hits are always returned."
-msgstr ""
+msgstr "`hit_max` 매개변수가 제거되었습니다. 모든 히트가 항상 반환됩니다."
 
 #: ../../textpage.rst:139 c687c9305d954f6eaea257e2fe5bbe58
 msgid ""
@@ -401,43 +401,43 @@ msgid ""
 "inside this area is examined. Only characters with fully contained bboxes"
 " are considered. The wrapper method :meth:`Page.search_for` "
 "correspondingly supports a *clip* parameter."
-msgstr ""
+msgstr ":ref:`TextPage` 의 `rect` 매개변수가 이제 존중됩니다. 이 영역 내의 텍스트만 검사됩니다. 완전히 포함된 bbox를 가진 문자만 고려됩니다. 래퍼 메서드 :meth:`Page.search_for` 는 이에 따라 *clip* 매개변수를 지원합니다."
 
 #: ../../textpage.rst:140 ec9e270e430341a88939c174a0e838a3
 msgid "**Hyphenated words** are now found."
-msgstr ""
+msgstr "**하이픈 처리된 단어** 가 이제 찾아집니다."
 
 #: ../../textpage.rst:141 595b14cd29774ef49fd1666b1d37dbb7
 msgid ""
 "**Overlapping rectangles** in the same line are now automatically joined."
 " We assume that such separations are an artifact created by multiple "
 "marked content groups, containing parts of the same search needle."
-msgstr ""
+msgstr "같은 줄의 **겹치는 사각형** 이 이제 자동으로 결합됩니다. 이러한 분리는 동일한 검색 needle의 일부를 포함하는 여러 표시된 콘텐츠 그룹에 의해 생성된 아티팩트라고 가정합니다."
 
 #: ../../textpage.rst:143 7b283f04f24544e18dc95d6f698f1a39
 msgid ""
 "Example Quad versus Rect: when searching for needle \"pymupdf\", then the"
 " corresponding entry will either be the blue rectangle, or, if *quads* "
 "was specified, the quad *Quad(ul, ur, ll, lr)*."
-msgstr ""
+msgstr "Quad 대 Rect 예시: needle \"pymupdf\" 를 검색할 때 해당 항목은 파란색 사각형이 되거나, *quads* 가 지정된 경우 사각형 *Quad(ul, ur, ll, lr)* 가 됩니다."
 
 #: ../../textpage.rst:149 22015cb6553240db9caee4c5d4d0a06b
 msgid ""
 "The rectangle associated with the text page. This either equals the "
 "rectangle of the creating page or the `clip` parameter of "
 ":meth:`Page.get_textpage` and text extraction / searching methods."
-msgstr ""
+msgstr "텍스트 페이지와 연결된 사각형. 이것은 생성 페이지의 사각형이거나 :meth:`Page.get_textpage` 및 텍스트 추출/검색 메서드의 `clip` 매개변수와 같습니다."
 
 #: ../../textpage.rst:151 e4d7797e393d49f38a2ad6066b720a21
 msgid ""
 "The output of text searching and most text extractions **is restricted to"
 " this rectangle**. (X)HTML and XML output will however always extract the"
 " full page."
-msgstr ""
+msgstr "텍스트 검색 및 대부분의 텍스트 추출 출력은 **이 사각형으로 제한됩니다**. 그러나 (X)HTML 및 XML 출력은 항상 전체 페이지를 추출합니다."
 
 #: ../../textpage.rst:156 746d4f0331d74f5eb4b706ab194b8b02
 msgid "Structure of Dictionary Outputs"
-msgstr ""
+msgstr "딕셔너리 출력 구조"
 
 #: ../../textpage.rst:157 ae8559712aa84a3b8f3abc14fba42605
 msgid ""
@@ -448,31 +448,31 @@ msgid ""
 "to map the text page's information hierarchy of blocks, lines, spans and "
 "characters as precisely as possible, by representing each of these by its"
 " own sub-dictionary:"
-msgstr ""
+msgstr ":meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, :meth:`TextPage.extractRAWDICT`, :meth:`TextPage.extractRAWJSON` 메서드는 페이지의 텍스트 및 이미지 콘텐츠를 포함하는 딕셔너리를 반환합니다. 네 가지 메서드의 딕셔너리 구조는 거의 동일합니다. 각각을 자체 하위 딕셔너리로 표현하여 텍스트 페이지의 블록, 줄, 범위 및 문자 정보 계층을 가능한 한 정확하게 매핑합니다:"
 
 #: ../../textpage.rst:159 1fc549b40ec54504aba36b49e614c7cc
 msgid "A **page** consists of a list of **block dictionaries**."
-msgstr ""
+msgstr "**페이지** 는 **블록 딕셔너리** 목록으로 구성됩니다."
 
 #: ../../textpage.rst:160 531deb445eda49c78ee0170f577f2f93
 msgid "A (text) **block** consists of a list of **line dictionaries**."
-msgstr ""
+msgstr "(텍스트) **블록** 은 **줄 딕셔너리** 목록으로 구성됩니다."
 
 #: ../../textpage.rst:161 5d0d26a55df64fb0bc4619f73f865415
 msgid "A **line** consists of a list of **span dictionaries**."
-msgstr ""
+msgstr "**줄** 은 **범위 딕셔너리** 목록으로 구성됩니다."
 
 #: ../../textpage.rst:162 d297bff2aae540828c971d533f6fe3bb
 msgid ""
 "A **span** either consists of the text itself or, for the RAW variants, a"
 " list of **character dictionaries**."
-msgstr ""
+msgstr "**범위** 는 텍스트 자체로 구성되거나 RAW 변형의 경우 **문자 딕셔너리** 목록으로 구성됩니다."
 
 #: ../../textpage.rst:163 37000c1f71684c77a812407e7849a0e0
 msgid ""
 "RAW variants: a **character** is a dictionary of its origin, bbox and "
 "unicode."
-msgstr ""
+msgstr "RAW 변형: **문자** 는 원본, bbox 및 유니코드의 딕셔너리입니다."
 
 #: ../../textpage.rst:165 192df2422b5e482bbb29f7afc93e8cdc
 msgid ""
@@ -480,7 +480,7 @@ msgid ""
 "represented by there **\"like\"** formats: a :data:`rect_like` *tuple* is"
 " used instead of a :ref:`Rect`, etc. The reasons for this are performance"
 " and memory considerations:"
-msgstr ""
+msgstr "여기에 포함된 모든 |PyMuPDF| 기하 객체(점, 사각형, 행렬)는 **\"like\"** 형식으로 표현됩니다: :ref:`Rect` 대신 :data:`rect_like` *tuple* 이 사용됩니다. 그 이유는 성능 및 메모리 고려 사항입니다:"
 
 #: ../../textpage.rst:167 517e734e4772478cb6b1bc32cab2ab16
 msgid ""
@@ -488,7 +488,7 @@ msgid ""
 "The geometry objects on the other hand are defined in Python source only."
 " A conversion of each Python tuple into its corresponding geometry object"
 " would add significant -- and largely unnecessary -- execution time."
-msgstr ""
+msgstr "이 코드는 C로 작성되었으며, Python 튜플을 쉽게 생성할 수 있습니다. 반면 기하 객체는 Python 소스에만 정의되어 있습니다. 각 Python 튜플을 해당 기하 객체로 변환하면 상당한 실행 시간이 추가됩니다(대부분 불필요함)."
 
 #: ../../textpage.rst:168 a7f4b55b2bb84753bc138ab3a04c2f8a
 msgid ""
@@ -498,7 +498,7 @@ msgid ""
 " as 4-tuples versus 140 KB as :ref:`Rect` objects. A \"rawdict\" output "
 "for such a page will however contain **4 to 5 thousand** bboxes, so in "
 "this case we talk about 750 KB versus 2 MB."
-msgstr ""
+msgstr "4-tuple은 약 168바이트가 필요하고, 해당 :ref:`Rect` 는 472바이트입니다. 거의 3배 크기입니다. 텍스트가 많은 페이지의 \"dict\" 딕셔너리에는 300개 이상의 bbox 객체가 포함되어 있습니다. 따라서 4-tuple로 약 50KB, :ref:`Rect` 객체로 140KB의 저장 공간이 필요합니다. 그러나 이러한 페이지의 \"rawdict\" 출력에는 **4천~5천 개** 의 bbox가 포함되므로, 이 경우 750KB 대 2MB를 말하는 것입니다."
 
 #: ../../textpage.rst:170 bbdd6aa883a447c5b6bbb24a389b7944
 msgid ""
@@ -509,36 +509,36 @@ msgid ""
 "times the size of a :data:`rect_like`). Given the mentioned amounts of "
 "generated bboxes, returning :data:`quad_like` information would have a "
 "significant impact."
-msgstr ""
+msgstr "또한 **bboxes** (= :data:`rect_like` 4-tuple)만 반환되지만, :ref:`TextPage` 는 실제로 **전체 위치 정보** 를 가지고 있습니다. :ref:`Quad` 형식입니다. 이 결정의 이유는 다시 메모리 고려 사항입니다: :data:`quad_like` 는 488바이트(:data:`rect_like` 크기의 3배)가 필요합니다. 생성된 bbox의 양을 고려하면 :data:`quad_like` 정보를 반환하면 상당한 영향을 미칩니다."
 
 #: ../../textpage.rst:172 d2d5ce2b47bc4940b491f08fbbaa0027
 msgid ""
 "In the vast majority of cases, we are dealing with **horizontal text "
 "only**, where bboxes provide entirely sufficient information."
-msgstr ""
+msgstr "대부분의 경우 **수평 텍스트만** 다루며, bbox가 완전히 충분한 정보를 제공합니다."
 
 #: ../../textpage.rst:174 feb1b497d7a04358ac4fc4f59750eb21
 msgid ""
 "In addition, **the full quad information is not lost**: it can be "
 "recovered as needed for lines, spans, and characters by using the "
 "appropriate function from the following list:"
-msgstr ""
+msgstr "또한 **전체 quad 정보는 손실되지 않습니다**: 다음 목록의 적절한 함수를 사용하여 줄, 범위 및 문자에 대해 필요에 따라 복구할 수 있습니다:"
 
 #: ../../textpage.rst:176 e89548afd6dc44168e0b77628a3cba31
 msgid ":meth:`recover_quad` -- the quad of a complete span"
-msgstr ""
+msgstr ":meth:`recover_quad` -- 전체 범위의 quad"
 
 #: ../../textpage.rst:177 27d71bee525843278a01adf552fa7a36
 msgid ":meth:`recover_span_quad` -- the quad of a character subset of a span"
-msgstr ""
+msgstr ":meth:`recover_span_quad` -- 범위의 문자 하위 집합의 quad"
 
 #: ../../textpage.rst:178 041a2862fe3d48ac95055a9328f85989
 msgid ":meth:`recover_line_quad` -- the quad of a line"
-msgstr ""
+msgstr ":meth:`recover_line_quad` -- 줄의 quad"
 
 #: ../../textpage.rst:179 66ae40921c104d34aba6daaf7127f04f
 msgid ":meth:`recover_char_quad` -- the quad of a character"
-msgstr ""
+msgstr ":meth:`recover_char_quad` -- 문자의 quad"
 
 #: ../../textpage.rst:181 727a2901b16c4ddd96ae14b244c5424a
 msgid ""
@@ -546,11 +546,11 @@ msgid ""
 "**not written horizontally** -- `line[\"dir\"] != (1, 0)` -- and you need"
 " the quad for text marker annotations (:meth:`Page.add_highlight_annot` "
 "and friends)."
-msgstr ""
+msgstr "언급한 대로, 이러한 함수 사용은 텍스트가 **수평으로 작성되지 않은** 경우(`line[\"dir\"] != (1, 0)`)에만 필요하며, 텍스트 마커 주석(:meth:`Page.add_highlight_annot` 등)에 quad가 필요한 경우입니다."
 
 #: ../../textpage.rst:191 7805ac6076c748d18288314bba88341d
 msgid "Page Dictionary"
-msgstr ""
+msgstr "페이지 딕셔너리"
 
 #: ../../textpage.rst:194 ../../textpage.rst:208 ../../textpage.rst:251
 #: ../../textpage.rst:263 ../../textpage.rst:285 ../../textpage.rst:369
@@ -558,7 +558,7 @@ msgstr ""
 #: 975906fdd1184ad3ad3fd3d27e4993b0 baf341562d684245aa92ddd993c2dd48
 #: bf7900e8b9b5405a8f0d4d83a8bf0411 c6778ca210f143f38e1b9841a02401e9
 msgid "**Key**"
-msgstr ""
+msgstr "**키**"
 
 #: ../../textpage.rst:194 ../../textpage.rst:208 ../../textpage.rst:251
 #: ../../textpage.rst:263 ../../textpage.rst:285 ../../textpage.rst:369
@@ -566,56 +566,56 @@ msgstr ""
 #: cc9c466c5ba84957921e1ff86a57d116 d94353036c5b40c1846dd829e554f27f
 #: f0dc2d1c0f2f41dea26d6f56aa6b3a26 fe805e2ac2f84c418cdee9f01871d787
 msgid "**Value**"
-msgstr ""
+msgstr "**값**"
 
 #: ../../textpage.rst:196 ../../textpage.rst:214
 #: 07aa10194d0d48eb97c6202f508f7705 8f326282fbe8407aa66c61b1d8bcd062
 msgid "width"
-msgstr ""
+msgstr "width"
 
 #: ../../textpage.rst:196 f244c49149a243688a1885d014c7a1bb
 msgid "width of the `clip` rectangle *(float)*"
-msgstr ""
+msgstr "`clip` 사각형의 너비 *(float)*"
 
 #: ../../textpage.rst:197 ../../textpage.rst:215
 #: b8882d43fa804c8a9c251b3ec47cef6d bcccca2b99b94b7ea01f4de3b4b7c85a
 msgid "height"
-msgstr ""
+msgstr "height"
 
 #: ../../textpage.rst:197 3100ead6fa2e45f5b61d6969928e4877
 msgid "height of the `clip` rectangle *(float)*"
-msgstr ""
+msgstr "`clip` 사각형의 높이 *(float)*"
 
 #: ../../textpage.rst:198 c5935e75747b42e799fe04c7f318b0da
 msgid "blocks"
-msgstr ""
+msgstr "blocks"
 
 #: ../../textpage.rst:198 30ab779a07894b089542bb81604f9b47
 msgid "*list* of block dictionaries"
-msgstr ""
+msgstr "블록 딕셔너리의 *list*"
 
 #: ../../textpage.rst:202 db462c15f35c46f5b52a233a3beed4d0
 msgid "Block Dictionaries"
-msgstr ""
+msgstr "블록 딕셔너리"
 
 #: ../../textpage.rst:203 952d964d7a5e43c2848616b970e2716c
 msgid ""
 "Block dictionaries come in two different formats for **image blocks** and"
 " for **text blocks**."
-msgstr ""
+msgstr "블록 딕셔너리는 **이미지 블록** 과 **텍스트 블록** 에 대해 두 가지 다른 형식으로 제공됩니다."
 
 #: ../../textpage.rst:205 238f68f9676441f1bdcff950557a856e
 msgid "**Image block:**"
-msgstr ""
+msgstr "**이미지 블록:**"
 
 #: ../../textpage.rst:210 ../../textpage.rst:253
 #: 800a3c27effc460f9480726ec3a5c729 d35d41a494c04f6285bda0eace697528
 msgid "type"
-msgstr ""
+msgstr "type"
 
 #: ../../textpage.rst:210 6328d3cec703451097bfaa7cf7f6c65f
 msgid "1 = image (``int``)"
-msgstr ""
+msgstr "1 = 이미지 (``int``)"
 
 #: ../../textpage.rst:211 ../../textpage.rst:254 ../../textpage.rst:265
 #: ../../textpage.rst:287 ../../textpage.rst:372
@@ -623,114 +623,114 @@ msgstr ""
 #: 4f766fcb9538433a8d4db8a39a80ff3c bc56648f4c414b1eb1faa55dba01ab98
 #: db0fdf56b2254240a588914bece3c707
 msgid "bbox"
-msgstr ""
+msgstr "bbox"
 
 #: ../../textpage.rst:211 ff4d18f9a8d24d16a31d552e95f6e589
 msgid "image bbox on page (:data:`rect_like`)"
-msgstr ""
+msgstr "페이지의 이미지 bbox (:data:`rect_like`)"
 
 #: ../../textpage.rst:212 ../../textpage.rst:255
 #: 4c56479091544270885701e21d3794c0 5d311b7030c74d77b291641b825cabc0
 msgid "number"
-msgstr ""
+msgstr "number"
 
 #: ../../textpage.rst:212 044f427c89414858935273b873628617
 msgid "block count (``int``)"
-msgstr ""
+msgstr "블록 개수 (``int``)"
 
 #: ../../textpage.rst:213 d457db3dffd648f5b421b9dabda513e8
 msgid "ext"
-msgstr ""
+msgstr "ext"
 
 #: ../../textpage.rst:213 9a1b2497c15747ccae408e2908b03716
 msgid "image type (``str``), as file extension, see below"
-msgstr ""
+msgstr "이미지 타입 (``str``), 파일 확장자로, 아래 참조"
 
 #: ../../textpage.rst:214 65917d8aff0a47ae97e1c880700ae5b9
 msgid "original image width (``int``)"
-msgstr ""
+msgstr "원본 이미지 너비 (``int``)"
 
 #: ../../textpage.rst:215 ef1b2983b8484b67aea4e7c52ec94c5e
 msgid "original image height (``int``)"
-msgstr ""
+msgstr "원본 이미지 높이 (``int``)"
 
 #: ../../textpage.rst:216 cdbc1a0fe83a45878f7d57c8195c2541
 msgid "colorspace"
-msgstr ""
+msgstr "colorspace"
 
 #: ../../textpage.rst:216 0768d9dd62e74b518365212bb8f2d509
 msgid "colorspace component count (``int``)"
-msgstr ""
+msgstr "색 공간 구성 요소 개수 (``int``)"
 
 #: ../../textpage.rst:217 c72ef151fd0843acbf96ee02c0b50384
 msgid "xres"
-msgstr ""
+msgstr "xres"
 
 #: ../../textpage.rst:217 2b798798946e43259c410f01235ab8cf
 msgid "resolution in x-direction (``int``) [#f3]_"
-msgstr ""
+msgstr "x 방향 해상도 (``int``) [#f3]_"
 
 #: ../../textpage.rst:218 711945f5b34049a1b07317557513f490
 msgid "yres"
-msgstr ""
+msgstr "yres"
 
 #: ../../textpage.rst:218 91a31d61290640b8988418d1a9ebb3ba
 msgid "resolution in y-direction (``int``) [#f3]_"
-msgstr ""
+msgstr "y 방향 해상도 (``int``) [#f3]_"
 
 #: ../../textpage.rst:219 c247c45f267c4a6281d20687be8c99af
 msgid "bpc"
-msgstr ""
+msgstr "bpc"
 
 #: ../../textpage.rst:219 8934e38405664f3fa8f78d65d3a6dba5
 msgid "bits per component (``int``)"
-msgstr ""
+msgstr "구성 요소당 비트 수 (``int``)"
 
 #: ../../textpage.rst:220 2db498cd52714dd8b5097aa444b17ac0
 msgid "transform"
-msgstr ""
+msgstr "transform"
 
 #: ../../textpage.rst:220 c07a01fdd4744863a7e7b665d9066376
 msgid "matrix transforming image rect to bbox (:data:`matrix_like`)"
-msgstr ""
+msgstr "이미지 rect를 bbox로 변환하는 행렬 (:data:`matrix_like`)"
 
 #: ../../textpage.rst:221 ../../textpage.rst:292
 #: 416da7dc62f34728a5e65a5b6eccec10 e5bfbe8873ce4531a1a93eea31b542ab
 msgid "size"
-msgstr ""
+msgstr "size"
 
 #: ../../textpage.rst:221 ef114c513c0140809c273a1fca277935
 msgid "size of the image in bytes (``int``)"
-msgstr ""
+msgstr "바이트 단위의 이미지 크기 (``int``)"
 
 #: ../../textpage.rst:222 b4442e7378f340ad9bbc40a5bda85f94
 msgid "image"
-msgstr ""
+msgstr "image"
 
 #: ../../textpage.rst:222 44de8974cd434bbca7c4dea100e9987f
 msgid "image content (``bytes``)"
-msgstr ""
+msgstr "이미지 콘텐츠 (``bytes``)"
 
 #: ../../textpage.rst:223 ce697bda1a494d35a92a1a9b886f4a53
 msgid "mask"
-msgstr ""
+msgstr "mask"
 
 #: ../../textpage.rst:223 203d79f1d981499da21d8cae601cef42
 msgid "image mask content (``bytes``) for transparent images"
-msgstr ""
+msgstr "투명 이미지의 이미지 마스크 콘텐츠 (``bytes``)"
 
 #: ../../textpage.rst:226 7b2748f1df1342538dd7b750dd6db1db
 msgid ""
 "Possible values of the \"ext\" key are \"bmp\", \"gif\", \"jpeg\", "
 "\"jpx\" (JPEG 2000), \"jxr\" (JPEG XR), \"png\", \"pnm\", and \"tiff\"."
-msgstr ""
+msgstr "\"ext\" 키의 가능한 값은 \"bmp\", \"gif\", \"jpeg\", \"jpx\" (JPEG 2000), \"jxr\" (JPEG XR), \"png\", \"pnm\", \"tiff\" 입니다."
 
 #: ../../textpage.rst:230 f165771e95ce4de587ef46d0281ce182
 msgid ""
 "An image block is generated for **all and every image occurrence** on the"
 " page. Hence there may be duplicates, if an image is shown at different "
 "locations."
-msgstr ""
+msgstr "페이지의 **모든 이미지 발생** 에 대해 이미지 블록이 생성됩니다. 따라서 이미지가 다른 위치에 표시되면 중복이 있을 수 있습니다."
 
 #: ../../textpage.rst:232 34122c8c572a45d7a4acfd1f2cbbbe55
 msgid ""
@@ -740,20 +740,20 @@ msgid ""
 "overlapping functionality as far as image lists are concerned. But both "
 "lists **may or may not** contain the same items. Any differences are most"
 " probably caused by one of the following:"
-msgstr ""
+msgstr ":ref:`TextPage` 및 해당 메서드 :meth:`Page.get_text` 는 **모든 문서 타입에 사용 가능합니다**. PDF 문서의 경우에만 :meth:`Document.get_page_images` / :meth:`Page.get_images` 메서드가 이미지 목록과 관련하여 일부 중복 기능을 제공합니다. 그러나 두 목록은 **같은 항목을 포함할 수도 있고 포함하지 않을 수도 있습니다**. 차이점은 다음 중 하나로 인한 것일 가능성이 높습니다:"
 
 #: ../../textpage.rst:234 87715f6d6a82452b8ef41b7cbb3b917c
 msgid ""
 "\"Inline\" images (see page 214 of the :ref:`AdobeManual`) of a PDF page "
 "are contained in a textpage, but **do not appear** in "
 ":meth:`Page.get_images`."
-msgstr ""
+msgstr "PDF 페이지의 \"인라인\" 이미지(:ref:`AdobeManual` 214페이지 참조)는 텍스트 페이지에 포함되지만 :meth:`Page.get_images` 에는 **나타나지 않습니다**."
 
 #: ../../textpage.rst:235 7671c8c4e14e4452a9de51d3be9f9a57
 msgid ""
 "Annotations may also contain images -- these will **not appear** in "
 ":meth:`Page.get_images`."
-msgstr ""
+msgstr "주석에도 이미지가 포함될 수 있습니다. 이것들은 :meth:`Page.get_images` 에 **나타나지 않습니다**."
 
 #: ../../textpage.rst:236 528e4366c2844284b6b3e06d85663c2c
 msgid ""
@@ -761,7 +761,7 @@ msgid ""
 "whether or not there are any duplicates. This is in contrast to "
 ":meth:`Page.get_images`, which will list each image only once (per "
 "reference name)."
-msgstr ""
+msgstr "텍스트 페이지의 이미지 블록은 **모든** 이미지 위치에 대해 생성됩니다. 중복이 있는지 여부와 관계없이. 이것은 각 이미지를 한 번만 나열하는 :meth:`Page.get_images` (참조 이름당)와 대조됩니다."
 
 #: ../../textpage.rst:237 6ba5259a29524a72bae31a85c368deb0
 msgid ""
@@ -769,14 +769,14 @@ msgid ""
 "appear in :meth:`Page.get_images` [#f1]_. But it may happen, that there "
 "is no \"display\" command in the page's :data:`contents` (erroneously or "
 "on purpose). In this case the image will **not appear** in the textpage."
-msgstr ""
+msgstr "페이지의 :data:`object` 정의에 언급된 이미지는 **항상** :meth:`Page.get_images` [#f1]_ 에 나타납니다. 그러나 페이지의 :data:`contents` 에 \"display\" 명령이 없을 수 있습니다(오류 또는 의도적으로). 이 경우 이미지는 텍스트 페이지에 **나타나지 않습니다**."
 
 #: ../../textpage.rst:239 e7f81738e67441429325db9963571f7d
 msgid ""
 "The image's \"transformation matrix\" is defined as the matrix, for which"
 " the expression `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` is true, "
 "lookup details here: :ref:`ImageTransformation`."
-msgstr ""
+msgstr "이미지의 \"변환 행렬\" 은 표현식 `bbox / transform == pymupdf.Rect(0, 0, 1, 1)` 가 참인 행렬로 정의됩니다. 자세한 내용은 :ref:`ImageTransformation` 을 참조하세요."
 
 #: ../../textpage.rst:241 57bed7561cd444e0b640b95c35da2f85
 msgid ""
@@ -789,63 +789,63 @@ msgid ""
 "always work because mask images come in multiple formats, of which not "
 "all qualify for the conditions under which overlaying Pixmaps are "
 "supported. Here is a code snippet:"
-msgstr ""
+msgstr "투명 이미지에는 마스크 이미지가 함께 제공될 수 있습니다. 이것은 키 `\"mask\"` 아래에 저장되며 `DeviceGray` PNG 이미지 형식을 가집니다. 그렇지 않으면 이 키의 값은 ``None`` 입니다. 있는 경우 \"image\" 및 \"mask\" 값에서 :ref:`Pixmap` 객체를 생성하고 오버레이하여 원본 이미지(즉, 투명도 포함)를 복구할 수 있습니다. 마스크 이미지는 여러 형식으로 제공되며, 모든 형식이 Pixmap 오버레이가 지원되는 조건을 충족하지는 않기 때문에 항상 작동한다고 보장할 수는 없습니다. 다음은 코드 스니펫입니다:"
 
 #: ../../textpage.rst:248 4615f23b245b4db39e8ea23b4d176464
 msgid "**Text block:**"
-msgstr ""
+msgstr "**텍스트 블록:**"
 
 #: ../../textpage.rst:253 db5d3f31fc8d4153b8fafecfdf3d1727
 msgid "0 = text *(int)*"
-msgstr ""
+msgstr "0 = 텍스트 *(int)*"
 
 #: ../../textpage.rst:254 6964cf3c7ba24458aae29d347f3f603a
 msgid "block rectangle, :data:`rect_like`"
-msgstr ""
+msgstr "블록 사각형, :data:`rect_like`"
 
 #: ../../textpage.rst:255 731cf949720a4619b5ea681f7764d295
 msgid "block count *(int)*"
-msgstr ""
+msgstr "블록 개수 *(int)*"
 
 #: ../../textpage.rst:256 3a23e4510e7949e29bf987d16327eb49
 msgid "lines"
-msgstr ""
+msgstr "lines"
 
 #: ../../textpage.rst:256 ede4e782ec014752989f15767a43462d
 msgid "*list* of text line dictionaries"
-msgstr ""
+msgstr "텍스트 줄 딕셔너리의 *list*"
 
 #: ../../textpage.rst:260 647d1430aba549968a23caa9bd2bf178
 msgid "Line Dictionary"
-msgstr ""
+msgstr "줄 딕셔너리"
 
 #: ../../textpage.rst:265 88d566f6551a42a29f62a0819ecbed64
 msgid "line rectangle, :data:`rect_like`"
-msgstr ""
+msgstr "줄 사각형, :data:`rect_like`"
 
 #: ../../textpage.rst:266 bc961e945f144c85a9e1a2193c3a4443
 msgid "wmode"
-msgstr ""
+msgstr "wmode"
 
 #: ../../textpage.rst:266 220a8c26dda34ae4b15fb120791f0296
 msgid "writing mode *(int)*: 0 = horizontal, 1 = vertical"
-msgstr ""
+msgstr "쓰기 모드 *(int)*: 0 = 수평, 1 = 수직"
 
 #: ../../textpage.rst:267 b23571753e8641b391f1c7bd3d666faf
 msgid "dir"
-msgstr ""
+msgstr "dir"
 
 #: ../../textpage.rst:267 f040c814bf3643e0b50bb1889d157bc2
 msgid "writing direction, :data:`point_like`"
-msgstr ""
+msgstr "쓰기 방향, :data:`point_like`"
 
 #: ../../textpage.rst:268 f4df6d31bea14f7d9133d10fe217a237
 msgid "spans"
-msgstr ""
+msgstr "spans"
 
 #: ../../textpage.rst:268 d2626131157f45bda11a0a0240ae20e0
 msgid "*list* of span dictionaries"
-msgstr ""
+msgstr "범위 딕셔너리의 *list*"
 
 #: ../../textpage.rst:271 827a258f7a314424b22d7d3077bc4795
 msgid ""
@@ -854,122 +854,122 @@ msgid ""
 "following picture: The word in each quadrant (counter-clockwise from top-"
 "right to bottom-right) is rotated by 30, 120, 210 and 300 degrees "
 "respectively."
-msgstr ""
+msgstr "키 *\"dir\"* 의 값은 텍스트가 x축에 대해 가진 각도의 **단위 벡터** `dir = (cosine, -sine)` 입니다 [#f2]_. 다음 그림을 참조하세요: 각 사분면(오른쪽 위에서 오른쪽 아래로 반시계 방향)의 단어는 각각 30, 120, 210, 300도 회전됩니다."
 
 #: ../../textpage.rst:277 76e3be33b8eb4d20a040a290a7493044
 msgid "Span Dictionary"
-msgstr ""
+msgstr "범위 딕셔너리"
 
 #: ../../textpage.rst:279 44e867372fca4010ae8c117e6f57244a
 msgid ""
 "Spans contain the actual text. A line contains **more than one span "
 "only**, if it contains text with different font properties."
-msgstr ""
+msgstr "범위에는 실제 텍스트가 포함됩니다. 줄은 다른 글꼴 속성을 가진 텍스트를 포함하는 경우에만 **하나 이상의 범위** 를 포함합니다."
 
 #: ../../textpage.rst:281 2484e6f332594c488b1ab6e8e45e8358
 msgid "Changed in version 1.14.17 Spans now also have a *bbox* key (again)."
-msgstr ""
+msgstr "버전 1.14.17에서 변경됨: 범위에 이제 *bbox* 키가 다시 있습니다."
 
 #: ../../textpage.rst:282 fe2deeccb3484496b06cee9c45979177
 msgid "Changed in version 1.17.6 Spans now also have an *origin* key."
-msgstr ""
+msgstr "버전 1.17.6에서 변경됨: 범위에 이제 *origin* 키가 있습니다."
 
 #: ../../textpage.rst:287 24917424394140498d62e12db012d491
 msgid "span rectangle, :data:`rect_like`"
-msgstr ""
+msgstr "범위 사각형, :data:`rect_like`"
 
 #: ../../textpage.rst:288 ../../textpage.rst:371
 #: d062895875c246f08ce11e156a46fe6c e4eadb2bf3fd4656a1dcaea2aa762fb2
 msgid "origin"
-msgstr ""
+msgstr "origin"
 
 #: ../../textpage.rst:288 49dcac4791f7495283b181cd85e5cb96
 msgid "the first character's origin, :data:`point_like`"
-msgstr ""
+msgstr "첫 번째 문자의 원점, :data:`point_like`"
 
 #: ../../textpage.rst:289 a039c803b12f44f2b903bfd72ff968f0
 msgid "font"
-msgstr ""
+msgstr "font"
 
 #: ../../textpage.rst:289 e59d2678453347c3b2290c87101bee41
 msgid "font name *(str)*"
-msgstr ""
+msgstr "글꼴 이름 *(str)*"
 
 #: ../../textpage.rst:290 9789271ef0d44ca8b8b7753a47109329
 msgid "ascender"
-msgstr ""
+msgstr "ascender"
 
 #: ../../textpage.rst:290 bae202ea90f340c08117616fba695605
 msgid "ascender of the font *(float)*"
-msgstr ""
+msgstr "글꼴의 상승부 *(float)*"
 
 #: ../../textpage.rst:291 f04de1e03bc64ecb932178642bbf28a2
 msgid "descender"
-msgstr ""
+msgstr "descender"
 
 #: ../../textpage.rst:291 cab39571402145599cd516740c2cd5e3
 msgid "descender of the font *(float)*"
-msgstr ""
+msgstr "글꼴의 하강부 *(float)*"
 
 #: ../../textpage.rst:292 7bb34b245d0e4a7a807d37f771540973
 msgid "font size *(float)*"
-msgstr ""
+msgstr "글꼴 크기 *(float)*"
 
 #: ../../textpage.rst:293 728b3550893a43df91864ece6b6a6c75
 msgid "flags"
-msgstr ""
+msgstr "flags"
 
 #: ../../textpage.rst:293 d4144f5c31e240ca8a9bc6a9902c4b40
 msgid "font characteristics *(int)*"
-msgstr ""
+msgstr "글꼴 특성 *(int)*"
 
 #: ../../textpage.rst:294 4ab488b7a402495f924066ec5fa0901d
 msgid "char_flags"
-msgstr ""
+msgstr "char_flags"
 
 #: ../../textpage.rst:294 ac689e1eb3bd44c196f5a43696910e9c
 msgid "char characteristics *(int)*"
-msgstr ""
+msgstr "문자 특성 *(int)*"
 
 #: ../../textpage.rst:295 70dfc6783fdb4c5a8a1e0ad9b92b44fc
 msgid "color"
-msgstr ""
+msgstr "color"
 
 #: ../../textpage.rst:295 0c21ca835d2f477e934a8f5cec1f8a4c
 msgid "text color in sRGB format 0xRRGGBB *(int)*."
-msgstr ""
+msgstr "sRGB 형식의 텍스트 색상 0xRRGGBB *(int)*."
 
 #: ../../textpage.rst:296 8e921b08a2ba477497897d70a87f4977
 msgid "alpha"
-msgstr ""
+msgstr "alpha"
 
 #: ../../textpage.rst:296 ec794a253afb48ea90cf9d7494caa03b
 msgid "text opacity 0..255 *(int)*."
-msgstr ""
+msgstr "텍스트 불투명도 0..255 *(int)*."
 
 #: ../../textpage.rst:297 72dbc8f290b94f6c88700e6a5df12717
 msgid "text"
-msgstr ""
+msgstr "text"
 
 #: ../../textpage.rst:297 42bc9c7faaed433c9e3868ab04254f3f
 msgid "(only for :meth:`extractDICT`) text *(str)*"
-msgstr ""
+msgstr "(:meth:`extractDICT` 전용) 텍스트 *(str)*"
 
 #: ../../textpage.rst:298 6c4e864e58554766a1c930bd0e32e581
 msgid "chars"
-msgstr ""
+msgstr "chars"
 
 #: ../../textpage.rst:298 287db5214934490ba0764caaa9ee699d
 msgid "(only for :meth:`extractRAWDICT`) *list* of character dictionaries"
-msgstr ""
+msgstr "(:meth:`extractRAWDICT` 전용) 문자 딕셔너리의 *list*"
 
 #: ../../textpage.rst:301 6a3a9323a60541ca97db64597a2a451a
 msgid "|history_begin|"
-msgstr ""
+msgstr "|history_begin|"
 
 #: ../../textpage.rst:303 e0b8ee67e36546b0b5b8b155e00eeb45
 msgid "*(New in version 1.25.3.0):* Added *\"alpha\"* item."
-msgstr ""
+msgstr "*(버전 1.25.3.0에서 새로 추가됨):* *\"alpha\"* 항목 추가."
 
 #: ../../textpage.rst:305 04010301eebf4c2dbf6989108e207ae9
 msgid ""
@@ -978,7 +978,7 @@ msgid ""
 "this integer back to formats (r, g, b) (PDF with float values from 0 to "
 "1) :meth:`sRGB_to_pdf`, or (R, G, B), :meth:`sRGB_to_rgb` (with integer "
 "values from 0 to 255)."
-msgstr ""
+msgstr "*(버전 1.16.0에서 새로 추가됨):* *\"color\"* 는 sRGB (int) 형식으로 인코딩된 텍스트 색상입니다. 예: 빨간색의 경우 0xFF0000. 이 정수를 다시 형식으로 변환하는 함수가 있습니다: (r, g, b) (0에서 1까지의 float 값, PDF) :meth:`sRGB_to_pdf`, 또는 (R, G, B) :meth:`sRGB_to_rgb` (0에서 255까지의 정수 값)."
 
 #: ../../textpage.rst:307 744bef29da2f4dbc90404a35ef0fd253
 msgid ""
@@ -986,11 +986,11 @@ msgid ""
 "properties, provided relative to :data:`fontsize` 1. Note that descender "
 "is a negative value. The following picture shows the relationship to "
 "other values and properties."
-msgstr ""
+msgstr "*(v1.18.5에서 새로 추가됨):* *\"ascender\"* 와 *\"descender\"* 는 :data:`fontsize` 1에 상대적인 글꼴 속성입니다. descender는 음수 값입니다. 다음 그림은 다른 값 및 속성과의 관계를 보여줍니다."
 
 #: ../../textpage.rst:309 e0a8a997405247f6bb89749ab0b624b7
 msgid "|history_end|"
-msgstr ""
+msgstr "|history_end|"
 
 #: ../../textpage.rst:314 9b180b7db6ac43e489b8d8e9ccb31622
 msgid ""
@@ -999,7 +999,7 @@ msgid ""
 "values (which actually represents the **line height**). The following "
 "code recalculates the span bbox to have a height of **fontsize** exactly "
 "fitting the text inside:"
-msgstr ""
+msgstr "이 숫자는 문자(또는 범위)의 최소 높이를 계산하는 데 사용할 수 있습니다. \"bbox\" 값에 제공된 표준 높이(실제로 **줄 높이** 를 나타냄)와 대조됩니다. 다음 코드는 범위 bbox를 **fontsize** 높이로 재계산하여 내부 텍스트에 정확히 맞도록 합니다:"
 
 #: ../../textpage.rst:324 91c353d85b0a45d7bde9987e275b50b5
 msgid ""
@@ -1009,7 +1009,7 @@ msgid ""
 "independently from the :data:`fontsize` found in the PDF. So please "
 "ensure that the height of `span[\"bbox\"]` is **larger** than "
 "`span[\"size\"]`."
-msgstr ""
+msgstr "위 계산은 **더 큰** 높이를 제공할 수 있습니다! 예를 들어 OCR된 문서에서 이런 일이 발생할 수 있으며, 모든 종류의 텍스트 아티팩트 위험이 높습니다. |MuPDF| 는 PDF에서 찾은 :data:`fontsize` 와 독립적으로 합리적인 bbox 높이를 제시하려고 합니다. 따라서 `span[\"bbox\"]` 의 높이가 `span[\"size\"]` 보다 **큰지** 확인하세요."
 
 #: ../../textpage.rst:326 cfa2fe9816d741889a16e7a98228f45f
 msgid ""
@@ -1017,139 +1017,139 @@ msgid ""
 " `pymupdf.TOOLS.set_small_glyph_heights(True)`. This sets a global "
 "parameter so that all subsequent text searches and text extractions are "
 "based on reduced glyph heights, where meaningful."
-msgstr ""
+msgstr "`pymupdf.TOOLS.set_small_glyph_heights(True)` 를 실행하여 |PyMuPDF| 가 위의 모든 작업을 자동으로 수행하도록 요청할 수 있습니다. 이것은 전역 매개변수를 설정하여 모든 후속 텍스트 검색 및 텍스트 추출이 의미 있는 경우 감소된 글리프 높이를 기반으로 하도록 합니다."
 
 #: ../../textpage.rst:328 dcd3f3103b3a404ea59ed88e1020efbe
 msgid ""
 "The following shows the original span rectangle in red and the rectangle "
 "with re-computed height in blue."
-msgstr ""
+msgstr "다음은 빨간색으로 표시된 원본 범위 사각형과 파란색으로 표시된 재계산된 높이의 사각형을 보여줍니다."
 
 #: ../../textpage.rst:334 c4897a84054b4b60ab66d79b8388e431
 msgid ""
 "*\"flags\"* is an integer, which represents font properties except for "
 "the first bit 0. They are to be interpreted like this:"
-msgstr ""
+msgstr "*\"flags\"* 는 첫 번째 비트 0을 제외한 글꼴 속성을 나타내는 정수입니다. 다음과 같이 해석됩니다:"
 
 #: ../../textpage.rst:336 817f541495b84011b646fb0f5a0c1eff
 msgid ""
 "bit 0: superscripted (:data:`TEXT_FONT_SUPERSCRIPT`) -- not a font "
 "property, detected by MuPDF code."
-msgstr ""
+msgstr "비트 0: 위첨자 (:data:`TEXT_FONT_SUPERSCRIPT`) -- 글꼴 속성이 아니며 MuPDF 코드에 의해 감지됩니다."
 
 #: ../../textpage.rst:337 4966d75813f448898822b04faffbe380
 msgid "bit 1: italic (:data:`TEXT_FONT_ITALIC`)"
-msgstr ""
+msgstr "비트 1: 기울임꼴 (:data:`TEXT_FONT_ITALIC`)"
 
 #: ../../textpage.rst:338 31205a9cd37941e0ac7c7fbbfb19ffc1
 msgid "bit 2: serifed (:data:`TEXT_FONT_SERIFED`)"
-msgstr ""
+msgstr "비트 2: 세리프 (:data:`TEXT_FONT_SERIFED`)"
 
 #: ../../textpage.rst:339 f887f5fcd078467cbd8ea212d8133aa3
 msgid "bit 3: monospaced (:data:`TEXT_FONT_MONOSPACED`)"
-msgstr ""
+msgstr "비트 3: 고정폭 (:data:`TEXT_FONT_MONOSPACED`)"
 
 #: ../../textpage.rst:340 075ed56b276245c096a3204cc111339a
 msgid "bit 4: bold (:data:`TEXT_FONT_BOLD`)"
-msgstr ""
+msgstr "비트 4: 굵게 (:data:`TEXT_FONT_BOLD`)"
 
 #: ../../textpage.rst:342 fafa4c4a530a43fa8278e455dd07640f
 msgid "Test these characteristics like so:"
-msgstr ""
+msgstr "다음과 같이 이러한 특성을 테스트합니다:"
 
 #: ../../textpage.rst:348 ffbc346b79aa4a6189253e08eeb6280f
 msgid ""
 "Bits 1 thru 4 are font properties, i.e. encoded in the font program. "
 "Please note, that this information is not necessarily correct or "
 "complete: fonts quite often contain wrong data here."
-msgstr ""
+msgstr "비트 1부터 4까지는 글꼴 속성, 즉 글꼴 프로그램에 인코딩된 것입니다. 이 정보가 반드시 정확하거나 완전하지는 않습니다. 글꼴은 여기에 잘못된 데이터를 포함하는 경우가 많습니다."
 
 #: ../../textpage.rst:350 67a56b648e48459abc86b3d71dded7d7
 msgid ""
 "*\"char_flags\"* is an integer, which represents extra character "
 "properties:"
-msgstr ""
+msgstr "*\"char_flags\"* 는 추가 문자 속성을 나타내는 정수입니다:"
 
 #: ../../textpage.rst:352 16e54aeb7318448cb0edbbce096027cc
 msgid "bit 0: strikeout."
-msgstr ""
+msgstr "비트 0: 취소선."
 
 #: ../../textpage.rst:353 f36bc128a5084f419c7b735cc7a5caeb
 msgid "bit 1: underline."
-msgstr ""
+msgstr "비트 1: 밑줄."
 
 #: ../../textpage.rst:354 05f6a81ee7234929b145f42b0eaeb4ee
 msgid "bit 2: synthetic (always 0, see char dictionary)."
-msgstr ""
+msgstr "비트 2: 합성 (항상 0, 문자 딕셔너리 참조)."
 
 #: ../../textpage.rst:355 2d7d278b9b7b46479144808b701ed7da
 msgid "bit 3: filled."
-msgstr ""
+msgstr "비트 3: 채움."
 
 #: ../../textpage.rst:356 a0b8d460dd8a42e69537652330a1f9ee
 msgid "bit 4: stroked."
-msgstr ""
+msgstr "비트 4: 획."
 
 #: ../../textpage.rst:357 430da53ed561403d90a8c2c28cc01a90
 msgid "bit 5: clipped."
-msgstr ""
+msgstr "비트 5: 클리핑."
 
 #: ../../textpage.rst:359 26fc27f279ca42fba75113be40e54d40
 msgid ""
 "For example if not filled and not stroked (`if not (char_flags & 2**3 & "
 "2**4): ...`) then the text will be invisible."
-msgstr ""
+msgstr "예를 들어 채워지지 않고 획이 없으면 (`if not (char_flags & 2**3 & 2**4): ...`) 텍스트가 보이지 않습니다."
 
 #: ../../textpage.rst:362 f68e611505354310ab256d5f4ac755f3
 msgid "(`char_flags` is new in v1.25.2.)"
-msgstr ""
+msgstr "(`char_flags` 는 v1.25.2에서 새로 추가됨.)"
 
 #: ../../textpage.rst:366 2b6029a504d149d0b74200b8dd10b461
 msgid "Character Dictionary for :meth:`extractRAWDICT`"
-msgstr ""
+msgstr ":meth:`extractRAWDICT` 의 문자 딕셔너리"
 
 #: ../../textpage.rst:371 e3322f02de66484cb59d9ddf2e914bcb
 msgid "character's left baseline point, :data:`point_like`"
-msgstr ""
+msgstr "문자의 왼쪽 기준선 점, :data:`point_like`"
 
 #: ../../textpage.rst:372 3a206190a9b4495299d14480848ee306
 msgid "character rectangle, :data:`rect_like`"
-msgstr ""
+msgstr "문자 사각형, :data:`rect_like`"
 
 #: ../../textpage.rst:373 7925e02a5e07443895c900f6450205fa
 msgid "synthetic"
-msgstr ""
+msgstr "synthetic"
 
 #: ../../textpage.rst:373 d557f7b009724b00a3418fb77e4943ce
 msgid "bool."
-msgstr ""
+msgstr "bool."
 
 #: ../../textpage.rst:374 fb692a970116495a977cac2daff0d94b
 msgid "c"
-msgstr ""
+msgstr "c"
 
 #: ../../textpage.rst:374 30e9a39551314a14a169ee11d34c575f
 msgid "the character (unicode)"
-msgstr ""
+msgstr "문자 (유니코드)"
 
 #: ../../textpage.rst:377 504a88fbf1324f19a3ed16c3f2c0c942
 msgid "(`synthetic` is new in v1.25.3.)"
-msgstr ""
+msgstr "(`synthetic` 는 v1.25.3에서 새로 추가됨.)"
 
 #: ../../textpage.rst:379 9d820af6f3ac446a912245d16d5e7bdd
 msgid ""
 "This image shows the relationship between a character's bbox and its "
 "quad: |textpagechar|"
-msgstr ""
+msgstr "이 이미지는 문자의 bbox와 quad 간의 관계를 보여줍니다: |textpagechar|"
 
 #: ../../textpage.rst:381 64023f700298486f98b566eac340e37b
 #: 7901af22526f478cb0ba76a7cc56288e
 msgid "textpagechar"
-msgstr ""
+msgstr "textpagechar"
 
 #: ../../textpage.rst:386 ab41f5e333004a04a46c0505e9d7bebf
 msgid "Footnotes"
-msgstr ""
+msgstr "각주"
 
 #: ../../textpage.rst:387 9c3377a336cd4477b8afbd4528d4dee0
 msgid ""
@@ -1163,7 +1163,7 @@ msgid ""
 "pages. If desired, this situation can be reverted using "
 ":meth:`Page.clean_contents`. After execution, the page's object "
 "definition will show fonts and images that are actually used."
-msgstr ""
+msgstr "PDF 페이지의 이미지 사양은 `/Resources` 라는 페이지의 (하위) :data:`dictionary` 에서 수행됩니다. 리소스 딕셔너리는 페이지의 부모 객체(일반적으로 :data:`catalog` -- 최상위 부모) 중 하나에서 **상속** 될 수 있습니다. PDF 생성자는 예를 들어 파일 수준에서 하나의 `/Resources` 를 정의하여 모든 페이지에서 사용된 모든 이미지 및/또는 모든 글꼴을 명명할 수 있습니다. 이 경우 :meth:`Page.get_images` 와 :meth:`Page.get_fonts` 는 결과적으로 모든 페이지에 대해 동일한 목록을 반환합니다. 원하는 경우 :meth:`Page.clean_contents` 를 사용하여 이 상황을 되돌릴 수 있습니다. 실행 후 페이지의 객체 정의는 실제로 사용되는 글꼴과 이미지를 표시합니다."
 
 #: ../../textpage.rst:389 8ebe9e78accc4c87b80eb50757ed695f
 msgid ""
@@ -1172,7 +1172,7 @@ msgid ""
 "point. Therefore, the positive direction for MuPDF's y-axis is **from top"
 " to bottom**. This causes the sign change for the sine value here: a "
 "**negative** value indicates anti-clockwise rotation of the text."
-msgstr ""
+msgstr "|MuPDF| 와 PDF의 좌표계는 |MuPDF| 가 페이지의 왼쪽 위 점을 `(0, 0)` 으로 사용한다는 점에서 다릅니다. PDF에서는 이것이 왼쪽 아래 점입니다. 따라서 |MuPDF| 의 y축의 양의 방향은 **위에서 아래로** 입니다. 이것은 여기서 사인 값의 부호 변경을 유발합니다: **음수** 값은 텍스트의 반시계 방향 회전을 나타냅니다."
 
 #: ../../textpage.rst:391 9bfe3c4bcdac45eb9b746197c51d2a7a
 msgid ""
@@ -1180,9 +1180,9 @@ msgid ""
 "not reflect** the resolution of the image itself. If you need the image's"
 " resolution, use the :meth:`Pixmap.xres` and :meth:`Pixmap.yres` "
 "attributes of the :ref:`Pixmap` created from the returned image binary."
-msgstr ""
+msgstr "이 값은 항상 96이며, PDF 인터프리터의 기본값입니다. 이것은 **이미지 자체의 해상도를 반영하지 않습니다**. 이미지의 해상도가 필요한 경우 반환된 이미지 바이너리에서 생성된 :ref:`Pixmap` 의 :meth:`Pixmap.xres` 및 :meth:`Pixmap.yres` 속성을 사용하세요."
 
 #: ../../footer.rst:46 909bafb54f4646cd8842c5ccd34ceeef
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

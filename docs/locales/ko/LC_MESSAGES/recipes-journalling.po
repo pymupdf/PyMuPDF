@@ -21,29 +21,29 @@ msgstr ""
 
 #: ../../header.rst:-1 25048fda51ce418c9d015f1246e746af
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 797ac5efa9e24c438fafe7f71ce832da
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 753e44f114514b2e927f9c1cf789d18c
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../recipes-journalling.rst:7 b01dda5af224433398494559bf0ada58
 msgid "Journalling"
-msgstr ""
+msgstr "저널링"
 
 #: ../../recipes-journalling.rst:10 f1543a90864a42ea86fe641d52d33bea
 msgid ""
 "Starting with version 1.19.0, journalling is possible when updating PDF "
 "documents."
-msgstr ""
+msgstr "버전 1.19.0부터 PDF 문서를 업데이트할 때 저널링이 가능합니다."
 
 #: ../../recipes-journalling.rst:12 1456c9ef805443c79a0bd76d2471b773
 msgid ""
@@ -52,7 +52,7 @@ msgid ""
 "Work\" in modern database systems, one can group a set of updates into an"
 " \"operation\". In MuPDF journalling, an operation plays the role of a "
 "LUW."
-msgstr ""
+msgstr "저널링은 PDF에 대한 변경 사항을 **되돌리거나** **다시 적용** 할 수 있게 하는 로깅 메커니즘입니다. 현대 데이터베이스 시스템의 LUW \"Logical Units of Work\"와 유사하게, 일련의 업데이트를 \"작업\"으로 그룹화할 수 있습니다. |MuPDF| 저널링에서 작업은 LUW의 역할을 합니다."
 
 #: ../../recipes-journalling.rst:14 aa605819004a494da8700c4dbb499ca3
 msgid ""
@@ -60,14 +60,14 @@ msgid ""
 "journalling happens on a **per document level**. There is no support for "
 "simultaneous updates across multiple PDFs: one would have to establish "
 "one's own logic here."
-msgstr ""
+msgstr "데이터베이스 시스템의 LUW 구현과 달리, |MuPDF| 저널링은 **문서별 수준** 에서 발생합니다. 여러 PDF에 걸친 동시 업데이트는 지원되지 않습니다. 여기서는 자체 로직을 구축해야 합니다."
 
 #: ../../recipes-journalling.rst:16 cabd8aa10cf746e6b10fc9fd0a9d7182
 msgid ""
 "Journalling must be *enabled* via a document method. Journalling is "
 "possible for existing or new documents. Journalling **can be disabled "
 "only** by closing the file."
-msgstr ""
+msgstr "저널링은 문서 메서드를 통해 *활성화* 해야 합니다. 기존 문서나 새 문서 모두에서 저널링이 가능합니다. 저널링은 파일을 닫는 경우에만 **비활성화** 할 수 있습니다."
 
 #: ../../recipes-journalling.rst:17 1090ca7dc7904871b61188430e85d1a1
 msgid ""
@@ -76,26 +76,26 @@ msgid ""
 " methods. Updates happening between these two calls form an LUW and can "
 "thus collectively be rolled back or re-applied, or, in MuPDF terminology "
 "\"undone\" resp. \"redone\"."
-msgstr ""
+msgstr "활성화되면 모든 변경은 *작업* 내에서 발생해야 합니다. 그렇지 않으면 예외가 발생합니다. 작업은 문서 메서드를 통해 시작되고 중지됩니다. 이 두 호출 사이에 발생하는 업데이트는 LUW를 형성하므로 집합적으로 롤백하거나 다시 적용할 수 있으며, |MuPDF| 용어로는 각각 \"실행 취소\" 및 \"다시 실행\"입니다."
 
 #: ../../recipes-journalling.rst:18 c31321fa1fc14929871630087cdd8b8b
 msgid ""
 "At any point, the journalling status can be queried: whether journalling "
 "is active, how many operations have been recorded, whether \"undo\" or "
 "\"redo\" is possible, the current position inside the journal, etc."
-msgstr ""
+msgstr "언제든지 저널링 상태를 쿼리할 수 있습니다: 저널링이 활성화되어 있는지, 몇 개의 작업이 기록되었는지, \"실행 취소\" 또는 \"다시 실행\"이 가능한지, 저널 내 현재 위치 등입니다."
 
 #: ../../recipes-journalling.rst:19 5748ec5bd69741daaecd28651e5b67b8
 msgid ""
 "The journal can be **saved to** or **loaded from** a file. These are "
 "document methods."
-msgstr ""
+msgstr "저널은 파일에 **저장** 하거나 파일에서 **로드** 할 수 있습니다. 이것들은 문서 메서드입니다."
 
 #: ../../recipes-journalling.rst:20 2a1ee018fa1144fba3f9e32e294bcd4e
 msgid ""
 "When loading a journal file, compatibility with the document is checked "
 "and journalling is automatically enabled upon success."
-msgstr ""
+msgstr "저널 파일을 로드할 때 문서와의 호환성이 확인되며, 성공 시 저널링이 자동으로 활성화됩니다."
 
 #: ../../recipes-journalling.rst:21 359a67deba6d45c7b2870adfc40b92b5
 msgid ""
@@ -106,7 +106,7 @@ msgid ""
 "snapshot), then document and journal are in sync and can later on be used"
 " together to undo or redo operations or to continue journalled updates --"
 " just as if there had been no interruption."
-msgstr ""
+msgstr "저널링 중인 **기존** PDF의 경우 특별한 새 저장 메서드인 :meth:`Document.save_snapshot` 를 사용할 수 있습니다. 이것은 지금까지의 모든 저널링된 업데이트를 포함하는 특별한 증분 저장을 수행합니다. 저널이 동시에 저장되면(문서 스냅샷 직후) 문서와 저널이 동기화되어 나중에 작업을 실행 취소하거나 다시 실행하거나 저널링된 업데이트를 계속하는 데 함께 사용할 수 있습니다. 마치 중단이 없었던 것처럼."
 
 #: ../../recipes-journalling.rst:22 2371ef9364394ab18af8172ee2fbd84c
 msgid ""
@@ -114,7 +114,7 @@ msgid ""
 "document is however changed in any way without using its journal file, "
 "then a desynchronization will take place and the journal is rendered "
 "unusable."
-msgstr ""
+msgstr "스냅샷 PDF는 모든 측면에서 유효한 PDF이며 완전히 사용 가능합니다. 하지만 저널 파일을 사용하지 않고 문서가 어떤 방식으로든 변경되면 동기화가 해제되고 저널이 사용 불가능해집니다."
 
 #: ../../recipes-journalling.rst:23 88b4f9365d4e41919901f2e3341b68b3
 msgid ""
@@ -124,48 +124,48 @@ msgid ""
 "recognizable relationships between an original PDF, like `original.pdf` "
 "and its snapshot sets, like `original-snap1.pdf` / `original-snap1.log`, "
 "`original-snap2.pdf` / `original-snap2.log`, etc."
-msgstr ""
+msgstr "스냅샷 파일은 증분 업데이트처럼 구조화됩니다. 그럼에도 불구하고 내부 저널링 로직은 저장이 **새 파일에** 발생해야 합니다. 따라서 사용자는 원본 PDF(예: `original.pdf`)와 스냅샷 세트(예: `original-snap1.pdf` / `original-snap1.log`, `original-snap2.pdf` / `original-snap2.log` 등) 간의 인식 가능한 관계를 지원하는 파일 명명 규칙을 개발해야 합니다."
 
 #: ../../recipes-journalling.rst:26 86cb216c0b2c49ad82e67e5dcd1dad33
 msgid "Example Session 1"
-msgstr ""
+msgstr "예제 세션 1"
 
 #: ../../recipes-journalling.rst:27 ../../recipes-journalling.rst:98
 #: 623199d65f524b49925fac870071c962 e45525e109c54fde88b07c36ca5ae547
 msgid "Description:"
-msgstr ""
+msgstr "설명:"
 
 #: ../../recipes-journalling.rst:29 64be3df2712342b6b3a07eb934808271
 msgid ""
 "Make a new PDF and enable journalling. Then add a page and some text "
 "lines -- each as a separate operation."
-msgstr ""
+msgstr "새 PDF를 만들고 저널링을 활성화합니다. 그런 다음 페이지와 일부 텍스트 줄을 추가합니다. 각각을 별도의 작업으로 수행합니다."
 
 #: ../../recipes-journalling.rst:30 f87700abdc524bcf98d294a44fcb2e9d
 msgid ""
 "Navigate within the journal, undoing and redoing these updates and "
 "displaying status and file results::"
-msgstr ""
+msgstr "저널 내에서 이동하며 이러한 업데이트를 실행 취소하고 다시 실행하며 상태와 파일 결과를 표시합니다::"
 
 #: ../../recipes-journalling.rst:97 f540b437628341a68f1d143da3561958
 msgid "Example Session 2"
-msgstr ""
+msgstr "예제 세션 2"
 
 #: ../../recipes-journalling.rst:100 e49f0638f47e40cfa88e8a2e5c342dc4
 msgid ""
 "Similar to previous, but after undoing some operations, we now add a "
 "different update. This will cause:"
-msgstr ""
+msgstr "이전과 유사하지만 일부 작업을 실행 취소한 후 다른 업데이트를 추가합니다. 이것은 다음을 유발합니다:"
 
 #: ../../recipes-journalling.rst:102 aeb2a12789f44076a21e14f5e8edbdf0
 msgid "permanent removal of the undone journal entries"
-msgstr ""
+msgstr "실행 취소된 저널 항목의 영구 제거"
 
 #: ../../recipes-journalling.rst:103 039d45dbbda9472596a7e3eab31cb2f1
 msgid "the new update operation will become the new last entry."
-msgstr ""
+msgstr "새 업데이트 작업이 새로운 마지막 항목이 됩니다."
 
 #: ../../footer.rst:46 5ed33c2c15454dd7b2014d897f80427a
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

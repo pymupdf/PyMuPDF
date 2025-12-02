@@ -21,38 +21,38 @@ msgstr ""
 
 #: ../../header.rst:-1 4ac2fe405aa74919af4d4a1801389523
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 aee68aa3a3cc4589bddde105fa520c68
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 60584b8003094a8b9570ee372d8eab4b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../annot.rst:7 f0fb0074a9b6446f8124c5e84ab64978
 msgid "Annot"
-msgstr ""
+msgstr "Annot (주석)"
 
 #: ../../annot.rst:9 fafaf69d450d48c5b26a1a93cb2eaa69
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "PDF 전용 클래스."
 
 #: ../../annot.rst:11 4869b122c6834f279f19045fee171ca8
 msgid "Quote from the :ref:`AdobeManual`:"
-msgstr ""
+msgstr ":ref:`AdobeManual` 에서 인용:"
 
 #: ../../annot.rst:13 e7b3050079714378a72611a6fde2125b
 msgid ""
 "*\"An annotation associates an object such as a note, sound, or movie "
 "with a location on a page of a PDF document, or provides a way to "
 "interact with the user by means of the mouse and keyboard.\"*"
-msgstr ""
+msgstr "*\"주석은 노트, 사운드 또는 동영상과 같은 객체를 PDF 문서 페이지의 위치와 연결하거나 마우스와 키보드를 통해 사용자와 상호 작용하는 방법을 제공합니다.\"*"
 
 #: ../../annot.rst:15 5c314b35139f446694f6aca06c7824f1
 msgid ""
@@ -61,15 +61,15 @@ msgid ""
 "structure change, etc.), then so does every of its existing annotation "
 "objects -- an exception is raised saying that the object is \"orphaned\","
 " whenever an annotation property or method is accessed."
-msgstr ""
+msgstr "주석과 페이지 사이에는 부모-자식 관계가 있습니다. 페이지 객체가 사용할 수 없게 되면(문서 닫기, 문서 구조 변경 등), 기존의 모든 주석 객체도 사용할 수 없게 됩니다 -- 주석 속성 또는 메서드에 액세스할 때마다 객체가 \"고아\"라는 예외가 발생합니다."
 
 #: ../../annot.rst:18 ce89c615b0d9400e96011970b5b97556
 msgid "**Attribute**"
-msgstr ""
+msgstr "**속성**"
 
 #: ../../annot.rst:18 715a7d9d0eca46759c21efd06dcef6ad
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../annot.rst:20 46ba2c1aef7f47fb8cf735ab0ab8ca51
 msgid ":meth:`Annot.delete_responses`"
@@ -77,7 +77,7 @@ msgstr ""
 
 #: ../../annot.rst:20 542edab529f14f8a90c247c58f61d0e4
 msgid "delete all responding annotations"
-msgstr ""
+msgstr "모든 응답 주석 삭제"
 
 #: ../../annot.rst:21 d6f4ad7997854c15ba7ef55c7c2df885
 msgid ":meth:`Annot.get_file`"
@@ -85,7 +85,7 @@ msgstr ""
 
 #: ../../annot.rst:21 df78c21ef62f4d29b9892ced6ce30eab
 msgid "get attached file content"
-msgstr ""
+msgstr "첨부 파일 내용 가져오기"
 
 #: ../../annot.rst:22 aaa2f1576e2940d187b785f39fd5d297
 msgid ":meth:`Annot.get_oc`"
@@ -93,7 +93,7 @@ msgstr ""
 
 #: ../../annot.rst:22 52de51aa8f364679a043608a648fdb6d
 msgid "get :data:`xref` of an :data:`OCG` / :data:`OCMD`"
-msgstr ""
+msgstr ":data:`OCG` / :data:`OCMD` 의 :data:`xref` 가져오기"
 
 #: ../../annot.rst:23 ba830719161c41318892442d95b2cb34
 msgid ":meth:`Annot.get_pixmap`"
@@ -101,7 +101,7 @@ msgstr ""
 
 #: ../../annot.rst:23 558b79769da645e1be5e25ee89f039ab
 msgid "image of the annotation as a pixmap"
-msgstr ""
+msgstr "주석의 이미지를 pixmap으로 가져오기"
 
 #: ../../annot.rst:24 a7049ccda64e4dd6890da7abe84fabf6
 msgid ":meth:`Annot.get_sound`"
@@ -109,7 +109,7 @@ msgstr ""
 
 #: ../../annot.rst:24 374a09b731894e87b56c7e841b17d330
 msgid "get the sound of an audio annotation"
-msgstr ""
+msgstr "오디오 주석의 사운드 가져오기"
 
 #: ../../annot.rst:25 35a90d1b5a004ad387963f3d9607d749
 msgid ":meth:`Annot.get_text`"
@@ -118,7 +118,7 @@ msgstr ""
 #: ../../annot.rst:25 ../../annot.rst:26 6131792a9d994335b4444e4823388a9a
 #: f86eecd4858f4cb89a366a146014aee5
 msgid "extract annotation text"
-msgstr ""
+msgstr "주석 텍스트 추출"
 
 #: ../../annot.rst:26 04cf9bb3fb1442709930c64bc5f6b0bb
 msgid ":meth:`Annot.get_textbox`"
@@ -130,7 +130,7 @@ msgstr ""
 
 #: ../../annot.rst:27 c85fb9dd00d64ff99bd74482953c24bf
 msgid "create a TextPage for the annotation"
-msgstr ""
+msgstr "주석에 대한 TextPage 생성"
 
 #: ../../annot.rst:28 802ef16921bd4a60800fbad10cc481fd
 msgid ":meth:`Annot.set_border`"
@@ -138,7 +138,7 @@ msgstr ""
 
 #: ../../annot.rst:28 2237d589cf4b43f8accb31706b0ac2e1
 msgid "set annotation's border properties"
-msgstr ""
+msgstr "주석의 테두리 속성 설정"
 
 #: ../../annot.rst:29 d6e3ab0ff8c247faa2df18a3dbd4fb5f
 msgid ":meth:`Annot.set_blendmode`"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: ../../annot.rst:29 8ff755a8802d4e4bb4f4c6466fd93439
 msgid "set annotation's blend mode"
-msgstr ""
+msgstr "주석의 블렌드 모드 설정"
 
 #: ../../annot.rst:30 ff206dc2f63444dfae9fbe12712ba514
 msgid ":meth:`Annot.set_colors`"
@@ -154,7 +154,7 @@ msgstr ""
 
 #: ../../annot.rst:30 3a8dce63eadd4ffe82a27bc21a526045
 msgid "set annotation's colors"
-msgstr ""
+msgstr "주석의 색상 설정"
 
 #: ../../annot.rst:31 ../../annot.rst:341 7c620a1bbb3d466d8c82b9c8817c33ee
 #: a00f8a2d06fa46afb1028c82837e4185
@@ -163,7 +163,7 @@ msgstr ""
 
 #: ../../annot.rst:31 37269417aa5845e78bc95975097fddad
 msgid "set annotation's flags field"
-msgstr ""
+msgstr "주석의 플래그 필드 설정"
 
 #: ../../annot.rst:32 60f6edb527ee49f1935786a1f19697cb
 msgid ":meth:`Annot.set_irt_xref`"
@@ -171,7 +171,7 @@ msgstr ""
 
 #: ../../annot.rst:32 fe64d8f927974fa7be28efe034d209b8
 msgid "define the annotation to being \"In Response To\""
-msgstr ""
+msgstr "주석을 \"답변 대상\"으로 정의"
 
 #: ../../annot.rst:33 efcba97648754ee0b6f2bf66c5fb7b3b
 msgid ":meth:`Annot.set_name`"
@@ -179,7 +179,7 @@ msgstr ""
 
 #: ../../annot.rst:33 f1f066d0c2da4d5f93f7b21c9e06512b
 msgid "set annotation's name field"
-msgstr ""
+msgstr "주석의 이름 필드 설정"
 
 #: ../../annot.rst:34 ../../annot.rst:342 068e0ee638a844e4b73d54c8713fd9bb
 #: 444417b076ed4a7f9938de802c9c8687
@@ -188,7 +188,7 @@ msgstr ""
 
 #: ../../annot.rst:34 2afdd097e4904b54a8f1ea48f5b61be3
 msgid "set :data:`xref` to an :data:`OCG` / :data:`OCMD`"
-msgstr ""
+msgstr ":data:`OCG` / :data:`OCMD` 로 :data:`xref` 설정"
 
 #: ../../annot.rst:35 c399de4849964e058e1637e53fdef2f9
 msgid ":meth:`Annot.set_opacity`"
@@ -196,7 +196,7 @@ msgstr ""
 
 #: ../../annot.rst:35 fff897c6b9cd4cf7bfd2472ea748ca06
 msgid "change transparency"
-msgstr ""
+msgstr "투명도 변경"
 
 #: ../../annot.rst:36 d97cf692893c4fe7a6b799f4897c0aef
 msgid ":meth:`Annot.set_open`"
@@ -204,7 +204,7 @@ msgstr ""
 
 #: ../../annot.rst:36 75aaff0f9c3c458ab962d5b77a5d79d3
 msgid "open / close annotation or its Popup"
-msgstr ""
+msgstr "주석 또는 팝업 열기 / 닫기"
 
 #: ../../annot.rst:37 39f62e91ffef48ce9321e816caa20faa
 msgid ":meth:`Annot.set_popup`"
@@ -212,7 +212,7 @@ msgstr ""
 
 #: ../../annot.rst:37 a674eec367f341508c884d315088746a
 msgid "create a Popup for the annotation"
-msgstr ""
+msgstr "주석에 대한 팝업 생성"
 
 #: ../../annot.rst:38 ../../annot.rst:340 305b0c54c12a450e8f06569799bb8a9f
 #: f592c57486d9486c86df308aa89526da
@@ -221,7 +221,7 @@ msgstr ""
 
 #: ../../annot.rst:38 26f28928df154a75b841a456bdfdbf0d
 msgid "change annotation rectangle"
-msgstr ""
+msgstr "주석 사각형 변경"
 
 #: ../../annot.rst:39 de6a1b1b820b471b86603c34dea03532
 msgid ":meth:`Annot.set_rotation`"
@@ -229,7 +229,7 @@ msgstr ""
 
 #: ../../annot.rst:39 9acc32b08f1d4f599b3735e31324426f
 msgid "change rotation"
-msgstr ""
+msgstr "회전 변경"
 
 #: ../../annot.rst:40 ../../annot.rst:343 18be6c4fae4e4cccb293fd8e12521dae
 #: 5200f1161df84772b72d390ec55d63cc
@@ -238,7 +238,7 @@ msgstr ""
 
 #: ../../annot.rst:40 c1b5d04cd03e4575a6d8bc9e47a2ac7f
 msgid "update attached file content"
-msgstr ""
+msgstr "첨부 파일 내용 업데이트"
 
 #: ../../annot.rst:41 736a77ca795b4bffab978f162c15c221
 msgid ":meth:`Annot.update`"
@@ -246,7 +246,7 @@ msgstr ""
 
 #: ../../annot.rst:41 53fe58b99d874419bf45e91f443bea49
 msgid "apply accumulated annot changes"
-msgstr ""
+msgstr "누적된 주석 변경 사항 적용"
 
 #: ../../annot.rst:42 076fef78de8747f98f8de5614822a3a3
 msgid ":attr:`Annot.blendmode`"
@@ -254,7 +254,7 @@ msgstr ""
 
 #: ../../annot.rst:42 3663d5144b7e4772a20a3ab76b0b7378
 msgid "annotation BlendMode"
-msgstr ""
+msgstr "주석 BlendMode"
 
 #: ../../annot.rst:43 209656247f2147b79d61220568d6e982
 msgid ":attr:`Annot.border`"
@@ -262,7 +262,7 @@ msgstr ""
 
 #: ../../annot.rst:43 cd995c15bfff4706a84f1d0deeef716c
 msgid "border details"
-msgstr ""
+msgstr "테두리 세부 사항"
 
 #: ../../annot.rst:44 a5a847e7aa1e4a66a59312e3ad69222e
 msgid ":attr:`Annot.colors`"
@@ -270,7 +270,7 @@ msgstr ""
 
 #: ../../annot.rst:44 7b16476edb2c47ee929046394941f61e
 msgid "border / background and fill colors"
-msgstr ""
+msgstr "테두리 / 배경 및 채우기 색상"
 
 #: ../../annot.rst:45 c79db9da10a34adf8724954ae760d148
 msgid ":attr:`Annot.file_info`"
@@ -278,7 +278,7 @@ msgstr ""
 
 #: ../../annot.rst:45 5e6d650320a44ec89edde9ad8443d028
 msgid "get attached file information"
-msgstr ""
+msgstr "첨부 파일 정보 가져오기"
 
 #: ../../annot.rst:46 830bf8e01251454db4eff541902734e7
 msgid ":attr:`Annot.flags`"
@@ -286,7 +286,7 @@ msgstr ""
 
 #: ../../annot.rst:46 d8e2f38116e34d6b8bcc0e11a02f64c4
 msgid "annotation flags"
-msgstr ""
+msgstr "주석 플래그"
 
 #: ../../annot.rst:47 427dbbb309334a4e938d8526af8aedd7
 msgid ":attr:`Annot.has_popup`"
@@ -294,7 +294,7 @@ msgstr ""
 
 #: ../../annot.rst:47 60549aa88002459b888f805a2649e95e
 msgid "whether annotation has a Popup"
-msgstr ""
+msgstr "주석에 팝업이 있는지 여부"
 
 #: ../../annot.rst:48 91cb2647177c40108aa8a389fbe4baba
 msgid ":attr:`Annot.irt_xref`"
@@ -302,7 +302,7 @@ msgstr ""
 
 #: ../../annot.rst:48 4b1a08935c844e1b94fd19e67c73c4bf
 msgid "annotation to which this one responds"
-msgstr ""
+msgstr "이 주석이 응답하는 주석"
 
 #: ../../annot.rst:49 c80c1d9523e54c13bf015a7802006f46
 msgid ":attr:`Annot.info`"
@@ -310,7 +310,7 @@ msgstr ""
 
 #: ../../annot.rst:49 e24c29731fb9426296860ef9e14c70f4
 msgid "various information"
-msgstr ""
+msgstr "다양한 정보"
 
 #: ../../annot.rst:50 9b1bc0b4f5604360a0fb530ee5571f6f
 msgid ":attr:`Annot.is_open`"
@@ -318,7 +318,7 @@ msgstr ""
 
 #: ../../annot.rst:50 76000b5c78d64a51b15f2dfb48416053
 msgid "whether annotation or its Popup is open"
-msgstr ""
+msgstr "주석 또는 팝업이 열려 있는지 여부"
 
 #: ../../annot.rst:51 c908f9af6c5e4097b190ab575189cc0e
 msgid ":attr:`Annot.line_ends`"
@@ -326,7 +326,7 @@ msgstr ""
 
 #: ../../annot.rst:51 5b4b1ee3f3ae4f66af35ac09445805c4
 msgid "start / end appearance of line-type annotations"
-msgstr ""
+msgstr "라인 타입 주석의 시작 / 끝 모양"
 
 #: ../../annot.rst:52 270077d780344f6c94f61715f13de4c2
 msgid ":attr:`Annot.next`"
@@ -334,7 +334,7 @@ msgstr ""
 
 #: ../../annot.rst:52 0dd927ea19014ab0ab931ee426aa46a2
 msgid "link to the next annotation"
-msgstr ""
+msgstr "다음 주석에 대한 링크"
 
 #: ../../annot.rst:53 0642e6954b8f41758e18c9fec902315c
 msgid ":attr:`Annot.opacity`"
@@ -342,7 +342,7 @@ msgstr ""
 
 #: ../../annot.rst:53 55103257955240a6b3c311e8e1f97f3c
 msgid "the annot's transparency"
-msgstr ""
+msgstr "주석의 투명도"
 
 #: ../../annot.rst:54 7528c54e1c664627851d592e77e4359b
 msgid ":attr:`Annot.parent`"
@@ -350,7 +350,7 @@ msgstr ""
 
 #: ../../annot.rst:54 d12a83a84aea44868a11feca2fd75f9e
 msgid "page object of the annotation"
-msgstr ""
+msgstr "주석의 페이지 객체"
 
 #: ../../annot.rst:55 17d31eb890f346608a29bac66b130ede
 msgid ":attr:`Annot.popup_rect`"
@@ -358,7 +358,7 @@ msgstr ""
 
 #: ../../annot.rst:55 e67d5b1efe1a49f8824bf40d6af292e8
 msgid "rectangle of the annotation's Popup"
-msgstr ""
+msgstr "주석 팝업의 사각형"
 
 #: ../../annot.rst:56 f5012088621c45f4a0cfa4ff69b400c8
 msgid ":attr:`Annot.popup_xref`"
@@ -366,7 +366,7 @@ msgstr ""
 
 #: ../../annot.rst:56 3c9f31c943c04997b05236036e58e2a7
 msgid "the PDF :data:`xref` number of the annotation's Popup"
-msgstr ""
+msgstr "주석 팝업의 PDF :data:`xref` 번호"
 
 #: ../../annot.rst:57 b0aaf4fc5d1d46a69cbca9c8576c4dff
 msgid ":attr:`Annot.rect`"
@@ -374,7 +374,7 @@ msgstr ""
 
 #: ../../annot.rst:57 a3afa859fcc54f03b9928dd3e3b37411
 msgid "rectangle containing the annotation"
-msgstr ""
+msgstr "주석을 포함하는 사각형"
 
 #: ../../annot.rst:58 e5405a3d8d6c48e3b0ba2375b00d54fc
 msgid ":attr:`Annot.type`"
@@ -382,7 +382,7 @@ msgstr ""
 
 #: ../../annot.rst:58 49ea84134cbd4fcfa71613fdc7c994d4
 msgid "type of the annotation"
-msgstr ""
+msgstr "주석 타입"
 
 #: ../../annot.rst:59 aedf999133ed4add859f5f25fcfd9c0a
 msgid ":attr:`Annot.vertices`"
@@ -390,7 +390,7 @@ msgstr ""
 
 #: ../../annot.rst:59 0328a5222a444a84b329ee20a13d1815
 msgid "point coordinates of Polygons, PolyLines, etc."
-msgstr ""
+msgstr "폴리곤, 폴리라인 등의 포인트 좌표"
 
 #: ../../annot.rst:60 593f8d9df1724b5abbabd4b0fb42cb5f
 msgid ":attr:`Annot.xref`"
@@ -398,11 +398,11 @@ msgstr ""
 
 #: ../../annot.rst:60 73d760603078437db968d81892fe5450
 msgid "the PDF :data:`xref` number"
-msgstr ""
+msgstr "PDF :data:`xref` 번호"
 
 #: ../../annot.rst:63 df3b29896fc84aa687b9b3d812b47830
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../annot.rst:75 b763b56670344531ae43994d27d0e054
 msgid "Changed in v1.19.2: added support of dpi parameter."
@@ -427,25 +427,25 @@ msgstr ""
 #: e6d90ec622494f2cad21e1c4990e3a26 f73c89ed9881402ba2bd06564113f2e8
 #: fe526c08b06a4286849cdeea133c925d
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../annot.rst:79 4ea40779573a4cd48d2f0ca41a27b6cb
 msgid "a matrix to be used for image creation. Default is :ref:`Identity`."
-msgstr ""
+msgstr "이미지 생성에 사용할 행렬. 기본값은 :ref:`Identity` 입니다."
 
 #: ../../annot.rst:81 1ceeea87c25445779a772f81c247bf10
 msgid ""
 "(new in v1.19.2) desired resolution in dots per inch. If not `None`, the "
 "matrix parameter is ignored."
-msgstr ""
+msgstr "(v1.19.2의 새로운 기능) 인치당 도트 단위의 원하는 해상도. `None` 이 아니면 matrix 매개변수는 무시됩니다."
 
 #: ../../annot.rst:83 17577d5328264f3c8b2c93127b76cb6c
 msgid "a colorspace to be used for image creation. Default is ``pymupdf.csRGB``."
-msgstr ""
+msgstr "이미지 생성에 사용할 색상 공간. 기본값은 ``pymupdf.csRGB`` 입니다."
 
 #: ../../annot.rst:86 93850b04eff54b39a748a09ca5d3e6bd
 msgid "whether to include transparency information. Default is ``False``."
-msgstr ""
+msgstr "투명도 정보를 포함할지 여부. 기본값은 ``False`` 입니다."
 
 #: ../../annot.rst 089309c51cd74976a42c4fcddda08a0a
 #: 09996d0975d243b1bc59b758b7d44173 1b331e1086824733a78f979f849d4845
@@ -461,7 +461,7 @@ msgstr ""
 #: ddc5fc79a0cd4e73a90a35b7de615f40 e556cbfd31a6417f8e4aab208b84c15a
 #: f867cc47820b4df6923b1b5b90969f1b
 msgid "Return type"
-msgstr ""
+msgstr "반환 타입"
 
 #: ../../annot.rst:88 4081b82925b34d7aa9202a29b34e6645
 msgid ":ref:`Pixmap`"
@@ -472,7 +472,7 @@ msgid ""
 "If the annotation has just been created or modified, you should "
 ":meth:`Document.reload_page` the page first via `page = "
 "doc.reload_page(page)`."
-msgstr ""
+msgstr "주석이 방금 생성되었거나 수정된 경우 `page = doc.reload_page(page)` 를 통해 먼저 :meth:`Document.reload_page` 를 사용해야 합니다."
 
 #: ../../annot.rst:94 968363fd034a4b84834bfe008fd58160
 msgid ""
@@ -480,12 +480,12 @@ msgid ""
 " about some background, e.g. look for \"Premultiplied alpha\" `in this "
 "online glossary "
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
-msgstr ""
+msgstr "`alpha=True` 인 경우 픽스맵은 *\"premultiplied\"* 픽셀을 가집니다. 배경에 대해 알아보려면 예를 들어 이 온라인 용어집 <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 \"Premultiplied alpha\"를 찾아보세요."
 
 #: ../../annot.rst:112 ../../annot.rst:133 059d5413f3154aaa8134479d9629d7da
 #: 5b109c06581d4245b9034c003ef2e32f
 msgid "New in 1.18.0"
-msgstr ""
+msgstr "*1.18.0의 새로운 기능*"
 
 #: ../../annot.rst:114 70fc1c944cd84ce18b5f51c59bbb47f0
 msgid ""
@@ -493,7 +493,7 @@ msgid ""
 "like the same method for :ref:`Page`.. This currently only delivers "
 "relevant data for annotation types 'FreeText' and 'Stamp'. Other types "
 "return an empty string (or equivalent objects)."
-msgstr ""
+msgstr "다양한 형식으로 주석의 콘텐츠를 검색합니다 -- :ref:`Page` 의 동일한 메서드와 매우 유사합니다. 현재는 주석 타입 'FreeText' 및 'Stamp'에 대해서만 관련 데이터를 제공합니다. 다른 타입은 빈 문자열(또는 해당 객체)을 반환합니다."
 
 #: ../../annot.rst:116 4f2629a0de0d499f8b80783953ee846e
 msgid ""
@@ -506,93 +506,93 @@ msgid ""
 ":meth:`TextPage.extractXML` * \"dict\" -- :meth:`TextPage.extractDICT` * "
 "\"json\" -- :meth:`TextPage.extractJSON` * \"rawdict\" -- "
 ":meth:`TextPage.extractRAWDICT`"
-msgstr ""
+msgstr "(위치 전용) 원하는 형식 - 다음 값 중 하나. 이 메서드는 :ref:`Page` 의 동일한 이름의 메서드와 정확히 동일하게 작동합니다.  * \"text\" -- :meth:`TextPage.extractTEXT`, 기본값 * \"blocks\" -- :meth:`TextPage.extractBLOCKS` * \"words\" -- :meth:`TextPage.extractWORDS` * \"html\" -- :meth:`TextPage.extractHTML` * \"xhtml\" -- :meth:`TextPage.extractXHTML` * \"xml\" -- :meth:`TextPage.extractXML` * \"dict\" -- :meth:`TextPage.extractDICT` * \"json\" -- :meth:`TextPage.extractJSON` * \"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
 
 #: ../../annot.rst:116 f5480fbc3f3f42fba82218a8e4aec39e
 msgid ""
 "(positional only) the desired format - one of the following values. "
 "Please note that this method works exactly like the same-named method of "
 ":ref:`Page`."
-msgstr ""
+msgstr "(위치 전용) 원하는 형식 - 다음 값 중 하나. 이 메서드는 :ref:`Page` 의 동일한 이름의 메서드와 정확히 동일하게 작동합니다."
 
 #: ../../annot.rst:118 72a5b0cb198a4de4a1b5bd8012921a2d
 msgid "\"text\" -- :meth:`TextPage.extractTEXT`, default"
-msgstr ""
+msgstr "\"text\" -- :meth:`TextPage.extractTEXT`, 기본값"
 
 #: ../../annot.rst:119 a0de89ee87384b559b91cb65e53fd4fe
 msgid "\"blocks\" -- :meth:`TextPage.extractBLOCKS`"
-msgstr ""
+msgstr "\"blocks\" -- :meth:`TextPage.extractBLOCKS`"
 
 #: ../../annot.rst:120 abb67ab204e8498a82f39f7786634fa3
 msgid "\"words\" -- :meth:`TextPage.extractWORDS`"
-msgstr ""
+msgstr "\"words\" -- :meth:`TextPage.extractWORDS`"
 
 #: ../../annot.rst:121 2a65cab359de401d84fb6c06d18af7fe
 msgid "\"html\" -- :meth:`TextPage.extractHTML`"
-msgstr ""
+msgstr "\"html\" -- :meth:`TextPage.extractHTML`"
 
 #: ../../annot.rst:122 ebb1a0a333b94886a085c62c2910b11b
 msgid "\"xhtml\" -- :meth:`TextPage.extractXHTML`"
-msgstr ""
+msgstr "\"xhtml\" -- :meth:`TextPage.extractXHTML`"
 
 #: ../../annot.rst:123 039f6bd299a1459984f1378d7506db1d
 msgid "\"xml\" -- :meth:`TextPage.extractXML`"
-msgstr ""
+msgstr "\"xml\" -- :meth:`TextPage.extractXML`"
 
 #: ../../annot.rst:124 def0587d2e904e678a48944fd55d8845
 msgid "\"dict\" -- :meth:`TextPage.extractDICT`"
-msgstr ""
+msgstr "\"dict\" -- :meth:`TextPage.extractDICT`"
 
 #: ../../annot.rst:125 9d446d90b12e480186eb0f5d4d6a88ca
 msgid "\"json\" -- :meth:`TextPage.extractJSON`"
-msgstr ""
+msgstr "\"json\" -- :meth:`TextPage.extractJSON`"
 
 #: ../../annot.rst:126 ba83222452844c0280bc4ca743ec52d2
 msgid "\"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
-msgstr ""
+msgstr "\"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
 
 #: ../../annot.rst:128 fc5b291ff14745a4acd435eba57c0ee4
 msgid ""
 "(keyword only) restrict the extraction to this area. Should hardly ever "
 "be required, defaults to :attr:`Annot.rect`."
-msgstr ""
+msgstr "(키워드 전용) 추출을 이 영역으로 제한합니다. 거의 필요하지 않으며, 기본값은 :attr:`Annot.rect` 입니다."
 
 #: ../../annot.rst:129 58a7b13ec10244cab579c577a4a02451
 msgid ""
 "(keyword only) control the amount of data returned. Defaults to simple "
 "text extraction."
-msgstr ""
+msgstr "(키워드 전용) 반환되는 데이터 양을 제어합니다. 기본값은 간단한 텍스트 추출입니다."
 
 #: ../../annot.rst:135 abea461b229f40449176733f81fe3e1f
 msgid ""
 "Return the annotation text. Mostly (except line breaks) equal to "
 ":meth:`Annot.get_text` with the \"text\" option."
-msgstr ""
+msgstr "주석 텍스트를 반환합니다. 대부분(줄바꿈 제외) \"text\" 옵션을 사용하는 :meth:`Annot.get_text` 와 동일합니다."
 
 #: ../../annot.rst:137 7769e9ff53bb477581a82b545145ed52
 msgid "the area to consider, defaults to :attr:`Annot.rect`."
-msgstr ""
+msgstr "고려할 영역, 기본값은 :attr:`Annot.rect` 입니다."
 
 #: ../../annot.rst:142 2e28ab6b2bd740c788a328a8a392b3d3
 msgid "Create a :ref:`TextPage` for the annotation."
-msgstr ""
+msgstr "주석에 대한 :ref:`TextPage` 생성."
 
 #: ../../annot.rst:144 ec86c28fbc9c4ea5a4520e3182ebac54
 msgid ""
 "indicator bits controlling the content available for subsequent text "
 "extractions and searches -- see the parameter of :meth:`Annot.get_text`."
-msgstr ""
+msgstr "후속 텍스트 추출 및 검색에 사용 가능한 콘텐츠를 제어하는 표시기 비트 -- :meth:`Annot.get_text` 의 매개변수 참조."
 
 #: ../../annot.rst:146 f524fdc0ad6649eabe0dcea86d45490d
 msgid "restrict extracted text to this area."
-msgstr ""
+msgstr "추출된 텍스트를 이 영역으로 제한합니다."
 
 #: ../../annot.rst 00ab1155c33d4b8b909387ee865f0f14
 #: 054667c67ee948229ce41dcc4618fb84 70e6a4c25ac54573a0e41c8e5ca39783
 #: 75932b217be7487a9362d25abfb1105c a5e875b7000f42ec9309633efaa12429
 #: c194084f626c4b5799f1d232a00741a2 ffd675b9852a4f828c4dfe677c57a2bf
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../annot.rst:148 195337666ae04da792bf99b2e5fc7381
 msgid ":ref:`TextPage`"
@@ -604,7 +604,7 @@ msgstr ""
 
 #: ../../annot.rst:152 b9da3f595018401c8b8eeb0c1529cca7
 msgid "v1.25.5: fixed `clip` arg."
-msgstr ""
+msgstr "v1.25.5: `clip` 인수 수정."
 
 #: ../../annot.rst:154 0201b53debf84074b8cde915dfcee8f4
 msgid "|history_end|"
@@ -612,7 +612,7 @@ msgstr ""
 
 #: ../../annot.rst:158 7980023e59354afead5f160d58e260cb
 msgid "Changed in version 1.16.10"
-msgstr ""
+msgstr "버전 1.16.10에서 변경됨"
 
 #: ../../annot.rst:160 0b5d367dc98e4a3a9b3fe1c292ce8cb6
 msgid ""
@@ -620,32 +620,32 @@ msgid ""
 " author (title). Changes for *name* and *id* will be ignored. The update "
 "happens selectively: To leave a property unchanged, set it to ``None``. "
 "To delete existing data, use an empty string."
-msgstr ""
+msgstr "주석 속성을 변경합니다. 날짜, 내용, 제목 및 작성자(제목)가 포함됩니다. *name* 및 *id* 에 대한 변경은 무시됩니다. 업데이트는 선택적으로 수행됩니다: 속성을 변경하지 않으려면 ``None`` 으로 설정하세요. 기존 데이터를 삭제하려면 빈 문자열을 사용하세요."
 
 #: ../../annot.rst:162 82ce1316fe354b898446a0cf7a1713b5
 msgid ""
 "a dictionary compatible with the *info* property (see below). All entries"
 " must be strings. If this argument is not a dictionary, the other "
 "arguments are used instead -- else they are ignored."
-msgstr ""
+msgstr "*info* 속성과 호환되는 딕셔너리(아래 참조). 모든 항목은 문자열이어야 합니다. 이 인수가 딕셔너리가 아니면 다른 인수가 대신 사용됩니다 -- 그렇지 않으면 무시됩니다."
 
 #: ../../annot.rst:163 ../../annot.rst:164 ../../annot.rst:167
 #: 83ea81f2fcaf4733afe8ff369d458b6f 86f02eb815724a3a9d24dd57c593a1a3
 #: c5a737145dcf4d738178459172d94c07
 msgid "*(new in v1.16.10)* see description in :attr:`info`."
-msgstr ""
+msgstr "*(v1.16.10의 새로운 기능)* :attr:`info` 의 설명을 참조하세요."
 
 #: ../../annot.rst:165 5b9616a7ad9147aa931d66313938ba67
 msgid ""
 "*(new in v1.16.10)* date of annot creation. If given, should be in PDF "
 "datetime format."
-msgstr ""
+msgstr "*(v1.16.10의 새로운 기능)* 주석 생성 날짜. 주어진 경우 PDF 날짜/시간 형식이어야 합니다."
 
 #: ../../annot.rst:166 3764dd0b660a48ecba7d241ddd0c78ef
 msgid ""
 "*(new in v1.16.10)* date of last modification. If given, should be in PDF"
 " datetime format."
-msgstr ""
+msgstr "*(v1.16.10의 새로운 기능)* 마지막 수정 날짜. 주어진 경우 PDF 날짜/시간 형식이어야 합니다."
 
 #: ../../annot.rst:171 e43517d418724f92aa471da27a597d2b
 msgid ""
@@ -654,22 +654,22 @@ msgid ""
 "identified by *start* is attached to the first point, and *end* to the "
 "last point of this list. For unsupported annotation types, a no-operation"
 " with a warning message results."
-msgstr ""
+msgstr "주석의 라인 끝 스타일을 설정합니다. 이러한 주석 타입 각각은 라인으로 연결된 포인트 목록으로 정의됩니다. *start* 로 식별된 심볼은 첫 번째 포인트에 첨부되고, *end* 는 이 목록의 마지막 포인트에 첨부됩니다. 지원되지 않는 주석 타입의 경우 경고 메시지와 함께 작업이 수행되지 않습니다."
 
 #: ../../annot.rst:175 c6f37bfe8f864b7aa70a6677d903fbdc
 msgid ""
 "Some symbols have an interior area (diamonds, circles, squares, etc.). "
 "These areas are filled with the fill color or the stroke color, depending"
 " on the annotation type."
-msgstr ""
+msgstr "일부 심볼에는 내부 영역(다이아몬드, 원, 사각형 등)이 있습니다. 이러한 영역은 주석 타입에 따라 채우기 색상 또는 스트로크 색상으로 채워집니다."
 
 #: ../../annot.rst:177 35d6ef1a79c74b06ab0a9dcf482f9a65
 msgid "The symbol number for the first point."
-msgstr ""
+msgstr "첫 번째 포인트의 심볼 번호."
 
 #: ../../annot.rst:178 458ad87b80944b07b309331fa16a70a2
 msgid "The symbol number for the last point."
-msgstr ""
+msgstr "마지막 포인트의 심볼 번호."
 
 #: ../../annot.rst:182 4fed90be4a2f4f6eb36e2d7f41f31319
 msgid ""
@@ -677,7 +677,7 @@ msgid ""
 "This visibility is controlled by the user interface of supporting PDF "
 "viewers. It is independent from other attributes like "
 ":attr:`Annot.flags`."
-msgstr ""
+msgstr "PDF 선택적 콘텐츠 메커니즘을 사용하여 주석의 가시성을 설정합니다. 이 가시성은 지원하는 PDF 뷰어의 사용자 인터페이스에 의해 제어됩니다. :attr:`Annot.flags` 와 같은 다른 속성과는 독립적입니다."
 
 #: ../../annot.rst:184 613a0a96a3a548efb40200791489f4fd
 msgid ""
@@ -685,119 +685,119 @@ msgid ""
 "previous xref will be overwritten. If zero, a previous entry will be "
 "removed. An exception occurs if the xref is not zero and does not point "
 "to a valid PDF object."
-msgstr ""
+msgstr "선택적 콘텐츠 그룹(OCG 또는 OCMD)의 :data:`xref`. 이전 xref는 덮어씌워집니다. 0이면 이전 항목이 제거됩니다. xref가 0이 아니고 유효한 PDF 객체를 가리키지 않으면 예외가 발생합니다."
 
 #: ../../annot.rst:186 55d26af3928947678aaeaa3e33027dcc
 msgid "This does **not require executing** :meth:`Annot.update` to take effect."
-msgstr ""
+msgstr "이것은 효과를 적용하기 위해 :meth:`Annot.update` **실행이 필요하지 않습니다**."
 
 #: ../../annot.rst:190 7e388a9f2b75447d8394d6d36c4a1bf8
 msgid ""
 "Return the :data:`xref` of an optional content object, or zero if there "
 "is none."
-msgstr ""
+msgstr "선택적 콘텐츠 객체의 :data:`xref` 를 반환하거나, 없으면 0을 반환합니다."
 
 #: ../../annot.rst:192 e8ec795f695645628c3efbfd3915cec6
 msgid "zero or the xref of an OCG (or OCMD)."
-msgstr ""
+msgstr "0 또는 OCG(또는 OCMD)의 xref."
 
 #: ../../annot.rst:197 b2f92c06a6294be3bfd5ec01d0e09768
 msgid "New in v1.19.3"
-msgstr ""
+msgstr "*v1.19.3의 새로운 기능*"
 
 #: ../../annot.rst:199 ad11cb50eb7b4800aec2e137d3accb71
 msgid "Set annotation to be \"In Response To\" another one."
-msgstr ""
+msgstr "주석을 다른 주석에 대한 \"답변 대상\"으로 설정합니다."
 
 #: ../../annot.rst:201 7b8bf875b3bc4826aa14c687fb8cd5d0
 msgid ""
 "The :data:`xref` of another annotation.  .. note:: Must refer to an "
 "existing annotation on this page. Setting this property requires no "
 "subsequent `update()`."
-msgstr ""
+msgstr "다른 주석의 :data:`xref`.  .. note:: 이 페이지의 기존 주석을 참조해야 합니다. 이 속성을 설정하는 데 후속 `update()` 가 필요하지 않습니다."
 
 #: ../../annot.rst:201 9e9d820407064710884e6a66aa7f7f55
 msgid "The :data:`xref` of another annotation."
-msgstr ""
+msgstr "다른 주석의 :data:`xref`."
 
 #: ../../annot.rst:203 14f320a016824d5198f1d52227d0a926
 msgid ""
 "Must refer to an existing annotation on this page. Setting this property "
 "requires no subsequent `update()`."
-msgstr ""
+msgstr "이 페이지의 기존 주석을 참조해야 합니다. 이 속성을 설정하는 데 후속 `update()` 가 필요하지 않습니다."
 
 #: ../../annot.rst:208 ../../annot.rst:217 ../../annot.rst:237
 #: 481fa7ca48f54e5598a63178e50438ab a466079f958942378ec240211f031c16
 #: f9ec8616d1df4181aa40e2958d601327
 msgid "New in v1.18.4"
-msgstr ""
+msgstr "*v1.18.4의 새로운 기능*"
 
 #: ../../annot.rst:210 67cc9664fad84f49a83ba297112ca110
 msgid ""
 "Set the annotation's Popup annotation to open or closed -- **or** the "
 "annotation itself, if its type is 'Text' (\"sticky note\")."
-msgstr ""
+msgstr "주석의 Popup 주석을 열거나 닫도록 설정합니다 -- **또는** 타입이 'Text'(\"sticky note\")인 경우 주석 자체를 설정합니다."
 
 #: ../../annot.rst:212 1504f1da1fda45fea8f19f45ffc20d4f
 msgid "the desired open state."
-msgstr ""
+msgstr "원하는 열림 상태."
 
 #: ../../annot.rst:219 c089225b48284823a9b7556a44262d27
 msgid ""
 "Create a Popup annotation for the annotation and specify its rectangle. "
 "If the Popup already exists, only its rectangle is updated."
-msgstr ""
+msgstr "주석에 대한 Popup 주석을 생성하고 사각형을 지정합니다. Popup이 이미 존재하면 사각형만 업데이트됩니다."
 
 #: ../../annot.rst:221 c34e5022b5454828b58718e9dcbc45fe
 msgid "the desired rectangle."
-msgstr ""
+msgstr "원하는 사각형."
 
 #: ../../annot.rst:227 facb954df51640a7ae7fd3710883dc98
 msgid ""
 "Set the annotation's transparency. Opacity can also be set in "
 ":meth:`Annot.update`."
-msgstr ""
+msgstr "주석의 투명도를 설정합니다. 불투명도는 :meth:`Annot.update` 에서도 설정할 수 있습니다."
 
 #: ../../annot.rst:229 d7989596080e46c987557189dc9c25ff
 msgid ""
 "a float in range *[0, 1]*. Any value outside is assumed to be 1. E.g. a "
 "value of 0.5 sets the transparency to 50%."
-msgstr ""
+msgstr "*[0, 1]* 범위의 float. 범위 밖의 값은 1로 간주됩니다. 예를 들어 0.5 값은 투명도를 50%로 설정합니다."
 
 #: ../../annot.rst:231 8cd9cbde74a9498aa0f39f1aceeb59c0
 msgid "Three overlapping 'Circle' annotations with each opacity set to 0.5:"
-msgstr ""
+msgstr "각 불투명도가 0.5로 설정된 세 개의 겹치는 'Circle' 주석:"
 
 #: ../../annot.rst:239 78ea45fdfd8c457285f97ad98ced56cb
 msgid ""
 "The annotation's blend mode. See :ref:`AdobeManual`, page 324 for "
 "explanations."
-msgstr ""
+msgstr "주석의 블렌드 모드. 설명은 :ref:`AdobeManual`, 324페이지를 참조하세요."
 
 #: ../../annot.rst:242 30d06915799b4a4d993a5b5fca1059fe
 msgid "the blend mode or ``None``."
-msgstr ""
+msgstr "블렌드 모드 또는 ``None``."
 
 #: ../../annot.rst:247 9dce9ac76ca040e1a31d5585a57839f6
 msgid "New in v1.16.14"
-msgstr ""
+msgstr "*v1.16.14의 새로운 기능*"
 
 #: ../../annot.rst:249 dc743497d0c04f36b92127b326b52323
 msgid ""
 "Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for "
 "explanations. The blend mode can also be set in :meth:`Annot.update`."
-msgstr ""
+msgstr "주석의 블렌드 모드를 설정합니다. 설명은 :ref:`AdobeManual`, 324페이지를 참조하세요. 블렌드 모드는 :meth:`Annot.update` 에서도 설정할 수 있습니다."
 
 #: ../../annot.rst:251 4cc8588ee3a54e0ea07306202519e692
 msgid ""
 "set the blend mode. Use :meth:`Annot.update` to reflect this in the "
 "visual appearance. For predefined values see :ref:`BlendModes`. Use "
 "`PDF_BM_Normal` to **remove** a blend mode."
-msgstr ""
+msgstr "블렌드 모드를 설정합니다. 시각적 모양에 반영하려면 :meth:`Annot.update` 를 사용하세요. 미리 정의된 값은 :ref:`BlendModes` 를 참조하세요. 블렌드 모드를 **제거** 하려면 `PDF_BM_Normal` 을 사용하세요."
 
 #: ../../annot.rst:256 f91715c6f8dd45839dff56adcd90fe40
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "*버전 1.16.0의 새로운 기능*"
 
 #: ../../annot.rst:258 63628e30584640f485f9216a26cc976e
 msgid ""
@@ -805,11 +805,11 @@ msgid ""
 "'Text' annotations, this is the icon name, for 'Stamp' annotations the "
 "text in the stamp. The visual result (if any) depends on your PDF viewer."
 " See also :ref:`mupdficons`."
-msgstr ""
+msgstr "모든 주석 타입의 이름 필드를 변경합니다. 'FileAttachment' 및 'Text' 주석의 경우 이것은 아이콘 이름이고, 'Stamp' 주석의 경우 스탬프의 텍스트입니다. 시각적 결과(있는 경우)는 PDF 뷰어에 따라 다릅니다. :ref:`mupdficons` 도 참조하세요."
 
 #: ../../annot.rst:260 c9956808cf6344fe93a68e352c078f3b
 msgid "the new name."
-msgstr ""
+msgstr "새 이름."
 
 #: ../../annot.rst:262 77d72775e0d649e0aee5cd748dcf35c5
 msgid ""
@@ -823,7 +823,7 @@ msgid ""
 ":data:`fontsize` 20 must not exceed 190 points. So please make sure that "
 "the following inequality is true: `pymupdf.get_text_length(text, "
 "fontname=\"tibo\", fontsize=20) <= 190`."
-msgstr ""
+msgstr "'Stamp' 주석의 이름을 설정하면 사각형이 **변경되지 않으며**, 텍스트도 어떤 방식으로도 레이아웃되지 않습니다. :ref:`StampIcons` 에서 표준 텍스트를 선택하는 경우(`\"STAMP_\"` 뒤의 **정확한** 이름 부분), 원래 레이아웃을 받아야 합니다. **임의의 텍스트**는 대문자로 변경되지 않지만, 그대로 \"Times-Bold\" 글꼴로 작성되며 **한 줄**에 가로로 중앙 정렬되고 맞추기 위해 단축됩니다. 텍스트가 완전히 표시되도록 하려면 :data:`fontsize` 20을 사용한 길이가 190포인트를 초과하지 않아야 합니다. 따라서 다음 부등식이 참인지 확인하세요: `pymupdf.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190`."
 
 #: ../../annot.rst:266 215783824e424078a9c68252ef072b76
 msgid ""
@@ -833,66 +833,66 @@ msgid ""
 "This method only affects certain annotation types [#f2]_ and will lead to"
 " a message on Python's `sys.stderr` in other cases. No exception will be "
 "raised, but `False` will be returned."
-msgstr ""
+msgstr "주석의 사각형을 변경합니다. 주석을 이동할 수 있고 사각형의 양쪽을 독립적으로 확장할 수 있습니다. 그러나 주석 모양은 회전, 뒤집기 또는 기울임이 되지 않습니다. 이 메서드는 특정 주석 타입 [#f2]_에만 영향을 미치며 다른 경우에는 Python의 `sys.stderr` 에 메시지가 표시됩니다. 예외는 발생하지 않지만 `False` 가 반환됩니다."
 
 #: ../../annot.rst:268 a55821d5ebaa43a79524ea735d7fce30
 msgid ""
 "the new rectangle of the annotation (finite and not empty). E.g. using a "
 "value of *annot.rect + (5, 5, 5, 5)* will shift the annot position 5 "
 "pixels to the right and downwards."
-msgstr ""
+msgstr "주석의 새 사각형(유한하고 비어 있지 않음). 예를 들어 *annot.rect + (5, 5, 5, 5)* 값을 사용하면 주석 위치가 오른쪽과 아래로 5픽셀 이동합니다."
 
 #: ../../annot.rst:270 58ba9ae624c649f59c822a951c81b8d9
 msgid "You **need not** invoke :meth:`Annot.update` for activation of the effect."
-msgstr ""
+msgstr "효과를 활성화하기 위해 :meth:`Annot.update` 를 **호출할 필요가 없습니다**."
 
 #: ../../annot.rst:275 4182447a9b644af7b8fdaadfb8a05d32
 msgid ""
 "Set the rotation of an annotation. This rotates the annotation rectangle "
 "around its center point. Then a **new annotation rectangle** is "
 "calculated from the resulting quad."
-msgstr ""
+msgstr "주석의 회전을 설정합니다. 이것은 중심점을 중심으로 주석 사각형을 회전시킵니다. 그런 다음 결과 쿼드에서 **새 주석 사각형** 이 계산됩니다."
 
 #: ../../annot.rst:277 6fc24fed55494f8fb4a955d4d8a13eba
 msgid ""
 "rotation angle in degrees. Arbitrary values are possible, but will be "
 "clamped to the interval `[0, 360)`."
-msgstr ""
+msgstr "도 단위의 회전 각도. 임의의 값이 가능하지만 `[0, 360)` 구간으로 제한됩니다."
 
 #: ../../annot.rst:280 e4f887994fc5422f95d07305f9ce1cd5
 msgid "You **must invoke** :meth:`Annot.update` to activate the effect."
-msgstr ""
+msgstr "효과를 활성화하려면 :meth:`Annot.update` 를 **호출해야 합니다**."
 
 #: ../../annot.rst:281 708375ceb35c401f93a653d662ffa946
 msgid ""
 "For PDF_ANNOT_FREE_TEXT, only one of the values 0, 90, 180 and 270 is "
 "possible and will **rotate the text** inside the current rectangle (which"
 " remains unchanged). Other values are silently ignored and replaced by 0."
-msgstr ""
+msgstr "PDF_ANNOT_FREE_TEXT의 경우 0, 90, 180, 270 값 중 하나만 가능하며 현재 사각형 내에서 **텍스트를 회전** 시킵니다(사각형은 변경되지 않음). 다른 값은 조용히 무시되고 0으로 대체됩니다."
 
 #: ../../annot.rst:282 9916c3c0474d42789055dd9fb27df6d5
 msgid ""
 "Otherwise, only the following :ref:`AnnotationTypes` can be rotated: "
 "'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', "
 "'Polyline', 'Polygon', and 'Stamp'. For all others the method is a no-op."
-msgstr ""
+msgstr "그렇지 않으면 다음 :ref:`AnnotationTypes` 만 회전할 수 있습니다: 'Square', 'Circle', 'Caret', 'Text', 'FileAttachment', 'Ink', 'Line', 'Polyline', 'Polygon', 'Stamp'. 다른 모든 경우 메서드는 작업을 수행하지 않습니다."
 
 #: ../../annot.rst:287 21f87eefce9f42cd84347e0b9f4c9750
 msgid ""
 "Changed in version 1.16.9: Allow specification without using a "
 "dictionary. The direct parameters are used if *border* is not a "
 "dictionary."
-msgstr ""
+msgstr "버전 1.16.9에서 변경됨: 딕셔너리를 사용하지 않고 지정할 수 있습니다. *border* 가 딕셔너리가 아니면 직접 매개변수가 사용됩니다."
 
 #: ../../annot.rst:289 a5d1d0e5012145d88adb8f0b58ec843d
 msgid "Changed in version 1.22.5: Support of the \"cloudy\" border effect."
-msgstr ""
+msgstr "버전 1.22.5에서 변경됨: \"cloudy\" 테두리 효과 지원."
 
 #: ../../annot.rst:291 c189c32c136c4970affbad53b8a4962c
 msgid ""
 "PDF only: Change border width, dashing, style and cloud effect. See the "
 ":attr:`Annot.border` attribute for more details."
-msgstr ""
+msgstr "PDF 전용: 테두리 너비, 파선, 스타일 및 클라우드 효과를 변경합니다. 자세한 내용은 :attr:`Annot.border` 속성을 참조하세요."
 
 #: ../../annot.rst:294 cd430c709f2743de8acc763ed90aa387
 msgid ""
@@ -901,37 +901,37 @@ msgid ""
 "and *clouds* (*int*). Omitted keys will leave the resp. property "
 "unchanged. Set the border argument to `None` (the default) to use the "
 "other arguments."
-msgstr ""
+msgstr ":attr:`border` 속성에서 반환된 딕셔너리, 키는 *\"width\"* (*float*), *\"style\"* (*str*), *\"dashes\"* (*sequence*), *clouds* (*int*). 생략된 키는 해당 속성을 변경하지 않습니다. 다른 인수를 사용하려면 border 인수를 `None` (기본값)으로 설정하세요."
 
 #: ../../annot.rst:296 39acc9934225448197fcfd592c9d832f
 msgid "A non-negative value will change the border line width."
-msgstr ""
+msgstr "음수가 아닌 값은 테두리 선 너비를 변경합니다."
 
 #: ../../annot.rst:297 a68a775771684101adfaada1b555645a
 msgid "A value other than `None` will change this border property."
-msgstr ""
+msgstr "`None` 이 아닌 값은 이 테두리 속성을 변경합니다."
 
 #: ../../annot.rst:298 6abbfe1e60884753b2f408c6140c1522
 msgid ""
 "All items of the sequence must be integers, otherwise the parameter is "
 "ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty "
 "sequence, \"style\" will automatically be set to \"D\" (dashed)."
-msgstr ""
+msgstr "시퀀스의 모든 항목은 정수여야 하며, 그렇지 않으면 매개변수가 무시됩니다. 파선을 제거하려면 `dashes=[]` 를 사용하세요. dashes가 비어 있지 않은 시퀀스인 경우 \"style\"이 자동으로 \"D\"(파선)로 설정됩니다."
 
 #: ../../annot.rst:299 a14bf775a9aa4b5690dfa5d75ad9a268
 msgid ""
 "A value >= 0 will change this property. Use `clouds=0` to remove the "
 "cloudy appearance completely. Only annotation types 'Square', 'Circle', "
 "and 'Polygon' are supported with this property."
-msgstr ""
+msgstr ">= 0 값은 이 속성을 변경합니다. 클라우드 모양을 완전히 제거하려면 `clouds=0` 을 사용하세요. 이 속성은 주석 타입 'Square', 'Circle', 'Polygon'에서만 지원됩니다."
 
 #: ../../annot.rst:303 ef79e54d0a714869a014c9d730425b72
 msgid "Changes the annotation flags. Use the `|` operator to combine several."
-msgstr ""
+msgstr "주석 플래그를 변경합니다. 여러 개를 결합하려면 `|` 연산자를 사용하세요."
 
 #: ../../annot.rst:305 fd0aa1fe5fa54354942159d69033f3dd
 msgid "an integer specifying the required flags."
-msgstr ""
+msgstr "필요한 플래그를 지정하는 정수."
 
 #: ../../annot.rst:309 6c045aa7fffe4727b0d500917f834af7
 msgid ""
@@ -939,7 +939,7 @@ msgid ""
 " -- not all annotation types accept both. **Do not use this method at all"
 " for FreeText annotations** because it has its special conventions to "
 "deal with up to three colors (border, fill, text)."
-msgstr ""
+msgstr "지원되는 주석 타입에 대한 \"stroke\" 및 \"fill\" 색상을 변경합니다 -- 모든 주석 타입이 둘 다 허용하는 것은 아닙니다. **FreeText 주석에는 이 메서드를 전혀 사용하지 마세요** 최대 3개의 색상(테두리, 채우기, 텍스트)을 처리하는 특별한 규칙이 있기 때문입니다."
 
 #: ../../annot.rst:311 db7de1cdaf074887b6a5856f6edce371
 msgid ""
@@ -947,50 +947,50 @@ msgid ""
 "keys and values see below. The most practical way should be to first make"
 " a copy of the *colors* property and then modify this dictionary as "
 "required."
-msgstr ""
+msgstr "색상 지정을 포함하는 딕셔너리. 허용되는 딕셔너리 키와 값은 아래를 참조하세요. 가장 실용적인 방법은 먼저 *colors* 속성의 복사본을 만든 다음 필요에 따라 이 딕셔너리를 수정하는 것입니다."
 
 #: ../../annot.rst:312 ../../annot.rst:313 75cff1ffb24c4912bfeb81a9ebd1432d
 #: ab1efc57d7bc48e98cf5e1bdb658a212
 msgid "see above."
-msgstr ""
+msgstr "위를 참조하세요."
 
 #: ../../annot.rst:315 7c1a94d49e3646c1acf119c6dbd9d5d2
 msgid ""
 "To completely remove a color specification, use an empty sequence like "
 "`[]`. If you specify `None`, an existing specification will not be "
 "changed."
-msgstr ""
+msgstr "색상 지정을 완전히 제거하려면 `[]` 와 같은 빈 시퀀스를 사용하세요. `None` 을 지정하면 기존 지정이 변경되지 않습니다."
 
 #: ../../annot.rst:320 2a6d90dee7ce4d77b26b92943743267a
 msgid "New in version 1.16.12"
-msgstr ""
+msgstr "*버전 1.16.12의 새로운 기능*"
 
 #: ../../annot.rst:322 595743ee33354f6db6ea8007f5c683d9
 msgid ""
 "Delete annotations referring to this one. This includes any 'Popup' "
 "annotations and all annotations responding to it."
-msgstr ""
+msgstr "이 주석을 참조하는 주석을 삭제합니다. 여기에는 모든 'Popup' 주석과 이에 응답하는 모든 주석이 포함됩니다."
 
 #: ../../annot.rst:336 3dd084b1ebf84cde9a0f1628888a078a
 msgid ""
 "Synchronize the appearance of an annotation with its properties after "
 "relevant changes."
-msgstr ""
+msgstr "관련 변경 후 주석의 모양을 속성과 동기화합니다."
 
 #: ../../annot.rst:338 7fe415cd7d454f189581594f76164856
 msgid "You can safely **omit** this method **only** for the following changes:"
-msgstr ""
+msgstr "다음 변경 사항에 대해서만 이 메서드를 안전하게 **생략** 할 수 있습니다:"
 
 #: ../../annot.rst:344 fe15053758b14d7199c023e93f5fb1b5
 msgid ":meth:`Annot.set_info` (except any changes to *\"content\"*)"
-msgstr ""
+msgstr ":meth:`Annot.set_info` (*\"content\"* 에 대한 변경 제외)"
 
 #: ../../annot.rst:346 0073d1e84f5d4733b0ed896ad1863ecc
 msgid ""
 "All arguments are optional. *(Changed in v1.16.14)* Blend mode and "
 "opacity are applicable to **all annotation types**. The other arguments "
 "are mostly special use, as described below."
-msgstr ""
+msgstr "모든 인수는 선택 사항입니다. *(v1.16.14에서 변경됨)* 블렌드 모드와 불투명도는 **모든 주석 타입** 에 적용됩니다. 다른 인수는 아래에 설명된 대로 대부분 특수 용도입니다."
 
 #: ../../annot.rst:348 f2ba4ab0eec14256874f4795f0809515
 msgid ""
@@ -998,23 +998,23 @@ msgid ""
 "sequences of floats ranging from 0.0 to 1.0 (including both). The "
 "sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK "
 "colorspaces respectively). For GRAY, just a float is also acceptable."
-msgstr ""
+msgstr "색상 지정은 PyMuPDF에서 사용하는 일반 형식으로 0.0부터 1.0까지(둘 다 포함)의 float 시퀀스로 만들 수 있습니다. 시퀀스 길이는 1, 3 또는 4여야 합니다(각각 GRAY, RGB 및 CMYK 색상 공간 지원). GRAY의 경우 단일 float도 허용됩니다."
 
 #: ../../annot.rst:350 f3ccad414cfa4feea70d7d6d4ee37f20
 msgid ""
 "*(new in v1.16.14)* **valid for all annotation types:** change or set the"
 " annotation's transparency. Valid values are *0 <= opacity < 1*."
-msgstr ""
+msgstr "*(v1.16.14의 새로운 기능)* **모든 주석 타입에 유효:** 주석의 투명도를 변경하거나 설정합니다. 유효한 값은 *0 <= opacity < 1* 입니다."
 
 #: ../../annot.rst:352 04465250dcde4c4c860e257ac3e888cc
 msgid ""
 "*(new in v1.16.14)* **valid for all annotation types:** change or set the"
 " annotation's blend mode. For valid values see :ref:`BlendModes`."
-msgstr ""
+msgstr "*(v1.16.14의 새로운 기능)* **모든 주석 타입에 유효:** 주석의 블렌드 모드를 변경하거나 설정합니다. 유효한 값은 :ref:`BlendModes` 를 참조하세요."
 
 #: ../../annot.rst:354 9bc27aa105ae42cd82a2451d40ee6e6e
 msgid "change :data:`fontsize` of the text. 'FreeText' annotations only."
-msgstr ""
+msgstr "텍스트의 :data:`fontsize` 변경. 'FreeText' 주석만 해당."
 
 #: ../../annot.rst:356 cf2b46ce81194d3889beefcdf7c9b7bc
 msgid ""
@@ -1022,24 +1022,24 @@ msgid ""
 "effect as ``border_color``. Note that the text color of rich-text "
 "annotations cannot be changed at all because it is set by HTML / CSS "
 "syntax and part of the text itself."
-msgstr ""
+msgstr "텍스트 색상 변경. 'FreeText' 주석만 해당. 이것은 ``border_color`` 와 동일한 효과를 가집니다. 리치 텍스트 주석의 텍스트 색상은 HTML / CSS 구문에 의해 설정되고 텍스트 자체의 일부이기 때문에 전혀 변경할 수 없습니다."
 
 #: ../../annot.rst:358 9573860e39914131a2e6b21985df1d0a
 msgid ""
 "change the border color. 'FreeText' annotations only. This has the same "
 "effect as ``text_color``."
-msgstr ""
+msgstr "테두리 색상 변경. 'FreeText' 주석만 해당. 이것은 ``text_color`` 와 동일한 효과를 가집니다."
 
 #: ../../annot.rst:360 f201d820422e410380867aef925e12c6
 msgid "the fill color."
-msgstr ""
+msgstr "채우기 색상."
 
 #: ../../annot.rst:362 51b7ae492b9d439ea63ad6e688461680
 msgid ""
 "*(new in v1.17.2)* add two diagonal lines to the annotation rectangle. "
 "'Redact' annotations only. If not desired, ``False`` must be specified "
 "even if the annotation was created with ``False``."
-msgstr ""
+msgstr "*(v1.17.2의 새로운 기능)* 주석 사각형에 두 개의 대각선을 추가합니다. 'Redact' 주석만 해당. 원하지 않는 경우 주석이 ``False`` 로 생성되었더라도 ``False`` 를 지정해야 합니다."
 
 #: ../../annot.rst:364 ca681b7d888b4269b353a917a0251fcc
 msgid ""
@@ -1047,7 +1047,7 @@ msgid ""
 " several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_."
 " Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any "
 "integer is acceptable."
-msgstr ""
+msgstr "새 회전 값. 기본값(-1)은 변경 없음을 의미합니다. 'FreeText' 및 여러 다른 주석 타입을 지원합니다(:meth:`Annot.set_rotation` 참조), [#f1]_. 'FreeText'의 경우 0, 90, 180 또는 270도만 선택하세요. 그렇지 않으면 모든 정수가 허용됩니다."
 
 #: ../../annot.rst:368 60ab5d4e01554e09aa2155cfcf1bd6a4
 msgid ""
@@ -1056,7 +1056,7 @@ msgid ""
 " be aware that for rich-text annotations, the text color is never "
 "changed. The text color is set by the ``text_color`` entry of the "
 "``info`` dictionary. This is a limitation of |MuPDF| and not a bug."
-msgstr ""
+msgstr "이 메서드는 FreeText 주석의 색상을 변경하는 유일한 방법입니다. 이 목적을 위해 :meth:`Annot.set_colors` 를 사용할 수 없습니다. 그러나 리치 텍스트 주석의 경우 텍스트 색상은 절대 변경되지 않습니다. 텍스트 색상은 ``info`` 딕셔너리의 ``text_color`` 항목에 의해 설정됩니다. 이것은 |MuPDF| 의 제한 사항이며 버그가 아닙니다."
 
 #: ../../annot.rst:370 1112033b5d6844729cb062a449ec85b1
 msgid ""
@@ -1064,62 +1064,62 @@ msgid ""
 "recommended!** This is because most annotation updates require the owning"
 " page to be reloaded -- which cannot be done inside this loop. Please use"
 " the example coding pattern given in the documentation of this generator."
-msgstr ""
+msgstr ":meth:`Page.annots` 루프 내에서 이 메서드를 사용하는 것은 **권장되지 않습니다!** 대부분의 주석 업데이트는 소유 페이지를 다시 로드해야 하기 때문입니다 -- 이 루프 내에서는 수행할 수 없습니다. 이 생성자의 문서에 제공된 예제 코딩 패턴을 사용하세요."
 
 #: ../../annot.rst:375 4a926753fff744ec9116dd6ed7183650
 msgid "Basic information of the annot's attached file."
-msgstr ""
+msgstr "주석의 첨부 파일에 대한 기본 정보."
 
 #: ../../annot.rst:378 dff1e3b1a640429fb53eddd0fa92ce69
 msgid ""
 "a dictionary with keys *filename*, *ufilename*, *desc* (description), "
 "*size* (uncompressed file size), *length* (compressed length) for "
 "FileAttachment annot types, else ``None``."
-msgstr ""
+msgstr "FileAttachment 주석 타입의 경우 *filename*, *ufilename*, *desc*(설명), *size*(압축되지 않은 파일 크기), *length*(압축된 길이) 키를 가진 딕셔너리, 그렇지 않으면 ``None``."
 
 #: ../../annot.rst:382 fff1e94235db41658c4a47630907af7b
 msgid "Returns attached file content."
-msgstr ""
+msgstr "첨부 파일 내용을 반환합니다."
 
 #: ../../annot.rst:385 e7858d0b8f274619a0e53226e2ad2558
 msgid "the content of the attached file."
-msgstr ""
+msgstr "첨부 파일의 내용."
 
 #: ../../annot.rst:395 0a6f0f824993411db432fbc73cedbf48
 msgid ""
 "Updates the content of an attached file. All arguments are optional. No "
 "arguments lead to a no-op."
-msgstr ""
+msgstr "첨부 파일의 내용을 업데이트합니다. 모든 인수는 선택 사항입니다. 인수가 없으면 작업이 수행되지 않습니다."
 
 #: ../../annot.rst:397 14cfd5ce68c443c4b5706490bf7ce62c
 msgid ""
 "the new file content. Omit to only change meta-information.  *(Changed in"
 " version 1.14.13)* *io.BytesIO* is now also supported."
-msgstr ""
+msgstr "새 파일 내용. 메타 정보만 변경하려면 생략하세요.  *(버전 1.14.13에서 변경됨)* *io.BytesIO* 도 이제 지원됩니다."
 
 #: ../../annot.rst:397 13e705e69a1d425184d4be574725693d
 msgid "the new file content. Omit to only change meta-information."
-msgstr ""
+msgstr "새 파일 내용. 메타 정보만 변경하려면 생략하세요."
 
 #: ../../annot.rst:399 a1e92b5db60e4c4599063b1893fd8eed
 msgid "*(Changed in version 1.14.13)* *io.BytesIO* is now also supported."
-msgstr ""
+msgstr "*(버전 1.14.13에서 변경됨)* *io.BytesIO* 도 이제 지원됩니다."
 
 #: ../../annot.rst:401 16d4a6c7354947dc9ed4a1af1e661951
 msgid "new filename to associate with the file."
-msgstr ""
+msgstr "파일과 연결할 새 파일 이름."
 
 #: ../../annot.rst:403 f71c9be54bb649adbc2100b1cf7793e5
 msgid "new unicode filename to associate with the file."
-msgstr ""
+msgstr "파일과 연결할 새 유니코드 파일 이름."
 
 #: ../../annot.rst:405 70d2cec5d76d4b4ca6ac53eb58acf503
 msgid "new description of the file content."
-msgstr ""
+msgstr "파일 내용에 대한 새 설명."
 
 #: ../../annot.rst:409 dfdaec12a2274c30a1f374a77b655ee8
 msgid "Return the embedded sound of an audio annotation."
-msgstr ""
+msgstr "오디오 주석의 포함된 사운드를 반환합니다."
 
 #: ../../annot.rst:412 c7fa04ae49d54d39a39b5d2245c490f0
 msgid ""
@@ -1135,81 +1135,81 @@ msgid ""
 "compression (str, opt.) name of compression filter stream      (bytes, "
 "requ.) the sound file content =========== "
 "======================================================="
-msgstr ""
+msgstr "사운드 오디오 파일 및 관련 속성. 가능한 딕셔너리 키는 다음과 같으며, \"rate\"와 \"stream\"만 항상 존재합니다.  =========== ======================================================= 키         설명 =========== ======================================================= rate        (float, 필수) 초당 샘플 수 channels    (int, 선택) 사운드 채널 수 bps         (int, 선택) 채널당 샘플 값당 비트 수 encoding    (str, 선택) 인코딩 형식: Raw, Signed, muLaw, ALaw compression (str, 선택) 압축 필터 이름 stream      (bytes, 필수) 사운드 파일 내용 =========== ========================================================"
 
 #: ../../annot.rst:412 df0e243fcf034592a8492436e6e1659a
 msgid ""
 "the sound audio file and accompanying properties. These are the possible "
 "dictionary keys, of which only \"rate\" and \"stream\" are always "
 "present."
-msgstr ""
+msgstr "사운드 오디오 파일 및 관련 속성. 가능한 딕셔너리 키는 다음과 같으며, \"rate\"와 \"stream\"만 항상 존재합니다."
 
 #: ../../annot.rst:415 12be1c52c4314285af838a6ce29fba9e
 msgid "Key"
-msgstr ""
+msgstr "키"
 
 #: ../../annot.rst:415 2bdf4ba35cce4815a2a492cf817897c8
 msgid "Description"
-msgstr ""
+msgstr "설명"
 
 #: ../../annot.rst:417 0d66d09f790c4ff3bc6c27ba0d9b632a
 msgid "rate"
-msgstr ""
+msgstr "rate"
 
 #: ../../annot.rst:417 c1045c0883214be39172475f75e7f5d0
 msgid "(float, requ.) samples per second"
-msgstr ""
+msgstr "(float, 필수) 초당 샘플 수"
 
 #: ../../annot.rst:418 8abdaaa9d7fe44dfa74cc67416d30c2b
 msgid "channels"
-msgstr ""
+msgstr "channels"
 
 #: ../../annot.rst:418 f74b4b35e92846e28327d70e75e25b02
 msgid "(int, opt.) number of sound channels"
-msgstr ""
+msgstr "(int, 선택) 사운드 채널 수"
 
 #: ../../annot.rst:419 942b2b733eed481b9491bc82bc570e1c
 msgid "bps"
-msgstr ""
+msgstr "bps"
 
 #: ../../annot.rst:419 7be514225767447a8a8095e8df1f2bc4
 msgid "(int, opt.) bits per sample value per channel"
-msgstr ""
+msgstr "(int, 선택) 채널당 샘플 값당 비트 수"
 
 #: ../../annot.rst:420 b38f02b791694df2ae7e91f5e18e4b63
 msgid "encoding"
-msgstr ""
+msgstr "encoding"
 
 #: ../../annot.rst:420 73e6b25cf0da41518e6a2a8c8342f9b9
 msgid "(str, opt.) encoding format: Raw, Signed, muLaw, ALaw"
-msgstr ""
+msgstr "(str, 선택) 인코딩 형식: Raw, Signed, muLaw, ALaw"
 
 #: ../../annot.rst:421 1969b7bd898244968ec9e8b0ccb1bde7
 msgid "compression"
-msgstr ""
+msgstr "compression"
 
 #: ../../annot.rst:421 a89ee4a1e5ae438bb9abdf27689f1840
 msgid "(str, opt.) name of compression filter"
-msgstr ""
+msgstr "(str, 선택) 압축 필터 이름"
 
 #: ../../annot.rst:422 8ae646c528504b2c930d6aeefa18e74b
 msgid "stream"
-msgstr ""
+msgstr "stream"
 
 #: ../../annot.rst:422 379f471934fe4d5fab7732b175a2bce2
 msgid "(bytes, requ.) the sound file content"
-msgstr ""
+msgstr "(bytes, 필수) 사운드 파일 내용"
 
 #: ../../annot.rst:428 04846fc70fde4de09324de235eedf132
 msgid ""
 "The annotation's transparency. If set, it is a value in range *[0, 1]*. "
 "The PDF default is 1. However, in an effort to tell the difference, we "
 "return *-1.0* if not set."
-msgstr ""
+msgstr "주석의 투명도. 설정된 경우 *[0, 1]* 범위의 값입니다. PDF 기본값은 1입니다. 그러나 차이를 구분하기 위해 설정되지 않은 경우 *-1.0* 을 반환합니다."
 
 #: ../../annot.rst:434 38341cb4267e49eea899f48c336adc57
 msgid "The owning page object of the annotation."
-msgstr ""
+msgstr "주석의 소유 페이지 객체."
 
 #: ../../annot.rst:436 b69e2ef1768c4682aeceb59e231073e6
 msgid ":ref:`Page`"
@@ -1217,18 +1217,18 @@ msgstr ""
 
 #: ../../annot.rst:440 d8c838f369404f76b51db3fa29590aaf
 msgid "The annot rotation."
-msgstr ""
+msgstr "주석 회전."
 
 #: ../../annot.rst:443 0e4000b23bd0487692990ba93841e11b
 msgid ""
 "a value [-1, 359]. If rotation is not at all, -1 is returned (and implies"
 " a rotation angle of 0). Other possible values are normalized to some "
 "value value 0 <= angle < 360."
-msgstr ""
+msgstr "[-1, 359] 값. 회전이 전혀 없는 경우 -1이 반환됩니다(회전 각도 0을 의미). 다른 가능한 값은 0 <= angle < 360 값으로 정규화됩니다."
 
 #: ../../annot.rst:447 675380b4c5e64bf7bff950dcc720a751
 msgid "The rectangle containing the annotation."
-msgstr ""
+msgstr "주석을 포함하는 사각형."
 
 #: ../../annot.rst:449 ../../annot.rst:549 aebdf20a1fda46b7abc7b4c3e0493882
 #: ec14799005724be998a1275792677a12
@@ -1237,7 +1237,7 @@ msgstr ""
 
 #: ../../annot.rst:453 c70b9c19d6d84a359b2b1a7396054162
 msgid "The next annotation on this page or None."
-msgstr ""
+msgstr "이 페이지의 다음 주석 또는 None."
 
 #: ../../annot.rst:455 e2f9dcc59c714b54a43f67ec7b62cff8
 msgid "*Annot*"
@@ -1249,58 +1249,58 @@ msgid ""
 "**[2, 'FreeText', 'FreeTextCallout']**. The second string entry is "
 "optional and may be empty. See the appendix :ref:`AnnotationTypes` for a "
 "list of possible values and their meanings."
-msgstr ""
+msgstr "주석 타입을 설명하는 숫자와 하나 또는 두 개의 문자열, 예: **[2, 'FreeText', 'FreeTextCallout']**. 두 번째 문자열 항목은 선택 사항이며 비어 있을 수 있습니다. 가능한 값과 의미 목록은 부록 :ref:`AnnotationTypes` 를 참조하세요."
 
 #: ../../annot.rst:465 814b528ad1594607875ed97510496fe2
 msgid ""
 "A dictionary containing various information. All fields are optional "
 "strings. For information items not provided, an empty string is returned."
-msgstr ""
+msgstr "다양한 정보를 포함하는 딕셔너리. 모든 필드는 선택적 문자열입니다. 제공되지 않은 정보 항목의 경우 빈 문자열이 반환됩니다."
 
 #: ../../annot.rst:467 132313a5fcff4d5b98ca42e3a4bf5fda
 msgid ""
 "*name* -- e.g. for 'Stamp' annotations it will contain the stamp text "
 "like \"Sold\" or \"Experimental\", for other annot types you will see the"
 " name of the annot's icon here (\"PushPin\" for FileAttachment)."
-msgstr ""
+msgstr "*name* -- 예를 들어 'Stamp' 주석의 경우 \"Sold\" 또는 \"Experimental\"와 같은 스탬프 텍스트를 포함하고, 다른 주석 타입의 경우 여기에서 주석 아이콘의 이름을 볼 수 있습니다(FileAttachment의 경우 \"PushPin\")."
 
 #: ../../annot.rst:469 bc6c85b50da94924bc357226258bd3fc
 msgid ""
 "*content* -- a string containing the text for type *Text* and *FreeText* "
 "annotations. Commonly used for filling the text field of annotation pop-"
 "up windows."
-msgstr ""
+msgstr "*content* -- *Text* 및 *FreeText* 주석에 대한 텍스트를 포함하는 문자열. 주석 팝업 창의 텍스트 필드를 채우는 데 일반적으로 사용됩니다."
 
 #: ../../annot.rst:471 d7645d31cbb64e3cb699a731902ecb75
 msgid ""
 "*title* -- a string containing the title of the annotation pop-up window."
 " By convention, this is used for the **annotation author**."
-msgstr ""
+msgstr "*title* -- 주석 팝업 창의 제목을 포함하는 문자열. 규칙에 따라 이것은 **주석 작성자** 에 사용됩니다."
 
 #: ../../annot.rst:473 ba6e837b12eb4a59b39297c6410293cb
 msgid "*creationDate* -- creation timestamp."
-msgstr ""
+msgstr "*creationDate* -- 생성 타임스탬프."
 
 #: ../../annot.rst:474 dea7337d10874b83bd25f6be18463264
 msgid "*modDate* -- last modified timestamp."
-msgstr ""
+msgstr "*modDate* -- 마지막 수정 타임스탬프."
 
 #: ../../annot.rst:475 affe5f09ffd3424b9ff3466bd9fa10e4
 msgid "*subject* -- subject."
-msgstr ""
+msgstr "*subject* -- 제목."
 
 #: ../../annot.rst:476 2839aeb340104f42b830df272fca2fb6
 msgid ""
 "*id* -- *(new in version 1.16.10)* a unique identification of the "
 "annotation. This is taken from PDF key */NM*. Annotations added by "
 "PyMuPDF will have a unique name, which appears here."
-msgstr ""
+msgstr "*id* -- *(버전 1.16.10의 새로운 기능)* 주석의 고유 식별자. 이것은 PDF 키 */NM* 에서 가져옵니다. PyMuPDF로 추가된 주석은 여기에 나타나는 고유한 이름을 가집니다."
 
 #: ../../annot.rst:483 16616c415f6e46b7a3677cfdd3112ce3
 msgid ""
 "An integer whose low order bits contain flags for how the annotation "
 "should be presented."
-msgstr ""
+msgstr "하위 비트에 주석을 표시하는 방법에 대한 플래그를 포함하는 정수."
 
 #: ../../annot.rst:489 8339de6110f3442eae85a3e339d2b60f
 msgid ""
@@ -1308,41 +1308,41 @@ msgid ""
 "'FreeText', 'Line', 'PolyLine', and 'Polygon'. ``None`` if not "
 "applicable. For possible values and descriptions in this list, see the "
 ":ref:`AdobeManual`, table 1.76 on page 400."
-msgstr ""
+msgstr "'FreeText', 'Line', 'PolyLine', 'Polygon' 주석 타입의 시작 및 끝 심볼을 지정하는 정수 쌍. 적용되지 않는 경우 ``None``. 이 목록의 가능한 값과 설명은 :ref:`AdobeManual`, 400페이지의 표 1.76을 참조하세요."
 
 #: ../../annot.rst:495 8bf05b20e751463eae59e5c917d94466
 msgid ""
 "A list containing a variable number of point (\"vertices\") coordinates "
 "(each given by a pair of floats) for various types of annotations:"
-msgstr ""
+msgstr "다양한 타입의 주석에 대한 가변 개수의 포인트(\"vertices\") 좌표(각각 float 쌍으로 제공)를 포함하는 목록:"
 
 #: ../../annot.rst:497 8912d31ff3344e5e8152219991bcb863
 msgid "'Line' -- the starting and ending coordinates (2 float pairs)."
-msgstr ""
+msgstr "'Line' -- 시작 및 종료 좌표(2개의 float 쌍)."
 
 #: ../../annot.rst:498 a5b0fa3b850f4856bd236c668f63f1eb
 msgid ""
 "'FreeText' -- 2 or 3 float pairs designating the starting, the (optional)"
 " knee point, and the ending coordinates."
-msgstr ""
+msgstr "'FreeText' -- 시작, (선택적) 무릎 포인트, 종료 좌표를 지정하는 2개 또는 3개의 float 쌍."
 
 #: ../../annot.rst:499 b0ee60812ba343fea5fc2d15019955f2
 msgid ""
 "'PolyLine' / 'Polygon' -- the coordinates of the edges connected by line "
 "pieces (n float pairs for n points)."
-msgstr ""
+msgstr "'PolyLine' / 'Polygon' -- 라인 조각으로 연결된 가장자리의 좌표(n개 포인트에 대해 n개의 float 쌍)."
 
 #: ../../annot.rst:500 8fbc31fb944e4da2868503b7613244d0
 msgid ""
 "text markup annotations -- 4 float pairs specifying the *QuadPoints* of "
 "the marked text span (see :ref:`AdobeManual`, page 403)."
-msgstr ""
+msgstr "텍스트 마크업 주석 -- 표시된 텍스트 스팬의 *QuadPoints* 를 지정하는 4개의 float 쌍(:ref:`AdobeManual`, 403페이지 참조)."
 
 #: ../../annot.rst:501 09ceddfd7c4642e187b77e4fe278f331
 msgid ""
 "'Ink' -- list of one to many sublists of vertex coordinates. Each such "
 "sublist represents a separate line in the drawing."
-msgstr ""
+msgstr "'Ink' -- 하나에서 많은 개수의 정점 좌표 하위 목록 목록. 각 하위 목록은 그리기의 별도 라인을 나타냅니다."
 
 #: ../../annot.rst:508 e363318aa7cb46ff97b34487bc567275
 msgid ""
@@ -1354,52 +1354,52 @@ msgid ""
 "determine the colorspaces used: 1 = GRAY, 3 = RGB, 4 = CMYK. So \"[1.0, "
 "0.0, 0.0]\" stands for RGB color red. Both lists can be empty if no color"
 " is specified. Be aware about some potentially unexpected cases:"
-msgstr ""
+msgstr "*0 <= float <= 1* 범위의 float 두 목록으로 \"stroke\" 및 내부(\"fill\") 색상을 지정하는 딕셔너리. 스트로크 색상은 테두리와 활성적으로 그려지거나 작성된 모든 것(\"stroked\")에 사용됩니다. 채우기 색상은 라인 끝, 원 및 사각형과 같은 객체의 내부에 사용됩니다. 이러한 목록의 길이는 암묵적으로 사용되는 색상 공간을 결정합니다: 1 = GRAY, 3 = RGB, 4 = CMYK. 따라서 \"[1.0, 0.0, 0.0]\"은 RGB 색상 빨강을 나타냅니다. 색상이 지정되지 않은 경우 두 목록 모두 비어 있을 수 있습니다. 잠재적으로 예상치 못한 경우에 유의하세요:"
 
 #: ../../annot.rst:510 c98f3742209a4834b74c3d4385888358
 msgid ""
 "The color of Highlight annotations is a **stroke** color, contrary to "
 "intuition."
-msgstr ""
+msgstr "Highlight 주석의 색상은 직관과 반대로 **stroke** 색상입니다."
 
 #: ../../annot.rst:511 2d1b77af92f94df2901498dee3ecf512
 msgid ""
 "The color if FreeText annotations is a **stroke** color, but appears as "
 "the color that fills the rectangle and any applicable line end symbols. "
 "Text color and border color cannot be accessed at all."
-msgstr ""
+msgstr "FreeText 주석의 색상은 **stroke** 색상이지만, 사각형과 모든 적용 가능한 라인 끝 심볼을 채우는 색상으로 나타납니다. 텍스트 색상과 테두리 색상은 전혀 액세스할 수 없습니다."
 
 #: ../../annot.rst:517 5673a83fdd3046e1a25a02e890bf9503
 msgid "The PDF :data:`xref`."
-msgstr ""
+msgstr "PDF :data:`xref`."
 
 #: ../../annot.rst:523 80d30458b0ae4d81a75fccb23e4560df
 msgid ""
 "The PDF :data:`xref` of an annotation to which this one responds. Return "
 "zero if this is no response annotation."
-msgstr ""
+msgstr "이 주석이 응답하는 주석의 PDF :data:`xref`. 응답 주석이 아니면 0을 반환합니다."
 
 #: ../../annot.rst:529 adc968b773a6471aba76a7111c2340a5
 msgid ""
 "The PDF :data:`xref` of the associated Popup annotation. Zero if non-"
 "existent."
-msgstr ""
+msgstr "연결된 Popup 주석의 PDF :data:`xref`. 존재하지 않으면 0."
 
 #: ../../annot.rst:535 87e7894e6b484ea3b6e9b676e28d88b3
 msgid "Whether the annotation has a Popup annotation."
-msgstr ""
+msgstr "주석에 Popup 주석이 있는지 여부."
 
 #: ../../annot.rst:541 a5edaf80b163482b844afac753dce499
 msgid ""
 "Whether the annotation's Popup is open -- **or** the annotation itself "
 "('Text' annotations only)."
-msgstr ""
+msgstr "주석의 Popup이 열려 있는지 여부 -- **또는** 주석 자체('Text' 주석만 해당)."
 
 #: ../../annot.rst:547 600f5a64e8a4400da0c1ae35c135efd1
 msgid ""
 "The rectangle of the associated Popup annotation. Infinite rectangle if "
 "non-existent."
-msgstr ""
+msgstr "연결된 Popup 주석의 사각형. 존재하지 않으면 무한 사각형."
 
 #: ../../annot.rst:553 9fd4e2374ea64a4f895272c2450db57b
 msgid ""
@@ -1412,19 +1412,19 @@ msgid ""
 "the annotation has a \"cloudy\" border, you will see the breadth of the "
 "cloud semi-circles here. In general, the numbers need not be identical. "
 "To compute the inner rectangle do `a.rect + a.rect_delta`."
-msgstr ""
+msgstr "주석의 `/RD` 항목을 나타내는 4개의 float 튜플. 네 숫자는 두 사각형(주석의 :attr:`rect` 와 그 사각형 내에 포함된 사각형) 사이의 수치 차이(왼쪽, 위쪽, -오른쪽, -아래쪽)를 설명합니다. 항목이 없으면 이 속성은 `(0, 0, 0, 0)` 입니다. 주석 테두리가 일반적인 직선인 경우, 이러한 숫자는 일반적으로 테두리 너비를 2로 나눈 값입니다. 주석에 \"cloudy\" 테두리가 있으면 여기에서 클라우드 반원의 폭을 볼 수 있습니다. 일반적으로 숫자가 동일할 필요는 없습니다. 내부 사각형을 계산하려면 `a.rect + a.rect_delta` 를 수행하세요."
 
 #: ../../annot.rst:557 76373f31dcbe446392d079eb34532b34
 msgid ""
 "A dictionary containing border characteristics. Empty if no border "
 "information exists. The following keys may be present:"
-msgstr ""
+msgstr "테두리 특성을 포함하는 딕셔너리. 테두리 정보가 없으면 비어 있습니다. 다음 키가 있을 수 있습니다:"
 
 #: ../../annot.rst:559 2a2fab2fdf524b6184a1f5b62304135a
 msgid ""
 "*width* -- a float indicating the border thickness in points. The value "
 "is -1.0 if no width is specified."
-msgstr ""
+msgstr "*width* -- 포인트 단위의 테두리 두께를 나타내는 float. 너비가 지정되지 않으면 값은 -1.0입니다."
 
 #: ../../annot.rst:561 ee7176832c7e4740b78bb806706a9d04
 msgid ""
@@ -1432,7 +1432,7 @@ msgid ""
 "*[]* means no dashes, *[n]* means equal on-off lengths of *n* points, "
 "longer lists will be interpreted as specifying alternating on-off length "
 "values. See the :ref:`AdobeManual` page 126 for more details."
-msgstr ""
+msgstr "*dashes* -- 라인 파선 패턴을 지정하는 정수 시퀀스. *[]* 는 파선 없음을 의미하고, *[n]* 는 *n* 포인트의 동일한 on-off 길이를 의미하며, 더 긴 목록은 교대 on-off 길이 값을 지정하는 것으로 해석됩니다. 자세한 내용은 :ref:`AdobeManual` 126페이지를 참조하세요."
 
 #: ../../annot.rst:563 994ba35808ba4456b6568752b410a28e
 msgid ""
@@ -1444,7 +1444,7 @@ msgid ""
 "engraved rectangle that appears to be recessed below the surface of the "
 "page, **\"U\"** (Underline) = a single line along the bottom of the "
 "annotation rectangle."
-msgstr ""
+msgstr "*style* -- 1바이트 테두리 스타일: **\"S\"** (Solid) = 주석을 둘러싸는 실선, **\"D\"** (Dashed) = 주석을 둘러싸는 파선, 파선 패턴은 *dashes* 항목으로 지정됨, **\"B\"** (Beveled) = 페이지 표면 위에 올라간 것처럼 보이는 시뮬레이션된 볼록 사각형, **\"I\"** (Inset) = 페이지 표면 아래로 움푹 들어간 것처럼 보이는 시뮬레이션된 조각 사각형, **\"U\"** (Underline) = 주석 사각형의 하단을 따른 단일 라인."
 
 #: ../../annot.rst:565 7700bc48fde44a268bcd7c4a8afa5304
 msgid ""
@@ -1452,11 +1452,11 @@ msgid ""
 "integer `-1 <= n <= 2`. A value `n = 0` indicates a straight line (no "
 "clouds), 1 means small and 2 means large semi-circles, mimicking the "
 "cloudy appearance. If -1, then no specification is present."
-msgstr ""
+msgstr "*clouds* -- \"cloudy\" 테두리를 나타내는 정수, 여기서 ``n`` 은 정수 `-1 <= n <= 2`. 값 `n = 0` 은 직선(클라우드 없음)을 나타내고, 1은 작은 반원을, 2는 큰 반원을 의미하여 클라우드 모양을 모방합니다. -1이면 지정이 없습니다."
 
 #: ../../annot.rst:573 332ac742d76d48529ceb6b4e40f7295a
 msgid "Annotation Icons in MuPDF"
-msgstr ""
+msgstr "MuPDF의 주석 아이콘"
 
 #: ../../annot.rst:574 21859a0e63974afa950419ab98ff55e6
 msgid ""
@@ -1466,23 +1466,23 @@ msgid ""
 "It is left to your discretion which item to choose when -- no mechanism "
 "will keep you from using e.g. the \"Speaker\" icon for a "
 "'FileAttachment'."
-msgstr ""
+msgstr "이것은 'Text' 및 'FileAttachment' 주석 타입에 대해 이름으로 참조할 수 있는 아이콘 목록입니다. 주석을 추가할 때 *icon* 매개변수를 통해 사용하거나 :meth:`Annot.set_name` 의 인수로 사용할 수 있습니다. 어떤 항목을 선택할지는 사용자의 재량에 맡겨집니다 -- 예를 들어 'FileAttachment'에 \"Speaker\" 아이콘을 사용하는 것을 막는 메커니즘은 없습니다."
 
 #: ../../annot.rst:580 cb12c1793cdb4341b24fbf6538c60d1c
 msgid "Example"
-msgstr ""
+msgstr "예제"
 
 #: ../../annot.rst:581 a2296e47889a4fec983f5aa41e485291
 msgid ""
 "Change the graphical image of an annotation. Also update the \"author\" "
 "and the text to be shown in the popup window::"
-msgstr ""
+msgstr "주석의 그래픽 이미지를 변경합니다. 또한 팝업 창에 표시될 \"author\" 및 텍스트를 업데이트합니다::"
 
 #: ../../annot.rst:604 7bff751c7d604fe38047b43fdeb95933
 msgid ""
 "This is how the circle annotation looks like before and after the change "
 "(pop-up windows displayed using Nitro PDF viewer):"
-msgstr ""
+msgstr "변경 전후의 원 주석 모습입니다(Nitro PDF 뷰어를 사용하여 표시된 팝업 창):"
 
 #: ../../annot.rst:606 479b5bc5389b486e92aaf64c6226c673
 msgid "|circle|"
@@ -1491,11 +1491,11 @@ msgstr ""
 #: ../../annot.rst:608 031e9835b5ea4674bd3bcd678ae780a5
 #: 8bea81da58c844a9abeb9a5253d1a9b6
 msgid "circle"
-msgstr ""
+msgstr "circle"
 
 #: ../../annot.rst:612 a8717fc2c8cd4706b95166aae42c2f9b
 msgid "Footnotes"
-msgstr ""
+msgstr "각주"
 
 #: ../../annot.rst:613 6d03771b774345a5b005846ee4002288
 msgid ""
@@ -1503,16 +1503,16 @@ msgid ""
 "annotation was defined, the original rectangle is **cannot be "
 "reconstructed** by setting the rotation value to zero again and will be "
 "lost."
-msgstr ""
+msgstr "주석을 회전시키면 사각형도 변경됩니다. 주석이 정의된 방식에 따라 원래 사각형은 회전 값을 다시 0으로 설정해도 **재구성할 수 없으며** 손실됩니다."
 
 #: ../../annot.rst:615 c6c9d602fa054b6fac8c6ec2c52ad078
 msgid ""
 "Only the following annotation types support method "
 ":meth:`Annot.set_rect`: Text, FreeText, Square, Circle, Redact, Stamp, "
 "Caret, FileAttachment, Sound, and Movie."
-msgstr ""
+msgstr "다음 주석 타입만 :meth:`Annot.set_rect` 메서드를 지원합니다: Text, FreeText, Square, Circle, Redact, Stamp, Caret, FileAttachment, Sound, Movie."
 
 #: ../../footer.rst:46 bc670bbcee16481398498b6cc9d3f828
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

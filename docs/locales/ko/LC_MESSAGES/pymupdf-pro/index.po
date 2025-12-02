@@ -21,194 +21,194 @@ msgstr ""
 
 #: ../../header.rst:-1 ff337a9fa03e4fd6a3d7aaec4930912f
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 b9e1a76b005b46c7a35e27ac36b668dd
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 5b66ad60d8974f3fb8061286f4b23214
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../pymupdf-pro/index.rst:8 07624f1e03dd463c99bf82f95b91a35e
 msgid "PyMuPDF Pro"
-msgstr ""
+msgstr "PyMuPDF Pro"
 
 #: ../../pymupdf-pro/index.rst:11 879666c817c94726a9df9e5880d5425a
 msgid "|PyMuPDF Pro| is a set of *commercial extensions* for |PyMuPDF|."
-msgstr ""
+msgstr "|PyMuPDF Pro| 는 |PyMuPDF| 를 위한 *상용 확장* 세트입니다."
 
 #: ../../pymupdf-pro/index.rst:13 ae90e3fd121f4e04a0a9ecd747514717
 msgid ""
 "Enhance |PyMuPDF| capability with **Office** document support & "
 "**RAG/LLM** integrations."
-msgstr ""
+msgstr "**Office** 문서 지원 및 **RAG/LLM** 통합으로 |PyMuPDF| 기능을 향상시킵니다."
 
 #: ../../pymupdf-pro/index.rst:15 aed2c2f793d348d8bf6eb0811eecb47a
 msgid ""
 "Enables Office document handling, including ``doc``, ``docx``, ``hwp``, "
 "``hwpx``, ``ppt``, ``pptx``, ``xls``, ``xlsx``, and others."
-msgstr ""
+msgstr "``doc``, ``docx``, ``hwp``, ``hwpx``, ``ppt``, ``pptx``, ``xls``, ``xlsx`` 등을 포함한 Office 문서 처리를 활성화합니다."
 
 #: ../../pymupdf-pro/index.rst:16 997a064abea1408d914a30cae0872289
 msgid "Supports text and table extraction, document conversion and more."
-msgstr ""
+msgstr "텍스트 및 테이블 추출, 문서 변환 등을 지원합니다."
 
 #: ../../pymupdf-pro/index.rst:17 7ee872ab1d5c4992b77ebbf8c3cf149c
 msgid "Includes the commercial version of |PyMuPDF4LLM|."
-msgstr ""
+msgstr "|PyMuPDF4LLM| 의 상용 버전을 포함합니다."
 
 #: ../../pymupdf-pro/index.rst:19 83cc2a9a8a854516b90d26d2841aad02
 msgid ""
 "To enquire about obtaining a commercial license, then `use this contact "
 "page <https://artifex.com/contact/>`_."
-msgstr ""
+msgstr "상용 라이선스 취득에 대한 문의는 `이 연락처 페이지 <https://artifex.com/contact/>`_ 를 사용하세요."
 
 #: ../../pymupdf-pro/index.rst:24 f0a9c51213864c898871ca01453557e1
 msgid ""
 "A licensed version of |PyMuPDF Pro| also gives you a licensed version of "
 "|PyMuPDF4LLM|. If you are interested in using the |PyMuPDF4LLM| package "
 "you should install it separately."
-msgstr ""
+msgstr "|PyMuPDF Pro| 의 라이선스 버전은 |PyMuPDF4LLM| 의 라이선스 버전도 제공합니다. |PyMuPDF4LLM| 패키지를 사용하려면 별도로 설치해야 합니다."
 
 #: ../../pymupdf-pro/index.rst:28 4a1d503fea744f4ba62d54e186f02d87
 msgid "Platform support"
-msgstr ""
+msgstr "플랫폼 지원"
 
 #: ../../pymupdf-pro/index.rst:30 78076f4c0458474f913d726a0fb0e0bc
 msgid "Available for these platforms only:"
-msgstr ""
+msgstr "다음 플랫폼에서만 사용 가능:"
 
 #: ../../pymupdf-pro/index.rst:32 ed38f46c156840689524033bf7da829d
 msgid "Windows x86_64."
-msgstr ""
+msgstr "Windows x86_64."
 
 #: ../../pymupdf-pro/index.rst:33 259897daea654cb8a90bc8e65c6e4f76
 msgid "Linux x86_64 (glibc)."
-msgstr ""
+msgstr "Linux x86_64 (glibc)."
 
 #: ../../pymupdf-pro/index.rst:34 1923df7caa0b4f04a3b259b4c866ba6e
 msgid "MacOS x86_64."
-msgstr ""
+msgstr "MacOS x86_64."
 
 #: ../../pymupdf-pro/index.rst:35 fd5d8bf6fc12467a826ce8202a1d2ec3
 msgid "MacOS arm64."
-msgstr ""
+msgstr "MacOS arm64."
 
 #: ../../pymupdf-pro/index.rst:39 f2952d3e2f47435bb640b83bd15721c4
 msgid "Office file support"
-msgstr ""
+msgstr "Office 파일 지원"
 
 #: ../../pymupdf-pro/index.rst:41 7c38d85a3c164f3a90d869b52ef96eb1
 msgid ""
 "In addition to the `standard file types supported by PyMuPDF "
 "<Supported_File_Types>`, |PyMuPDF Pro| supports:"
-msgstr ""
+msgstr "`PyMuPDF 가 지원하는 표준 파일 타입 <Supported_File_Types>` 외에도 |PyMuPDF Pro| 는 다음을 지원합니다:"
 
 #: ../../pymupdf-pro/index.rst:46 67438064f36f474186aeb4fbfb093d31
 msgid "**DOC/DOCX**"
-msgstr ""
+msgstr "**DOC/DOCX**"
 
 #: ../../pymupdf-pro/index.rst:47 9ab995c3f8214b9ab04698d96a84b4e2
 msgid "**XLS/XLSX**"
-msgstr ""
+msgstr "**XLS/XLSX**"
 
 #: ../../pymupdf-pro/index.rst:48 9e2c997d6ac44df79efb09f56a593cbb
 msgid "**PPT/PPTX**"
-msgstr ""
+msgstr "**PPT/PPTX**"
 
 #: ../../pymupdf-pro/index.rst:49 28e3c375094f40258eea347ffcaf5a8f
 msgid "**HWP/HWPX**"
-msgstr ""
+msgstr "**HWP/HWPX**"
 
 #: ../../pymupdf-pro/index.rst:66 9ccca49db9fb4df98d9464183c30d68c
 msgid "Usage"
-msgstr ""
+msgstr "사용법"
 
 #: ../../pymupdf-pro/index.rst:69 edd61111e81a46198c9ef49a53e782b0
 msgid "Installation"
-msgstr ""
+msgstr "설치"
 
 #: ../../pymupdf-pro/index.rst:71 f961577e8ffd49469227db2bbdcd9bb2
 msgid "Install via pip with:"
-msgstr ""
+msgstr "pip 를 통해 설치합니다:"
 
 #: ../../pymupdf-pro/index.rst:79 699e6bf8334b4cf8b23793ff0e45ccbf
 msgid "Loading an **Office** document"
-msgstr ""
+msgstr "**Office** 문서 로드"
 
 #: ../../pymupdf-pro/index.rst:81 08e39b8bfc514665aafb5c1aa211bcfc
 msgid ""
 "Import |PyMuPDF Pro| and you can then reference **Office** documents "
 "directly, e.g.:"
-msgstr ""
+msgstr "|PyMuPDF Pro| 를 가져오면 **Office** 문서를 직접 참조할 수 있습니다. 예:"
 
 #: ../../pymupdf-pro/index.rst:92 e21e201731344245a88c7e6bdd9c2dc2
 msgid ""
 "All standard |PyMuPDF| functionality is exposed as expected - |PyMuPDF "
 "Pro| handles the extended **Office** file types"
-msgstr ""
+msgstr "모든 표준 |PyMuPDF| 기능이 예상대로 노출됩니다 - |PyMuPDF Pro| 는 확장된 **Office** 파일 타입을 처리합니다"
 
 #: ../../pymupdf-pro/index.rst:95 32d84f02e19a40b5bb42c1d26a81afe5
 msgid ""
 "From then on you can work with document pages just as you would do "
 "normally, but with respect to the `restrictions "
 "<PyMuPDFPro_Restrictions>`."
-msgstr ""
+msgstr "그때부터 `제한 사항 <PyMuPDFPro_Restrictions>` 을 고려하여 일반적으로 수행하는 것처럼 문서 페이지로 작업할 수 있습니다."
 
 #: ../../pymupdf-pro/index.rst:99 36c298b59008468ab926c22842511b25
 msgid "Converting an **Office** document to |PDF|"
-msgstr ""
+msgstr "**Office** 문서를 |PDF| 로 변환"
 
 #: ../../pymupdf-pro/index.rst:101 c01333a0e65f42d29d469ace26b3fd91
 msgid ""
 "The following code snippet can convert your **Office** document to |PDF| "
 "format:"
-msgstr ""
+msgstr "다음 코드 조각은 **Office** 문서를 |PDF| 형식으로 변환할 수 있습니다:"
 
 #: ../../pymupdf-pro/index.rst:119 cd5eb6eaf8094ced89572a48282454ca
 msgid "Restrictions"
-msgstr ""
+msgstr "제한 사항"
 
 #: ../../pymupdf-pro/index.rst:122 badbfba0a2a0495290e9594585aaefc9
 msgid ""
 "|PyMuPDF Pro| functionality is restricted without a license key as "
 "follows:"
-msgstr ""
+msgstr "라이선스 키 없이 |PyMuPDF Pro| 기능은 다음과 같이 제한됩니다:"
 
 #: ../../pymupdf-pro/index.rst:124 0edbc072da504add956116e21d3eebde
 msgid "**Only the first 3 pages of any document will be available.**"
-msgstr ""
+msgstr "**모든 문서의 처음 3페이지만 사용할 수 있습니다.**"
 
 #: ../../pymupdf-pro/index.rst:126 6fa9f0d4dec94b3db782dacdc632f5a0
 msgid ""
 "To unlock full functionality you should `obtain a trial key "
 "<https://pymupdf.pro/try-pro/>`_."
-msgstr ""
+msgstr "전체 기능을 잠금 해제하려면 `시험 키를 받으세요 <https://pymupdf.pro/try-pro/>`_."
 
 #: ../../pymupdf-pro/index.rst:132 ff0d00debbdb4746809d8750352f10bc
 msgid "Trial keys"
-msgstr ""
+msgstr "시험 키"
 
 #: ../../pymupdf-pro/index.rst:134 e689628360fa4b4497ccbb720dd0faca
 msgid ""
 "To obtain a license key `please fill out the form on this page "
 "<https://pymupdf.pro/try-pro/>`_. You will then have the trial key "
 "emailled to the address you submitted."
-msgstr ""
+msgstr "라이선스 키를 받으려면 `이 페이지의 양식을 작성하세요 <https://pymupdf.pro/try-pro/>`_. 그러면 제출한 주소로 시험 키가 이메일로 전송됩니다."
 
 #: ../../pymupdf-pro/index.rst:138 b4af428798424c3baae4771829727b28
 msgid "Using a key"
-msgstr ""
+msgstr "키 사용"
 
 #: ../../pymupdf-pro/index.rst:141 6766aa2a1d144b81a15c3ad28ce403da
 msgid "Initialize |PyMuPDF Pro| with a key as follows:"
-msgstr ""
+msgstr "다음과 같이 키로 |PyMuPDF Pro| 를 초기화합니다:"
 
 #: ../../pymupdf-pro/index.rst:149 92e495f1e7934e1e83d346f56ab9833d
 msgid ""
@@ -216,43 +216,43 @@ msgid ""
 "want to use |PyMuPDF Pro| after this time you should then `enquire about "
 "obtaining a commercial license <https://artifex.com/products/pymupdf-"
 "pro/>`_."
-msgstr ""
+msgstr "이것은 제한된 시간 동안 제품을 평가할 수 있게 해줍니다. 이 시간 이후에 |PyMuPDF Pro| 를 사용하려면 `상용 라이선스 취득에 대해 문의하세요 <https://artifex.com/products/pymupdf-pro/>`_."
 
 #: ../../pymupdf-pro/index.rst:153 a394162132a04de092aabb5d2fcbc814
 msgid "Fonts"
-msgstr ""
+msgstr "글꼴"
 
 #: ../../pymupdf-pro/index.rst:155 8e2db8a260ac4b8597a804b55d7ab547
 msgid ""
 "By default `pymupdf.pro.unlock()` searches for all installed font "
 "directories."
-msgstr ""
+msgstr "기본적으로 `pymupdf.pro.unlock()` 은 설치된 모든 글꼴 디렉토리를 검색합니다."
 
 #: ../../pymupdf-pro/index.rst:157 e0cd7217fd79445ea7e79586abad31d1
 msgid "This can be controlled with keyword-only args:"
-msgstr ""
+msgstr "키워드 전용 인수로 제어할 수 있습니다:"
 
 #: ../../pymupdf-pro/index.rst:159 879866813ec14fd08f5b249e833e7ee7
 msgid ""
 "`fontpath`: specific font directories, either as a list/tuple or "
 "`os.sep`-separated string. If None (the default), we use "
 "`os.environ['PYMUPDFPRO_FONT_PATH']` if set."
-msgstr ""
+msgstr "`fontpath`: 특정 글꼴 디렉토리, list/tuple 또는 `os.sep` 로 구분된 문자열. None(기본값)인 경우 설정되어 있으면 `os.environ['PYMUPDFPRO_FONT_PATH']` 를 사용합니다."
 
 #: ../../pymupdf-pro/index.rst:161 5ca9e3934e6c4c91b603c12662c79cf6
 msgid ""
 "`fontpath_auto`: Whether to append system font directories. If None (the "
 "default) we use true if `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` is '1'."
 " If true we append all system font directories."
-msgstr ""
+msgstr "`fontpath_auto`: 시스템 글꼴 디렉토리를 추가할지 여부. None(기본값)인 경우 `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` 가 '1'이면 true를 사용합니다. true이면 모든 시스템 글꼴 디렉토리를 추가합니다."
 
 #: ../../pymupdf-pro/index.rst:165 5ecf267b5f8f4e68be5f69f1cbee4782
 msgid ""
 "Function `pymupdf.pro.get_fontpath()` returns a tuple of all font "
 "directories used by `unlock()`."
-msgstr ""
+msgstr "함수 `pymupdf.pro.get_fontpath()` 는 `unlock()` 에서 사용하는 모든 글꼴 디렉토리의 튜플을 반환합니다."
 
 #: ../../footer.rst:46 b26519c017c744e3b52c222b2633f6ed
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

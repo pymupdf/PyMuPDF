@@ -21,31 +21,31 @@ msgstr ""
 
 #: ../../header.rst:-1 218a54ea43ac4940a4a60f2c3a6a2478
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 07e59acd2f254f13ab7d70dabdc0b0e5
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 b0edbb6b219e443c991a8de67143adf0
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../lowlevel.rst:5 ab1b60182cf44f4cbdbc96550824ae06
 msgid "Low Level Functions and Classes"
-msgstr ""
+msgstr "저수준 함수 및 클래스"
 
 #: ../../lowlevel.rst:6 7cd71eb177ee46c7809cc02f9cf0360a
 msgid ""
 "Contains a number of functions and classes for the experienced user. To "
 "be used for special needs or performance requirements."
-msgstr ""
+msgstr "경험 많은 사용자를 위한 여러 함수와 클래스를 포함합니다. 특수한 요구사항이나 성능 요구사항에 사용됩니다."
 
 #: ../../footer.rst:46 e5486934644f471b8a6673bf428a5c43
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

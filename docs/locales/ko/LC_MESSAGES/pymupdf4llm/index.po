@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 7f556c0708ab49cdbc462a525dfa7aff
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 4eb9ac713eaa4bc5a5a44191f5dec7ae
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 8c03dba2f9bc41ab84de0114382f5e82
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../pymupdf4llm/index.rst:8 96b9f29894ff49beba7a07931c5c900d
 msgid "PyMuPDF4LLM"
-msgstr ""
+msgstr "PyMuPDF4LLM"
 
 #: ../../pymupdf4llm/index.rst:10 59d6714b7f6549e0a52c173974da2135
 msgid ""
@@ -45,7 +45,7 @@ msgid ""
 "format you need for **LLM** & **RAG** environments. It supports "
 ":ref:`Markdown extraction <extracting_as_md>` as well as :ref:`LlamaIndex"
 " document output <extracting_as_llamaindex>`."
-msgstr ""
+msgstr "|PyMuPDF4LLM| 는 **LLM** 및 **RAG** 환경에 필요한 형식으로 |PDF| 콘텐츠를 더 쉽게 추출할 수 있도록 하는 것을 목표로 합니다. :ref:`Markdown 추출 <extracting_as_md>` 및 :ref:`LlamaIndex 문서 출력 <extracting_as_llamaindex>` 을 지원합니다."
 
 #: ../../pymupdf4llm/index.rst:12 8b36d59c925f4a0d93873eeab7e4843a
 msgid ""
@@ -61,31 +61,31 @@ msgid ""
 "You can extend the supported file types to also include **Office** "
 "document formats (DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX) by :ref:`using "
 "PyMuPDF Pro with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`."
-msgstr ""
+msgstr ":ref:`PyMuPDF Pro와 PyMuPDF4LLM 함께 사용 <using_pymupdf4llm_withpymupdfpro>` 하여 지원되는 파일 타입을 **Office** 문서 형식(DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX)도 포함하도록 확장할 수 있습니다."
 
 #: ../../pymupdf4llm/index.rst:19 38428359cdaf4039b439454f5c712ec7
 msgid "Features"
-msgstr ""
+msgstr "기능"
 
 #: ../../pymupdf4llm/index.rst:21 5f4fb197fcdd4a0ab3ac79607a78a25e
 msgid "Support for multi-column pages"
-msgstr ""
+msgstr "다중 열 페이지 지원"
 
 #: ../../pymupdf4llm/index.rst:22 7e249663241a4aacb2f9b1fcb4450393
 msgid ""
 "Support for image and vector graphics extraction (and inclusion of "
 "references in the MD text)"
-msgstr ""
+msgstr "이미지 및 벡터 그래픽 추출 지원(MD 텍스트에 참조 포함)"
 
 #: ../../pymupdf4llm/index.rst:23 cf659dc9b2da48d69e7ab3d1cda7f132
 msgid "Support for page chunking output."
-msgstr ""
+msgstr "페이지 청킹 출력 지원."
 
 #: ../../pymupdf4llm/index.rst:24 20715d6347fb42b7b485fba224287741
 msgid ""
 "Direct support for output as :ref:`LlamaIndex Documents "
 "<extracting_as_llamaindex>`."
-msgstr ""
+msgstr ":ref:`LlamaIndex 문서 <extracting_as_llamaindex>` 로 출력하는 직접 지원."
 
 #: ../../pymupdf4llm/index.rst:25 42fe53c6392143838058ca9b8b1684a3
 msgid ""
@@ -101,60 +101,60 @@ msgstr ""
 
 #: ../../pymupdf4llm/index.rst:30 90f6c12aacd14b7eba944b6c1e013ed5
 msgid "Functionality"
-msgstr ""
+msgstr "기능"
 
 #: ../../pymupdf4llm/index.rst:32 e63a722974dc41f3928dc372e66da5c0
 msgid ""
 "This package converts the pages of a file to text in **Markdown** format "
 "using |PyMuPDF|."
-msgstr ""
+msgstr "이 패키지는 |PyMuPDF| 를 사용하여 파일의 페이지를 **Markdown** 형식의 텍스트로 변환합니다."
 
 #: ../../pymupdf4llm/index.rst:34 1504c800279e44568bfbbeef3eb2ba6d
 msgid ""
 "Standard text and tables are detected, brought in the right reading "
 "sequence and then together converted to **GitHub**-compatible "
 "**Markdown** text."
-msgstr ""
+msgstr "표준 텍스트와 테이블이 감지되고 올바른 읽기 순서로 가져온 다음 **GitHub** 호환 **Markdown** 텍스트로 함께 변환됩니다."
 
 #: ../../pymupdf4llm/index.rst:36 4d3e28d4b9654f6889e99f25edeafb6f
 msgid ""
 "Header lines are identified via the font size and appropriately prefixed "
 "with one or more `#` tags."
-msgstr ""
+msgstr "헤더 줄은 글꼴 크기를 통해 식별되며 하나 이상의 `#` 태그로 적절히 접두사가 붙습니다."
 
 #: ../../pymupdf4llm/index.rst:38 d3dc9c01915e4fd5a47c1784eae70c00
 msgid ""
 "Bold, italic, mono-spaced text and code blocks are detected and formatted"
 " accordingly. Similar applies to ordered and unordered lists."
-msgstr ""
+msgstr "굵게, 기울임꼴, 고정폭 텍스트 및 코드 블록이 감지되고 그에 따라 형식화됩니다. 순서 있는 목록과 순서 없는 목록에도 유사하게 적용됩니다."
 
 #: ../../pymupdf4llm/index.rst:40 bc9f92950b5b4c038ed82153c462a0c6
 msgid ""
 "By default, all document pages are processed. If desired, a subset of "
 "pages can be specified by providing a list of `0`-based page numbers."
-msgstr ""
+msgstr "기본적으로 모든 문서 페이지가 처리됩니다. 원하는 경우 `0` 기반 페이지 번호 목록을 제공하여 페이지 하위 집합을 지정할 수 있습니다."
 
 #: ../../pymupdf4llm/index.rst:44 24714fd3cb744a908099e19f1af6ce7e
 msgid "Installation"
-msgstr ""
+msgstr "설치"
 
 #: ../../pymupdf4llm/index.rst:47 dd73904df42146e18551936620e44355
 msgid "Install the package via **pip** with:"
-msgstr ""
+msgstr "**pip** 를 통해 패키지를 설치합니다:"
 
 #: ../../pymupdf4llm/index.rst:58 a08840e778fe46379ec9110ad3c3608a
 msgid "Extracting a file as **Markdown**"
-msgstr ""
+msgstr "파일을 **Markdown** 으로 추출"
 
 #: ../../pymupdf4llm/index.rst:60 98c0760b58c04cbeb1299faf5b79ab3f
 msgid ""
 "To retrieve your document content in **Markdown** simply install the "
 "package and then use a couple of lines of **Python** code to get results."
-msgstr ""
+msgstr "**Markdown** 형식으로 문서 콘텐츠를 검색하려면 패키지를 설치한 다음 몇 줄의 **Python** 코드를 사용하여 결과를 얻습니다."
 
 #: ../../pymupdf4llm/index.rst:64 6a398956ca7f4c9c9057734393a79743
 msgid "Then in your **Python** script do:"
-msgstr ""
+msgstr "그런 다음 **Python** 스크립트에서 다음을 수행합니다:"
 
 #: ../../pymupdf4llm/index.rst:75 b227684a017d42e8b88f83ad2a3c673e
 msgid ""
@@ -162,104 +162,104 @@ msgid ""
 ":ref:`PyMuPDF Document <Document>`. A second parameter may be a list of "
 "`0`-based page numbers, e.g. `[0, 1]` would just select the first and "
 "second pages of the document."
-msgstr ""
+msgstr "위와 같이 파일명 문자열 대신 :ref:`PyMuPDF Document <Document>` 를 제공할 수도 있습니다. 두 번째 매개변수는 `0` 기반 페이지 번호 목록일 수 있습니다. 예를 들어 `[0,1]` 은 문서의 첫 번째와 두 번째 페이지만 선택합니다."
 
 #: ../../pymupdf4llm/index.rst:78 a0929decafbc41cb86a00b46905219e0
 msgid ""
 "If you want to store your **Markdown** file, e.g. store as a UTF8-encoded"
 " file, then do:"
-msgstr ""
+msgstr "**Markdown** 파일을 저장하려면(예: UTF8 인코딩 파일로 저장) 다음을 수행합니다:"
 
 #: ../../pymupdf4llm/index.rst:91 fe47c11343ec4d278c9f9cc524bccb86
 msgid "Extracting a file as a **LlamaIndex** document"
-msgstr ""
+msgstr "파일을 **LlamaIndex** 문서로 추출"
 
 #: ../../pymupdf4llm/index.rst:93 6834228bb5524c319b8c3d5dbe8138d6
 msgid ""
 "|PyMuPDF4LLM| supports direct conversion to a **LLamaIndex** document. A "
 "document is first converted into **Markdown** format and then a "
 "**LlamaIndex** document is returned as follows:"
-msgstr ""
+msgstr "|PyMuPDF4LLM| 는 **LlamaIndex** 문서로 직접 변환을 지원합니다. 문서는 먼저 **Markdown** 형식으로 변환된 다음 다음과 같이 **LlamaIndex** 문서가 반환됩니다:"
 
 #: ../../pymupdf4llm/index.rst:107 e653025ecf1948759d96b33b7902c524
 msgid "Using with |PyMuPDF Pro|"
-msgstr ""
+msgstr "|PyMuPDF Pro| 와 함께 사용"
 
 #: ../../pymupdf4llm/index.rst:110 9e877b4bd26d43cbaf81821091d51a1b
 msgid ""
 "For **Office** document support, |PyMuPDF4LLM| works seamlessly with "
 "|PyMuPDF Pro|. Assuming you have :doc:`../pymupdf-pro` installed you will"
 " be able to work with **Office** documents as expected:"
-msgstr ""
+msgstr "**Office** 문서 지원을 위해 |PyMuPDF4LLM| 는 |PyMuPDF Pro| 와 원활하게 작동합니다. :doc:`../pymupdf-pro` 가 설치되어 있다고 가정하면 예상대로 **Office** 문서로 작업할 수 있습니다:"
 
 #: ../../pymupdf4llm/index.rst:121 ff1a10504dbe4b5381a2f6232a21b346
 msgid ""
 "As you can see |PyMuPDF Pro| functionality will be available within the "
 "|PyMuPDF4LLM| context!"
-msgstr ""
+msgstr "보시다시피 |PyMuPDF Pro| 기능이 |PyMuPDF4LLM| 컨텍스트 내에서 사용 가능합니다!"
 
 #: ../../pymupdf4llm/index.rst:126 32a7f061e08e4a6ca0f4f3fddb070669
 msgid "API"
-msgstr ""
+msgstr "API"
 
 #: ../../pymupdf4llm/index.rst:128 b4ebede9414d489da467192cd788038a
 msgid "See :ref:`the PyMuPDF4LLM API <pymupdf4llm-api>`."
-msgstr ""
+msgstr ":ref:`PyMuPDF4LLM API <pymupdf4llm-api>` 를 참조하세요."
 
 #: ../../pymupdf4llm/index.rst:131 bb3e7108ffa0474c9130db24bde17039
 msgid "Further Resources"
-msgstr ""
+msgstr "추가 리소스"
 
 #: ../../pymupdf4llm/index.rst:135 ec0ceb929e634253940d9d8b12c34e12
 msgid "Sample code"
-msgstr ""
+msgstr "샘플 코드"
 
 #: ../../pymupdf4llm/index.rst:137 f2d41ac1c1d24d9289e6ce68bc9370de
 msgid ""
 "`Command line RAG Chatbot with PyMuPDF "
 "<https://github.com/pymupdf/RAG/tree/main/examples/country-capitals>`_"
-msgstr ""
+msgstr "`PyMuPDF 를 사용한 명령줄 RAG 챗봇 <https://github.com/pymupdf/RAG/tree/main/examples/country-capitals>`_"
 
 #: ../../pymupdf4llm/index.rst:138 bf6ddba28b86427ab7c934e3fe869608
 msgid ""
 "`Example of a Browser Application using Langchain and PyMuPDF "
 "<https://github.com/pymupdf/RAG/tree/main/examples/GUI>`_"
-msgstr ""
+msgstr "`Langchain과 PyMuPDF 를 사용한 브라우저 애플리케이션 예제 <https://github.com/pymupdf/RAG/tree/main/examples/GUI>`_"
 
 #: ../../pymupdf4llm/index.rst:142 05f33a793ba04dbea19e7a464b4c8cd5
 msgid "Blogs"
-msgstr ""
+msgstr "블로그"
 
 #: ../../pymupdf4llm/index.rst:144 d6c3173afe6a4dbd880c662d9a8b9e66
 msgid ""
 "`RAG/LLM and PDF: Enhanced Text Extraction <https://artifex.com/blog/rag-"
 "llm-and-pdf-enhanced-text-extraction>`_"
-msgstr ""
+msgstr "`RAG/LLM 및 PDF: 향상된 텍스트 추출 <https://artifex.com/blog/rag-llm-and-pdf-enhanced-text-extraction>`_"
 
 #: ../../pymupdf4llm/index.rst:145 2469a1a8ebb649b083d10e876d5b3022
 msgid ""
 "`Creating a RAG Chatbot with ChatGPT and PyMuPDF "
 "<https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-"
 "pymupdf>`_"
-msgstr ""
+msgstr "`ChatGPT와 PyMuPDF 로 RAG 챗봇 만들기 <https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-pymupdf>`_"
 
 #: ../../pymupdf4llm/index.rst:146 750da7ec1111406c9f24fe09151140ae
 msgid ""
 "`Building a RAG Chatbot GUI with the ChatGPT API and PyMuPDF "
 "<https://artifex.com/blog/building-a-rag-chatbot-gui-with-the-chatgpt-"
 "api-and-pymupdf>`_"
-msgstr ""
+msgstr "`ChatGPT API와 PyMuPDF 로 RAG 챗봇 GUI 구축 <https://artifex.com/blog/building-a-rag-chatbot-gui-with-the-chatgpt-api-and-pymupdf>`_"
 
 #: ../../pymupdf4llm/index.rst:147 d820865d4e2b470b975fd95e67ec0436
 msgid ""
 "`RAG/LLM and PDF: Conversion to Markdown Text with PyMuPDF "
 "<https://artifex.com/blog/rag-llm-and-pdf-conversion-to-markdown-text-"
 "with-pymupdf>`_"
-msgstr ""
+msgstr "`RAG/LLM 및 PDF: PyMuPDF 로 Markdown 텍스트로 변환 <https://artifex.com/blog/rag-llm-and-pdf-conversion-to-markdown-text-with-pymupdf>`_"
 
 #: ../../footer.rst:48 30b12247e1244acba7a2885245d87849
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 
 #~ msgid ""
 #~ "Instead of the filename string as "
