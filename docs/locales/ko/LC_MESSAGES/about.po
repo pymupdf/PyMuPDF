@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-12-02 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 c21340a4b75747d5952e637a324049bf
+#: ../../header.rst:-1 f19dada9348f4b02a8e7f37161295aed
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 12768be3aef44279a0f53bb67e659597
+#: ../../header.rst:-1 3a2fd52dfdbe4ef0ba2277d3dc5ce9cd
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 4d3f2343a3e8462e92d346b6ef1bbe0f
+#: ../../header.rst:-1 6457f182efd342f9971c29ded21b19cd
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -133,33 +133,41 @@ msgid ""
 " Inc.`"
 msgstr ""
 
-#: ../../version.rst:3 b23f02d66d164eb195ed6512c8e9ff6c
+#: ../../version.rst:1 b23f02d66d164eb195ed6512c8e9ff6c
 msgid "This documentation covers PyMuPDF |version|."
 msgstr ""
 
-#: ../../version.rst:5 ca881a8c265b46618c644701ea14c695
+#: ../../version.rst:3 ca881a8c265b46618c644701ea14c695
 msgid ""
-"The major and minor versions of |PyMuPDF| and |MuPDF| will always be the "
+"The major and minor versions of PyMuPDF and MuPDF will always be the "
 "same. Only the third qualifier (patch level) may deviate from that of "
-"|MuPDF|."
+"MuPDF."
 msgstr ""
 
-#: ../../version.rst:7 a91d12805e42498fb4eebcb3f7923eb8
+#: ../../version.rst:5 a91d12805e42498fb4eebcb3f7923eb8
 msgid ""
 "Typically PyMuPDF is released more frequently than MuPDF so it will often"
 " be the case that the patch level of PyMuPDF will be greater than the "
 "embedded MuPDF."
 msgstr ""
 
-#: ../../version.rst:11 2e3b5e5955fc4cba8aafc25d3d650e7a
+#: ../../version.rst:9 2e3b5e5955fc4cba8aafc25d3d650e7a
 msgid "For example PyMuPDF-1.24.5 contains MuPDF-1.24.2."
 msgstr ""
 
-#: ../../version.rst:13 a60af2aa03494194b19ecf8e3bc095fc
+#: ../../version.rst:11 a60af2aa03494194b19ecf8e3bc095fc
 msgid "Also see `pymupdf_version` and `mupdf_version`."
 msgstr ""
 
-#: ../../footer.rst:46 ea2d1136af82416baa3286db6ed38f96
+#: ../../footer.rst:48 ea2d1136af82416baa3286db6ed38f96
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
+
+#~ msgid ""
+#~ "The major and minor versions of "
+#~ "|PyMuPDF| and |MuPDF| will always be "
+#~ "the same. Only the third qualifier "
+#~ "(patch level) may deviate from that "
+#~ "of |MuPDF|."
+#~ msgstr ""
 

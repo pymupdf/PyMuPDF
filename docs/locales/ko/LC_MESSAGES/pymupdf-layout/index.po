@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 17:04+0000\n"
+"POT-Creation-Date: 2025-12-02 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 55554f175cc249878ead6e3e984a2e8a
+#: ../../header.rst:-1 26c7f492ac6349fe997fad9d41aabea5
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 6aa2efac349e4bcab64dd67c0a0d5b13
+#: ../../header.rst:-1 4231d660381d4fa5b43b5d8b068e8dfa
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 fc386a5037ac4a0ba4239f1c51308e56
+#: ../../header.rst:-1 8bba0218b1e445b192946cba4c548076
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -61,49 +61,49 @@ msgstr ""
 msgid "Install from |PyPI| with::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:26 5e49fc1022b0491e968e6dac9a6ebd28
+#: ../../pymupdf-layout/index.rst:28 5e49fc1022b0491e968e6dac9a6ebd28
 msgid "Using"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:29 c4caa7b3525f461385db5339599b8e02
+#: ../../pymupdf-layout/index.rst:31 c4caa7b3525f461385db5339599b8e02
 msgid ""
 "In nutshell, |PyMuPDF Layout| detects the layout to extract, but we need "
 "|PyMuPDF4LLM| for the API interface. This provides us with options to "
 "extract document content as |Markdown|, |JSON| or |TXT|."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:31 2851cd8bd3374a3c8fc60a4a0fe524e8
+#: ../../pymupdf-layout/index.rst:33 2851cd8bd3374a3c8fc60a4a0fe524e8
 msgid ""
 "Let's set up the Python coding environment to get started and open a PDF "
 "then we'll move on to the semantic data extraction."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:34 6a1648fb91cc454788a795ffc391432a
+#: ../../pymupdf-layout/index.rst:36 6a1648fb91cc454788a795ffc391432a
 msgid "Register packages and open a PDF"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:36 1ba188d096bc425abbfee2ba07430823
+#: ../../pymupdf-layout/index.rst:38 1ba188d096bc425abbfee2ba07430823
 msgid "First up let's import the libraries and open a sample document::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:42 d7900ddabe0644c09c53ba9fb57126b0
+#: ../../pymupdf-layout/index.rst:44 d7900ddabe0644c09c53ba9fb57126b0
 msgid ""
 "Note, in the above code, that |PyMuPDF Layout| must be imported as shown "
 "and before importing |PyMuPDF4LLM| to activate |PyMuPDF|'s layout feature"
 " and make it available to |PyMuPDF4LLM|."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:44 7b66dd7c7a164f99b1fd0113f2ccf699
+#: ../../pymupdf-layout/index.rst:46 7b66dd7c7a164f99b1fd0113f2ccf699
 msgid ""
 "Omitting the first line would cause execution of standard |PyMuPDF4LLM| -"
 " without the layout feature!"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:47 a21b9bc7b3844b0ab455c3f364a2057f
+#: ../../pymupdf-layout/index.rst:49 a21b9bc7b3844b0ab455c3f364a2057f
 msgid "Extract the structured data"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:49 35bc60862bb24334a75b7dc95b60156f
+#: ../../pymupdf-layout/index.rst:51 35bc60862bb24334a75b7dc95b60156f
 msgid ""
 "We've activated the |PyMuPDF Layout| library and we've loaded a document,"
 " next let's extract the structured data. This is now like a super-charged"
@@ -112,33 +112,33 @@ msgid ""
 " results."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:52 8fabaa7045ea40bca50d9b6cf1904b2b
+#: ../../pymupdf-layout/index.rst:54 8fabaa7045ea40bca50d9b6cf1904b2b
 msgid "Extract as Markdown"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:60 253f86c879cd4cfda51045e1311a3cba
+#: ../../pymupdf-layout/index.rst:62 253f86c879cd4cfda51045e1311a3cba
 msgid "Extract as JSON"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:68 8da4947d5b974f24803ba5ed16e8cd77
+#: ../../pymupdf-layout/index.rst:70 8da4947d5b974f24803ba5ed16e8cd77
 msgid "Extract as TXT"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:76 5bbe37c28031413fa4f86978d66b0161
+#: ../../pymupdf-layout/index.rst:78 5bbe37c28031413fa4f86978d66b0161
 msgid ""
 "Please refer top the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` for "
 "more."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:78 6eedc55b27574fb583b04a9b9f3e3f55
+#: ../../pymupdf-layout/index.rst:80 6eedc55b27574fb583b04a9b9f3e3f55
 msgid "Finally we can save the output to an external file as follows::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:86 9bdb3f269e1c497e91d97cdc3a687bff
+#: ../../pymupdf-layout/index.rst:88 9bdb3f269e1c497e91d97cdc3a687bff
 msgid "Headers & Footers"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:89 c239bc0bbbd64d318e6e8fdc55d1efbe
+#: ../../pymupdf-layout/index.rst:91 c239bc0bbbd64d318e6e8fdc55d1efbe
 msgid ""
 "Many documents will have header and footer information on each page of a "
 "PDF which you may or may not want to include. This information can be "
@@ -147,35 +147,35 @@ msgid ""
 "to extracting the document content )."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:91 ee2ea44ed53e4d95860be54bee8ead00
+#: ../../pymupdf-layout/index.rst:93 ee2ea44ed53e4d95860be54bee8ead00
 msgid ""
 "|PyMuPDF Layout| is trained in detecting these typical document elements "
 "and able to omit them."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:93 2e53e75f3b83455ab9f885efaae230c7
+#: ../../pymupdf-layout/index.rst:95 2e53e75f3b83455ab9f885efaae230c7
 msgid ""
 "So in this case we can adjust our API calls to ignore these elements as "
 "follows::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:101 fc82782444984a34ab18e40f5123faeb
+#: ../../pymupdf-layout/index.rst:103 fc82782444984a34ab18e40f5123faeb
 msgid ""
 "Please note that page ``header`` / ``footer`` exclusion is not applicable"
 " to JSON output as it aims to always represent all data for the included "
-"pages. Please refer top the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>`"
-" for more."
+"pages. Please refer to the full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` "
+"for more."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:104 a00239ede95b43319833ba01713ce8d7
+#: ../../pymupdf-layout/index.rst:106 a00239ede95b43319833ba01713ce8d7
 msgid "Extending Capability"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:107 f3bec49e1ee042caad2ba1f1f8d07230
+#: ../../pymupdf-layout/index.rst:109 f3bec49e1ee042caad2ba1f1f8d07230
 msgid "Using with Pro"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:109 1a6a4c0ada2842d588768a849fe3c7f3
+#: ../../pymupdf-layout/index.rst:111 1a6a4c0ada2842d588768a849fe3c7f3
 msgid ""
 "We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Pro| and "
 "thus increase our capability by allowing Office documents to be provided "
@@ -183,32 +183,32 @@ msgid ""
 "|PyMuPDF Pro| and unlock it::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:116 695ebd9778304b3da362108ea2e9695e
+#: ../../pymupdf-layout/index.rst:118 695ebd9778304b3da362108ea2e9695e
 msgid "Now we can happily load Office files and convert them as follows::"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:122 14fdcdcd4aab4335919c50efc4749185
+#: ../../pymupdf-layout/index.rst:126 14fdcdcd4aab4335919c50efc4749185
 msgid "OCR support"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:124 99eb4f65329d45c7bb6eaf035c255259
+#: ../../pymupdf-layout/index.rst:128 99eb4f65329d45c7bb6eaf035c255259
 msgid ""
-"The new layout-sensitive PyMuPDF4LLM version also evaluates whether a "
+"The new layout-sensitive |PyMuPDF4LLM| version also evaluates whether a "
 "page would benefit from applying OCR to it. If its heuristics come to "
 "this conclusion, the built-in Tesseract-OCR module is automatically "
 "invoked. Its results are then handled like normal page content."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:126 cdbf9a9f1f5341cc96aaaa1a6a74434f
+#: ../../pymupdf-layout/index.rst:130 cdbf9a9f1f5341cc96aaaa1a6a74434f
 msgid ""
 "If a page contains (roughly) no text at all, but is covered with images "
 "or many character-sized vectors, a check is made using `OpenCV "
 "<https://pypi.org/project/opencv-python/>`_ whether text is *probably* "
 "detectable on the page at all. This is done to tell apart image-based "
-"text from ordinary pictures (like photographies)."
+"text from ordinary pictures (like photographs)."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:128 8c8ba1c1b2bc4875b04cc60b98293a08
+#: ../../pymupdf-layout/index.rst:132 8c8ba1c1b2bc4875b04cc60b98293a08
 msgid ""
 "If the page does contain text but too many characters are unreadable "
 "(like \"�����\"), OCR is also executed, but **for the affected text areas"
@@ -216,18 +216,45 @@ msgid ""
 "text and other content like images and vectors."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:130 225a390ebce94321a090f94ab2165c16
+#: ../../pymupdf-layout/index.rst:134 225a390ebce94321a090f94ab2165c16
 msgid ""
-"For these heuristics to work we need both, an existing Tesseract "
-"installation and the availability of OpenCV in the Python environment. If"
+"For these heuristics to work we need both, an existing :ref:`Tesseract "
+"installation <installation_ocr>` and the availability of `OpenCV "
+"<https://pypi.org/project/opencv-python/>`_ in the Python environment. If"
 " either is missing, no OCR is attempted at all."
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:137 fddcc1ea96e64c658554704bb141490b
+#: ../../pymupdf-layout/index.rst:136 08b0b8dca54f41e4a81739a6b2fd1324
+msgid ""
+"The decision tree for whether OCR is actually used or not depends on the "
+"following:"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:138 8cd3ca3cdb2c404eb48ad42a553220de
+msgid ":ref:`PyMuPDF Layout is imported <pymupdf_layout_using>`"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:140 10ee5e795c7446e8b3403d85522a49cd
+msgid ""
+"In the :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` you have `use_ocr` "
+"enabled (this is set to `True` by default)"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:142 a91c79870eec43b4b647375636f046ea
+msgid ":ref:`Tesseract is correctly installed <installation_ocr>`"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:144 32944c44045a42d29563e3e93a1b1d98
+msgid ""
+"`OpenCV <https://pypi.org/project/opencv-python/>`_ is available in your "
+"Python environment"
+msgstr ""
+
+#: ../../pymupdf-layout/index.rst:154 fddcc1ea96e64c658554704bb141490b
 msgid "|PyMuPDF Layout| and |PyMuPDF4LLM| parameter caveats"
 msgstr ""
 
-#: ../../pymupdf-layout/index.rst:139 b7f33df2c3974ea1bbead613286f3639
+#: ../../pymupdf-layout/index.rst:156 b7f33df2c3974ea1bbead613286f3639
 msgid ""
 "If you have imported ``pymupdf.layout``, |PyMuPDF4LLM| changes its "
 "behavior in various areas quite significantly. New methods become "
@@ -237,7 +264,7 @@ msgid ""
 " date while we continue to work on improvements."
 msgstr ""
 
-#: ../../footer.rst:46 fcc43bbf382644f6928a40bc9aea37c1
+#: ../../footer.rst:48 fcc43bbf382644f6928a40bc9aea37c1
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
 
@@ -393,5 +420,47 @@ msgstr ""
 #~ msgstr ""
 
 #~ msgid "write_images"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Please note that page ``header`` / "
+#~ "``footer`` exclusion is not applicable "
+#~ "to JSON output as it aims to "
+#~ "always represent all data for the "
+#~ "included pages. Please refer top the "
+#~ "full :ref:`PyMuPDF4LLM API <pymupdf4llm-api>`"
+#~ " for more."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "The new layout-sensitive PyMuPDF4LLM "
+#~ "version also evaluates whether a page"
+#~ " would benefit from applying OCR to"
+#~ " it. If its heuristics come to "
+#~ "this conclusion, the built-in "
+#~ "Tesseract-OCR module is automatically "
+#~ "invoked. Its results are then handled"
+#~ " like normal page content."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If a page contains (roughly) no "
+#~ "text at all, but is covered with"
+#~ " images or many character-sized "
+#~ "vectors, a check is made using "
+#~ "`OpenCV <https://pypi.org/project/opencv-python/>`_ "
+#~ "whether text is *probably* detectable on"
+#~ " the page at all. This is done"
+#~ " to tell apart image-based text "
+#~ "from ordinary pictures (like photographies)."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "For these heuristics to work we "
+#~ "need both, an existing Tesseract "
+#~ "installation and the availability of "
+#~ "OpenCV in the Python environment. If "
+#~ "either is missing, no OCR is "
+#~ "attempted at all."
 #~ msgstr ""
 

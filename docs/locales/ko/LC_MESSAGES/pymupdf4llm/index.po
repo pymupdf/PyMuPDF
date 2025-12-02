@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-26 17:04+0000\n"
+"POT-Creation-Date: 2025-12-02 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 d999746961f541d091c04253454c2495
+#: ../../header.rst:-1 7f556c0708ab49cdbc462a525dfa7aff
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 942f0462179c4c28a52bfb5b4819a15a
+#: ../../header.rst:-1 4eb9ac713eaa4bc5a5a44191f5dec7ae
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 cc1a6ef974e74b6299fc9df6b833ae6d
+#: ../../header.rst:-1 8c03dba2f9bc41ab84de0114382f5e82
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -49,7 +49,7 @@ msgstr ""
 
 #: ../../pymupdf4llm/index.rst:12 8b36d59c925f4a0d93873eeab7e4843a
 msgid ""
-"When using |PyMuPDF4LLM| with PyMuPDF-Layout, page layout detection will "
+"When using |PyMuPDF4LLM| with PyMuPDF Layout, page layout detection will "
 "be greatly improved. This is true for table detection, but also for the "
 "detection of page headers and footers, footnotes, list items and text "
 "paragraphs. In addition two new methods become available, `to_json()` and"
@@ -87,12 +87,16 @@ msgid ""
 "<extracting_as_llamaindex>`."
 msgstr ""
 
-#: ../../pymupdf4llm/index.rst:25 ed7f233894d54e93aca9c1f33a896476
-msgid "In \"layout mode\": Support for plain text output similar to Markdown"
+#: ../../pymupdf4llm/index.rst:25 42fe53c6392143838058ca9b8b1684a3
+msgid ""
+"When used with :ref:`PyMuPDF Layout <pymupdf-layout>` : Support for plain"
+" text output similar to Markdown"
 msgstr ""
 
-#: ../../pymupdf4llm/index.rst:26 e29cc03c8f6f40be974a1f9262165c9c
-msgid "In \"layout mode\": Support for JSON output"
+#: ../../pymupdf4llm/index.rst:26 345e944ae1c54464a70343f8ee2b62e9
+msgid ""
+"When used with :ref:`PyMuPDF Layout <pymupdf-layout>` : Support for JSON "
+"output"
 msgstr ""
 
 #: ../../pymupdf4llm/index.rst:30 90f6c12aacd14b7eba944b6c1e013ed5
@@ -253,7 +257,7 @@ msgid ""
 "with-pymupdf>`_"
 msgstr ""
 
-#: ../../footer.rst:46 30b12247e1244acba7a2885245d87849
+#: ../../footer.rst:48 30b12247e1244acba7a2885245d87849
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
 
@@ -265,5 +269,23 @@ msgstr ""
 #~ "`0`-based page numbers, e.g. `[0,1]` "
 #~ "would just select the first and "
 #~ "second pages of the document."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "When using |PyMuPDF4LLM| with PyMuPDF-"
+#~ "Layout, page layout detection will be"
+#~ " greatly improved. This is true for"
+#~ " table detection, but also for the"
+#~ " detection of page headers and "
+#~ "footers, footnotes, list items and text"
+#~ " paragraphs. In addition two new "
+#~ "methods become available, `to_json()` and "
+#~ "`to_text()`."
+#~ msgstr ""
+
+#~ msgid "In \"layout mode\": Support for plain text output similar to Markdown"
+#~ msgstr ""
+
+#~ msgid "In \"layout mode\": Support for JSON output"
 #~ msgstr ""
 

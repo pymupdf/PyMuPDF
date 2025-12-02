@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-12-02 16:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -19,17 +19,17 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 4b2125667c71405ca651d2f4f33203ce
+#: ../../header.rst:-1 5bde7eeb42a94cb6ad62717574f27aa5
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 7a5706b2ba4a4c5f9ab33e6a435e268e
+#: ../../header.rst:-1 d2d8813dfee94f0996d61dd06a14af30
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
 
-#: ../../header.rst:-1 232846e89a9147f6abd57e2c5299b488
+#: ../../header.rst:-1 222913211ce746a5a7e9bc909639786b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
@@ -1961,7 +1961,7 @@ msgstr ""
 #: ../../../changes.txt:675 fab60867577a487b9c3f486166614839
 msgid ""
 "Fixed bug in set_xml_metadata(), PR `3112 "
-"https://github.com/pymupdf/PyMuPDF/pull/3112>`_: Fix pdf_add_stream "
+"<https://github.com/pymupdf/PyMuPDF/pull/3112>`_: Fix pdf_add_stream "
 "metadata error"
 msgstr ""
 
@@ -8646,7 +8646,13 @@ msgid ""
 " Supports incremental saves."
 msgstr ""
 
-#: ../../footer.rst:46 0555f8605d724eadbe65f9eb27755b4f
+#: ../../footer.rst:48 0555f8605d724eadbe65f9eb27755b4f
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
+
+#~ msgid ""
+#~ "Fixed bug in set_xml_metadata(), PR "
+#~ "`3112 https://github.com/pymupdf/PyMuPDF/pull/3112>`_: Fix"
+#~ " pdf_add_stream metadata error"
+#~ msgstr ""
 
