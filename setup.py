@@ -1278,7 +1278,7 @@ classifier = [
 # PyMuPDF version.
 version_p = '1.26.7'
 
-version_mupdf = '1.26.11'
+version_mupdf = '1.26.12'
 
 # PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
 # (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
