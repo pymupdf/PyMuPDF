@@ -21,19 +21,21 @@ msgstr ""
 
 #: ../../header.rst:-1 9ffb1f48b2494df7b48540af9ba555e5
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 f4528acfe03f4323a54be4f8f1c27047
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| (및 기타) 문서의 데이터 추출, 분석, 변환 및 조작을 위한 고성능 Python 라이브러리입니다."
+"|PyMuPDF| 는 |PDF| (및 기타) 문서의 데이터 추출, 분석, 변환 및 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 f2a88f7cde9b4e52a457ae00f4060abc
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
+"|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../../changes.txt:2 4cd69e5be9794686a140129e41fc4b95
 msgid "Change Log"

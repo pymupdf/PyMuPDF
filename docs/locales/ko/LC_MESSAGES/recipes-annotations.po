@@ -21,81 +21,81 @@ msgstr ""
 
 #: ../../header.rst:-1 e39981b2c0484073b422a752a1279263
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 a25bcd51270e4dff8f4dd98b5a7d2ea7
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 ffd0e115b0694217a5c11e90d1c837a8
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../recipes-annotations.rst:7 12ff591c90a64c459b910af4df023591
 msgid "Annotations"
-msgstr ""
+msgstr "주석"
 
 #: ../../recipes-annotations.rst:12 bc44c8128be246918c791ea26fd73fee
 msgid "How to Add and Modify Annotations"
-msgstr ""
+msgstr "주석 추가 및 수정 방법"
 
 #: ../../recipes-annotations.rst:14 a59a46aeff5e4ef494d91210cfb5db2a
 msgid ""
 "In |PyMuPDF|, new annotations can be added via :ref:`Page` methods. Once "
 "an annotation exists, it can be modified to a large extent using methods "
 "of the :ref:`Annot` class."
-msgstr ""
+msgstr "|PyMuPDF| 에서는 :ref:`Page` 메서드를 통해 새로운 주석을 추가할 수 있습니다. 주석이 존재하면 :ref:`Annot` 클래스의 메서드를 사용하여 대부분 수정할 수 있습니다."
 
 #: ../../recipes-annotations.rst:16 a3c0373aeefa401f92881e510ad0071c
 msgid ""
 "Annotations can **only** be inserted in |PDF| pages - other document "
 "types do not support annotation insertion."
-msgstr ""
+msgstr "주석은 |PDF| 페이지에만 삽입할 수 있습니다. 다른 문서 유형은 주석 삽입을 지원하지 않습니다."
 
 #: ../../recipes-annotations.rst:18 46c6f65e527d46acadde2b136d169470
 msgid ""
 "In contrast to many other tools, initial insert of annotations happens "
 "with a minimum number of properties. We leave it to the programmer to "
 "e.g. set attributes like author, creation date or subject."
-msgstr ""
+msgstr "다른 많은 도구와 달리, 주석의 초기 삽입은 최소한의 속성으로 수행됩니다. 예를 들어 작성자, 생성 날짜 또는 제목과 같은 속성을 설정하는 것은 프로그래머에게 맡깁니다."
 
 #: ../../recipes-annotations.rst:20 d729f5e88c444e6c9303c4deddaa0a97
 msgid ""
 "As an overview for these capabilities, look at the following script that "
 "fills a PDF page with most of the available annotations. Look in the next"
 " sections for more special situations:"
-msgstr ""
+msgstr "이러한 기능에 대한 개요로, 사용 가능한 대부분의 주석으로 PDF 페이지를 채우는 다음 스크립트를 참조하세요. 더 특수한 상황에 대해서는 다음 섹션을 참조하세요:"
 
 #: ../../recipes-annotations.rst:26 b668508bf5a2442aaea6ff355de90c9a
 msgid "This script should lead to the following output:"
-msgstr ""
+msgstr "이 스크립트는 다음과 같은 출력을 생성해야 합니다:"
 
 #: ../../recipes-annotations.rst:36 8a364e58ae174ad9b402e789c6a65d86
 msgid "How to Use FreeText"
-msgstr ""
+msgstr "FreeText 사용 방법"
 
 #: ../../recipes-annotations.rst:37 0369d14436b04373b454e0cbe29a65b3
 msgid ""
 "This script shows a couple of basic ways to deal with 'FreeText' "
 "annotations:"
-msgstr ""
+msgstr "이 스크립트는 'FreeText' 주석을 처리하는 몇 가지 기본 방법을 보여줍니다:"
 
 #: ../../recipes-annotations.rst:41 ../../recipes-annotations.rst:50
 #: 1a21cf6f40874661841ad5000a08a6fb 3ca839e69a444b2db34029d783dc79c4
 msgid "The result looks like this:"
-msgstr ""
+msgstr "결과는 다음과 같습니다:"
 
 #: ../../recipes-annotations.rst:46 f9f8bbc9486f42ef87d4c3f349be31d1
 msgid "Here is an example for using rich text and call-out lines:"
-msgstr ""
+msgstr "다음은 서식 있는 텍스트와 설명선을 사용하는 예제입니다:"
 
 #: ../../recipes-annotations.rst:63 cf8c08007d894233a60344bfbafb0253
 msgid "How to Use Ink Annotations"
-msgstr ""
+msgstr "잉크 주석 사용 방법"
 
 #: ../../recipes-annotations.rst:64 c0d699327401467ca37c7e4396f3235b
 msgid ""
@@ -105,19 +105,19 @@ msgid ""
 "lists of points**. Each point list is regarded as a continuous line "
 "connecting the points. Different point lists represent independent line "
 "segments of the annotation."
-msgstr ""
+msgstr "잉크 주석은 손으로 그린 낙서를 포함하는 데 사용됩니다. 일반적인 예로는 이름과 성으로 구성된 서명 이미지가 있을 수 있습니다. 기술적으로 잉크 주석은 **점 목록의 목록** 으로 구현됩니다. 각 점 목록은 점을 연결하는 연속 선으로 간주됩니다. 서로 다른 점 목록은 주석의 독립적인 선 세그먼트를 나타냅니다."
 
 #: ../../recipes-annotations.rst:66 9f3baa89959f4c559f8a04c132d4ef39
 msgid ""
 "The following script creates an ink annotation with two mathematical "
 "curves (sine and cosine function graphs) as line segments:"
-msgstr ""
+msgstr "다음 스크립트는 두 개의 수학 곡선(사인 및 코사인 함수 그래프)을 선 세그먼트로 사용하여 잉크 주석을 생성합니다:"
 
 #: ../../recipes-annotations.rst:70 3f0535a897bd412ab755434fe5c5677e
 msgid "This is the result:"
-msgstr ""
+msgstr "결과는 다음과 같습니다:"
 
 #: ../../footer.rst:46 921b64bf6be94ffdbd4576b585c70ed6
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

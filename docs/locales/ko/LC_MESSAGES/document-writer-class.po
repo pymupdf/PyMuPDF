@@ -21,100 +21,100 @@ msgstr ""
 
 #: ../../header.rst:-1 b5b4277baa2f45589bb33213fe28d133
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 99651177bb7e45218e911de8509ad3d7
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 bfa8a6eb19134fd5a3ed2f7ff3e5a66b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../document-writer-class.rst:7 9ec19dc1ee5e4333ada6ca4a81b20c76
 msgid "DocumentWriter"
-msgstr ""
+msgstr "DocumentWriter"
 
 #: ../../document-writer-class.rst:9 a8428a7a09fa4d84ba14e57e1cd9933c
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "|pdf_only_class|"
 
 #: ../../document-writer-class.rst:12 fdd84ae0909a4d88bcdceeefa2b39965
 msgid "New in v1.21.0"
-msgstr ""
+msgstr "v1.21.0의 새로운 기능"
 
 #: ../../document-writer-class.rst:14 2d81b86330d54196bb5037872069be5e
 msgid ""
 "This class represents a utility which can output various :ref:`document "
 "types supported by PyMuPDF<Supported_File_Types>`."
-msgstr ""
+msgstr "이 클래스는 |PyMuPDF| 가 :ref:`지원하는 다양한 문서 유형<Supported_File_Types>` 을 출력할 수 있는 유틸리티를 나타냅니다."
 
 #: ../../document-writer-class.rst:16 f752c28f5ed14d28b92bcff7e31a12f8
 msgid ""
 "In |PyMuPDF| only used for outputting PDF documents whose pages are "
 "populated by :ref:`Story` DOMs."
-msgstr ""
+msgstr "|PyMuPDF| 에서는 :ref:`Story` DOM으로 페이지가 채워진 PDF 문서를 출력하는 데만 사용됩니다."
 
 #: ../../document-writer-class.rst:18 a51f0f40cbb0442f86dc705ad1fa8132
 msgid ""
 "Using DocumentWriter_ also for other document types might happen in the "
 "future."
-msgstr ""
+msgstr "DocumentWriter_ 를 다른 문서 유형에도 사용하는 것은 향후 가능할 수 있습니다."
 
 #: ../../document-writer-class.rst:21 8c16e93aa1ce4c6e89c38ba3555943a2
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../document-writer-class.rst:21 078570c061cc494ab88a122d6f975a13
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../document-writer-class.rst:23 e28aaeaab2de42e2be303102f8816b38
 msgid ":meth:`DocumentWriter.begin_page`"
-msgstr ""
+msgstr ":meth:`DocumentWriter.begin_page`"
 
 #: ../../document-writer-class.rst:23 46462fa63c0f497ca2b40e3aa34b103a
 msgid "start a new output page"
-msgstr ""
+msgstr "새 출력 페이지 시작"
 
 #: ../../document-writer-class.rst:24 3fb4972774e64633aeb1fa920d332d0b
 msgid ":meth:`DocumentWriter.end_page`"
-msgstr ""
+msgstr ":meth:`DocumentWriter.end_page`"
 
 #: ../../document-writer-class.rst:24 deca462b344444baaba815c62c4ccf49
 msgid "finish the current output page"
-msgstr ""
+msgstr "현재 출력 페이지 완료"
 
 #: ../../document-writer-class.rst:25 e80c1d8e184c453bbec00d4725057371
 msgid ":meth:`DocumentWriter.close`"
-msgstr ""
+msgstr ":meth:`DocumentWriter.close`"
 
 #: ../../document-writer-class.rst:25 82b604112a0849018b6017d0b48a269a
 msgid "flush pending output and close the file"
-msgstr ""
+msgstr "대기 중인 출력을 플러시하고 파일 닫기"
 
 #: ../../document-writer-class.rst:28 77d9bb485f4345bc9066ac6cbf59d8a9
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../document-writer-class.rst:34 ae20c5fbdb154f71a4aa713c0690c587
 msgid ""
 "Create a document writer object, passing a Python file pointer or a file "
 "path. Options to use when saving the file may also be passed."
-msgstr ""
+msgstr "Python 파일 포인터 또는 파일 경로를 전달하여 문서 작성자 객체를 생성합니다. 파일을 저장할 때 사용할 옵션도 전달할 수 있습니다."
 
 #: ../../document-writer-class.rst:36 6124d2357c6a4781a34eddaaf0ca7dfa
 msgid "This class can also be used as a Python context manager."
-msgstr ""
+msgstr "이 클래스는 Python 컨텍스트 관리자로도 사용할 수 있습니다."
 
 #: ../../document-writer-class.rst d2e1469751bd4c2e8536b3688da9abc9
 #: e1457a30002847edb1dba253d238fc76
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../document-writer-class.rst:38 3fd7620d0e854ab3bc313135cc0b7a22
 msgid ""
@@ -123,13 +123,13 @@ msgid ""
 "document writer can create a PDF in memory. Subsequently, this PDF can be"
 " re-opened for input and be further manipulated. This technique is used "
 "by several example scripts in :ref:`Stories recipes<RecipesStories>`."
-msgstr ""
+msgstr "출력 파일. 이것은 문자열 파일 이름이거나 모든 Python 파일 포인터일 수 있습니다. .. note:: `io.BytesIO()` 객체를 파일 포인터로 사용하면 문서 작성자가 메모리에서 PDF를 생성할 수 있습니다. 그런 다음 이 PDF를 입력용으로 다시 열고 추가로 조작할 수 있습니다. 이 기술은 :ref:`Stories recipes<RecipesStories>` 의 여러 예제 스크립트에서 사용됩니다."
 
 #: ../../document-writer-class.rst:38 8206476585d647538a060a35c0be1961
 msgid ""
 "the output file. This may be a string file name, or any Python file "
 "pointer."
-msgstr ""
+msgstr "출력 파일. 이것은 문자열 파일 이름이거나 모든 Python 파일 포인터일 수 있습니다."
 
 #: ../../document-writer-class.rst:40 5cc894a076804ce4bbaf88cd575d9067
 msgid ""
@@ -137,42 +137,42 @@ msgid ""
 "create a PDF in memory. Subsequently, this PDF can be re-opened for input"
 " and be further manipulated. This technique is used by several example "
 "scripts in :ref:`Stories recipes<RecipesStories>`."
-msgstr ""
+msgstr "`io.BytesIO()` 객체를 파일 포인터로 사용하면 문서 작성자가 메모리에서 PDF를 생성할 수 있습니다. 그런 다음 이 PDF를 입력용으로 다시 열고 추가로 조작할 수 있습니다. 이 기술은 :ref:`Stories recipes<RecipesStories>` 의 여러 예제 스크립트에서 사용됩니다."
 
 #: ../../document-writer-class.rst:42 8e2b505af0b34fec888ef183d42bc55a
 msgid ""
 "specify saving options for the output PDF. Typical are \"compress\" or "
 "\"clean\". More possible values may be taken from help output of the "
 "`mutool convert` CLI utility."
-msgstr ""
+msgstr "출력 PDF의 저장 옵션을 지정합니다. 일반적인 옵션은 \"compress\" 또는 \"clean\"입니다. 더 많은 가능한 값은 `mutool convert` CLI 유틸리티의 도움말 출력에서 가져올 수 있습니다."
 
 #: ../../document-writer-class.rst:46 f4aad7b430d043e1af763b51fe58f1be
 msgid "Start a new output page of a given dimension."
-msgstr ""
+msgstr "주어진 크기의 새 출력 페이지를 시작합니다."
 
 #: ../../document-writer-class.rst:48 d97df503773b4b5d804d95f381624a79
 msgid ""
 "a rectangle specifying the page size. After this method, output "
 "operations may write content to the page."
-msgstr ""
+msgstr "페이지 크기를 지정하는 사각형. 이 메서드 후에 출력 작업이 페이지에 콘텐츠를 쓸 수 있습니다."
 
 #: ../../document-writer-class.rst:52 3357a3e14b5c4681a572cf35f2056a51
 msgid ""
 "Finish a page. This flushes any pending data and appends the page to the "
 "output document."
-msgstr ""
+msgstr "페이지를 완료합니다. 이것은 대기 중인 모든 데이터를 플러시하고 페이지를 출력 문서에 추가합니다."
 
 #: ../../document-writer-class.rst:56 b42cc189417341c8939b89cb1ea93a07
 msgid ""
 "Close the output file. This method is required for writing any pending "
 "data."
-msgstr ""
+msgstr "출력 파일을 닫습니다. 대기 중인 데이터를 쓰려면 이 메서드가 필요합니다."
 
 #: ../../document-writer-class.rst:58 f5b95d821dfe45629904bb96a9fb09e4
 msgid "For usage examples consult the section of :ref:`Story`."
-msgstr ""
+msgstr "사용 예제는 :ref:`Story` 섹션을 참조하세요."
 
 #: ../../footer.rst:46 de69d88972544cf695683e1f78897d93
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

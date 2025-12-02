@@ -21,94 +21,94 @@ msgstr ""
 
 #: ../../header.rst:-1 f549435fd225442b88591b9ea748ccf5
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 26942a499b7a445b90c295eca24482e7
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 af615b1043644e81bbff2aaf9a089159
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../colorspace.rst:7 34c209fdd6e340a2957eb63d18046708
 msgid "Colorspace"
-msgstr ""
+msgstr "Colorspace (색 공간)"
 
 #: ../../colorspace.rst:9 f977d2d374354205a274599236a85e9e
 msgid "Represents the color space of a :ref:`Pixmap`."
-msgstr ""
+msgstr ":ref:`Pixmap` 의 색 공간을 나타냅니다."
 
 #: ../../colorspace.rst:12 1b2a1f6f61a04f109833fcd6f2cd89f6
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../colorspace.rst:18 e6633c622a404083816fea39291502e0
 msgid "Constructor"
-msgstr ""
+msgstr "생성자"
 
 #: ../../colorspace.rst bb53728a68224c1598e93adba7f88d7b
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../colorspace.rst:20 2f9149a75fe74a3ea8f99ed87ca10a79
 msgid ""
 "A number identifying the colorspace. Possible values are :data:`CS_RGB`, "
 ":data:`CS_GRAY` and :data:`CS_CMYK`."
-msgstr ""
+msgstr "색 공간을 식별하는 숫자. 가능한 값은 :data:`CS_RGB`, :data:`CS_GRAY`, :data:`CS_CMYK` 입니다."
 
 #: ../../colorspace.rst:24 68374fc9f8604e2c9f51ccab76cd667f
 msgid ""
 "The name identifying the colorspace. Example: *pymupdf.csCMYK.name = "
 "'DeviceCMYK'*."
-msgstr ""
+msgstr "색 공간을 식별하는 이름. 예: *pymupdf.csCMYK.name = 'DeviceCMYK'*."
 
 #: ../../colorspace.rst 2b529cfead5f452aa08c4f0889094f2a
 #: de6bc202909d47c1ac4f59fb0cfd08f4
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../colorspace.rst:26 fae8ee7d418c442591c2744e79c8744d
 msgid "str"
-msgstr ""
+msgstr "str"
 
 #: ../../colorspace.rst:30 c1510ca299d344e599e43a51f294701f
 msgid ""
 "The number of bytes required to define the color of one pixel. Example: "
 "*pymupdf.csCMYK.n == 4*."
-msgstr ""
+msgstr "한 픽셀의 색상을 정의하는 데 필요한 바이트 수. 예: *pymupdf.csCMYK.n == 4*."
 
 #: ../../colorspace.rst:32 f102b99da0f947f2ad6e51b936a3be73
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../colorspace.rst:35 38447c5856904db38a697c5fbbac7a22
 msgid "**Predefined Colorspaces**"
-msgstr ""
+msgstr "**사전 정의된 색 공간**"
 
 #: ../../colorspace.rst:37 050d42a00f5a4101af529f195bc8bb1c
 msgid ""
 "For saving some typing effort, there exist predefined colorspace objects "
 "for the three available cases."
-msgstr ""
+msgstr "입력을 간소화하기 위해 세 가지 사용 가능한 경우에 대한 사전 정의된 색 공간 객체가 존재합니다."
 
 #: ../../colorspace.rst:39 e4c24c0bade34c0893756619c1ebc542
 msgid ":data:`csRGB`  = *pymupdf.Colorspace(pymupdf.CS_RGB)*"
-msgstr ""
+msgstr ":data:`csRGB`  = *pymupdf.Colorspace(pymupdf.CS_RGB)*"
 
 #: ../../colorspace.rst:40 2094a63eb7ee45d9ae81e24499dde735
 msgid ":data:`csGRAY` = *pymupdf.Colorspace(pymupdf.CS_GRAY)*"
-msgstr ""
+msgstr ":data:`csGRAY` = *pymupdf.Colorspace(pymupdf.CS_GRAY)*"
 
 #: ../../colorspace.rst:41 055f0bfcd886462d9efd42028ac34cf4
 msgid ":data:`csCMYK` = *pymupdf.Colorspace(pymupdf.CS_CMYK)*"
-msgstr ""
+msgstr ":data:`csCMYK` = *pymupdf.Colorspace(pymupdf.CS_CMYK)*"
 
 #: ../../footer.rst:46 db2d1460e2e34af68d7315f27089b57f
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

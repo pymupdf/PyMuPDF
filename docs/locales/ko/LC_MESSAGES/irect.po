@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 fba66bf65f8244c99a76005b4aa13c77
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 c942dc1ee97843a1823121e8c22c5942
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 8e36a463460e419f9787f96dfe806717
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../irect.rst:7 5159d7062cad401c98bbfc419330c03c
 msgid "IRect"
-msgstr ""
+msgstr "IRect"
 
 #: ../../irect.rst:9 da2f82891e674e9a99975f0e1c77534a
 msgid ""
@@ -48,242 +48,242 @@ msgid ""
 "apply to this class. Methods and attributes have the same names, and in "
 "many cases are implemented by re-using the respective :ref:`Rect` "
 "counterparts."
-msgstr ""
+msgstr "IRect는 :ref:`Rect` 와 매우 유사한 사각형 경계 상자입니다. 단, 모든 모서리 좌표가 정수라는 점이 다릅니다. IRect는 픽셀 영역을 지정하는 데 사용됩니다(예: 렌더링 중 이미지 데이터를 받기 위해). 그 외에도 사각형의 빈 상태 및 유효성에 대한 고려 사항도 이 클래스에 적용됩니다. 메서드와 속성은 동일한 이름을 가지며, 많은 경우 해당 :ref:`Rect` 대응 항목을 재사용하여 구현됩니다."
 
 #: ../../irect.rst:12 a2319632991b4392b7ea2363ed3ce3ca
 msgid "**Attribute / Method**"
-msgstr ""
+msgstr "**속성 / 메서드**"
 
 #: ../../irect.rst:12 985bc4b51a2844cc8c87af7ba3568037
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../irect.rst:14 312b0f5bcbbd40a2bd8e8e1e19229048
 msgid ":meth:`IRect.contains`"
-msgstr ""
+msgstr ":meth:`IRect.contains`"
 
 #: ../../irect.rst:14 1ccbbb3d38b14035b18375fea8176585
 msgid "checks containment of another object"
-msgstr ""
+msgstr "다른 객체의 포함 여부 확인"
 
 #: ../../irect.rst:15 48378afa42394efc9fdbf9eb14494570
 msgid ":meth:`IRect.get_area`"
-msgstr ""
+msgstr ":meth:`IRect.get_area`"
 
 #: ../../irect.rst:15 7c5d16bc4f66409496a2544313c511e1
 msgid "calculate rectangle area"
-msgstr ""
+msgstr "사각형 영역 계산"
 
 #: ../../irect.rst:16 f0ccc3542ac74ea990d056a328e04a38
 msgid ":meth:`IRect.intersect`"
-msgstr ""
+msgstr ":meth:`IRect.intersect`"
 
 #: ../../irect.rst:16 1dc1ecaee3494262a0fe5f21fa1f14d9
 msgid "common part with another rectangle"
-msgstr ""
+msgstr "다른 사각형과의 공통 부분"
 
 #: ../../irect.rst:17 dcc6834c254f4196bae3b0d0fab4ceb1
 msgid ":meth:`IRect.intersects`"
-msgstr ""
+msgstr ":meth:`IRect.intersects`"
 
 #: ../../irect.rst:17 4fa770702f6f48ddab2468a3aa6c9af1
 msgid "checks for non-empty intersection"
-msgstr ""
+msgstr "비어 있지 않은 교집합 확인"
 
 #: ../../irect.rst:18 1475b0caba85400c836e2e24795f6c17
 msgid ":meth:`IRect.morph`"
-msgstr ""
+msgstr ":meth:`IRect.morph`"
 
 #: ../../irect.rst:18 185917170ebf4403aecdb06acfbbdb30
 msgid "transform with a point and a matrix"
-msgstr ""
+msgstr "점과 행렬로 변환"
 
 #: ../../irect.rst:19 f89cd99364a04f8ead7c40c76d334821
 msgid ":meth:`IRect.torect`"
-msgstr ""
+msgstr ":meth:`IRect.torect`"
 
 #: ../../irect.rst:19 b73013e1bd9c44e28fb742260bdf0272
 msgid "matrix that transforms to another rectangle"
-msgstr ""
+msgstr "다른 사각형으로 변환하는 행렬"
 
 #: ../../irect.rst:20 15c7541278e84bb8ab6442f22f75170c
 msgid ":meth:`IRect.norm`"
-msgstr ""
+msgstr ":meth:`IRect.norm`"
 
 #: ../../irect.rst:20 5344860eef7b4ebca725b7087c5ba8b1
 msgid "the Euclidean norm"
-msgstr ""
+msgstr "유클리드 노름"
 
 #: ../../irect.rst:21 b4daf225e3034e7f9a2a7efdb849941e
 msgid ":meth:`IRect.normalize`"
-msgstr ""
+msgstr ":meth:`IRect.normalize`"
 
 #: ../../irect.rst:21 da5ac901945f432e951f9ccfbde9a1e3
 msgid "makes a rectangle finite"
-msgstr ""
+msgstr "사각형을 유한하게 만듦"
 
 #: ../../irect.rst:22 b57e345172924c9f92f87bdeee2b8b3b
 msgid ":attr:`IRect.bottom_left`"
-msgstr ""
+msgstr ":attr:`IRect.bottom_left`"
 
 #: ../../irect.rst:22 8de2dbecf83540c2845f6fea2e7ecc7b
 msgid "bottom left point, synonym *bl*"
-msgstr ""
+msgstr "왼쪽 아래 점, 동의어 *bl*"
 
 #: ../../irect.rst:23 78ac63f7fbd94c12a1bb2853a704964d
 msgid ":attr:`IRect.bottom_right`"
-msgstr ""
+msgstr ":attr:`IRect.bottom_right`"
 
 #: ../../irect.rst:23 694a01dd73e044ebb482e19a2d477c0f
 msgid "bottom right point, synonym *br*"
-msgstr ""
+msgstr "오른쪽 아래 점, 동의어 *br*"
 
 #: ../../irect.rst:24 c996baab80024480b6fa888ba3dae48d
 msgid ":attr:`IRect.height`"
-msgstr ""
+msgstr ":attr:`IRect.height`"
 
 #: ../../irect.rst:24 5cfaf1765add470395b5f7e3f9f3af09
 msgid "height of the rectangle"
-msgstr ""
+msgstr "사각형의 높이"
 
 #: ../../irect.rst:25 1b7c56522528489b89e2c3863d10335b
 msgid ":attr:`IRect.is_empty`"
-msgstr ""
+msgstr ":attr:`IRect.is_empty`"
 
 #: ../../irect.rst:25 0f3aefc4a2e247f4909ac53517ac039c
 msgid "whether rectangle is empty"
-msgstr ""
+msgstr "사각형이 비어 있는지 여부"
 
 #: ../../irect.rst:26 ebba20f4de03492090a9968e1e5dd412
 msgid ":attr:`IRect.is_infinite`"
-msgstr ""
+msgstr ":attr:`IRect.is_infinite`"
 
 #: ../../irect.rst:26 9c334c81b9b8415ba1053a2528ecb6ff
 msgid "whether rectangle is infinite"
-msgstr ""
+msgstr "사각형이 무한한지 여부"
 
 #: ../../irect.rst:27 5001534eb64f471d85cc5b89d7d974a1
 msgid ":attr:`IRect.rect`"
-msgstr ""
+msgstr ":attr:`IRect.rect`"
 
 #: ../../irect.rst:27 4b920cbbb5bd436ea5424583f46a971f
 msgid "the :ref:`Rect` equivalent"
-msgstr ""
+msgstr ":ref:`Rect` 와 동등한 것"
 
 #: ../../irect.rst:28 73d2bc3e97c64f5facee96dfcf12b95c
 msgid ":attr:`IRect.top_left`"
-msgstr ""
+msgstr ":attr:`IRect.top_left`"
 
 #: ../../irect.rst:28 5806b5f7f43040419aec40fe1ec99f9b
 msgid "top left point, synonym *tl*"
-msgstr ""
+msgstr "왼쪽 위 점, 동의어 *tl*"
 
 #: ../../irect.rst:29 856082fe624c4dd4b8eeb24285c1a347
 msgid ":attr:`IRect.top_right`"
-msgstr ""
+msgstr ":attr:`IRect.top_right`"
 
 #: ../../irect.rst:29 0b985550b8ed4625a72796ab4c754952
 msgid "top_right point, synonym *tr*"
-msgstr ""
+msgstr "오른쪽 위 점, 동의어 *tr*"
 
 #: ../../irect.rst:30 5cc9d50c8cec4d768741a74eca8abf0b
 msgid ":attr:`IRect.quad`"
-msgstr ""
+msgstr ":attr:`IRect.quad`"
 
 #: ../../irect.rst:30 d135c468e28048fc921fdfdf4bbb13cf
 msgid ":ref:`Quad` made from rectangle corners"
-msgstr ""
+msgstr "사각형 모서리로 만든 :ref:`Quad`"
 
 #: ../../irect.rst:31 022996f05c34445fa253e0e774b365a3
 msgid ":attr:`IRect.width`"
-msgstr ""
+msgstr ":attr:`IRect.width`"
 
 #: ../../irect.rst:31 0b36bdc4d3bf46afab89889318dc863a
 msgid "width of the rectangle"
-msgstr ""
+msgstr "사각형의 너비"
 
 #: ../../irect.rst:32 521608cb542c4976ba07f2f56d904ace
 msgid ":attr:`IRect.x0`"
-msgstr ""
+msgstr ":attr:`IRect.x0`"
 
 #: ../../irect.rst:32 d0964024870440a58844774693381ec8
 msgid "X-coordinate of the top left corner"
-msgstr ""
+msgstr "왼쪽 위 모서리의 X 좌표"
 
 #: ../../irect.rst:33 548e8fbd99a442b2b5a586073ff4f2ab
 msgid ":attr:`IRect.x1`"
-msgstr ""
+msgstr ":attr:`IRect.x1`"
 
 #: ../../irect.rst:33 30a1db52025e46e0be799ff23b4f2696
 msgid "X-coordinate of the bottom right corner"
-msgstr ""
+msgstr "오른쪽 아래 모서리의 X 좌표"
 
 #: ../../irect.rst:34 f81b38bd9fde4f54bed975e459d7a9ac
 msgid ":attr:`IRect.y0`"
-msgstr ""
+msgstr ":attr:`IRect.y0`"
 
 #: ../../irect.rst:34 2b16ddf8934849fbaab256d3d54e4363
 msgid "Y-coordinate of the top left corner"
-msgstr ""
+msgstr "왼쪽 위 모서리의 Y 좌표"
 
 #: ../../irect.rst:35 70d84d3ce7a34c4297a1e7700d3f7109
 msgid ":attr:`IRect.y1`"
-msgstr ""
+msgstr ":attr:`IRect.y1`"
 
 #: ../../irect.rst:35 b3e0e713d8d046a8968b780c0340f966
 msgid "Y-coordinate of the bottom right corner"
-msgstr ""
+msgstr "오른쪽 아래 모서리의 Y 좌표"
 
 #: ../../irect.rst:38 2edafd03825b4939bfe6472c41b08bcf
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../irect.rst:50 70995ff946be4d8d84849a0c0b6f16d3
 msgid ""
 "Overloaded constructors. Also see examples below and those for the "
 ":ref:`Rect` class."
-msgstr ""
+msgstr "오버로드된 생성자. 아래 예제와 :ref:`Rect` 클래스의 예제도 참조하세요."
 
 #: ../../irect.rst:52 8f664a86d7374ec9bda83e6905b4e67b
 msgid "If another irect is specified, a **new copy** will be made."
-msgstr ""
+msgstr "다른 irect가 지정되면 **새 복사본** 이 만들어집니다."
 
 #: ../../irect.rst:54 6e6e21909c9c4ae3a9139bde73277f88
 msgid ""
 "If sequence is specified, it must be a Python sequence type of 4 numbers "
 "(see :ref:`SequenceTypes`). Non-integer numbers will be truncated, non-"
 "numeric values will raise an exception."
-msgstr ""
+msgstr "sequence가 지정되면 4개의 숫자로 구성된 Python 시퀀스 유형이어야 합니다(:ref:`SequenceTypes` 참조). 정수가 아닌 숫자는 잘리고, 숫자가 아닌 값은 예외를 발생시킵니다."
 
 #: ../../irect.rst:56 f9a414d271ee415fb26b8f0b142958b7
 msgid "The other parameters mean integer coordinates."
-msgstr ""
+msgstr "다른 매개변수는 정수 좌표를 의미합니다."
 
 #: ../../irect.rst:61 7c84bdc985c64c339d0548802f831996
 msgid ""
 "Calculates the area of the rectangle and, with no parameter, equals "
 "*abs(IRect)*. Like an empty rectangle, the area of an infinite rectangle "
 "is also zero."
-msgstr ""
+msgstr "사각형의 영역을 계산하며, 매개변수 없이는 *abs(IRect)* 와 같습니다. 빈 사각형과 마찬가지로 무한 사각형의 영역도 0입니다."
 
 #: ../../irect.rst 18e4b1fb1da640de88306538351ca10b
 #: 218364ce30ff4c0a9be4541c11fe1e9f 394c5a21898045d19dc3fca6edc763a7
 #: 489a707b54a24c2eb3edb81f8229ef4f 5b5047f52c7a458c90e239164e797307
 #: 6408eafe7a4547e980f6763bd4b559e1
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../irect.rst:63 63bea0a8781c48c49fac02eaeda867ce
 msgid ""
 "Specify required unit: respective squares of \"px\" (pixels, default), "
 "\"in\" (inches), \"cm\" (centimeters), or \"mm\" (millimeters)."
-msgstr ""
+msgstr "필요한 단위 지정: \"px\"(픽셀, 기본값), \"in\"(인치), \"cm\"(센티미터) 또는 \"mm\"(밀리미터)의 각각의 제곱."
 
 #: ../../irect.rst 0f9fbd309a584cab995697cae68f899d
 #: 7c2bab6d8e594a5589e33354d18a1796 ba5dbf6b9e214071aaec6e290fac295f
 #: e6ca9e94a86f416a922d607f4943a5a3
 msgid "Return type"
-msgstr ""
+msgstr "반환 유형"
 
 #: ../../irect.rst:69 5dc2badf5382432fa2d57f3db0e32119
 msgid ""
@@ -292,11 +292,11 @@ msgid ""
 "rectangle is empty, the result is also empty. If either rectangle is "
 "infinite, the other one is taken as the result -- and hence also infinite"
 " if both rectangles were infinite."
-msgstr ""
+msgstr "현재 사각형과 *ir* 의 교집합(공통 사각형 영역)이 계산되어 현재 사각형을 대체합니다. 사각형 중 하나가 비어 있으면 결과도 비어 있습니다. 사각형 중 하나가 무한이면 다른 하나가 결과로 사용됩니다 -- 따라서 두 사각형이 모두 무한이면 결과도 무한입니다."
 
 #: ../../irect.rst:71 8af38038c172477b9e9af3e3b7862926
 msgid "Second rectangle."
-msgstr ""
+msgstr "두 번째 사각형."
 
 #: ../../irect.rst:75 e7214be906944cddbd77c8aecdd86d95
 msgid ""
@@ -306,94 +306,94 @@ msgid ""
 "this is always ``False``, if *x* is not an empty rectangle and not a "
 "number. If *x* is a number, it will be checked to be one of the four "
 "components. *x in irect* and *irect.contains(x)* are equivalent."
-msgstr ""
+msgstr "*x* 가 사각형에 포함되어 있는지 확인합니다. 이것은 :data:`rect_like`, :data:`point_like` 또는 숫자일 수 있습니다. *x* 가 빈 사각형이면 이것은 항상 true입니다. 반대로, 사각형이 비어 있으면 이것은 항상 ``False`` 입니다. *x* 가 빈 사각형이 아니고 숫자가 아닌 경우. *x* 가 숫자이면 4개의 구성 요소 중 하나인지 확인됩니다. *x in irect* 와 *irect.contains(x)* 는 동일합니다."
 
 #: ../../irect.rst:77 7cc8752befc847a9885e54e61f00faee
 msgid "the object to check."
-msgstr ""
+msgstr "확인할 객체."
 
 #: ../../irect.rst:84 41a07fef21a04ff9b1f1c59de07d83d1
 msgid ""
 "Checks whether the rectangle and the :data:`rect_like` \"r\" contain a "
 "common non-empty :ref:`IRect`. This will always be ``False`` if either is"
 " infinite or empty."
-msgstr ""
+msgstr "사각형과 :data:`rect_like` \"r\"이 공통의 비어 있지 않은 :ref:`IRect` 를 포함하는지 확인합니다. 둘 중 하나가 무한이거나 비어 있으면 이것은 항상 ``False`` 입니다."
 
 #: ../../irect.rst:86 aa8981e507b44374bd69c86ddf1f7541
 msgid "the rectangle to check."
-msgstr ""
+msgstr "확인할 사각형."
 
 #: ../../irect.rst:92 e0237b4a333a4949bae56a33d349416d
 msgid "New in version 1.19.3"
-msgstr ""
+msgstr "버전 1.19.3에서 새로 추가됨"
 
 #: ../../irect.rst:94 a8f435e24dcb48e2bdbca8838eca5764
 msgid ""
 "Compute the matrix which transforms this rectangle to a given one. See "
 ":meth:`Rect.torect`."
-msgstr ""
+msgstr "이 사각형을 주어진 사각형으로 변환하는 행렬을 계산합니다. :meth:`Rect.torect` 를 참조하세요."
 
 #: ../../irect.rst:96 d1c97833dc404dbf9a4af4245c9a4541
 msgid "the target rectangle. Must not be empty or infinite."
-msgstr ""
+msgstr "대상 사각형. 비어 있거나 무한이 아니어야 합니다."
 
 #: ../../irect.rst:97 2f2d67d9571f465fa494157309add0d7
 msgid ":ref:`Matrix`"
-msgstr ""
+msgstr ":ref:`Matrix`"
 
 #: ../../irect.rst 75c56c65e0e64566a450b019b0cac229
 #: a68dd79a643440fbb2173c54bf9da905
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../irect.rst:98 c705e90002274a80b333b03348c54360
 msgid ""
 "a matrix `mat` such that `self * mat = rect`. Can for example be used to "
 "transform between the page and the pixmap coordinates."
-msgstr ""
+msgstr "`self * mat = rect` 가 되는 행렬 `mat`. 예를 들어 페이지와 픽셀맵 좌표 간 변환에 사용할 수 있습니다."
 
 #: ../../irect.rst:103 287c04b5d7f141ccb8d6ad779ecaeb1e
 msgid "New in version 1.17.0"
-msgstr ""
+msgstr "버전 1.17.0에서 새로 추가됨"
 
 #: ../../irect.rst:105 e37ea5bfcc8d496abb5f6decf903b78d
 msgid "Return a new quad after applying a matrix to it using a fixed point."
-msgstr ""
+msgstr "고정점을 사용하여 행렬을 적용한 후 새 quad를 반환합니다."
 
 #: ../../irect.rst:107 05bbb73520154a3181137a24fec1c86f
 msgid "the fixed point."
-msgstr ""
+msgstr "고정점."
 
 #: ../../irect.rst:108 b34bf6b64a6543358399eee20fed216a
 msgid "the matrix."
-msgstr ""
+msgstr "행렬."
 
 #: ../../irect.rst:109 c69142f99a804255b75e2eaf0d41597a
 msgid ""
 "a new :ref:`Quad`. This a wrapper of the same-named quad method. If "
 "infinite, the infinite quad is returned."
-msgstr ""
+msgstr "새 :ref:`Quad`. 이것은 동일한 이름의 quad 메서드의 래퍼입니다. 무한이면 무한 quad가 반환됩니다."
 
 #: ../../irect.rst:113 1cacf407916d48f49e0c36e73c9d2795
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "버전 1.16.0에서 새로 추가됨"
 
 #: ../../irect.rst:115 73cccdef3ba54c138d3c2949905823f1
 msgid ""
 "Return the Euclidean norm of the rectangle treated as a vector of four "
 "numbers."
-msgstr ""
+msgstr "4개의 숫자 벡터로 처리된 사각형의 유클리드 노름을 반환합니다."
 
 #: ../../irect.rst:119 1e3b3df827f64cdaa8f3e30d20539c21
 msgid ""
 "Make the rectangle finite. This is done by shuffling rectangle corners. "
 "After this, the bottom right corner will indeed be south-eastern to the "
 "top left one. See :ref:`Rect` for a more details."
-msgstr ""
+msgstr "사각형을 유한하게 만듭니다. 이것은 사각형 모서리를 재배치하여 수행됩니다. 이 작업 후, 오른쪽 아래 모서리는 실제로 왼쪽 위 모서리의 남동쪽이 됩니다. 자세한 내용은 :ref:`Rect` 를 참조하세요."
 
 #: ../../irect.rst:125 80fcd714078d4459b6446f7aa881ded8
 msgid "Equals *Point(x0, y0)*."
-msgstr ""
+msgstr "*Point(x0, y0)* 와 같습니다."
 
 #: ../../irect.rst 1185a0d53778409b8eb3beb582b64888
 #: 34743c436e9f444485fae4bae2ddb7f9 352aed9e86654ed0bfb3414c7c9f882a
@@ -404,46 +404,46 @@ msgstr ""
 #: d95b0909ef3d4300a206cd4f2b8c8671 f6cdc81509354493aa34a01e5ebc06b4
 #: f97ab05a65224ade959a073fae8e16c2
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../irect.rst:127 ../../irect.rst:135 ../../irect.rst:143
 #: ../../irect.rst:151 88e60a9d15ad4d409f7a85722cd1cb9c
 #: c7e32fdd1a374a44979cdc28e388d038 fb5fa1bba9ab48979d23d8dd6744ca12
 #: fdc51db9a96f4153893929ddb8e95ee3
 msgid ":ref:`Point`"
-msgstr ""
+msgstr ":ref:`Point`"
 
 #: ../../irect.rst:133 305506d4a8894b98b370bfdaf51af233
 msgid "Equals *Point(x1, y0)*."
-msgstr ""
+msgstr "*Point(x1, y0)* 와 같습니다."
 
 #: ../../irect.rst:141 9af3c12519684f28bb4bc50d612e4372
 msgid "Equals *Point(x0, y1)*."
-msgstr ""
+msgstr "*Point(x0, y1)* 와 같습니다."
 
 #: ../../irect.rst:149 ae11bdfc7226476aac26a17b08ad9204
 msgid "Equals *Point(x1, y1)*."
-msgstr ""
+msgstr "*Point(x1, y1)* 와 같습니다."
 
 #: ../../irect.rst:155 6b6c7c24528e4d028bb599bcaba2d291
 msgid "The :ref:`Rect` with the same coordinates as floats."
-msgstr ""
+msgstr "float와 동일한 좌표를 가진 :ref:`Rect`."
 
 #: ../../irect.rst:157 07b31a4170c647d1ae20c438ea29c332
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../irect.rst:161 6d942227a8804d80be71085d59471e1f
 msgid "The quadrilateral *Quad(irect.tl, irect.tr, irect.bl, irect.br)*."
-msgstr ""
+msgstr "사각형 *Quad(irect.tl, irect.tr, irect.bl, irect.br)*."
 
 #: ../../irect.rst:163 21c9866abaed4b9ea6806095673297f4
 msgid ":ref:`Quad`"
-msgstr ""
+msgstr ":ref:`Quad`"
 
 #: ../../irect.rst:167 aa41fcfcf80642958f591e2014a05804
 msgid "Contains the width of the bounding box. Equals *abs(x1 - x0)*."
-msgstr ""
+msgstr "경계 상자의 너비를 포함합니다. *abs(x1 - x0)* 와 같습니다."
 
 #: ../../irect.rst:169 ../../irect.rst:175 ../../irect.rst:181
 #: ../../irect.rst:187 ../../irect.rst:193 ../../irect.rst:199
@@ -451,54 +451,54 @@ msgstr ""
 #: a72fd244eafd454380cfe3bc5def6325 f2ef5e017dda4f76ab39cff8b6079d88
 #: fa70673340164af19d538be4a10b59ad fc10d7f00d79406db00d1066e4567571
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../irect.rst:173 e896ac73b5c64e75b7724b41502abd00
 msgid "Contains the height of the bounding box. Equals *abs(y1 - y0)*."
-msgstr ""
+msgstr "경계 상자의 높이를 포함합니다. *abs(y1 - y0)* 와 같습니다."
 
 #: ../../irect.rst:179 29e02c90a309472484e82207f4e2bb94
 msgid "X-coordinate of the left corners."
-msgstr ""
+msgstr "왼쪽 모서리의 X 좌표."
 
 #: ../../irect.rst:185 ec2198ff697e420d9c05f93f973367bb
 msgid "Y-coordinate of the top corners."
-msgstr ""
+msgstr "위쪽 모서리의 Y 좌표."
 
 #: ../../irect.rst:191 e02641fa0cb443a58d8b6f6d447edb7a
 msgid "X-coordinate of the right corners."
-msgstr ""
+msgstr "오른쪽 모서리의 X 좌표."
 
 #: ../../irect.rst:197 2e367ece51d84b1280d4ec05cc038c6a
 msgid "Y-coordinate of the bottom corners."
-msgstr ""
+msgstr "아래쪽 모서리의 Y 좌표."
 
 #: ../../irect.rst:203 900a2545643f4623905b338b7edefd8b
 msgid "``True`` if rectangle is infinite, ``False`` otherwise."
-msgstr ""
+msgstr "사각형이 무한이면 ``True``, 그렇지 않으면 ``False``."
 
 #: ../../irect.rst:205 ../../irect.rst:211 4c1a21a29dfe4414ad6992b3dcc0b117
 #: aec6fc0ebb874b20bfb1a90a68a30dcc
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../irect.rst:209 877573fb6317435ca1b1a73c24606949
 msgid "``True`` if rectangle is empty, ``False`` otherwise."
-msgstr ""
+msgstr "사각형이 비어 있으면 ``True``, 그렇지 않으면 ``False``."
 
 #: ../../irect.rst:216 7cc608bcd141490a9f473438421895b4
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
-msgstr ""
+msgstr "이 클래스는 Python 시퀀스 프로토콜을 따르므로 구성 요소는 인덱스를 통해 액세스할 수도 있습니다. :ref:`SequenceTypes` 도 참조하세요."
 
 #: ../../irect.rst:217 a3c01f53c9ef4d5eb1b84f26294b538b
 msgid ""
 "Rectangles can be used with arithmetic operators -- see chapter "
 ":ref:`Algebra`."
-msgstr ""
+msgstr "사각형은 산술 연산자와 함께 사용할 수 있습니다 -- :ref:`Algebra` 장을 참조하세요."
 
 #: ../../footer.rst:46 512cd6db01a142258a5b31acbcb8a187
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 9ae2958084504b3cbf245bd73a2ab2b9
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 f48bded6e5a0490fbc182596e6c86f50
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c3968fe2fa604ee2a68fdd576c733553
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../rag.rst:6 d9c164003dda4429a6f39b4abd473e49
 msgid "PyMuPDF, LLM & RAG"
-msgstr ""
+msgstr "PyMuPDF, LLM 및 RAG"
 
 #: ../../rag.rst:9 f18a0f62e26e4863b32ba327cc3828fe
 msgid ""
@@ -45,58 +45,58 @@ msgid ""
 "framework and overall :title:`RAG (Retrieval-Augmented Generation`) "
 "solution provides the fastest and most reliable way to deliver document "
 "data."
-msgstr ""
+msgstr "|PyMuPDF| 를 :title:`Large Language Model (LLM)` 프레임워크 및 전체 :title:`RAG (Retrieval-Augmented Generation)` 솔루션에 통합하면 문서 데이터를 제공하는 가장 빠르고 신뢰할 수 있는 방법을 제공합니다."
 
 #: ../../rag.rst:11 6e23dfb312db4517ab86e93891470aed
 msgid ""
 "There are a few well known :title:`LLM` solutions which have their own "
 "interfaces with |PyMuPDF| - it is a fast growing area, so please let us "
 "know if you discover any more!"
-msgstr ""
+msgstr "|PyMuPDF| 와 자체 인터페이스를 가진 몇 가지 잘 알려진 :title:`LLM` 솔루션이 있습니다. 빠르게 성장하는 분야이므로 더 발견하시면 알려주세요!"
 
 #: ../../rag.rst:13 8de65ced808e469d9fac7bd41abaf9cf
 msgid ""
 "If you need to export to :title:`Markdown` or obtain a "
 ":title:`LlamaIndex` Document from a file:"
-msgstr ""
+msgstr ":title:`Markdown` 으로 내보내거나 파일에서 :title:`LlamaIndex` 문서를 얻어야 하는 경우:"
 
 #: ../../rag.rst:31 0e6f773ad0c846eb81ad529f37c724ce
 msgid "Integration with :title:`LangChain`"
-msgstr ""
+msgstr ":title:`LangChain` 과의 통합"
 
 #: ../../rag.rst:33 617c7d9b690c427cb4d5f385dbaea902
 msgid ""
 "It is simple to integrate directly with :title:`LangChain` by using their"
 " dedicated loader as follows:"
-msgstr ""
+msgstr "다음과 같이 전용 로더를 사용하여 :title:`LangChain` 과 직접 통합하는 것은 간단합니다:"
 
 #: ../../rag.rst:43 2b8a08a537ff4f0c9d20ccd117cca1c7
 msgid ""
 "See `LangChain Using PyMuPDF "
 "<https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf"
 "/#using-pymupdf>`_ for full details."
-msgstr ""
+msgstr "자세한 내용은 `LangChain Using PyMuPDF <https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf/#using-pymupdf>`_ 를 참조하세요."
 
 #: ../../rag.rst:47 882dd97452644713ade70ec5d297ac45
 msgid "Integration with :title:`LlamaIndex`"
-msgstr ""
+msgstr ":title:`LlamaIndex` 와의 통합"
 
 #: ../../rag.rst:50 0a3eaf04eb9c4726a40af71757d7454d
 msgid ""
 "Use the dedicated `PyMuPDFReader` from :title:`LlamaIndex` 🦙 to manage "
 "your document loading."
-msgstr ""
+msgstr ":title:`LlamaIndex` 🦙 의 전용 `PyMuPDFReader` 를 사용하여 문서 로딩을 관리하세요."
 
 #: ../../rag.rst:58 49e6d30976b047949da389fa02a61f6d
 msgid ""
 "See `Building RAG from Scratch "
 "<https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval>`_"
 " for more."
-msgstr ""
+msgstr "자세한 내용은 `Building RAG from Scratch <https://docs.llamaindex.ai/en/stable/examples/low_level/oss_ingestion_retrieval>`_ 를 참조하세요."
 
 #: ../../rag.rst:62 a966faf5a5914f53816c15fa2dc9cf18
 msgid "Preparing Data for Chunking"
-msgstr ""
+msgstr "청킹을 위한 데이터 준비"
 
 #: ../../rag.rst:64 c943a32cc39448f396304fd518f9a003
 msgid ""
@@ -106,11 +106,11 @@ msgid ""
 "<https://medium.com/@anuragmishra_27746/five-levels-of-chunking-"
 "strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ is "
 "supported."
-msgstr ""
+msgstr "데이터 청킹(또는 분할)은 :title:`LLM` 데이터에 컨텍스트를 제공하는 데 필수적이며, |PyMuPDF| 가 이제 :title:`Markdown` 출력을 지원하므로 `Level 3 chunking <https://medium.com/@anuragmishra_27746/five-levels-of-chunking-strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ 이 지원됨을 의미합니다."
 
 #: ../../rag.rst:71 c1d64297cf6740508697a6569cd86382
 msgid "Outputting as :title:`Markdown`"
-msgstr ""
+msgstr ":title:`Markdown` 으로 출력"
 
 #: ../../rag.rst:73 39636d4fa0cf42edb1f1e408555643f2
 msgid ""
@@ -119,73 +119,73 @@ msgid ""
 "wrapper of |PyMuPDF| functions which for each page outputs standard and "
 "table text in an integrated Markdown-formatted string across all document"
 " pages:"
-msgstr ""
+msgstr ":title:`Markdown` 형식으로 문서를 내보내려면 별도의 헬퍼가 필요합니다. 패키지 :doc:`pymupdf4llm/index` 는 |PyMuPDF| 함수의 고수준 래퍼로, 각 페이지에 대해 모든 문서 페이지에 걸쳐 통합된 Markdown 형식 문자열로 표준 텍스트와 테이블 텍스트를 출력합니다:"
 
 #: ../../rag.rst:87 ab3bd85d9da04f3288b59385ab304c9a
 msgid "For further information please refer to: :doc:`pymupdf4llm/index`."
-msgstr ""
+msgstr "자세한 내용은 :doc:`pymupdf4llm/index` 를 참조하세요."
 
 #: ../../rag.rst:91 0e0368f9987d4fd6989fb56fb6001afd
 msgid "How to use :title:`Markdown` output"
-msgstr ""
+msgstr ":title:`Markdown` 출력 사용 방법"
 
 #: ../../rag.rst:93 7bbbb34419cf4138a90d6f32225fd2c0
 msgid ""
 "Once you have your data in :title:`Markdown` format you are ready to "
 "chunk/split it and supply it to your :title:`LLM`, for example, if this "
 "is :title:`LangChain` then do the following:"
-msgstr ""
+msgstr ":title:`Markdown` 형식의 데이터가 준비되면 청킹/분할하여 :title:`LLM` 에 제공할 준비가 됩니다. 예를 들어, 이것이 :title:`LangChain` 인 경우 다음을 수행하세요:"
 
 #: ../../rag.rst:109 e0cd08f28f6b4684b8212adaecee1134
 msgid ""
 "For more see `5 Levels of Text Splitting <https://github.com"
 "/FullStackRetrieval-"
 "com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_"
-msgstr ""
+msgstr "자세한 내용은 `5 Levels of Text Splitting <https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_ 를 참조하세요."
 
 #: ../../rag.rst:113 59da1458c9df47cf875bc76ea4b09c0f
 msgid "Related Blogs"
-msgstr ""
+msgstr "관련 블로그"
 
 #: ../../rag.rst:115 fc915048dbc24e0fbbb2afab1ec5ea4c
 msgid ""
 "To find out more about |PyMuPDF|, :title:`LLM` & :title:`RAG` check out "
 "our blogs for implementations & tutorials."
-msgstr ""
+msgstr "|PyMuPDF|, :title:`LLM` 및 :title:`RAG` 에 대한 자세한 내용은 구현 및 튜토리얼 블로그를 확인하세요."
 
 #: ../../rag.rst:119 0122bc55056941f1ab375130d1567c25
 msgid "Methodologies to Extract Text"
-msgstr ""
+msgstr "텍스트 추출 방법론"
 
 #: ../../rag.rst:121 e7a6690e847f451e86a01250978a6578
 msgid ""
 "`Enhanced Text Extraction <https://artifex.com/blog/rag-llm-and-pdf-"
 "enhanced-text-extraction>`_"
-msgstr ""
+msgstr "`Enhanced Text Extraction <https://artifex.com/blog/rag-llm-and-pdf-enhanced-text-extraction>`_"
 
 #: ../../rag.rst:122 04321925122b427b86774ef96ad18527
 msgid ""
 "`Conversion to Markdown Text with PyMuPDF <https://artifex.com/blog/rag-"
 "llm-and-pdf-conversion-to-markdown-text-with-pymupdf>`_"
-msgstr ""
+msgstr "`Conversion to Markdown Text with PyMuPDF <https://artifex.com/blog/rag-llm-and-pdf-conversion-to-markdown-text-with-pymupdf>`_"
 
 #: ../../rag.rst:127 60562c518d964c8090b1290cd59e6a19
 msgid "Create a Chatbot to discuss your documents"
-msgstr ""
+msgstr "문서를 논의하기 위한 챗봇 만들기"
 
 #: ../../rag.rst:129 20a7402279fa4414b283adebd82344bd
 msgid ""
 "`Make a simple command line Chatbot <https://artifex.com/blog/creating-a"
 "-rag-chatbot-with-chatgpt-and-pymupdf>`_"
-msgstr ""
+msgstr "`Make a simple command line Chatbot <https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-pymupdf>`_"
 
 #: ../../rag.rst:130 68ea640af63a45c382ba8d71fc1796ca
 msgid ""
 "`Make a Chatbot GUI <https://artifex.com/blog/building-a-rag-chatbot-gui-"
 "with-the-chatgpt-api-and-pymupdf>`_"
-msgstr ""
+msgstr "`Make a Chatbot GUI <https://artifex.com/blog/building-a-rag-chatbot-gui-with-the-chatgpt-api-and-pymupdf>`_"
 
 #: ../../footer.rst:46 e79c14c4775649ff81f129c4ebc2dcb1
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

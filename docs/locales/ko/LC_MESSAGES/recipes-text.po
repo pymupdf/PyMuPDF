@@ -21,37 +21,37 @@ msgstr ""
 
 #: ../../header.rst:-1 aacd92b247384bf48857a075d285a561
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 dbeb3e790165465a99d5c54f8c3d8ead
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c0909ea966bf494c8da17ef86ca44a3b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../recipes-text.rst:7 05ae1dd8d9f44a9481a79f9e3b1d86d7
 msgid "Text"
-msgstr ""
+msgstr "Text"
 
 #: ../../recipes-text.rst:13 7caab8ee2fd2466083df37b5e33d293a
 msgid "How to Extract all Document Text"
-msgstr ""
+msgstr "모든 문서 텍스트 추출 방법"
 
 #: ../../recipes-text.rst:15 8c1e407daf5546229fd685147c64ce69
 msgid ""
 "This script will take a document filename and generate a text file from "
 "all of its text."
-msgstr ""
+msgstr "이 스크립트는 문서 파일 이름을 받아 모든 텍스트에서 텍스트 파일을 생성합니다."
 
 #: ../../recipes-text.rst:17 32ad66847ecb4784aabbcd72e5132bcc
 msgid "The document can be any :ref:`supported type<Supported_File_Types>`."
-msgstr ""
+msgstr "문서는 :ref:`지원되는 모든 타입<Supported_File_Types>` 일 수 있습니다."
 
 #: ../../recipes-text.rst:19 81db58eeb7da49e8ac352d7290a9895b
 msgid ""
@@ -59,58 +59,60 @@ msgid ""
 "filename supplied as a parameter. It generates one text file named "
 "\"filename.txt\" in the script directory. Text of pages is separated by a"
 " form feed character::"
-msgstr ""
+msgstr "스크립트는 매개변수로 제공된 문서 파일 이름을 기대하는 명령줄 도구로 작동합니다. 스크립트 디렉토리에 \"filename.txt\"라는 하나의 텍스트 파일을 생성합니다. 페이지의 텍스트는 폼 피드 문자로 구분됩니다::"
 
 #: ../../recipes-text.rst:28 34acce45dea14d438a205400310b647d
 msgid ""
 "The output will be plain text as it is coded in the document. No effort "
 "is made to prettify in any way. Specifically for PDF, this may mean "
 "output not in usual reading order, unexpected line breaks and so forth."
-msgstr ""
+msgstr "출력은 문서에 코딩된 대로 일반 텍스트입니다. 어떤 방식으로도 예쁘게 만들려는 시도는 없습니다. 특히 PDF의 경우, 이것은 일반적인 읽기 순서가 아닌 출력, 예상치 못한 줄바꿈 등을 의미할 수 있습니다."
 
 #: ../../recipes-text.rst:30 d85615155c024325ba277a5ca1e1ccc0
 msgid ""
 "You have many options to rectify this -- see chapter :ref:`Appendix2`. "
 "Among them are:"
-msgstr ""
+msgstr "이를 수정하는 많은 옵션이 있습니다 -- :ref:`Appendix2` 장을 참조하세요. 그 중에는 다음이 있습니다:"
 
 #: ../../recipes-text.rst:32 9f7a0c712a724bcb8f46594a0696a485
 msgid ""
 "Extract text in HTML format and store it as a HTML document, so it can be"
 " viewed in any browser."
-msgstr ""
+msgstr "HTML 형식으로 텍스트를 추출하고 HTML 문서로 저장하여 모든 브라우저에서 볼 수 있도록 합니다."
 
 #: ../../recipes-text.rst:33 14d8db3ab4354b208d1b10a44164247a
 msgid ""
 "Extract text as a list of text blocks via *Page.get_text(\"blocks\")*. "
 "Each item of this list contains position information for its text, which "
 "can be used to establish a convenient reading order."
-msgstr ""
+msgstr "*Page.get_text(\"blocks\")* 를 통해 텍스트 블록 목록으로 텍스트를 추출합니다. 이 목록의 각 항목은 텍스트에 대한 위치 정보를 포함하며, 이를 사용하여 편리한 읽기 순서를 설정할 수 있습니다."
 
 #: ../../recipes-text.rst:34 a737dbb5f0df4394b85c682d11c5fbc7
 msgid ""
 "Extract a list of single words via *Page.get_text(\"words\")*. Its items "
 "are words with position information. Use it to determine text contained "
 "in a given rectangle -- see next section."
-msgstr ""
+msgstr "*Page.get_text(\"words\")* 를 통해 단일 단어 목록을 추출합니다. 항목은 위치 정보가 있는 단어입니다. 주어진 사각형에 포함된 텍스트를 확인하는 데 사용하세요 -- 다음 섹션을 참조하세요."
 
 #: ../../recipes-text.rst:36 1eecb5d77eb545a89b29bbbe32c68b52
 msgid "See the following two sections for examples and further explanations."
-msgstr ""
+msgstr "예제 및 추가 설명은 다음 두 섹션을 참조하세요."
 
 #: ../../recipes-text.rst:44 5d550fa30f214c0ab6daaa5da9d1d56b
 msgid "How to Extract Text as Markdown"
-msgstr ""
+msgstr "Markdown 형식으로 텍스트 추출 방법"
 
 #: ../../recipes-text.rst:46 3a0e63deebbf4416a1fea6b96c24774a
 msgid ""
 "This is especially useful for :title:`RAG/LLM` environments - please see "
 ":ref:`Outputting as Markdown <rag_outputting_as_md>`."
 msgstr ""
+"이는 특히 :title:`RAG/LLM` 환경에 유용합니다 - :ref:`Outputting as Markdown "
+"<rag_outputting_as_md>` 를 참조하세요."
 
 #: ../../recipes-text.rst:52 76343110228443c691bf59b95ab056c9
 msgid "How to Extract Key-Value Pairs from a Page"
-msgstr ""
+msgstr "페이지에서 키-값 쌍 추출 방법"
 
 #: ../../recipes-text.rst:53 34f319f64a034da383333b8c516bb6fc
 msgid ""
@@ -120,22 +122,25 @@ msgid ""
 "script <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-"
 "extraction/lookup-keywords.py>`_."
 msgstr ""
+"페이지 레이아웃이 어느 정도 *\"예측 가능한\"* 경우, 정규 표현식을 사용하지 않고도 특정 키워드 집합에 대한 값을 빠르고 쉽게 찾는 간단한 방법이 있습니다. `이 예제 스크립트 "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/text-extraction/lookup-"
+"keywords.py>`_ 를 참조하세요."
 
 #: ../../recipes-text.rst:55 0b02d215083344e3bafc3ec057536e9f
 msgid "\"Predictable\" in this context means:"
-msgstr ""
+msgstr "여기서 \"예측 가능한\" 이란 다음을 의미합니다:"
 
 #: ../../recipes-text.rst:57 312afbe84baa4bdf84138e6f35377145
 msgid ""
 "Every keyword is followed by its value -- no other text is present in "
 "between them."
-msgstr ""
+msgstr "각 키워드 뒤에는 그 값이 이어집니다 -- 그 사이에 다른 텍스트는 없습니다."
 
 #: ../../recipes-text.rst:58 fd6c255cc6164834b85534e21a47f8c3
 msgid ""
 "The bottom of the value's boundary box is **not above** the one of the "
 "keyword."
-msgstr ""
+msgstr "값의 경계 상자 하단이 키워드의 경계 상자보다 **위에 있지 않습니다**."
 
 #: ../../recipes-text.rst:59 3a28328449d0465298d40e600034845d
 msgid ""
@@ -143,16 +148,17 @@ msgid ""
 "fixed, and the text may also have been stored as one string. Key and "
 "value may have any distance from each other."
 msgstr ""
+"**다른 제한은 없습니다**: 페이지 레이아웃이 고정되어 있을 수도 있고 아닐 수도 있으며, 텍스트가 하나의 문자열로 저장되었을 수도 있습니다. 키와 값은 서로 어떤 거리든 가질 수 있습니다."
 
 #: ../../recipes-text.rst:61 d4fc0262f0d74fcd8ab3810ea67fcabd
 msgid ""
 "For example, the following five key-value pairs will be correctly "
 "identified::"
-msgstr ""
+msgstr "예를 들어, 다음 다섯 개의 키-값 쌍이 올바르게 식별됩니다::"
 
 #: ../../recipes-text.rst:77 193e5336ec2f43b2a832b43d6a58d308
 msgid "How to Extract Text from within a Rectangle"
-msgstr ""
+msgstr "사각형 내부에서 텍스트 추출 방법"
 
 #: ../../recipes-text.rst:78 4c4438f1bc044009b24645d65ce8ab60
 msgid ""
@@ -161,16 +167,19 @@ msgid ""
 "Utilities/tree/master/textbox-extraction>`_ in the PyMuPDF-Utilities "
 "repository specifically dealing with this topic."
 msgstr ""
+"이제 (v1.18.0) 이를 달성하는 방법이 여러 가지 있습니다. 따라서 이 주제를 다루는 `폴더 "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textbox-extraction>`_ 를 "
+"PyMuPDF-Utilities 저장소에 만들었습니다."
 
 #: ../../recipes-text.rst:88 742b2388b2764f87a7e62ef6bfa73dd6
 msgid "How to Extract Text in Natural Reading Order"
-msgstr ""
+msgstr "자연스러운 읽기 순서로 텍스트 추출 방법"
 
 #: ../../recipes-text.rst:90 0e8c0fee0d084b9883b573ad87009d6e
 msgid ""
 "One of the common issues with PDF text extraction is, that text may not "
 "appear in any particular reading order."
-msgstr ""
+msgstr "PDF 텍스트 추출의 일반적인 문제 중 하나는 텍스트가 특정 읽기 순서로 나타나지 않을 수 있다는 것입니다."
 
 #: ../../recipes-text.rst:92 371d80a5d01448afa0dd235c5b575b74
 msgid ""
@@ -181,36 +190,41 @@ msgid ""
 "correctly shown by PDF viewer software). For example, the following "
 "snippet will add some header and footer lines to an existing PDF::"
 msgstr ""
+"이는 PDF 생성자(소프트웨어 또는 사람)의 책임입니다. 예를 들어, 페이지 헤더는 문서가 생성된 후 별도의 단계에서 삽입되었을 수 있습니다. "
+"이 경우 헤더 텍스트는 페이지 텍스트 추출의 끝에 나타납니다(하지만 PDF 뷰어 소프트웨어에서는 올바르게 표시됩니다). 예를 들어, 다음 스니펫은 기존 "
+"PDF에 일부 헤더 및 푸터 줄을 추가합니다::"
 
 #: ../../recipes-text.rst:104 4e580c24666243d38d3b31b8c81cd144
 msgid ""
 "The text sequence extracted from a page modified in this way will look "
 "like this:"
-msgstr ""
+msgstr "이런 방식으로 수정된 페이지에서 추출된 텍스트 시퀀스는 다음과 같습니다:"
 
 #: ../../recipes-text.rst:106 0dc07ee4abb14a8591e99d17d219a66e
 msgid "original text"
-msgstr ""
+msgstr "원본 텍스트"
 
 #: ../../recipes-text.rst:107 a16785675c2e42889b217e4366030fc0
 msgid "header line"
-msgstr ""
+msgstr "헤더 줄"
 
 #: ../../recipes-text.rst:108 799554ad7a954b8f9f8b0a65b45eb2ef
 msgid "footer line"
-msgstr ""
+msgstr "푸터 줄"
 
 #: ../../recipes-text.rst:110 6dfbb78929994320a0792e1e879361b4
 msgid ""
 "PyMuPDF has several means to re-establish some reading sequence or even "
 "to re-generate a layout close to the original:"
-msgstr ""
+msgstr "PyMuPDF는 읽기 순서를 재구성하거나 원본에 가까운 레이아웃을 재생성하는 여러 가지 방법을 제공합니다:"
 
 #: ../../recipes-text.rst:112 3c8a07a9513e4d6faa6519684db819d5
 msgid ""
 "Use `sort` parameter of :meth:`Page.get_text`. It will sort the output "
 "from top-left to bottom-right (ignored for XHTML, HTML and XML output)."
 msgstr ""
+":meth:`Page.get_text` 의 `sort` 매개변수를 사용하세요. 출력을 왼쪽 위에서 오른쪽 아래로 정렬합니다 (XHTML, "
+"HTML 및 XML 출력에는 무시됨)."
 
 #: ../../recipes-text.rst:113 ec3f668329044785b2d980019e4279e2
 msgid ""
@@ -218,6 +232,8 @@ msgid ""
 "produces a text file where text has been re-arranged in layout-preserving"
 " mode. Many options are available to control the output."
 msgstr ""
+"CLI에서 `pymupdf` 모듈을 사용하세요: `python -m pymupdf gettext ...`, 이는 레이아웃을 보존하는 모드로 "
+"텍스트가 재배열된 텍스트 파일을 생성합니다. 출력을 제어하는 많은 옵션이 있습니다."
 
 #: ../../recipes-text.rst:115 e9acdb536bca4568ad8b4d1ec10d61ea
 msgid ""
@@ -225,12 +241,14 @@ msgid ""
 "<https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-"
 "from-a-rectangle>`_ with your modifications."
 msgstr ""
+"위에서 언급한 `스크립트 <https://github.com/pymupdf/PyMuPDF/wiki/How-to-extract-text-from-a-"
+"rectangle>`_ 를 수정하여 사용할 수도 있습니다."
 
 #: ../../recipes-text.rst:122 e855c66968e14c8292b797d093cd0b65
 msgid ""
 "How to :index:`Extract Table Content <pair: extract; table>` from "
 "Documents"
-msgstr ""
+msgstr "문서에서 :index:`테이블 내용 추출 <pair: extract; table>` 방법"
 
 #: ../../recipes-text.rst:123 44f6d95fd2764808af666701bb7f19a0
 msgid ""
@@ -238,6 +256,8 @@ msgid ""
 "something like an embedded Excel or other identifiable object. It usually"
 " is just normal, standard text, formatted to appear as tabular data."
 msgstr ""
+"문서에서 테이블을 볼 때, 일반적으로 Excel 같은 임베드된 객체나 다른 식별 가능한 객체를 보는 것이 아닙니다. 보통은 표 형식 데이터로 "
+"보이도록 포맷된 일반적인 표준 텍스트일 뿐입니다."
 
 #: ../../recipes-text.rst:125 d16f360542d940e5a852c0aa8564e344
 msgid ""
@@ -246,12 +266,16 @@ msgid ""
 "then **(1)** graphically indicate table and column borders, and **(2)** "
 "then extract text based on this information."
 msgstr ""
+"따라서 이러한 페이지 영역에서 표 형식 데이터를 추출하려면 테이블 영역(즉, 경계 상자)을 **식별**
+하는 방법을 찾은 다음 **(1)** "
+"테이블 및 열 경계를 그래픽으로 표시하고 **(2)** 이 정보를 기반으로 텍스트를 추출해야 합니다."
 
 #: ../../recipes-text.rst:127 a113658ef8c641279d0583854610b700
 msgid ""
 "This can be a very complex task, depending on details like the presence "
 "or absence of lines, rectangles or other supporting vector graphics."
 msgstr ""
+"이는 선, 사각형 또는 기타 지원 벡터 그래픽의 존재 여부와 같은 세부 사항에 따라 매우 복잡한 작업이 될 수 있습니다."
 
 #: ../../recipes-text.rst:129 591bba39c0464acda49f9fc542563e38
 msgid ""
@@ -262,6 +286,9 @@ msgid ""
 "to the well-known Python package for data analysis `pandas "
 "<https://pypi.org/project/pandas/>`_."
 msgstr ""
+":meth:`Page.find_tables` 메서드는 높은 테이블 감지 정밀도로 모든 작업을 수행합니다. 큰 장점은 외부 라이브러리 의존성이 없고 "
+"인공 지능이나 머신 러닝 기술을 사용할 필요가 없다는 것입니다. 또한 데이터 분석을 위한 잘 알려진 Python 패키지 `pandas "
+"<https://pypi.org/project/pandas/>`_ 에 대한 통합 인터페이스를 제공합니다."
 
 #: ../../recipes-text.rst:131 0ec9741148044d23b6fe82ee829207a2
 msgid ""
@@ -270,10 +297,13 @@ msgid ""
 "analysis>`_, which cover standard situations like multiple tables on one "
 "page or joining table fragments across multiple pages."
 msgstr ""
+"한 페이지에 여러 테이블이 있거나 여러 페이지에 걸친 테이블 조각을 결합하는 것과 같은 표준 상황을 다루는 예제 `Jupyter 노트북 "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_ "
+"를 살펴보세요."
 
 #: ../../recipes-text.rst:138 b1f926e82a76494a9f56c7876863ca93
 msgid "How to Mark Extracted Text"
-msgstr ""
+msgstr "추출된 텍스트 표시 방법"
 
 #: ../../recipes-text.rst:139 1e973eca86874445943029692b1f158c
 msgid ""
@@ -283,22 +313,24 @@ msgid ""
 "used to automatically insert annotations which visibly mark the found "
 "text."
 msgstr ""
+"페이지에서 임의의 텍스트를 검색하는 표준 검색 함수가 있습니다: :meth:`Page.search_for`. 발견된 항목을 둘러싸는 "
+":ref:`Rect` 객체 목록을 반환합니다. 이러한 사각형은 예를 들어 발견된 텍스트를 시각적으로 표시하는 주석을 자동으로 삽입하는 데 사용할 수 있습니다."
 
 #: ../../recipes-text.rst:141 dc031cd749464364bf765bac0417b4b0
 msgid "This method has advantages and drawbacks. Pros are:"
-msgstr ""
+msgstr "이 방법에는 장점과 단점이 있습니다. 장점은 다음과 같습니다:"
 
 #: ../../recipes-text.rst:143 86833cccc89c42c3895307b65c1b8961
 msgid "The search string can contain blanks and wrap across lines"
-msgstr ""
+msgstr "검색 문자열은 공백을 포함할 수 있고 여러 줄에 걸칠 수 있습니다"
 
 #: ../../recipes-text.rst:144 fbcd0df95b764ad0a6fc7a6e5cf28042
 msgid "Upper or lower case characters are treated equal"
-msgstr ""
+msgstr "대문자 또는 소문자 문자가 동일하게 처리됩니다"
 
 #: ../../recipes-text.rst:145 5c86c01b36574cb1ac96a3d8134e20f7
 msgid "Word hyphenation at line ends is detected and resolved"
-msgstr ""
+msgstr "줄 끝의 단어 하이픈 연결이 감지되고 해결됩니다"
 
 #: ../../recipes-text.rst:146 3c530d96cd524a0f93975a14b9e1802b
 msgid ""
@@ -306,10 +338,12 @@ msgid ""
 " that is **not parallel** to either axis -- using :ref:`Quad` output is "
 "also recommended, when page rotation is not zero."
 msgstr ""
+"반환값은 어느 축에도 **평행하지 않은** 텍스트를 정확히 찾기 위한 :ref:`Quad` 객체 목록일 수도 있습니다 -- 페이지 회전이 "
+"0이 아닐 때는 :ref:`Quad` 출력 사용을 권장합니다."
 
 #: ../../recipes-text.rst:148 d23bafdfe40a49d6bf4bb9a1b76b0938
 msgid "But you also have other options::"
-msgstr ""
+msgstr "하지만 다른 옵션도 있습니다::"
 
 #: ../../recipes-text.rst:182 80855b0c68a2478481c53a15e79cac96
 msgid ""
@@ -317,12 +351,14 @@ msgid ""
 "in via cli parameter. This method separates a page's text into \"words\" "
 "using white spaces as delimiters. Further remarks:"
 msgstr ""
+"이 스크립트는 CLI 매개변수를 통해 전달된 문자열을 찾기 위해 `Page.get_text(\"words\")` 를 사용합니다. 이 방법은 "
+"페이지의 텍스트를 공백을 구분자로 사용하여 \"단어\"로 분리합니다. 추가 설명:"
 
 #: ../../recipes-text.rst:184 1de65ffefd864dd3aba7fd7e18895779
 msgid ""
 "If found, the **complete word containing the string** is marked "
 "(underlined) -- not only the search string."
-msgstr ""
+msgstr "발견되면, 검색 문자열뿐만 아니라 **문자열을 포함하는 전체 단어** 가 표시됩니다(밑줄)."
 
 #: ../../recipes-text.rst:185 2b3e71fdbd4147a499e2a703e50786fd
 msgid ""
@@ -332,6 +368,9 @@ msgid ""
 "delimiters=\"./,\")` then none of these characters should be included in "
 "your search string either."
 msgstr ""
+"검색 문자열에는 **단어 구분자를 포함할 수 없습니다**. 기본적으로 단어 구분자는 공백과 줄바꿈 없는 공백 `chr(0xA0)` "
+"입니다. `page.get_text(\"words\", delimiters=\"./,\")` 와 같이 추가 구분 문자를 사용하는 경우, 이러한 "
+"문자 중 어느 것도 검색 문자열에 포함되어서는 안 됩니다."
 
 #: ../../recipes-text.rst:186 adbf6633cd5e4ad488040e4cc264ca3c
 msgid ""
@@ -339,16 +378,20 @@ msgid ""
 "changed by using the string method *lower()* (or even regular "
 "expressions) in function *mark_word*."
 msgstr ""
+"여기서 보여주듯이, 대문자/소문자가 **구분됩니다**. 하지만 *mark_word* 함수에서 문자열 메서드 *lower()* (또는 정규 "
+"표현식)를 사용하여 이를 변경할 수 있습니다."
 
 #: ../../recipes-text.rst:187 96993cd9b8a9474da6785f2edc5b39a5
 msgid "There is **no upper limit**: all occurrences will be detected."
-msgstr ""
+msgstr "**상한이 없습니다**: 모든 항목이 감지됩니다."
 
 #: ../../recipes-text.rst:188 0e9d7915b8cc4de6861f917e3f3412e6
 msgid ""
 "You can use **anything** to mark the word: 'Underline', 'Highlight', "
 "'StrikeThrough' or 'Square' annotations, etc."
 msgstr ""
+"단어를 표시하는 데 **어떤 것** 이든 사용할 수 있습니다: 'Underline', 'Highlight', 'StrikeThrough' 또는 "
+"'Square' 주석 등."
 
 #: ../../recipes-text.rst:189 d0f23f19d8d74f58b65405672d5ef654
 msgid ""
@@ -356,28 +399,30 @@ msgid ""
 "been used as the search string. Note that all strings **containing "
 "\"MuPDF\"** have been completely underlined (not just the search string)."
 msgstr ""
+"이 매뉴얼 페이지의 예제 스니펫입니다. \"MuPDF\" 가 검색 문자열로 사용되었습니다. **\"MuPDF\"를 포함하는** 모든 문자열이 "
+"완전히 밑줄 처리되었습니다(검색 문자열뿐만 아니라)."
 
 #: ../../recipes-text.rst:200 e7ff4483e8b34bd3b6aa194e55963507
 msgid "How to Mark Searched Text"
-msgstr ""
+msgstr "검색된 텍스트 표시 방법"
 
 #: ../../recipes-text.rst:204 7c7b2708f7d045ebb7a03223d6f8ea9d
 msgid "This script searches for text and marks it::"
-msgstr ""
+msgstr "이 스크립트는 텍스트를 검색하고 표시합니다::"
 
 #: ../../recipes-text.rst:230 e211931535cf4266a427d5b731c8a73e
 msgid "The result looks like this:"
-msgstr ""
+msgstr "결과는 다음과 같습니다:"
 
 #: ../../recipes-text.rst:241 9c36d575753f422cbdc4614a787057ab
 msgid "How to Mark Non-horizontal Text"
-msgstr ""
+msgstr "수평이 아닌 텍스트 표시 방법"
 
 #: ../../recipes-text.rst:242 1e52760d0e514e19ba6ab20d5f1fb0d7
 msgid ""
 "The previous section already shows an example for marking non-horizontal "
 "text, that was detected by text **searching**."
-msgstr ""
+msgstr "이전 섹션에서는 텍스트 **검색** 으로 감지된 수평이 아닌 텍스트를 표시하는 예제를 이미 보여주었습니다."
 
 #: ../../recipes-text.rst:244 ded1ab547046433489a3f24860ad56dc
 msgid ""
@@ -388,6 +433,10 @@ msgid ""
 "!= (1, 0)`, then the text of all its spans is rotated by (the same) angle"
 " != 0."
 msgstr ""
+"하지만 :meth:`Page.get_text` 의 \"dict\" / \"rawdict\" 옵션을 사용한 텍스트 **추출** 은 x축에 대해 "
+"0이 아닌 각도를 가진 텍스트도 반환할 수 있습니다. 이는 줄 딕셔너리의 `\"dir\"` 키 값으로 표시됩니다: 해당 각도의 튜플 "
+"`(cosine, sine)` 입니다. `line[\"dir\"] != (1, 0)` 이면, 모든 스팬의 텍스트가 (동일한) 각도 != 0으로 "
+"회전됩니다."
 
 #: ../../recipes-text.rst:246 806b832583d84ccc93707076ad170901
 msgid ""
@@ -396,12 +445,15 @@ msgid ""
 "the data contained in the line and span dictionary. Do this with the "
 "following utility function (new in v1.18.9)::"
 msgstr ""
+"하지만 이 메서드가 반환하는 \"bboxes\"는 사각형일 뿐입니다 -- 쿼드가 아닙니다. 따라서 스팬 텍스트를 올바르게 표시하려면, 줄 및 "
+"스팬 딕셔너리에 포함된 데이터에서 쿼드를 복구해야 합니다. 다음 유틸리티 함수를 사용하세요 (v1.18.9에서 새로 추가됨)::"
 
 #: ../../recipes-text.rst:251 374483caf365491888ccd4a28c1034f8
 msgid ""
 "If you want to **mark the complete line** or a subset of its spans in one"
 " go, use the following snippet (works for v1.18.10 or later)::"
 msgstr ""
+"**전체 줄** 또는 스팬의 하위 집합을 한 번에 표시하려면 다음 스니펫을 사용하세요 (v1.18.10 이상에서 작동)::"
 
 #: ../../recipes-text.rst:258 1257febf78464c89b484b1cf6071bec4
 msgid ""
@@ -409,60 +461,62 @@ msgid ""
 " In the example above, the second to second-to-last span are marked. If "
 "omitted, the complete line is taken."
 msgstr ""
+"위의 `spans` 인수는 `line[\"spans\"]` 의 임의의 하위 목록을 지정할 수 있습니다. 위 예제에서는 두 번째부터 "
+"마지막에서 두 번째까지의 스팬이 표시됩니다. 생략하면 전체 줄이 사용됩니다."
 
 #: ../../recipes-text.rst:265 73fd41c1a1a94a5db20497ae5b6e3c38
 msgid "How to Analyze Font Characteristics"
-msgstr ""
+msgstr "폰트 특성 분석 방법"
 
 #: ../../recipes-text.rst:266 7643d48b4b834ad5a18337b0d8dda127
 msgid ""
 "To analyze the characteristics of text in a PDF use this elementary "
 "script as a starting point:"
-msgstr ""
+msgstr "PDF의 텍스트 특성을 분석하려면 이 기본 스크립트를 시작점으로 사용하세요:"
 
 #: ../../recipes-text.rst:271 be40eabfee1c41e68990b36a6e79a16f
 msgid "Here is the PDF page and the script output:"
-msgstr ""
+msgstr "PDF 페이지와 스크립트 출력은 다음과 같습니다:"
 
 #: ../../recipes-text.rst:282 f7cca7fc650940c6b739a5e09938bbdd
 msgid "How to Insert Text"
-msgstr ""
+msgstr "텍스트 삽입 방법"
 
 #: ../../recipes-text.rst:283 dacb14e969f44d09b2a5487775dd63ea
 msgid ""
 "PyMuPDF provides ways to insert text on new or existing PDF pages with "
 "the following features:"
-msgstr ""
+msgstr "PyMuPDF는 다음 기능을 사용하여 새 PDF 페이지나 기존 PDF 페이지에 텍스트를 삽입하는 방법을 제공합니다:"
 
 #: ../../recipes-text.rst:285 f1dd495e1caa4902a8e5c782e9c679b5
 msgid ""
 "choose the font, including built-in fonts and fonts that are available as"
 " files"
-msgstr ""
+msgstr "파일로 사용 가능한 폰트를 포함하여 내장 폰트와 폰트를 선택"
 
 #: ../../recipes-text.rst:286 4b098043ef3245699c145e6b99254bfb
 msgid "choose text characteristics like bold, italic, font size, font color, etc."
-msgstr ""
+msgstr "굵게, 기울임, 폰트 크기, 폰트 색상 등의 텍스트 특성 선택"
 
 #: ../../recipes-text.rst:287 a7d20d40102b4dd987941eec0fe2059b
 msgid "position the text in multiple ways:"
-msgstr ""
+msgstr "여러 방법으로 텍스트 위치 지정:"
 
 #: ../../recipes-text.rst:289 ebb1742c954f43b6b40e7dd5c8eefbc2
 msgid "either as simple line-oriented output starting at a certain point,"
-msgstr ""
+msgstr "특정 지점에서 시작하는 간단한 줄 지향 출력으로,"
 
 #: ../../recipes-text.rst:290 caf3e77d02db4d88ba4b4ce0df67f82b
 msgid ""
 "or fitting text in a box provided as a rectangle, in which case text "
 "alignment choices are also available,"
-msgstr ""
+msgstr "또는 사각형으로 제공된 상자에 텍스트를 맞추는 경우, 이 경우 텍스트 정렬 선택도 사용 가능,"
 
 #: ../../recipes-text.rst:291 08f04e2e5fff428aad600459aeae779f
 msgid ""
 "choose whether text should be put in foreground (overlay existing "
 "content),"
-msgstr ""
+msgstr "텍스트를 전경에 배치할지 선택(기존 콘텐츠 위에 오버레이),"
 
 #: ../../recipes-text.rst:292 1899456d8c24474f8bcd5e172b2cde12
 msgid ""
@@ -470,18 +524,20 @@ msgid ""
 "changed via a :ref:`Matrix`, to achieve effects like scaling, shearing or"
 " mirroring,"
 msgstr ""
+"모든 텍스트를 임의로 \"변형\"할 수 있습니다. 즉, :ref:`Matrix` 를 통해 모양을 변경하여 확대/축소, 기울이기 또는 미러링과 "
+"같은 효과를 얻을 수 있습니다,"
 
 #: ../../recipes-text.rst:293 86bfde1660ba41f499e89840e1564a90
 msgid ""
 "independently from morphing and in addition to that, text can be rotated "
 "by integer multiples of 90 degrees."
-msgstr ""
+msgstr "변형과 독립적으로, 추가로 텍스트를 90도의 정수 배로 회전할 수 있습니다."
 
 #: ../../recipes-text.rst:295 be111c03edb84cf2a94e8762714cc0eb
 msgid ""
 "All of the above is provided by three basic :ref:`Page`, resp. "
 ":ref:`Shape` methods:"
-msgstr ""
+msgstr "위의 모든 것은 세 가지 기본 :ref:`Page`, 각각 :ref:`Shape` 메서드로 제공됩니다:"
 
 #: ../../recipes-text.rst:297 72cb967325024d41a8ffa1c2ab753fd4
 msgid ""
@@ -489,28 +545,32 @@ msgid ""
 "reference. The result is reflected in the output of "
 ":meth:`Document.get_page_fonts`. The font can be:"
 msgstr ""
+":meth:`Page.insert_font` -- 나중에 참조할 수 있도록 페이지에 폰트를 설치합니다. 결과는 "
+":meth:`Document.get_page_fonts` 의 출력에 반영됩니다. 폰트는 다음 중 하나일 수 있습니다:"
 
 #: ../../recipes-text.rst:299 b76fff0661ed480cb05480c7a9a31ddd
 msgid "provided as a file,"
-msgstr ""
+msgstr "파일로 제공되거나,"
 
 #: ../../recipes-text.rst:300 7c635389b9dd4de28b6bfd73e66eb774
 msgid "via :ref:`Font` (then use :attr:`Font.buffer`)"
-msgstr ""
+msgstr ":ref:`Font` 를 통해 (그런 다음 :attr:`Font.buffer` 사용) 또는"
 
 #: ../../recipes-text.rst:301 58c5c49b72314f1fbef5a7fdb829811d
 msgid "already present somewhere in **this or another** PDF, or"
-msgstr ""
+msgstr "**이 PDF 또는 다른** PDF의 어딘가에 이미 있거나,"
 
 #: ../../recipes-text.rst:302 f6a2b00d975e4ffbb57171c37d4127bb
 msgid "be a **built-in** font."
-msgstr ""
+msgstr "**내장** 폰트일 수 있습니다."
 
 #: ../../recipes-text.rst:304 a44d01d2b9bb4d3686811c70f9b9271a
 msgid ""
 ":meth:`Page.insert_text` -- write some lines of text. Internally, this "
 "uses :meth:`Shape.insert_text`."
 msgstr ""
+":meth:`Page.insert_text` -- 텍스트 줄을 작성합니다. 내부적으로는 :meth:`Shape.insert_text` 를 "
+"사용합니다."
 
 #: ../../recipes-text.rst:306 bfd1f9b3c2b741b29c87208a1a66d28e
 msgid ""
@@ -519,18 +579,21 @@ msgid ""
 " you keep control as to whether text actually fits. Internally, this uses"
 " :meth:`Shape.insert_textbox`."
 msgstr ""
+":meth:`Page.insert_textbox` -- 주어진 사각형에 텍스트를 맞춥니다. 여기서 텍스트 정렬 기능(왼쪽, 오른쪽, "
+"가운데, 양쪽 정렬)을 선택할 수 있으며 텍스트가 실제로 맞는지 제어할 수 있습니다. 내부적으로는 :meth:`Shape.insert_textbox` "
+"를 사용합니다."
 
 #: ../../recipes-text.rst:308 be171eb050b94f58b9cd1b5e0262f4c9
 msgid "Both text insertion methods automatically install the font as necessary."
-msgstr ""
+msgstr "두 텍스트 삽입 방법 모두 필요에 따라 폰트를 자동으로 설치합니다."
 
 #: ../../recipes-text.rst:314 b5fff0f0c7634c4b944d6adf15b57a63
 msgid "How to Write Text Lines"
-msgstr ""
+msgstr "텍스트 줄 작성 방법"
 
 #: ../../recipes-text.rst:315 cb73fdfc91be42e784e9bdd13d791bc0
 msgid "Output some text lines on a page::"
-msgstr ""
+msgstr "페이지에 텍스트 줄 출력::"
 
 #: ../../recipes-text.rst:336 93ea55096a814bf78d67323eff265e39
 msgid ""
@@ -540,18 +603,20 @@ msgid ""
 "calculated from the :data:`fontsize` and 36 points (0.5 inches) as bottom"
 " margin."
 msgstr ""
+"이 방법을 사용하면 **줄 수** 만 페이지 높이를 초과하지 않도록 제어됩니다. 초과 줄은 작성되지 않으며 실제 줄 수가 반환됩니다. 계산은 "
+":data:`fontsize` 와 하단 여백으로 36포인트(0.5인치)에서 계산된 줄 높이를 사용합니다."
 
 #: ../../recipes-text.rst:338 d32561da58f04605a11ea899f3142f80
 msgid ""
 "Line **width is ignored**. The surplus part of a line will simply be "
 "invisible."
-msgstr ""
+msgstr "줄 **너비는 무시됩니다**. 줄의 초과 부분은 단순히 보이지 않습니다."
 
 #: ../../recipes-text.rst:340 be87d53797fa4459b5ccf3c4131594e4
 msgid ""
 "However, for built-in fonts there are ways to calculate the line width "
 "beforehand - see :meth:`get_text_length`."
-msgstr ""
+msgstr "하지만 내장 폰트의 경우 사전에 줄 너비를 계산하는 방법이 있습니다 - :meth:`get_text_length` 를 참조하세요."
 
 #: ../../recipes-text.rst:342 f9e73fbbab774c2caa85bbed776cc956
 msgid ""
@@ -559,36 +624,38 @@ msgid ""
 "different rotation options, and thereby explains, how the text insertion "
 "point must be chosen to achieve the desired result::"
 msgstr ""
+"다른 예제입니다. 네 가지 다른 회전 옵션을 사용하여 4개의 텍스트 문자열을 삽입하고, 원하는 결과를 얻기 위해 텍스트 삽입 지점을 어떻게 "
+"선택해야 하는지 설명합니다::"
 
 #: ../../recipes-text.rst:378 0213c8bab6154d30805d62976edc9a19
 msgid "This is the result:"
-msgstr ""
+msgstr "결과는 다음과 같습니다:"
 
 #: ../../recipes-text.rst:390 f3944598e7174b5c84183c27d9976e7d
 msgid "How to Fill a Text Box"
-msgstr ""
+msgstr "텍스트 상자 채우기 방법"
 
 #: ../../recipes-text.rst:391 432bedd774af4765abc17063d64bbff5
 msgid ""
 "This script fills 4 different rectangles with text, each time choosing a "
 "different rotation value::"
-msgstr ""
+msgstr "이 스크립트는 텍스트로 4개의 다른 사각형을 채우며, 매번 다른 회전 값을 선택합니다::"
 
 #: ../../recipes-text.rst:428 b57fefc0582d49269895485a9f9f2d81
 msgid ""
 "Some default values were used above: font size 11 and text alignment "
 "\"left\". The result will look like this:"
-msgstr ""
+msgstr "위에서는 일부 기본값이 사용되었습니다: 폰트 크기 11 및 텍스트 정렬 \"left\". 결과는 다음과 같습니다:"
 
 #: ../../recipes-text.rst:438 1b2793a104ab4b5688254d0c742bdce1
 msgid "How to Fill a Box with HTML Text"
-msgstr ""
+msgstr "HTML 텍스트로 상자 채우기 방법"
 
 #: ../../recipes-text.rst:439 19e59b0993924e4c95225686d9cc0d88
 msgid ""
 "Method :meth:`Page.insert_htmlbox` offers a **much more powerful** way to"
 " insert text in a rectangle."
-msgstr ""
+msgstr ":meth:`Page.insert_htmlbox` 메서드는 사각형에 텍스트를 삽입하는 **훨씬 더 강력한** 방법을 제공합니다."
 
 #: ../../recipes-text.rst:441 35f57808a8794c8e9e19787c2c32e112
 msgid ""
@@ -597,18 +664,20 @@ msgid ""
 "things like font, font weight (bold) and style (italic), color and much "
 "more."
 msgstr ""
+"간단한 일반 텍스트 대신, 이 메서드는 HTML 소스를 받아들입니다. HTML 태그뿐만 아니라 폰트, 폰트 굵기(굵게), 스타일(기울임), "
+"색상 등을 제어하는 스타일 지시문도 포함할 수 있습니다."
 
 #: ../../recipes-text.rst:443 71ac810a548442d29907981f132dccbf
 msgid ""
 "It is also possible to mix multiple fonts and languages, to output HTML "
 "tables and to insert images and URI links."
-msgstr ""
+msgstr "여러 폰트와 언어를 혼합하고, HTML 테이블을 출력하며, 이미지와 URI 링크를 삽입할 수도 있습니다."
 
 #: ../../recipes-text.rst:445 0b4174d507754388b32a80b165012df6
 msgid ""
 "For even more styling flexibility, an additional CSS source may also be "
 "given."
-msgstr ""
+msgstr "더 많은 스타일링 유연성을 위해 추가 CSS 소스를 제공할 수도 있습니다."
 
 #: ../../recipes-text.rst:447 ef0b305a96e04f7b82deb24dacac92d1
 msgid ""
@@ -617,6 +686,8 @@ msgid ""
 " correctly thanks to using the HarfBuzz library - which provides this so-"
 "called **\"text shaping\"** feature."
 msgstr ""
+"이 메서드는 :ref:`Story` 클래스를 기반으로 합니다. 따라서 Devanagari, Nepali, Tamil 등과 같은 복잡한 "
+"문자 체계가 지원되며 HarfBuzz 라이브러리를 사용하여 올바르게 작성됩니다 - 이는 소위 **\"텍스트 셰이핑\"** 기능을 제공합니다."
 
 #: ../../recipes-text.rst:449 1260a458a7e544b1aa67b8755b17c8ec
 msgid ""
@@ -624,27 +695,29 @@ msgid ""
 "the Google NOTO font library - as a fallback (when the -- optionally "
 "supplied -- user font(s) do not contain some glyphs)."
 msgstr ""
+"문자를 출력하는 데 필요한 모든 폰트는 Google NOTO 폰트 라이브러리에서 자동으로 가져옵니다 - 폴백으로 (선택적으로 제공된 "
+"-- 사용자 폰트에 일부 글리프가 없는 경우)."
 
 #: ../../recipes-text.rst:451 fcaf38aee6714a809439a7e41809456a
 msgid ""
 "As a small glimpse into the features offered here, we will output the "
 "following HTML-enriched text::"
-msgstr ""
+msgstr "여기서 제공되는 기능을 간단히 살펴보기 위해 다음 HTML이 풍부한 텍스트를 출력합니다::"
 
 #: ../../recipes-text.rst:476 9c59a952ce374072a5f1980b9e94e9e5
 msgid ""
 "Please note how the \"css\" parameter is used to globally select the "
 "default \"sans-serif\" font and a font size of 14."
-msgstr ""
+msgstr "\"css\" 매개변수가 기본 \"sans-serif\" 폰트와 폰트 크기 14를 전역적으로 선택하는 데 어떻게 사용되는지 주목하세요."
 
 #: ../../recipes-text.rst:478 ../../recipes-text.rst:546
 #: 7e28c391edc0498e9f137492e4579c8b d1d571d5e2a543f1960a767a55013650
 msgid "The result will look like this:"
-msgstr ""
+msgstr "결과는 다음과 같습니다:"
 
 #: ../../recipes-text.rst:483 ed1313ec473f4a6abdbea7c7fdbc2bc3
 msgid "How to output HTML tables and images"
-msgstr ""
+msgstr "HTML 테이블 및 이미지 출력 방법"
 
 #: ../../recipes-text.rst:485 d915167d0a8a487ca0714949823727f9
 msgid ""
@@ -652,10 +725,12 @@ msgid ""
 " we are including all the styling in the HTML source itself. Please also "
 "note, how it works to include an image - even within a table cell::"
 msgstr ""
+"이 메서드로 테이블을 출력하는 또 다른 예제입니다. 이번에는 모든 스타일링을 HTML 소스 자체에 포함합니다. 이미지를 포함하는 방법(테이블 "
+"셀 내부에서도)도 주목하세요::"
 
 #: ../../recipes-text.rst:552 8a1001c5f5074d4ba6c32b464a047fe3
 msgid "How to Output Languages of the World"
-msgstr ""
+msgstr "세계 언어 출력 방법"
 
 #: ../../recipes-text.rst:554 694851da42974f849ae4f15fb8583d84
 msgid ""
@@ -663,14 +738,16 @@ msgid ""
 "It includes automatic **text shaping** for complex scripting systems like"
 " Devanagari and right-to-left languages::"
 msgstr ""
+"세 번째 예제는 자동 다국어 지원을 보여줍니다. Devanagari 및 오른쪽에서 왼쪽으로 쓰는 언어와 같은 복잡한 문자 체계에 대한 자동 "
+"**텍스트 셰이핑** 을 포함합니다::"
 
 #: ../../recipes-text.rst:584 11883d2c3225403c9efe9db6404e0614
 msgid "And this is the output:"
-msgstr ""
+msgstr "그리고 이것이 출력입니다:"
 
 #: ../../recipes-text.rst:589 1694d9848471473387efc178c64d1ac3
 msgid "How to Specify your Own Fonts"
-msgstr ""
+msgstr "자신의 폰트 지정 방법"
 
 #: ../../recipes-text.rst:591 e24039a16e614bad9521e9f98300ca0a
 msgid ""
@@ -680,6 +757,9 @@ msgid ""
 " example uses the famous MS Comic Sans font in its four variants regular,"
 " bold, italic and bold-italic."
 msgstr ""
+"`@font-face` 문을 사용하여 CSS 구문으로 폰트 파일을 정의하세요. 지원하려는 폰트 굵기와 폰트 스타일(예: 굵게 또는 기울임)의 "
+"모든 조합에 대해 별도의 `@font-face` 가 필요합니다. 다음 예제는 유명한 MS Comic Sans 폰트를 일반, 굵게, "
+"기울임, 굵은 기울임의 네 가지 변형으로 사용합니다."
 
 #: ../../recipes-text.rst:593 b2b6a21607d34d64a2c7e188ebc89771
 msgid ""
@@ -687,18 +767,20 @@ msgid ""
 "`C:/Windows/Fonts` the method needs an :ref:`Archive` definition that "
 "points to that folder::"
 msgstr ""
+"이 네 개의 폰트 파일이 시스템 폴더 `C:/Windows/Fonts` 에 있으므로, 메서드는 해당 폴더를 가리키는 :ref:`Archive` "
+"정의가 필요합니다::"
 
 #: ../../recipes-text.rst:642 e0f58841406a42738934f9d5496b3b1a
 msgid "How to Request Text Alignment"
-msgstr ""
+msgstr "텍스트 정렬 요청 방법"
 
 #: ../../recipes-text.rst:644 fe05e68776a74af9bbef92af559109dd
 msgid "This example combines multiple requirements:"
-msgstr ""
+msgstr "이 예제는 여러 요구사항을 결합합니다:"
 
 #: ../../recipes-text.rst:646 e70a8667e3944fd9b0816777acb87234
 msgid "Rotate the text by 90 degrees anti-clockwise."
-msgstr ""
+msgstr "텍스트를 90도 반시계 방향으로 회전합니다."
 
 #: ../../recipes-text.rst:647 d9cf7d46a2d346b2a4f74a171faa1447
 msgid ""
@@ -706,22 +788,24 @@ msgid ""
 "fonts/>`_. You will see that the respective CSS definitions are a lot "
 "easier in this case."
 msgstr ""
+"`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 패키지의 폰트를 사용합니다. 이 "
+"경우 해당 CSS 정의가 훨씬 더 쉬운 것을 볼 수 있습니다."
 
 #: ../../recipes-text.rst:648 bd33916fceb54e72962046e30a682445
 msgid "Align the text with the \"justify\" option."
-msgstr ""
+msgstr "\"justify\" 옵션으로 텍스트를 정렬합니다."
 
 #: ../../recipes-text.rst:698 77fa2772ac8f4569be51c8e5f85dfc85
 msgid "How to Extract Text with Color"
-msgstr ""
+msgstr "색상이 있는 텍스트 추출 방법"
 
 #: ../../recipes-text.rst:700 9b6a414568c14a82b047478e4a84f66a
 msgid ""
 "Iterate through your text blocks and find the spans of text you need for "
 "this information."
-msgstr ""
+msgstr "텍스트 블록을 반복하고 이 정보에 필요한 텍스트 스팬을 찾으세요."
 
 #: ../../footer.rst:46 bdb1928a7ce24b5a9d8c30e00a139e48
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 

@@ -21,44 +21,44 @@ msgstr ""
 
 #: ../../header.rst:-1 74c1aedfabcd4a5c96f4c2597285c328
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 6b94c7df538e4108a3a5ad33241349ec
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 23ee2c9ef17542ffbf5210e348e9de6a
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../identity.rst:7 ec6871dd23a6408aba45460204127d54
 msgid "Identity"
-msgstr ""
+msgstr "Identity"
 
 #: ../../identity.rst:9 776ab5a8eb3b4fd5ac5d1b88b17d507a
 msgid ""
 "Identity is a :ref:`Matrix` that performs no action -- to be used "
 "whenever the syntax requires a matrix, but no actual transformation "
 "should take place. It has the form *pymupdf.Matrix(1, 0, 0, 1, 0, 0)*."
-msgstr ""
+msgstr "Identity는 아무 작업도 수행하지 않는 :ref:`Matrix` 입니다. 구문이 행렬을 요구하지만 실제 변환이 필요하지 않을 때 사용됩니다. 형식은 *pymupdf.Matrix(1, 0, 0, 1, 0, 0)* 입니다."
 
 #: ../../identity.rst:11 2260793ef04b4f739e2e3ba60744f1c2
 msgid ""
 "Identity is a constant, an \"immutable\" object. So, all of its matrix "
 "properties are read-only and its methods are disabled."
-msgstr ""
+msgstr "Identity는 상수이며 \"불변\" 객체입니다. 따라서 모든 행렬 속성은 읽기 전용이고 메서드는 비활성화됩니다."
 
 #: ../../identity.rst:13 66677799dfa547a68a4f708a29d071a0
 msgid ""
 "If you need a **mutable** identity matrix as a starting point, use one of"
 " the following statements::"
-msgstr ""
+msgstr "시작점으로 **변경 가능한** 항등 행렬이 필요하면 다음 문 중 하나를 사용하세요::"
 
 #: ../../footer.rst:46 62e975eb99a4452285d40da0e91fc76e
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -21,37 +21,37 @@ msgstr ""
 
 #: ../../header.rst:-1 95c1ee7365714a268b45d71ca863b7ee
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 8dbea99845b74a23bde58d46198a17ac
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 cf3d095401604af48e44cc3a35d66bff
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../textwriter.rst:7 e9730367b10a49359e1d45817a7f7880
 msgid "TextWriter"
-msgstr ""
+msgstr "TextWriter (텍스트 라이터)"
 
 #: ../../textwriter.rst:9 cda3eb15a6fe4186b26bf8276092c97f
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "|pdf_only_class|"
 
 #: ../../textwriter.rst:11 db627f8740eb4561a5527a9d4ca4e25f
 msgid "New in v1.16.18"
-msgstr ""
+msgstr "v1.16.18에서 새로 추가됨"
 
 #: ../../textwriter.rst:13 67e48f18fa9440238b3a1969be763ace
 msgid ""
 "This class represents a MuPDF *text* object. The basic idea is to "
 "**decouple (1) text preparation, and (2) text output** to PDF pages."
-msgstr ""
+msgstr "이 클래스는 MuPDF *text* 객체를 나타냅니다. 기본 아이디어는 **(1) 텍스트 준비와 (2) PDF 페이지로의 텍스트 출력을 분리** 하는 것입니다."
 
 #: ../../textwriter.rst:15 5a301b5eac7846a6a95cae297b7806a2
 msgid ""
@@ -59,27 +59,27 @@ msgid ""
 "(\"spans\") together with their positions and individual font "
 "information. The **output** of the writer's prepared content may happen "
 "multiple times to any PDF page with a compatible page size."
-msgstr ""
+msgstr "**준비** 중에 텍스트 라이터는 임의의 수의 텍스트 조각(\"스팬\")을 위치 및 개별 글꼴 정보와 함께 저장합니다. 라이터의 준비된 콘텐츠의 **출력** 은 호환되는 페이지 크기를 가진 모든 PDF 페이지에 여러 번 수행될 수 있습니다."
 
 #: ../../textwriter.rst:17 7cf591fcc0cf40af9d587a72b702b960
 msgid ""
 "A text writer is an elegant alternative to methods "
 ":meth:`Page.insert_text` and friends:"
-msgstr ""
+msgstr "텍스트 라이터는 :meth:`Page.insert_text` 및 유사한 메서드에 대한 우아한 대안입니다:"
 
 #: ../../textwriter.rst:19 8d88b6d0545142bc9885b1dcbb44a4ea
 msgid ""
 "**Improved text positioning:** Choose any point where insertion of text "
 "should start. Storing text returns the \"cursor position\" after the "
 "*last character* of the span."
-msgstr ""
+msgstr "**개선된 텍스트 위치 지정:** 텍스트 삽입이 시작되어야 하는 임의의 지점을 선택합니다. 텍스트 저장은 스팬의 *마지막 문자* 이후의 \"커서 위치\"를 반환합니다."
 
 #: ../../textwriter.rst:20 4014fff4490f449991524305bfef1c4b
 msgid ""
 "**Free font choice:** Each text span has its own font and "
 ":data:`fontsize`. This lets you easily switch when composing a larger "
 "text."
-msgstr ""
+msgstr "**자유로운 글꼴 선택:** 각 텍스트 스팬은 자체 글꼴과 :data:`fontsize` 를 가집니다. 이를 통해 더 큰 텍스트를 구성할 때 쉽게 전환할 수 있습니다."
 
 #: ../../textwriter.rst:21 96e0cdf2386340edafe0ed3b9aa2a211
 msgid ""
@@ -90,26 +90,26 @@ msgid ""
 "comes with the **universal font \"Droid Sans Fallback Regular\"**, which "
 "supports **all Latin** characters (including Cyrillic and Greek), and "
 "**all CJK** characters (Chinese, Japanese, Korean)."
-msgstr ""
+msgstr "**자동 대체 글꼴:** 선택한 글꼴이 문자를 지원하지 않으면 대체 글꼴이 자동으로 검색됩니다. 이는 출력에서 인쇄할 수 없는 기호(\"TOFUs\" -- 작은 사각형처럼 보임)를 볼 위험을 크게 줄입니다. |PyMuPDF| 는 이제 **모든 라틴** 문자(키릴 문자 및 그리스 문자 포함)와 **모든 CJK** 문자(중국어, 일본어, 한국어)를 지원하는 **범용 글꼴 \"Droid Sans Fallback Regular\"** 를 제공합니다."
 
 #: ../../textwriter.rst:22 89a8833cb85e46909d178dc372f5aaac
 msgid ""
 "**Cyrillic and Greek Support:** The :ref:`Base-14-fonts` have integrated "
 "support of Cyrillic and Greek characters **without specifying encoding.**"
 " Your text may be a mixture of Latin, Greek and Cyrillic."
-msgstr ""
+msgstr "**키릴 문자 및 그리스 문자 지원:** :ref:`Base-14-fonts` 는 **인코딩을 지정하지 않고** 키릴 문자 및 그리스 문자에 대한 통합 지원을 제공합니다. 텍스트는 라틴 문자, 그리스 문자 및 키릴 문자의 혼합일 수 있습니다."
 
 #: ../../textwriter.rst:23 939bfd358cb14ee1ac3d682b4310030f
 msgid ""
 "**Transparency support:** Parameter *opacity* is supported. This offers a"
 " handy way to create watermark-style text."
-msgstr ""
+msgstr "**투명도 지원:** *opacity* 매개변수가 지원됩니다. 이를 통해 워터마크 스타일의 텍스트를 만드는 편리한 방법을 제공합니다."
 
 #: ../../textwriter.rst:24 36106b9c863b43c39d4d348af9680b3e
 msgid ""
 "**Justified text:** Supported for any font -- not just simple fonts as in"
 " :meth:`Page.insert_textbox`."
-msgstr ""
+msgstr "**양쪽 정렬 텍스트:** :meth:`Page.insert_textbox` 와 같은 단순 글꼴뿐만 아니라 모든 글꼴에 대해 지원됩니다."
 
 #: ../../textwriter.rst:25 88d0bcdd76b94defb985b51bd7050a50
 msgid ""
@@ -117,183 +117,183 @@ msgid ""
 "It can be written multiple times, either to the same or to other pages, "
 "in the same or in different PDFs, choosing different colors or "
 "transparency."
-msgstr ""
+msgstr "**재사용성:** TextWriter 객체는 PDF 페이지와 독립적으로 존재합니다. 동일한 페이지 또는 다른 페이지, 동일한 PDF 또는 다른 PDF에 여러 번 작성할 수 있으며, 다른 색상이나 투명도를 선택할 수 있습니다."
 
 #: ../../textwriter.rst:27 6ef8000439b141009aae765ba8c24479
 msgid "Using this object entails three steps:"
-msgstr ""
+msgstr "이 객체를 사용하려면 세 단계가 필요합니다:"
 
 #: ../../textwriter.rst:29 55dea84332984f3ca477041ec762edcf
 msgid ""
 "When **created**, a TextWriter requires a fixed **page rectangle** in "
 "relation to which it calculates text positions. A text writer can write "
 "to pages of this size only."
-msgstr ""
+msgstr "**생성** 시 TextWriter는 텍스트 위치를 계산하기 위한 고정된 **페이지 사각형** 이 필요합니다. 텍스트 라이터는 이 크기의 페이지에만 쓸 수 있습니다."
 
 #: ../../textwriter.rst:30 57f72fe6a49d41c7be7ed160f47f3019
 msgid ""
 "Store text in the TextWriter using methods :meth:`TextWriter.append`, "
 ":meth:`TextWriter.appendv` and :meth:`TextWriter.fill_textbox` as often "
 "as is desired."
-msgstr ""
+msgstr "원하는 만큼 :meth:`TextWriter.append`, :meth:`TextWriter.appendv` 및 :meth:`TextWriter.fill_textbox` 메서드를 사용하여 TextWriter에 텍스트를 저장합니다."
 
 #: ../../textwriter.rst:31 ac5cfe5c0bf548bf8358a2cc4efa279b
 msgid "Output the TextWriter object on some PDF page(s)."
-msgstr ""
+msgstr "일부 PDF 페이지에 TextWriter 객체를 출력합니다."
 
 #: ../../textwriter.rst:35 a70f239f39dc44bcbbcc7f367f4f04e8
 msgid ""
 "Starting with version 1.17.0, TextWriters **do support** text rotation "
 "via the *morph* parameter of :meth:`TextWriter.write_text`."
-msgstr ""
+msgstr "버전 1.17.0부터 TextWriter는 :meth:`TextWriter.write_text` 의 *morph* 매개변수를 통한 텍스트 회전을 **지원합니다**."
 
 #: ../../textwriter.rst:37 39efcbe7af8242d59a6e61a1577bd093
 msgid ""
 "There also exists :meth:`Page.write_text` which combines one or more "
 "TextWriters and jointly writes them to a given rectangle and with a given"
 " rotation angle -- much like :meth:`Page.show_pdf_page`."
-msgstr ""
+msgstr ":meth:`Page.write_text` 도 존재하며, 하나 이상의 TextWriter를 결합하여 주어진 사각형과 주어진 회전 각도로 공동으로 작성합니다 -- :meth:`Page.show_pdf_page` 와 매우 유사합니다."
 
 #: ../../textwriter.rst:41 58759c7fac7b4e859398a94c56641cf5
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../textwriter.rst:41 f8b99b262c4e479daa04854b10a8ca62
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간략 설명**"
 
 #: ../../textwriter.rst:43 5aef1526d3ed401ebe84391dae14eb4e
 msgid ":meth:`~TextWriter.append`"
-msgstr ""
+msgstr ":meth:`~TextWriter.append`"
 
 #: ../../textwriter.rst:43 8a1f849d010e4a069dd84d412203d33f
 msgid "Add text in horizontal write mode"
-msgstr ""
+msgstr "수평 쓰기 모드에서 텍스트 추가"
 
 #: ../../textwriter.rst:44 a3aab120ca1545a79fce7af51ccd1964
 msgid ":meth:`~TextWriter.appendv`"
-msgstr ""
+msgstr ":meth:`~TextWriter.appendv`"
 
 #: ../../textwriter.rst:44 30601ff66d064e7bbc6b0711078114c1
 msgid "Add text in vertical write mode"
-msgstr ""
+msgstr "수직 쓰기 모드에서 텍스트 추가"
 
 #: ../../textwriter.rst:45 665726b1a2f74150b2cf20b54f5d3864
 msgid ":meth:`~TextWriter.fill_textbox`"
-msgstr ""
+msgstr ":meth:`~TextWriter.fill_textbox`"
 
 #: ../../textwriter.rst:45 79bdf8fe196e481f9e0f7e6b6d83fa39
 msgid "Fill rectangle (horizontal write mode)"
-msgstr ""
+msgstr "사각형 채우기 (수평 쓰기 모드)"
 
 #: ../../textwriter.rst:46 50d2cf2d0f664964ad637397d702ba01
 msgid ":meth:`~TextWriter.write_text`"
-msgstr ""
+msgstr ":meth:`~TextWriter.write_text`"
 
 #: ../../textwriter.rst:46 e17f4b99e3a3451090107da06c63083d
 msgid "Output TextWriter to a PDF page"
-msgstr ""
+msgstr "TextWriter를 PDF 페이지로 출력"
 
 #: ../../textwriter.rst:47 b1dd0ce95c524931a45226c559b5fc7f
 msgid ":attr:`~TextWriter.color`"
-msgstr ""
+msgstr ":attr:`~TextWriter.color`"
 
 #: ../../textwriter.rst:47 977d247f29344daebbc7eb2edad63dda
 msgid "Text color (can be changed)"
-msgstr ""
+msgstr "텍스트 색상 (변경 가능)"
 
 #: ../../textwriter.rst:48 a702a69b27f04a1a8bf416872181b83c
 msgid ":attr:`~TextWriter.last_point`"
-msgstr ""
+msgstr ":attr:`~TextWriter.last_point`"
 
 #: ../../textwriter.rst:48 9c6a85c298f542b0ad83608987c80d7c
 msgid "Last written character ends here"
-msgstr ""
+msgstr "마지막으로 작성된 문자가 여기서 끝남"
 
 #: ../../textwriter.rst:49 85bb365488064af39728ae2cff15a95e
 msgid ":attr:`~TextWriter.opacity`"
-msgstr ""
+msgstr ":attr:`~TextWriter.opacity`"
 
 #: ../../textwriter.rst:49 360143b334e144b188b4fc4606f37cd1
 msgid "Text opacity (can be changed)"
-msgstr ""
+msgstr "텍스트 투명도 (변경 가능)"
 
 #: ../../textwriter.rst:50 44cf6996b53b4136925af2dd23e6d3c3
 msgid ":attr:`~TextWriter.rect`"
-msgstr ""
+msgstr ":attr:`~TextWriter.rect`"
 
 #: ../../textwriter.rst:50 a79f2dca7b614eaaa5682eae3f4fa368
 msgid "Page rectangle used by this TextWriter"
-msgstr ""
+msgstr "이 TextWriter가 사용하는 페이지 사각형"
 
 #: ../../textwriter.rst:51 86888b68bbf045c8a8e10712005c4259
 msgid ":attr:`~TextWriter.text_rect`"
-msgstr ""
+msgstr ":attr:`~TextWriter.text_rect`"
 
 #: ../../textwriter.rst:51 cd277f06068040caa6fda7759192bbd3
 msgid "Area occupied so far"
-msgstr ""
+msgstr "지금까지 차지한 영역"
 
 #: ../../textwriter.rst:55 07466a577be94bd3ab53ccdfc689e759
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../textwriter.rst 0671bfe1c02041f88c29cf3ea4be264b
 #: 7841a29906a944f189e7e759b6592a97 7cb374b81c074ac69a19656e5756ce8c
 #: 800737d8455c4751bf6f9476b3e4a8df ffbf23da457b4c1fbab7452f6745e439
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../textwriter.rst:61 1156a360315c4f6cab4971ea0b50224f
 msgid "rectangle internally used for text positioning computations."
-msgstr ""
+msgstr "텍스트 위치 계산에 내부적으로 사용되는 사각형."
 
 #: ../../textwriter.rst:62 51fad4a4f8034a198c2666a029ac959b
 msgid ""
 "sets the transparency for the text to store here. Values outside the "
 "interval `[0, 1)` will be ignored. A value of e.g. 0.5 means 50% "
 "transparency."
-msgstr ""
+msgstr "여기에 저장할 텍스트의 투명도를 설정합니다. `[0, 1)` 구간 밖의 값은 무시됩니다. 예를 들어 0.5 값은 50% 투명도를 의미합니다."
 
 #: ../../textwriter.rst:63 6b628abb5ffe4a5585ddb2b56255b5dd
 msgid ""
 "the color of the text. All colors are specified as floats *0 <= color <= "
 "1*. A single float represents some gray level, a sequence implies the "
 "colorspace via its length."
-msgstr ""
+msgstr "텍스트의 색상. 모든 색상은 부동 소수점 *0 <= color <= 1* 로 지정됩니다. 단일 부동 소수점은 일부 회색 레벨을 나타내고, 시퀀스는 길이를 통해 색 공간을 암시합니다."
 
 #: ../../textwriter.rst:68 0fa13673da764fdaab29ebfad67bf44c
 msgid "*Changed in v1.18.9*"
-msgstr ""
+msgstr "*v1.18.9에서 변경됨*"
 
 #: ../../textwriter.rst:69 ../../textwriter.rst:100
 #: 08713255cee94718b3bc26b0dda8f233 be3763dd7a294137b65bf5a1770830d3
 msgid "*Changed in v1.18.15*"
-msgstr ""
+msgstr "*v1.18.15에서 변경됨*"
 
 #: ../../textwriter.rst:71 6f8eddc35363416184aad7c44e5d01ef
 msgid "Add some new text in horizontal writing."
-msgstr ""
+msgstr "수평 쓰기로 일부 새 텍스트를 추가합니다."
 
 #: ../../textwriter.rst:73 ../../textwriter.rst:104
 #: 31e8d87141cf44c5890e5151a73047f4 f7e1346516c8429f9cafb3010a03a215
 msgid "start position of the text, the bottom left point of the first character."
-msgstr ""
+msgstr "텍스트의 시작 위치, 첫 번째 문자의 왼쪽 하단 점."
 
 #: ../../textwriter.rst:74 3b2200db94814c6b84f09e2a67431714
 msgid ""
 "a string of arbitrary length. It will be written starting at position "
 "\"pos\"."
-msgstr ""
+msgstr "임의 길이의 문자열. \"pos\" 위치에서 시작하여 작성됩니다."
 
 #: ../../textwriter.rst:75 ../../textwriter.rst:106
 #: 6080d699b79c4e7cabc81e6632904644 8f2fdb3f4ec442f4b7703714fb642f4c
 msgid "a :ref:`Font`. If omitted, `pymupdf.Font(\"helv\")` will be used."
-msgstr ""
+msgstr ":ref:`Font`. 생략하면 `pymupdf.Font(\"helv\")` 가 사용됩니다."
 
 #: ../../textwriter.rst:76 09fbce8fe4ee46b0a95710e2b4761014
 msgid "the :data:`fontsize`, a positive number, default 11."
-msgstr ""
+msgstr ":data:`fontsize`, 양수, 기본값 11."
 
 #: ../../textwriter.rst:77 ../../textwriter.rst:108
 #: 4483c3fec8c3452cac52b7d831f281c1 87ccb28c8f1b4453af79b92ad4c5aabd
@@ -301,7 +301,7 @@ msgid ""
 "the language to use, e.g. \"en\" for English. Meaningful values should be"
 " compliant with the ISO 639 standards 1, 2, 3 or 5. Reserved for future "
 "use: currently has no effect as far as we know."
-msgstr ""
+msgstr "사용할 언어, 예: 영어의 경우 \"en\". 의미 있는 값은 ISO 639 표준 1, 2, 3 또는 5를 준수해야 합니다. 향후 사용을 위해 예약됨: 현재로서는 알려진 바에 따르면 효과가 없습니다."
 
 #: ../../textwriter.rst:78 d8bd68ad24da40269a51cc710d5053e8
 msgid ""
@@ -312,7 +312,7 @@ msgid ""
 ":attr:`TextWriter.last_point` will still be the rightmost character, and "
 "there neither is any alignment taking place. Hence you may want to use "
 ":meth:`TextWriter.fill_textbox` instead."
-msgstr ""
+msgstr "*(v1.18.9에서 새로 추가)* 텍스트를 오른쪽에서 왼쪽으로 작성할지 여부. 아랍어나 히브리어와 같은 언어에 적용됩니다. 기본값은 ``False`` 입니다. ``True`` 인 경우 텍스트 내의 모든 라틴 문자 부분이 자동으로 변환됩니다. 다른 결과는 없습니다. 즉, :attr:`TextWriter.last_point` 는 여전히 가장 오른쪽 문자이며 정렬도 수행되지 않습니다. 따라서 :meth:`TextWriter.fill_textbox` 를 대신 사용하는 것이 좋을 수 있습니다."
 
 #: ../../textwriter.rst:79 75daea05a2a449aa9e600dc6f54efa72
 msgid ""
@@ -326,7 +326,7 @@ msgid ""
 "tw.append((50,100), text, font=font, small_caps=True) >>> "
 "tw.write_text(page) >>> doc.ez_save(\"x.pdf\")  will produce this PDF "
 "text:  .. image:: images/img-smallcaps.*"
-msgstr ""
+msgstr "*(v1.18.15에서 새로 추가)* 글꼴에서 문자의 작은 대문자 버전을 찾습니다. 존재하면 해당 값을 사용합니다. 그렇지 않으면 원래 문자(이 글꼴 또는 대체 글꼴)가 사용됩니다. 대체 글꼴은 작은 대문자를 반환하지 않습니다. 예를 들어, 이 코드 조각::  >>> doc = pymupdf.open() >>> page = doc.new_page() >>> text = \"PyMuPDF: the Python bindings for MuPDF\" >>> font = pymupdf.Font(\"figo\")  # 작은 대문자가 있는 글꼴 선택 >>> tw = pymupdf.TextWriter(page.rect) >>> tw.append((50,100), text, font=font, small_caps=True) >>> tw.write_text(page) >>> doc.ez_save(\"x.pdf\")  는 이 PDF 텍스트를 생성합니다:  .. image:: images/img-smallcaps.*"
 
 #: ../../textwriter.rst:79 46eb184e73ae4219ac1e4bed06322f56
 msgid ""
@@ -334,16 +334,16 @@ msgid ""
 " font. If present, take that value instead. Otherwise the original "
 "character (this font or the fallback font) will be taken. The fallback "
 "font will never return small caps. For example, this snippet::"
-msgstr ""
+msgstr "*(v1.18.15에서 새로 추가)* 글꼴에서 문자의 작은 대문자 버전을 찾습니다. 존재하면 해당 값을 사용합니다. 그렇지 않으면 원래 문자(이 글꼴 또는 대체 글꼴)가 사용됩니다. 대체 글꼴은 작은 대문자를 반환하지 않습니다. 예를 들어, 이 코드 조각::"
 
 #: ../../textwriter.rst:90 973003c33fe84aa69d42e2c43c861a09
 msgid "will produce this PDF text:"
-msgstr ""
+msgstr "이 PDF 텍스트를 생성합니다:"
 
 #: ../../textwriter.rst 031973dcb92c46dfb30974b0b0277dbb
 #: 56067c1753344901a2a112d292086782 6fe2f7cc1d5b405588798ce1725db0d6
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../textwriter.rst:95 ../../textwriter.rst:111
 #: 2916a5791a9446a1be47d9bdde016b5b 2d57d9c3e3404a1b8aaedf35dc4f6d7d
@@ -351,77 +351,77 @@ msgid ""
 ":attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises "
 "an exception for an unsupported font -- checked via "
 ":attr:`Font.is_writable`."
-msgstr ""
+msgstr ":attr:`text_rect` 및 :attr:`last_point`. *(v1.18.0에서 변경:)* 지원되지 않는 글꼴에 대해 예외를 발생시킵니다 -- :attr:`Font.is_writable` 을 통해 확인됩니다."
 
 #: ../../textwriter.rst:102 53cbfa2552fa46b2837c5848f6ae7eed
 msgid "Add some new text in vertical, top-to-bottom writing."
-msgstr ""
+msgstr "수직, 위에서 아래로 쓰기로 일부 새 텍스트를 추가합니다."
 
 #: ../../textwriter.rst:105 77e2561d4b4a448caf4a7b3ecbc624ce
 msgid "a string. It will be written starting at position \"pos\"."
-msgstr ""
+msgstr "문자열. \"pos\" 위치에서 시작하여 작성됩니다."
 
 #: ../../textwriter.rst:107 1195a41741cd44ca8653fce3a3c8b23f
 msgid "the :data:`fontsize`, a positive float, default 11."
-msgstr ""
+msgstr ":data:`fontsize`, 양수 부동 소수점, 기본값 11."
 
 #: ../../textwriter.rst:109 ../../textwriter.rst:133
 #: 48cdfcdb373b4a939b9ac2491aaf9f76 a007fa3bc26e4925bac3b3884fa1d6f4
 msgid "*(New in v1.18.15)* see :meth:`append`."
-msgstr ""
+msgstr "*(v1.18.15에서 새로 추가)* :meth:`append` 를 참조하세요."
 
 #: ../../textwriter.rst:115 131d2ddda39f47e5b8750ce4e02aacf1
 msgid ""
 "Changed in 1.17.3: New parameter `pos` to specify where to start writing "
 "within rectangle."
-msgstr ""
+msgstr "1.17.3에서 변경: 사각형 내에서 쓰기를 시작할 위치를 지정하는 새 매개변수 `pos`."
 
 #: ../../textwriter.rst:116 29062b4cba8b458c9715b63563932eea
 msgid ""
 "Changed in v1.18.9: Return list of lines which do not fit in rectangle. "
 "Support writing right-to-left (e.g. Arabian, Hebrew)."
-msgstr ""
+msgstr "v1.18.9에서 변경: 사각형에 맞지 않는 줄 목록을 반환합니다. 오른쪽에서 왼쪽으로 쓰기 지원(예: 아랍어, 히브리어)."
 
 #: ../../textwriter.rst:117 1af15893d8c0406eaba47e8cbc605623
 msgid "Changed in v1.18.15: Prefer small caps if supported by the font."
-msgstr ""
+msgstr "v1.18.15에서 변경: 글꼴에서 지원하는 경우 작은 대문자를 선호합니다."
 
 #: ../../textwriter.rst:119 557382b2514d472bbe73f5017c792395
 msgid ""
 "Fill a given rectangle with text in horizontal writing mode. This is a "
 "convenience method to use as an alternative for :meth:`append`."
-msgstr ""
+msgstr "수평 쓰기 모드로 주어진 사각형을 텍스트로 채웁니다. 이는 :meth:`append` 의 대안으로 사용할 수 있는 편의 메서드입니다."
 
 #: ../../textwriter.rst:121 cef4e997c224414e95918704fa70b178
 msgid "the area to fill. No part of the text will appear outside of this."
-msgstr ""
+msgstr "채울 영역. 텍스트의 어떤 부분도 이 영역 밖에 나타나지 않습니다."
 
 #: ../../textwriter.rst:122 eb9a1f87715c476190b440d505b21385
 msgid ""
 "the text. Can be specified as a (UTF-8) string or a list / tuple of "
 "strings. A string will first be converted to a list using *splitlines()*."
 " Every list item will begin on a new line (forced line breaks)."
-msgstr ""
+msgstr "텍스트. (UTF-8) 문자열 또는 문자열의 리스트/튜플로 지정할 수 있습니다. 문자열은 먼저 *splitlines()* 를 사용하여 리스트로 변환됩니다. 각 리스트 항목은 새 줄에서 시작합니다(강제 줄바꿈)."
 
 #: ../../textwriter.rst:123 adaa607ca4b34119b1413a21aa5d5703
 msgid ""
 "*(new in v1.17.3)* start storing at this point. Default is a point near "
 "rectangle top-left."
-msgstr ""
+msgstr "*(v1.17.3에서 새로 추가)* 이 지점에서 저장을 시작합니다. 기본값은 사각형 왼쪽 상단 근처의 점입니다."
 
 #: ../../textwriter.rst:124 093d30283065429a8003316402078989
 msgid "the :ref:`Font`, default `pymupdf.Font(\"helv\")`."
-msgstr ""
+msgstr ":ref:`Font`, 기본값 `pymupdf.Font(\"helv\")`."
 
 #: ../../textwriter.rst:125 fa67844b1bdc4fd5b33c77ea89ae7619
 msgid "the :data:`fontsize`."
-msgstr ""
+msgstr ":data:`fontsize`."
 
 #: ../../textwriter.rst:126 a3f0cf660cc34b2aa6461b460ccc9fd7
 msgid ""
 "text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, "
 "TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY."
-msgstr ""
+msgstr "텍스트 정렬. TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT 또는 TEXT_ALIGN_JUSTIFY 중 하나를 사용합니다."
 
 #: ../../textwriter.rst:127 fab2e37b003c4547a135db4871ab87f9
 msgid ""
@@ -430,42 +430,42 @@ msgid ""
 "If ``True``, any Latin parts are automatically reverted. You must still "
 "set the alignment (if you want right alignment), it does not happen "
 "automatically -- the other alignment options remain available as well."
-msgstr ""
+msgstr "*(v1.18.9에서 새로 추가)* 텍스트를 오른쪽에서 왼쪽으로 작성할지 여부. 아랍어나 히브리어와 같은 언어에 적용됩니다. 기본값은 ``False`` 입니다. ``True`` 인 경우 모든 라틴 문자 부분이 자동으로 반전됩니다. 정렬(오른쪽 정렬을 원하는 경우)을 여전히 설정해야 하며, 자동으로 발생하지 않습니다 -- 다른 정렬 옵션도 계속 사용할 수 있습니다."
 
 #: ../../textwriter.rst:128 fbd4a0182852411d9c83784e6421be47
 msgid ""
 "on text overflow do nothing, warn, or raise an exception. Overflow text "
 "will never be written. **Changed in v1.18.9:**  * Default is ``None``. * "
 "The list of overflow lines will be returned."
-msgstr ""
+msgstr "텍스트 오버플로우 시 아무 작업도 하지 않거나 경고를 표시하거나 예외를 발생시킵니다. 오버플로우 텍스트는 절대 작성되지 않습니다. **v1.18.9에서 변경:**  * 기본값은 ``None`` 입니다. * 오버플로우 줄 목록이 반환됩니다."
 
 #: ../../textwriter.rst:128 0e6db582f2eb4eb28e4c2efbd9fb40e1
 msgid ""
 "on text overflow do nothing, warn, or raise an exception. Overflow text "
 "will never be written. **Changed in v1.18.9:**"
-msgstr ""
+msgstr "텍스트 오버플로우 시 아무 작업도 하지 않거나 경고를 표시하거나 예외를 발생시킵니다. 오버플로우 텍스트는 절대 작성되지 않습니다. **v1.18.9에서 변경:**"
 
 #: ../../textwriter.rst:130 cdae6e2706854c9e826f849d936c11ee
 msgid "Default is ``None``."
-msgstr ""
+msgstr "기본값은 ``None`` 입니다."
 
 #: ../../textwriter.rst:131 1bda032411484b10b23479232b916047
 msgid "The list of overflow lines will be returned."
-msgstr ""
+msgstr "오버플로우 줄 목록이 반환됩니다."
 
 #: ../../textwriter.rst 035f3f34d091461bbe3cc1d030bfe153
 #: 1871d0ab981b44759c8973a335232ef3 6459020d5302480fb99a57af3fd39d02
 #: 92e14712db2944b694cdf765796b471d d0a0b9758d76412fb2a1f68276a1f782
 #: f3e6dee2f74245bfa95d18620e9bd73d
 msgid "Return type"
-msgstr ""
+msgstr "반환 유형"
 
 #: ../../textwriter.rst:136 396c812b4c0346d69cbc578eaae29744
 msgid ""
 "*New in v1.18.9* -- List of lines that did not fit in the rectangle. Each"
 " item is a tuple `(text, length)` containing a string and its length (on "
 "the page)."
-msgstr ""
+msgstr "*v1.18.9에서 새로 추가* -- 사각형에 맞지 않는 줄 목록. 각 항목은 문자열과 그 길이(페이지에서)를 포함하는 튜플 `(text, length)` 입니다."
 
 #: ../../textwriter.rst:138 cd3a09fa82ee40e399e27a6aa0c1235d
 msgid ""
@@ -475,23 +475,23 @@ msgid ""
 " is exclusively controlled by the insertion point. Therefore there is no "
 "need to adhere to any order. *(Changed in v1.18.0:)* Raise an exception "
 "for an unsupported font -- checked via :attr:`Font.is_writable`."
-msgstr ""
+msgstr "필요한 만큼 자주 이 메서드를 사용하세요 -- 기술적 제한은 없습니다(시스템의 메모리 제약 제외). :meth:`append` 와 텍스트 상자를 혼합하고 둘 다 여러 개를 가질 수 있습니다. 텍스트 위치 지정은 삽입 지점에 의해서만 제어됩니다. 따라서 순서를 따를 필요가 없습니다. *(v1.18.0에서 변경:)* 지원되지 않는 글꼴에 대해 예외를 발생시킵니다 -- :attr:`Font.is_writable` 을 통해 확인됩니다."
 
 #: ../../textwriter.rst:143 54709b98b30a47ac89166f31faf2772a
 msgid ""
 "Write the TextWriter text to a page, which is the only mandatory "
 "parameter. The other parameters can be used to temporarily override the "
 "values used when the TextWriter was created."
-msgstr ""
+msgstr "TextWriter 텍스트를 페이지에 작성합니다. 이는 유일한 필수 매개변수입니다. 다른 매개변수는 TextWriter가 생성될 때 사용된 값을 임시로 재정의하는 데 사용할 수 있습니다."
 
 #: ../../textwriter.rst:145 59f4fdcbbc44452680ba4c0c95aa5cff
 msgid "write to this :ref:`Page`."
-msgstr ""
+msgstr "이 :ref:`Page` 에 작성합니다."
 
 #: ../../textwriter.rst:146 ../../textwriter.rst:147
 #: 376b4dcec8264f3db2f6be76d778904b d45c4d5a07474ef4a0cd683fdd04bcdc
 msgid "override the value of the TextWriter for this output."
-msgstr ""
+msgstr "이 출력에 대해 TextWriter의 값을 재정의합니다."
 
 #: ../../textwriter.rst:148 ee07ac03480b41539d94053d359dd9d3
 msgid ""
@@ -499,69 +499,69 @@ msgid ""
 "must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and "
 "a matrix-like *matrix*. A typical example is rotating the text around "
 "*fixpoint*."
-msgstr ""
+msgstr "행렬을 적용하여 텍스트 모양을 수정합니다. 제공된 경우 이것은 점과 같은 *fixpoint* 와 행렬과 같은 *matrix* 를 가진 시퀀스 *(fixpoint, matrix)* 여야 합니다. 일반적인 예는 *fixpoint* 주위로 텍스트를 회전하는 것입니다."
 
 #: ../../textwriter.rst:149 b45dc013b8e740f9bef33593ed5c8711
 msgid "put in foreground (default) or background."
-msgstr ""
+msgstr "전경(기본값) 또는 배경에 배치합니다."
 
 #: ../../textwriter.rst:150 ba9cfbd9695340699d7179b74412ef18
 msgid "*(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`."
-msgstr ""
+msgstr "*(v1.18.4에서 새로 추가)* :data:`OCG` 또는 :data:`OCMD` 의 :data:`xref`."
 
 #: ../../textwriter.rst:151 9523549f48f246a3ae03b7bc5f901456
 msgid ""
 "The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).  "
 ".. image:: images/img-rendermode.*"
-msgstr ""
+msgstr "PDF `Tr` 연산자 값. 값: 0 (기본값), 1, 2, 3 (보이지 않음).  .. image:: images/img-rendermode.*"
 
 #: ../../textwriter.rst:151 78528b40a6544fe0a046dee8ae6857ef
 msgid "The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible)."
-msgstr ""
+msgstr "PDF `Tr` 연산자 값. 값: 0 (기본값), 1, 2, 3 (보이지 않음)."
 
 #: ../../textwriter.rst:158 525f73853e924927ad796c65943a368d
 msgid "The area currently occupied."
-msgstr ""
+msgstr "현재 차지하고 있는 영역."
 
 #: ../../textwriter.rst:160 ../../textwriter.rst:184
 #: ba565ed25cdd42f7862fcb93e757cf70 be5a7d304fd0479ea3d522fa0b628537
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../textwriter.rst:164 87ebb8ff55c24240abc1589af86e4a9a
 msgid ""
 "The \"cursor position\" -- a :ref:`Point` -- after the last written "
 "character (its bottom-right)."
-msgstr ""
+msgstr "\"커서 위치\" -- 마지막으로 작성된 문자(오른쪽 하단) 이후의 :ref:`Point`."
 
 #: ../../textwriter.rst:166 ac55d30024ef4851bc1e890d44698e93
 msgid ":ref:`Point`"
-msgstr ""
+msgstr ":ref:`Point`"
 
 #: ../../textwriter.rst:170 3f90c9a1dc4c4511a85d2dd1d614e275
 msgid "The text opacity (modifiable)."
-msgstr ""
+msgstr "텍스트 투명도 (수정 가능)."
 
 #: ../../textwriter.rst:176 40b6c71ad92443f69b941e2ae68ef65d
 msgid "The text color (modifiable)."
-msgstr ""
+msgstr "텍스트 색상 (수정 가능)."
 
 #: ../../textwriter.rst:182 c8c0cc26dcc643b4b7a36449cc37508b
 msgid ""
 "The page rectangle for which this TextWriter was created. Must not be "
 "modified."
-msgstr ""
+msgstr "이 TextWriter가 생성된 페이지 사각형. 수정하면 안 됩니다."
 
 #: ../../textwriter.rst:187 96d56c1eedc9403da49260989a4dc7c5
 msgid ""
 "To see some demo scripts dealing with TextWriter, have a look at `the "
 "TextWriter demo scripts <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/tree/master/textwriter>`_."
-msgstr ""
+msgstr "TextWriter를 다루는 일부 데모 스크립트를 보려면 `TextWriter 데모 스크립트 <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/textwriter>`_ 를 참조하세요."
 
 #: ../../textwriter.rst:189 86f5ad85ef9f430798003667a5d4bba8
 msgid "Opacity and color apply to **all the text** in this object."
-msgstr ""
+msgstr "투명도와 색상은 이 객체의 **모든 텍스트** 에 적용됩니다."
 
 #: ../../textwriter.rst:190 3fd56e7645674dd592624498a3b40033
 msgid ""
@@ -569,13 +569,13 @@ msgid ""
 "TextWriter. Whenever you determine the color should change, simply append"
 " the text to the respective TextWriter using the previously returned "
 ":attr:`last_point` as position for the new text span."
-msgstr ""
+msgstr "다른 색상/투명도가 필요한 경우 별도의 TextWriter를 생성해야 합니다. 색상이 변경되어야 한다고 판단할 때마다 이전에 반환된 :attr:`last_point` 를 새 텍스트 스팬의 위치로 사용하여 해당 TextWriter에 텍스트를 추가하세요."
 
 #: ../../textwriter.rst:191 473cca9e82e445e7a947ffeaead9f1d6
 msgid ""
 "Appending items or text boxes can occur in arbitrary order: only the "
 "position parameter controls where text appears."
-msgstr ""
+msgstr "항목이나 텍스트 상자를 추가하는 것은 임의의 순서로 발생할 수 있습니다: 위치 매개변수만 텍스트가 나타나는 위치를 제어합니다."
 
 #: ../../textwriter.rst:192 e86c99a3e580410c80b33c1b9273d1e5
 msgid ""
@@ -583,7 +583,7 @@ msgid ""
 "This can be used to let text with different properties appear on the same"
 " displayed line: just specify *pos* accordingly, and e.g. set it to "
 ":attr:`last_point` of the previously added item."
-msgstr ""
+msgstr "글꼴과 :data:`fontsize` 는 동일한 TextWriter 내에서 자유롭게 변경할 수 있습니다. 이를 사용하여 다른 속성을 가진 텍스트가 동일한 표시 줄에 나타나도록 할 수 있습니다: *pos* 를 그에 따라 지정하고, 예를 들어 이전에 추가된 항목의 :attr:`last_point` 로 설정하세요."
 
 #: ../../textwriter.rst:193 0dd912f04fa84ab7832bd944567f6dc1
 msgid ""
@@ -591,7 +591,7 @@ msgid ""
 "the position of the first text character. This allows filling the same "
 "textbox with contents from different :ref:`TextWriter` objects, thus "
 "allowing for multiple colors, opacities, etc."
-msgstr ""
+msgstr ":meth:`TextWriter.fill_textbox` 의 *pos* 인수를 사용하여 첫 번째 텍스트 문자의 위치를 설정할 수 있습니다. 이를 통해 다른 :ref:`TextWriter` 객체의 콘텐츠로 동일한 텍스트 상자를 채울 수 있으므로 여러 색상, 투명도 등을 허용합니다."
 
 #: ../../textwriter.rst:194 46ddcc45b9594214860870dcb571f619
 msgid ""
@@ -599,9 +599,9 @@ msgid ""
 "Starting with v1.18.0 this can be checked via the font attribute "
 ":attr:`Font.is_writable`. This attribute is also checked when using "
 ":ref:`TextWriter` methods."
-msgstr ""
+msgstr "|MuPDF| 는 이 기능으로 모든 글꼴을 지원하지 않습니다. 예를 들어 Type3 글꼴은 지원하지 않습니다. v1.18.0부터는 글꼴 속성 :attr:`Font.is_writable` 을 통해 이를 확인할 수 있습니다. 이 속성은 :ref:`TextWriter` 메서드를 사용할 때도 확인됩니다."
 
 #: ../../footer.rst:46 b6d5682a116d45b9b5a6850c9cfd6f9e
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -21,45 +21,45 @@ msgstr ""
 
 #: ../../header.rst:-1 b63e36b67e8a44e789752decae758e83
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 e0da5e0d85184ed69a42ef8e32e4ed85
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 e06822680b004870af6da375e9614933
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../app1.rst:7 4aa59227e1bc4902938be155b3c846ab
 msgid "Appendix 1: Details on Text Extraction"
-msgstr ""
+msgstr "부록 1: 텍스트 추출에 대한 세부사항"
 
 #: ../../app1.rst:8 c4a15e5247104a09bb9b36ac199c0a28
 msgid ""
 "This chapter provides background on the text extraction methods of "
 "PyMuPDF."
-msgstr ""
+msgstr "이 장은 |PyMuPDF| 의 텍스트 추출 메서드에 대한 배경 정보를 제공합니다."
 
 #: ../../app1.rst:10 2e9bc8cf9b71428b8520ed5b6afad430
 msgid "Information of interest are"
-msgstr ""
+msgstr "관심 있는 정보는 다음과 같습니다"
 
 #: ../../app1.rst:12 0deb2f883f5f4387bde429329f1bae7b
 msgid "what do they provide?"
-msgstr ""
+msgstr "그들이 무엇을 제공하는가?"
 
 #: ../../app1.rst:13 45c9c32702024484bdb3305c7e87faf7
 msgid "what do they imply (processing time / data sizes)?"
-msgstr ""
+msgstr "그들이 무엇을 의미하는가(처리 시간 / 데이터 크기)?"
 
 #: ../../app1.rst:16 fde4b48bf0784a33849cd72c5d22218c
 msgid "General structure of a TextPage"
-msgstr ""
+msgstr "TextPage의 일반적인 구조"
 
 #: ../../app1.rst:17 7fc02c7d51cd42079849d6836d102acc
 msgid ""
@@ -68,111 +68,111 @@ msgid ""
 "extraction methods are used, but it is also available directly and can be"
 " used as a persistent object. Other than its name suggests, images may "
 "optionally also be part of a text page::"
-msgstr ""
+msgstr ":ref:`TextPage` 는 (Py-) |MuPDF| 의 클래스 중 하나입니다. 일반적으로 :ref:`Page` 텍스트 추출 메서드가 사용될 때 배후에서 생성(그리고 다시 파괴)되지만, 직접 사용할 수도 있으며 영구 객체로 사용할 수 있습니다. 이름이 시사하는 것과 달리, 이미지는 선택적으로 텍스트 페이지의 일부일 수도 있습니다::"
 
 #: ../../app1.rst:27 66fcac07e660407fa94a50c99aacdd57
 msgid "A **text page** consists of blocks (= roughly paragraphs)."
-msgstr ""
+msgstr "**텍스트 페이지** 는 블록(= 대략 단락)으로 구성됩니다."
 
 #: ../../app1.rst:29 0be706ea23474e148d6ac4453252bd47
 msgid "A **block** consists of either lines and their characters, or an image."
-msgstr ""
+msgstr "**블록** 은 행과 그 문자, 또는 이미지로 구성됩니다."
 
 #: ../../app1.rst:31 c0a517869bb34a7d97003a5aef98fd51
 msgid "A **line** consists of spans."
-msgstr ""
+msgstr "**행** 은 스팬으로 구성됩니다."
 
 #: ../../app1.rst:33 517dd3b2b07645b8b02c39add65933dd
 msgid ""
 "A **span** consists of adjacent characters with identical font "
 "properties: name, size, flags and color."
-msgstr ""
+msgstr "**스팬** 은 동일한 글꼴 속성(이름, 크기, 플래그 및 색상)을 가진 인접한 문자로 구성됩니다."
 
 #: ../../app1.rst:36 275e9dfe8a8c43eaac52d976da135915
 msgid "Plain Text"
-msgstr ""
+msgstr "일반 텍스트"
 
 #: ../../app1.rst:38 9d36b5923a304f7a9edbb308a34e087e
 msgid ""
 "Function :meth:`TextPage.extractText` (or *Page.get_text(\"text\")*) "
 "extracts a page's plain **text in original order** as specified by the "
 "creator of the document."
-msgstr ""
+msgstr "함수 :meth:`TextPage.extractText` (또는 *Page.get_text(\"text\")*) 는 문서 작성자가 지정한 대로 페이지의 일반 **텍스트를 원래 순서대로** 추출합니다."
 
 #: ../../app1.rst:40 a844cfb991fb44ba922960d023c28deb
 msgid "An example output::"
-msgstr ""
+msgstr "예제 출력::"
 
 #: ../../app1.rst:45 83c6c339e3924476b41ff9b80c5e50d9
 msgid ""
 "The output may not equal an accustomed \"natural\" reading order. "
 "However, you can request a reordering following the scheme \"top-left to "
 "bottom-right\" by executing `page.get_text(\"text\", sort=True)`."
-msgstr ""
+msgstr "출력이 익숙한 \"자연스러운\" 읽기 순서와 같지 않을 수 있습니다. 그러나 `page.get_text(\"text\", sort=True)` 를 실행하여 \"왼쪽 위에서 오른쪽 아래로\" 체계에 따라 재정렬을 요청할 수 있습니다."
 
 #: ../../app1.rst:49 ../../app1.rst:337 19e4af19f3d74a33909a5898279c5eab
 #: 4eb48dd8cc9e4ac88b8890d5ed10f9a7
 msgid "BLOCKS"
-msgstr ""
+msgstr "BLOCKS"
 
 #: ../../app1.rst:51 686c7ad1dcf54c52be5a45853aad1f78
 msgid ""
 "Function :meth:`TextPage.extractBLOCKS` (or *Page.get_text(\"blocks\")*) "
 "extracts a page's text blocks as a list of items like::"
-msgstr ""
+msgstr "함수 :meth:`TextPage.extractBLOCKS` (또는 *Page.get_text(\"blocks\")*) 는 페이지의 텍스트 블록을 다음과 같은 항목 목록으로 추출합니다::"
 
 #: ../../app1.rst:55 c216dd1a83d846b19dfbfc40fbbb3a86
 msgid ""
 "Where the first 4 items are the float coordinates of the block's bbox. "
 "The lines within each block are concatenated by a new-line character."
-msgstr ""
+msgstr "여기서 처음 4개 항목은 블록의 bbox의 부동 소수점 좌표입니다. 각 블록 내의 행은 줄바꿈 문자로 연결됩니다."
 
 #: ../../app1.rst:57 ac5e7636040b407abf4b4c74f54734e6
 msgid ""
 "This is a high-speed method, which by default also extracts image meta "
 "information: Each image appears as a block with one text line, which "
 "contains meta information. The image itself is not shown."
-msgstr ""
+msgstr "이것은 고속 메서드이며, 기본적으로 이미지 메타 정보도 추출합니다: 각 이미지는 메타 정보를 포함하는 하나의 텍스트 행이 있는 블록으로 나타납니다. 이미지 자체는 표시되지 않습니다."
 
 #: ../../app1.rst:59 493c35f505154b66a5413eb8aae3f20b
 msgid ""
 "As with simple text output above, the `sort` argument can be used as well"
 " to obtain a reading order."
-msgstr ""
+msgstr "위의 간단한 텍스트 출력과 마찬가지로 `sort` 인수를 사용하여 읽기 순서를 얻을 수 있습니다."
 
 #: ../../app1.rst:61 ../../app1.rst:79 3b27a871707241fab31e8b57d54a181b
 #: 72a6a0bd50b84a369ab338f015c7c0c5
 msgid "Example output::"
-msgstr ""
+msgstr "예제 출력::"
 
 #: ../../app1.rst:69 ../../app1.rst:338 2b7c8cb324cd43a5935bad475501fbba
 #: ac2182e6a5334397ba4cba52f6a0ecbb
 msgid "WORDS"
-msgstr ""
+msgstr "WORDS"
 
 #: ../../app1.rst:71 bd891cd06d344be6a34c3533eef6b2b1
 msgid ""
 "Function :meth:`TextPage.extractWORDS` (or *Page.get_text(\"words\")*) "
 "extracts a page's text **words** as a list of items like::"
-msgstr ""
+msgstr "함수 :meth:`TextPage.extractWORDS` (또는 *Page.get_text(\"words\")*) 는 페이지의 텍스트 **단어** 를 다음과 같은 항목 목록으로 추출합니다::"
 
 #: ../../app1.rst:75 7b33ff6ba92d470f8bab020fcd37037d
 msgid ""
 "Where the first 4 items are the float coordinates of the words's bbox. "
 "The last three integers provide some more information on the word's "
 "whereabouts."
-msgstr ""
+msgstr "여기서 처음 4개 항목은 단어의 bbox의 부동 소수점 좌표입니다. 마지막 세 정수는 단어의 위치에 대한 추가 정보를 제공합니다."
 
 #: ../../app1.rst:77 d553fb9cb8484714ba2faab69dc0c761
 msgid ""
 "This is a high-speed method. As with the previous methods, argument "
 "`sort=True` will reorder the words."
-msgstr ""
+msgstr "이것은 고속 메서드입니다. 이전 메서드와 마찬가지로 인수 `sort=True` 는 단어를 재정렬합니다."
 
 #: ../../app1.rst:95 ../../app1.rst:341 4c71524cc80240d8a4a615692160ee42
 #: 6e202dc149ab40d4a04fbf729bde5724
 msgid "HTML"
-msgstr ""
+msgstr "HTML"
 
 #: ../../app1.rst:97 279a64262cf0486490e50a36ebcb9fc4
 msgid ""
@@ -181,18 +181,18 @@ msgid ""
 "JSON below. This includes images, font information and text positions. If"
 " wrapped in HTML header and trailer code, it can readily be displayed by "
 "an internet browser. Our above example::"
-msgstr ""
+msgstr ":meth:`TextPage.extractHTML` (또는 *Page.get_text(\"html\")* 출력은 페이지의 ``TextPage`` 구조를 완전히 반영합니다 -- 아래의 DICT / JSON과 매우 유사합니다. 이것은 이미지, 글꼴 정보 및 텍스트 위치를 포함합니다. HTML 헤더 및 트레일러 코드로 감싸면 인터넷 브라우저에서 쉽게 표시할 수 있습니다. 위의 예제::"
 
 #: ../../app1.rst:113 a754b6fee5f44c9e9763dd071ea484d3
 msgid "Controlling Quality of HTML Output"
-msgstr ""
+msgstr "HTML 출력 품질 제어"
 
 #: ../../app1.rst:114 9d69d29a89e34b598cab8061b0df6acb
 msgid ""
 "While HTML output has improved a lot in MuPDF v1.12.0, it is not yet bug-"
 "free: we have found problems in the areas **font support** and **image "
 "positioning**."
-msgstr ""
+msgstr "|MuPDF| v1.12.0에서 HTML 출력이 많이 개선되었지만, 아직 버그가 없지는 않습니다: **글꼴 지원** 및 **이미지 위치 지정** 영역에서 문제를 발견했습니다."
 
 #: ../../app1.rst:116 e323aee6a8184c43b04054264f0ad164
 msgid ""
@@ -201,7 +201,7 @@ msgid ""
 "them with others; the results will probably look awkward. This issue "
 "varies greatly by browser -- on my Windows machine, MS Edge worked just "
 "fine, whereas Firefox looked horrible."
-msgstr ""
+msgstr "HTML 텍스트에는 원본 문서에서 사용된 글꼴에 대한 참조가 포함되어 있습니다. 브라우저가 이를 알지 못하면(가능성은 낮지만!) 다른 것으로 대체할 수 있으며, 결과가 어색해 보일 수 있습니다. 이 문제는 브라우저에 따라 크게 다릅니다 -- Windows 머신에서 MS Edge는 잘 작동했지만 Firefox는 형편없이 보였습니다."
 
 #: ../../app1.rst:118 a3e819ae14b54c27a9a077e7e935cb86
 msgid ""
@@ -210,7 +210,7 @@ msgid ""
 "where the various possible page bbox variants do not coincide (e.g. "
 "*MediaBox != CropBox*). We do not know yet, how to address this -- we "
 "filed a bug at MuPDF's site."
-msgstr ""
+msgstr "복잡한 구조를 가진 PDF의 경우 이미지가 올바르게 위치 지정되거나 크기 조정되지 않을 수 있습니다. 이것은 회전된 페이지와 다양한 가능한 페이지 bbox 변형이 일치하지 않는 페이지(예: *MediaBox != CropBox*)의 경우인 것 같습니다. 이것을 해결하는 방법은 아직 알지 못합니다 -- |MuPDF| 사이트에 버그를 제출했습니다."
 
 #: ../../app1.rst:120 eb269d37c6994ea68a4d82c390bd674f
 msgid ""
@@ -220,11 +220,11 @@ msgid ""
 "serifed fonts will become \"Times\", non-serifed \"Helvetica\" and "
 "monospaced will become \"Courier\". Their respective variations for "
 "\"bold\", \"italic\", etc. are hopefully done correctly by your browser::"
-msgstr ""
+msgstr "글꼴 문제를 해결하기 위해 HTML 파일을 스캔하고 글꼴 참조를 교체하는 간단한 유틸리티 스크립트를 사용할 수 있습니다. 다음은 모든 글꼴을 :ref:`Base-14-Fonts` 중 하나로 교체하는 작은 예제입니다: 세리프 글꼴은 \"Times\"가 되고, 비세리프 글꼴은 \"Helvetica\"가 되며, 고정폭 글꼴은 \"Courier\"가 됩니다. \"bold\", \"italic\" 등에 대한 각각의 변형은 브라우저에서 올바르게 처리되기를 바랍니다::"
 
 #: ../../app1.rst:160 9a01edbae3494fb6bcfa415551ffe12d
 msgid "DICT (or JSON)"
-msgstr ""
+msgstr "DICT (또는 JSON)"
 
 #: ../../app1.rst:162 dc5943b2ac244ae3bd4c1c3cced27b9a
 msgid ""
@@ -233,21 +233,21 @@ msgid ""
 "content and position detail (*bbox* -- boundary boxes in pixel units) for"
 " every block, line and span. Images are stored as *bytes* for DICT output"
 " and base64 encoded strings for JSON output."
-msgstr ""
+msgstr ":meth:`TextPage.extractDICT` (또는 *Page.get_text(\"dict\", sort=False)*) 출력은 ``TextPage`` 구조를 완전히 반영하며 모든 블록, 행 및 스팬에 대한 이미지 콘텐츠 및 위치 세부 정보(*bbox* -- 픽셀 단위의 경계 상자)를 제공합니다. 이미지는 DICT 출력의 경우 *bytes* 로 저장되고 JSON 출력의 경우 base64 인코딩된 문자열로 저장됩니다."
 
 #: ../../app1.rst:164 c83998d97cb54af2a6c9e8ee068e02d3
 msgid ""
 "For a visualization of the dictionary structure have a look at "
 ":ref:`textpagedict`."
-msgstr ""
+msgstr "딕셔너리 구조의 시각화는 :ref:`textpagedict` 를 참조하세요."
 
 #: ../../app1.rst:166 dd7c1a96c694470682bfdfceee248a97
 msgid "Here is how this looks like::"
-msgstr ""
+msgstr "다음은 이것이 어떻게 보이는지입니다::"
 
 #: ../../app1.rst:192 c2fb2cd52f07453b86d0afd6278fef62
 msgid "RAWDICT (or RAWJSON)"
-msgstr ""
+msgstr "RAWDICT (또는 RAWJSON)"
 
 #: ../../app1.rst:193 7d7646fe8d554083af47f4d372febdde
 msgid ""
@@ -258,40 +258,40 @@ msgid ""
 "*\"chars\"*. Each *\"chars\"* entry is a character *dict*. For example, "
 "here is what you would see in place of item *\"text\": \"Text in black "
 "color.\"* above::"
-msgstr ""
+msgstr ":meth:`TextPage.extractRAWDICT` (또는 *Page.get_text(\"rawdict\", sort=False)*) 는 **DICT의 정보 상위 집합** 이며 세부 수준을 한 단계 더 깊게 가져갑니다. 위와 정확히 같아 보이지만, 스팬의 *\"text\"* 항목(*string*)이 *\"chars\"* 목록으로 대체됩니다. 각 *\"chars\"* 항목은 문자 *dict* 입니다. 예를 들어, 위의 *\"text\": \"Text in black color.\"* 항목 대신 다음과 같은 것을 볼 수 있습니다::"
 
 #: ../../app1.rst:224 ../../app1.rst:339 2400046f9c4f49858da21224a19d4b15
 #: 2d3722af4f584209bd8eaab07e032c6d
 msgid "XML"
-msgstr ""
+msgstr "XML"
 
 #: ../../app1.rst:226 c5a5b0c5667b42278fbebec3ebb83fab
 msgid ""
 "The :meth:`TextPage.extractXML` (or *Page.get_text(\"xml\")*) version "
 "extracts text (no images) with the detail level of RAWDICT::"
-msgstr ""
+msgstr ":meth:`TextPage.extractXML` (또는 *Page.get_text(\"xml\")*) 버전은 RAWDICT의 세부 수준으로 텍스트(이미지 없음)를 추출합니다::"
 
 #: ../../app1.rst:255 76940447ff984e9f8267433f30622b18
 msgid ""
 "We have successfully tested `lxml <https://pypi.org/project/lxml/>`_ to "
 "interpret this output."
-msgstr ""
+msgstr "이 출력을 해석하기 위해 `lxml <https://pypi.org/project/lxml/>`_ 를 성공적으로 테스트했습니다."
 
 #: ../../app1.rst:258 ../../app1.rst:340 a405be8a4b8c4148920284c0af5d2a21
 #: def99570eabf40eb9a2296563cf87c89
 msgid "XHTML"
-msgstr ""
+msgstr "XHTML"
 
 #: ../../app1.rst:259 f860ba05b7b84b0cbbd677dfb53ba52c
 msgid ""
 ":meth:`TextPage.extractXHTML` (or *Page.get_text(\"xhtml\")*) is a "
 "variation of TEXT but in HTML format, containing the bare text and images"
 " (\"semantic\" output)::"
-msgstr ""
+msgstr ":meth:`TextPage.extractXHTML` (또는 *Page.get_text(\"xhtml\")*) 는 TEXT의 변형이지만 HTML 형식이며, 일반 텍스트와 이미지를 포함합니다(\"의미론적\" 출력)::"
 
 #: ../../app1.rst:268 0f8064883834458ab08418752216e011
 msgid "Text Extraction Flags Defaults"
-msgstr ""
+msgstr "텍스트 추출 플래그 기본값"
 
 #: ../../app1.rst:269 8ba849c311aa457d85362ff7f4f1819e
 msgid ""
@@ -302,7 +302,7 @@ msgid ""
 "flags with a value other than ``None``, be aware that you must set **all "
 "desired** options. A description of the respective bit settings can be "
 "found in :ref:`TextPreserve`."
-msgstr ""
+msgstr "버전 1.16.2의 새로운 기능: 메서드 :meth:`Page.get_text` 는 추출된 데이터의 양과 품질을 제어하는 키워드 매개변수 *flags* *(int)* 를 지원합니다. 다음 표는 각 추출 변형에 대한 기본 설정(플래그 매개변수 생략 또는 None)을 보여줍니다. ``None`` 이 아닌 값으로 플래그를 지정하는 경우 **모든 원하는** 옵션을 설정해야 합니다. 각 비트 설정에 대한 설명은 :ref:`TextPreserve` 에서 찾을 수 있습니다."
 
 #: ../../app1.rst:271 d40d16d07939413e8c75c3dc13b1127c
 msgid ""
@@ -313,75 +313,75 @@ msgid ""
 ":data:`TEXTFLAGS_HTML`, :data:`TEXTFLAGS_XHTML`, :data:`TEXTFLAGS_XML`, "
 "and :data:`TEXTFLAGS_SEARCH`. You can now easily modify a default flag, "
 "e.g."
-msgstr ""
+msgstr "v1.19.6의 새로운 기능: 다음 표의 기본 조합은 이제 Python 상수로 사용할 수 있습니다: :data:`TEXTFLAGS_TEXT`, :data:`TEXTFLAGS_WORDS`, :data:`TEXTFLAGS_BLOCKS`, :data:`TEXTFLAGS_DICT`, :data:`TEXTFLAGS_RAWDICT`, :data:`TEXTFLAGS_HTML`, :data:`TEXTFLAGS_XHTML`, :data:`TEXTFLAGS_XML`, 및 :data:`TEXTFLAGS_SEARCH`. 이제 기본 플래그를 쉽게 수정할 수 있습니다. 예를 들어:"
 
 #: ../../app1.rst:273 dc924700aa9b4042894cae14679d63f2
 msgid "**include** images in a \"blocks\" output:"
-msgstr ""
+msgstr "\"blocks\" 출력에 이미지를 **포함**:"
 
 #: ../../app1.rst:275 3d7561abbff8475c825b8d983783bf39
 msgid "`flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES`"
-msgstr ""
+msgstr "`flags = TEXTFLAGS_BLOCKS | TEXT_PRESERVE_IMAGES`"
 
 #: ../../app1.rst:277 4ca8d0166e4646bd80fcc1d69f340a95
 msgid "**exclude** images from a \"dict\" output:"
-msgstr ""
+msgstr "\"dict\" 출력에서 이미지를 **제외**:"
 
 #: ../../app1.rst:279 1a2e1663435b4abaa1b188e5d6bd9338
 msgid "`flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES`"
-msgstr ""
+msgstr "`flags = TEXTFLAGS_DICT & ~TEXT_PRESERVE_IMAGES`"
 
 #: ../../app1.rst:281 d3769cd425ff4854b0e4292af9c3a0e1
 msgid "set **dehyphenation off** in text searches:"
-msgstr ""
+msgstr "텍스트 검색에서 **하이픈 제거를 끔**:"
 
 #: ../../app1.rst:283 2365979a4e104875a8c468496909f03d
 msgid "`flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE`"
-msgstr ""
+msgstr "`flags = TEXTFLAGS_SEARCH & ~TEXT_DEHYPHENATE`"
 
 #: ../../app1.rst:287 6f7f786332d34c359591ddf8d17a374b
 msgid "Indicator"
-msgstr ""
+msgstr "표시기"
 
 #: ../../app1.rst:287 5f2792809a9645ccaa7c3103a8c35f60
 msgid "text"
-msgstr ""
+msgstr "text"
 
 #: ../../app1.rst:287 9330883adb104a8b880b90565531cf78
 msgid "html"
-msgstr ""
+msgstr "html"
 
 #: ../../app1.rst:287 ead5e0f63b1849fcad0e1d2b7e718887
 msgid "xhtml"
-msgstr ""
+msgstr "xhtml"
 
 #: ../../app1.rst:287 6c6f9476a4614058833f45708bdc20be
 msgid "xml"
-msgstr ""
+msgstr "xml"
 
 #: ../../app1.rst:287 0248ca12579948d7a86695462a79fdcb
 msgid "dict"
-msgstr ""
+msgstr "dict"
 
 #: ../../app1.rst:287 e7d633c232874f17bede991cf837d6c3
 msgid "rawdict"
-msgstr ""
+msgstr "rawdict"
 
 #: ../../app1.rst:287 7fa4130e9ccf41c4a89237b146f501ef
 msgid "words"
-msgstr ""
+msgstr "words"
 
 #: ../../app1.rst:287 34941a4200304d7492e796f779d70af9
 msgid "blocks"
-msgstr ""
+msgstr "blocks"
 
 #: ../../app1.rst:287 29648526b349495e89efdba8501f7d58
 msgid "search"
-msgstr ""
+msgstr "search"
 
 #: ../../app1.rst:289 a7ced22ad3514aee9d5860e7a63e2585
 msgid "preserve ligatures"
-msgstr ""
+msgstr "합자 유지"
 
 #: ../../app1.rst:289 ../../app1.rst:290 ../../app1.rst:291 ../../app1.rst:293
 #: ../../app1.rst:294 ../../app1.rst:295 0cb4cd763ef542608c195c6460b399dc
@@ -424,52 +424,52 @@ msgstr ""
 
 #: ../../app1.rst:290 d4a8b0082348457c9b3a7f0c83dde31d
 msgid "preserve whitespace"
-msgstr ""
+msgstr "공백 유지"
 
 #: ../../app1.rst:291 7cff9f000b1f41abbca9effe3a08af35
 msgid "preserve images"
-msgstr ""
+msgstr "이미지 유지"
 
 #: ../../app1.rst:291 2dbd9b27a6ad426cb7dcc9be3911020b
 #: c63946a2a43041a995ca0fbeb23153ef d209151eb3624d868e0ce8d60b9347b8
 msgid "n/a"
-msgstr ""
+msgstr "해당 없음"
 
 #: ../../app1.rst:292 5a4bb22be2824af98d9db38f003324d8
 msgid "inhibit spaces"
-msgstr ""
+msgstr "공백 억제"
 
 #: ../../app1.rst:293 cb5ae3cd443344048f5ddc1e916152df
 msgid "dehyphenate"
-msgstr ""
+msgstr "하이픈 제거"
 
 #: ../../app1.rst:294 ac1c83a387304202a50381f999e13a9b
 msgid "clip to mediabox"
-msgstr ""
+msgstr "미디어박스로 자르기"
 
 #: ../../app1.rst:295 0fec3cdc767c4ecc80645956dbdaa050
 msgid "use CID instead of U+FFFD"
-msgstr ""
+msgstr "U+FFFD 대신 CID 사용"
 
 #: ../../app1.rst:298 3e0abf5ee8404c7c85743a6d0c348e5f
 msgid "**search** refers to the text search function."
-msgstr ""
+msgstr "**search** 는 텍스트 검색 함수를 나타냅니다."
 
 #: ../../app1.rst:299 2063c0aa9e6746fca18404258dea465f
 msgid "**\"json\"** is handled exactly like **\"dict\"** and is hence left out."
-msgstr ""
+msgstr "**\"json\"** 은 **\"dict\"** 와 정확히 동일하게 처리되므로 생략되었습니다."
 
 #: ../../app1.rst:300 4a5e41e47c864b39a729542c7bb2ae23
 msgid ""
 "**\"rawjson\"** is handled exactly like **\"rawdict\"** and is hence left"
 " out."
-msgstr ""
+msgstr "**\"rawjson\"** 은 **\"rawdict\"** 와 정확히 동일하게 처리되므로 생략되었습니다."
 
 #: ../../app1.rst:301 5783eaf8a223417bbb6edf7595657706
 msgid ""
 "An \"n/a\" specification means a value of 0 and setting this bit never "
 "has any effect on the output (but an adverse effect on performance)."
-msgstr ""
+msgstr "\"n/a\" 지정은 값이 0임을 의미하며 이 비트를 설정해도 출력에 영향을 주지 않습니다(하지만 성능에 부정적인 영향을 미칩니다)."
 
 #: ../../app1.rst:302 b5dddb0dc411425db6bc1a169ff2a8d4
 msgid ""
@@ -477,15 +477,15 @@ msgid ""
 "includes them by default, then by all means set the respective bit off: "
 "You will experience a better performance and much lower space "
 "requirements."
-msgstr ""
+msgstr "기본적으로 이미지를 포함하는 출력 변형을 사용할 때 이미지에 관심이 없다면, 반드시 해당 비트를 끄세요: 더 나은 성능과 훨씬 낮은 공간 요구 사항을 경험할 수 있습니다."
 
 #: ../../app1.rst:304 608cc56e35e24516bf555cbdb28b782e
 msgid "To show the effect of `TEXT_INHIBIT_SPACES` have a look at this example::"
-msgstr ""
+msgstr "`TEXT_INHIBIT_SPACES` 의 효과를 보려면 이 예제를 참조하세요::"
 
 #: ../../app1.rst:324 73de41a5c50b4025bbb2c6a93243d3b7
 msgid "Performance"
-msgstr ""
+msgstr "성능"
 
 #: ../../app1.rst:325 008bf5834d9c43878d55c1f182c383ad
 msgid ""
@@ -493,7 +493,7 @@ msgid ""
 "information they supply, and in terms of resource requirements and "
 "runtimes. Generally, more information of course means, that more "
 "processing is required and a higher data volume is generated."
-msgstr ""
+msgstr "텍스트 추출 메서드는 제공하는 정보와 리소스 요구 사항 및 실행 시간 측면에서 모두 크게 다릅니다. 일반적으로 더 많은 정보는 더 많은 처리가 필요하고 더 높은 데이터 볼륨이 생성됨을 의미합니다."
 
 #: ../../app1.rst:327 aa82ec64134a4f3bbbea8037e3f3835d
 #, python-format
@@ -504,7 +504,7 @@ msgid ""
 "settings required 160 seconds across all extraction methods. When all "
 "images where excluded, less than 50% of that time (77 seconds) were "
 "needed."
-msgstr ""
+msgstr "특히 이미지는 **매우 큰** 영향을 미칩니다. 필요하지 않을 때는 반드시 제외하세요(*flags* 매개변수를 통해). 기본 플래그 설정으로 아래에 언급된 총 2,700페이지를 처리하는 데 모든 추출 메서드에서 160초가 필요했습니다. 모든 이미지가 제외되면 그 시간의 50% 미만(77초)이 필요했습니다."
 
 #: ../../app1.rst:329 74982287fc904cbe9d5f67869c717cff
 msgid ""
@@ -513,119 +513,119 @@ msgid ""
 "not aware of a faster (free) tool. Even the most detailed method, "
 "RAWDICT, processes all 1'310 pages of the :ref:`AdobeManual` in less than"
 " 5 seconds (simple text needs less than 2 seconds here)."
-msgstr ""
+msgstr "우선, 모든 메서드는 시장의 다른 제품과 비교하여 **매우 빠릅니다**. 처리 속도 측면에서 더 빠른(무료) 도구는 알지 못합니다. 가장 상세한 메서드인 RAWDICT조차 :ref:`AdobeManual` 의 모든 1,310페이지를 5초 미만으로 처리합니다(여기서는 간단한 텍스트가 2초 미만이 필요합니다)."
 
 #: ../../app1.rst:331 83629ccfb7c9414089033b0147642f2e
 msgid ""
 "The following table shows average relative speeds (\"RSpeed\", baseline "
 "1.00 is TEXT), taken across ca. 1400 text-heavy and 1300 image-heavy "
 "pages."
-msgstr ""
+msgstr "다음 표는 약 1400페이지의 텍스트 중심 페이지와 1300페이지의 이미지 중심 페이지에서 가져온 평균 상대 속도(\"RSpeed\", 기준선 1.00은 TEXT)를 보여줍니다."
 
 #: ../../app1.rst:334 bc84a1d73aa545a3aca4437e5017ed0e
 msgid "Method"
-msgstr ""
+msgstr "메서드"
 
 #: ../../app1.rst:334 9368181159ab4fd6a75aae6bdaa5d189
 msgid "RSpeed"
-msgstr ""
+msgstr "RSpeed"
 
 #: ../../app1.rst:334 7110ef6f2a7c4849a31df08c1bbf7f95
 msgid "Comments"
-msgstr ""
+msgstr "설명"
 
 #: ../../app1.rst:334 e1c0047fd9194edba834839b48102df9
 msgid "no images"
-msgstr ""
+msgstr "이미지 없음"
 
 #: ../../app1.rst:336 4b7a66b4248d47dc9f0ac0139eea5321
 msgid "TEXT"
-msgstr ""
+msgstr "TEXT"
 
 #: ../../app1.rst:336 ../../app1.rst:337 ../../app1.rst:340
 #: 25343a3526d44c7e9147a4b83482b458 5c3d7bcdd77648fea697a40e67bab8fc
 #: 6669d2767e5c49eeb1606eef0ef897e0 e55d755ae5ee4a62bd2e705a1b4974a4
 #: f0dcc7f23fa74accb9461d0e6ad00b34
 msgid "1.00"
-msgstr ""
+msgstr "1.00"
 
 #: ../../app1.rst:336 74b3bb1df5a74fe7965c9a036c43b0b6
 msgid "no images, **plain** text, line breaks"
-msgstr ""
+msgstr "이미지 없음, **일반** 텍스트, 줄바꿈"
 
 #: ../../app1.rst:337 db8f0e8c5f874c7bbbc6d938ebde2e18
 msgid "image bboxes (only), **block** level text with bboxes, line breaks"
-msgstr ""
+msgstr "이미지 bbox(만), **블록** 수준 텍스트와 bbox, 줄바꿈"
 
 #: ../../app1.rst:338 075075d180484d1e9a104abafa5c7123
 #: 18d11064908b48228b89fe3c8c0d242c
 msgid "1.02"
-msgstr ""
+msgstr "1.02"
 
 #: ../../app1.rst:338 b3d7c61c84a84af98ad596efb0959503
 msgid "no images, **word** level text with bboxes"
-msgstr ""
+msgstr "이미지 없음, **단어** 수준 텍스트와 bbox"
 
 #: ../../app1.rst:339 0c5c60a2ef4342038c3a2c60d07bd072
 #: ab025008beb540c3af6517c25c3731c8
 msgid "2.72"
-msgstr ""
+msgstr "2.72"
 
 #: ../../app1.rst:339 233b3e8abb32457bb01d804468cd86e2
 msgid "no images, **char** level text, layout and font details"
-msgstr ""
+msgstr "이미지 없음, **문자** 수준 텍스트, 레이아웃 및 글꼴 세부 정보"
 
 #: ../../app1.rst:340 495e91c0090643cd9239576c13e8f216
 msgid "3.32"
-msgstr ""
+msgstr "3.32"
 
 #: ../../app1.rst:340 b4c7e848e2814720ab1d9fbeb303c9f9
 msgid "**base64** images, **span** level text, no layout info"
-msgstr ""
+msgstr "**base64** 이미지, **스팬** 수준 텍스트, 레이아웃 정보 없음"
 
 #: ../../app1.rst:341 e1c73c9152e644efbed95fc738d1ae9d
 msgid "3.54"
-msgstr ""
+msgstr "3.54"
 
 #: ../../app1.rst:341 61d71ce102d24fbbb30ff945dc28f207
 msgid "**base64** images, **span** level text, layout and font details"
-msgstr ""
+msgstr "**base64** 이미지, **스팬** 수준 텍스트, 레이아웃 및 글꼴 세부 정보"
 
 #: ../../app1.rst:341 892ba5e6677e4561bfe9a5dc406e3852
 msgid "1.01"
-msgstr ""
+msgstr "1.01"
 
 #: ../../app1.rst:342 5b44d6bc99504bb4bc7e4d457aa5509f
 msgid "DICT"
-msgstr ""
+msgstr "DICT"
 
 #: ../../app1.rst:342 bb46e12ef905445f84a825d968043de6
 msgid "3.93"
-msgstr ""
+msgstr "3.93"
 
 #: ../../app1.rst:342 426e28067c23452bb6edeb57689a7855
 msgid "**binary** images, **span** level text, layout and font details"
-msgstr ""
+msgstr "**바이너리** 이미지, **스팬** 수준 텍스트, 레이아웃 및 글꼴 세부 정보"
 
 #: ../../app1.rst:342 16da06be2e1a492c94b26bb12c8c4022
 msgid "1.04"
-msgstr ""
+msgstr "1.04"
 
 #: ../../app1.rst:343 02cf93b26e5f449e95976162924b980c
 msgid "RAWDICT"
-msgstr ""
+msgstr "RAWDICT"
 
 #: ../../app1.rst:343 0eddcb199db847968d5f20c520727971
 msgid "4.50"
-msgstr ""
+msgstr "4.50"
 
 #: ../../app1.rst:343 7ae92e67a9f34967b697139a85969bff
 msgid "**binary** images, **char** level text, layout and font details"
-msgstr ""
+msgstr "**바이너리** 이미지, **문자** 수준 텍스트, 레이아웃 및 글꼴 세부 정보"
 
 #: ../../app1.rst:343 b31064906dbc405e9e886eab7a219b5f
 msgid "1.68"
-msgstr ""
+msgstr "1.68"
 
 #: ../../app1.rst:346 bbe02a1a6ecb4053aea6eac932438250
 #, python-format
@@ -634,13 +634,13 @@ msgid ""
 " speeds are changing drastically: except RAWDICT and XML, the other "
 "methods are almost equally fast, and RAWDICT requires 40% less execution "
 "time than the **now slowest XML**."
-msgstr ""
+msgstr "언급한 대로: 이미지 추출을 제외하면(마지막 열) 상대 속도가 크게 변합니다: RAWDICT와 XML을 제외하고 다른 메서드는 거의 동일하게 빠르며, RAWDICT는 **이제 가장 느린 XML** 보다 40% 적은 실행 시간이 필요합니다."
 
 #: ../../app1.rst:348 c9763e96efa94f389c83973e6830f9cc
 msgid "Look at chapter **Appendix 1** for more performance information."
-msgstr ""
+msgstr "더 많은 성능 정보는 **부록 1** 장을 참조하세요."
 
 #: ../../footer.rst:46 ee2a605b55f548d69f51e5e9c010b812
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

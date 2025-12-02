@@ -21,44 +21,44 @@ msgstr ""
 
 #: ../../header.rst:-1 a5170acfd12b43adbefd8dfbe853d226
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 cb2bde859c1349828bd247664168fdad
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 becd9c25862646c28f77d71822cc2c8b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../recipes-images.rst:7 4710064fae7342178423b005970103b5
 msgid "Images"
-msgstr ""
+msgstr "Images"
 
 #: ../../recipes-images.rst:14 4e4cf4f2971d49878a83873ab5b972f7
 msgid "How to Make Images from Document Pages"
-msgstr ""
+msgstr "문서 페이지에서 이미지 만들기"
 
 #: ../../recipes-images.rst:16 e9a6e38305b94ba1b80f9f8c8e22ffd0
 msgid ""
 "This little script will take a document filename and generate a PNG file "
 "from each of its pages."
-msgstr ""
+msgstr "이 작은 스크립트는 문서 파일 이름을 받아 각 페이지에서 PNG 파일을 생성합니다."
 
 #: ../../recipes-images.rst:18 308acb4260244cb889d8b5e5e696bc88
 msgid "The document can be any :ref:`supported type<Supported_File_Types>`."
-msgstr ""
+msgstr "문서는 :ref:`지원되는 모든 타입<Supported_File_Types>` 일 수 있습니다."
 
 #: ../../recipes-images.rst:20 a3082189c02c48da807760245885aa8a
 msgid ""
 "The script works as a command line tool which expects the filename being "
 "supplied as a parameter. The generated image files (1 per page) are "
 "stored in the directory of the script::"
-msgstr ""
+msgstr "스크립트는 매개변수로 제공된 파일 이름을 기대하는 명령줄 도구로 작동합니다. 생성된 이미지 파일(페이지당 1개)은 스크립트 디렉토리에 저장됩니다::"
 
 #: ../../recipes-images.rst:29 b7e5e6dd24f045f4a09c4f91b7d4fea8
 msgid ""
@@ -68,37 +68,37 @@ msgid ""
 " sized page. They will have a resolution of 96 dpi in x and y dimension "
 "and have no transparency. You can change all that -- for how to do this, "
 "read the next sections."
-msgstr ""
+msgstr "스크립트 디렉토리에는 이제 *page-0.png*, *page-1.png* 등의 PNG 이미지 파일이 포함됩니다. 그림은 페이지의 크기를 가지며 너비와 높이는 정수로 반올림됩니다. 예를 들어 A4 세로 크기 페이지의 경우 595 x 842 픽셀입니다. x 및 y 차원에서 96 dpi의 해상도를 가지며 투명도가 없습니다. 모든 것을 변경할 수 있습니다 -- 방법은 다음 섹션을 참조하세요."
 
 #: ../../recipes-images.rst:37 a572d7ea36d948ea96eded0ff8001773
 msgid "How to Increase :index:`Image Resolution <pair: image; resolution>`"
-msgstr ""
+msgstr ":index:`이미지 해상도 <pair: image; resolution>` 높이는 방법"
 
 #: ../../recipes-images.rst:39 11a284ffaf7742f6a03127e4d1240761
 msgid ""
 "The image of a document page is represented by a :ref:`Pixmap`, and the "
 "simplest way to create a pixmap is via method :meth:`Page.get_pixmap`."
-msgstr ""
+msgstr "문서 페이지의 이미지는 :ref:`Pixmap` 으로 표현되며, 픽스맵을 생성하는 가장 간단한 방법은 :meth:`Page.get_pixmap` 메서드를 사용하는 것입니다."
 
 #: ../../recipes-images.rst:41 feae2612c8c0499e90d765be25a00eac
 msgid ""
 "This method has many options to influence the result. The most important "
 "among them is the :ref:`Matrix`, which lets you :index:`zoom`, rotate, "
 "distort or mirror the outcome."
-msgstr ""
+msgstr "이 메서드는 결과에 영향을 주는 많은 옵션이 있습니다. 그 중 가장 중요한 것은 :index:`확대`, 회전, 왜곡 또는 미러링을 가능하게 하는 :ref:`Matrix` 입니다."
 
 #: ../../recipes-images.rst:43 b12ee8c226f44cbaaa494b318449f822
 msgid ""
 ":meth:`Page.get_pixmap` by default will use the :ref:`Identity` matrix, "
 "which does nothing."
-msgstr ""
+msgstr ":meth:`Page.get_pixmap` 은 기본적으로 아무것도 하지 않는 :ref:`Identity` 행렬을 사용합니다."
 
 #: ../../recipes-images.rst:45 1b9e0cde360b4b86b79e4a5560753ac9
 msgid ""
 "In the following, we apply a :index:`zoom factor <pair: resolution;zoom>`"
 " of 2 to each dimension, which will generate an image with a four times "
 "better resolution for us (and also about 4 times the size)::"
-msgstr ""
+msgstr "다음에서는 각 차원에 :index:`확대 배율 <pair: resolution;zoom>` 2를 적용하여 4배 더 나은 해상도의 이미지를 생성합니다(크기도 약 4배)::"
 
 #: ../../recipes-images.rst:53 4b841620223b468290813f2c76bf2f57
 msgid ""
@@ -110,10 +110,14 @@ msgid ""
 "file -- which does not happen automatically when using the Matrix "
 "notation."
 msgstr ""
+"버전 1.19.2부터 해상도를 설정하는 더 직접적인 방법이 있습니다: `\"dpi\"` (인치당 도트 수) 매개변수를 "
+"`\"matrix\"` 대신 사용할 수 있습니다. 페이지의 300 dpi 이미지를 만들려면 `pix = "
+"page.get_pixmap(dpi=300)` 을 지정하세요. 표기법의 간결함 외에도, 이 방법의 추가 장점은 **dpi 값이 이미지 "
+"파일과 함께 저장된다는** 것입니다 -- Matrix 표기법을 사용할 때는 자동으로 발생하지 않습니다."
 
 #: ../../recipes-images.rst:61 31bbb7951f74400fb93921872432755d
 msgid "How to Create :index:`Partial Pixmaps` (Clips)"
-msgstr ""
+msgstr ":index:`부분 픽스맵 <Partial Pixmaps>` (클립) 생성 방법"
 
 #: ../../recipes-images.rst:62 fbadb2ef5dbd470f8a7e831854d224d8
 msgid ""
@@ -121,6 +125,8 @@ msgid ""
 " e.g. when you display the image in a GUI and would like to fill the "
 "respective window with a zoomed part of the page."
 msgstr ""
+"항상 페이지의 전체 이미지가 필요하거나 원하는 것은 아닙니다. 예를 들어 GUI에서 이미지를 표시하고 해당 창을 페이지의 확대된 부분으로 "
+"채우고 싶을 때가 그런 경우입니다."
 
 #: ../../recipes-images.rst:64 85f7bd7eb0b042c0813c26e94f741bf2
 msgid ""
@@ -128,6 +134,8 @@ msgid ""
 "but you now want to fill this room with the bottom right quarter of your "
 "page, thus using a four times better resolution."
 msgstr ""
+"GUI 창에 전체 문서 페이지를 표시할 공간이 있다고 가정하지만, 이제 이 공간을 페이지의 오른쪽 아래 사분면으로 채워 4배 더 나은 "
+"해상도를 사용하고 싶다고 가정합니다."
 
 #: ../../recipes-images.rst:66 29dbb31ae3f94b88b955a6b089ae6df5
 msgid ""
@@ -136,6 +144,8 @@ msgid ""
 "PyMuPDF is by providing two diagonally opposite corners, which is what we"
 " are doing here."
 msgstr ""
+"이를 달성하려면 GUI에 표시하려는 영역과 같은 사각형을 정의하고 \"clip\"이라고 부르세요. PyMuPDF에서 사각형을 구성하는 "
+"방법 중 하나는 대각선으로 반대편에 있는 두 모서리를 제공하는 것이며, 여기서도 그렇게 합니다."
 
 #: ../../recipes-images.rst:79 27b90a5d3a3c45eca6798eb33e10e442
 msgid ""
@@ -143,10 +153,12 @@ msgid ""
 "points: the middle point *mp* of the page rectangle, and its bottom "
 "right, *rect.br*."
 msgstr ""
+"위에서는 두 개의 대각선 반대편 점을 지정하여 *clip* 을 구성합니다: 페이지 사각형의 중간점 *mp* 와 그 오른쪽 아래 "
+"*rect.br* 입니다."
 
 #: ../../recipes-images.rst:87 bb7f676a34c54b28a8067fefa1aacd1b
 msgid "How to Zoom a Clip to a GUI Window"
-msgstr ""
+msgstr "클립을 GUI 창에 맞게 확대하는 방법"
 
 #: ../../recipes-images.rst:88 3c061aaed37648d081263d96cee3321a
 msgid ""
@@ -157,12 +169,15 @@ msgid ""
 " the WIDTH and HEIGHT of your GUI's window that should receive the page's"
 " clip rectangle."
 msgstr ""
+"이전 섹션도 읽어보세요. 이번에는 클립의 **확대 배율을 계산** 하여 이미지가 주어진 GUI 창에 가장 잘 맞도록 합니다. 즉, "
+"이미지의 너비 또는 높이(또는 둘 다)가 창 크기와 같아집니다. 다음 코드 스니펫을 위해서는 페이지의 클립 사각형을 받을 GUI "
+"창의 WIDTH와 HEIGHT를 제공해야 합니다."
 
 #: ../../recipes-images.rst:105 b3a9b91ee3804e7b8c64ed8a2205e309
 msgid ""
 "For the other way round, now assume you **have** the zoom factor and need"
 " to **compute the fitting clip**."
-msgstr ""
+msgstr "반대로, 이제 **확대 배율이 있고** **맞는 클립을 계산** 해야 한다고 가정합니다."
 
 #: ../../recipes-images.rst:107 8ecba4f1cc2d4ce6b5472a6b7d1f6778
 msgid ""
@@ -171,22 +186,25 @@ msgid ""
 "Choose the top-left point `tl` of the clip on the page to compute the "
 "right pixmap::"
 msgstr ""
+"이 경우 `zoom = HEIGHT/clip.height = WIDTH/clip.width` 이므로, `clip.height = "
+"HEIGHT/zoom` 과 `clip.width = WIDTH/zoom` 을 설정해야 합니다. 올바른 픽스맵을 계산하려면 페이지에서 "
+"클립의 왼쪽 위 지점 `tl` 을 선택하세요::"
 
 #: ../../recipes-images.rst:124 a9179194547c43379baf5fb667307041
 msgid "How to Create or Suppress Annotation Images"
-msgstr ""
+msgstr "주석 이미지 생성 또는 억제 방법"
 
 #: ../../recipes-images.rst:125 9cc92f685bcf4d2bafef5da546fbac00
 msgid ""
 "Normally, the pixmap of a page also shows the page's annotations. "
 "Occasionally, this may not be desirable."
-msgstr ""
+msgstr "일반적으로 페이지의 픽스맵은 페이지의 주석도 표시합니다. 때로는 이것이 바람직하지 않을 수 있습니다."
 
 #: ../../recipes-images.rst:127 1079c45bc5474873945edff781094f65
 msgid ""
 "To suppress the annotation images on a rendered page, just specify "
 "`annots=False` in :meth:`Page.get_pixmap`."
-msgstr ""
+msgstr "렌더링된 페이지에서 주석 이미지를 억제하려면 :meth:`Page.get_pixmap` 에서 `annots=False` 를 지정하세요."
 
 #: ../../recipes-images.rst:129 b141c29860864fde93d41fedac0919b0
 msgid ""
@@ -194,10 +212,12 @@ msgid ""
 ":meth:`Annot.get_pixmap` method. The resulting pixmap has the same "
 "dimensions as the annotation rectangle."
 msgstr ""
+"주석을 별도로 렌더링할 수도 있습니다: 주석에는 자체 :meth:`Annot.get_pixmap` 메서드가 있습니다. 결과 픽스맵은 주석 "
+"사각형과 동일한 크기를 가집니다."
 
 #: ../../recipes-images.rst:141 5f7013ae1124470a83fa5df727f719d1
 msgid "How to Extract Images: Non-PDF Documents"
-msgstr ""
+msgstr "이미지 추출 방법: 비 PDF 문서"
 
 #: ../../recipes-images.rst:143 3b4b1649fadc41cea019b924cd517adc
 msgid ""
@@ -205,18 +225,20 @@ msgid ""
 "**extracting** images **contained** in documents, so they can be "
 "displayed as part of one or more pages."
 msgstr ""
+"이전 섹션과 달리, 이 섹션은 문서에 **포함된** 이미지를 **추출** 하는 것을 다루므로, 하나 이상의 페이지의 일부로 표시할 수 "
+"있습니다."
 
 #: ../../recipes-images.rst:145 cd906454fde6400783d50eb0297c5b39
 msgid ""
 "If you want to recreate the original image in file form or as a memory "
 "area, you have basically two options:"
-msgstr ""
+msgstr "원본 이미지를 파일 형식 또는 메모리 영역으로 재생성하려면 기본적으로 두 가지 옵션이 있습니다:"
 
 #: ../../recipes-images.rst:147 dda6ef39b73f40f8b4b566ccb3d6011e
 msgid ""
 "Convert your document to a PDF, and then use one of the PDF-only "
 "extraction methods. This snippet will convert a document to PDF::"
-msgstr ""
+msgstr "문서를 PDF로 변환한 다음 PDF 전용 추출 방법 중 하나를 사용하세요. 이 스니펫은 문서를 PDF로 변환합니다::"
 
 #: ../../recipes-images.rst:153 d9d2f8dd08d6424f8418f2300c013bcd
 msgid ""
@@ -228,10 +250,14 @@ msgid ""
 "works equally well for PDF files. This creates a list of all images shown"
 " on a page::"
 msgstr ""
+"\"dict\" 매개변수와 함께 :meth:`Page.get_text` 를 사용하세요. 이것은 모든 문서 유형에 작동합니다. 페이지에 표시된 "
+"모든 텍스트와 이미지를 Python 딕셔너리 형식으로 추출합니다. 각 이미지는 메타 정보와 **바이너리 이미지 데이터** 를 포함하는 이미지 "
+"블록에 나타납니다. 딕셔너리 구조의 세부 사항은 :ref:`TextPage` 를 참조하세요. 이 방법은 PDF 파일에도 동일하게 "
+"작동합니다. 이것은 페이지에 표시된 모든 이미지의 목록을 생성합니다::"
 
 #: ../../recipes-images.rst:182 44ce44e54f6a4d52b8fa3e4377314037
 msgid "How to Extract Images: PDF Documents"
-msgstr ""
+msgstr "이미지 추출 방법: PDF 문서"
 
 #: ../../recipes-images.rst:184 121c432a4e1b4f0da9d62f1686089fe3
 msgid ""
@@ -239,6 +265,8 @@ msgid ""
 "reference number (:data:`xref`, an integer). If you know this number, you"
 " have two ways to access the image's data:"
 msgstr ""
+"PDF의 다른 \"객체\"와 마찬가지로, 이미지는 교차 참조 번호(:data:`xref`, 정수)로 식별됩니다. 이 번호를 알고 있으면 "
+"이미지 데이터에 액세스하는 두 가지 방법이 있습니다:"
 
 #: ../../recipes-images.rst:186 65a8bdab9a754e05bb94c1a31c2dc6c3
 msgid ""
@@ -248,6 +276,9 @@ msgid ""
 " the ones of the image. In this case there is no way to tell which image "
 "format the embedded original has."
 msgstr ""
+"*pix = pymupdf.Pixmap(doc, xref)* 지시로 이미지의 :ref:`Pixmap` 을 **생성** 합니다. 이 방법은 "
+"**매우** 빠릅니다(한 자리 마이크로초). 픽스맵의 속성(너비, 높이 등)은 이미지의 속성을 반영합니다. 이 경우 임베드된 원본의 "
+"이미지 형식을 알 수 있는 방법이 없습니다."
 
 #: ../../recipes-images.rst:188 1270aa02e2f747a8a27ef8e3820b2c51
 msgid ""
@@ -264,12 +295,19 @@ msgid ""
 "(and the binary image data are identical). Otherwise, this method is "
 "**thousands of times faster**, and the **image data is much smaller**."
 msgstr ""
+"*img = doc.extract_image(xref)* 로 이미지를 **추출** 합니다. 이것은 *img[\"image\"]* 로 바이너리 "
+"이미지 데이터를 포함하는 딕셔너리입니다. 많은 메타데이터도 제공됩니다 -- 대부분 이미지의 픽스맵에서 찾을 수 있는 것과 동일합니다. "
+"주요 차이점은 이미지 형식을 지정하는 문자열 *img[\"ext\"]* 입니다: \"png\" 외에도 \"jpeg\", "
+"\"bmp\", \"tiff\" 등의 문자열이 나타날 수 있습니다. 디스크에 저장하려면 이 문자열을 파일 확장자로 사용하세요. 이 "
+"방법의 실행 속도는 *pix = pymupdf.Pixmap(doc, xref);pix.tobytes()* 문의 결합 속도와 비교해야 합니다. "
+"임베드된 이미지가 PNG 형식인 경우, :meth:`Document.extract_image` 의 속도는 거의 동일합니다(바이너리 이미지 "
+"데이터도 동일). 그렇지 않으면 이 방법이 **수천 배 더 빠르고**, **이미지 데이터가 훨씬 작습니다**."
 
 #: ../../recipes-images.rst:190 c7235a839397415b88cc200813afa335
 msgid ""
 "The question remains: **\"How do I know those 'xref' numbers of "
 "images?\"**. There are two answers to this:"
-msgstr ""
+msgstr "질문은 남아 있습니다: **\"이미지의 'xref' 번호를 어떻게 알 수 있나요?\"**. 이에 대한 두 가지 답변이 있습니다:"
 
 #: ../../recipes-images.rst:192 24b9f0cac5e8493794473b40e99d6fff
 msgid ""
@@ -281,6 +319,10 @@ msgid ""
 "same image may be referenced multiple times (by different pages), so you "
 "might want to provide a mechanism avoiding multiple extracts."
 msgstr ""
+"**\"페이지 객체 검사:\"** :meth:`Page.get_images` 의 항목을 반복합니다. 이것은 리스트의 리스트이며, 항목은 "
+"*[xref, smask, ...]* 와 같이 보이며 이미지의 :data:`xref` 를 포함합니다. 그런 다음 이 :data:`xref` "
+"를 위의 방법 중 하나와 함께 사용할 수 있습니다. **유효한(손상되지 않은)** 문서에 이 방법을 사용하세요. 그러나 동일한 이미지가 "
+"여러 번 참조될 수 있으므로(다른 페이지에서) 여러 번 추출을 피하는 메커니즘을 제공하는 것이 좋습니다."
 
 #: ../../recipes-images.rst:193 90acb0b07ce44df5809cc83032fab4d6
 msgid ""
@@ -293,12 +335,16 @@ msgid ""
 "You may want to provide logic to exclude those from extraction. Also have"
 " a look at the next section."
 msgstr ""
+"**\"알 필요 없음:\"** 문서의 **모든 xref** 목록을 반복하고 각각에 대해 :meth:`Document.extract_image` "
+"를 수행합니다. 반환된 딕셔너리가 비어 있으면 계속합니다 -- 이 :data:`xref` 는 이미지가 아닙니다. PDF가 **손상된(사용 "
+"불가능한 페이지)** 경우 이 방법을 사용하세요. PDF에는 종종 다른 이미지의 투명도를 정의하는 특수 목적의 \"의사 이미지\"(\"스텐실 "
+"마스크\")가 포함되어 있습니다. 추출에서 이를 제외하는 로직을 제공하는 것이 좋습니다. 다음 섹션도 살펴보세요."
 
 #: ../../recipes-images.rst:195 12c15b841d0c40e5bf38fd3252a5c82f
 msgid ""
 "For both extraction approaches, there exist ready-to-use general purpose "
 "scripts:"
-msgstr ""
+msgstr "두 추출 방법 모두에 대해 즉시 사용 가능한 범용 스크립트가 있습니다:"
 
 #: ../../recipes-images.rst:197 ae5e3ffd1ec342fdbedcedbd9585539f
 msgid ""
@@ -306,6 +352,8 @@ msgid ""
 "Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_ "
 "extracts images page by page:"
 msgstr ""
+"`extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-"
+"images/extract-from-pages.py>`_ 는 페이지별로 이미지를 추출합니다:"
 
 #: ../../recipes-images.rst:202 116fc9d92a524d5fbef97898d73400ef
 msgid ""
@@ -313,10 +361,12 @@ msgid ""
 "Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ "
 "extracts images by xref table:"
 msgstr ""
+"그리고 `extract-from-xref.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-"
+"images/extract-from-xref.py>`_ 는 xref 테이블로 이미지를 추출합니다:"
 
 #: ../../recipes-images.rst:213 27941620eff34254b2f1df365e86c504
 msgid "How to Handle Image Masks"
-msgstr ""
+msgstr "이미지 마스크 처리 방법"
 
 #: ../../recipes-images.rst:214 06e8942247e04ca18cbb0a2e166e63e0
 msgid ""
@@ -326,12 +376,14 @@ msgid ""
 "mask, it must be \"enriched\" with transparency bytes taken from its "
 "mask."
 msgstr ""
+"PDF의 일부 이미지에는 **이미지 마스크** 가 함께 제공됩니다. 가장 간단한 형태에서 마스크는 별도의 이미지로 저장된 알파(투명도) "
+"바이트를 나타냅니다. 마스크가 있는 이미지의 원본을 재구성하려면 마스크에서 가져온 투명도 바이트로 \"보강\"해야 합니다."
 
 #: ../../recipes-images.rst:216 6956e284f58a455894dad036a8d732f4
 msgid ""
 "Whether an image does have such a mask can be recognized in one of two "
 "ways in PyMuPDF:"
-msgstr ""
+msgstr "이미지에 그러한 마스크가 있는지는 PyMuPDF에서 두 가지 방법 중 하나로 인식할 수 있습니다:"
 
 #: ../../recipes-images.rst:218 8f7b0eb999094613b1ec4e9642a0c45a
 msgid ""
@@ -339,24 +391,28 @@ msgid ""
 "`(xref, smask, ...)`, where :data:`xref` is the image's :data:`xref` and "
 "*smask*, if positive, then it is the :data:`xref` of a mask."
 msgstr ""
+":meth:`Document.get_page_images` 의 항목은 일반 형식 `(xref, smask, ...)` 을 가지며, 여기서 "
+":data:`xref` 는 이미지의 :data:`xref` 이고 *smask* 가 양수이면 마스크의 :data:`xref` 입니다."
 
 #: ../../recipes-images.rst:219 76639fa3068e459eb26f660440a3b239
 msgid ""
 "The (dictionary) results of :meth:`Document.extract_image` have a key "
 "*\"smask\"*, which also contains any mask's :data:`xref` if positive."
 msgstr ""
+":meth:`Document.extract_image` 의 (딕셔너리) 결과에는 *\"smask\"* 키가 있으며, 양수이면 마스크의 "
+":data:`xref` 도 포함합니다."
 
 #: ../../recipes-images.rst:221 46e1113696e24d6ba6ff91a314912958
 msgid ""
 "If *smask == 0* then the image encountered via :data:`xref` can be "
 "processed as it is."
-msgstr ""
+msgstr "*smask == 0* 이면 :data:`xref` 를 통해 발견된 이미지는 그대로 처리할 수 있습니다."
 
 #: ../../recipes-images.rst:223 65ebef4703d447a9b3116690abc567cd
 msgid ""
 "To recover the original image using PyMuPDF, the procedure depicted as "
 "follows must be executed:"
-msgstr ""
+msgstr "PyMuPDF를 사용하여 원본 이미지를 복구하려면 다음에 설명된 절차를 실행해야 합니다:"
 
 #: ../../recipes-images.rst:232 6a6811e1d3974ca493ec08e4a67eca0f
 msgid ""
@@ -364,6 +420,8 @@ msgid ""
 " the image mask. Step (3) adds an alpha channel and fills it with "
 "transparency information."
 msgstr ""
+"단계 (1)은 기본 이미지의 픽스맵을 생성합니다. 단계 (2)는 이미지 마스크에 대해 동일한 작업을 수행합니다. 단계 (3)는 알파 "
+"채널을 추가하고 투명도 정보로 채웁니다."
 
 #: ../../recipes-images.rst:234 0f019370007b48829a5c384c1d511b38
 msgid ""
@@ -373,20 +431,24 @@ msgid ""
 "Utilities/blob/master/examples/extract-images/extract-from-xref.py>`_ "
 "above also contain this logic."
 msgstr ""
+"위의 `extract-from-pages.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-"
+"images/extract-from-pages.py>`_ 및 `extract-from-xref.py "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/extract-images/extract-from-"
+"xref.py>`_ 스크립트에도 이 로직이 포함되어 있습니다."
 
 #: ../../recipes-images.rst:250 e6cc7c95f595417399c8af124895022f
 msgid "How to Make one PDF of all your Pictures (or Files)"
-msgstr ""
+msgstr "모든 사진(또는 파일)을 하나의 PDF로 만드는 방법"
 
 #: ../../recipes-images.rst:251 0e5cc72aa12e4c159cee3caf5b124a72
 msgid ""
 "We show here **three scripts** that take a list of (image and other) "
 "files and put them all in one PDF."
-msgstr ""
+msgstr "여기서는 (이미지 및 기타) 파일 목록을 받아 모두 하나의 PDF에 넣는 **세 가지 스크립트** 를 보여줍니다."
 
 #: ../../recipes-images.rst:253 23141b711e854c0fb09b4da836e870c4
 msgid "**Method 1: Inserting Images as Pages**"
-msgstr ""
+msgstr "**방법 1: 이미지를 페이지로 삽입**"
 
 #: ../../recipes-images.rst:255 6b5ea11f2ac6474da5bc139a540e80fc
 msgid ""
@@ -394,18 +456,20 @@ msgid ""
 " The result will be a PDF with one page per image. It will only work for "
 ":ref:`supported image<Supported_File_Types>` file formats::"
 msgstr ""
+"첫 번째는 각 이미지를 동일한 크기의 PDF 페이지로 변환합니다. 결과는 이미지당 한 페이지의 PDF가 됩니다. "
+":ref:`지원되는 이미지<Supported_File_Types>` 파일 형식에서만 작동합니다::"
 
 #: ../../recipes-images.rst:278 5d5f4b70e6ad473b98f0b67b8dd864ee
 msgid ""
 "This will generate a PDF only marginally larger than the combined "
 "pictures' size. Some numbers on performance:"
-msgstr ""
+msgstr "이것은 결합된 그림 크기보다 약간만 큰 PDF를 생성합니다. 성능에 대한 일부 수치:"
 
 #: ../../recipes-images.rst:280 c29ed63a41334d08bd31d57a51745ab1
 msgid ""
 "The above script needed about 1 minute on my machine for 149 pictures "
 "with a total size of 514 MB (and about the same resulting PDF size)."
-msgstr ""
+msgstr "위 스크립트는 총 크기가 514 MB인 149개의 그림에 대해 내 컴퓨터에서 약 1분이 걸렸습니다(결과 PDF 크기도 거의 동일)."
 
 #: ../../recipes-images.rst:285 90edd65fe7324ee6a8c2c256f5dad5b3
 msgid ""
@@ -414,6 +478,8 @@ msgid ""
 "complete source code: it offers a directory selection dialog and skips "
 "unsupported files and non-file entries."
 msgstr ""
+"더 완전한 소스 코드는 `여기 <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/insert-"
+"images/insert.py>`_ 를 참조하세요: 디렉토리 선택 대화 상자를 제공하고 지원되지 않는 파일과 비파일 항목을 건너뜁니다."
 
 #: ../../recipes-images.rst:287 66dd4d051e7b4d12816c624eee514c5e
 msgid ""
@@ -425,10 +491,14 @@ msgid ""
 "for large numbers of images. So this alternative **cannot be "
 "recommended** here."
 msgstr ""
+":meth:`Page.show_pdf_page` 대신 :meth:`Page.insert_image` 를 사용했을 수도 있으며, 결과는 비슷해 보이는 "
+"파일이었을 것입니다. 그러나 이미지 유형에 따라 **이미지를 압축하지 않고** 저장할 수 있습니다. 따라서 합리적인 파일 크기를 "
+"달성하려면 저장 옵션 *deflate = True* 를 사용해야 하며, 이는 많은 수의 이미지에 대해 실행 시간을 크게 증가시킵니다. "
+"따라서 이 대안은 여기서 **권장할 수 없습니다**."
 
 #: ../../recipes-images.rst:289 31ee78dae4e846c59e2bd4c8213760da
 msgid "**Method 2: Embedding Files**"
-msgstr ""
+msgstr "**방법 2: 파일 임베드**"
 
 #: ../../recipes-images.rst:291 d485e0eb28084b90a6b28a8ee7cef448
 msgid ""
@@ -437,6 +507,8 @@ msgid ""
 "reasons. To later access the embedded files again, you would need a "
 "suitable PDF viewer that can display and / or extract embedded files::"
 msgstr ""
+"두 번째 스크립트는 이미지뿐만 아니라 임의의 파일을 **임베드** 합니다. 결과 PDF는 기술적 이유로 하나의(빈) 페이지만 있습니다. "
+"나중에 임베드된 파일에 다시 액세스하려면 임베드된 파일을 표시하고/또는 추출할 수 있는 적절한 PDF 뷰어가 필요합니다::"
 
 #: ../../recipes-images.rst:316 c94ada8bd9e04598aaf5ab16502b491d
 msgid ""
@@ -447,10 +519,14 @@ msgid ""
 "images/embed.py>`_ for a more complete source code: it offers a directory"
 " selection dialog and skips non-file entries."
 msgstr ""
+"이것은 지금까지 가장 빠른 방법이며 가능한 가장 작은 출력 파일 크기도 생성합니다. 위의 그림은 내 컴퓨터에서 20초가 걸렸고 "
+"510 MB 크기의 PDF를 생성했습니다. 더 완전한 소스 코드는 `여기 "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/embed-images/embed.py>`_ "
+"를 참조하세요: 디렉토리 선택 대화 상자를 제공하고 비파일 항목을 건너뜁니다."
 
 #: ../../recipes-images.rst:318 9d6d6606772743a0b3d7948c5256f795
 msgid "**Method 3: Attaching Files**"
-msgstr ""
+msgstr "**방법 3: 파일 첨부**"
 
 #: ../../recipes-images.rst:320 bcaa4036cb074aa2975925493b912887
 msgid ""
@@ -459,6 +535,9 @@ msgid ""
 "Utilities/blob/master/examples/attach-images/attach.py>`_ for the "
 "complete source code."
 msgstr ""
+"이 작업을 달성하는 세 번째 방법은 페이지 주석을 통해 파일을 **첨부** 하는 것입니다. 전체 소스 코드는 `여기 "
+"<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/attach-images/attach.py>`_ "
+"를 참조하세요."
 
 #: ../../recipes-images.rst:322 436939e68a27496f95bf3ba627243f13
 msgid ""
@@ -466,12 +545,14 @@ msgid ""
 "produces a similar file size. It will produce PDF pages which show a "
 "'FileAttachment' icon for each attached file."
 msgstr ""
+"이것은 이전 스크립트와 유사한 성능을 가지며 유사한 파일 크기도 생성합니다. 각 첨부 파일에 대해 'FileAttachment' 아이콘을 "
+"표시하는 PDF 페이지를 생성합니다."
 
 #: ../../recipes-images.rst:326 9ea52a5b17d243b5867452d1793d07b7
 msgid ""
 "Both, the **embed** and the **attach** methods can be used for "
 "**arbitrary files** -- not just images."
-msgstr ""
+msgstr "**임베드** 와 **첨부** 방법 모두 이미지뿐만 아니라 **임의의 파일** 에 사용할 수 있습니다."
 
 #: ../../recipes-images.rst:328 034f2966cc014086a05a35dc70520940
 msgid ""
@@ -481,10 +562,13 @@ msgid ""
 "Tkinter (no additional GUI package) and requires just one more line of "
 "code!"
 msgstr ""
+"장시간 실행될 수 있는 작업에 대해 진행 표시기를 표시하려면 `PySimpleGUI "
+"<https://pypi.org/project/PySimpleGUI/>`_ 패키지 사용을 강력히 권장합니다. 순수 Python이며 "
+"Tkinter를 사용합니다(추가 GUI 패키지 없음) 그리고 코드 한 줄만 더 필요합니다!"
 
 #: ../../recipes-images.rst:342 f8cabd46ec6d45f09659866a69d91b45
 msgid "How to Create Vector Images"
-msgstr ""
+msgstr "벡터 이미지 생성 방법"
 
 #: ../../recipes-images.rst:343 f469c239c3464680bb9794d9b17a101b
 msgid ""
@@ -493,6 +577,8 @@ msgid ""
 "decide on its quality (i.e. resolution) at creation time. It cannot be "
 "changed later."
 msgstr ""
+"문서 페이지에서 이미지를 만드는 일반적인 방법은 :meth:`Page.get_pixmap` 입니다. 픽스맵은 래스터 이미지를 나타내므로 "
+"생성 시 품질(즉, 해상도)을 결정해야 합니다. 나중에 변경할 수 없습니다."
 
 #: ../../recipes-images.rst:345 39ff1890e34045f0bdaebaf77376c7a6
 msgid ""
@@ -501,42 +587,48 @@ msgid ""
 "remain precise across zooming levels (of course with the exception of any"
 " raster graphic elements embedded therein)."
 msgstr ""
+"PyMuPDF는 또한 SVG 형식(확장 가능한 벡터 그래픽, XML 구문으로 정의됨)으로 페이지의 **벡터 이미지** 를 만드는 방법을 "
+"제공합니다. SVG 이미지는 확대/축소 수준에서 정확성을 유지합니다(물론 그 안에 임베드된 래스터 그래픽 요소는 제외)."
 
 #: ../../recipes-images.rst:347 9f178ef03b574e8297104f71a80c68ea
 msgid ""
 "Instruction *svg = page.get_svg_image(matrix=pymupdf.Identity)* delivers "
 "a UTF-8 string *svg* which can be stored with extension \".svg\"."
 msgstr ""
+"지시 *svg = page.get_svg_image(matrix=pymupdf.Identity)* 는 확장자 \".svg\" 로 저장할 수 있는 "
+"UTF-8 문자열 *svg* 를 제공합니다."
 
 #: ../../recipes-images.rst:363 b15d36501a88442697fbeeba5b5bb55f
 msgid "How to Convert Images"
-msgstr ""
+msgstr "이미지 변환 방법"
 
 #: ../../recipes-images.rst:364 9c9044f3d0894de0812ab73694a00aca
 msgid ""
 "Just as a feature among others, PyMuPDF's image conversion is easy. It "
 "may avoid using other graphics packages like PIL/Pillow in many cases."
 msgstr ""
+"다른 기능과 마찬가지로 PyMuPDF의 이미지 변환은 쉽습니다. 많은 경우 PIL/Pillow와 같은 다른 그래픽 패키지를 사용하지 "
+"않아도 될 수 있습니다."
 
 #: ../../recipes-images.rst:366 f0648a404f50475e9fbc97705bcf53d2
 msgid "Notwithstanding that interfacing with Pillow is almost trivial."
-msgstr ""
+msgstr "그럼에도 불구하고 Pillow와의 인터페이싱은 거의 사소합니다."
 
 #: ../../recipes-images.rst:369 51147cdb2eb848a59946a784bc3f94a1
 msgid "**Input Formats**"
-msgstr ""
+msgstr "**입력 형식**"
 
 #: ../../recipes-images.rst:369 6e77d3be370148e2a5bce129911da566
 msgid "**Output Formats**"
-msgstr ""
+msgstr "**출력 형식**"
 
 #: ../../recipes-images.rst:369 cf281244182e4d06a258fbbb823081c2
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../recipes-images.rst:371 530dd206bde5448eb1361b263e3af56b
 msgid "BMP"
-msgstr ""
+msgstr "BMP"
 
 #: ../../recipes-images.rst:371 ../../recipes-images.rst:373
 #: ../../recipes-images.rst:374 ../../recipes-images.rst:375
@@ -550,138 +642,138 @@ msgstr ""
 
 #: ../../recipes-images.rst:371 e8fc53116fb14428812ab304c72fcdaf
 msgid "Windows Bitmap"
-msgstr ""
+msgstr "Windows Bitmap"
 
 #: ../../recipes-images.rst:372 03735a46d7ff47c291751487299a3f1e
 #: 17c492d6f34d4470b1aa86f58b11ca2e
 msgid "JPEG"
-msgstr ""
+msgstr "JPEG"
 
 #: ../../recipes-images.rst:372 7d1770830b8a487f8c91ea91bd6474eb
 msgid "Joint Photographic Experts Group"
-msgstr ""
+msgstr "Joint Photographic Experts Group"
 
 #: ../../recipes-images.rst:373 23fe9f08f0c74644b077b0cf444d3358
 msgid "JXR"
-msgstr ""
+msgstr "JXR"
 
 #: ../../recipes-images.rst:373 f548e4952b8b416689c5ce6bc9f95f33
 msgid "JPEG Extended Range"
-msgstr ""
+msgstr "JPEG Extended Range"
 
 #: ../../recipes-images.rst:374 684a27b7d2874c2b87911e269b40f2d0
 msgid "JPX/JP2"
-msgstr ""
+msgstr "JPX/JP2"
 
 #: ../../recipes-images.rst:374 14493ac2be944a018bff6dbd8ae2bac5
 msgid "JPEG 2000"
-msgstr ""
+msgstr "JPEG 2000"
 
 #: ../../recipes-images.rst:375 7e15ddbcb0ae4375b206202c12d586c7
 msgid "GIF"
-msgstr ""
+msgstr "GIF"
 
 #: ../../recipes-images.rst:375 9978971d8ce4454d86b805ab8d47cfa9
 msgid "Graphics Interchange Format"
-msgstr ""
+msgstr "Graphics Interchange Format"
 
 #: ../../recipes-images.rst:376 13363ae60931495a837cbc8baf5970fc
 msgid "TIFF"
-msgstr ""
+msgstr "TIFF"
 
 #: ../../recipes-images.rst:376 10d71cf9bb9e453cb0dcdea2659abd95
 msgid "Tagged Image File Format"
-msgstr ""
+msgstr "Tagged Image File Format"
 
 #: ../../recipes-images.rst:377 05f4cb19c0a34596814f731af32ea876
 #: 7931ab4e2d304558895b4c7ce5c29979
 msgid "PNG"
-msgstr ""
+msgstr "PNG"
 
 #: ../../recipes-images.rst:377 62b451811d4e476c8ae5dd6d849a54a4
 msgid "Portable Network Graphics"
-msgstr ""
+msgstr "Portable Network Graphics"
 
 #: ../../recipes-images.rst:378 c1d7da490b554e84a7204e6c99fe37ef
 #: f730284031c54916ac361e6304056bcb
 msgid "PNM"
-msgstr ""
+msgstr "PNM"
 
 #: ../../recipes-images.rst:378 561bb44f8a6f4ec6a424777a37eef460
 msgid "Portable Anymap"
-msgstr ""
+msgstr "Portable Anymap"
 
 #: ../../recipes-images.rst:379 3eb2b8341ba14a0ca14b367fb547e28d
 #: 57b7760ff7804df8b3a3d1bad69d6b15
 msgid "PGM"
-msgstr ""
+msgstr "PGM"
 
 #: ../../recipes-images.rst:379 21eeb4db595f461792110aec2d8ecea9
 msgid "Portable Graymap"
-msgstr ""
+msgstr "Portable Graymap"
 
 #: ../../recipes-images.rst:380 13aa92582d5d4474abf412bdfe3d0c28
 #: 4c893f1c9fcb4388a360d103c115f4ee
 msgid "PBM"
-msgstr ""
+msgstr "PBM"
 
 #: ../../recipes-images.rst:380 30f2520397de4b9eb325877a3a507bbf
 msgid "Portable Bitmap"
-msgstr ""
+msgstr "Portable Bitmap"
 
 #: ../../recipes-images.rst:381 14f81272a872402b9c2a813dcdf1adbd
 #: 958c5a3c6c9f445f8782e01f89dc6eb2
 msgid "PPM"
-msgstr ""
+msgstr "PPM"
 
 #: ../../recipes-images.rst:381 b047b29cb5924074b6edcc64ac2f21d4
 msgid "Portable Pixmap"
-msgstr ""
+msgstr "Portable Pixmap"
 
 #: ../../recipes-images.rst:382 8b7545df28fe4e84a4f6e5b4eaa96994
 #: b4a70161776d47b9ae8a64cdf4733492
 msgid "PAM"
-msgstr ""
+msgstr "PAM"
 
 #: ../../recipes-images.rst:382 99b6482f875c4216be23cd14e3b55579
 msgid "Portable Arbitrary Map"
-msgstr ""
+msgstr "Portable Arbitrary Map"
 
 #: ../../recipes-images.rst:383 a5f2249d2d1d484f87fad69069bc2941
 msgid "PSD"
-msgstr ""
+msgstr "PSD"
 
 #: ../../recipes-images.rst:383 5aa71e0042e440b8a2ae7d1232ae1da7
 msgid "Adobe Photoshop Document"
-msgstr ""
+msgstr "Adobe Photoshop Document"
 
 #: ../../recipes-images.rst:384 9f13c58a08324e2a9a956e0c7481fdb6
 msgid "PS"
-msgstr ""
+msgstr "PS"
 
 #: ../../recipes-images.rst:384 f7d3f16fd29d4f2e873705fa491cdaab
 msgid "Adobe Postscript"
-msgstr ""
+msgstr "Adobe Postscript"
 
 #: ../../recipes-images.rst:387 47aac2499f2743ea83430c735ea35f6d
 msgid "The general scheme is just the following two lines::"
-msgstr ""
+msgstr "일반적인 방식은 다음 두 줄입니다::"
 
 #: ../../recipes-images.rst:392 b7f3421a215d4d909a51a70302130d37
 msgid "**Remarks**"
-msgstr ""
+msgstr "**비고**"
 
 #: ../../recipes-images.rst:394 7a47fbda67ec43d7914f6405319663fa
 msgid ""
 "The **input** argument of *pymupdf.Pixmap(arg)* can be a file or a bytes "
 "/ io.BytesIO object containing an image."
-msgstr ""
+msgstr "*pymupdf.Pixmap(arg)* 의 **입력** 인수는 이미지를 포함하는 파일 또는 bytes / io.BytesIO 객체일 수 있습니다."
 
 #: ../../recipes-images.rst:395 58b740eb05e34db9a556c68fe43e7b90
 msgid ""
 "Instead of an output **file**, you can also create a bytes object via "
 "*pix.tobytes(\"yyy\")* and pass this around."
-msgstr ""
+msgstr "출력 **파일** 대신 *pix.tobytes(\"yyy\")* 를 통해 bytes 객체를 생성하고 이를 전달할 수도 있습니다."
 
 #: ../../recipes-images.rst:396 c3b285b2e78146219bd78577d12d121a
 msgid ""
@@ -689,10 +781,12 @@ msgid ""
 "terms of colorspace and transparency. The ``Pixmap`` class has batteries "
 "included if adjustments are needed."
 msgstr ""
+"당연히 입력 및 출력 형식은 색 공간 및 투명도 측면에서 호환되어야 합니다. ``Pixmap`` 클래스는 조정이 필요한 경우 내장 기능을 "
+"포함하고 있습니다."
 
 #: ../../recipes-images.rst:399 e67f10d9438447479868be73be60c969
 msgid "**Convert JPEG to Photoshop**::"
-msgstr ""
+msgstr "**JPEG를 Photoshop으로 변환**::"
 
 #: ../../recipes-images.rst:405 69af5be5c5e042739b6b881440591067
 msgid ""
@@ -701,16 +795,21 @@ msgid ""
 "formats (PPM, PGM, etc.) does the trick, because they are supported by "
 "all Tkinter versions::"
 msgstr ""
+"**JPEG를 Tkinter PhotoImage로 변환** 합니다. 모든 **RGB / 알파 없음** 이미지도 정확히 동일하게 작동합니다. "
+"**Portable Anymap** 형식(PPM, PGM 등) 중 하나로 변환하면 효과가 있습니다. 모든 Tkinter 버전에서 지원되기 "
+"때문입니다::"
 
 #: ../../recipes-images.rst:412 95cfd29f810e445da70d90c145d8615a
 msgid ""
 "Convert **PNG with alpha** to Tkinter PhotoImage. This requires "
 "**removing the alpha bytes**, before we can do the PPM conversion::"
 msgstr ""
+"**알파가 있는 PNG** 를 Tkinter PhotoImage로 변환합니다. PPM 변환을 수행하기 전에 **알파 바이트를 제거** 해야 "
+"합니다::"
 
 #: ../../recipes-images.rst:429 1911e5e8b8924c1a8b4f22e5163ab54f
 msgid "How to Use Pixmaps: Gluing Images"
-msgstr ""
+msgstr "픽스맵 사용 방법: 이미지 붙이기"
 
 #: ../../recipes-images.rst:431 7bec2fa27c4e409498516974d3af1a08
 msgid ""
@@ -718,18 +817,20 @@ msgid ""
 "purposes. The script reads an image file and creates a new image which "
 "consist of 3 * 4 tiles of the original::"
 msgstr ""
+"이것은 픽스맵이 순수하게 그래픽적이고 문서가 아닌 목적으로 사용될 수 있는 방법을 보여줍니다. 스크립트는 이미지 파일을 읽고 원본의 "
+"3 * 4 타일로 구성된 새 이미지를 생성합니다::"
 
 #: ../../recipes-images.rst:451 5e629a692db5492494234aeaa2c9e000
 msgid "This is the input picture:"
-msgstr ""
+msgstr "이것이 입력 그림입니다:"
 
 #: ../../recipes-images.rst:456 0eb66869c4e049f18880e64efa606cb7
 msgid "Here is the output:"
-msgstr ""
+msgstr "출력은 다음과 같습니다:"
 
 #: ../../recipes-images.rst:473 193131d4ef064104aca816c9fb1b8eda
 msgid "How to Use Pixmaps: Making a Fractal"
-msgstr ""
+msgstr "픽스맵 사용 방법: 프랙탈 만들기"
 
 #: ../../recipes-images.rst:475 94c73f5e5e844ef29a6937bacf69e134
 msgid ""
@@ -740,6 +841,9 @@ msgid ""
 "and continue *ad infinitum*. The end result is a set with area zero and "
 "fractal dimension 1.8928..."
 msgstr ""
+"다음은 **시에르핀스키 카펫** 을 생성하는 또 다른 픽스맵 예제입니다 -- **칸토어 집합** 을 2차원으로 일반화한 프랙탈입니다. 정사각형 "
+"카펫이 주어지면 9개의 하위 사각형(3 x 3)을 표시하고 중앙의 것을 잘라냅니다. 나머지 8개의 하위 사각형 각각에 대해 동일한 "
+"방식으로 처리하고 *무한히* 계속합니다. 최종 결과는 면적이 0이고 프랙탈 차원이 1.8928...인 집합입니다."
 
 #: ../../recipes-images.rst:477 56abcac9cb974ce6ae22fd649ca0859f
 msgid ""
@@ -747,24 +851,25 @@ msgid ""
 " one-pixel granularity. To increase the image precision, change the value"
 " of n (precision)::"
 msgstr ""
+"이 스크립트는 1픽셀 단위까지 내려가서 PNG로 근사 이미지를 생성합니다. 이미지 정밀도를 높이려면 n(정밀도) 값을 변경하세요::"
 
 #: ../../recipes-images.rst:531 c2a2453f8f7b4dbdb1a88b9ab6e6be44
 msgid "The result should look something like this:"
-msgstr ""
+msgstr "결과는 다음과 같아야 합니다:"
 
 #: ../../recipes-images.rst:541 7b65b42e069e44c4acda5058a222b54c
 msgid "How to Interface with NumPy"
-msgstr ""
+msgstr "NumPy와 인터페이스하는 방법"
 
 #: ../../recipes-images.rst:543 4737dca0e38f4d0391a1712b9196eeb8
 msgid ""
 "This shows how to create a PNG file from a numpy array (several times "
 "faster than most other methods)::"
-msgstr ""
+msgstr "이것은 numpy 배열에서 PNG 파일을 만드는 방법을 보여줍니다(대부분의 다른 방법보다 몇 배 빠름)::"
 
 #: ../../recipes-images.rst:570 86677e790d2c4f67807e8699c758c3b8
 msgid "How to Add Images to a PDF Page"
-msgstr ""
+msgstr "PDF 페이지에 이미지 추가 방법"
 
 #: ../../recipes-images.rst:572 8b806d59869144378fcd5066d1490f5c
 msgid ""
@@ -772,128 +877,132 @@ msgid ""
 ":meth:`Page.insert_image` and :meth:`Page.show_pdf_page`. Both methods "
 "have things in common, but there are also differences."
 msgstr ""
+"PDF 페이지에 이미지를 추가하는 두 가지 방법이 있습니다: :meth:`Page.insert_image` 와 "
+":meth:`Page.show_pdf_page`. 두 방법 모두 공통점이 있지만 차이점도 있습니다."
 
 #: ../../recipes-images.rst:575 2c8c48d1aa0b4d95ba46f51b58d654d6
 msgid "**Criterion**"
-msgstr ""
+msgstr "**기준**"
 
 #: ../../recipes-images.rst:575 7d8993132b2b4a42a0cf8d794f2992d0
 msgid ":meth:`Page.insert_image`"
-msgstr ""
+msgstr ":meth:`Page.insert_image`"
 
 #: ../../recipes-images.rst:575 8a3e9ca045d64f2e8d891f008fec70a3
 msgid ":meth:`Page.show_pdf_page`"
-msgstr ""
+msgstr ":meth:`Page.show_pdf_page`"
 
 #: ../../recipes-images.rst:577 5bd36cce5edc4839bb92e31c9c76b006
 msgid "displayable content"
-msgstr ""
+msgstr "표시 가능한 콘텐츠"
 
 #: ../../recipes-images.rst:577 6abadbc464324e72b3412212af08ddd5
 msgid "image file, image in memory, pixmap"
-msgstr ""
+msgstr "이미지 파일, 메모리의 이미지, 픽스맵"
 
 #: ../../recipes-images.rst:577 fe5a852c20eb446f96ab83f04f7f4a93
 msgid "PDF page"
-msgstr ""
+msgstr "PDF 페이지"
 
 #: ../../recipes-images.rst:578 204fbfd1f4dd47b9b874c7093d251715
 msgid "display resolution"
-msgstr ""
+msgstr "표시 해상도"
 
 #: ../../recipes-images.rst:578 6877443fc21f4ae29b20fa83d0845e7f
 msgid "image resolution"
-msgstr ""
+msgstr "이미지 해상도"
 
 #: ../../recipes-images.rst:578 3259783ac12241b39f8d13f3ae0773d6
 msgid "vectorized (except raster page content)"
-msgstr ""
+msgstr "벡터화됨(래스터 페이지 콘텐츠 제외)"
 
 #: ../../recipes-images.rst:579 0a170d4e27b74f7ba12e8e015f247437
 msgid "rotation"
-msgstr ""
+msgstr "회전"
 
 #: ../../recipes-images.rst:579 809287424df744108ab05380b655171e
 msgid "0, 90, 180 or 270 degrees"
-msgstr ""
+msgstr "0, 90, 180 또는 270도"
 
 #: ../../recipes-images.rst:579 da8c599cd42840bbac1e77a82693730a
 msgid "any angle"
-msgstr ""
+msgstr "임의의 각도"
 
 #: ../../recipes-images.rst:580 f40e820c9fb14438ae80fc9bde7f8a98
 msgid "clipping"
-msgstr ""
+msgstr "클리핑"
 
 #: ../../recipes-images.rst:580 4573b228aad144ed96c21fc96b46d235
 msgid "no (full image only)"
-msgstr ""
+msgstr "아니오(전체 이미지만)"
 
 #: ../../recipes-images.rst:580 ../../recipes-images.rst:585
 #: 451bef807fb34d769267984ed465f6dc cca26d0a49b6435a81557dc0961b5744
 msgid "yes"
-msgstr ""
+msgstr "예"
 
 #: ../../recipes-images.rst:581 cfbb20540a0b4c778339a005d689e7b8
 msgid "keep aspect ratio"
-msgstr ""
+msgstr "종횡비 유지"
 
 #: ../../recipes-images.rst:581 9088023618154cb2b1a12c0ddf19f1a2
 #: f0b3417bf2a7468f8f23939745c86e02
 msgid "yes (default option)"
-msgstr ""
+msgstr "예(기본 옵션)"
 
 #: ../../recipes-images.rst:582 5f19b1705d7c458d9132e003453cbec7
 msgid "transparency (water marking)"
-msgstr ""
+msgstr "투명도(워터마킹)"
 
 #: ../../recipes-images.rst:582 99fc40d08cd448d4a3d5157524c2fed1
 msgid "depends on the image"
-msgstr ""
+msgstr "이미지에 따라 다름"
 
 #: ../../recipes-images.rst:582 4953bd2dbe474a6a95444caaec0f8e00
 msgid "depends on the page"
-msgstr ""
+msgstr "페이지에 따라 다름"
 
 #: ../../recipes-images.rst:583 800220a1afe84937ab054dd04a19a8c8
 msgid "location / placement"
-msgstr ""
+msgstr "위치 / 배치"
 
 #: ../../recipes-images.rst:583 3d7142d3e8b844178ad964a906047c57
 #: 6f79b41a8b7f44d0b808c73f0bca9bbf
 msgid "scaled to fit target rectangle"
-msgstr ""
+msgstr "대상 사각형에 맞게 크기 조정"
 
 #: ../../recipes-images.rst:584 bcd9bfd74c0e4791b173eea29559bf7c
 msgid "performance"
-msgstr ""
+msgstr "성능"
 
 #: ../../recipes-images.rst:584 709fb304b9de44d69140fb3994966d0b
 #: aa53a4c8c09a4cfba0e8f1a66a28bb65
 msgid "automatic prevention of duplicates;"
-msgstr ""
+msgstr "중복 자동 방지;"
 
 #: ../../recipes-images.rst:585 0937b39761af40238a7534454037df7f
 msgid "multi-page image support"
-msgstr ""
+msgstr "다중 페이지 이미지 지원"
 
 #: ../../recipes-images.rst:585 14f432eb978947a8aeab98f966d2d10f
 msgid "no"
-msgstr ""
+msgstr "아니오"
 
 #: ../../recipes-images.rst:586 925c5122b94f48c5b30dceafcb918523
 msgid "ease of use"
-msgstr ""
+msgstr "사용 편의성"
 
 #: ../../recipes-images.rst:586 570bc160fd964dfd90f9efc5d183be86
 msgid "simple, intuitive;"
-msgstr ""
+msgstr "간단하고 직관적;"
 
 #: ../../recipes-images.rst:586 7cf88dffae244d2ab3bda778f8a61657
 msgid ""
 "simple, intuitive; **usable for all document types** (including images!) "
 "after conversion to PDF via :meth:`Document.convert_to_pdf`"
 msgstr ""
+"간단하고 직관적; :meth:`Document.convert_to_pdf` 를 통해 PDF로 변환 후 **모든 문서 유형** (이미지 포함!)에 "
+"사용 가능"
 
 #: ../../recipes-images.rst:592 6ad1ea7eaa8f47249a3a73f2bd375d6e
 msgid ""
@@ -901,6 +1010,8 @@ msgid ""
 "parameters **filename / stream / pixmap** must be given, if not re-"
 "inserting an existing image::"
 msgstr ""
+":meth:`Page.insert_image` 의 기본 코드 패턴. 기존 이미지를 다시 삽입하지 않는 경우 **filename / stream / "
+"pixmap** 매개변수 중 **정확히 하나** 를 제공해야 합니다::"
 
 #: ../../recipes-images.rst:607 324876f64fbe4c44ab53d2a63fa13939
 msgid ""
@@ -908,22 +1019,24 @@ msgid ""
 "must be different :ref:`Document` objects (but may be opened from the "
 "same file)::"
 msgstr ""
+":meth:`Page.show_pdf_page` 의 기본 코드 패턴. 소스 및 대상 PDF는 서로 다른 :ref:`Document` 객체여야 "
+"합니다(같은 파일에서 열 수 있음)::"
 
 #: ../../recipes-images.rst:623 3fb681b8dd954d6191b33bb9379c5769
 msgid "How to Use Pixmaps: Checking Text Visibility"
-msgstr ""
+msgstr "픽스맵 사용 방법: 텍스트 가시성 확인"
 
 #: ../../recipes-images.rst:625 f6738eb5b3944be59ab375f9b7eb965f
 msgid ""
 "Whether or not a given piece of text is actually visible on a page "
 "depends on a number of factors:"
-msgstr ""
+msgstr "주어진 텍스트가 페이지에서 실제로 보이는지는 여러 요인에 따라 다릅니다:"
 
 #: ../../recipes-images.rst:627 1e747fae38a041ceab9962bed078d738
 msgid ""
 "Text is not covered by another object but may have the same color as the "
 "background i.e., white-on-white etc."
-msgstr ""
+msgstr "텍스트가 다른 객체에 의해 덮이지 않았지만 배경과 같은 색상일 수 있습니다. 예: 흰색 위의 흰색 등."
 
 #: ../../recipes-images.rst:628 f335376e08db4247a18b81df59e129c8
 msgid ""
@@ -931,18 +1044,23 @@ msgid ""
 "important capability, for example to uncover badly anonymized legal "
 "documents."
 msgstr ""
+"텍스트가 이미지나 벡터 그래픽에 의해 덮일 수 있습니다. 이를 감지하는 것은 중요한 기능입니다. 예를 들어 잘못 익명화된 법률 문서를 "
+"발견하는 데 사용됩니다."
 
 #: ../../recipes-images.rst:629 c13633a208484210b9ae568ec9ba0f68
 msgid ""
 "Text is created hidden. This technique is usually used by OCR tools to "
 "store the recognized text in an invisible layer on the page."
 msgstr ""
+"텍스트가 숨겨진 상태로 생성됩니다. 이 기술은 일반적으로 OCR 도구가 인식된 텍스트를 페이지의 보이지 않는 레이어에 저장하는 데 "
+"사용됩니다."
 
 #: ../../recipes-images.rst:631 15e4b37ca4e743d9ace6bbddf7721b12
 msgid ""
 "The following shows how to detect situation 1. above, or situation 2. if "
 "the covering object is unicolor::"
 msgstr ""
+"다음은 위의 상황 1을 감지하는 방법 또는 덮는 객체가 단색인 경우 상황 2를 감지하는 방법을 보여줍니다::"
 
 #: ../../recipes-images.rst:645 83c1b504293642219a2e1c7034fa13ef
 msgid ""
@@ -951,6 +1069,9 @@ msgid ""
 "note that we create a **pixmap only once**. This can save a lot of "
 "processing time if there are multiple hit rectangles."
 msgstr ""
+":meth:`Pixmap.color_topusage` 메서드는 `(ratio, pixel)` 튜플을 반환합니다. 여기서 0 < ratio <= "
+"1이고 *pixel* 은 색상의 픽셀 값입니다. **픽스맵을 한 번만 생성** 합니다. 여러 히트 사각형이 있는 경우 처리 시간을 많이 "
+"절약할 수 있습니다."
 
 #: ../../recipes-images.rst:647 a5240ef02f1b474ca0cc0911c89fca25
 msgid ""
@@ -959,8 +1080,11 @@ msgid ""
 "visible text returns the color of the background (mostly white) and a "
 "ratio around 0.7 to 0.8, for example `(0.685, b'\\xff\\xff\\xff')`."
 msgstr ""
+"위 코드의 로직은 다음과 같습니다: 바늘이 가리키는 사각형이 (\"거의\": > 95%) 단색이면 텍스트가 보일 수 없습니다. "
+"보이는 텍스트의 일반적인 결과는 배경 색상(대부분 흰색)과 약 0.7~0.8의 비율을 반환합니다. 예: `(0.685, "
+"b'\\xff\\xff\\xff')`."
 
 #: ../../footer.rst:46 069c8258eace4a40a1b85ff062eeb067
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 

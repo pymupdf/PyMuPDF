@@ -21,40 +21,40 @@ msgstr ""
 
 #: ../../header.rst:-1 5b2b2477e1b643fe878fe480ca8a5a5c
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 9af1355de6074c539e4b51e5dd6b1657
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 8dcf3faef7104a2cafff9541cb4c8daf
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../recipes-ocr.rst:17 d523ae4d9ab8407a9cf5b861f5297e31
 msgid "OCR - Optical Character Recognition"
-msgstr ""
+msgstr "OCR - 광학 문자 인식"
 
 #: ../../recipes-ocr.rst:19 ad0635e0379e4e30a03ba26654ccd626
 msgid ""
 "|PyMuPDF| has integrated support for OCR (Optical Character Recognition)."
 " It is possible to use OCR for both, images (via the :ref:`Pixmap` class)"
 " and for document pages."
-msgstr ""
+msgstr "|PyMuPDF| 는 OCR(광학 문자 인식)에 대한 통합 지원을 제공합니다. 이미지(:ref:`Pixmap` 클래스를 통해)와 문서 페이지 모두에 OCR을 사용할 수 있습니다."
 
 #: ../../recipes-ocr.rst:21 0e099596d02b489e9ad0b0acde488005
 msgid ""
 "The feature is currently based on Tesseract-OCR which must be installed "
 "as a separate application -- see the :ref:`installation_ocr`."
-msgstr ""
+msgstr "이 기능은 현재 Tesseract-OCR을 기반으로 하며 별도의 애플리케이션으로 설치해야 합니다. 자세한 내용은 :ref:`installation_ocr` 을 참조하세요."
 
 #: ../../recipes-ocr.rst:24 ea8b233238a54196add63aa017b42543
 msgid "How to OCR an Image"
-msgstr ""
+msgstr "이미지 OCR 방법"
 
 #: ../../recipes-ocr.rst:25 a44323f4b0df47da98d91ac1a37d6b21
 msgid ""
@@ -62,68 +62,68 @@ msgid ""
 "can then be saved to a 1-page PDF. This page will look like the original "
 "image with the same width and height. It will contain a layer of text as "
 "recognized by Tesseract."
-msgstr ""
+msgstr "지원되는 이미지는 먼저 :ref:`Pixmap` 으로 변환해야 합니다. 그런 다음 Pixmap을 1페이지 PDF로 저장할 수 있습니다. 이 페이지는 원본 이미지와 동일한 너비와 높이를 가집니다. Tesseract가 인식한 텍스트 레이어가 포함됩니다."
 
 #: ../../recipes-ocr.rst:27 fb8760d9d7144f5786b17ead972a9a1f
 msgid ""
 "The PDF can be generated via one of the methods "
 ":meth:`Pixmap.pdfocr_save` or :meth:`Pixmap.pdfocr_tobytes`, as a file on"
 " disk or as a PDF in memory."
-msgstr ""
+msgstr "PDF는 :meth:`Pixmap.pdfocr_save` 또는 :meth:`Pixmap.pdfocr_tobytes` 메서드 중 하나를 통해 디스크의 파일로 또는 메모리의 PDF로 생성할 수 있습니다."
 
 #: ../../recipes-ocr.rst:29 1f42a8e44a1d4d17b7f75da5f822e8aa
 msgid ""
 "The text can be extracted and searched with the usual text extraction and"
 " search methods (:meth:`Page.get_text`, :meth:`Page.search_for`, etc.). "
 "Please also note the following important facts and prerequisites:"
-msgstr ""
+msgstr "텍스트는 일반적인 텍스트 추출 및 검색 메서드(:meth:`Page.get_text`, :meth:`Page.search_for` 등)로 추출하고 검색할 수 있습니다. 다음 중요한 사실과 전제 조건도 참고하세요:"
 
 #: ../../recipes-ocr.rst:31 44371b59458b49ce97c3a0a6cc2e6b26
 msgid ""
 "When converting the image to a Pixmap, please confirm that the color "
 "space is RGB and alpha is `False` (no transparency). Convert the original"
 " Pixmap if necessary."
-msgstr ""
+msgstr "이미지를 Pixmap으로 변환할 때 색 공간이 RGB이고 alpha가 `False` (투명도 없음)인지 확인하세요. 필요하면 원본 Pixmap을 변환하세요."
 
 #: ../../recipes-ocr.rst:32 30e5cba3998c418688b3fea3b830296b
 msgid ""
 "All text is written as \"hidden\" with Tesseract's own `GlyphLessFont`, a"
 " mono-spaced font with metrics comparable to Courier."
-msgstr ""
+msgstr "모든 텍스트는 Tesseract 자체 `GlyphLessFont` 로 \"숨김\"으로 작성되며, Courier와 유사한 메트릭을 가진 고정폭 글꼴입니다."
 
 #: ../../recipes-ocr.rst:33 6ac9d9f5b2824a4890be1cf73715c091
 msgid ""
 "All text has the properties regular and black (i.e. no bold, no italic, "
 "no information about the original fonts)."
-msgstr ""
+msgstr "모든 텍스트는 일반 및 검은색 속성을 가집니다(즉, 굵게, 기울임꼴 없음, 원본 글꼴 정보 없음)."
 
 #: ../../recipes-ocr.rst:34 a08272a3cc18432f9cc35cdd8591c309
 msgid ""
 "Tesseract does not recognize vector graphics (i.e. no drawings / line-"
 "art)."
-msgstr ""
+msgstr "Tesseract는 벡터 그래픽을 인식하지 않습니다(즉, 그림/선화 없음)."
 
 #: ../../recipes-ocr.rst:36 35e883700cc148b98f8d79dcf362ad4e
 msgid "This approach is also recommended to OCR a complete scanned PDF:"
-msgstr ""
+msgstr "이 방법은 전체 스캔된 PDF를 OCR하는 데도 권장됩니다:"
 
 #: ../../recipes-ocr.rst:38 d47d8fca90fb4141932d00dd7353c53a
 msgid "Render each page to a :ref:`Pixmap` with desired resolution"
-msgstr ""
+msgstr "각 페이지를 원하는 해상도로 :ref:`Pixmap` 에 렌더링"
 
 #: ../../recipes-ocr.rst:39 666549a157cb4d1eae9cfaa445aa6b78
 msgid "Append the resulting 1-page PDF to the output PDF"
-msgstr ""
+msgstr "결과 1페이지 PDF를 출력 PDF에 추가"
 
 #: ../../recipes-ocr.rst:42 df250dae4cd34a3e9b289c490a3cde65
 msgid "How to OCR a Document Page"
-msgstr ""
+msgstr "문서 페이지 OCR 방법"
 
 #: ../../recipes-ocr.rst:43 9a152c4ead1343cf86489d1427003811
 msgid ""
 "Any supported document page can be OCR-ed -- either the complete page or "
 "only the image areas on it."
-msgstr ""
+msgstr "지원되는 모든 문서 페이지를 OCR할 수 있습니다. 페이지 전체 또는 해당 페이지의 이미지 영역만 OCR할 수 있습니다."
 
 #: ../../recipes-ocr.rst:45 75c8b08c675a49f2bf0d5425b06d171a
 msgid ""
@@ -132,43 +132,43 @@ msgid ""
 "and store the result in a :ref:`TextPage`. Using this TextPage for all "
 "subsequent extractions and text searches will then happen with "
 "|PyMuPDF|'s usual top speed."
-msgstr ""
+msgstr "광학 문자 인식은 표준 텍스트 추출보다 약 1,000배 느리기 때문에, 페이지당 한 번만 OCR을 수행하고 결과를 :ref:`TextPage` 에 저장합니다. 이후 모든 추출 및 텍스트 검색에 이 TextPage를 사용하면 |PyMuPDF| 의 일반적인 최고 속도로 처리됩니다."
 
 #: ../../recipes-ocr.rst:47 96c380b987f94acbbfb8ac4450e43dce
 msgid "To OCR a document page, follow this approach:"
-msgstr ""
+msgstr "문서 페이지를 OCR하려면 다음 방법을 따르세요:"
 
 #: ../../recipes-ocr.rst:49 39681da9450c49058ca2763173465812
 msgid ""
 "Determine whether OCR is needed / beneficial at all. A number of criteria"
 " can be used for this decision, like:"
-msgstr ""
+msgstr "OCR이 필요한지/유익한지 판단하세요. 다음과 같은 여러 기준을 사용할 수 있습니다:"
 
 #: ../../recipes-ocr.rst:51 671903164c6c495da5a353e4d7e1a112
 msgid "page is completely covered by an image"
-msgstr ""
+msgstr "페이지가 이미지로 완전히 덮여 있음"
 
 #: ../../recipes-ocr.rst:52 67a0e6d81030439db6adb2f9c61737d4
 msgid "no text exists on the page"
-msgstr ""
+msgstr "페이지에 텍스트가 없음"
 
 #: ../../recipes-ocr.rst:53 95a2141830a64bd6b31d96005eb2207b
 msgid "thousands of small vector graphics (indicating *simulated* text)"
-msgstr ""
+msgstr "수천 개의 작은 벡터 그래픽(*시뮬레이션된* 텍스트를 나타냄)"
 
 #: ../../recipes-ocr.rst:55 a56ae19e7c8a4d0bb37016395d9ab63c
 msgid ""
 "OCR the page and store result in a :ref:`TextPage` object using an "
 "instruction like `tp = page.get_textpage_ocr(...)`."
-msgstr ""
+msgstr "`tp = page.get_textpage_ocr(...)` 와 같은 명령을 사용하여 페이지를 OCR하고 결과를 :ref:`TextPage` 객체에 저장합니다."
 
 #: ../../recipes-ocr.rst:57 4e0d85d010b04df58a9c1169c5d8b553
 msgid ""
 "Refer to the produced :ref:`TextPage` in all subsequent text extractions "
 "and searches via the `textpage=tp` parameter."
-msgstr ""
+msgstr "이후 모든 텍스트 추출 및 검색에서 `textpage=tp` 매개변수를 통해 생성된 :ref:`TextPage` 를 참조하세요."
 
 #: ../../footer.rst:46 1536d96897a04a48b4b90ead47380207
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

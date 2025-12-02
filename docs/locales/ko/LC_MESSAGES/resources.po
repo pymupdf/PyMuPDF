@@ -21,55 +21,55 @@ msgstr ""
 
 #: ../../header.rst:-1 ed18d6f38b3341f2bde92874aa4bc5d5
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 e9efbd58e1724907a6662c6a6d1443ed
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 f0d9191b949d4c7aaf99c05b1e804afe
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../resources.rst:6 29588c8ac283422b8882c226d20d5624
 msgid "Resources"
-msgstr ""
+msgstr "리소스"
 
 #: ../../resources.rst:9 226156d6aa574ae49ebbc29f7cc0ef0d
 msgid "**PyMuPDF Pro**"
-msgstr ""
+msgstr "**PyMuPDF Pro**"
 
 #: ../../resources.rst:12 67c0d5d5d80c4878907a81eb3091f9c3
 msgid "For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`."
-msgstr ""
+msgstr "**Office** 파일 지원을 위해 `PyMuPDF Pro <pymupdf-pro>` 를 사용해 보세요."
 
 #: ../../resources.rst:20 28881f0ff7624205aac76bf0a54670e2
 msgid "Find out about **PyMuPDF Utilities**"
-msgstr ""
+msgstr "**PyMuPDF Utilities** 에 대해 알아보기"
 
 #: ../../resources.rst:22 a5cac2a3beb04e638f4ab889c042bce1
 msgid ""
 "The :title:`GitHub` repository `PyMuPDF-Utilities "
 "<https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of"
 " examples, demonstrations and use cases."
-msgstr ""
+msgstr ":title:`GitHub` 저장소 `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ 에는 다양한 예제, 데모 및 사용 사례가 포함되어 있습니다."
 
 #: ../../resources.rst:31 ae915eee85a646ed938c77e4ca278e0f
 msgid "Do you need |PDF| to **DOCX** conversion?"
-msgstr ""
+msgstr "|PDF| 를 **DOCX** 로 변환이 필요하신가요?"
 
 #: ../../resources.rst:33 38b205c29ae545f79e6de0b8dda5b6a8
 msgid ""
 "We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-"
 "docx** library to provide simple document conversion from |PDF| to "
 "**DOCX** format."
-msgstr ""
+msgstr "|PDF| 에서 **DOCX** 형식으로의 간단한 문서 변환을 제공하기 위해 |PyMuPDF| 와 **python-docx** 라이브러리를 사용하는 pdf2docx_ 라이브러리를 권장합니다."
 
 #: ../../footer.rst:46 26ed59be763d4fe5a9384c80731d8341
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

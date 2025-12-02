@@ -21,29 +21,29 @@ msgstr ""
 
 #: ../../header.rst:-1 d57c78d809254da4835f2c2e979be9bf
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 a9ed1908021a4b46ac047f81afa8fd03
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c383513223a942bea5aee21e50d9b3c2
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../linkdest.rst:7 6f11bc05a63745008c94dda126160905
 msgid "linkDest"
-msgstr ""
+msgstr "linkDest"
 
 #: ../../linkdest.rst:8 0b3bb1ecff3b4317aaaabd080edb44e8
 msgid ""
 "Class representing the `dest` property of an outline entry or a link. "
 "Describes the destination to which such entries point."
-msgstr ""
+msgstr "개요 항목 또는 링크의 `dest` 속성을 나타내는 클래스입니다. 이러한 항목이 가리키는 대상을 설명합니다."
 
 #: ../../linkdest.rst:10 c02022acb8024740b76912d137b9899a
 msgid ""
@@ -51,121 +51,121 @@ msgid ""
 "version 1.10.0. For backward compatibility, PyMuPDF is still maintaining "
 "it, although some of its attributes are no longer backed by data actually"
 " available via MuPDF."
-msgstr ""
+msgstr "MuPDF v1.9.0까지 이 클래스는 MuPDF 내부에 존재했으며 버전 1.10.0에서 제거되었습니다. 하위 호환성을 위해 PyMuPDF는 여전히 이를 유지하고 있지만, 일부 속성은 더 이상 MuPDF를 통해 실제로 사용 가능한 데이터로 지원되지 않습니다."
 
 #: ../../linkdest.rst:13 192d952a7df04c4cb3800c0c6f8b6f99
 msgid "**Attribute**"
-msgstr ""
+msgstr "**속성**"
 
 #: ../../linkdest.rst:13 71e9a555483944ff92a77001b3d42f49
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../linkdest.rst:15 3ccecaa069ff4226b5794d23afcb6f38
 msgid ":attr:`linkDest.dest`"
-msgstr ""
+msgstr ":attr:`linkDest.dest`"
 
 #: ../../linkdest.rst:15 b0182cc143894b7397921f5e6efe2ad8
 msgid "destination"
-msgstr ""
+msgstr "대상"
 
 #: ../../linkdest.rst:16 94cfb537b2034d95b10812ca82ab0904
 msgid ":attr:`linkDest.fileSpec`"
-msgstr ""
+msgstr ":attr:`linkDest.fileSpec`"
 
 #: ../../linkdest.rst:16 8c2d54d1045244c2b2c7be7fe3aff94d
 msgid "file specification (path, filename)"
-msgstr ""
+msgstr "파일 사양(경로, 파일명)"
 
 #: ../../linkdest.rst:17 c9d87d20c7e34bdcba3e15b52958cc2d
 msgid ":attr:`linkDest.flags`"
-msgstr ""
+msgstr ":attr:`linkDest.flags`"
 
 #: ../../linkdest.rst:17 8eab10462616444ca0c07141a25997d1
 msgid "descriptive flags"
-msgstr ""
+msgstr "설명 플래그"
 
 #: ../../linkdest.rst:18 d3ee936fbf09442985e09022f97346a0
 msgid ":attr:`linkDest.isMap`"
-msgstr ""
+msgstr ":attr:`linkDest.isMap`"
 
 #: ../../linkdest.rst:18 6b10fcc4b7024312b80879a046dde7a1
 msgid "is this a MAP?"
-msgstr ""
+msgstr "이것이 MAP입니까?"
 
 #: ../../linkdest.rst:19 ebd316b494c341949404a1013a0c3716
 msgid ":attr:`linkDest.isUri`"
-msgstr ""
+msgstr ":attr:`linkDest.isUri`"
 
 #: ../../linkdest.rst:19 a3d669f5e1b24a5f8817d790b4dfce24
 msgid "is this a URI?"
-msgstr ""
+msgstr "이것이 URI입니까?"
 
 #: ../../linkdest.rst:20 5f79bf4078184f17aed9690ec43a9e28
 msgid ":attr:`linkDest.kind`"
-msgstr ""
+msgstr ":attr:`linkDest.kind`"
 
 #: ../../linkdest.rst:20 da66f3a913634b5197318056882d489c
 msgid "kind of destination"
-msgstr ""
+msgstr "대상 유형"
 
 #: ../../linkdest.rst:21 a9f255b3361541bbbc58d4b524552874
 msgid ":attr:`linkDest.lt`"
-msgstr ""
+msgstr ":attr:`linkDest.lt`"
 
 #: ../../linkdest.rst:21 8696049fe5f14b5e898e8894961de97a
 msgid "top left coordinates"
-msgstr ""
+msgstr "왼쪽 위 좌표"
 
 #: ../../linkdest.rst:22 e69848891b564b91b789e415193e2599
 msgid ":attr:`linkDest.named`"
-msgstr ""
+msgstr ":attr:`linkDest.named`"
 
 #: ../../linkdest.rst:22 3e9e08f3e3f646e39ea6939d38f92ea7
 msgid "name if named destination"
-msgstr ""
+msgstr "이름이 지정된 대상인 경우 이름"
 
 #: ../../linkdest.rst:23 e55ceb925d38472da5faac759c6c1f39
 msgid ":attr:`linkDest.newWindow`"
-msgstr ""
+msgstr ":attr:`linkDest.newWindow`"
 
 #: ../../linkdest.rst:23 9da63baa93924bb3810f8b14cd3c6f08
 msgid "name of new window"
-msgstr ""
+msgstr "새 창 이름"
 
 #: ../../linkdest.rst:24 3133f4f237c54427b5f38bb9e4ee0870
 msgid ":attr:`linkDest.page`"
-msgstr ""
+msgstr ":attr:`linkDest.page`"
 
 #: ../../linkdest.rst:24 4e9fb63bb49e45838a66455c5ee65ae9
 msgid "page number"
-msgstr ""
+msgstr "페이지 번호"
 
 #: ../../linkdest.rst:25 007c86d9023d40e5bb0e4e5b93d802dd
 msgid ":attr:`linkDest.rb`"
-msgstr ""
+msgstr ":attr:`linkDest.rb`"
 
 #: ../../linkdest.rst:25 6eeedea7ed6145018567f08541f89224
 msgid "bottom right coordinates"
-msgstr ""
+msgstr "오른쪽 아래 좌표"
 
 #: ../../linkdest.rst:26 748aaf1c62434b01970667a3b3033d87
 msgid ":attr:`linkDest.uri`"
-msgstr ""
+msgstr ":attr:`linkDest.uri`"
 
 #: ../../linkdest.rst:26 7ad45d4c5bba4618bf6a5964e2571854
 msgid "URI"
-msgstr ""
+msgstr "URI"
 
 #: ../../linkdest.rst:29 fb8d1e50444c4cd08673dbee32636872
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../linkdest.rst:35 899ccd076a8a486087261429c87c1e49
 msgid ""
 "Target destination name if :attr:`linkDest.kind` is :data:`LINK_GOTOR` "
 "and :attr:`linkDest.page` is *-1*."
-msgstr ""
+msgstr ":attr:`linkDest.kind` 가 :data:`LINK_GOTOR` 이고 :attr:`linkDest.page` 가 *-1* 인 경우 대상 이름."
 
 #: ../../linkdest.rst 04ee6c88174848ac8bab86ad2416c0a3
 #: 1464a774b9d54e0e990c6ebe2da4c6e8 473cf52ca9cf41cf99038dd29cc31c14
@@ -175,20 +175,20 @@ msgstr ""
 #: bb350508308a4d99acad49e328495653 e224131ce0fe4fd0a1df5250c0487ca4
 #: e5f8f3174dfc4ff997a1743196c9e4d6
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../linkdest.rst:37 ../../linkdest.rst:43 ../../linkdest.rst:79
 #: ../../linkdest.rst:103 581dcd6df6224fbe8745cc8ab2b07a91
 #: a81ed9ea22224e639705fc5e3839af2f d3182a558fb849428de433c60a1bdad7
 #: f69f354db0e14b7ea4880f6b4e0aa8ff
 msgid "str"
-msgstr ""
+msgstr "str"
 
 #: ../../linkdest.rst:41 90baaf8b636c4ee591f82da46afacac7
 msgid ""
 "Contains the filename and path this link points to, if "
 ":attr:`linkDest.kind` is :data:`LINK_GOTOR` or :data:`LINK_LAUNCH`."
-msgstr ""
+msgstr ":attr:`linkDest.kind` 가 :data:`LINK_GOTOR` 또는 :data:`LINK_LAUNCH` 인 경우 이 링크가 가리키는 파일명과 경로를 포함합니다."
 
 #: ../../linkdest.rst:47 ee1974ce6ace4936a3d8b8b75df71cb3
 msgid ""
@@ -197,58 +197,58 @@ msgid ""
 " such that e.g. :attr:`linkDest.lt` and :attr:`linkDest.rb` can be "
 "treated as defining a bounding box. But the flags indicate which of the "
 "values were actually specified, see :ref:`linkDest Flags`."
-msgstr ""
+msgstr "대상의 다양한 측면의 유효성과 의미를 설명하는 비트 필드입니다. 가능한 한 링크 대상은 예를 들어 :attr:`linkDest.lt` 와 :attr:`linkDest.rb` 가 경계 상자를 정의하는 것으로 처리될 수 있도록 구성됩니다. 하지만 플래그는 실제로 지정된 값들을 나타냅니다. :ref:`linkDest Flags` 를 참조하세요."
 
 #: ../../linkdest.rst:49 ../../linkdest.rst:67 ../../linkdest.rst:91
 #: 3b848969f4524896b56f42ff138fb1c9 4f8b0dea71b94d5dbc70216822055473
 #: bcc9a9fb3afa46a898733753cf361878
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../linkdest.rst:53 09670cfe131548ddaff754f8d49d8e50
 msgid ""
 "This flag specifies whether to track the mouse position when the URI is "
 "resolved. Default value: False."
-msgstr ""
+msgstr "이 플래그는 URI가 해결될 때 마우스 위치를 추적할지 여부를 지정합니다. 기본값: False."
 
 #: ../../linkdest.rst:55 ../../linkdest.rst:61 ../../linkdest.rst:85
 #: 0f0bd710715f40efbacc9b29ff09ea21 44063c7c188e4ce083c47c800c7fe09f
 #: 64522ffbee3a4d4a93db40e43a1b4f85
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../linkdest.rst:59 fbb535a20f504c3e943e5b5a817ff056
 msgid ""
 "Specifies whether this destination is an internet resource (as opposed to"
 " e.g. a local file specification in URI format)."
-msgstr ""
+msgstr "이 대상이 인터넷 리소스인지 여부를 지정합니다(예: URI 형식의 로컬 파일 사양과 대조)."
 
 #: ../../linkdest.rst:65 ca4f535dd57b4577b7809ce0b0137464
 msgid ""
 "Indicates the type of this destination, like a place in this document, a "
 "URI, a file launch, an action or a place in another file. Look at "
 ":ref:`linkDest Kinds` to see the names and numerical values."
-msgstr ""
+msgstr "이 문서 내의 위치, URI, 파일 실행, 작업 또는 다른 파일 내의 위치와 같은 이 대상의 유형을 나타냅니다. 이름과 숫자 값을 보려면 :ref:`linkDest Kinds` 를 참조하세요."
 
 #: ../../linkdest.rst:71 47371977bcbb41fca7f337d5784b6648
 msgid "The top left :ref:`Point` of the destination."
-msgstr ""
+msgstr "대상의 왼쪽 위 :ref:`Point`."
 
 #: ../../linkdest.rst:73 ../../linkdest.rst:97 8e3bc240ba0743959b8cbaa03d0dcff8
 #: c1283cb2f6344dc99b2a97cb147bba13
 msgid ":ref:`Point`"
-msgstr ""
+msgstr ":ref:`Point`"
 
 #: ../../linkdest.rst:77 c723aab53cf843ebae6f749ce9ff4e59
 msgid ""
 "This destination refers to some named action to perform (e.g. a "
 "javascript, see :ref:`AdobeManual`). Standard actions provided are "
 "*NextPage*, *PrevPage*, *FirstPage*,  and *LastPage*."
-msgstr ""
+msgstr "이 대상은 수행할 이름이 지정된 작업(예: javascript, :ref:`AdobeManual` 참조)을 나타냅니다. 제공되는 표준 작업은 *NextPage*, *PrevPage*, *FirstPage*, *LastPage* 입니다."
 
 #: ../../linkdest.rst:83 1a909731575743f18e88a17658993f9c
 msgid "If true, the destination should be launched in a new window."
-msgstr ""
+msgstr "true이면 대상은 새 창에서 시작되어야 합니다."
 
 #: ../../linkdest.rst:89 09037d0a5d7f4c37a6408b92ec712af6
 msgid ""
@@ -257,17 +257,17 @@ msgid ""
 ":data:`LINK_GOTO`. May be *-1* if :attr:`linkDest.kind` is "
 ":data:`LINK_GOTOR`. In this case :attr:`linkDest.dest` contains the "
 "**name** of a destination in the target document."
-msgstr ""
+msgstr "이 대상이 가리키는 페이지 번호(이 문서 또는 대상 문서 내). :attr:`linkDest.kind` 가 :data:`LINK_GOTOR` 또는 :data:`LINK_GOTO` 인 경우에만 설정됩니다. :attr:`linkDest.kind` 가 :data:`LINK_GOTOR` 이면 *-1* 일 수 있습니다. 이 경우 :attr:`linkDest.dest` 에는 대상 문서의 대상 **이름** 이 포함됩니다."
 
 #: ../../linkdest.rst:95 c34d69f4dd99459b8b7b950ce4b817ef
 msgid "The bottom right :ref:`Point` of this destination."
-msgstr ""
+msgstr "이 대상의 오른쪽 아래 :ref:`Point`."
 
 #: ../../linkdest.rst:101 ab5be4b38a0d488996cc185c94c3339d
 msgid "The name of the URI this destination points to."
-msgstr ""
+msgstr "이 대상이 가리키는 URI의 이름."
 
 #: ../../footer.rst:46 fa618bdc623f48169996365910295fee
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

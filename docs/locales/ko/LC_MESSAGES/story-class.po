@@ -21,161 +21,161 @@ msgstr ""
 
 #: ../../header.rst:-1 4450760445994835a9f3775bc9c6f0d5
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 418de775a4634f88837f5ac77a451b10
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 497384ace3f84fa19412dac9da22148c
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../story-class.rst:7 8fafdeea9e5940c28193c7e4fca942c5
 msgid "Story"
-msgstr ""
+msgstr "Story"
 
 #: ../../story-class.rst:11 ce4d16eaf6e64bc59264c0a812630ed7
 msgid "New in v1.21.0"
-msgstr ""
+msgstr "v1.21.0 에서 새로 추가됨"
 
 #: ../../story-class.rst:14 9b7cd17b7b8b43e89336e41091ffd8db
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../story-class.rst:14 306881cbd8ff40e98c769bdad361af16
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../story-class.rst:16 87f3b530a2174677808e6a73c8c7c3d4
 msgid ":meth:`Story.reset`"
-msgstr ""
+msgstr ":meth:`Story.reset`"
 
 #: ../../story-class.rst:16 986c1b4812b34f7b90447c9b85c00515
 msgid "\"rewind\" story output to its beginning"
-msgstr ""
+msgstr "스토리 출력을 시작 부분으로 \"되감기\""
 
 #: ../../story-class.rst:17 acfb8788456043e98e066d8b7f232242
 msgid ":meth:`Story.place`"
-msgstr ""
+msgstr ":meth:`Story.place`"
 
 #: ../../story-class.rst:17 71dd7b0f8852455eb72f274d589300e5
 msgid "compute story content to fit in provided rectangle"
-msgstr ""
+msgstr "제공된 사각형에 맞도록 스토리 콘텐츠 계산"
 
 #: ../../story-class.rst:18 f37a1cf6b3d447fcb752828907626437
 msgid ":meth:`Story.draw`"
-msgstr ""
+msgstr ":meth:`Story.draw`"
 
 #: ../../story-class.rst:18 44a1f29ca77c4ed281ff70a784a28d92
 msgid "write the computed content to current page"
-msgstr ""
+msgstr "계산된 콘텐츠를 현재 페이지에 쓰기"
 
 #: ../../story-class.rst:19 fc8ae71a62484786b2548b2f0715d3e7
 msgid ":meth:`Story.element_positions`"
-msgstr ""
+msgstr ":meth:`Story.element_positions`"
 
 #: ../../story-class.rst:19 78ea4b34e9924ea0b59ec0f387db8d9f
 msgid "callback function logging currently processed story content"
-msgstr ""
+msgstr "현재 처리 중인 스토리 콘텐츠를 로깅하는 콜백 함수"
 
 #: ../../story-class.rst:20 5703135b6e844a53859347624fb3ba8e
 msgid ":attr:`Story.body`"
-msgstr ""
+msgstr ":attr:`Story.body`"
 
 #: ../../story-class.rst:20 8074d90f9db0473c9f78fde5598d87a0
 msgid "the story's underlying :htmlTag:`body`"
-msgstr ""
+msgstr "스토리의 기본 :htmlTag:`body`"
 
 #: ../../story-class.rst:21 b7007d57a5f0478da333d3b7defa34da
 msgid ":meth:`Story.write`"
-msgstr ""
+msgstr ":meth:`Story.write`"
 
 #: ../../story-class.rst:21 529c592a049543488f766ea64af4aef6
 msgid "places and draws Story to a DocumentWriter"
-msgstr ""
+msgstr "Story를 DocumentWriter에 배치하고 그리기"
 
 #: ../../story-class.rst:22 48189b1970a944249727deeaab30767a
 msgid ":meth:`Story.write_stabilized`"
-msgstr ""
+msgstr ":meth:`Story.write_stabilized`"
 
 #: ../../story-class.rst:22 c71c16dc9e434b81ae25d7e81791842c
 msgid "iterative layout of html content to a DocumentWriter"
-msgstr ""
+msgstr "HTML 콘텐츠를 DocumentWriter에 반복 레이아웃"
 
 #: ../../story-class.rst:23 926f2a550c3b4cb3856a305b4c499249
 msgid ":meth:`Story.write_with_links`"
-msgstr ""
+msgstr ":meth:`Story.write_with_links`"
 
 #: ../../story-class.rst:23 ea4c862bdeb84b94a80868a8fa1d6d3c
 msgid "like `write()` but also creates PDF links"
-msgstr ""
+msgstr "`write()` 와 유사하지만 PDF 링크도 생성"
 
 #: ../../story-class.rst:24 355d937b5c4a4d2ea430c50ed160c9a9
 msgid ":meth:`Story.write_stabilized_with_links`"
-msgstr ""
+msgstr ":meth:`Story.write_stabilized_with_links`"
 
 #: ../../story-class.rst:24 ff1a2e0bd3b942a9825101dc74641ab4
 msgid "like `write_stabilized()` but also creates PDF links"
-msgstr ""
+msgstr "`write_stabilized()` 와 유사하지만 PDF 링크도 생성"
 
 #: ../../story-class.rst:25 98afa53a01d5479fb9a84e798fc75af0
 msgid ":meth:`Story.fit`"
-msgstr ""
+msgstr ":meth:`Story.fit`"
 
 #: ../../story-class.rst:25 ../../story-class.rst:252
 #: 08f697738e6841388fafdd24e5a00d7d f9fb3d7fc30744c5a4bcf19dc86ef076
 msgid "Finds optimal rect that contains the story `self`."
-msgstr ""
+msgstr "스토리 `self` 를 포함하는 최적의 rect를 찾습니다."
 
 #: ../../story-class.rst:26 071db5186e824d7fad400d8f4d4621cc
 msgid ":meth:`Story.fit_scale`"
-msgstr ""
+msgstr ":meth:`Story.fit_scale`"
 
 #: ../../story-class.rst:27 29faf46f8f304213baacc284272e99ba
 msgid ":meth:`Story.fit_height`"
-msgstr ""
+msgstr ":meth:`Story.fit_height`"
 
 #: ../../story-class.rst:28 2063bec0fd3d4a00af6338d93189ee72
 msgid ":meth:`Story.fit_width`"
-msgstr ""
+msgstr ":meth:`Story.fit_width`"
 
 #: ../../story-class.rst:31 35c3d645808f404fb3d0ac4e2995d443
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../story-class.rst:37 49eb5559ce2b4b13a47f5ad496e9d111
 msgid ""
 "Create a **story**, optionally providing HTML and CSS source. The HTML is"
 " parsed, and held within the Story as a DOM (Document Object Model)."
-msgstr ""
+msgstr "**스토리** 를 생성하며, 선택적으로 HTML 및 CSS 소스를 제공합니다. HTML은 파싱되어 Story 내에서 DOM(Document Object Model)로 유지됩니다."
 
 #: ../../story-class.rst:40 bf2f904ab1c24ea9aa46205eca2718ea
 msgid ""
 "This structure may be modified: content (text, images) may be added, "
 "copied, modified or removed by using methods of the :ref:`Xml` class."
-msgstr ""
+msgstr "이 구조는 수정할 수 있습니다: :ref:`Xml` 클래스의 메서드를 사용하여 콘텐츠(텍스트, 이미지)를 추가, 복사, 수정 또는 제거할 수 있습니다."
 
 #: ../../story-class.rst:43 1e855bc531eb4f55a7c51053f068d9ab
 msgid ""
 "When finished, the **story** can be written to any device; in typical "
 "usage the device may be provided by a :ref:`DocumentWriter` to make new "
 "pages."
-msgstr ""
+msgstr "완료되면 **스토리** 는 모든 장치에 쓸 수 있습니다. 일반적인 사용에서 장치는 :ref:`DocumentWriter` 에 의해 제공되어 새 페이지를 만듭니다."
 
 #: ../../story-class.rst:46 c090bdee02db4f288f710c647c45c161
 msgid "Here are some general remarks:"
-msgstr ""
+msgstr "다음은 일반적인 설명입니다:"
 
 #: ../../story-class.rst:48 3110c6455944434ca9ae1a71696896a3
 msgid ""
 "The :ref:`Story` constructor parses and validates the provided HTML to "
 "create the DOM."
-msgstr ""
+msgstr ":ref:`Story` 생성자는 제공된 HTML을 파싱하고 검증하여 DOM을 생성합니다."
 
 #: ../../story-class.rst:49 4d9f69c5792d489b85a3b9d41d525d79
 msgid ""
@@ -184,14 +184,14 @@ msgid ""
 "completely built from ground up programmatically, or the existing DOM can"
 " be modified pretty arbitrarily. For details of this interface, please "
 "see the :ref:`Xml` class."
-msgstr ""
+msgstr "|PyMuPDF| 는 기본 DOM의 *노드* 에 대한 액세스를 제공하여 HTML 소스를 조작하는 여러 방법을 제공합니다. 문서는 프로그래밍 방식으로 처음부터 완전히 구축할 수 있거나, 기존 DOM을 거의 임의로 수정할 수 있습니다. 이 인터페이스의 세부 사항은 :ref:`Xml` 클래스를 참조하세요."
 
 #: ../../story-class.rst:54 ac1a27756a8945c8b1dbf9b6e9da921b
 msgid ""
 "If no (or no more) changes to the DOM are required, the story is ready to"
 " be laid out and to be fed to a series of devices (typically devices "
 "provided by a :ref:`DocumentWriter` to produce new pages)."
-msgstr ""
+msgstr "DOM에 대한 변경이 더 이상 필요하지 않으면 스토리는 레이아웃되고 일련의 장치(일반적으로 새 페이지를 생성하기 위해 :ref:`DocumentWriter` 에 의해 제공되는 장치)에 공급할 준비가 됩니다."
 
 #: ../../story-class.rst:57 43fe3dfc3cf348098a32b05485bde654
 msgid ""
@@ -200,24 +200,24 @@ msgid ""
 "alternatively, the looping can handled for you using the `write()` or "
 "`write_stabilised()` methods. Which method you choose is largely a matter"
 " of taste."
-msgstr ""
+msgstr "다음 단계는 스토리를 배치하고 쓰는 것입니다. 이것은 `place()` 및 `draw()` 호출을 반복하는 루프로 직접 수행하거나, 대신 `write()` 또는 `write_stabilised()` 메서드를 사용하여 루프를 처리할 수 있습니다. 어떤 방법을 선택할지는 주로 취향의 문제입니다."
 
 #: ../../story-class.rst:63 f4b32731d97b4d2a84d306de1e33820a
 msgid "To work in the first of these styles, the following loop should be used:"
-msgstr ""
+msgstr "이러한 스타일 중 첫 번째로 작업하려면 다음 루프를 사용해야 합니다:"
 
 #: ../../story-class.rst:65 1ae96b31b4494e6b907dcec02c2fdea5
 msgid ""
 "Obtain a suitable device to write to; typically by requesting a new, "
 "empty page from a :ref:`DocumentWriter`."
-msgstr ""
+msgstr "쓰기에 적합한 장치를 얻습니다. 일반적으로 :ref:`DocumentWriter` 에서 새 빈 페이지를 요청합니다."
 
 #: ../../story-class.rst:68 73b9d54af347493b94d1d93c72bb7e84
 msgid ""
 "Determine one or more rectangles on the page, that should receive "
 "**story** data. Note that not every page needs to have the same set of "
 "rectangles."
-msgstr ""
+msgstr "페이지에서 **스토리** 데이터를 받을 하나 이상의 사각형을 결정합니다. 모든 페이지가 동일한 사각형 세트를 가질 필요는 없습니다."
 
 #: ../../story-class.rst:71 f486ccb350994671b7e2380f3a839e86
 msgid ""
@@ -225,7 +225,7 @@ msgid ""
 "that rectangle has been filled, and whether there is more story data that"
 " did not fit. This step can be repeated several times with adjusted "
 "rectangles until the caller is happy with the results."
-msgstr ""
+msgstr "각 사각형을 **스토리** 에 전달하여 배치하고, 해당 사각형의 어느 부분이 채워졌는지, 맞지 않는 더 많은 스토리 데이터가 있는지 확인합니다. 이 단계는 호출자가 결과에 만족할 때까지 조정된 사각형으로 여러 번 반복할 수 있습니다."
 
 #: ../../story-class.rst:76 ff1738fc7d2d4f969c58dcf423696458
 msgid ""
@@ -237,24 +237,24 @@ msgid ""
 ":htmlTag:`id`), or if their `href` attribute is not `None` (responding to"
 " HTML tag :htmlTag:`href`). This can conveniently be used for automatic "
 "generation of a Table of Contents, an index of images or the like."
-msgstr ""
+msgstr "선택적으로 이 시점에서 `element_positions()` 메서드를 호출하여 흥미로운 항목이 배치된 위치에 대한 세부 정보를 요청할 수 있습니다. 항목은 정수 `heading` 속성이 0이 아닌 경우(HTML 태그 :htmlTag:`h1` - :htmlTag:`h6` 에 해당), `id` 속성이 `None` 이 아닌 경우(HTML 태그 :htmlTag:`id` 에 해당), 또는 `href` 속성이 `None` 이 아닌 경우(HTML 태그 :htmlTag:`href` 에 해당) 흥미로운 것으로 간주됩니다. 이것은 목차, 이미지 인덱스 등의 자동 생성에 편리하게 사용할 수 있습니다."
 
 #: ../../story-class.rst:85 b921780cdb2e45e389e9a40859c21b25
 msgid "Next, draw that rectangle out to the device with the `draw()` method."
-msgstr ""
+msgstr "다음으로 `draw()` 메서드를 사용하여 해당 사각형을 장치에 그립니다."
 
 #: ../../story-class.rst:86 7c8805ef770e4dde8806474fd720a74d
 msgid ""
 "If the most recent call to `place()` indicated that all the story data "
 "had fitted, stop now."
-msgstr ""
+msgstr "`place()` 에 대한 가장 최근 호출이 모든 스토리 데이터가 맞았다고 표시하면 지금 중지합니다."
 
 #: ../../story-class.rst:88 c13e1999d6654790a96926efb47a4809
 msgid ""
 "Otherwise, we can loop back. If there are more rectangles to be placed on"
 " the current device (page), we jump back to step 3 - if not, we jump back"
 " to step 1 to get a new device."
-msgstr ""
+msgstr "그렇지 않으면 루프로 돌아갈 수 있습니다. 현재 장치(페이지)에 배치할 더 많은 사각형이 있으면 3단계로 돌아가고, 그렇지 않으면 새 장치를 얻기 위해 1단계로 돌아갑니다."
 
 #: ../../story-class.rst:91 4038804e871b4c1bbe32c9a13c9ec423
 msgid ""
@@ -263,26 +263,26 @@ msgid ""
 "all the looping for you, in exchange for being provided with callbacks "
 "that control the behaviour (notably a callback that enumerates the "
 "rectangles/pages to use)."
-msgstr ""
+msgstr "대안으로 :ref:`DocumentWriter` 를 사용하는 경우 `write()` 또는 `write_stabilized()` 메서드를 사용할 수 있습니다. 이것들은 동작을 제어하는 콜백(특히 사용할 사각형/페이지를 열거하는 콜백)을 제공하는 대가로 모든 루프를 처리합니다."
 
 #: ../../story-class.rst:96 ee657bc17cb9479098b79a0775f10c3a
 msgid ""
 "Which part of the **story** will land on which rectangle / which page, is"
 " fully under control of the :ref:`Story` object and cannot be predicted."
-msgstr ""
+msgstr "**스토리** 의 어느 부분이 어떤 사각형/어떤 페이지에 배치될지는 :ref:`Story` 객체의 완전한 제어 하에 있으며 예측할 수 없습니다."
 
 #: ../../story-class.rst:98 2373c29f02c449119f61da189826bc09
 msgid ""
 "Images may be part of a **story**. They will be placed together with any "
 "surrounding text."
-msgstr ""
+msgstr "이미지는 **스토리** 의 일부일 수 있습니다. 주변 텍스트와 함께 배치됩니다."
 
 #: ../../story-class.rst:99 30316b2b832342268461f6c7d74a9197
 msgid ""
 "Multiple stories may - independently from each other - write to the same "
 "page. For example, one may have separate stories for page header, page "
 "footer, regular text, comment boxes, etc."
-msgstr ""
+msgstr "여러 스토리는 서로 독립적으로 같은 페이지에 쓸 수 있습니다. 예를 들어 페이지 헤더, 페이지 푸터, 일반 텍스트, 주석 상자 등에 대해 별도의 스토리를 가질 수 있습니다."
 
 #: ../../story-class.rst 3bc54fe727d84b0fb5ec6f5a505593d7
 #: 632479f010e74a7fa705e9873fc201e2 6bae93af6e1f4bcd9f975e3dbf237a8f
@@ -291,7 +291,7 @@ msgstr ""
 #: b092aa952799492ab41859def37221e6 c431629c4269486e838a6416b26f8a06
 #: ecb562eb477f4178bbbac8624595e806
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../story-class.rst:103 7a7770ae27444f9cbae197749eec78ab
 msgid ""
@@ -299,15 +299,15 @@ msgid ""
 "If provided, not a complete HTML document is needed. The in-built source "
 "parser will forgive (many / most) HTML syntax errors and also accepts "
 "HTML fragments like `\"<b>Hello, <i>World!</i></b>\"`."
-msgstr ""
+msgstr "HTML 소스 코드. 생략하면 기본 최소값이 생성됩니다(아래 참조). 제공된 경우 완전한 HTML 문서가 필요하지 않습니다. 내장 소스 파서는 (많은/대부분의) HTML 구문 오류를 용서하며 `\"<b>Hello, <i>World!</i></b>\"` 와 같은 HTML 조각도 허용합니다."
 
 #: ../../story-class.rst:108 998745be0a874eeb8f4d73e3411eb0cc
 msgid "CSS source code. If provided, must contain valid CSS specifications."
-msgstr ""
+msgstr "CSS 소스 코드. 제공된 경우 유효한 CSS 사양을 포함해야 합니다."
 
 #: ../../story-class.rst:109 2bfac39f7a0745239025903a70202169
 msgid "the default text font size."
-msgstr ""
+msgstr "기본 텍스트 글꼴 크기."
 
 #: ../../story-class.rst:110 78219d1129fc40ab9949caef213ed7a5
 msgid ""
@@ -319,7 +319,7 @@ msgid ""
 "archive will temporarily be constructed. So, instead of `story = "
 "pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also "
 "shorter write `story = pymupdf.Story(archive=\"myfolder\")`."
-msgstr ""
+msgstr "렌더링을 위한 리소스를 로드할 :ref:`Archive`. 현재 지원되는 리소스 타입은 이미지와 텍스트 글꼴입니다. 생략하면 스토리는 이러한 데이터를 찾으려고 시도하지 않으므로 불완전한 출력을 생성할 수 있습니다.  .. note:: 실제 아카이브 대신 :ref:`Archive` 를 **생성** 하기 위한 유효한 인수도 제공할 수 있습니다. 이 경우 아카이브가 임시로 구성됩니다. 따라서 `story = pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))` 대신 `story = pymupdf.Story(archive=\"myfolder\")` 로 더 짧게 쓸 수도 있습니다."
 
 #: ../../story-class.rst:110 4050936d618a42da8eecf6ab4e063d8b
 msgid ""
@@ -327,7 +327,7 @@ msgid ""
 "supported resource types are images and text fonts. If omitted, the story"
 " will not try to look up any such data and may thus produce incomplete "
 "output."
-msgstr ""
+msgstr "렌더링을 위한 리소스를 로드할 :ref:`Archive`. 현재 지원되는 리소스 타입은 이미지와 텍스트 글꼴입니다. 생략하면 스토리는 이러한 데이터를 찾으려고 시도하지 않으므로 불완전한 출력을 생성할 수 있습니다."
 
 #: ../../story-class.rst:112 dbafa089e71b405c8505fe068f111435
 msgid ""
@@ -336,7 +336,7 @@ msgid ""
 "temporarily be constructed. So, instead of `story = "
 "pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also "
 "shorter write `story = pymupdf.Story(archive=\"myfolder\")`."
-msgstr ""
+msgstr "실제 아카이브 대신 :ref:`Archive` 를 **생성** 하기 위한 유효한 인수도 제공할 수 있습니다. 이 경우 아카이브가 임시로 구성됩니다. 따라서 `story = pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))` 대신 `story = pymupdf.Story(archive=\"myfolder\")` 로 더 짧게 쓸 수도 있습니다."
 
 #: ../../story-class.rst:116 38e199a574974c68a5789c3487298702
 msgid ""
@@ -344,21 +344,21 @@ msgid ""
 " rectangle. The method maintains a pointer which part of the story's "
 "content has already been written and upon the next invocation resumes "
 "from that pointer's position."
-msgstr ""
+msgstr "제공된 사각형에 맞는 스토리 콘텐츠의 일부를 계산합니다. 이 메서드는 스토리 콘텐츠의 어느 부분이 이미 쓰여졌는지에 대한 포인터를 유지하며, 다음 호출 시 해당 포인터 위치에서 재개합니다."
 
 #: ../../story-class.rst:118 9204c5de62594877a0b9554fe46dd00d
 msgid ""
 "layout the current part of the content to fit into this rectangle. This "
 "must be a sub-rectangle of the page's :ref:`MediaBox<Glossary_MediaBox>`."
-msgstr ""
+msgstr "콘텐츠의 현재 부분을 이 사각형에 맞도록 레이아웃합니다. 이것은 페이지의 :ref:`MediaBox<Glossary_MediaBox>` 의 하위 사각형이어야 합니다."
 
 #: ../../story-class.rst f63a283a6c88499ead37123b58293124
 msgid "Return type"
-msgstr ""
+msgstr "반환 타입"
 
 #: ../../story-class.rst 94bc5676fca747a28908e39b08f758dd
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../story-class.rst:121 cfc9d87ae2c0427fb812923a5380f63e
 msgid ""
@@ -366,44 +366,44 @@ msgid ""
 " of the story has been written, otherwise more is waiting to be written "
 "to subsequent rectangles / pages. Rectangle `filled` is the part of "
 "`where` that has actually been filled."
-msgstr ""
+msgstr "bool(int) `more` 와 사각형 `filled`. `more == 0` 이면 스토리의 모든 콘텐츠가 쓰여진 것이고, 그렇지 않으면 더 많은 콘텐츠가 후속 사각형/페이지에 쓰이기를 기다리고 있습니다. 사각형 `filled` 는 실제로 채워진 `where` 의 부분입니다."
 
 #: ../../story-class.rst:125 6813b9d6cf0a4992aac607d827be601c
 msgid "Write the content part prepared by :meth:`Story.place` to the page."
-msgstr ""
+msgstr ":meth:`Story.place` 로 준비된 콘텐츠 부분을 페이지에 씁니다."
 
 #: ../../story-class.rst:127 883fc316b5194fbebc4f2e1002d07a4a
 msgid ""
 "the :ref:`Device` created by `dev = writer.begin_page(mediabox)`. The "
 "device knows how to call all MuPDF functions needed to write the content."
-msgstr ""
+msgstr "`dev = writer.begin_page(mediabox)` 로 생성된 :ref:`Device`. 장치는 콘텐츠를 쓰는 데 필요한 모든 MuPDF 함수를 호출하는 방법을 알고 있습니다."
 
 #: ../../story-class.rst:128 15d1012c1f36445b97b2245366f1fe29
 msgid ""
 "a matrix for transforming content when writing to the page. An example "
 "may be writing rotated text. The default means no transformation (i.e. "
 "the :ref:`Identity` matrix)."
-msgstr ""
+msgstr "페이지에 쓸 때 콘텐츠를 변환하는 행렬. 예를 들어 회전된 텍스트를 쓰는 것입니다. 기본값은 변환 없음(즉, :ref:`Identity` 행렬)을 의미합니다."
 
 #: ../../story-class.rst:132 a4b6e0a215c74c77bc15ee4a585a753c
 msgid ""
 "Let the Story provide positioning information about certain HTML elements"
 " once their place on the current page has been computed - i.e. invoke "
 "this method **directly after** :meth:`Story.place`."
-msgstr ""
+msgstr "Story가 현재 페이지에서의 위치가 계산된 후 특정 HTML 요소에 대한 위치 정보를 제공하도록 합니다. 즉, :meth:`Story.place` **직후에** 이 메서드를 호출합니다."
 
 #: ../../story-class.rst:134 132b23607fe24fd4b386d921fa955b1f
 msgid ""
 "*Story* will pass position information to *function*. This information "
 "can for example be used to generate a Table of Contents."
-msgstr ""
+msgstr "*Story* 는 위치 정보를 *function* 에 전달합니다. 이 정보는 예를 들어 목차를 생성하는 데 사용할 수 있습니다."
 
 #: ../../story-class.rst:136 9b62cdc7c4734ce9bd97fd06ae689ced
 msgid ""
 "a Python function accepting an :class:`ElementPosition` object. It will "
 "be invoked by the Story object to process positioning information. The "
 "function **must** be a callable accepting exactly one argument."
-msgstr ""
+msgstr ":class:`ElementPosition` 객체를 받는 Python 함수. Story 객체에 의해 호출되어 위치 정보를 처리합니다. 함수는 **반드시** 정확히 하나의 인수를 받는 호출 가능한 객체여야 합니다."
 
 #: ../../story-class.rst:137 95c635a4d01544919b451835ba7cfb5e
 msgid ""
@@ -412,18 +412,18 @@ msgid ""
 "Like for example the current output page number. Every key in this "
 "dictionary must be a string that conforms to the rules for a valid Python"
 " identifier. The complete set of information is explained below."
-msgstr ""
+msgstr "`function` 에 전달되는 :class:`ElementPosition` 인스턴스에 추가되어야 하는 **추가** 정보가 있는 선택적 딕셔너리. 예를 들어 현재 출력 페이지 번호입니다. 이 딕셔너리의 모든 키는 유효한 Python 식별자 규칙을 준수하는 문자열이어야 합니다. 전체 정보 세트는 아래에 설명되어 있습니다."
 
 #: ../../story-class.rst:146 d1a8ec5e26534fb08b5644c78bdd0f35
 msgid "Rewind the story's document to the beginning for starting over its output."
-msgstr ""
+msgstr "출력을 다시 시작하기 위해 스토리 문서를 시작 부분으로 되감습니다."
 
 #: ../../story-class.rst:150 99e9fa88415b44008dfa1a9212359a94
 msgid ""
 "The :htmlTag:`body` part of the story's DOM. This attribute contains the "
 ":ref:`Xml` node of :htmlTag:`body`. All relevant content for PDF "
 "production is contained between \"<body>\" and \"</body>\"."
-msgstr ""
+msgstr "스토리 DOM의 :htmlTag:`body` 부분. 이 속성은 :htmlTag:`body` 의 :ref:`Xml` 노드를 포함합니다. PDF 생성을 위한 모든 관련 콘텐츠는 \"<body>\" 와 \"</body>\" 사이에 포함됩니다."
 
 #: ../../story-class.rst:154 41b172bf34d0440fadc8322fad80b439
 msgid ""
@@ -431,11 +431,11 @@ msgid ""
 " code to implement a loop that calls `Story.place()` and `Story.draw()` "
 "etc, at the expense of having to provide at least the `rectfn()` "
 "callback."
-msgstr ""
+msgstr "Story를 `DocumentWriter` 에 배치하고 그립니다. `Story.place()` 및 `Story.draw()` 등을 호출하는 루프를 구현하는 호출 코드의 필요성을 피하지만, 최소한 `rectfn()` 콜백을 제공해야 합니다."
 
 #: ../../story-class.rst:159 f45d6bee9274444588f63a947cb04ff9
 msgid "a `DocumentWriter` or None."
-msgstr ""
+msgstr "`DocumentWriter` 또는 None."
 
 #: ../../story-class.rst:160 0a82dd0477cc4e6aba46d8bde1ff66cb
 msgid ""
@@ -443,27 +443,27 @@ msgid ""
 "`(mediabox, rect, ctm)`:  * mediabox: None or rect for new page. * rect: "
 "The next rect into which content should be placed. * ctm: None or a "
 "`Matrix`."
-msgstr ""
+msgstr "`(rect_num: int, filled: Rect)` 를 받아 `(mediabox, rect, ctm)` 를 반환하는 호출 가능한 객체:  * mediabox: 새 페이지의 None 또는 rect. * rect: 콘텐츠가 배치될 다음 rect. * ctm: None 또는 `Matrix`."
 
 #: ../../story-class.rst:160 09db40fd97944cc3bdc056101682d345
 msgid ""
 "a callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:"
-msgstr ""
+msgstr "`(rect_num: int, filled: Rect)` 를 받아 `(mediabox, rect, ctm)` 를 반환하는 호출 가능한 객체:"
 
 #: ../../story-class.rst:163 ../../story-class.rst:204
 #: 195039e86a0a453b80a1947c0d982191 cc6afdff529d4b18bf96bab124b071b0
 msgid "mediabox: None or rect for new page."
-msgstr ""
+msgstr "mediabox: 새 페이지의 None 또는 rect."
 
 #: ../../story-class.rst:164 ../../story-class.rst:205
 #: 25c7020d98834950b5d94ff65444d7dd 66c0ba4ebccc4299ab74abd2a830ae53
 msgid "rect: The next rect into which content should be placed."
-msgstr ""
+msgstr "rect: 콘텐츠가 배치될 다음 rect."
 
 #: ../../story-class.rst:165 15dd25041536413eb3b45f6c0546d4c9
 msgid "ctm: None or a `Matrix`."
-msgstr ""
+msgstr "ctm: None 또는 `Matrix`."
 
 #: ../../story-class.rst:166 00bf180b2a0c4c8d85c03815119541f1
 msgid ""
@@ -471,43 +471,43 @@ msgid ""
 "     An `ElementPosition` with an extra `.page_num` member. Typically "
 "called multiple times as we generate elements that are headings or have "
 "an id."
-msgstr ""
+msgstr "None 또는 `(position: ElementPosition)` 를 받는 호출 가능한 객체:  * position: 추가 `.page_num` 멤버를 가진 `ElementPosition`. 일반적으로 제목이거나 id를 가진 요소를 생성할 때 여러 번 호출됩니다."
 
 #: ../../story-class.rst:166 25928f4a5c5f491488b15662e26bc608
 msgid "None, or a callable taking `(position: ElementPosition)`:"
-msgstr ""
+msgstr "None 또는 `(position: ElementPosition)` 를 받는 호출 가능한 객체:"
 
 #: ../../story-class.rst:168 2dd05e9f8b994f32855896af88fa138a
 msgid "position:"
-msgstr ""
+msgstr "position:"
 
 #: ../../story-class.rst:169 e39ff5907e3f417a840c59e64a0ce9d8
 msgid "An `ElementPosition` with an extra `.page_num` member."
-msgstr ""
+msgstr "추가 `.page_num` 멤버를 가진 `ElementPosition`."
 
 #: ../../story-class.rst:170 4892cafe0f7d41f0985e89860b77823a
 msgid ""
 "Typically called multiple times as we generate elements that are headings"
 " or have an id."
-msgstr ""
+msgstr "일반적으로 제목이거나 id를 가진 요소를 생성할 때 여러 번 호출됩니다."
 
 #: ../../story-class.rst:172 3fa53b922faa4eda8ba2cba1ac636ca9
 msgid ""
 "None, or a callable taking `(page_num, mediabox, dev, after)`; called at "
 "start (`after=0`) and end (`after=1`) of each page."
-msgstr ""
+msgstr "None 또는 `(page_num, mediabox, dev, after)` 를 받는 호출 가능한 객체. 각 페이지의 시작(`after=0`)과 끝(`after=1`)에서 호출됩니다."
 
 #: ../../story-class.rst:178 dd5221f0ed8740b9870aee56024e5b7b
 msgid ""
 "Static method that does iterative layout of html content to a "
 "`DocumentWriter`."
-msgstr ""
+msgstr "HTML 콘텐츠를 `DocumentWriter` 에 반복 레이아웃하는 정적 메서드."
 
 #: ../../story-class.rst:181 30078c22673b4583b6668ac47bc366ff
 msgid ""
 "For example this allows one to add a table of contents section while "
 "ensuring that page numbers are patched up until stable."
-msgstr ""
+msgstr "예를 들어 이것은 페이지 번호가 안정될 때까지 패치되도록 하면서 목차 섹션을 추가할 수 있게 합니다."
 
 #: ../../story-class.rst:184 c06d6f0e11c445a79282ea1b2b0ad535
 msgid ""
@@ -515,144 +515,144 @@ msgid ""
 "archive)` and lays it out with internal call to `Story.write()`; uses a "
 "None writer and extracts the list of `ElementPosition`'s which is passed "
 "to the next call of `contentfn()`."
-msgstr ""
+msgstr "`(contentfn(), user_css, em, archive)` 로부터 새 `Story` 를 반복적으로 생성하고 `Story.write()` 내부 호출로 레이아웃합니다. None writer를 사용하고 `ElementPosition` 목록을 추출하여 `contentfn()` 의 다음 호출에 전달합니다."
 
 #: ../../story-class.rst:190 44779b3ded2c4ee6874e7b1ae2bff004
 msgid ""
 "When the html from `contentfn()` becomes unchanged, we do a final "
 "iteration using `writer`."
-msgstr ""
+msgstr "`contentfn()` 의 HTML이 변경되지 않으면 `writer` 를 사용하여 최종 반복을 수행합니다."
 
 #: ../../story-class.rst:193 0f2c4d433e064304a49d4bd0a6ebfe73
 msgid "A `DocumentWriter`."
-msgstr ""
+msgstr "`DocumentWriter`."
 
 #: ../../story-class.rst:195 368d195d03b147fc837acd54849c93e0
 msgid ""
 "A function taking a list of `ElementPositions` and returning a string "
 "containing html. The returned html can depend on the list of positions, "
 "for example with a table of contents near the start."
-msgstr ""
+msgstr "`ElementPositions` 목록을 받아 HTML을 포함하는 문자열을 반환하는 함수. 반환된 HTML은 위치 목록에 따라 달라질 수 있습니다. 예를 들어 시작 부분 근처에 목차가 있습니다."
 
 #: ../../story-class.rst:200 1cf1064d178a4eb5abc44f35d1b26213
 msgid ""
 "A callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:  * mediabox: None or rect for new page. * rect: "
 "The next rect into which content should be placed. * ctm: A `Matrix`."
-msgstr ""
+msgstr "`(rect_num: int, filled: Rect)` 를 받아 `(mediabox, rect, ctm)` 를 반환하는 호출 가능한 객체:  * mediabox: 새 페이지의 None 또는 rect. * rect: 콘텐츠가 배치될 다음 rect. * ctm: `Matrix`."
 
 #: ../../story-class.rst:201 9c7835ef50c04228a8a373880c57f7ec
 msgid ""
 "A callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:"
-msgstr ""
+msgstr "`(rect_num: int, filled: Rect)` 를 받아 `(mediabox, rect, ctm)` 를 반환하는 호출 가능한 객체:"
 
 #: ../../story-class.rst:206 ee9f39495b5e42c8abe6db31752b059c
 msgid "ctm: A `Matrix`."
-msgstr ""
+msgstr "ctm: `Matrix`."
 
 #: ../../story-class.rst:207 0e5bb33450b440519eaa4678352a268d
 msgid ""
 "None, or a callable taking `(page_num, medibox, dev, after)`; called at "
 "start (`after=0`) and end (`after=1`) of each page."
-msgstr ""
+msgstr "None 또는 `(page_num, medibox, dev, after)` 를 받는 호출 가능한 객체. 각 페이지의 시작(`after=0`)과 끝(`after=1`)에서 호출됩니다."
 
 #: ../../story-class.rst:212 1e4fd7df55fb49df898e449e0f6cc1d4
 msgid ""
 "If true, we add unique ids to all header tags that don't already have an "
 "id. This can help automatic generation of tables of contents."
-msgstr ""
+msgstr "true이면 id가 아직 없는 모든 헤더 태그에 고유 id를 추가합니다. 이것은 목차의 자동 생성에 도움이 될 수 있습니다."
 
 #: ../../story-class.rst:216 5855dd1c0eb74ba680d81ec3bd7ab855
 msgid "Returns:"
-msgstr ""
+msgstr "반환값:"
 
 #: ../../story-class.rst:217 b8d9d14cc3f7420cbfcb12cdd3784c27
 msgid "None."
-msgstr ""
+msgstr "None."
 
 #: ../../story-class.rst:221 22ec8dffec4842c2b36b31e44c148e9b
 msgid ""
 "Similar to `write()` except that we don't have a `writer` arg and we "
 "return a PDF `Document` in which links have been created for each "
 "internal html link."
-msgstr ""
+msgstr "`write()` 와 유사하지만 `writer` 인수가 없고 각 내부 HTML 링크에 대해 링크가 생성된 PDF `Document` 를 반환합니다."
 
 #: ../../story-class.rst:227 cb292a6045f4454589078e45beb372b8
 msgid ""
 "Similar to `write_stabilized()` except that we don't have a `writer` arg "
 "and instead return a PDF `Document` in which links have been created for "
 "each internal html link."
-msgstr ""
+msgstr "`write_stabilized()` 와 유사하지만 `writer` 인수가 없고 대신 각 내부 HTML 링크에 대해 링크가 생성된 PDF `Document` 를 반환합니다."
 
 #: ../../story-class.rst:233 79e6df9feb764d49bb6c4880d7985f6e
 msgid "The result from a `Story.fit*()` method."
-msgstr ""
+msgstr "`Story.fit*()` 메서드의 결과."
 
 #: ../../story-class.rst:235 2a76b4161e5f46ca816faca601040d90
 msgid "Members:"
-msgstr ""
+msgstr "멤버:"
 
 #: ../../story-class.rst:237 035ed3847947402d887364c7d5c447e9
 msgid "`big_enough`:"
-msgstr ""
+msgstr "`big_enough`:"
 
 #: ../../story-class.rst:238 bf717872d31642deaf8eb1605a3012a6
 msgid "`True` if the fit succeeded."
-msgstr ""
+msgstr "적합이 성공하면 `True`."
 
 #: ../../story-class.rst:239 7320376b01af4fa9a8fa3ae295bbda83
 msgid "`filled`:"
-msgstr ""
+msgstr "`filled`:"
 
 #: ../../story-class.rst:240 17cc4e2057bd41cc8e2633814392b385
 msgid "From the last call to `Story.place()`."
-msgstr ""
+msgstr "`Story.place()` 에 대한 마지막 호출에서."
 
 #: ../../story-class.rst:241 e24cc834373e411587bbb7bfa0414333
 msgid "`more`:"
-msgstr ""
+msgstr "`more`:"
 
 #: ../../story-class.rst:242 4a3e937b059041a7b3a20e0d429f503c
 msgid "`False` if the fit succeeded."
-msgstr ""
+msgstr "적합이 성공하면 `False`."
 
 #: ../../story-class.rst:243 bbbe1925cdb245ad87cc43c74cf72b73
 msgid "`numcalls`:"
-msgstr ""
+msgstr "`numcalls`:"
 
 #: ../../story-class.rst:244 9e3bcaa3dbf8478a98ff6e4241532bb6
 msgid "Number of calls made to `self.place()`."
-msgstr ""
+msgstr "`self.place()` 에 대한 호출 횟수."
 
 #: ../../story-class.rst:245 169f3c8877c640d8aa7fb28ee47ab520
 msgid "`parameter`:"
-msgstr ""
+msgstr "`parameter`:"
 
 #: ../../story-class.rst:246 985d429bb06144c6bcfa903f4c388ebf
 msgid "The successful parameter value, or the largest failing value."
-msgstr ""
+msgstr "성공한 매개변수 값 또는 가장 큰 실패 값."
 
 #: ../../story-class.rst:247 42a31d9fef9248d9a8d194383c59191d
 msgid "`rect`:"
-msgstr ""
+msgstr "`rect`:"
 
 #: ../../story-class.rst:248 902774936ea0439f89fd8ff5b6dfc8e4
 msgid "The rect created from `parameter`."
-msgstr ""
+msgstr "`parameter` 로부터 생성된 rect."
 
 #: ../../story-class.rst:254 ../../story-class.rst:282
 #: ../../story-class.rst:304 ../../story-class.rst:325
 #: 696c11bfa76d489093846a7c247a4851 853a35b41b0d4e92a0abce39320b0d0b
 #: 8e63b26bcbe146e994f59d0598d8ae81 f109c3abb97c461c90ef5083439ae6b7
 msgid "Returns a `Story.FitResult` instance."
-msgstr ""
+msgstr "`Story.FitResult` 인스턴스를 반환합니다."
 
 #: ../../story-class.rst:256 18ef28643cd147a3a66b0e495f27b656
 msgid ""
 "On success, the last call to `self.place()` will have been with the "
 "returned rectangle, so `self.draw()` can be used directly."
-msgstr ""
+msgstr "성공 시 `self.place()` 에 대한 마지막 호출은 반환된 사각형으로 수행되므로 `self.draw()` 를 직접 사용할 수 있습니다."
 
 #: ../../story-class.rst:259 fcc258b789cf4618a282896268872c2f
 msgid ""
@@ -662,171 +662,171 @@ msgid ""
 "behaves monotonically when given rect `fn(parameter`) as `parameter` "
 "increases. This usually means that both width and height increase or stay"
 " unchanged as `parameter` increases."
-msgstr ""
+msgstr "부동 소수점 `parameter` 를 받아 `pymupdf.Rect()` 를 반환하는 호출 가능한 객체. rect가 비어 있으면 스토리가 맞지 않는다고 가정하고 `self.place()` 를 호출하지 않습니다. `parameter` 가 증가할 때 rect `fn(parameter`)가 주어지면 `self.place()` 가 단조롭게 동작하도록 보장해야 합니다. 이것은 일반적으로 `parameter` 가 증가할 때 너비와 높이가 모두 증가하거나 변경되지 않음을 의미합니다."
 
 #: ../../story-class.rst:260 c6955c50c2ba4885973d0c3f04c0e2c5
 msgid ""
 "A callable taking a floating point `parameter` and returning a "
 "`pymupdf.Rect()`. If the rect is empty, we assume the story will not fit "
 "and do not call `self.place()`."
-msgstr ""
+msgstr "부동 소수점 `parameter` 를 받아 `pymupdf.Rect()` 를 반환하는 호출 가능한 객체. rect가 비어 있으면 스토리가 맞지 않는다고 가정하고 `self.place()` 를 호출하지 않습니다."
 
 #: ../../story-class.rst:264 d7e59ae0c80245ab9c009b98fd8b45c0
 msgid ""
 "Must guarantee that `self.place()` behaves monotonically when given rect "
 "`fn(parameter`) as `parameter` increases. This usually means that both "
 "width and height increase or stay unchanged as `parameter` increases."
-msgstr ""
+msgstr "`parameter` 가 증가할 때 rect `fn(parameter`)가 주어지면 `self.place()` 가 단조롭게 동작하도록 보장해야 합니다. 이것은 일반적으로 `parameter` 가 증가할 때 너비와 높이가 모두 증가하거나 변경되지 않음을 의미합니다."
 
 #: ../../story-class.rst:268 11dc2ac2cfa948f9b5a1f9820e2552e5
 msgid "Minimum parameter to consider; `None` for -infinity."
-msgstr ""
+msgstr "고려할 최소 매개변수. `None` 이면 -무한대."
 
 #: ../../story-class.rst:270 318cf2242b354dcfaf2261319967a6e2
 msgid "Maximum parameter to consider; `None` for +infinity."
-msgstr ""
+msgstr "고려할 최대 매개변수. `None` 이면 +무한대."
 
 #: ../../story-class.rst:272 c04b8320d63941998719b704f3829f97
 msgid "Maximum error in returned `parameter`."
-msgstr ""
+msgstr "반환된 `parameter` 의 최대 오류."
 
 #: ../../story-class.rst:274 ../../story-class.rst:295
 #: ../../story-class.rst:317 ../../story-class.rst:338
 #: 04ed040f1f414b7c8386ffe687178265 470693ef9de2469a8028547ee1f19ddd
 #: 8b4b77e4979541f0a4121fe75de9674d aed40072033645edb4aa0fbcdb14816f
 msgid "If true we output diagnostics."
-msgstr ""
+msgstr "true이면 진단 정보를 출력합니다."
 
 #: ../../story-class.rst:279 44286dc4a32a44f390cb28a04e6cf752
 msgid ""
 "Finds smallest value `scale` in range `scale_min..scale_max` where `scale"
 " * rect` is large enough to contain the story `self`."
-msgstr ""
+msgstr "`scale * rect` 가 스토리 `self` 를 포함할 수 있을 만큼 큰 `scale_min..scale_max` 범위에서 가장 작은 값 `scale` 을 찾습니다."
 
 #: ../../story-class.rst:284 ../../story-class.rst:306
 #: bc70968d12674cddba38101f99cb1fbd fdda159f6afc401ebac759335fb3dfec
 msgid "width of rect."
-msgstr ""
+msgstr "rect의 너비."
 
 #: ../../story-class.rst:286 ../../story-class.rst:327
 #: 3ee0663bbd3d4788b49acf35a5a11b7e b17196b122de4057b9427222b9a3e7f4
 msgid "height of rect."
-msgstr ""
+msgstr "rect의 높이."
 
 #: ../../story-class.rst:288 198e10d6fd8b4243a6c9e1051223c22e
 msgid "Minimum scale to consider; must be >= 0."
-msgstr ""
+msgstr "고려할 최소 스케일. >= 0 이어야 합니다."
 
 #: ../../story-class.rst:290 8fb7f93b830e4d5bb7de7c76d7c7e540
 msgid "Maximum scale to consider, must be >= scale_min or `None` for infinite."
-msgstr ""
+msgstr "고려할 최대 스케일. >= scale_min 이어야 하거나 무한대의 경우 `None`."
 
 #: ../../story-class.rst:293 f423b2cdc42a427f978455fb05d8b7df
 msgid "Maximum error in returned scale."
-msgstr ""
+msgstr "반환된 스케일의 최대 오류."
 
 #: ../../story-class.rst:300 9dc7b774a8d94c71b557ecfbb9976265
 msgid ""
 "Finds smallest height in range `height_min..height_max` where a rect with"
 " size `(width, height)` is large enough to contain the story `self`."
-msgstr ""
+msgstr "크기 `(width, height)` 의 rect가 스토리 `self` 를 포함할 수 있을 만큼 큰 `height_min..height_max` 범위에서 가장 작은 높이를 찾습니다."
 
 #: ../../story-class.rst:308 85ff87d9747942168779a4df514ba339
 msgid "Minimum height to consider; must be >= 0."
-msgstr ""
+msgstr "고려할 최소 높이. >= 0 이어야 합니다."
 
 #: ../../story-class.rst:310 912d526c91f243f18cb6395c816ca9bc
 msgid "Maximum height to consider, must be >= height_min or `None` for infinite."
-msgstr ""
+msgstr "고려할 최대 높이. >= height_min 이어야 하거나 무한대의 경우 `None`."
 
 #: ../../story-class.rst:313 ../../story-class.rst:334
 #: c1f7875eb4ae4239a6376368ebf24647 c7cca120f409456097470b299bdfb49a
 msgid "`(x0, y0)` of rect."
-msgstr ""
+msgstr "rect의 `(x0, y0)`."
 
 #: ../../story-class.rst:315 f67d83462abe4bbcaff9a80b51a5978f
 msgid "Maximum error in returned height."
-msgstr ""
+msgstr "반환된 높이의 최대 오류."
 
 #: ../../story-class.rst:322 acf77aa0831f4a0386314816cc6f06aa
 msgid ""
 "Finds smallest width in range `width_min..width_max` where a rect with "
 "size `(width, height)` is large enough to contain the story `self`."
-msgstr ""
+msgstr "크기 `(width, height)` 의 rect가 스토리 `self` 를 포함할 수 있을 만큼 큰 `width_min..width_max` 범위에서 가장 작은 너비를 찾습니다."
 
 #: ../../story-class.rst:329 9bd900ad77c545e490768485d91fc7c8
 msgid "Minimum width to consider; must be >= 0."
-msgstr ""
+msgstr "고려할 최소 너비. >= 0 이어야 합니다."
 
 #: ../../story-class.rst:331 ff7c27444b38461aa0606500f65534c2
 msgid "Maximum width to consider, must be >= width_min or `None` for infinite."
-msgstr ""
+msgstr "고려할 최대 너비. >= width_min 이어야 하거나 무한대의 경우 `None`."
 
 #: ../../story-class.rst:336 0b2941234085492388b7df6476fba23f
 msgid "Maximum error in returned width."
-msgstr ""
+msgstr "반환된 너비의 최대 오류."
 
 #: ../../story-class.rst:343 b1ca57aa343940a18c8a31095aa158c9
 msgid "Element Positioning CallBack function"
-msgstr ""
+msgstr "요소 위치 지정 콜백 함수"
 
 #: ../../story-class.rst:345 091fadf161344745a01b68eb9c135c89
 msgid ""
 "The callback function can be used to log information about story output. "
 "The function's access to the information is read-only: it has no way to "
 "influence the story's output."
-msgstr ""
+msgstr "콜백 함수는 스토리 출력에 대한 정보를 로깅하는 데 사용할 수 있습니다. 함수의 정보 액세스는 읽기 전용입니다. 스토리 출력에 영향을 줄 수 있는 방법이 없습니다."
 
 #: ../../story-class.rst:347 6228d7d0c75448809d16fd4e876f667e
 msgid ""
 "A typical loop for executing a story with using this method would look "
 "like this::"
-msgstr ""
+msgstr "이 메서드를 사용하여 스토리를 실행하는 일반적인 루프는 다음과 같습니다::"
 
 #: ../../story-class.rst:379 ae147d021aa143be82a1e049deb89061
 msgid "Attributes of the ElementPosition class"
-msgstr ""
+msgstr "ElementPosition 클래스의 속성"
 
 #: ../../story-class.rst:380 c1fbd0b7565542d1b95f8c57a58016bd
 msgid ""
 "Exactly one parameter must be passed to the function provided by "
 ":meth:`Story.element_positions`. It is an object with the following "
 "attributes:"
-msgstr ""
+msgstr ":meth:`Story.element_positions` 에 의해 제공되는 함수에는 정확히 하나의 매개변수가 전달되어야 합니다. 다음 속성을 가진 객체입니다:"
 
 #: ../../story-class.rst:382 db748bf0d1de49da994057c0c9813003
 msgid ""
 "The parameter passed to the `recorder` function is an object with the "
 "following attributes:"
-msgstr ""
+msgstr "`recorder` 함수에 전달되는 매개변수는 다음 속성을 가진 객체입니다:"
 
 #: ../../story-class.rst:384 332f4d6df2e849cda1fb558f9f1bc52e
 msgid "`elpos.depth` (int) -- depth of this element in the box structure."
-msgstr ""
+msgstr "`elpos.depth` (int) -- 박스 구조에서 이 요소의 깊이."
 
 #: ../../story-class.rst:386 43ebf06ffd544102857d5d1e63b02e5e
 msgid ""
 "`elpos.heading` (int) -- the header level, 0 if no header, 1-6 for "
 ":htmlTag:`h1` - :htmlTag:`h6`."
-msgstr ""
+msgstr "`elpos.heading` (int) -- 헤더 레벨, 헤더가 없으면 0, :htmlTag:`h1` - :htmlTag:`h6` 의 경우 1-6."
 
 #: ../../story-class.rst:388 fd08004f2ef1497584d8af90ce1c5a41
 msgid ""
 "`elpos.href` (str) -- value of the `href` attribute, or None if not "
 "defined."
-msgstr ""
+msgstr "`elpos.href` (str) -- `href` 속성의 값, 정의되지 않았으면 None."
 
 #: ../../story-class.rst:390 d75122312d1142dc8e2d75061746ee48
 msgid "`elpos.id` (str) -- value of the `id` attribute, or None if not defined."
-msgstr ""
+msgstr "`elpos.id` (str) -- `id` 속성의 값, 정의되지 않았으면 None."
 
 #: ../../story-class.rst:392 f0d4a253cad54310a3c431f54e394f96
 msgid "`elpos.rect` (tuple) -- element position on page."
-msgstr ""
+msgstr "`elpos.rect` (tuple) -- 페이지에서의 요소 위치."
 
 #: ../../story-class.rst:394 a66c52c844ca4388889b38841925a406
 msgid "`elpos.text` (str) -- immediate text of the element."
-msgstr ""
+msgstr "`elpos.text` (str) -- 요소의 직접 텍스트."
 
 #: ../../story-class.rst:396 bed702a812984188bb16fc3565c6d75a
 msgid ""
@@ -834,19 +834,19 @@ msgid ""
 "set: closes element. Relevant for elements that may contain other "
 "elements and thus may not immediately be closed after being created / "
 "opened."
-msgstr ""
+msgstr "`elpos.open_close` (int 비트 필드) -- 비트 0 설정: 요소 열기, 비트 1 설정: 요소 닫기. 다른 요소를 포함할 수 있어 생성/열린 후 즉시 닫히지 않을 수 있는 요소와 관련됩니다."
 
 #: ../../story-class.rst:398 9c020d958f7e41739d4c89fc24c82271
 msgid "`elpos.rect_num` (int) -- count of rectangles filled by the story so far."
-msgstr ""
+msgstr "`elpos.rect_num` (int) -- 지금까지 스토리로 채워진 사각형의 개수."
 
 #: ../../story-class.rst:400 64579e878d5a4437b0267944543f75dc
 msgid ""
 "`elpos.page_num` (int) -- page number; only present when using "
 "`pymupdf.Story.write*()` functions."
-msgstr ""
+msgstr "`elpos.page_num` (int) -- 페이지 번호. `pymupdf.Story.write*()` 함수를 사용할 때만 존재합니다."
 
 #: ../../footer.rst:46 a8171a5060434652be4eadd0eef0baa1
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

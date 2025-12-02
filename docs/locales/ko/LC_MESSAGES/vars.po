@@ -21,37 +21,37 @@ msgstr ""
 
 #: ../../header.rst:-1 b5ad9d8dc172425eb69cab3f7d6af3f1
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 469b53fb216c416cab35e3785cb83220
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 3fc4b25efb434bdd9a36d5ea7c1bb7e4
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../vars.rst:5 f49c06cd5a6f4032b8cd339c64a77df1
 msgid "Constants and Enumerations"
-msgstr ""
+msgstr "상수 및 열거형"
 
 #: ../../vars.rst:6 49759909465a4d1794c2b500ea92ef1d
 msgid ""
 "Constants and enumerations of :title:`MuPDF` as implemented by |PyMuPDF|."
 " Each of the following values is accessible as `pymupdf.value`."
-msgstr ""
+msgstr "|PyMuPDF| 에서 구현한 :title:`MuPDF` 의 상수 및 열거형. 다음 각 값은 `pymupdf.value` 로 접근할 수 있습니다."
 
 #: ../../vars.rst:10 32fc3323ad3f4cdfb477267318e012bc
 msgid "Constants"
-msgstr ""
+msgstr "상수"
 
 #: ../../vars.rst:14 5b27640ef1ee4e98bea1cf03003160a1
 msgid "Predefined Python list of valid :ref:`Base-14-Fonts`."
-msgstr ""
+msgstr "유효한 :ref:`Base-14-Fonts` 의 사전 정의된 Python 목록."
 
 #: ../../vars.rst 03741e7ad1a44d5299f6572dedaca7b4
 #: 049f7b4ff1974e208b3a904e6026a510 05d7b5730e6142eb96888bc1f1fbcc93
@@ -67,33 +67,33 @@ msgstr ""
 #: f03ecc8098ca4cc181b8356bd7a2bb91 f3646d6d4cee48e0b1af3350ce178eec
 #: f7af32255ccb4f66a37175278b7b7087 fddcade3afa241b8a81b00e45d91f2a4
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../vars.rst:16 669fb77a7bdd4fbcb224507f1b8d7932
 msgid "list"
-msgstr ""
+msgstr "list"
 
 #: ../../vars.rst:20 b3ae8b9f4f43444aa8fdc74de25f17f0
 msgid "Predefined RGB colorspace *pymupdf.Colorspace(pymupdf.CS_RGB)*."
-msgstr ""
+msgstr "사전 정의된 RGB 색 공간 *pymupdf.Colorspace(pymupdf.CS_RGB)*."
 
 #: ../../vars.rst:22 ../../vars.rst:28 ../../vars.rst:34
 #: 19f89992935a4f8e839adc1511263368 204d25d273a7452cb5ba5e71b6869076
 #: 79e2265294cd409f800e1e4a446e2ccf
 msgid ":ref:`Colorspace`"
-msgstr ""
+msgstr ":ref:`Colorspace`"
 
 #: ../../vars.rst:26 6a13d5103eb54565bf88415ab0ddc8c5
 msgid "Predefined GRAY colorspace *pymupdf.Colorspace(pymupdf.CS_GRAY)*."
-msgstr ""
+msgstr "사전 정의된 GRAY 색 공간 *pymupdf.Colorspace(pymupdf.CS_GRAY)*."
 
 #: ../../vars.rst:32 7321e72d393e42a3b735759e78d1800e
 msgid "Predefined CMYK colorspace *pymupdf.Colorspace(pymupdf.CS_CMYK)*."
-msgstr ""
+msgstr "사전 정의된 CMYK 색 공간 *pymupdf.Colorspace(pymupdf.CS_CMYK)*."
 
 #: ../../vars.rst:38 69ab2345dd374ad1873f76d16292717c
 msgid "1 -- Type of :ref:`Colorspace` is RGBA"
-msgstr ""
+msgstr "1 -- :ref:`Colorspace` 유형은 RGBA"
 
 #: ../../vars.rst:40 ../../vars.rst:46 ../../vars.rst:52 ../../vars.rst:324
 #: ../../vars.rst:330 ../../vars.rst:339 ../../vars.rst:348 ../../vars.rst:354
@@ -103,237 +103,237 @@ msgstr ""
 #: b6975d022fb6464bb4f18e4ee6bd73fa c2c115fb5ad14e8da9970160f490f151
 #: c3202da1e321403b976247fc2a19756a d3d462436758488a8dab6f328e27425e
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../vars.rst:44 23b50446130242d885968a5027985060
 msgid "2 -- Type of :ref:`Colorspace` is GRAY"
-msgstr ""
+msgstr "2 -- :ref:`Colorspace` 유형은 GRAY"
 
 #: ../../vars.rst:50 9cf5e34e2e83453799d96f7be872aa7b
 msgid "3 -- Type of :ref:`Colorspace` is CMYK"
-msgstr ""
+msgstr "3 -- :ref:`Colorspace` 유형은 CMYK"
 
 #: ../../vars.rst:56 22d14edcfed74d6ba68f180a5162d3bc
 msgid "'x.xx.x' -- MuPDF version that is being used by PyMuPDF."
-msgstr ""
+msgstr "'x.xx.x' -- PyMuPDF에서 사용 중인 MuPDF 버전."
 
 #: ../../vars.rst:58 ../../vars.rst:70 24ffecb2a7de45fbbce9cac71b9ad2c2
 #: 4162b0bbb82145f5863294fee9b84fcb
 msgid "string"
-msgstr ""
+msgstr "string"
 
 #: ../../vars.rst:62 22fa0f6343d143a783918bf5d77c0101
 msgid "MuPDF version as a tuple of integers, `(major, minor, patch)`."
-msgstr ""
+msgstr "정수 튜플로 표현된 MuPDF 버전, `(major, minor, patch)`."
 
 #: ../../vars.rst:64 ../../vars.rst:76 ../../vars.rst:86
 #: 2f0bacf105574469a7a2f46854047382 ad5b78a4130443e0b9cb7a3e7209521d
 #: d8a2a6e3dcc44d9a96a1324281332fc4
 msgid "tuple"
-msgstr ""
+msgstr "tuple"
 
 #: ../../vars.rst:68 44158f3deff845c6a420df354f39c1ae
 msgid "'x.xx.x' -- PyMuPDF version."
-msgstr ""
+msgstr "'x.xx.x' -- PyMuPDF 버전."
 
 #: ../../vars.rst:74 503076c6013f48dea2d5aff3c0bfffe3
 msgid "PyMuPDF version as a tuple of integers, `(major, minor, patch)`."
-msgstr ""
+msgstr "정수 튜플로 표현된 PyMuPDF 버전, `(major, minor, patch)`."
 
 #: ../../vars.rst:80 ../../vars.rst:98 60b862b7a373462c8b0819e549788e84
 #: c79955e7841e4b48a637775a61cfbd69
 msgid "Disabled (set to None) in 1.26.1."
-msgstr ""
+msgstr "1.26.1에서 비활성화됨(None으로 설정)."
 
 #: ../../vars.rst:84 fff27c04ee62442897c643c5bfb60fd8
 msgid ""
 "(pymupdf_version, mupdf_version, timestamp) -- combined version "
 "information where `timestamp` is the generation point in time formatted "
 "as \"YYYYMMDDhhmmss\"."
-msgstr ""
+msgstr "(pymupdf_version, mupdf_version, timestamp) -- 결합된 버전 정보. `timestamp` 는 \"YYYYMMDDhhmmss\" 형식의 생성 시점입니다."
 
 #: ../../vars.rst:90 4fbbccb8f9024a63a332534e6a7d0d2e
 msgid "Legacy equivalent to `mupdf_version`."
-msgstr ""
+msgstr "`mupdf_version` 과 동일한 레거시."
 
 #: ../../vars.rst:94 24f0ff9e8cf44c5fba17fe9c4bd63d7f
 msgid "Legacy equivalent to `pymupdf_version`."
-msgstr ""
+msgstr "`pymupdf_version` 과 동일한 레거시."
 
 #: ../../vars.rst:104 4dce9933f18a45198a4633f8fefe9d07
 msgid "Document Permissions"
-msgstr ""
+msgstr "문서 권한"
 
 #: ../../vars.rst:107 ../../vars.rst:125 ../../vars.rst:138
 #: 69c0225036764f13b91eaa9dd3d4b5a1 8e2f223c79664413ba8ac6afd092c3fa
 #: a0a9b218a32347e18401eec3e71b51c6
 msgid "Code"
-msgstr ""
+msgstr "코드"
 
 #: ../../vars.rst:107 c680e8bb0a64489fbe38ff0350dae277
 msgid "Permitted Action"
-msgstr ""
+msgstr "허용된 작업"
 
 #: ../../vars.rst:109 a79221d078824de999e2f0ccf27939da
 msgid "PDF_PERM_PRINT"
-msgstr ""
+msgstr "PDF_PERM_PRINT"
 
 #: ../../vars.rst:109 634b2c786f6946a99a89687ae863c63d
 msgid "Print the document"
-msgstr ""
+msgstr "문서 인쇄"
 
 #: ../../vars.rst:110 488e117f6ad841e4b5ebe9ca302ecd70
 msgid "PDF_PERM_MODIFY"
-msgstr ""
+msgstr "PDF_PERM_MODIFY"
 
 #: ../../vars.rst:110 a868ac82b5084146a37a1633ab518c6c
 msgid "Modify the document's contents"
-msgstr ""
+msgstr "문서 내용 수정"
 
 #: ../../vars.rst:111 18ef7dd19b374b5ebfdb3cec757c73ac
 msgid "PDF_PERM_COPY"
-msgstr ""
+msgstr "PDF_PERM_COPY"
 
 #: ../../vars.rst:111 8f52d72b641b40d285393c8d0bdf12b3
 msgid "Copy or otherwise extract text and graphics"
-msgstr ""
+msgstr "텍스트 및 그래픽 복사 또는 추출"
 
 #: ../../vars.rst:112 9e025ab3d4f741e2a325152bc6f8a701
 msgid "PDF_PERM_ANNOTATE"
-msgstr ""
+msgstr "PDF_PERM_ANNOTATE"
 
 #: ../../vars.rst:112 cb0beab224b94270bdabfc3bd1ceacc6
 msgid "Add or modify text annotations and interactive form fields"
-msgstr ""
+msgstr "텍스트 주석 및 대화형 양식 필드 추가 또는 수정"
 
 #: ../../vars.rst:113 65f9a8539a38426e9d9edea861734d4d
 msgid "PDF_PERM_FORM"
-msgstr ""
+msgstr "PDF_PERM_FORM"
 
 #: ../../vars.rst:113 9880c191956741d1ada6315e712e1df3
 msgid "Fill in forms and sign the document"
-msgstr ""
+msgstr "양식 작성 및 문서 서명"
 
 #: ../../vars.rst:114 419137e25c424c91876fed826c5a5bb0
 msgid "PDF_PERM_ACCESSIBILITY"
-msgstr ""
+msgstr "PDF_PERM_ACCESSIBILITY"
 
 #: ../../vars.rst:114 c90f5be96ba842199ff198fe845a93a8
 msgid "Obsolete, always permitted"
-msgstr ""
+msgstr "사용 중단됨, 항상 허용됨"
 
 #: ../../vars.rst:115 2ac0ea137a68490a808035fe357a1eb5
 msgid "PDF_PERM_ASSEMBLE"
-msgstr ""
+msgstr "PDF_PERM_ASSEMBLE"
 
 #: ../../vars.rst:115 ee21ef3d77b543aa83b85d5966fa800c
 msgid "Insert, rotate, or delete pages, bookmarks, thumbnail images"
-msgstr ""
+msgstr "페이지, 책갈피, 썸네일 이미지 삽입, 회전 또는 삭제"
 
 #: ../../vars.rst:116 12f225fa0c204cecae58e07d185ee517
 msgid "PDF_PERM_PRINT_HQ"
-msgstr ""
+msgstr "PDF_PERM_PRINT_HQ"
 
 #: ../../vars.rst:116 40cb4480233843f686a1bb405c551ad8
 msgid "High quality printing"
-msgstr ""
+msgstr "고품질 인쇄"
 
 #: ../../vars.rst:122 c7730f8c05a4440dabe25baa7a267683
 msgid "PDF Optional Content Codes"
-msgstr ""
+msgstr "PDF 선택적 콘텐츠 코드"
 
 #: ../../vars.rst:125 ../../vars.rst:138 063e2ffd14154f0ebe27a414e68d96c6
 #: fe257d4a0ce0417dba5855c9020e0ca1
 msgid "Meaning"
-msgstr ""
+msgstr "의미"
 
 #: ../../vars.rst:127 fe2012971224466ea97a0fb2a812c5d5
 msgid "PDF_OC_ON"
-msgstr ""
+msgstr "PDF_OC_ON"
 
 #: ../../vars.rst:127 420c6f19787341418e8a584a6befd890
 msgid "Set an OCG to ON temporarily"
-msgstr ""
+msgstr "OCG를 일시적으로 ON으로 설정"
 
 #: ../../vars.rst:128 2c29aec5886a45cfae0e991402caad13
 msgid "PDF_OC_TOGGLE"
-msgstr ""
+msgstr "PDF_OC_TOGGLE"
 
 #: ../../vars.rst:128 a7ebc40cd09c47a3867c2d73be2fdc36
 msgid "Toggle OCG status temporarily"
-msgstr ""
+msgstr "OCG 상태를 일시적으로 토글"
 
 #: ../../vars.rst:129 4b06b1f6475a41cb8d448d28fbf5dd24
 msgid "PDF_OC_OFF"
-msgstr ""
+msgstr "PDF_OC_OFF"
 
 #: ../../vars.rst:129 8a6a1199c65a44ba85224f9de436969f
 msgid "Set an OCG to OFF temporarily"
-msgstr ""
+msgstr "OCG를 일시적으로 OFF로 설정"
 
 #: ../../vars.rst:135 2b7b50430a24457fafc7cd3943e62be7
 msgid "PDF encryption method codes"
-msgstr ""
+msgstr "PDF 암호화 방법 코드"
 
 #: ../../vars.rst:140 a3c958105b9a4e8db59f50cb6ab72b3f
 msgid "PDF_ENCRYPT_KEEP"
-msgstr ""
+msgstr "PDF_ENCRYPT_KEEP"
 
 #: ../../vars.rst:140 30102a9f273a4422a20bf1aa06b451e6
 msgid "do not change"
-msgstr ""
+msgstr "변경하지 않음"
 
 #: ../../vars.rst:141 57fd2541dc9c472e9d50b26ef7cd6daf
 msgid "PDF_ENCRYPT_NONE"
-msgstr ""
+msgstr "PDF_ENCRYPT_NONE"
 
 #: ../../vars.rst:141 49f9186cb5ae45cd9064cb575b6d5385
 msgid "remove any encryption"
-msgstr ""
+msgstr "모든 암호화 제거"
 
 #: ../../vars.rst:142 49fe127596b048f4a7ea339156fdf19d
 msgid "PDF_ENCRYPT_RC4_40"
-msgstr ""
+msgstr "PDF_ENCRYPT_RC4_40"
 
 #: ../../vars.rst:142 5e3374e98bdc43a199f2fd85dcc18580
 msgid "RC4 40 bit"
-msgstr ""
+msgstr "RC4 40비트"
 
 #: ../../vars.rst:143 178727ee434846ad808cce5a8aaad74f
 msgid "PDF_ENCRYPT_RC4_128"
-msgstr ""
+msgstr "PDF_ENCRYPT_RC4_128"
 
 #: ../../vars.rst:143 a3c8b50a7af8456a966bcd7de122f754
 msgid "RC4 128 bit"
-msgstr ""
+msgstr "RC4 128비트"
 
 #: ../../vars.rst:144 1ccff559acbb47a8a81bae717b32c4c8
 msgid "PDF_ENCRYPT_AES_128"
-msgstr ""
+msgstr "PDF_ENCRYPT_AES_128"
 
 #: ../../vars.rst:144 d1fdccc17e4348788f55154c73a66ddd
 msgid "*Advanced Encryption Standard* 128 bit"
-msgstr ""
+msgstr "*고급 암호화 표준* 128비트"
 
 #: ../../vars.rst:145 6052a9f31b7f4ec0b078312655adc0d5
 msgid "PDF_ENCRYPT_AES_256"
-msgstr ""
+msgstr "PDF_ENCRYPT_AES_256"
 
 #: ../../vars.rst:145 14eb7ccec2184fbbb74c67eb54aeaa93
 msgid "*Advanced Encryption Standard* 256 bit"
-msgstr ""
+msgstr "*고급 암호화 표준* 256비트"
 
 #: ../../vars.rst:146 0e8a697210064a68a4acb78e4798c066
 msgid "PDF_ENCRYPT_UNKNOWN"
-msgstr ""
+msgstr "PDF_ENCRYPT_UNKNOWN"
 
 #: ../../vars.rst:146 c4ff9f33d8bf406baac59afdedce3393
 msgid "unknown"
-msgstr ""
+msgstr "알 수 없음"
 
 #: ../../vars.rst:152 41ce5d42a96641298f59e62ca328c3ad
 msgid "Font File Extensions"
-msgstr ""
+msgstr "글꼴 파일 확장자"
 
 #: ../../vars.rst:153 a5aa4b1442b84096a3364986edc00478
 msgid ""
@@ -341,125 +341,125 @@ msgid ""
 "buffers extracted from a PDF. This string is returned by "
 ":meth:`Document.get_page_fonts`, :meth:`Page.get_fonts` and "
 ":meth:`Document.extract_font`."
-msgstr ""
+msgstr "이 표는 PDF에서 추출한 글꼴 파일 버퍼를 저장할 때 사용해야 하는 파일 확장자를 보여줍니다. 이 문자열은 :meth:`Document.get_page_fonts`, :meth:`Page.get_fonts` 및 :meth:`Document.extract_font` 에 의해 반환됩니다."
 
 #: ../../vars.rst:156 0052347b09ef46dd84c581597bacb35f
 msgid "Ext"
-msgstr ""
+msgstr "확장자"
 
 #: ../../vars.rst:156 2d2cd27d463f4ff0997dae7caa6b83b6
 msgid "Description"
-msgstr ""
+msgstr "설명"
 
 #: ../../vars.rst:158 112b17f0de1840a08e0864ed1e9fad0c
 msgid "ttf"
-msgstr ""
+msgstr "ttf"
 
 #: ../../vars.rst:158 0cb8088360d7427baefcf5281b49766b
 msgid "TrueType font"
-msgstr ""
+msgstr "TrueType 글꼴"
 
 #: ../../vars.rst:159 c2a6b6d61d0e40d583db103da173e32f
 msgid "pfa"
-msgstr ""
+msgstr "pfa"
 
 #: ../../vars.rst:159 5a1d03107af64f5981ab318e0360c9af
 msgid "Postscript for ASCII font (various subtypes)"
-msgstr ""
+msgstr "ASCII 글꼴용 Postscript (다양한 하위 유형)"
 
 #: ../../vars.rst:160 86be9bafc4174236b68e13a9dac7e5c8
 msgid "cff"
-msgstr ""
+msgstr "cff"
 
 #: ../../vars.rst:160 8675d363e0c9499ab403a49e9cda22a1
 msgid "Type1C font (compressed font equivalent to Type1)"
-msgstr ""
+msgstr "Type1C 글꼴 (Type1과 동등한 압축 글꼴)"
 
 #: ../../vars.rst:161 4c60a1421ea7458e81092448bae7a1d8
 msgid "cid"
-msgstr ""
+msgstr "cid"
 
 #: ../../vars.rst:161 cf49f17f14d346f89b4ace2ba62a022f
 msgid "character identifier font (postscript format)"
-msgstr ""
+msgstr "문자 식별자 글꼴 (postscript 형식)"
 
 #: ../../vars.rst:162 fc39dc6369a74d13baa2932ca54039b7
 msgid "otf"
-msgstr ""
+msgstr "otf"
 
 #: ../../vars.rst:162 e6d68a78565e4efdbdabf3ad08977b53
 msgid "OpenType font"
-msgstr ""
+msgstr "OpenType 글꼴"
 
 #: ../../vars.rst:163 b7864b379d2a4c898a5538edf898a0a6
 msgid "n/a"
-msgstr ""
+msgstr "해당 없음"
 
 #: ../../vars.rst:163 d276c42e480048c98e84446e521418fb
 msgid "not extractable, e.g. :ref:`Base-14-Fonts`, Type 3 fonts and others"
-msgstr ""
+msgstr "추출할 수 없음, 예: :ref:`Base-14-Fonts`, Type 3 글꼴 및 기타"
 
 #: ../../vars.rst:169 30a554d8b43e4399ac3db70eb4861a79
 msgid "Text Alignment"
-msgstr ""
+msgstr "텍스트 정렬"
 
 #: ../../vars.rst:172 c285bb937c45411c9e8428e8cbc6d5ce
 msgid "0 -- align left."
-msgstr ""
+msgstr "0 -- 왼쪽 정렬."
 
 #: ../../vars.rst:176 f6c2ead9ebb844e2a50572a57dbf9a86
 msgid "1 -- align center."
-msgstr ""
+msgstr "1 -- 가운데 정렬."
 
 #: ../../vars.rst:180 8e82db4889224a20909e002199177be8
 msgid "2 -- align right."
-msgstr ""
+msgstr "2 -- 오른쪽 정렬."
 
 #: ../../vars.rst:184 75af6aadfef54289894f0d114de9eeae
 msgid "3 -- align justify."
-msgstr ""
+msgstr "3 -- 양쪽 정렬."
 
 #: ../../vars.rst:191 cf47b8894ae04d868274979275d334ee
 msgid "Font Properties"
-msgstr ""
+msgstr "글꼴 속성"
 
 #: ../../vars.rst:192 5c56a8ed6d794191b089c5b738da3cf9
 msgid ""
 "Please note that the following bits are derived from what a font has to "
 "say about its properties. It may not be (and quite often is not) correct."
-msgstr ""
+msgstr "다음 비트는 글꼴이 자신의 속성에 대해 말하는 내용에서 파생됩니다. 정확하지 않을 수 있으며(그리고 종종 그렇습니다)."
 
 #: ../../vars.rst:196 d8f06c39601c4b96bd13ea9e078c40ce
 msgid ""
 "1 -- the character or span is a superscript. This property is computed by"
 " MuPDF and not part of any font information."
-msgstr ""
+msgstr "1 -- 문자 또는 스팬이 위첨자입니다. 이 속성은 MuPDF에 의해 계산되며 글꼴 정보의 일부가 아닙니다."
 
 #: ../../vars.rst:200 d21771d5f06e4862a5dc0a350e8a4def
 msgid "2 -- the font is italic."
-msgstr ""
+msgstr "2 -- 글꼴이 이탤릭체입니다."
 
 #: ../../vars.rst:204 c25bebd41297409da31265769924b7c0
 msgid "4 -- the font is serifed."
-msgstr ""
+msgstr "4 -- 글꼴이 세리프입니다."
 
 #: ../../vars.rst:208 b4a15a033d644c66b6b71cd52bef75b0
 msgid "8 -- the font is mono-spaced."
-msgstr ""
+msgstr "8 -- 글꼴이 고정폭입니다."
 
 #: ../../vars.rst:212 fd8f231700104de8a26b9fa17f57dca6
 msgid "16 -- the font is bold."
-msgstr ""
+msgstr "16 -- 글꼴이 굵게입니다."
 
 #: ../../vars.rst:215 ae7fc7375fe24bcab9635e7ecaf45788
 msgid "Text Extraction Flags"
-msgstr ""
+msgstr "텍스트 추출 플래그"
 
 #: ../../vars.rst:216 b53381821bdc40c69b532bc7e53092be
 msgid ""
 "Option bits controlling the amount of data, that are parsed into a "
 ":ref:`TextPage`."
-msgstr ""
+msgstr ":ref:`TextPage` 로 파싱되는 데이터 양을 제어하는 옵션 비트."
 
 #: ../../vars.rst:218 4e0693fb1e8f4c7e991b270de3d35b6c
 msgid ""
@@ -470,7 +470,7 @@ msgid ""
 "combinations of the values are used. Please use a value that meets your "
 "situation. Especially make sure to switch off image extraction unless you"
 " really need them. The impact on performance and memory is significant!"
-msgstr ""
+msgstr "PyMuPDF 프로그래머의 경우, 이러한 값의 일부 조합(Python의 `|` 연산자를 사용하거나 단순히 `+` 사용)이 모든 텍스트 검색 및 텍스트 추출 메서드의 매개변수인 ``flags`` 정수에 집계됩니다. 개별 메서드에 따라 다른 기본 값 조합이 사용됩니다. 상황에 맞는 값을 사용하세요. 특히 실제로 필요하지 않은 경우 이미지 추출을 끄는 것이 중요합니다. 성능과 메모리에 미치는 영향이 큽니다!"
 
 #: ../../vars.rst:222 e2a36dbf69d04d888507fc509ee2b720
 msgid ""
@@ -480,14 +480,14 @@ msgid ""
 "characters f, f and i. Default is \"on\" in PyMuPDF. MuPDF supports the "
 "following 7 ligatures: \"ff\", \"fi\", \"fl\", \"ffi\", \"ffl\", , "
 "\"ft\", \"st\"."
-msgstr ""
+msgstr "1 -- 설정되면 합자가 원래 형태로 애플리케이션에 전달됩니다. 그렇지 않으면 합자가 구성 요소로 확장됩니다. 예를 들어 합자 \"ffi\"는 세 개의 별도 문자 f, f, i로 확장됩니다. PyMuPDF의 기본값은 \"on\"입니다. MuPDF는 다음 7개의 합자를 지원합니다: \"ff\", \"fi\", \"fl\", \"ffi\", \"ffl\", \"ft\", \"st\"."
 
 #: ../../vars.rst:226 03ceff6db720488f91e124b08d5a1e41
 msgid ""
 "2 -- If set, whitespace is passed through. Otherwise any type of "
 "horizontal whitespace (including horizontal tabs) will be replaced with "
 "space characters of variable width. Default is \"on\" in PyMuPDF."
-msgstr ""
+msgstr "2 -- 설정되면 공백이 그대로 전달됩니다. 그렇지 않으면 모든 유형의 수평 공백(수평 탭 포함)이 가변 너비의 공백 문자로 대체됩니다. PyMuPDF의 기본값은 \"on\"입니다."
 
 #: ../../vars.rst:230 cf99390225b04a8996e5580bd96fe830
 msgid ""
@@ -497,7 +497,7 @@ msgid ""
 "\"rawdict\", \"rawjson\", \"html\", and \"xhtml\" and is the default "
 "there. If used with \"blocks\" however, only image metadata will be "
 "returned, not the image itself."
-msgstr ""
+msgstr "4 -- 설정되면 이미지가 :ref:`TextPage` 에 저장됩니다. 이것은 \"blocks\", \"dict\", \"json\", \"rawdict\", \"rawjson\", \"html\", \"xhtml\" 유형의 텍스트 추출 출력에 (보통 큰!) 바이너리 이미지 콘텐츠가 포함되게 하며, 여기서 기본값입니다. 그러나 \"blocks\"와 함께 사용하면 이미지 자체가 아닌 이미지 메타데이터만 반환됩니다."
 
 #: ../../vars.rst:234 2681e56367fe46aa936b2b5870294639
 msgid ""
@@ -506,7 +506,7 @@ msgid ""
 "not insert spaces to point to the next character's position, but will "
 "provide the direct location address. The default in PyMuPDF is \"off\" --"
 " so spaces **will be generated**."
-msgstr ""
+msgstr "8 -- 설정되면 MuPDF는 문자 사이에 큰 간격이 있는 곳에 누락된 공백 문자를 추가하려고 시도하지 않습니다. PDF에서 작성자는 종종 다음 문자 위치를 가리키는 공백을 삽입하지 않고 직접 위치 주소를 제공합니다. PyMuPDF의 기본값은 \"off\"입니다 -- 따라서 공백이 **생성됩니다**."
 
 #: ../../vars.rst:238 cb25cbf3acb74d84824fa410aed54abd
 msgid ""
@@ -518,20 +518,20 @@ msgid ""
 "on different lines will be joined to one span **\"first method leads to "
 "wrong results\"** and correspondingly updated bboxes: the characters of "
 "the resulting span will no longer have identical y-coordinates."
-msgstr ""
+msgstr "16 -- 줄 끝의 하이픈을 무시하고 다음 줄과 결합합니다. 텍스트 검색 함수와 함께 내부적으로 사용됩니다. 그러나 일반적으로 사용 가능합니다: 켜면 텍스트 추출은 첫 번째 줄의 끝 하이픈이 제거된 결합된 텍스트 줄(또는 스팬)을 반환합니다. 따라서 다른 줄에 있는 두 개의 별도 스팬 **\"first meth-\"** 및 **\"od leads to wrong results\"** 는 하나의 스팬 **\"first method leads to wrong results\"** 로 결합되고 그에 따라 bbox가 업데이트됩니다: 결과 스팬의 문자는 더 이상 동일한 y 좌표를 가지지 않습니다."
 
 #: ../../vars.rst:242 19c2601d343547ba88a56aac0f0c8ff5
 msgid ""
 "32 -- Generate a new line for every span. Not used (\"off\") in PyMuPDF, "
 "but available for your use. Every line in \"dict\", \"json\", "
 "\"rawdict\", \"rawjson\" will contain exactly one span."
-msgstr ""
+msgstr "32 -- 각 스팬에 대해 새 줄을 생성합니다. PyMuPDF에서는 사용되지 않지만(\"off\") 사용할 수 있습니다. \"dict\", \"json\", \"rawdict\", \"rawjson\"의 모든 줄은 정확히 하나의 스팬을 포함합니다."
 
 #: ../../vars.rst:246 87e941b789f8436e998a2f3801575756
 msgid ""
 "64 -- Characters entirely outside a page's **mediabox** or contained in "
 "other \"clipped\" areas will be ignored. This is default in PyMuPDF."
-msgstr ""
+msgstr "64 -- 페이지의 **mediabox** 완전히 밖에 있거나 다른 \"클리핑된\" 영역에 포함된 문자는 무시됩니다. 이것은 PyMuPDF의 기본값입니다."
 
 #: ../../vars.rst:250 befbc341b1674e348a9396c99be1ac8a
 msgid ""
@@ -539,11 +539,11 @@ msgid ""
 " **text extraction** in PyMuPDF. If you **want to detect** when encoding "
 "information is missing or uncertain, toggle this flag and scan for the "
 "presence of U+FFFD (= `chr(0xfffd)`) code points in the resulting text."
-msgstr ""
+msgstr "128 -- U+FFFD 대신 원시 문자 코드를 사용합니다. 이것은 PyMuPDF에서 **텍스트 추출** 의 기본값입니다. 인코딩 정보가 누락되거나 불확실할 때 **감지하려면** 이 플래그를 토글하고 결과 텍스트에서 U+FFFD(= `chr(0xfffd)`) 코드 포인트의 존재를 스캔하세요."
 
 #: ../../vars.rst:254 328eded5e21c495986514848f3acd090
 msgid "256 -- Not supported."
-msgstr ""
+msgstr "256 -- 지원되지 않음."
 
 #: ../../vars.rst:258 c2468f6ee1364a9aacd5178c2e2e1f03
 msgid ""
@@ -562,17 +562,28 @@ msgid ""
 "slow down text extraction somewhat because of the incurred computational "
 "effort."
 msgstr ""
+"512 -- 문자 경계 상자를 계산할 때 모든 글꼴의 메트릭 값을 무시합니다 -- 가장 "
+"두드러지게 `ascender "
+"<https://en.wikipedia.org/wiki/Ascender_(typography)>`_ 및 `descender "
+"<https://en.wikipedia.org/wiki/Descender>`_ 값입니다. 대신 각 문자의 글리프의 "
+"그리기 명령을 따르고 해당 사각형 경계를 계산합니다. 이것은 시각적 모양을 그리는 "
+"데 사용된 모든 점을 감싸는 가장 작은 사각형입니다 - 배경을 이해하려면 "
+":ref:`Shape` 클래스를 참조하세요. 이것은 특히 개별 문자 높이를 초래합니다. "
+"예를 들어 (흰색) 공백은 **높이가 0인 bbox** 를 가집니다(아무것도 그려지지 않기 "
+"때문) -- 글꼴 메트릭을 사용할 때 생성되는 0이 아닌 경계 상자와 대조됩니다. 이 "
+"옵션은 오류가 포함된 글꼴에 대해서도 의미 있는 경계 상자를 얻는 데 유용할 수 "
+"있습니다. 발생하는 계산 작업으로 인해 사용 시 텍스트 추출 속도가 다소 느려집니다."
 
 #: ../../vars.rst:260 0d005cfd39294c549dcb076c7db6a438
 msgid ""
 "Note that this has no effect by default - one must also disable the "
 "global quad corrections setting with "
 "`pymupdf.TOOLS.unset_quad_corrections(True)`."
-msgstr ""
+msgstr "기본적으로는 효과가 없습니다 - `pymupdf.TOOLS.unset_quad_corrections(True)` 로 전역 quad 보정 설정도 비활성화해야 합니다."
 
 #: ../../vars.rst:265 26addbea02e84233b6230ff416c3f839
 msgid "1024 -- Not supported."
-msgstr ""
+msgstr "1024 -- 지원되지 않음."
 
 #: ../../vars.rst:269 71ca80b7b9a0453f96fbe2509cc882f8
 msgid ""
@@ -581,16 +592,19 @@ msgid ""
 "for background. If set, the **stored** (\"replacement\" text) is ignored "
 "in favor of the displayed text."
 msgstr ""
+"2048 -- PDF 뷰어 등에 나타나는 텍스트와 PDF에 저장된 텍스트 간의 내장된 "
+"차이를 무시합니다. 배경은 :ref:`AdobeManual` 615페이지를 참조하세요. 설정되면 "
+"**저장된** (\"대체\" 텍스트)이 무시되고 표시된 텍스트가 우선됩니다."
 
 #: ../../vars.rst:273 a2280aa3922d45a0b01eec12d3b1828e
 msgid "4096 -- Attempt to segment page into different regions."
-msgstr ""
+msgstr "4096 -- 페이지를 다른 영역으로 분할하려고 시도합니다."
 
 #: ../../vars.rst:275 6055e0ec2f2640a4a69c769d60051dd1
 msgid ""
 "The following constants represent the default combinations of the above "
 "for text extraction and searching:"
-msgstr ""
+msgstr "다음 상수는 텍스트 추출 및 검색을 위한 위의 기본 조합을 나타냅니다:"
 
 #: ../../vars.rst:279 ../../vars.rst:283 ../../vars.rst:287 ../../vars.rst:307
 #: 18445061c2274e3094f8e223b2f97d8b 4848e850ecdd4b71ae9e0fe4bd1bd2ab
@@ -599,6 +613,8 @@ msgid ""
 "`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP "
 "| TEXT_USE_CID_FOR_UNKNOWN_UNICODE`"
 msgstr ""
+"`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP "
+"| TEXT_USE_CID_FOR_UNKNOWN_UNICODE`"
 
 #: ../../vars.rst:291 ../../vars.rst:295 ../../vars.rst:299 ../../vars.rst:303
 #: 1cef0274d54745cead1031d1bca2799f 2fbf2a5e26ee49eb868428bcbb529499
@@ -607,70 +623,72 @@ msgid ""
 "`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP "
 "| TEXT_PRESERVE_IMAGES | TEXT_USE_CID_FOR_UNKNOWN_UNICODE`"
 msgstr ""
+"`TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP "
+"| TEXT_PRESERVE_IMAGES | TEXT_USE_CID_FOR_UNKNOWN_UNICODE`"
 
 #: ../../vars.rst:311 bb90ee72173049c7a370c67ba9105b23
 msgid "`TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_DEHYPHENATE`"
-msgstr ""
+msgstr "`TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP | TEXT_DEHYPHENATE`"
 
 #: ../../vars.rst:317 f588bfe5d7214e09848d2ea66fc226e0
 msgid "Link Destination Kinds"
-msgstr ""
+msgstr "링크 대상 종류"
 
 #: ../../vars.rst:318 25e6f87b871146ab8c9d29979584f4b3
 msgid "Possible values of :attr:`linkDest.kind` (link destination kind)."
-msgstr ""
+msgstr ":attr:`linkDest.kind` (링크 대상 종류)의 가능한 값."
 
 #: ../../vars.rst:322 93386ed82cc246f889866c47a3647e09
 msgid "0 -- No destination. Indicates a dummy link."
-msgstr ""
+msgstr "0 -- 대상 없음. 더미 링크를 나타냅니다."
 
 #: ../../vars.rst:328 55d8c4d1bc6e4ff7896e13f3fcbbfa74
 msgid "1 -- Points to a place in this document."
-msgstr ""
+msgstr "1 -- 이 문서의 위치를 가리킵니다."
 
 #: ../../vars.rst:334 17fd7d0b788140929657b02c096290f0
 msgid ""
 "2 -- Points to a URI -- typically a resource specified with internet "
 "syntax."
-msgstr ""
+msgstr "2 -- URI를 가리킵니다 -- 일반적으로 인터넷 구문으로 지정된 리소스."
 
 #: ../../vars.rst:336 c2c977e93a6b466686c3ec774112b806
 msgid ""
 "PyMuPDF treats any external link that contains a colon and does not start"
 " with `file:`, as `LINK_URI`."
-msgstr ""
+msgstr "PyMuPDF는 콜론을 포함하고 `file:` 로 시작하지 않는 모든 외부 링크를 `LINK_URI` 로 처리합니다."
 
 #: ../../vars.rst:343 f2f74244f1ff419e9d052ead3e767a51
 msgid "3 -- Launch (open) another file (of any \"executable\" type)."
-msgstr ""
+msgstr "3 -- 다른 파일(모든 \"실행 가능한\" 유형)을 실행(열기)합니다."
 
 #: ../../vars.rst:345 80fd06d08b3a4bbd91c5550c158e44a4
 msgid ""
 "|PyMuPDF| treats any external link that starts with `file:` or doesn't "
 "contain a colon, as `LINK_LAUNCH`."
-msgstr ""
+msgstr "|PyMuPDF| 는 `file:` 로 시작하거나 콜론을 포함하지 않는 모든 외부 링크를 `LINK_LAUNCH` 로 처리합니다."
 
 #: ../../vars.rst:352 953c280a5a2c4081b49b4428360d0b70
 msgid "4 -- points to a named location."
-msgstr ""
+msgstr "4 -- 명명된 위치를 가리킵니다."
 
 #: ../../vars.rst:358 c2dd6d723df94a729c602ab39198e6e3
 msgid "5 -- Points to a place in another PDF document."
-msgstr ""
+msgstr "5 -- 다른 PDF 문서의 위치를 가리킵니다."
 
 #: ../../vars.rst:365 13d9db49dc764ad2943a0bd89bf1eccd
 msgid "Link Destination Flags"
-msgstr ""
+msgstr "링크 대상 플래그"
 
 #: ../../vars.rst:367 d3b19de8c19a4cca93ae0614069136aa
 msgid ""
 "The rightmost byte of this integer is a bit field, so test the truth of "
 "these bits with the *&* operator."
-msgstr ""
+msgstr "이 정수의 가장 오른쪽 바이트는 비트 필드이므로 *&* 연산자로 이러한 비트의 참을 테스트하세요."
 
 #: ../../vars.rst:371 adfb385a3f204afa96eae840376cfaaf
 msgid "1  (bit 0) Top left x value is valid"
-msgstr ""
+msgstr "1  (비트 0) 왼쪽 상단 x 값이 유효함"
 
 #: ../../vars.rst:373 ../../vars.rst:379 ../../vars.rst:385 ../../vars.rst:391
 #: ../../vars.rst:397 ../../vars.rst:403 ../../vars.rst:409
@@ -679,43 +697,43 @@ msgstr ""
 #: b54e07447ebd48d08adcaa6c2330efd7 cc044f3983144e34b9ec5e221c661f84
 #: de33e1ca908e4329acf8e771d8062395
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../vars.rst:377 f6bb945288e84c2ea7af6535127f5686
 msgid "2  (bit 1) Top left y value is valid"
-msgstr ""
+msgstr "2  (비트 1) 왼쪽 상단 y 값이 유효함"
 
 #: ../../vars.rst:383 1429f391f08e4098bf3648e649655ce7
 msgid "4  (bit 2) Bottom right x value is valid"
-msgstr ""
+msgstr "4  (비트 2) 오른쪽 하단 x 값이 유효함"
 
 #: ../../vars.rst:389 dd2f2b2b41774030b5c2a8b95d745273
 msgid "8  (bit 3) Bottom right y value is valid"
-msgstr ""
+msgstr "8  (비트 3) 오른쪽 하단 y 값이 유효함"
 
 #: ../../vars.rst:395 62df816d97ee45ccab57344fe8d25a10
 msgid "16 (bit 4) Horizontal fit"
-msgstr ""
+msgstr "16 (비트 4) 수평 맞춤"
 
 #: ../../vars.rst:401 78e6492677c146c4a8d9bf5ea9d48be1
 msgid "32 (bit 5) Vertical fit"
-msgstr ""
+msgstr "32 (비트 5) 수직 맞춤"
 
 #: ../../vars.rst:407 40d05c050d174b918e1b5d3b4e8d4671
 msgid "64 (bit 6) Bottom right x is a zoom figure"
-msgstr ""
+msgstr "64 (비트 6) 오른쪽 하단 x는 확대/축소 수치"
 
 #: ../../vars.rst:413 136d76a8f9eb46c88e7d3a181650da73
 msgid "Annotation Related Constants"
-msgstr ""
+msgstr "주석 관련 상수"
 
 #: ../../vars.rst:414 0afb6c758143449fb56a0b04ab704888
 msgid "See chapter 8.4.5, pp. 615 of the :ref:`AdobeManual` for details."
-msgstr ""
+msgstr "자세한 내용은 :ref:`AdobeManual` 615페이지의 8.4.5장을 참조하세요."
 
 #: ../../vars.rst:419 c080cb77d13c409a8faecbcbd760910c
 msgid "Annotation Types"
-msgstr ""
+msgstr "주석 유형"
 
 #: ../../vars.rst:420 d20a798f8f554b5d8529e31b8816197f
 msgid ""
@@ -723,65 +741,65 @@ msgid ""
 "specification technically handles them all in the same way, whereas "
 "|MuPDF| (and PyMuPDF) treats them as three basically different types of "
 "objects."
-msgstr ""
+msgstr "이 식별자는 **링크** 및 **위젯** 도 포함합니다: PDF 사양은 기술적으로 모두 동일한 방식으로 처리하지만, |MuPDF| (및 PyMuPDF)는 이를 기본적으로 세 가지 다른 유형의 객체로 처리합니다."
 
 #: ../../vars.rst:457 713c32c363bd480cba99fcadd3fa3555
 msgid "Annotation Flag Bits"
-msgstr ""
+msgstr "주석 플래그 비트"
 
 #: ../../vars.rst:474 9fdaae6162c54afea314aa849239b470
 msgid "Annotation Line Ending Styles"
-msgstr ""
+msgstr "주석 선 끝 스타일"
 
 #: ../../vars.rst:490 3e407ea8c72444ebba3331d472a6a25a
 msgid "Widget Constants"
-msgstr ""
+msgstr "위젯 상수"
 
 #: ../../vars.rst:495 96ec99e51a7e4985a737ba02c17541ac
 msgid "Widget Types (*field_type*)"
-msgstr ""
+msgstr "위젯 유형 (*field_type*)"
 
 #: ../../vars.rst:508 755546e537074e1aaa1b792a365b879a
 msgid "Text Widget Subtypes (*text_format*)"
-msgstr ""
+msgstr "텍스트 위젯 하위 유형 (*text_format*)"
 
 #: ../../vars.rst:519 2d435f5842544cc5ad764fc27d6e30db
 msgid "Widget flags (*field_flags*)"
-msgstr ""
+msgstr "위젯 플래그 (*field_flags*)"
 
 #: ../../vars.rst:520 1be2e082d5f24d78b93633d42c3ab6b3
 msgid "**Common to all field types**::"
-msgstr ""
+msgstr "**모든 필드 유형에 공통**::"
 
 #: ../../vars.rst:526 9a70d77fe1724d00a6baf6703369f739
 msgid "**Text widgets**::"
-msgstr ""
+msgstr "**텍스트 위젯**::"
 
 #: ../../vars.rst:536 a70d3da20a7a4996843ce3b94a65f844
 msgid "**Button widgets**::"
-msgstr ""
+msgstr "**버튼 위젯**::"
 
 #: ../../vars.rst:543 33f39c42d34a4fa49140b193aec55d00
 msgid "**Choice widgets**::"
-msgstr ""
+msgstr "**선택 위젯**::"
 
 #: ../../vars.rst:556 05602853929445cfb71dfca4dc7fb284
 msgid "PDF Standard Blend Modes"
-msgstr ""
+msgstr "PDF 표준 블렌드 모드"
 
 #: ../../vars.rst:558 d1da99abe9c4449e9af156616a68a1c3
 msgid "For an explanation see :ref:`AdobeManual`, page 324::"
-msgstr ""
+msgstr "설명은 :ref:`AdobeManual` 324페이지를 참조하세요::"
 
 #: ../../vars.rst:581 72834b1fb7fb47c6982ed3593f7600d3
 msgid "Stamp Annotation Icons"
-msgstr ""
+msgstr "스탬프 주석 아이콘"
 
 #: ../../vars.rst:582 71aa56b7b0644cef8475af050d9bccf3
 msgid "MuPDF has defined the following icons for **rubber stamp** annotations::"
-msgstr ""
+msgstr "MuPDF는 **고무 스탬프** 주석에 대해 다음 아이콘을 정의했습니다::"
 
 #: ../../footer.rst:46 7b627849860f4ae7a235d36a44c7c566
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

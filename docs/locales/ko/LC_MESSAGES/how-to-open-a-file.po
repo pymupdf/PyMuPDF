@@ -21,72 +21,72 @@ msgstr ""
 
 #: ../../header.rst:-1 21b5c4028adc463abcc84975940e6301
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 ee82d615395c4e24b8b07395ed871d70
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 1d5b2478c53f433882bce199582d444d
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../how-to-open-a-file.rst:7 5ea3d22849e641d897ccb82f8a12500f
 msgid "Opening Files"
-msgstr ""
+msgstr "파일 열기"
 
 #: ../../how-to-open-a-file.rst:16 395abd8299ba47be838498d680488494
 msgid "Supported File Types"
-msgstr ""
+msgstr "지원되는 파일 유형"
 
 #: ../../how-to-open-a-file.rst:21 cb3463a996b24a14a008c2fc0ad2b685
 msgid "PyMuPDF"
-msgstr ""
+msgstr "PyMuPDF"
 
 #: ../../how-to-open-a-file.rst:23 036ac377808741358875a6692e0b2d95
 msgid "|PyMuPDF| can open files other than just |PDF|."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 외의 파일도 열 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:25 ../../how-to-open-a-file.rst:38
 #: 1a17fc4b2c2e43a9a47e3a2a1ed82bd4 40ef4134dff248bc8869aed36fd176fc
 msgid "The following file types are supported:"
-msgstr ""
+msgstr "다음 파일 유형이 지원됩니다:"
 
 #: ../../how-to-open-a-file.rst:34 fa9ae965eea142478505848892067bb0
 msgid "PyMuPDF Pro"
-msgstr ""
+msgstr "PyMuPDF Pro"
 
 #: ../../how-to-open-a-file.rst:36 c4725d269a0e41b0867c5b6b16b8960b
 msgid "|PyMuPDF Pro| can open Office files."
-msgstr ""
+msgstr "|PyMuPDF Pro| 는 Office 파일을 열 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:43 d91d49bc138843188ab0077259cd82ae
 msgid "**DOC/DOCX**"
-msgstr ""
+msgstr "**DOC/DOCX**"
 
 #: ../../how-to-open-a-file.rst:44 6ff3d492743f45da9b9967b7ac205f1c
 msgid "**XLS/XLSX**"
-msgstr ""
+msgstr "**XLS/XLSX**"
 
 #: ../../how-to-open-a-file.rst:45 4c317c161ef64bebb742fc17e8e5c6d3
 msgid "**PPT/PPTX**"
-msgstr ""
+msgstr "**PPT/PPTX**"
 
 #: ../../how-to-open-a-file.rst:46 dfd0df787a6d4a8bada3b55675495889
 msgid "**HWP/HWPX**"
-msgstr ""
+msgstr "**HWP/HWPX**"
 
 #: ../../how-to-open-a-file.rst:63 61701c1d1007436987106ec058719b82
 msgid "How to Open a File"
-msgstr ""
+msgstr "파일을 여는 방법"
 
 #: ../../how-to-open-a-file.rst:65 9dd2157acd454f2ea9e62168276399c2
 msgid "To open a file, do the following:"
-msgstr ""
+msgstr "파일을 열려면 다음을 수행하세요:"
 
 #: ../../how-to-open-a-file.rst:72 284b59b0b7ca41789da44c7d61f81fc7
 msgid ""
@@ -94,31 +94,31 @@ msgid ""
 "pymupdf.Document(\"a.pdf\")` does exactly the same. So, `open` is just a "
 "convenient alias and you can find its full API documented in that "
 "chapter."
-msgstr ""
+msgstr "위 코드는 :ref:`Document` 를 생성합니다. `doc = pymupdf.Document(\"a.pdf\")` 명령도 동일하게 작동합니다. 따라서 `open` 은 편의를 위한 별칭이며, 해당 장에서 전체 API 문서를 확인할 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:76 1a5ad0264ff94231899c2caafe461a22
 msgid ""
 "File Recognizer: Opening with :index:`a Wrong File Extension <pair: "
 "wrong; file extension>`"
-msgstr ""
+msgstr "파일 인식기: 잘못된 파일 확장자로 열기"
 
 #: ../../how-to-open-a-file.rst:78 90b4fc7ee95f43f49a70a15c890eb8b8
 msgid ""
 "If you have a document with a wrong file extension for its type, do not "
 "worry: it will still be opened correctly, thanks to the integrated file "
 "\"content recognizer\"."
-msgstr ""
+msgstr "파일 유형과 다른 확장자를 가진 문서가 있어도 걱정하지 마세요: 통합된 파일 \"콘텐츠 인식기\" 덕분에 여전히 올바르게 열립니다."
 
 #: ../../how-to-open-a-file.rst:80 792fc8fc530d4591b0673684e9d0b274
 msgid ""
 "This component looks at the actual data in the file using a number of "
 "heuristics -- independent of the file extension. This of course is also "
 "true for file names **without** an extension."
-msgstr ""
+msgstr "이 구성 요소는 파일 확장자와 무관하게 여러 휴리스틱을 사용하여 파일의 실제 데이터를 확인합니다. 확장자가 **없는** 파일 이름에도 마찬가지입니다."
 
 #: ../../how-to-open-a-file.rst:82 8eec48ad8d35400f93aa9ef384f1baee
 msgid "Here is a list of details about how the file content recognizer works:"
-msgstr ""
+msgstr "파일 콘텐츠 인식기의 작동 방식에 대한 세부사항은 다음과 같습니다:"
 
 #: ../../how-to-open-a-file.rst:84 999889fc95024292bbe0dc81938a321a
 msgid ""
@@ -129,7 +129,7 @@ msgid ""
 "resides in memory, the ``filetype`` must be used. File formats that can "
 "successfully be recognized will be opened even without or wrong "
 "extensions, and the ``filetype`` paraneter will be ignored."
-msgstr ""
+msgstr "파일 이름에서 열 때, 콘텐츠 검사를 통해 파일 형식을 결정할 수 없는 경우 ``filetype`` 매개변수를 사용하세요. 예를 들어 모든 텍스트 파일(\"txt\", \"html\", \"xml\" 또는 소스 파일)이 이에 해당합니다. 파일 확장자가 없거나 잘못되었거나 파일이 메모리에 있는 경우 ``filetype`` 을 사용해야 합니다. 성공적으로 인식할 수 있는 파일 형식은 확장자가 없거나 잘못되어도 열리며, ``filetype`` 매개변수는 무시됩니다."
 
 #: ../../how-to-open-a-file.rst:86 1ac5dd5257eb4ed280e6ec3ed082da31
 msgid ""
@@ -139,27 +139,27 @@ msgid ""
 "parameter continue to play a role and are used to create a \"Tex\" / "
 "\"HTML\" / ... document. Correspondingly, text files with other / no "
 "extensions, can successfully be opened using ``filetype``."
-msgstr ""
+msgstr "텍스트 콘텐츠 기반 파일은 명확하게 인식 가능한 내부 구조를 포함하지 않습니다. 소스 파일(Python, C 등)뿐만 아니라 HTML, XML 등도 마찬가지입니다. 이 경우 파일 확장자와 ``filetype`` 매개변수가 계속 역할을 하며 \"Tex\" / \"HTML\" / ... 문서를 만드는 데 사용됩니다. 따라서 다른 확장자 또는 확장자가 없는 텍스트 파일은 ``filetype`` 을 사용하여 성공적으로 열 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:92 b9b6d23c55ea4547afea0a22f2d79c6d
 msgid "Opening Remote Files"
-msgstr ""
+msgstr "원격 파일 열기"
 
 #: ../../how-to-open-a-file.rst:95 3b43bf59bfc148328c683743eac1329f
 msgid ""
 "For remote files on a server (i.e. non-local files), you will need to "
 "*stream* the file data to |PyMuPDF|."
-msgstr ""
+msgstr "서버의 원격 파일(즉, 로컬이 아닌 파일)의 경우, 파일 데이터를 |PyMuPDF| 로 *스트리밍* 해야 합니다."
 
 #: ../../how-to-open-a-file.rst:97 34b7bf2e937a4250810966ed193bdfc8
 msgid ""
 "For example use the `requests "
 "<https://requests.readthedocs.io/en/latest/>`_ library as follows:"
-msgstr ""
+msgstr "예를 들어 `requests <https://requests.readthedocs.io/en/latest/>`_ 라이브러리를 다음과 같이 사용하세요:"
 
 #: ../../how-to-open-a-file.rst:110 f259d8091f7242e7bdd2c51ebdd3f925
 msgid "Opening Files from Cloud Services"
-msgstr ""
+msgstr "클라우드 서비스에서 파일 열기"
 
 #: ../../how-to-open-a-file.rst:112 21d40cb6351a4c69bc14196e1eb014ea
 msgid ""
@@ -167,11 +167,11 @@ msgid ""
 " please see these `Cloud Interactions code snippets "
 "<https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/cloud-"
 "interactions>`_."
-msgstr ""
+msgstr "일반적인 클라우드 서비스에 저장된 파일을 다루는 추가 예제는 `Cloud Interactions 코드 스니펫 <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/cloud-interactions>`_ 을 참조하세요."
 
 #: ../../how-to-open-a-file.rst:120 de92d6a4c46143de86751bded4adc336
 msgid "Opening Django Files"
-msgstr ""
+msgstr "Django 파일 열기"
 
 #: ../../how-to-open-a-file.rst:122 2a24401c8daf4ec1967ffd20ab41ce1c
 msgid ""
@@ -182,17 +182,17 @@ msgid ""
 "filesystemstorage-class>`_, but the `django-storages <https://django-"
 "storages.readthedocs.io/en/latest/index.html>`_ library provides a number"
 " of other storage backends."
-msgstr ""
+msgstr "Django는 파일을 저장하기 위해 `File Storage API <https://docs.djangoproject.com/en/5.1/ref/files/storage/>`_ 를 구현합니다. 기본값은 `FileSystemStorage <https://docs.djangoproject.com/en/5.1/ref/files/storage/#the-filesystemstorage-class>`_ 이지만, `django-storages <https://django-storages.readthedocs.io/en/latest/index.html>`_ 라이브러리는 여러 다른 스토리지 백엔드를 제공합니다."
 
 #: ../../how-to-open-a-file.rst:124 ce91bc54879b4e0caad6216633c87800
 msgid ""
 "You can open the file, move the contents into memory, then pass the "
 "contents to |PyMuPDF| as a stream."
-msgstr ""
+msgstr "파일을 열고, 콘텐츠를 메모리로 이동한 다음, 콘텐츠를 스트림으로 |PyMuPDF| 에 전달할 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:139 619bd327f13f4ed1a9204d62ce0a0e40
 msgid "Please note that if the file you open is large, you may run out of memory."
-msgstr ""
+msgstr "열려는 파일이 큰 경우 메모리가 부족할 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:141 e974ef8989724d7ca39ae4e2f528060d
 msgid ""
@@ -200,18 +200,18 @@ msgid ""
 "backends in different environments. If you're only using the "
 "`FileSystemStorage`, you can simply use the `obj.file.name` to open the "
 "file directly with |PyMuPDF| as shown in an earlier example."
-msgstr ""
+msgstr "File Storage API는 다른 환경에서 다른 스토리지 백엔드를 사용하는 경우 잘 작동합니다. `FileSystemStorage` 만 사용하는 경우, 이전 예제에서와 같이 `obj.file.name` 을 사용하여 |PyMuPDF| 로 파일을 직접 열 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:149 11fadcb68ef146fc93ca9f4473e140a5
 msgid "Opening Files as Text"
-msgstr ""
+msgstr "파일을 텍스트로 열기"
 
 #: ../../how-to-open-a-file.rst:152 79658fdcc60c4f62821491708e3874a6
 msgid ""
 "|PyMuPDF| has the capability to open any plain text file as a document. "
 "In order to do this you should provide the `filetype` parameter for the "
 "`pymupdf.open` function as `\"txt\"`."
-msgstr ""
+msgstr "|PyMuPDF| 는 모든 일반 텍스트 파일을 문서로 열 수 있는 기능이 있습니다. 이를 수행하려면 `pymupdf.open` 함수의 `filetype` 매개변수를 `\"txt\"` 로 제공해야 합니다."
 
 #: ../../how-to-open-a-file.rst:159 d72a0b8f986843488dfc6ddc257e4f45
 msgid ""
@@ -220,36 +220,36 @@ msgid ""
 "extracting and page rendering. Obviously, once you have rendered your "
 "`txt` content, then saving as |PDF| or merging with other |PDF| files is "
 "no problem."
-msgstr ""
+msgstr "이렇게 하면 다양한 파일 유형을 열고 텍스트 검색, 텍스트 추출 및 페이지 렌더링과 같은 일반적인 **비PDF** 특정 기능을 수행할 수 있습니다. `txt` 콘텐츠를 렌더링한 후에는 |PDF| 로 저장하거나 다른 |PDF| 파일과 병합하는 것도 문제없습니다."
 
 #: ../../how-to-open-a-file.rst:163 25cb1a49799b43669b7c520e52fc2e46
 msgid "Examples"
-msgstr ""
+msgstr "예제"
 
 #: ../../how-to-open-a-file.rst:167 df4ce47e55a94298b344689b280a64df
 msgid "Opening a `C#` file"
-msgstr ""
+msgstr "`C#` 파일 열기"
 
 #: ../../how-to-open-a-file.rst:176 2f20ca6b671845fca3ae2bceeb25eebd
 msgid "Opening an ``XML`` file"
-msgstr ""
+msgstr "``XML`` 파일 열기"
 
 #: ../../how-to-open-a-file.rst:184 1c25e62b57d843c9b5b8122f59295144
 msgid "Opening a `JSON` file"
-msgstr ""
+msgstr "`JSON` 파일 열기"
 
 #: ../../how-to-open-a-file.rst:191 687e69a017bb48b682d8b720ad323f52
 msgid "And so on!"
-msgstr ""
+msgstr "등등!"
 
 #: ../../how-to-open-a-file.rst:193 f6ae4e85cdb1469bbf04502e1bb02ccd
 msgid ""
 "As you can imagine many text based file formats can be *very simply "
 "opened* and *interpreted* by |PyMuPDF|. This can make data analysis and "
 "extraction for a wide range of previously unavailable files possible."
-msgstr ""
+msgstr "상상할 수 있듯이 많은 텍스트 기반 파일 형식은 |PyMuPDF| 로 *매우 간단하게 열고* *해석할* 수 있습니다. 이를 통해 이전에 사용할 수 없었던 광범위한 파일에 대한 데이터 분석 및 추출이 가능해집니다."
 
 #: ../../footer.rst:46 6894d49c24fc4cfa8f9d99a9257edfdf
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

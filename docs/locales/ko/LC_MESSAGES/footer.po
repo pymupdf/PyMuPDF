@@ -21,5 +21,5 @@ msgstr ""
 
 #: ../../footer.rst:46 6174f91a653847f0bf61a4cba1c92a19
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

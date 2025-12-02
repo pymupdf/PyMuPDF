@@ -21,121 +21,121 @@ msgstr ""
 
 #: ../../header.rst:-1 ff003cfb5c0b4ca9ba474a0f6e3841c2
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 c536d6f0052e4f9cbf11534486001461
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 2b6c43a92fad451db1603199ddd7c294
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../displaylist.rst:7 698bbcf656244694aa96f09767a54aa5
 msgid "DisplayList"
-msgstr ""
+msgstr "DisplayList (디스플레이 리스트)"
 
 #: ../../displaylist.rst:9 2b6a249a9e6a46a482202e8b105e8ddc
 msgid ""
 "DisplayList is a list containing drawing commands (text, images, etc.). "
 "The intent is two-fold:"
-msgstr ""
+msgstr "DisplayList는 그리기 명령(텍스트, 이미지 등)을 포함하는 리스트입니다. 목적은 두 가지입니다:"
 
 #: ../../displaylist.rst:11 01de3b874c654c729617cd5a69c98a06
 msgid "as a caching-mechanism to reduce parsing of a page"
-msgstr ""
+msgstr "페이지 파싱을 줄이기 위한 캐싱 메커니즘으로"
 
 #: ../../displaylist.rst:12 e47cc33899c24e9b8b48607d9cc55aca
 msgid ""
 "as a data structure in multi-threading setups, where one thread parses "
 "the page and another one renders pages. This aspect is currently not "
 "supported by PyMuPDF."
-msgstr ""
+msgstr "멀티스레딩 설정에서 데이터 구조로, 한 스레드는 페이지를 파싱하고 다른 스레드는 페이지를 렌더링합니다. 이 측면은 현재 PyMuPDF에서 지원되지 않습니다."
 
 #: ../../displaylist.rst:14 ff6ed96e5e434d9ab8b7c046b2b5b89e
 msgid ""
 "A display list is populated with objects from a page, usually by "
 "executing :meth:`Page.get_displaylist`. There also exists an independent "
 "constructor."
-msgstr ""
+msgstr "디스플레이 리스트는 일반적으로 :meth:`Page.get_displaylist` 를 실행하여 페이지의 객체로 채워집니다. 독립적인 생성자도 존재합니다."
 
 #: ../../displaylist.rst:16 66dc12118dd1430c91493428b6adb3ca
 msgid ""
 "\"Replay\" the list (once or many times) by invoking one of its methods "
 ":meth:`~DisplayList.run`, :meth:`~DisplayList.get_pixmap` or "
 ":meth:`~DisplayList.get_textpage`."
-msgstr ""
+msgstr "리스트를 \"재생\"하려면(한 번 또는 여러 번) 메서드 중 하나인 :meth:`~DisplayList.run`, :meth:`~DisplayList.get_pixmap` 또는 :meth:`~DisplayList.get_textpage` 를 호출하세요."
 
 #: ../../displaylist.rst:20 c6df8741dd9746c4849b6615f4787387
 msgid "**Method**"
-msgstr ""
+msgstr "**메서드**"
 
 #: ../../displaylist.rst:20 7f551f0499df4df7ad355142c819deef
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간략 설명**"
 
 #: ../../displaylist.rst:22 81094ba0fcee4f3dac4c1d13adccd9d9
 msgid ":meth:`~DisplayList.run`"
-msgstr ""
+msgstr ":meth:`~DisplayList.run`"
 
 #: ../../displaylist.rst:22 790d819aba1b4a4e89cf7059456f3be1
 msgid "Run a display list through a device."
-msgstr ""
+msgstr "디스플레이 리스트를 디바이스를 통해 실행합니다."
 
 #: ../../displaylist.rst:23 c12a3766ae42430fadfe30df077ebef7
 msgid ":meth:`~DisplayList.get_pixmap`"
-msgstr ""
+msgstr ":meth:`~DisplayList.get_pixmap`"
 
 #: ../../displaylist.rst:23 a2c2be7f9085440cb858e4a52c0253c3
 msgid "generate a pixmap"
-msgstr ""
+msgstr "픽스맵 생성"
 
 #: ../../displaylist.rst:24 2e841e7218aa459b955f952f63f85c7f
 msgid ":meth:`~DisplayList.get_textpage`"
-msgstr ""
+msgstr ":meth:`~DisplayList.get_textpage`"
 
 #: ../../displaylist.rst:24 4b5a1849844142eba8b0e00c4ea85c1b
 msgid "generate a text page"
-msgstr ""
+msgstr "텍스트 페이지 생성"
 
 #: ../../displaylist.rst:25 e7f6a71e64b144b2bb150227a7b7183b
 msgid ":attr:`~DisplayList.rect`"
-msgstr ""
+msgstr ":attr:`~DisplayList.rect`"
 
 #: ../../displaylist.rst:25 205d05395d674e39a9e4f0e958d3d06f
 msgid "mediabox of the display list"
-msgstr ""
+msgstr "디스플레이 리스트의 mediabox"
 
 #: ../../displaylist.rst:29 4a42cea626fe4460b70834ce0af2a4ef
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../displaylist.rst:35 9e9d57cb314843a081adb93c9240ac5f
 msgid "Create a new display list."
-msgstr ""
+msgstr "새 디스플레이 리스트를 생성합니다."
 
 #: ../../displaylist.rst 02a4c577c3194a778a9d75f67212861e
 #: 27616f064af541208365c4cf3260036b 27eb0863e4044881b0a7ef37d0114e28
 #: d4d3d713dc85432f9ebc95eac1f51a09
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../displaylist.rst:37 06aebf2ce5d941adbb8e7aa50ae0b2b8
 msgid "The page's rectangle."
-msgstr ""
+msgstr "페이지의 사각형."
 
 #: ../../displaylist.rst 3e56029375ab4b639b13a2bd6b5dc316
 #: a18c2d343b454f2bb564792a3fc55a17 d0a557e9eef6429c8aa58d2cbac510a6
 msgid "Return type"
-msgstr ""
+msgstr "반환 유형"
 
 #: ../../displaylist.rst:40 b8ad61a1e5a44b7587e9e889a0f7b29a
 msgid "``DisplayList``"
-msgstr ""
+msgstr "``DisplayList``"
 
 #: ../../displaylist.rst:44 ce5a41193477481c88976a823b4ad9d6
 msgid ""
@@ -143,66 +143,66 @@ msgid ""
 "display list with its \"commands\" (i.e. text extraction or image "
 "creation). The display list can later be used to \"read\" a page many "
 "times without having to re-interpret it from the document file."
-msgstr ""
+msgstr "디스플레이 리스트를 디바이스를 통해 실행합니다. 디바이스는 디스플레이 리스트를 \"명령\"(즉, 텍스트 추출 또는 이미지 생성)으로 채웁니다. 디스플레이 리스트는 나중에 문서 파일에서 다시 해석할 필요 없이 페이지를 여러 번 \"읽는\" 데 사용할 수 있습니다."
 
 #: ../../displaylist.rst:46 2dc2aba3d46f4fc4a7820028e1a60253
 msgid ""
 "You will most probably instead use one of the specialized run methods "
 "below -- :meth:`get_pixmap` or :meth:`get_textpage`."
-msgstr ""
+msgstr "아래의 특수화된 실행 메서드 중 하나를 사용하는 것이 좋습니다 -- :meth:`get_pixmap` 또는 :meth:`get_textpage`."
 
 #: ../../displaylist.rst:48 6e70c4b85f91448c9a7c98c37c0a0ae4
 msgid "Device"
-msgstr ""
+msgstr "Device"
 
 #: ../../displaylist.rst:51 2f667d2e56bf4e01898f21ff9eb28571
 msgid "Transformation matrix to apply to the display list contents."
-msgstr ""
+msgstr "디스플레이 리스트 콘텐츠에 적용할 변환 행렬."
 
 #: ../../displaylist.rst:54 b64884bb37bd4618a66990bf4733f646
 msgid ""
 "Only the part visible within this area will be considered when the list "
 "is run through the device."
-msgstr ""
+msgstr "리스트가 디바이스를 통해 실행될 때 이 영역 내에서 보이는 부분만 고려됩니다."
 
 #: ../../displaylist.rst:65 ab527e51c453471f9f60eedf09b9d087
 msgid "Run the display list through a draw device and return a pixmap."
-msgstr ""
+msgstr "디스플레이 리스트를 그리기 디바이스를 통해 실행하고 픽스맵을 반환합니다."
 
 #: ../../displaylist.rst:67 61769985d519468490018723da292d0a
 msgid "matrix to use. Default is the identity matrix."
-msgstr ""
+msgstr "사용할 행렬. 기본값은 항등 행렬입니다."
 
 #: ../../displaylist.rst:70 5932c2f43fdd4b4c8a0f5d2d7c994379
 msgid "the desired colorspace. Default is RGB."
-msgstr ""
+msgstr "원하는 색 공간. 기본값은 RGB입니다."
 
 #: ../../displaylist.rst:73 fbab40e0ab2c491e9dfb956c94981baa
 msgid "determine whether or not (0, default) to include a transparency channel."
-msgstr ""
+msgstr "투명도 채널을 포함할지 여부를 결정합니다(0, 기본값은 포함하지 않음)."
 
 #: ../../displaylist.rst:75 466d20a9e3a74fb78536c5cce52c0423
 msgid ""
 "restrict rendering to the intersection of this area with "
 ":attr:`DisplayList.rect`."
-msgstr ""
+msgstr ":attr:`DisplayList.rect` 와 이 영역의 교집합으로 렌더링을 제한합니다."
 
 #: ../../displaylist.rst:77 757d1f9a21b041c6ae4ed0b958ce457b
 msgid ":ref:`Pixmap`"
-msgstr ""
+msgstr ":ref:`Pixmap`"
 
 #: ../../displaylist.rst 65ed81ab27df4ce49e030837b6f76d44
 #: bc2f03674971487f858250a2cbe58732
 msgid "Returns"
-msgstr ""
+msgstr "반환값"
 
 #: ../../displaylist.rst:78 ea8ff1cc1cdf40caa3e75151ca6cb92c
 msgid "pixmap of the display list."
-msgstr ""
+msgstr "디스플레이 리스트의 픽스맵."
 
 #: ../../displaylist.rst:82 f854adb186fc469aa47d5bd62e907d4d
 msgid "Run the display list through a text device and return a text page."
-msgstr ""
+msgstr "디스플레이 리스트를 텍스트 디바이스를 통해 실행하고 텍스트 페이지를 반환합니다."
 
 #: ../../displaylist.rst:84 a9b235a2d522430c93c09a55cb019b92
 msgid ""
@@ -211,31 +211,31 @@ msgid ""
 " :data:`ligatures` are **passed through**, white spaces are **passed "
 "through** (not translated to spaces), and images are **not included**. "
 "See :ref:`TextPreserve`."
-msgstr ""
+msgstr "텍스트 페이지로 파싱되는 정보를 제어하는 플래그입니다. PyMuPDF의 기본값은 `3 = TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE` 입니다. 즉, :data:`ligatures` 는 **그대로 전달** 되고, 공백은 **그대로 전달** 되며(공백으로 변환되지 않음), 이미지는 **포함되지 않습니다**. :ref:`TextPreserve` 를 참조하세요."
 
 #: ../../displaylist.rst:86 daf0b2be9b6a4376b53e036006a9a7e3
 msgid ":ref:`TextPage`"
-msgstr ""
+msgstr ":ref:`TextPage`"
 
 #: ../../displaylist.rst:87 4d6cd4f91f0e4964b02aad9a3db2ad8a
 msgid "text page of the display list."
-msgstr ""
+msgstr "디스플레이 리스트의 텍스트 페이지."
 
 #: ../../displaylist.rst:91 e4d71370db2d4368b08b17d8436d7747
 msgid ""
 "Contains the display list's mediabox. This will equal the page's "
 "rectangle if it was created via :meth:`Page.get_displaylist`."
-msgstr ""
+msgstr "디스플레이 리스트의 mediabox를 포함합니다. :meth:`Page.get_displaylist` 를 통해 생성된 경우 페이지의 사각형과 같습니다."
 
 #: ../../displaylist.rst 0b6e65f6961f4c6b9882f9b9dfe93154
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../displaylist.rst:93 f277dc21a3714454ae8f4cf4f1e5113d
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../footer.rst:46 e683ef7401754f0d941d78c8c96788e0
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

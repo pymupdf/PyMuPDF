@@ -21,34 +21,34 @@ msgstr ""
 
 #: ../../header.rst:-1 7909b1fec71a4bb1918715ca5918f604
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 87466d36d4244b14b06775988b5a86da
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 |PDF| 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c4e019a1ef45475794222706f39fa6bd
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "|PDF| 텍스트 추출, |PDF| 이미지 추출, |PDF| 변환, |PDF| 테이블, |PDF| 분할, |PDF| 생성, Pyodide, PyScript"
 
 #: ../../shape.rst:6 a9435293f59542b2850588abf5b6a5c0
 msgid "Shape"
-msgstr ""
+msgstr "Shape"
 
 #: ../../shape.rst:8 c22618002fb44404a4ac660d7663c2a9
 msgid "|pdf_only_class|"
-msgstr ""
+msgstr "|pdf_only_class|"
 
 #: ../../shape.rst:10 83f7ae44343b4e29b36be26c67c582a7
 msgid ""
 "This class allows creating interconnected graphical elements on a PDF "
 "page. Its methods have the same meaning and name as the corresponding "
 ":ref:`Page` methods."
-msgstr ""
+msgstr "이 클래스는 PDF 페이지에서 상호 연결된 그래픽 요소를 생성할 수 있게 합니다. 메서드는 해당 :ref:`Page` 메서드와 동일한 의미와 이름을 가집니다."
 
 #: ../../shape.rst:12 1687c125d94c4a889d4123d18b33a654
 msgid ""
@@ -57,7 +57,7 @@ msgid ""
 "the :meth:`Shape.commit` method. For page text insertion, only the "
 ":meth:`Shape.commit` method is invoked. If many draw and text operations "
 "are executed for a page, you should always consider using a Shape object."
-msgstr ""
+msgstr "실제로 각 :ref:`Page` draw 메서드는 (1) 하나의 shape draw 메서드, (2) :meth:`Shape.finish` 메서드, (3) :meth:`Shape.commit` 메서드에 대한 편의 래퍼입니다. 페이지 텍스트 삽입의 경우 :meth:`Shape.commit` 메서드만 호출됩니다. 페이지에 많은 그리기 및 텍스트 작업이 실행되는 경우 항상 Shape 객체 사용을 고려해야 합니다."
 
 #: ../../shape.rst:14 61eb314053054e4e9a36e36845c74ae6
 msgid ""
@@ -65,7 +65,7 @@ msgid ""
 "contribute to one drawing. Once the drawing is complete, the "
 ":meth:`Shape.finish` method must be invoked to apply color, dashing, "
 "width, morphing and other attributes."
-msgstr ""
+msgstr "여러 draw 메서드를 연속으로 실행할 수 있으며 각각이 하나의 그림에 기여합니다. 그림이 완료되면 :meth:`Shape.finish` 메서드를 호출하여 색상, 대시, 너비, 변형 및 기타 속성을 적용해야 합니다."
 
 #: ../../shape.rst:16 f3481ff5d87c41998cb0f7de7874cbee
 msgid ""
@@ -73,7 +73,7 @@ msgid ""
 "logging the area they are covering in a rectangle (:attr:`Shape.rect`). "
 "This property can for instance be used to set "
 ":attr:`Page.cropbox_position`."
-msgstr ""
+msgstr "이 클래스의 **Draw** 메서드(및 :meth:`Shape.insert_textbox`)는 사각형(:attr:`Shape.rect`)에서 덮고 있는 영역을 기록합니다. 이 속성은 예를 들어 :attr:`Page.cropbox_position` 을 설정하는 데 사용할 수 있습니다."
 
 #: ../../shape.rst:18 93fc8032a8144e439538867e5d7d9ff1
 msgid ""
@@ -82,15 +82,15 @@ msgid ""
 "therefore only require :meth:`Shape.commit` to become effective. As a "
 "consequence, both include parameters for controlling properties like "
 "colors, etc."
-msgstr ""
+msgstr "**텍스트 삽입** :meth:`Shape.insert_text` 및 :meth:`Shape.insert_textbox` 는 암시적으로 \"finish\"를 실행하므로 효과를 발휘하려면 :meth:`Shape.commit` 만 필요합니다. 결과적으로 둘 다 색상 등의 속성을 제어하는 매개변수를 포함합니다."
 
 #: ../../shape.rst:21 7753ef6a86874229bc626bf090e7fd68
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**Method / Attribute**"
 
 #: ../../shape.rst:21 21306cc0a07a4be8b729f6d593a2a25e
 msgid "**Description**"
-msgstr ""
+msgstr "**Description**"
 
 #: ../../shape.rst:23 76875c2923b44844919d4f7dbc4ff2ae
 msgid ":meth:`Shape.commit`"
@@ -98,7 +98,7 @@ msgstr ""
 
 #: ../../shape.rst:23 b6e101dde14a4c0399c2d1e32dfae0e3
 msgid "update the page's contents"
-msgstr ""
+msgstr "페이지의 콘텐츠 업데이트"
 
 #: ../../shape.rst:24 68e32b027b2a42519c263a5d79f0aca5
 msgid ":meth:`Shape.draw_bezier`"
@@ -106,7 +106,7 @@ msgstr ""
 
 #: ../../shape.rst:24 cfd73fa2818546d897d3cc7dbf43cb7f
 msgid "draw a cubic Bezier curve"
-msgstr ""
+msgstr "3차 Bezier 곡선 그리기"
 
 #: ../../shape.rst:25 4f7b9a227586442b8c80cfc50bb5d2f6
 msgid ":meth:`Shape.draw_circle`"
@@ -114,7 +114,7 @@ msgstr ""
 
 #: ../../shape.rst:25 9f885ddec57646dc9618b9b296ef806e
 msgid "draw a circle around a point"
-msgstr ""
+msgstr "점 주위에 원 그리기"
 
 #: ../../shape.rst:26 aa0ac0a299bb4cacbdb189b821d1057f
 msgid ":meth:`Shape.draw_curve`"
@@ -122,7 +122,7 @@ msgstr ""
 
 #: ../../shape.rst:26 444333668308404a995780c7c2ffd1e8
 msgid "draw a cubic Bezier using one helper point"
-msgstr ""
+msgstr "하나의 보조 점을 사용하여 3차 Bezier 그리기"
 
 #: ../../shape.rst:27 1b7d6cc35258460398a82cc2ea5f5017
 msgid ":meth:`Shape.draw_line`"
@@ -130,7 +130,7 @@ msgstr ""
 
 #: ../../shape.rst:27 0a76a1b23d26472bb46eaef1b0b11d37
 msgid "draw a line"
-msgstr ""
+msgstr "선 그리기"
 
 #: ../../shape.rst:28 eea95a7b69df4cc6a775a0d4015d87f5
 msgid ":meth:`Shape.draw_oval`"
@@ -138,7 +138,7 @@ msgstr ""
 
 #: ../../shape.rst:28 34529e37e99440538218de68e175f373
 msgid "draw an ellipse"
-msgstr ""
+msgstr "타원 그리기"
 
 #: ../../shape.rst:29 8817f8a373594a85a5b96f2658e31d98
 msgid ":meth:`Shape.draw_polyline`"
@@ -146,7 +146,7 @@ msgstr ""
 
 #: ../../shape.rst:29 3b98bc2fd12c456c8a2410d43daa8912
 msgid "connect a sequence of points"
-msgstr ""
+msgstr "점 시퀀스 연결"
 
 #: ../../shape.rst:30 4022cf63cc3a496696d3f62c0a2805ab
 msgid ":meth:`Shape.draw_quad`"
@@ -154,7 +154,7 @@ msgstr ""
 
 #: ../../shape.rst:30 bde0f7baa3e145cda4e9d029099dda80
 msgid "draw a quadrilateral"
-msgstr ""
+msgstr "사각형 그리기"
 
 #: ../../shape.rst:31 c4addcda29c140a6b1975890737ead18
 msgid ":meth:`Shape.draw_rect`"
@@ -162,7 +162,7 @@ msgstr ""
 
 #: ../../shape.rst:31 2b173978a5c64357ac1aabcc6e976c73
 msgid "draw a rectangle"
-msgstr ""
+msgstr "직사각형 그리기"
 
 #: ../../shape.rst:32 7f7f34efc2e944109b6c07df81c75430
 msgid ":meth:`Shape.draw_sector`"
@@ -170,7 +170,7 @@ msgstr ""
 
 #: ../../shape.rst:32 d5d4937a74fb42b7b20852638b500044
 msgid "draw a circular sector or piece of pie"
-msgstr ""
+msgstr "원형 섹터 또는 파이 조각 그리기"
 
 #: ../../shape.rst:33 880b0c8a153e48fdaa1029e9be76e520
 msgid ":meth:`Shape.draw_squiggle`"
@@ -178,7 +178,7 @@ msgstr ""
 
 #: ../../shape.rst:33 da68180d030a4b1fb309de94d47743b1
 msgid "draw a squiggly line"
-msgstr ""
+msgstr "구불구불한 선 그리기"
 
 #: ../../shape.rst:34 9fe45650af3d4e0ca97f2b9d25d87789
 msgid ":meth:`Shape.draw_zigzag`"
@@ -186,7 +186,7 @@ msgstr ""
 
 #: ../../shape.rst:34 63c2fdb3045d4b81ae22677572e74fbe
 msgid "draw a zigzag line"
-msgstr ""
+msgstr "지그재그 선 그리기"
 
 #: ../../shape.rst:35 c22ba5f6783649118106601684861498
 msgid ":meth:`Shape.finish`"
@@ -194,7 +194,7 @@ msgstr ""
 
 #: ../../shape.rst:35 7c247cc071c04f4383953864f5d543ee
 msgid "finish a set of draw commands"
-msgstr ""
+msgstr "그리기 명령 세트 완료"
 
 #: ../../shape.rst:36 0ba068100e264e0b9e9ec1f368662d1d
 msgid ":meth:`Shape.insert_text`"
@@ -202,7 +202,7 @@ msgstr ""
 
 #: ../../shape.rst:36 5dd5770c7a054a66ab3b70a9d530c6f3
 msgid "insert text lines"
-msgstr ""
+msgstr "텍스트 줄 삽입"
 
 #: ../../shape.rst:37 fa4216d497f9485cb9c79fc192a851bf
 msgid ":meth:`Shape.insert_textbox`"
@@ -210,7 +210,7 @@ msgstr ""
 
 #: ../../shape.rst:37 47ec8b14ef6c4a6d97b355006a0b0b62
 msgid "fit text into a rectangle"
-msgstr ""
+msgstr "사각형에 텍스트 맞추기"
 
 #: ../../shape.rst:38 f1252e5521e147f5bb1c776091ef3328
 msgid ":attr:`Shape.doc`"
@@ -218,7 +218,7 @@ msgstr ""
 
 #: ../../shape.rst:38 7f05739c6d0d459aa0631c532353654e
 msgid "stores the page's document"
-msgstr ""
+msgstr "페이지의 문서 저장"
 
 #: ../../shape.rst:39 61f46d3f420545e684f380815c9730f3
 msgid ":attr:`Shape.draw_cont`"
@@ -226,7 +226,7 @@ msgstr ""
 
 #: ../../shape.rst:39 8a19e4b60bd145ceaa799130f96ab50f
 msgid "draw commands since last :meth:`Shape.finish`"
-msgstr ""
+msgstr "마지막 :meth:`Shape.finish` 이후의 그리기 명령"
 
 #: ../../shape.rst:40 dbc1fe5e22804f4291fdc27abafe492f
 msgid ":attr:`Shape.height`"
@@ -234,7 +234,7 @@ msgstr ""
 
 #: ../../shape.rst:40 a1b344bfa62b474dbecc168b7566abfd
 msgid "stores the page's height"
-msgstr ""
+msgstr "페이지의 높이 저장"
 
 #: ../../shape.rst:41 98c50cf9d34b4f1fac07407191336a46
 msgid ":attr:`Shape.lastPoint`"
@@ -242,7 +242,7 @@ msgstr ""
 
 #: ../../shape.rst:41 d744e08ab64c4be89b54b91da06292ad
 msgid "stores the current point"
-msgstr ""
+msgstr "현재 점 저장"
 
 #: ../../shape.rst:42 3c7b42195cfb495cba0b78bee8af7989
 msgid ":attr:`Shape.page`"
@@ -250,7 +250,7 @@ msgstr ""
 
 #: ../../shape.rst:42 94b8094277504a3e865c3fc7a2fbadcf
 msgid "stores the owning page"
-msgstr ""
+msgstr "소유 페이지 저장"
 
 #: ../../shape.rst:43 74e41af07b7e49dfb9e8897106da6072
 msgid ":attr:`Shape.rect`"
@@ -258,7 +258,7 @@ msgstr ""
 
 #: ../../shape.rst:43 2fd72b972ba64904b71bf6a28bf4aa69
 msgid "rectangle surrounding drawings"
-msgstr ""
+msgstr "그림을 둘러싸는 사각형"
 
 #: ../../shape.rst:44 d662c10c7b284e1a9e8fb0cfacc0af7e
 msgid ":attr:`Shape.text_cont`"
@@ -266,7 +266,7 @@ msgstr ""
 
 #: ../../shape.rst:44 260872b329274794a91fbe27de9d0fd7
 msgid "accumulated text insertions"
-msgstr ""
+msgstr "누적된 텍스트 삽입"
 
 #: ../../shape.rst:45 260f168374084a0389735532a415f968
 msgid ":attr:`Shape.totalcont`"
@@ -274,7 +274,7 @@ msgstr ""
 
 #: ../../shape.rst:45 cca60781247448a6bef1b019d5b03005
 msgid "accumulated string to be stored in :data:`contents`"
-msgstr ""
+msgstr ":data:`contents` 에 저장될 누적 문자열"
 
 #: ../../shape.rst:46 bf5489e997644d1b86ef1a304a20a630
 msgid ":attr:`Shape.width`"
@@ -282,11 +282,11 @@ msgstr ""
 
 #: ../../shape.rst:46 320f315bc7e34fb9a224c8104c0490ba
 msgid "stores the page's width"
-msgstr ""
+msgstr "페이지의 너비 저장"
 
 #: ../../shape.rst:49 bb77ff1beb1643f1a32fbeb881764556
 msgid "**Class API**"
-msgstr ""
+msgstr "**Class API**"
 
 #: ../../shape.rst:55 f849eb8fe4ea4d84ae176a3bfaddbc5d
 msgid ""
@@ -294,7 +294,7 @@ msgid ""
 " is being given the convenience method *new_shape()* to construct a "
 "*Shape* object. During instantiation, a check will be made whether we do "
 "have a PDF page. An exception is otherwise raised."
-msgstr ""
+msgstr "새로운 그림을 생성합니다. |PyMuPDF| 를 가져오는 동안 *pymupdf.Page* 객체에 *Shape* 객체를 구성하기 위한 편의 메서드 *new_shape()* 가 제공됩니다. 인스턴스화 중에 PDF 페이지가 있는지 확인합니다. 그렇지 않으면 예외가 발생합니다."
 
 #: ../../shape.rst 1c33018ebf664e5c82016942d1b106b9
 #: 1ffb902ffb054dea81b4421598d73d3b 2c7222c93878455593e199cee35f9bc0
@@ -305,27 +305,27 @@ msgstr ""
 #: ec2e6f2b47e543f780ac5d88287a15e3 f4f238ef2bbb4c60a0db78dc6ba48ae3
 #: fc6fd8d86630442eac29f0ee69909dd3
 msgid "Parameters"
-msgstr ""
+msgstr "Parameters"
 
 #: ../../shape.rst:57 7af1e6f9a6c54700a96a634680458cf7
 msgid "an existing page of a PDF document."
-msgstr ""
+msgstr "PDF 문서의 기존 페이지."
 
 #: ../../shape.rst:62 76f377d8f0084511ba9e8ab03be15272
 msgid "Draw a line from :data:`point_like` objects *p1* to *p2*."
-msgstr ""
+msgstr ":data:`point_like` 객체 *p1* 에서 *p2* 까지 선을 그립니다."
 
 #: ../../shape.rst:64 ../../shape.rst:78 ../../shape.rst:114
 #: 0bd9ca4fa2034c02bba75a1ed84436e8 67a3775d53744800bce979bd9509dae4
 #: 6fdeeec1ae7344738df476d7c0995efd
 msgid "starting point"
-msgstr ""
+msgstr "시작점"
 
 #: ../../shape.rst:66 ../../shape.rst:80 ../../shape.rst:116
 #: 233bc3b5db494f95bd617855177b0ba3 b9a33dfd5ad0434bb5d1681c4ef5477f
 #: d7a11d5e2d0843bf98b67ccb4c5a1b5c
 msgid "end point"
-msgstr ""
+msgstr "끝점"
 
 #: ../../shape.rst 00c99cce86684724a7484f034aead4b9
 #: 11b2ce9eb7ac446288dfe432b6af2d66 37b1db5fc557483698f96296fca977a1
@@ -335,7 +335,7 @@ msgstr ""
 #: 8ce97810f50346f1963cb9045d0e3bc9 9a9e08e465d642609b4034f0ac585738
 #: e06a173ede194c2499189e3f4ea96d22 f8c5c0c193bf4857a6d61a7fe76a58a0
 msgid "Return type"
-msgstr ""
+msgstr "Return type"
 
 #: ../../shape.rst:68 ../../shape.rst:84 ../../shape.rst:120
 #: ../../shape.rst:129 ../../shape.rst:138 ../../shape.rst:157
@@ -348,7 +348,7 @@ msgstr ""
 #: 6f503a8ab6474890be0934600cf2de3b 881f284fe0a54cc180a7ff765822eb7e
 #: 8b84d3286ddb4519bb3afc99075e83fb f570f468b63940e4b0b9f5890f13db63
 msgid ":ref:`Point`"
-msgstr ""
+msgstr ":ref:`Point`"
 
 #: ../../shape.rst 19bca25aa417451a9d8eb8425f4d7fe5
 #: 2d7984c3e8b24f9cacf4f90e2f10a7e0 42bcff3c5d7c4b3ea0f0cff8b94a1936
@@ -358,13 +358,13 @@ msgstr ""
 #: c9221ebfa6724c35be3fe1b3043dcc84 edda77c9978d4bdc8e49a11220f628de
 #: fda0a5dbf3e44f70993141cd223cda9f ffd43af87088494c8ab238422d4affeb
 msgid "Returns"
-msgstr ""
+msgstr "Returns"
 
 #: ../../shape.rst:69 ../../shape.rst:85 ../../shape.rst:121
 #: 03c2703f4c2c4c488c6e1dd5a8bde13f 54fc79ebcc5547368af108398f088aa1
 #: d5a893ea1f9f4e6cb959502504cda257
 msgid "the end point, *p2*."
-msgstr ""
+msgstr "끝점 *p2*."
 
 #: ../../shape.rst:76 eed928e2a53b4d0db6454fc9a3031e88
 msgid ""
@@ -374,80 +374,80 @@ msgid ""
 " will be adjusted as necessary to meet this condition. The drawn line "
 "will always turn \"left\" when leaving *p1* and always join *p2* from the"
 " \"right\"."
-msgstr ""
+msgstr ":data:`point_like` 객체 *p1* 에서 *p2* 까지 구불구불한(물결치는, 파형의) 선을 그립니다. 항상 정수 개의 전체 파형 주기가 그려지며, 한 주기의 길이는 *4 * breadth* 입니다. 이 조건을 충족하기 위해 breadth 매개변수가 필요에 따라 조정됩니다. 그려진 선은 *p1* 을 떠날 때 항상 \"왼쪽\"으로 돌고 항상 \"오른쪽\"에서 *p2* 에 합류합니다."
 
 #: ../../shape.rst:82 cbee403daaee4a56b9b2f131ff95afb9
 msgid ""
 "the amplitude of each wave. The condition *2 * breadth < abs(p2 - p1)* "
 "must be true to fit in at least one wave. See the following picture, "
 "which shows two points connected by one full period."
-msgstr ""
+msgstr "각 파형의 진폭. 최소한 하나의 파형을 맞추려면 조건 *2 * breadth < abs(p2 - p1)* 이 참이어야 합니다. 하나의 전체 주기로 연결된 두 점을 보여주는 다음 그림을 참조하세요."
 
 #: ../../shape.rst:89 c61f3a8ac2e84d7e88c065f6a80328ac
 msgid ""
 "Here is an example of three connected lines, forming a closed, filled "
 "triangle. Little arrows indicate the stroking direction."
-msgstr ""
+msgstr "다음은 닫힌 채워진 삼각형을 형성하는 세 개의 연결된 선의 예입니다. 작은 화살표는 스트로크 방향을 나타냅니다."
 
 #: ../../shape.rst:105 3b09c6c0299043ad9e407b82096dc07f
 msgid ""
 "Waves drawn are **not** trigonometric (sine / cosine). If you need that, "
 "have a look at `draw.py <https://github.com/pymupdf/PyMuPDF-"
 "Utilities/blob/master/examples/draw-sines/draw.py>`_."
-msgstr ""
+msgstr "그려진 파형은 **삼각함수** (사인/코사인)가 **아닙니다**. 그것이 필요하다면 `draw.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/draw-sines/draw.py>`_ 를 참조하세요."
 
 #: ../../shape.rst:112 e6d38796d27441ac9eb554ae3567f070
 msgid ""
 "Draw a zigzag line from :data:`point_like` objects *p1* to *p2*. "
 "Otherwise works exactly like :meth:`Shape.draw_squiggle`."
-msgstr ""
+msgstr ":data:`point_like` 객체 *p1* 에서 *p2* 까지 지그재그 선을 그립니다. 그 외에는 :meth:`Shape.draw_squiggle` 과 정확히 동일하게 작동합니다."
 
 #: ../../shape.rst:118 2686f76e3e56495ca08bdd2711d1c28e
 msgid ""
 "the amplitude of the movement. The condition *2 * breadth < abs(p2 - p1)*"
 " must be true to fit in at least one period."
-msgstr ""
+msgstr "이동의 진폭. 최소한 하나의 주기를 맞추려면 조건 *2 * breadth < abs(p2 - p1)* 이 참이어야 합니다."
 
 #: ../../shape.rst:125 bfb5a00ac07547bf822e4b2d95c0f3d7
 msgid ""
 "Draw several connected lines between points contained in the sequence "
 "*points*. This can be used for creating arbitrary polygons by setting the"
 " last item equal to the first one."
-msgstr ""
+msgstr "시퀀스 *points* 에 포함된 점들 사이에 여러 개의 연결된 선을 그립니다. 마지막 항목을 첫 번째 항목과 같게 설정하여 임의의 다각형을 만드는 데 사용할 수 있습니다."
 
 #: ../../shape.rst:127 9afa3278382745228b82849acc3d1db1
 msgid ""
 "a sequence of :data:`point_like` objects. Its length must at least be 2 "
 "(in which case it is equivalent to *draw_line()*)."
-msgstr ""
+msgstr ":data:`point_like` 객체의 시퀀스. 길이는 최소 2여야 합니다(이 경우 *draw_line()* 와 동일함)."
 
 #: ../../shape.rst:130 b0f8276e3be04c6996c165c83ed3fdbd
 msgid "*points[-1]* -- the last point in the argument sequence."
-msgstr ""
+msgstr "*points[-1]* -- 인수 시퀀스의 마지막 점."
 
 #: ../../shape.rst:134 bf9fc4f7ee704353953bbb497b85a344
 msgid ""
 "Draw a standard cubic Bézier curve from *p1* to *p4*, using *p2* and *p3*"
 " as control points."
-msgstr ""
+msgstr "*p2* 와 *p3* 를 제어점으로 사용하여 *p1* 에서 *p4* 까지 표준 3차 Bézier 곡선을 그립니다."
 
 #: ../../shape.rst:136 65ae6d8fa1ca4696b5ceec6e6a33a484
 msgid "All arguments are :data:`point_like` objects."
-msgstr ""
+msgstr "모든 인수는 :data:`point_like` 객체입니다."
 
 #: ../../shape.rst:139 c3bc7d17a1564a259bbccff931fbceb4
 msgid "the end point, *p4*."
-msgstr ""
+msgstr "끝점 *p4*."
 
 #: ../../shape.rst:141 540f633870214c57b214a2d3dc6fad47
 msgid ""
 "The points do not need to be different -- experiment a bit with some of "
 "them being equal!"
-msgstr ""
+msgstr "점들이 달라야 할 필요는 없습니다 -- 일부가 같도록 실험해보세요!"
 
 #: ../../shape.rst:143 cc32f6b9b719471e990541995cb91d8a
 msgid "Example:"
-msgstr ""
+msgstr "Example:"
 
 #: ../../shape.rst:149 3cd13feab216456fb40eabb0f87476f2
 msgid ""
@@ -455,67 +455,67 @@ msgid ""
 " square, a regular circle is drawn, a general rectangle will result in an"
 " ellipse. If a quadrilateral is used instead, a plethora of shapes can be"
 " the result."
-msgstr ""
+msgstr "주어진 사각형(사변형) 내에 \"타원\"을 그립니다. 정사각형이면 일반 원이 그려지고, 일반 직사각형이면 타원이 됩니다. 사변형을 사용하면 다양한 모양이 결과가 될 수 있습니다."
 
 #: ../../shape.rst:151 3beef81862054f6c9dcfb27abe73062b
 msgid ""
 "The drawing starts and ends at the middle point of the line `bottom-left "
 "-> top-left` corners in an anti-clockwise movement."
-msgstr ""
+msgstr "그리기는 반시계 방향으로 `왼쪽 아래 -> 왼쪽 위` 모서리 선의 중간점에서 시작하고 끝납니다."
 
 #: ../../shape.rst:153 dbc5cddf46e74369a4ec90c4aba4a510
 msgid ""
 ":data:`rect_like` or :data:`quad_like`.  *Changed in version 1.14.5:*  "
 "Quads are now also supported."
-msgstr ""
+msgstr ":data:`rect_like` 또는 :data:`quad_like`.  *버전 1.14.5에서 변경됨:* 이제 Quads도 지원됩니다."
 
 #: ../../shape.rst:153 0704abfebefe4fe78ed8116b1a8491c3
 msgid ":data:`rect_like` or :data:`quad_like`."
-msgstr ""
+msgstr ":data:`rect_like` 또는 :data:`quad_like`."
 
 #: ../../shape.rst:155 b5056fbc16ad42e4b786c5a89beddb09
 msgid "*Changed in version 1.14.5:*  Quads are now also supported."
-msgstr ""
+msgstr "*버전 1.14.5에서 변경됨:* 이제 Quads도 지원됩니다."
 
 #: ../../shape.rst:158 913c4e5f92e8407f8da84ba1fbe6cb29
 msgid ""
 "the middle point of line `rect.bl -> rect.tl`, or resp. `quad.ll -> "
 "quad.ul`. Look at just a few examples here, or at the *quad-show?.py* "
 "scripts in the PyMuPDF-Utilities repository."
-msgstr ""
+msgstr "선 `rect.bl -> rect.tl` 또는 각각 `quad.ll -> quad.ul` 의 중간점. 여기서 몇 가지 예제를 보거나 PyMuPDF-Utilities 저장소의 *quad-show?.py* 스크립트를 참조하세요."
 
 #: ../../shape.rst:165 e10d02b00d77481699e5ed1c3824246d
 msgid ""
 "Draw a circle given its center and radius. The drawing starts and ends at"
 " point `center - (radius, 0)` in an **anti-clockwise** movement. This "
 "point is the middle of the enclosing square's left side."
-msgstr ""
+msgstr "중심과 반지름이 주어진 원을 그립니다. 그리기는 **반시계 방향** 으로 점 `center - (radius, 0)` 에서 시작하고 끝납니다. 이 점은 둘러싸는 정사각형의 왼쪽 변의 중간입니다."
 
 #: ../../shape.rst:167 ab7929d6c83247179ab99962d0e45182
 msgid ""
 "This is a shortcut for `draw_sector(center, start, 360, "
 "fullSector=False)`. To draw the same circle in a **clockwise** movement, "
 "use `-360` as degrees."
-msgstr ""
+msgstr "이것은 `draw_sector(center, start, 360, fullSector=False)` 의 바로가기입니다. **시계 방향** 으로 동일한 원을 그리려면 각도로 `-360` 을 사용하세요."
 
 #: ../../shape.rst:169 ../../shape.rst:199 6f2705ad71a74c2b917e39246bc2698d
 #: bd872730dfb6401aa65d5bf0dcfa4a1d
 msgid "the center of the circle."
-msgstr ""
+msgstr "원의 중심."
 
 #: ../../shape.rst:171 5b6ab9084a254ee998a1d680ac1e0240
 msgid "the radius of the circle. Must be positive."
-msgstr ""
+msgstr "원의 반지름. 양수여야 합니다."
 
 #: ../../shape.rst:174 7c4ce467661b468b8439dadac7926f6a
 msgid ""
 "`Point(center.x - radius, center.y)`.  .. image:: images/img-drawcircle.*"
 "    :scale: 60"
-msgstr ""
+msgstr "`Point(center.x - radius, center.y)`.  .. image:: images/img-drawcircle.*    :scale: 60"
 
 #: ../../shape.rst:174 2debffa3cd414df1912ce3b384b1301c
 msgid "`Point(center.x - radius, center.y)`."
-msgstr ""
+msgstr "`Point(center.x - radius, center.y)`."
 
 #: ../../shape.rst:181 ee66694536bb4ca4a6a74521eab10648
 msgid ""
@@ -526,50 +526,50 @@ msgid ""
 "does not change its sign. If the lines to p2 intersect with an angle of "
 "90 degrees, then the resulting curve is a quarter ellipse (resp. quarter "
 "circle, if of same length)."
-msgstr ""
+msgstr "*draw_bezier()* 의 특수한 경우: *p1* 에서 *p3* 까지 3차 Bezier 곡선을 그립니다. 두 선 `p1 -> p2` 와 `p3 -> p2` 각각에 하나의 제어점이 생성됩니다. 따라서 두 제어점은 모두 선 `p1 -> p3` 의 같은 쪽에 있습니다. 이것은 곡선의 곡률이 부호를 변경하지 않도록 보장합니다. p2로의 선이 90도 각도로 교차하면 결과 곡선은 1/4 타원(또는 같은 길이인 경우 1/4 원)이 됩니다."
 
 #: ../../shape.rst:183 b9aa05d9515a4765ba0ed43ffaf7fdc8
 msgid "All arguments are :data:`point_like`."
-msgstr ""
+msgstr "모든 인수는 :data:`point_like` 입니다."
 
 #: ../../shape.rst:186 17f64971541f45cd813e80d02b9a38f9
 msgid ""
 "the end point, *p3*. The following is a filled quarter ellipse segment. "
 "The yellow area is oriented **clockwise:**  .. image:: images/img-"
 "drawCurve.png    :align: center"
-msgstr ""
+msgstr "끝점 *p3*. 다음은 채워진 1/4 타원 세그먼트입니다. 노란색 영역은 **시계 방향** 으로 향합니다:  .. image:: images/img-drawCurve.png    :align: center"
 
 #: ../../shape.rst:186 13f26770deb8487da263851084fcf4e9
 msgid ""
 "the end point, *p3*. The following is a filled quarter ellipse segment. "
 "The yellow area is oriented **clockwise:**"
-msgstr ""
+msgstr "끝점 *p3*. 다음은 채워진 1/4 타원 세그먼트입니다. 노란색 영역은 **시계 방향** 으로 향합니다:"
 
 #: ../../shape.rst:197 e52f58c73f024ab492a6b26bf05ef6d1
 msgid ""
 "Draw a circular sector, optionally connecting the arc to the circle's "
 "center (like a piece of pie)."
-msgstr ""
+msgstr "원형 섹터를 그립니다. 선택적으로 호를 원의 중심에 연결합니다(파이 조각처럼)."
 
 #: ../../shape.rst:201 4a4f8fd9d4ae4e9f9d879279d68a23eb
 msgid ""
 "one of the two end points of the pie's arc segment. The other one is "
 "calculated from the *angle*."
-msgstr ""
+msgstr "파이의 호 세그먼트의 두 끝점 중 하나. 다른 하나는 *angle* 에서 계산됩니다."
 
 #: ../../shape.rst:203 cde4d3b5b77e4714a1e8229d3a7d5901
 msgid ""
 "the angle of the sector in degrees. Used to calculate the other end point"
 " of the arc. Depending on its sign, the arc is drawn anti-clockwise "
 "(positive) or clockwise."
-msgstr ""
+msgstr "섹터의 각도(도 단위). 호의 다른 끝점을 계산하는 데 사용됩니다. 부호에 따라 호는 반시계 방향(양수) 또는 시계 방향으로 그려집니다."
 
 #: ../../shape.rst:205 240361925857465eae04d2b1fb29fe7f
 msgid ""
 "whether to draw connecting lines from the ends of the arc to the circle "
 "center. If a fill color is specified, the full \"pie\" is colored, "
 "otherwise just the sector."
-msgstr ""
+msgstr "호의 끝에서 원의 중심까지 연결선을 그릴지 여부. 채우기 색상이 지정되면 전체 \"파이\"가 색칠되고, 그렇지 않으면 섹터만 색칠됩니다."
 
 #: ../../shape.rst:208 be7cd89a7589439eb4d78244412304ad
 msgid ""
@@ -577,27 +577,27 @@ msgid ""
 "following invocation to create logically connected pies charts. Examples:"
 "  .. image:: images/img-drawSector1.*  .. image:: images/img-"
 "drawSector2.*"
-msgstr ""
+msgstr "호의 다른 끝점. 논리적으로 연결된 파이 차트를 만들기 위한 후속 호출의 시작점으로 사용할 수 있습니다. 예:  .. image:: images/img-drawSector1.*  .. image:: images/img-drawSector2.*"
 
 #: ../../shape.rst:208 0043e2c7a86744b4a2bc4d7f0bce8a4b
 msgid ""
 "the other end point of the arc. Can be used as starting point for a "
 "following invocation to create logically connected pies charts. Examples:"
-msgstr ""
+msgstr "호의 다른 끝점. 논리적으로 연결된 파이 차트를 만들기 위한 후속 호출의 시작점으로 사용할 수 있습니다. 예:"
 
 #: ../../shape.rst:217 5fb3a670ab80402c9dcadb97fd8823f0
 msgid "Changed in v1.22.0: Added parameter *radius*."
-msgstr ""
+msgstr "v1.22.0에서 변경됨: 매개변수 *radius* 추가."
 
 #: ../../shape.rst:219 d0e527f29d634bf6a4487b2594b804af
 msgid ""
 "Draw a rectangle. The drawing starts and ends at the top-left corner in "
 "an anti-clockwise movement."
-msgstr ""
+msgstr "직사각형을 그립니다. 그리기는 반시계 방향으로 왼쪽 위 모서리에서 시작하고 끝납니다."
 
 #: ../../shape.rst:221 9f2b7555b1844871bbf67f60773f3566
 msgid "where to put the rectangle on the page."
-msgstr ""
+msgstr "페이지에서 직사각형을 배치할 위치."
 
 #: ../../shape.rst:222 67f101fa3c674ce7b113450e58af1ac1
 #, python-format
@@ -610,44 +610,44 @@ msgid ""
 " as a quarter circle. If a tuple `(rx, ry)` is given, then the curvature "
 "is asymmetric with respect to the horizontal and vertical directions. A "
 "value of `radius=(0.5, 0.5)` draws an ellipse."
-msgstr ""
+msgstr "둥근 직사각형 모서리를 그립니다. `None` 이 아니면 직사각형 변 길이의 백분율로 곡률의 반지름을 지정합니다. 이것은 하나 또는 (튜플의) 두 개의 float `0 < radius <= 0.5` 여야 하며, 여기서 0.5는 해당 변의 50%에 해당합니다. float인 경우 곡률의 반지름은 `radius * min(width, height)` 로 계산되며, 모서리의 둘레를 1/4 원으로 그립니다. 튜플 `(rx, ry)` 가 주어지면 곡률은 수평 및 수직 방향에 대해 비대칭입니다. `radius=(0.5, 0.5)` 값은 타원을 그립니다."
 
 #: ../../shape.rst:225 6c3047af9341428fb1852d642a8d8fb3
 msgid "top-left corner of the rectangle."
-msgstr ""
+msgstr "직사각형의 왼쪽 위 모서리."
 
 #: ../../shape.rst:229 654bd0a3b7ce4bf78f0d2d85b1d37414
 msgid ""
 "Draw a quadrilateral. The drawing starts and ends at the top-left corner "
 "(:attr:`Quad.ul`) in an anti-clockwise movement. It is a shortcut of "
 ":meth:`Shape.draw_polyline` with the argument `(ul, ll, lr, ur, ul)`."
-msgstr ""
+msgstr "사변형을 그립니다. 그리기는 반시계 방향으로 왼쪽 위 모서리(:attr:`Quad.ul`)에서 시작하고 끝납니다. 인수 `(ul, ll, lr, ur, ul)` 을 사용하는 :meth:`Shape.draw_polyline` 의 바로가기입니다."
 
 #: ../../shape.rst:231 046262682daf47c8be64f00f93f9acba
 msgid "where to put the tetragon on the page."
-msgstr ""
+msgstr "페이지에서 사각형을 배치할 위치."
 
 #: ../../shape.rst:234 3fe224acf6924b1085f1052564c9423f
 msgid ":attr:`Quad.ul`."
-msgstr ""
+msgstr ":attr:`Quad.ul`."
 
 #: ../../shape.rst:253 0de6d95816a442d3b9408559071e8954
 msgid ""
 "Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all "
 "of them."
-msgstr ""
+msgstr ":ref:`CommonParms` 를 모두에 적용하여 *draw*()* 메서드 세트를 완료합니다."
 
 #: ../../shape.rst:255 56332b3691544dfbaf0fd9e731231bc5
 msgid ""
 "It has **no effect on** :meth:`Shape.insert_text` and "
 ":meth:`Shape.insert_textbox`."
-msgstr ""
+msgstr ":meth:`Shape.insert_text` 및 :meth:`Shape.insert_textbox` 에는 **영향을 주지 않습니다**."
 
 #: ../../shape.rst:257 549c8c7eeb8344aaa7576d3e8a534e9c
 msgid ""
 "The method also supports **morphing the compound drawing** using "
 ":ref:`Point` *fixpoint* and :ref:`matrix` *matrix*."
-msgstr ""
+msgstr "이 메서드는 :ref:`Point` *fixpoint* 및 :ref:`matrix` *matrix* 를 사용하여 **복합 그림 변형** 도 지원합니다."
 
 #: ../../shape.rst:259 dba0c80e395c4f9992d5e84ad7225ffd
 msgid ""
@@ -658,19 +658,19 @@ msgid ""
 "values in its first 4 components, *matrix.e == matrix.f == 0* must be "
 "true, however. This means that any combination of scaling, shearing, "
 "rotating, flipping, etc. is possible, but translations are not."
-msgstr ""
+msgstr "임의의 :ref:`Point` *fixpoint* 주변의 텍스트 또는 복합 그림을 :ref:`Matrix` *matrix* 를 적용하여 변형합니다. 이것은 *fixpoint* 가 이 작업의 **고정점** 임을 의미합니다: 위치가 변경되지 않습니다. 기본값은 변형 없음(``None``)입니다. 행렬은 처음 4개 구성 요소에 임의의 값을 포함할 수 있지만, *matrix.e == matrix.f == 0* 이 참이어야 합니다. 이것은 확대/축소, 기울이기, 회전, 뒤집기 등의 조합이 가능하지만 이동은 불가능함을 의미합니다."
 
 #: ../../shape.rst:261 5dafa22688dd4869b353c3ba9d3b07f7
 msgid ""
 "*(new in v1.18.1)* set transparency for stroke colors. Value < 0 or > 1 "
 "will be ignored. Default is 1 (intransparent)."
-msgstr ""
+msgstr "*(v1.18.1의 새로운 기능)* 스트로크 색상의 투명도를 설정합니다. 값 < 0 또는 > 1은 무시됩니다. 기본값은 1(불투명)입니다."
 
 #: ../../shape.rst:262 ccec6b24043c40a28e9532eddd90bdce
 msgid ""
 "*(new in v1.18.1)* set transparency for fill colors. Default is 1 "
 "(intransparent)."
-msgstr ""
+msgstr "*(v1.18.1의 새로운 기능)* 채우기 색상의 투명도를 설정합니다. 기본값은 1(불투명)입니다."
 
 #: ../../shape.rst:264 df15c1363a6a46538ab6875019646cbd
 msgid ""
@@ -681,24 +681,24 @@ msgid ""
 "expected with these rules. For an in-depth explanation, see "
 ":ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the "
 "difference."
-msgstr ""
+msgstr "채우기 작업에 **\"even-odd rule\"**을 요청합니다. 기본값은 ``False`` 이므로 **\"nonzero winding number rule\"**이 사용됩니다. 이러한 규칙은 영역이 겹치는 곳에 채우기 색상을 적용하는 대체 방법입니다. 상당히 복잡한 모양에서만 이러한 규칙으로 다른 동작이 예상됩니다. 자세한 설명은 :ref:`AdobeManual` 137페이지 이하를 참조하세요. 차이를 보여주는 예제는 다음과 같습니다."
 
 #: ../../shape.rst:266 c674e567b1e5433eaf84acd80acc23dc
 msgid ""
 "*(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or "
 ":data:`OCMD` to make this drawing conditionally displayable."
-msgstr ""
+msgstr "*(v1.18.4의 새로운 기능)* 이 그림을 조건부로 표시 가능하게 하는 :data:`OCG` 또는 :data:`OCMD` 의 :data:`xref` 번호."
 
 #: ../../shape.rst:270 63c92f36394847c489986e7f2afbb97a
 msgid "For each pixel in a shape, the following will happen:"
-msgstr ""
+msgstr "모양의 각 픽셀에 대해 다음이 발생합니다:"
 
 #: ../../shape.rst:272 36c14ed50f0445be999e611bc169aa24
 msgid ""
 "Rule **\"even-odd\"** counts, how many areas contain the pixel. If this "
 "count is **odd,** the pixel is regarded **inside** the shape, if it is "
 "**even**, the pixel is **outside**."
-msgstr ""
+msgstr "규칙 **\"even-odd\"** 는 픽셀을 포함하는 영역의 수를 계산합니다. 이 카운트가 **홀수** 이면 픽셀은 모양 **내부** 로 간주되고, **짝수** 이면 픽셀은 **외부** 로 간주됩니다."
 
 #: ../../shape.rst:274 3effcfe2b7fe4980b3622d1cc2555db9
 msgid ""
@@ -707,7 +707,7 @@ msgid ""
 "area is drawn anti-clockwise and it **subtracts 1** for clockwise areas. "
 "If the result is zero, the pixel is regarded **outside,** pixels with a "
 "non-zero count are **inside** the shape."
-msgstr ""
+msgstr "기본 규칙 **\"nonzero winding\"** 은 추가로 픽셀을 포함하는 각 영역의 *\"방향\"* 을 봅니다: 영역이 반시계 방향으로 그려지면 **1을 더하고** 시계 방향 영역에 대해서는 **1을 뺍니다**. 결과가 0이면 픽셀은 **외부** 로 간주되고, 0이 아닌 카운트를 가진 픽셀은 모양 **내부** 에 있습니다."
 
 #: ../../shape.rst:276 b72f9a0a9d6a42fba11e06941aaae289
 msgid ""
@@ -716,11 +716,11 @@ msgid ""
 "two shapes contain one (the top-left) circle drawn clockwise. As can be "
 "seen, area orientation is irrelevant for the right column (even-odd "
 "rule)."
-msgstr ""
+msgstr "위 이미지의 네 모양 중 위쪽 두 개는 각각 표준 방식(반시계 방향, 화살표 참조)으로 그려진 세 개의 원을 보여줍니다. 아래쪽 두 모양은 시계 방향으로 그려진 하나(왼쪽 위)의 원을 포함합니다. 보시다시피 영역 방향은 오른쪽 열(even-odd 규칙)과 무관합니다."
 
 #: ../../shape.rst:297 a50a3db9c4f74b3aaed7c91f010f050f
 msgid "Insert text lines starting at ``point``."
-msgstr ""
+msgstr "``point`` 에서 시작하는 텍스트 줄을 삽입합니다."
 
 #: ../../shape.rst:299 d60ae29ad0ca4e709ff2c72d7bf5c264
 msgid ""
@@ -729,7 +729,7 @@ msgid ""
 "*rotate* parameter. Please have a look at the following picture. The "
 "small red dots indicate the positions of *point* in each of the four "
 "possible cases.  .. image:: images/img-inserttext.*    :scale: 33"
-msgstr ""
+msgstr "픽셀 단위로 *text* 의 첫 번째 문자의 왼쪽 아래 위치. 이것이 *rotate* 매개변수와 함께 어떻게 작동하는지 이해하는 것이 중요합니다. 다음 그림을 참조하세요. 작은 빨간 점은 네 가지 가능한 경우 각각에서 *point* 의 위치를 나타냅니다.  .. image:: images/img-inserttext.*    :scale: 33"
 
 #: ../../shape.rst:299 1521f8f6fbea43a0be0deb7904e4623c
 msgid ""
@@ -738,7 +738,7 @@ msgid ""
 "*rotate* parameter. Please have a look at the following picture. The "
 "small red dots indicate the positions of *point* in each of the four "
 "possible cases."
-msgstr ""
+msgstr "픽셀 단위로 *text* 의 첫 번째 문자의 왼쪽 아래 위치. 이것이 *rotate* 매개변수와 함께 어떻게 작동하는지 이해하는 것이 중요합니다. 다음 그림을 참조하세요. 작은 빨간 점은 네 가지 가능한 경우 각각에서 *point* 의 위치를 나타냅니다."
 
 #: ../../shape.rst:304 c50197a3ee954fc4b17e16da50350320
 msgid ""
@@ -749,21 +749,21 @@ msgid ""
 "space on the page (in the sense of reading direction as established by "
 "the *rotate* parameter). Any rest of *text* is discarded -- the return "
 "code however contains the number of inserted lines."
-msgstr ""
+msgstr "삽입할 텍스트. 문자열 타입 또는 시퀀스 타입으로 지정할 수 있습니다. 시퀀스 또는 줄바꿈 ``\\n`` 을 포함하는 문자열의 경우 여러 줄이 삽입됩니다. 줄이 너무 넓어도 처리하지 않지만, 삽입된 줄 수는 페이지의 \"수직\" 공간(*rotate* 매개변수에 의해 설정된 읽기 방향의 의미에서)에 의해 제한됩니다. *text* 의 나머지는 버려집니다 -- 그러나 반환 코드는 삽입된 줄 수를 포함합니다."
 
 #: ../../shape.rst:306 ../../shape.rst:346 a2bce94fcad44fc08799f6d16a27e19d
 #: f75a16cbc40142c5a8ce2199eb87b25c
 msgid ""
 "a factor to override the line height calculated from font properties. If "
 "not `None`, a line height of `fontsize * lineheight` will be used."
-msgstr ""
+msgstr "글꼴 속성에서 계산된 줄 높이를 재정의하는 요소. `None` 이 아니면 `fontsize * lineheight` 의 줄 높이가 사용됩니다."
 
 #: ../../shape.rst:307 1ecd328d935546d38c4621a762982871
 msgid ""
 "*(new in v1.18.1)* set transparency for stroke colors (the **border "
 "line** of a character). Only  `0 <= value <= 1` will be considered. "
 "Default is 1 (intransparent)."
-msgstr ""
+msgstr "*(v1.18.1의 새로운 기능)* 스트로크 색상(문자의 **테두리 선**)의 투명도를 설정합니다. `0 <= value <= 1` 만 고려됩니다. 기본값은 1(불투명)입니다."
 
 #: ../../shape.rst:308 ../../shape.rst:351 168d47f1a50e45efbddb4be1a0a28d1c
 #: 7029b8b04590494a850f9bf97c737317
@@ -771,7 +771,7 @@ msgid ""
 "*(new in v1.18.1)* set transparency for fill colors. Default is 1 "
 "(intransparent). Use this value to control transparency of the text "
 "color. Stroke opacity **only** affects the border line of characters."
-msgstr ""
+msgstr "*(v1.18.1의 새로운 기능)* 채우기 색상의 투명도를 설정합니다. 기본값은 1(불투명)입니다. 이 값을 사용하여 텍스트 색상의 투명도를 제어합니다. 스트로크 불투명도는 **문자의 테두리 선에만** 영향을 줍니다."
 
 #: ../../shape.rst:310 bc253669783d43fbbcea827f904f8df7
 msgid ""
@@ -784,23 +784,23 @@ msgid ""
 " of the first character's rectangle. Multiple lines, if present, always "
 "follow the reading direction established by this parameter. So line 2 is "
 "located **above** line 1 in case of `rotate = 180`, etc."
-msgstr ""
+msgstr "텍스트를 회전할지 여부를 결정합니다. 허용되는 값은 90도의 배수입니다. 기본값은 0(회전 없음)이며, 왼쪽에서 오른쪽으로 향하는 수평 텍스트 줄을 의미합니다. 180은 텍스트가 **오른쪽에서 왼쪽** 으로 거꾸로 표시됨을 의미합니다. 90은 반시계 방향 회전, 텍스트가 **위쪽** 으로 실행됨을 의미합니다. 270(또는 -90)은 시계 방향 회전, 텍스트가 **아래쪽** 으로 실행됨을 의미합니다. 어떤 경우든 *point* 는 첫 번째 문자의 사각형의 왼쪽 아래 좌표를 지정합니다. 여러 줄이 있는 경우 항상 이 매개변수에 의해 설정된 읽기 방향을 따릅니다. 따라서 `rotate = 180` 인 경우 줄 2는 줄 1 **위에** 위치합니다."
 
 #: ../../shape.rst:312 ../../shape.rst:355 68906f83108042f0b104b462a3b39709
 #: 9759f8b8a55448eb88645d85395ee4e8
 msgid ""
 "*(new in v1.18.4)* the :data:`xref` number of an :data:`OCG` or "
 ":data:`OCMD` to make this text conditionally displayable."
-msgstr ""
+msgstr "*(v1.18.4의 새로운 기능)* 이 텍스트를 조건부로 표시 가능하게 하는 :data:`OCG` 또는 :data:`OCMD` 의 :data:`xref` 번호."
 
 #: ../../shape.rst:315 ed86c6cd4572455ba92ae3ff42b41fdf
 msgid "number of lines inserted."
-msgstr ""
+msgstr "삽입된 줄 수."
 
 #: ../../shape.rst:317 ../../shape.rst:367 4a40110f016f4c7bb3e919ac462d14e3
 #: 785b22c9fbc5484186666fbe76c0f207
 msgid "For a description of the other parameters see :ref:`CommonParms`."
-msgstr ""
+msgstr "다른 매개변수에 대한 설명은 :ref:`CommonParms` 를 참조하세요."
 
 #: ../../shape.rst:338 32569db0897946de8f8338dcc82e3dd3
 msgid ""
@@ -808,18 +808,18 @@ msgid ""
 "split into lines and words and then filled into the available space, "
 "starting from one of the four rectangle corners, which depends on "
 "`rotate`. Line feeds and multiple space will be respected."
-msgstr ""
+msgstr "PDF 전용: 지정된 사각형에 텍스트를 삽입합니다. 텍스트는 줄과 단어로 분할된 다음 사용 가능한 공간에 채워지며, `rotate` 에 따라 사각형의 네 모서리 중 하나에서 시작합니다. 줄바꿈과 여러 공백이 존중됩니다."
 
 #: ../../shape.rst:340 c50da8ee249d416084e826f0a8a2efd6
 msgid "the area to use. It must be finite and not empty."
-msgstr ""
+msgstr "사용할 영역. 유한하고 비어 있지 않아야 합니다."
 
 #: ../../shape.rst:342 7990001f1d8a482696c3ea94ee3b11c5
 msgid ""
 "the text to be inserted. Must be specified as a string or a sequence of "
 "strings. Line breaks are respected also when occurring in a sequence "
 "entry."
-msgstr ""
+msgstr "삽입할 텍스트. 문자열 또는 문자열 시퀀스로 지정해야 합니다. 시퀀스 항목에 발생하는 경우에도 줄바꿈이 존중됩니다."
 
 #: ../../shape.rst:344 8bfa2ed038884962a70ceb3e0459dc06
 msgid ""
@@ -827,19 +827,19 @@ msgid ""
 "are the other supported options, see :ref:`TextAlign`. Please note that "
 "the effect of parameter value *TEXT_ALIGN_JUSTIFY* is only achievable "
 "with \"simple\" (single-byte) fonts (including the :ref:`Base-14-Fonts`)."
-msgstr ""
+msgstr "각 텍스트 줄을 정렬합니다. 기본값은 0(왼쪽)입니다. 중앙, 오른쪽 및 양쪽 정렬은 다른 지원 옵션입니다. :ref:`TextAlign` 을 참조하세요. 매개변수 값 *TEXT_ALIGN_JUSTIFY* 의 효과는 \"simple\"(단일 바이트) 글꼴(:ref:`Base-14-Fonts` 포함)에서만 달성할 수 있습니다."
 
 #: ../../shape.rst:348 9adb4b3bbe094da8a624bd552fc13f21
 msgid ""
 "controls handling of tab characters ``\\t`` using the "
 "`string.expandtabs()` method **per each line**."
-msgstr ""
+msgstr "**각 줄마다** `string.expandtabs()` 메서드를 사용하여 탭 문자 ``\\t`` 의 처리를 제어합니다."
 
 #: ../../shape.rst:350 67177b4ade6c4da5a4523395d6bd4bf4
 msgid ""
 "*(new in v1.18.1)* set transparency for stroke colors. Negative values "
 "and values > 1 will be ignored. Default is 1 (intransparent)."
-msgstr ""
+msgstr "*(v1.18.1의 새로운 기능)* 스트로크 색상의 투명도를 설정합니다. 음수 값과 값 > 1은 무시됩니다. 기본값은 1(불투명)입니다."
 
 #: ../../shape.rst:353 d5edb13ac13b4ab4ba9d26fa3d3a6d82
 msgid ""
@@ -852,7 +852,7 @@ msgid ""
 "morphing. See the second example, which shows text first rotated left by "
 "`90` degrees and then the whole rectangle rotated clockwise around is "
 "lower left corner."
-msgstr ""
+msgstr "사각형에서 텍스트를 회전하도록 요청합니다. 이 값은 90도의 배수여야 합니다. 기본값은 0(회전 없음)입니다. 효과적으로 네 가지 값 `0`, `90`, `180` 및 `270` (= `-90`)이 처리되며, 각각 텍스트가 다른 사각형 모서리에서 시작하도록 합니다. 왼쪽 아래는 `90`, 오른쪽 아래는 `180`, `-90 / 270` 은 오른쪽 위입니다. 텍스트가 사각형에 채워지는 방법의 예제를 참조하세요. 이 인수는 변형보다 우선합니다. 텍스트가 먼저 `90` 도 왼쪽으로 회전한 다음 전체 사각형이 왼쪽 아래 모서리를 중심으로 시계 방향으로 회전하는 두 번째 예제를 참조하세요."
 
 #: ../../shape.rst:358 c9924f296b104dcb885e423a8329287a
 msgid ""
@@ -862,60 +862,60 @@ msgid ""
 "negative**: no execution. The value returned is the space deficit to "
 "store text lines. Enlarge rectangle, decrease *fontsize*, decrease text "
 "amount, etc."
-msgstr ""
+msgstr "**양수 또는 0인 경우**: 성공적인 실행. 반환된 값은 픽셀 단위의 사용되지 않은 사각형 줄 공간입니다. 이것은 안전하게 무시할 수 있습니다 -- 또는 사각형을 최적화하고 후속 항목을 배치하는 데 사용할 수 있습니다.  **음수인 경우**: 실행되지 않음. 반환된 값은 텍스트 줄을 저장하기 위한 공간 부족입니다. 사각형을 확대하고, *fontsize* 를 줄이고, 텍스트 양을 줄이는 등을 수행하세요."
 
 #: ../../shape.rst:359 ff434ea0b01748d3a22351b8914d1de9
 msgid ""
 "**If positive or zero**: successful execution. The value returned is the "
 "unused rectangle line space in pixels. This may safely be ignored -- or "
 "be used to optimize the rectangle, position subsequent items, etc."
-msgstr ""
+msgstr "**양수 또는 0인 경우**: 성공적인 실행. 반환된 값은 픽셀 단위의 사용되지 않은 사각형 줄 공간입니다. 이것은 안전하게 무시할 수 있습니다 -- 또는 사각형을 최적화하고 후속 항목을 배치하는 데 사용할 수 있습니다."
 
 #: ../../shape.rst:361 2d7f62a0c5ec468eb58daea2b7b74842
 msgid ""
 "**If negative**: no execution. The value returned is the space deficit to"
 " store text lines. Enlarge rectangle, decrease *fontsize*, decrease text "
 "amount, etc."
-msgstr ""
+msgstr "**음수인 경우**: 실행되지 않음. 반환된 값은 텍스트 줄을 저장하기 위한 공간 부족입니다. 사각형을 확대하고, *fontsize* 를 줄이고, 텍스트 양을 줄이는 등을 수행하세요."
 
 #: ../../shape.rst:375 f65e40d3ebec4535af01faa79e3c04db
 msgid ""
 "Update the page's :data:`contents` with the accumulated drawings, "
 "followed by any text insertions. If text overlaps drawings, it will be "
 "written on top of the drawings."
-msgstr ""
+msgstr "누적된 그림으로 페이지의 :data:`contents` 를 업데이트한 다음 텍스트 삽입을 수행합니다. 텍스트가 그림과 겹치면 그림 위에 기록됩니다."
 
 #: ../../shape.rst:377 3cc36436278147c4bf9af8031f1046a3
 msgid "**Do not forget to execute this method:**"
-msgstr ""
+msgstr "**이 메서드를 실행하는 것을 잊지 마세요:**"
 
 #: ../../shape.rst:379 44ccc171888e476f88b7c3ce68d54ad9
 msgid ""
 "If a shape is **not committed, it will be ignored and the page will not "
 "be changed!**"
-msgstr ""
+msgstr "shape가 **커밋되지 않으면 무시되고 페이지가 변경되지 않습니다!**"
 
 #: ../../shape.rst:381 8911998982cf45e6b4d61df722ae0084
 msgid ""
 "The method will reset attributes :attr:`Shape.rect`, :attr:`lastPoint`, "
 ":attr:`draw_cont`, :attr:`text_cont` and :attr:`totalcont`. Afterwards, "
 "the shape object can be reused for the **same page**."
-msgstr ""
+msgstr "이 메서드는 속성 :attr:`Shape.rect`, :attr:`lastPoint`, :attr:`draw_cont`, :attr:`text_cont` 및 :attr:`totalcont` 를 재설정합니다. 이후 shape 객체는 **동일한 페이지** 에 대해 재사용할 수 있습니다."
 
 #: ../../shape.rst:383 90b57d6cc3344abaa5ae796d17518c78
 msgid ""
 "determine whether to put content in foreground (default) or background. "
 "Relevant only, if the page already has a non-empty :data:`contents` "
 "object."
-msgstr ""
+msgstr "콘텐츠를 전경(기본값) 또는 배경에 배치할지 결정합니다. 페이지에 이미 비어 있지 않은 :data:`contents` 객체가 있는 경우에만 관련됩니다."
 
 #: ../../shape.rst:385 555f29f07330465799e60c983380d945
 msgid "**---------- Attributes ----------**"
-msgstr ""
+msgstr "**---------- Attributes ----------**"
 
 #: ../../shape.rst:389 bcd84d9d71fe4ab7a75882c2f6ea55ee
 msgid "For reference only: the page's document."
-msgstr ""
+msgstr "참조용: 페이지의 문서."
 
 #: ../../shape.rst 4bc5f78dcd47499499d993fc76937923
 #: 51e0e906798c404999816e887c14725e 583eb30bb6764d82886dcee5ecc5ef23
@@ -923,23 +923,23 @@ msgstr ""
 #: 8ad67482ac084e4e8acd77c771ac9813 bd1c39ed922a4dba9f34104a29bd9bd6
 #: dc8385568c9641d9bb717e0218bc356a f04ca533ba0f465e9baafc622227ff3a
 msgid "type"
-msgstr ""
+msgstr "type"
 
 #: ../../shape.rst:391 d4a7179efc87417687ed54512b5fd372
 msgid ":ref:`Document`"
-msgstr ""
+msgstr ":ref:`Document`"
 
 #: ../../shape.rst:395 e50d0793a5eb432bb3c2ca8ea196f4c2
 msgid "For reference only: the owning page."
-msgstr ""
+msgstr "참조용: 소유 페이지."
 
 #: ../../shape.rst:397 a88ee833273045f299c35dd3ead948a4
 msgid ":ref:`Page`"
-msgstr ""
+msgstr ":ref:`Page`"
 
 #: ../../shape.rst:401 2bad01b347624c13a0c42fc3970fc1b5
 msgid "Copy of the page's height"
-msgstr ""
+msgstr "페이지 높이의 복사본"
 
 #: ../../shape.rst:403 ../../shape.rst:409 a1d7f49541cb48ab8a1087635dffe627
 #: ee0e76b01d494167bc804a4bcb20168e
@@ -948,13 +948,13 @@ msgstr ""
 
 #: ../../shape.rst:407 ae4a0df9e57c45dd99dc05694d71194d
 msgid "Copy of the page's width."
-msgstr ""
+msgstr "페이지 너비의 복사본."
 
 #: ../../shape.rst:413 36e04a92b85b455f986d86cf86a84b9d
 msgid ""
 "Accumulated command buffer for **draw methods** since last finish. Every "
 "finish method will append its commands to :attr:`Shape.totalcont`."
-msgstr ""
+msgstr "마지막 finish 이후 **draw 메서드** 의 누적 명령 버퍼. 모든 finish 메서드는 명령을 :attr:`Shape.totalcont` 에 추가합니다."
 
 #: ../../shape.rst:415 ../../shape.rst:421 ../../shape.rst:442
 #: 0e691c52a692459fb3651063bbd96fa1 3bd5e87273ea409ba3861ff7a5df3fba
@@ -967,7 +967,7 @@ msgid ""
 "Accumulated text buffer. All **text insertions** go here. This buffer "
 "will be appended to :attr:`totalcont` :meth:`Shape.commit`, so that text "
 "will never be covered by drawings in the same Shape."
-msgstr ""
+msgstr "누적된 텍스트 버퍼. 모든 **텍스트 삽입** 이 여기로 갑니다. 이 버퍼는 :meth:`Shape.commit` 에서 :attr:`totalcont` 에 추가되므로 텍스트가 같은 Shape의 그림에 의해 덮이지 않습니다."
 
 #: ../../shape.rst:425 31e0348adf3949dea03c7e108eec0e9a
 msgid ""
@@ -977,7 +977,7 @@ msgid ""
 ":meth:`Shape.insert_textbox` update this property (i.e. **enlarge** the "
 "rectangle as needed). **Morphing** operations, however "
 "(:meth:`Shape.finish`, :meth:`Shape.insert_textbox`) are ignored."
-msgstr ""
+msgstr "그림을 둘러싸는 사각형. 이 속성은 사용자가 자유롭게 사용할 수 있으며 언제든지 변경할 수 있습니다. shape가 생성되거나 커밋될 때 값이 ``None`` 으로 설정됩니다. 모든 *draw** 메서드와 :meth:`Shape.insert_textbox` 는 이 속성을 업데이트합니다(즉, 필요에 따라 사각형을 **확대**). 하지만 **Morphing** 작업(:meth:`Shape.finish`, :meth:`Shape.insert_textbox`)은 무시됩니다."
 
 #: ../../shape.rst:427 58e3a175f61343beb779d52d6f9a968a
 msgid ""
@@ -986,33 +986,33 @@ msgid ""
 " for later or external use. If you have not manipulated the attribute "
 "yourself, it should reflect a rectangle that contains all drawings so "
 "far."
-msgstr ""
+msgstr "이 속성의 일반적인 사용은 나중에 사용하거나 외부에서 사용하기 위해 shape를 생성할 때 :attr:`Page.cropbox_position` 을 이 값으로 설정하는 것입니다. 속성을 직접 조작하지 않은 경우 지금까지의 모든 그림을 포함하는 사각형을 반영해야 합니다."
 
 #: ../../shape.rst:429 bde3111f6fcb4fde8ae6d94e2b784878
 msgid ""
 "If you have used morphing and need a rectangle containing the morphed "
 "objects, use the following code::"
-msgstr ""
+msgstr "변형을 사용했고 변형된 객체를 포함하는 사각형이 필요한 경우 다음 코드를 사용하세요::"
 
 #: ../../shape.rst:436 8b59162d4cdc4453a1a62c884c29d8c5
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../shape.rst:440 70f79c2bf0624368be25e43a4b7a3c3f
 msgid ""
 "Total accumulated command buffer for draws and text insertions. This will"
 " be used by :meth:`Shape.commit`."
-msgstr ""
+msgstr "그리기 및 텍스트 삽입을 위한 총 누적 명령 버퍼. 이것은 :meth:`Shape.commit` 에서 사용됩니다."
 
 #: ../../shape.rst:446 2a512a35544e4ff4bc0908226c3f1474
 msgid ""
 "For reference only: the current point of the drawing path. It is ``None``"
 " at *Shape* creation and after each *finish()* and *commit()*."
-msgstr ""
+msgstr "참조용: 그리기 경로의 현재 점. *Shape* 생성 시 및 각 *finish()* 및 *commit()* 후에 ``None`` 입니다."
 
 #: ../../shape.rst:451 5f43e7fa99ee464a8f4e310b6073e35b
 msgid "Usage"
-msgstr ""
+msgstr "사용법"
 
 #: ../../shape.rst:452 a35b85f2df424fe5a8123cbd236b49c9
 msgid ""
@@ -1020,7 +1020,7 @@ msgid ""
 "this, as many draw, finish and text insertions methods as required may "
 "follow. Each sequence of draws must be finished before the drawing is "
 "committed. The overall coding pattern looks like this::"
-msgstr ""
+msgstr "그리기 객체는 *shape = page.new_shape()* 로 구성됩니다. 그 후 필요한 만큼 많은 draw, finish 및 텍스트 삽입 메서드가 올 수 있습니다. 그리기가 커밋되기 전에 각 draw 시퀀스가 완료되어야 합니다. 전체 코딩 패턴은 다음과 같습니다::"
 
 #: ../../shape.rst:471 7d0392c130464a54a962cc95cad3ce9d
 msgid ""
@@ -1028,7 +1028,7 @@ msgid ""
 "giving it common colors, line width, morphing, etc. If *closePath* is "
 "specified, it will also connect the end point of the last draw with the "
 "starting point of the first one."
-msgstr ""
+msgstr "각 *finish()* 는 앞의 그리기를 하나의 논리적 모양으로 결합하여 공통 색상, 선 너비, 변형 등을 제공합니다. *closePath* 가 지정되면 마지막 그리기의 끝점을 첫 번째 그리기의 시작점과 연결합니다."
 
 #: ../../shape.rst:473 d909c60fe1834c8eb1936c81f4fe8a7c
 msgid ""
@@ -1038,7 +1038,7 @@ msgid ""
 "its starting point. Failing to do so, would automatically start a new "
 "path and *finish()* may not work as expected (but it won't complain "
 "either)."
-msgstr ""
+msgstr "복합 그래픽을 성공적으로 만들려면 각 draw 메서드가 이전 메서드의 끝점을 시작점으로 사용하도록 하세요. 위의 의사 코드에서 *draw2* 는 따라서 *draw1* 의 반환된 :ref:`Point` 를 시작점으로 사용해야 합니다. 그렇게 하지 않으면 자동으로 새 경로가 시작되고 *finish()* 가 예상대로 작동하지 않을 수 있습니다(하지만 불평하지도 않습니다)."
 
 #: ../../shape.rst:475 fb42b4b00cfd4c8f9bc125398e78d941
 msgid ""
@@ -1046,91 +1046,91 @@ msgid ""
 ":attr:`Shape.draw_cont` nor :attr:`Shape.lastPoint`). They are appended "
 "to *Shape.totalcont* directly, whereas draws will be appended by "
 "*Shape.finish*."
-msgstr ""
+msgstr "텍스트 삽입은 커밋 전 어디서든 발생할 수 있습니다(:attr:`Shape.draw_cont` 나 :attr:`Shape.lastPoint` 를 건드리지 않습니다). 이것들은 *Shape.totalcont* 에 직접 추가되는 반면, 그리기는 *Shape.finish* 에 의해 추가됩니다."
 
 #: ../../shape.rst:477 f1ba4537b82747479d0306c9e87f4f4c
 msgid ""
 "Each *commit* takes all text insertions and shapes and places them in "
 "foreground or background on the page -- thus providing a way to control "
 "graphical layers."
-msgstr ""
+msgstr "각 *commit* 은 모든 텍스트 삽입과 모양을 가져와 페이지의 전경 또는 배경에 배치합니다 -- 따라서 그래픽 레이어를 제어하는 방법을 제공합니다."
 
 #: ../../shape.rst:479 f54933082b2d4eff99e12a13fc1482a9
 msgid ""
 "**Only** *commit* **will update** the page's contents, the other methods "
 "are basically string manipulations."
-msgstr ""
+msgstr "**오직** *commit* 만 페이지의 콘텐츠를 **업데이트** 하며, 다른 메서드는 기본적으로 문자열 조작입니다."
 
 #: ../../shape.rst:482 278641dcb46d4baf936c58e97dcd5458
 msgid "Examples"
-msgstr ""
+msgstr "예제"
 
 #: ../../shape.rst:483 eb1041462daa4eaea29f2c68f9820833
 msgid "Create a full circle of pieces of pie in different colors::"
-msgstr ""
+msgstr "다양한 색상의 파이 조각으로 전체 원 만들기::"
 
 #: ../../shape.rst:498 eaebaebe3baa4f09947553ff9e26c2a1
 msgid "Here is an example for 5 colors:"
-msgstr ""
+msgstr "다음은 5가지 색상의 예제입니다:"
 
 #: ../../shape.rst:502 3cf653254d684532a9c3aba1c78bfd12
 msgid ""
 "Create a regular n-edged polygon (fill yellow, red border). We use "
 "*draw_sector()* only to calculate the points on the circumference, and "
 "empty the draw command buffer again before drawing the polygon::"
-msgstr ""
+msgstr "정규 n각형 만들기(노란색 채우기, 빨간색 테두리). 원주 위의 점을 계산하기 위해 *draw_sector()* 만 사용하고, 다각형을 그리기 전에 그리기 명령 버퍼를 다시 비웁니다::"
 
 #: ../../shape.rst:517 e093071b33a14f6ca8a50b7e9ef6d3b1
 msgid "Here is the polygon for n = 7:"
-msgstr ""
+msgstr "다음은 n = 7인 다각형입니다:"
 
 #: ../../shape.rst:524 32cfdbeb116244d09f20318c9cbaa2ac
 msgid "Common Parameters"
-msgstr ""
+msgstr "공통 매개변수"
 
 #: ../../shape.rst:526 e8e32aa90b154bf9b1f9186f60ab584a
 msgid "**fontname** (*str*)"
-msgstr ""
+msgstr "**fontname** (*str*)"
 
 #: ../../shape.rst:528 77ba86666bd24c11b1d1d22120f706a7
 msgid "In general, there are three options:"
-msgstr ""
+msgstr "일반적으로 세 가지 옵션이 있습니다:"
 
 #: ../../shape.rst:530 02905b80e6194c4eacf48669a2b4862d
 msgid ""
 "Use one of the standard :ref:`Base-14-Fonts`. In this case, *fontfile* "
 "**must not** be specified and *\"Helvetica\"* is used if this parameter "
 "is omitted, too."
-msgstr ""
+msgstr "표준 :ref:`Base-14-Fonts` 중 하나를 사용합니다. 이 경우 *fontfile* 을 **지정하면 안 되며** 이 매개변수도 생략하면 *\"Helvetica\"* 가 사용됩니다."
 
 #: ../../shape.rst:531 e643b83ac7934c6a8daf143d5e6ea969
 msgid ""
 "Choose a font already in use by the page. Then specify its **reference** "
 "name prefixed with a slash \"/\", see example below."
-msgstr ""
+msgstr "페이지에서 이미 사용 중인 글꼴을 선택합니다. 그런 다음 슬래시 \"/\" 로 시작하는 **참조** 이름을 지정하세요. 아래 예제를 참조하세요."
 
 #: ../../shape.rst:532 1aa96eb291154994b5334cb249b357b8
 msgid ""
 "Specify a font file present on your system. In this case choose an "
 "arbitrary, but new name for this parameter (without \"/\" prefix)."
-msgstr ""
+msgstr "시스템에 있는 글꼴 파일을 지정합니다. 이 경우 이 매개변수에 대해 임의의 새 이름을 선택하세요(\"/\" 접두사 없이)."
 
 #: ../../shape.rst:534 42e52261eb524d2984f6a0c4332a2f24
 msgid ""
 "If inserted text should re-use one of the page's fonts, use its reference"
 " name appearing in :meth:`Page.get_fonts` like so:"
-msgstr ""
+msgstr "삽입된 텍스트가 페이지의 글꼴 중 하나를 재사용해야 하는 경우 :meth:`Page.get_fonts` 에 나타나는 참조 이름을 다음과 같이 사용하세요:"
 
 #: ../../shape.rst:536 17c14b3525c343518ae06671819af5b8
 msgid ""
 "Suppose the font list has the item *[1024, 0, 'Type1', 'NimbusMonL-Bold',"
 " 'R366']*, then specify *fontname = \"/R366\", fontfile = None* to use "
 "font *NimbusMonL-Bold*."
-msgstr ""
+msgstr "글꼴 목록에 항목 *[1024, 0, 'Type1', 'NimbusMonL-Bold', 'R366']* 가 있다고 가정하면, 글꼴 *NimbusMonL-Bold* 를 사용하기 위해 *fontname = \"/R366\", fontfile = None* 을 지정하세요."
 
 #: ../../shape.rst:540 30272688bae040099e4f10745899bb73
 msgid "**fontfile** (*str*)"
-msgstr ""
+msgstr "**fontfile** (*str*)"
 
 #: ../../shape.rst:542 c86a2afe0b8040a3841ecc108e5f0c2a
 msgid ""
@@ -1139,30 +1139,30 @@ msgid ""
 " new font will be embedded in the PDF upon *doc.save()*. Similar to new "
 "images, a font file will be embedded only once. A table of MD5 codes for "
 "the binary font contents is used to ensure this."
-msgstr ""
+msgstr "컴퓨터에 있는 글꼴의 파일 경로. *fontfile* 을 지정하는 경우 위 목록에 **나타나지 않는** *fontname* 을 사용해야 합니다. 이 새 글꼴은 *doc.save()* 시 PDF에 포함됩니다. 새 이미지와 유사하게 글꼴 파일은 한 번만 포함됩니다. 바이너리 글꼴 콘텐츠의 MD5 코드 테이블을 사용하여 이를 보장합니다."
 
 #: ../../shape.rst:546 de497e62ab204c48ae01fa7ac3ed1c32
 msgid "**set_simple** (*bool*)"
-msgstr ""
+msgstr "**set_simple** (*bool*)"
 
 #: ../../shape.rst:548 8620026ea526446e8ef1ca19f9760737
 msgid ""
 "Fonts installed from files are installed as **Type0** fonts by default. "
 "If you want to use 1-byte characters only, set this to true. This setting"
 " cannot be reverted. Subsequent changes are ignored."
-msgstr ""
+msgstr "파일에서 설치된 글꼴은 기본적으로 **Type0** 글꼴로 설치됩니다. 1바이트 문자만 사용하려면 이것을 true로 설정하세요. 이 설정은 되돌릴 수 없습니다. 후속 변경 사항은 무시됩니다."
 
 #: ../../shape.rst:552 3981f48a75204dc09ff6f422f689ffa4
 msgid "**fontsize** (*float*)"
-msgstr ""
+msgstr "**fontsize** (*float*)"
 
 #: ../../shape.rst:554 30ac30c13b44417bbeb1b66ed6d98114
 msgid "Font size of text, see: :data:`fontsize`."
-msgstr ""
+msgstr "텍스트의 글꼴 크기, 참조: :data:`fontsize`."
 
 #: ../../shape.rst:558 4d0dc80686d94b4c88776c39286aa523
 msgid "**dashes** (*str*)"
-msgstr ""
+msgstr "**dashes** (*str*)"
 
 #: ../../shape.rst:560 47655eea2c2e46188c15bd1c75c4117a
 msgid ""
@@ -1171,33 +1171,33 @@ msgid ""
 "(optional) is the subsequent gap length, and ``p`` (the \"phase\" - "
 "**required**, even if 0!) specifies how many pixels should be skipped "
 "before the dashing starts. If ``m`` is omitted, it defaults to ``n``."
-msgstr ""
+msgstr "선을 점선으로 그리도록 합니다. 일반 형식은 픽셀 길이를 나타내는 (최대) 3개의 float `\"[n m] p\"` 입니다. ``n`` 은 대시 길이이고, ``m`` (선택 사항)은 후속 간격 길이이며, ``p`` (\"phase\" - **필수**, 0이어도!)는 대시가 시작되기 전에 건너뛸 픽셀 수를 지정합니다. ``m`` 이 생략되면 기본값은 ``n`` 입니다."
 
 #: ../../shape.rst:562 c003ae76596a4f938a7fd5de9cb061a3
 msgid ""
 "A continuous line (no dashes) is drawn with `\"[] 0\"` or ``None`` or "
 "`\"\"`. Examples:"
-msgstr ""
+msgstr "연속 선(대시 없음)은 `\"[] 0\"` 또는 ``None`` 또는 `\"\"` 로 그려집니다. 예제:"
 
 #: ../../shape.rst:564 e6cbda6711694eb8b100b5a9792385ef
 msgid ""
 "Specifying `\"[3 4] 0\"` means dashes of 3 and gaps of 4 pixels following"
 " each other."
-msgstr ""
+msgstr "`\"[3 4] 0\"` 을 지정하면 3픽셀 대시와 4픽셀 간격이 연속으로 이어집니다."
 
 #: ../../shape.rst:565 3391c97c4550433782ec215117a6557d
 msgid "`\"[3 3] 0\"` and `\"[3] 0\"` do the same thing."
-msgstr ""
+msgstr "`\"[3 3] 0\"` 과 `\"[3] 0\"` 은 동일한 작업을 수행합니다."
 
 #: ../../shape.rst:567 f068a3fa466545ecaf2d248a20fc2739
 msgid ""
 "For (the rather complex) details on how to achieve sophisticated dashing "
 "effects, see :ref:`AdobeManual`, page 217."
-msgstr ""
+msgstr "정교한 대시 효과를 얻는 방법에 대한 (상당히 복잡한) 세부 사항은 :ref:`AdobeManual`, 217페이지를 참조하세요."
 
 #: ../../shape.rst:571 82aa9894181a4fe3b697261487bbfe7e
 msgid "**color / fill** (*list, tuple*)"
-msgstr ""
+msgstr "**color / fill** (*list, tuple*)"
 
 #: ../../shape.rst:573 3ed2643ec6df4cc28a73683cb286285e
 msgid ""
@@ -1206,7 +1206,7 @@ msgid ""
 " (CMYK). For GRAY colorspace, a single float instead of the unwieldy "
 "*(float,)* or *[float]* is also accepted. Accept (default) or use `None` "
 "to not use the parameter."
-msgstr ""
+msgstr "스트로크 및 채우기 색상은 0부터 1까지의 float 튜플 또는 리스트로 지정할 수 있습니다. 이러한 시퀀스는 길이가 1(GRAY), 3(RGB) 또는 4(CMYK)여야 합니다. GRAY 색 공간의 경우 다루기 어려운 *(float,)* 또는 *[float]* 대신 단일 float도 허용됩니다. 기본값을 수락하거나 `None` 을 사용하여 매개변수를 사용하지 않습니다."
 
 #: ../../shape.rst:575 06bd406c862d430d8527a7a38b17df9b
 msgid ""
@@ -1214,13 +1214,13 @@ msgid ""
 "may be used to get predefined RGB color triples by name. It accepts a "
 "string as the name of the color and returns the corresponding triple. The"
 " method knows over 540 color names -- see section :ref:`ColorDatabase`."
-msgstr ""
+msgstr "색상 지정을 단순화하기 위해 *pymupdf.utils* 의 메서드 *getColor()* 를 사용하여 이름으로 미리 정의된 RGB 색상 삼중항을 가져올 수 있습니다. 색상 이름으로 문자열을 받아 해당 삼중항을 반환합니다. 이 메서드는 540개 이상의 색상 이름을 알고 있습니다 -- 섹션 :ref:`ColorDatabase` 를 참조하세요."
 
 #: ../../shape.rst:577 3313c7d4006745a8b2fc466404404f63
 msgid ""
 "Please note that the term *color* usually means \"stroke\" color when "
 "used in conjunction with fill color."
-msgstr ""
+msgstr "*color* 라는 용어는 채우기 색상과 함께 사용될 때 일반적으로 \"스트로크\" 색상을 의미합니다."
 
 #: ../../shape.rst:579 0a6d8ba9500941c4bc6aa00352d41451
 msgid ""
@@ -1229,36 +1229,36 @@ msgid ""
 "`None`, then the drawing will contain no color specification. But it will"
 " still be \"stroked\", which causes PDF's default color \"black\" be used"
 " by Adobe Acrobat and all other viewers."
-msgstr ""
+msgstr "색상 매개변수의 기본값을 `None` 으로 두면 해당 색상 선택 명령이 생성되지 않습니다. *fill* 과 *color* 가 모두 `None` 이면 그리기에는 색상 사양이 포함되지 않습니다. 하지만 여전히 \"스트로크\"되며, 이로 인해 Adobe Acrobat 및 기타 모든 뷰어에서 PDF의 기본 색상 \"black\" 이 사용됩니다."
 
 #: ../../shape.rst:583 2e5246304d274dfaa37af742928af0ea
 msgid "**width** (*float*)"
-msgstr ""
+msgstr "**width** (*float*)"
 
 #: ../../shape.rst:585 77b8db9870114d7f91f971f5aaa99512
 msgid ""
 "The stroke (\"border\") width of the elements in a shape (if applicable)."
 " The default value is 1. The values width, color and fill have the "
 "following relationship / dependency:"
-msgstr ""
+msgstr "shape의 요소의 스트로크(\"테두리\") 너비(해당하는 경우). 기본값은 1입니다. width, color 및 fill 값은 다음과 같은 관계/의존성을 가집니다:"
 
 #: ../../shape.rst:587 bd3f3d47979d4ba6967fc689176d7873
 msgid ""
 "If `fill=None` shape elements will always be drawn with a border - even "
 "if `color=None` (in which case black is taken) or `width=0` (in which "
 "case 1 is taken)."
-msgstr ""
+msgstr "`fill=None` 이면 shape 요소는 항상 테두리와 함께 그려집니다 -- `color=None` (이 경우 검은색이 사용됨)이거나 `width=0` (이 경우 1이 사용됨)인 경우에도 마찬가지입니다."
 
 #: ../../shape.rst:588 50e316e85bee43f3ae23b6e8bf36459e
 msgid ""
 "Shapes without border can only be achieved if a fill color is specified "
 "(which may be white of course). To achieve this, specify `width=0`. In "
 "this case, the ``color`` parameter is ignored."
-msgstr ""
+msgstr "테두리 없는 shape는 채우기 색상이 지정된 경우에만 달성할 수 있습니다(물론 흰색일 수 있음). 이를 달성하려면 `width=0` 을 지정하세요. 이 경우 ``color`` 매개변수는 무시됩니다."
 
 #: ../../shape.rst:592 dbf0b7aa242944fd9c3dba05b0a5476c
 msgid "**stroke_opacity / fill_opacity** (*floats*)"
-msgstr ""
+msgstr "**stroke_opacity / fill_opacity** (*floats*)"
 
 #: ../../shape.rst:594 f10fd732b18e4d06882b251b866820ed
 msgid ""
@@ -1267,7 +1267,7 @@ msgid ""
 " 0.5 corresponds to 50% transparency, 0 means invisible and 1 means "
 "intransparent. For e.g. a rectangle the stroke opacity applies to its "
 "border and fill opacity to its interior."
-msgstr ""
+msgstr "두 값 모두 [0, 1] 범위의 float입니다. 음수 값 또는 값 > 1은 (대부분의 경우) 무시됩니다. 둘 다 투명도를 설정하므로 값 0.5는 50% 투명도에 해당하고, 0은 보이지 않음을 의미하며 1은 불투명을 의미합니다. 예를 들어 사각형의 경우 스트로크 불투명도는 테두리에 적용되고 채우기 불투명도는 내부에 적용됩니다."
 
 #: ../../shape.rst:596 908ef08674a94047bf811e5db7824042
 msgid ""
@@ -1276,21 +1276,21 @@ msgid ""
 "sight this seems surprising, but it becomes obvious when you look further"
 " down to `render_mode`: `fill_opacity` applies to the yellow and "
 "`stroke_opacity` applies to the blue color."
-msgstr ""
+msgstr "텍스트 삽입(:meth:`Shape.insert_text` 및 :meth:`Shape.insert_textbox`)의 경우 텍스트에 *fill_opacity* 를 사용합니다. 처음에는 놀라울 수 있지만 `render_mode` 를 보면 명확해집니다: `fill_opacity` 는 노란색에 적용되고 `stroke_opacity` 는 파란색에 적용됩니다."
 
 #: ../../shape.rst:600 807dedb850524343a44713165dc92d74
 msgid "**border_width** (*float*)"
-msgstr ""
+msgstr "**border_width** (*float*)"
 
 #: ../../shape.rst:602 7c05f5b49a074002a9a8e24fa16e09c0
 msgid ""
 "Set the border width for text insertions. New in v1.14.9. Relevant only "
 "if the render mode argument is used with a value greater zero."
-msgstr ""
+msgstr "텍스트 삽입의 테두리 너비를 설정합니다. v1.14.9의 새로운 기능. 렌더 모드 인수가 0보다 큰 값으로 사용되는 경우에만 관련됩니다."
 
 #: ../../shape.rst:606 e8f74369b5414cf39c02c7bdc84d0278
 msgid "**render_mode** (*int*)"
-msgstr ""
+msgstr "**render_mode** (*int*)"
 
 #: ../../shape.rst:608 07e11204dc2b4479bd2e65c3e33aad8d
 msgid ""
@@ -1298,13 +1298,13 @@ msgid ""
 "appearance (:meth:`Shape.insert_text` and :meth:`Shape.insert_textbox`). "
 "See page 246 in :ref:`AdobeManual`. New in v1.14.9. These methods now "
 "also differentiate between fill and stroke colors."
-msgstr ""
+msgstr "*버전 1.14.9의 새로운 기능:* 텍스트 모양을 제어하는 `range(8)` 의 정수(:meth:`Shape.insert_text` 및 :meth:`Shape.insert_textbox`). :ref:`AdobeManual` 246페이지를 참조하세요. v1.14.9의 새로운 기능. 이 메서드는 이제 채우기 색상과 스트로크 색상을 구분합니다."
 
 #: ../../shape.rst:610 69a9ed429520483291966e04bc134827
 msgid ""
 "For default 0, only the text fill color is used to paint the text. For "
 "backward compatibility, using the *color* parameter instead also works."
-msgstr ""
+msgstr "기본값 0의 경우 텍스트를 그리는 데 텍스트 채우기 색상만 사용됩니다. 하위 호환성을 위해 *color* 매개변수를 대신 사용해도 작동합니다."
 
 #: ../../shape.rst:611 92f8238398a445de9ac634455065140b
 msgid ""
@@ -1312,7 +1312,7 @@ msgid ""
 " drawn with a thickness as set in argument *border_width*. The color "
 "chosen in the *color* argument is taken for this, the *fill* parameter is"
 " ignored."
-msgstr ""
+msgstr "렌더 모드 1의 경우 각 글리프(즉, 텍스트 문자)의 테두리만 인수 *border_width* 에 설정된 두께로 그려집니다. *color* 인수에서 선택한 색상이 사용되며 *fill* 매개변수는 무시됩니다."
 
 #: ../../shape.rst:612 6dd3e1055d934657ae6fbe17f98f1b7b
 msgid ""
@@ -1320,23 +1320,23 @@ msgid ""
 "parameters and the specified border width. You can use this value to "
 "simulate **bold text** without using another font: choose the same value "
 "for *fill* and *color* and an appropriate value for *border_width*."
-msgstr ""
+msgstr "렌더 모드 2의 경우 글리프가 채워지고 스트로크되며, 두 색상 매개변수와 지정된 테두리 너비를 사용합니다. 다른 글꼴을 사용하지 않고 **굵은 텍스트**를 시뮬레이션하려면 이 값을 사용할 수 있습니다: *fill* 과 *color* 에 동일한 값을 선택하고 *border_width* 에 적절한 값을 선택하세요."
 
 #: ../../shape.rst:613 44ab50cc9488478cbafcd5e8d9859763
 msgid ""
 "For render mode 3, the glyphs are neither stroked nor filled: the text "
 "becomes invisible."
-msgstr ""
+msgstr "렌더 모드 3의 경우 글리프가 스트로크되지도 채워지지도 않습니다: 텍스트가 보이지 않게 됩니다."
 
 #: ../../shape.rst:615 e59e76826913438ea50a2cc075ab7cd2
 msgid ""
 "The following examples use border_width=0.3, together with a fontsize of "
 "15. Stroke color is blue and fill color is some yellow."
-msgstr ""
+msgstr "다음 예제는 border_width=0.3과 함께 fontsize 15를 사용합니다. 스트로크 색상은 파란색이고 채우기 색상은 노란색입니다."
 
 #: ../../shape.rst:621 082047ee68a54ee3ae920d7817052247
 msgid "**miter_limit** (*float*)"
-msgstr ""
+msgstr "**miter_limit** (*float*)"
 
 #: ../../shape.rst:623 5df811fb349949d38e4160fbc8097077
 msgid ""
@@ -1344,7 +1344,7 @@ msgid ""
 "length / line-width` (\"miter quotient\"). Used in text output methods. "
 "This is only relevant for non-zero render mode values -- then, characters"
 " are written with border lines (i.e. \"stroked\")."
-msgstr ""
+msgstr "몫 `miter-length / line-width` (\"miter quotient\")의 최대 허용 값을 지정하는 float. 텍스트 출력 메서드에서 사용됩니다. 이것은 0이 아닌 렌더 모드 값에만 관련됩니다 -- 그런 경우 문자는 테두리 선(즉, \"스트로크\")으로 작성됩니다."
 
 #: ../../shape.rst:625 fcdf5a0b4b05400fabcc68e71bbfe4a3
 msgid ""
@@ -1352,46 +1352,46 @@ msgid ""
 "the line width is large enough, then \"spikes\" may become visible -- "
 "causing an ugly appearance as shown below. For more background, see page "
 "126 of the :ref:`AdobeManual`."
-msgstr ""
+msgstr "일부 문자를 스트로크하는 두 선이 날카로운 (<= 90°) 각도로 만나고 선 너비가 충분히 크면 \"스파이크\"가 보일 수 있습니다 -- 아래와 같이 보기 흉한 모양을 만듭니다. 더 자세한 내용은 :ref:`AdobeManual` 126페이지를 참조하세요."
 
 #: ../../shape.rst:627 61ef12d76d4c44a5971fbe5f377e42cd
 msgid ""
 "For instance, when joins meet at 90°, then the miter length is ``sqrt(2) "
 "* line-width``, so the miter quotient is ``sqrt(2)``."
-msgstr ""
+msgstr "예를 들어, 조인이 90°에서 만나면 miter 길이는 ``sqrt(2) * line-width`` 이므로 miter 몫은 ``sqrt(2)`` 입니다."
 
 #: ../../shape.rst:629 6e57edd425af46cab1f0544ea9fb09d6
 msgid ""
 "If ``miter_limit`` is exceeded, then all joins with a larger qotient will"
 " appear as beveled (\"butt\" appearance)."
-msgstr ""
+msgstr "``miter_limit`` 이 초과되면 더 큰 몫을 가진 모든 조인이 베벨 처리된 것처럼(\"butt\" 모양) 나타납니다."
 
 #: ../../shape.rst:631 1b9c88426fad4881993b42f8df4e29ba
 msgid ""
 "The default value 1 (and any smaller value) will ensure that all joins "
 "are rendered as a butt. A value of ``None`` will use the PDF default "
 "value."
-msgstr ""
+msgstr "기본값 1(및 더 작은 값)은 모든 조인이 butt로 렌더링되도록 보장합니다. ``None`` 값은 PDF 기본값을 사용합니다."
 
 #: ../../shape.rst:633 6c5240d22b91424eb8a99f3f6cdd9e61
 msgid "Example text showing spikes (``miter_limit=None``):"
-msgstr ""
+msgstr "스파이크를 보여주는 예제 텍스트 (``miter_limit=None``):"
 
 #: ../../shape.rst:637 22b2f2ab87704749865bf8654f86f486
 msgid "Example text suppressing spikes (``miter_limit=1``):"
-msgstr ""
+msgstr "스파이크를 억제하는 예제 텍스트 (``miter_limit=1``):"
 
 #: ../../shape.rst:643 ef72de748a3241f494828889b778a5c3
 msgid "**overlay** (*bool*)"
-msgstr ""
+msgstr "**overlay** (*bool*)"
 
 #: ../../shape.rst:645 1a50148614e94b0f9e09a72b981ba540
 msgid "Causes the item to appear in foreground (default) or background."
-msgstr ""
+msgstr "항목이 전경(기본값) 또는 배경에 나타나도록 합니다."
 
 #: ../../shape.rst:649 f9c30f5c9a0245e5acbf5d0126b40609
 msgid "**morph** (*sequence*)"
-msgstr ""
+msgstr "**morph** (*sequence*)"
 
 #: ../../shape.rst:651 5029b952e1be402ea4aea727b6c5334a
 msgid ""
@@ -1405,7 +1405,7 @@ msgid ""
 "*fixpoint* is its center. Similarly, if *matrix* is a left-right or up-"
 "down flip, then the mirroring axis will be the vertical, respectively "
 "horizontal line going through *fixpoint*, etc."
-msgstr ""
+msgstr "*draw*()* 메서드로 생성된 shape 또는 페이지 메서드 *insert_textbox()* / *insert_text()* 로 삽입된 텍스트의 \"변형\"을 일으킵니다. ``None`` 이 아니면 *(fixpoint, matrix)* 쌍이어야 하며, 여기서 *fixpoint* 는 :ref:`Point` 이고 *matrix* 는 :ref:`Matrix` 입니다. 행렬은 이동을 제외한 모든 것이 될 수 있습니다. 즉, *matrix.e == matrix.f == 0* 이 참이어야 합니다. 점은 행렬 작업의 고정점으로 사용됩니다. 예를 들어, *matrix* 가 회전 또는 확대/축소이면 *fixpoint* 는 중심입니다. 마찬가지로, *matrix* 가 좌우 또는 상하 뒤집기이면 미러링 축은 각각 *fixpoint* 를 통과하는 수직 또는 수평선이 됩니다."
 
 #: ../../shape.rst:653 b02e3c71c8f64fc68a15b90bf3c129ea
 msgid ""
@@ -1414,11 +1414,11 @@ msgid ""
 ":meth:`Shape.draw_rect`). For the result of a morphing operation there is"
 " however no such guaranty: this is entirely the programmer's "
 "responsibility."
-msgstr ""
+msgstr "여러 메서드는 삽입될 항목이 실제로 페이지에 맞는지 확인합니다(:meth:`Shape.insert_text` 또는 :meth:`Shape.draw_rect` 등). 하지만 변형 작업의 결과에 대해서는 그러한 보장이 없습니다: 이것은 전적으로 프로그래머의 책임입니다."
 
 #: ../../shape.rst:657 62281c77ca8f47188d63f20f3712a5b0
 msgid "**lineCap (deprecated: \"roundCap\")** (*int*)"
-msgstr ""
+msgstr "**lineCap (더 이상 사용되지 않음: \"roundCap\")** (*int*)"
 
 #: ../../shape.rst:659 cd5b630baa744b1189ae847e6e8286fd
 msgid ""
@@ -1427,34 +1427,34 @@ msgid ""
 "circle to the ends, whose center is the end point and whose diameter is "
 "the line width. Value 2 adds a semi-square with an edge length of line "
 "width and a center of the line end."
-msgstr ""
+msgstr "선 끝의 모양을 제어합니다. 기본값 0은 각 선이 날카로운 가장자리에서 정확히 주어진 좌표에서 끝나도록 합니다. 값 1은 끝에 반원을 추가하며, 중심은 끝점이고 지름은 선 너비입니다. 값 2는 선 너비의 가장자리 길이와 선 끝의 중심을 가진 반사각형을 추가합니다."
 
 #: ../../shape.rst:661 6026a44a326145afa3e7a6f376a1bbf6
 msgid "*Changed in version 1.14.15*"
-msgstr ""
+msgstr "*버전 1.14.15에서 변경됨*"
 
 #: ../../shape.rst:665 2e6dced4dc3b49d0bfc6d15aba362eba
 msgid "**lineJoin** (*int*)"
-msgstr ""
+msgstr "**lineJoin** (*int*)"
 
 #: ../../shape.rst:667 66fbb0a47a7648efa567adac178985a1
 msgid ""
 "*New in version 1.14.15:* Controls the way how line connections look "
 "like. This may be either as a sharp edge (0), a rounded join (1), or a "
 "cut-off edge (2, \"butt\")."
-msgstr ""
+msgstr "*버전 1.14.15의 새로운 기능:* 선 연결의 모양을 제어합니다. 이것은 날카로운 가장자리(0), 둥근 조인(1) 또는 잘린 가장자리(2, \"butt\")일 수 있습니다."
 
 #: ../../shape.rst:671 82bab1c6af0a4d169a36b68529a2ab41
 msgid "**closePath** (*bool*)"
-msgstr ""
+msgstr "**closePath** (*bool*)"
 
 #: ../../shape.rst:673 991347c321464275b6f78b81a2f89e09
 msgid ""
 "Causes the end point of a drawing to be automatically connected with the "
 "starting point (by a straight line)."
-msgstr ""
+msgstr "그리기의 끝점을 시작점과 자동으로 연결합니다(직선으로)."
 
 #: ../../footer.rst:46 703f5e6cdc364cd898823615d897ea50
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 

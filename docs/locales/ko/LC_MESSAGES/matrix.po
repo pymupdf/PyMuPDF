@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 22b6a2a0571c4176bce077c545c814b3
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 73c9619ac3ee44d084a65d56842dc380
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 84065a34a4a14808906180f02e2efea2
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../matrix.rst:7 8a040befeffb44ac97583a22b00537bb
 msgid "Matrix"
-msgstr ""
+msgstr "Matrix"
 
 #: ../../matrix.rst:9 8eb69980d89943bb8e94c77820ab6263
 msgid ""
@@ -47,7 +47,7 @@ msgid ""
 "of a page in a variety of ways: (parts of) the page can be rotated, "
 "zoomed, flipped, sheared and shifted by setting some or all of just six "
 "float values."
-msgstr ""
+msgstr "Matrix는 MuPDF의 이미지 변환에 사용되는 행 우선 3x3 행렬입니다(:ref:`AdobeManual` 에 명시된 해당 개념을 준수). 행렬을 사용하면 페이지의 렌더링된 이미지를 다양한 방식으로 조작할 수 있습니다: 단 6개의 float 값 중 일부 또는 전체를 설정하여 페이지(의 일부)를 회전, 확대/축소, 뒤집기, 기울이기 및 이동할 수 있습니다."
 
 #: ../../matrix.rst:12 99311bf26c5b4fd5b0df9afed1d8ff5a
 msgid ""
@@ -56,17 +56,17 @@ msgid ""
 "six elements are used for manipulations. These six elements are usually "
 "represented by `[a, b, c, d, e, f]`. Here is how they are positioned in "
 "the matrix:"
-msgstr ""
+msgstr "모든 점 또는 픽셀이 2차원 공간에 있으므로 해당 행렬의 한 열 벡터는 상수 단위 벡터이며, 나머지 6개 요소만 조작에 사용됩니다. 이 6개 요소는 일반적으로 `[a, b, c, d, e, f]` 로 표시됩니다. 행렬에서의 위치는 다음과 같습니다:"
 
 #: ../../matrix.rst:17 981036c6e6c24d00adc24601b311399b
 msgid "Please note:"
-msgstr ""
+msgstr "참고:"
 
 #: ../../matrix.rst:19 f1ae75aa82ce4a989a3afb538b648bd5
 msgid ""
 "the below methods are just convenience functions -- everything they do, "
 "can also be achieved by directly manipulating the six numerical values"
-msgstr ""
+msgstr "아래 메서드는 편의 함수일 뿐입니다 -- 수행하는 모든 작업은 6개의 숫자 값을 직접 조작하여도 달성할 수 있습니다"
 
 #: ../../matrix.rst:20 26c41674818040ab9d706c72f62e5b31
 msgid ""
@@ -74,251 +74,251 @@ msgid ""
 "rotates **and** shears **and** scales **and** shifts, etc. in one go. If "
 "you however choose to do this, do have a look at the **remarks** further "
 "down or at the :ref:`AdobeManual`."
-msgstr ""
+msgstr "모든 조작을 결합할 수 있습니다 -- 한 번에 회전 **및** 기울이기 **및** 확대/축소 **및** 이동 등을 수행하는 행렬을 구성할 수 있습니다. 하지만 이렇게 하려면 아래의 **참고 사항** 또는 :ref:`AdobeManual` 을 참조하세요."
 
 #: ../../matrix.rst:23 afd4ea95b6d34a6e914cc64e20f4259b
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../matrix.rst:23 c34d2903bcee45ddb3cc5e621baefea0
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../matrix.rst:25 11abdcd6cd234d4fa95850fe12580df9
 msgid ":meth:`Matrix.prerotate`"
-msgstr ""
+msgstr ":meth:`Matrix.prerotate`"
 
 #: ../../matrix.rst:25 80427e602a66422cac1da53c44af455f
 msgid "perform a rotation"
-msgstr ""
+msgstr "회전 수행"
 
 #: ../../matrix.rst:26 cad3e578828b433ba7ba0051be2032bf
 msgid ":meth:`Matrix.prescale`"
-msgstr ""
+msgstr ":meth:`Matrix.prescale`"
 
 #: ../../matrix.rst:26 a7e0bd6a201641fb912613e9f27fd76f
 msgid "perform a scaling"
-msgstr ""
+msgstr "확대/축소 수행"
 
 #: ../../matrix.rst:27 50c7f90d06004c62b19c6bff1b5a0ee9
 msgid ":meth:`Matrix.preshear`"
-msgstr ""
+msgstr ":meth:`Matrix.preshear`"
 
 #: ../../matrix.rst:27 10745ab48ff842fa86f0dba65a8ac4c9
 msgid "perform a shearing (skewing)"
-msgstr ""
+msgstr "기울이기(왜곡) 수행"
 
 #: ../../matrix.rst:28 b4c7cc3f2aff4f929fd556b21396c232
 msgid ":meth:`Matrix.pretranslate`"
-msgstr ""
+msgstr ":meth:`Matrix.pretranslate`"
 
 #: ../../matrix.rst:28 cefba85880554c02abc66d69a6a32faf
 msgid "perform a translation (shifting)"
-msgstr ""
+msgstr "이동(시프트) 수행"
 
 #: ../../matrix.rst:29 b3b9abc777594cf8b33d5290836afe88
 msgid ":meth:`Matrix.concat`"
-msgstr ""
+msgstr ":meth:`Matrix.concat`"
 
 #: ../../matrix.rst:29 fe1f3aa66e6042309e54265e9b99b18d
 msgid "perform a matrix multiplication"
-msgstr ""
+msgstr "행렬 곱셈 수행"
 
 #: ../../matrix.rst:30 fb89b2f56f6247ac8fc9b88f34f7e6c1
 msgid ":meth:`Matrix.invert`"
-msgstr ""
+msgstr ":meth:`Matrix.invert`"
 
 #: ../../matrix.rst:30 4dab7517ebb647c78b179fbe83285a9f
 msgid "calculate the inverted matrix"
-msgstr ""
+msgstr "역행렬 계산"
 
 #: ../../matrix.rst:31 3f0c29fd96594bd7824f5d9ab40c0fd7
 msgid ":meth:`Matrix.norm`"
-msgstr ""
+msgstr ":meth:`Matrix.norm`"
 
 #: ../../matrix.rst:31 bee6a79c30594e5a9982c37569a07722
 msgid "the Euclidean norm"
-msgstr ""
+msgstr "유클리드 노름"
 
 #: ../../matrix.rst:32 b0e601bc11b94c5b978faf3969d20262
 msgid ":attr:`Matrix.a`"
-msgstr ""
+msgstr ":attr:`Matrix.a`"
 
 #: ../../matrix.rst:32 7bd503f42cb2438da182834d71fb2dd4
 msgid "zoom factor X direction"
-msgstr ""
+msgstr "X 방향 확대/축소 계수"
 
 #: ../../matrix.rst:33 b20b6e26dcf04b37bf9d3226d6b7720f
 msgid ":attr:`Matrix.b`"
-msgstr ""
+msgstr ":attr:`Matrix.b`"
 
 #: ../../matrix.rst:33 dc49e0f4424c40eaa3c9b116b0a0d20f
 msgid "shearing effect Y direction"
-msgstr ""
+msgstr "Y 방향 기울이기 효과"
 
 #: ../../matrix.rst:34 d2e19dfdd9104ec19d44f40c663bcc03
 msgid ":attr:`Matrix.c`"
-msgstr ""
+msgstr ":attr:`Matrix.c`"
 
 #: ../../matrix.rst:34 0a2f7dcd0de34db7a4c69a001674c37a
 msgid "shearing effect X direction"
-msgstr ""
+msgstr "X 방향 기울이기 효과"
 
 #: ../../matrix.rst:35 c72a8985cba049b487c8ffebefcf9d99
 msgid ":attr:`Matrix.d`"
-msgstr ""
+msgstr ":attr:`Matrix.d`"
 
 #: ../../matrix.rst:35 c1fe0a57201a4eb6ad2a830ae1b17b15
 msgid "zoom factor Y direction"
-msgstr ""
+msgstr "Y 방향 확대/축소 계수"
 
 #: ../../matrix.rst:36 e471bd7cfd92424ab1e5f3e5059d4be9
 msgid ":attr:`Matrix.e`"
-msgstr ""
+msgstr ":attr:`Matrix.e`"
 
 #: ../../matrix.rst:36 d19ab3110ade4ac3b17c845a8c80fb37
 msgid "horizontal shift"
-msgstr ""
+msgstr "수평 이동"
 
 #: ../../matrix.rst:37 4a6eb68a255c4608873196c13298d411
 msgid ":attr:`Matrix.f`"
-msgstr ""
+msgstr ":attr:`Matrix.f`"
 
 #: ../../matrix.rst:37 0f0db520282844e9869b27e82d6fba11
 msgid "vertical shift"
-msgstr ""
+msgstr "수직 이동"
 
 #: ../../matrix.rst:38 e75c12f64eee44059ea4b0762741fdb1
 msgid ":attr:`Matrix.is_rectilinear`"
-msgstr ""
+msgstr ":attr:`Matrix.is_rectilinear`"
 
 #: ../../matrix.rst:38 bc57693d7a8c445eb2a7717732d081b9
 msgid "true if rect corners will remain rect corners"
-msgstr ""
+msgstr "사각형 모서리가 사각형 모서리로 유지되면 true"
 
 #: ../../matrix.rst:41 01aaa6a5cece41dd86f5e6c6f0d08b42
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../matrix.rst:59 56627216de1442368ffe90a40bd40b5a
 msgid "Overloaded constructors."
-msgstr ""
+msgstr "오버로드된 생성자."
 
 #: ../../matrix.rst:61 ab9ade436b794d9cb70e8ec07c59573e
 msgid ""
 "Without parameters, the zero matrix *Matrix(0.0, 0.0, 0.0, 0.0, 0.0, "
 "0.0)* will be created."
-msgstr ""
+msgstr "매개변수 없이 영 행렬 *Matrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)* 이 생성됩니다."
 
 #: ../../matrix.rst:63 0ff005031e87475e82c82f509a503432
 msgid ""
 "*zoom-** and *shear-** specify zoom or shear values (float) and create a "
 "zoom or shear matrix, respectively."
-msgstr ""
+msgstr "*zoom-** 및 *shear-**는 확대/축소 또는 기울이기 값(float)을 지정하고 각각 확대/축소 또는 기울이기 행렬을 생성합니다."
 
 #: ../../matrix.rst:65 3772827e3c4e46efaa66e0541654fbde
 msgid "For \"matrix\" a **new copy** of another matrix will be made."
-msgstr ""
+msgstr "\"matrix\"의 경우 다른 행렬의 **새 복사본** 이 만들어집니다."
 
 #: ../../matrix.rst:67 e0de220e569d4fb192d61776da7cc98d
 msgid ""
 "Float value \"degree\" specifies the creation of a rotation matrix which "
 "rotates anti-clockwise."
-msgstr ""
+msgstr "Float 값 \"degree\"는 반시계 방향으로 회전하는 회전 행렬의 생성을 지정합니다."
 
 #: ../../matrix.rst:69 202fbb08a1534f9b873b978d1ee2f25e
 msgid ""
 "A \"sequence\" must be any Python sequence object with exactly 6 float "
 "entries (see :ref:`SequenceTypes`)."
-msgstr ""
+msgstr "\"sequence\"는 정확히 6개의 float 항목을 가진 모든 Python 시퀀스 객체여야 합니다(:ref:`SequenceTypes` 참조)."
 
 #: ../../matrix.rst:71 3290c36cfd044349b8b73b9a12b39105
 msgid ""
 "*pymupdf.Matrix(1, 1)* and *pymupdf.Matrix(pymupdf.Identity)* create "
 "modifiable versions of the :ref:`Identity` matrix, which looks like *[1, "
 "0, 0, 1, 0, 0]*."
-msgstr ""
+msgstr "*pymupdf.Matrix(1, 1)* 및 *pymupdf.Matrix(pymupdf.Identity)* 는 *[1, 0, 0, 1, 0, 0]* 처럼 보이는 :ref:`Identity` 행렬의 수정 가능한 버전을 생성합니다."
 
 #: ../../matrix.rst:75 2d27925e056c4beab39284c17c097dc8
 msgid "New in version 1.16.0"
-msgstr ""
+msgstr "버전 1.16.0에서 새로 추가됨"
 
 #: ../../matrix.rst:77 23099b3eeb904d19a2fca93ba4ff4ac2
 msgid "Return the Euclidean norm of the matrix as a vector."
-msgstr ""
+msgstr "행렬의 유클리드 노름을 벡터로 반환합니다."
 
 #: ../../matrix.rst:81 cf82a48349524343a3a9fb35951b2482
 msgid ""
 "Modify the matrix to perform a counter-clockwise rotation for positive "
 "*deg* degrees, else clockwise. The matrix elements of an identity matrix "
 "will change in the following way:"
-msgstr ""
+msgstr "행렬을 수정하여 양수 *deg* 도에 대해 반시계 방향 회전을 수행하고, 그렇지 않으면 시계 방향으로 회전합니다. 항등 행렬의 행렬 요소는 다음과 같이 변경됩니다:"
 
 #: ../../matrix.rst:83 a024346df65d49e7bcdef1a35d0f0ea9
 msgid "*[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]*."
-msgstr ""
+msgstr "*[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]*."
 
 #: ../../matrix.rst 0e2caa4b969d4e8c883315663dfbb010
 #: 2a76f7fdef494d7cb96fb9bcb0b288a0 44ed05851fab4cd4b3017cd0b82bc4f4
 #: 797389fbee9c42f6a11d44d628804863 c8b2675c06ee43c4abcd46c105be0f19
 #: e6e50d5d62724013ba993ce51b6e65a8
 msgid "Parameters"
-msgstr ""
+msgstr "매개변수"
 
 #: ../../matrix.rst:85 34bf9b5e70b9486285ffd6799c5556ca
 msgid ""
 "The rotation angle in degrees (use conventional notation based on Pi = "
 "180 degrees)."
-msgstr ""
+msgstr "도 단위의 회전 각도(Pi = 180도를 기준으로 한 일반 표기법 사용)."
 
 #: ../../matrix.rst:89 94eb659613c24f939142b8fc6dd19ab4
 msgid ""
 "Modify the matrix to scale by the zoom factors sx and sy. Has effects on "
 "attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [a*sx, b*sx, c*sy, "
 "d*sy, e, f]*."
-msgstr ""
+msgstr "행렬을 수정하여 확대/축소 계수 sx 및 sy로 스케일링합니다. 속성 *a* 부터 *d* 에만 영향을 줍니다: *[a, b, c, d, e, f] -> [a*sx, b*sx, c*sy, d*sy, e, f]*."
 
 #: ../../matrix.rst:91 72c725939ccb4e8b90b12926ae88abec
 msgid ""
 "Zoom factor in X direction. For the effect see description of attribute "
 "*a*."
-msgstr ""
+msgstr "X 방향의 확대/축소 계수. 효과는 속성 *a* 의 설명을 참조하세요."
 
 #: ../../matrix.rst:93 2ef911aad48643e18db6f643f2613c9a
 msgid ""
 "Zoom factor in Y direction. For the effect see description of attribute "
 "*d*."
-msgstr ""
+msgstr "Y 방향의 확대/축소 계수. 효과는 속성 *d* 의 설명을 참조하세요."
 
 #: ../../matrix.rst:97 a47d6e8530894f2aac1846c0416c7f14
 msgid ""
 "Modify the matrix to perform a shearing, i.e. transformation of "
 "rectangles into parallelograms (rhomboids). Has effects on attributes *a*"
 " thru *d* only: *[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]*."
-msgstr ""
+msgstr "행렬을 수정하여 기울이기를 수행합니다. 즉, 사각형을 평행사변형(마름모)으로 변환합니다. 속성 *a* 부터 *d* 에만 영향을 줍니다: *[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]*."
 
 #: ../../matrix.rst:99 7af0396c77db4280bd8b6ef9764cab2d
 msgid "Shearing effect in X direction. See attribute *c*."
-msgstr ""
+msgstr "X 방향의 기울이기 효과. 속성 *c* 를 참조하세요."
 
 #: ../../matrix.rst:101 5a8d7d2b58c348f0bf481d54d9ff5b01
 msgid "Shearing effect in Y direction. See attribute *b*."
-msgstr ""
+msgstr "Y 방향의 기울이기 효과. 속성 *b* 를 참조하세요."
 
 #: ../../matrix.rst:105 152c5f45800e42b6a038fee68ba116d4
 msgid ""
 "Modify the matrix to perform a shifting / translation operation along the"
 " x and / or y axis. Has effects on attributes *e* and *f* only: *[a, b, "
 "c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]*."
-msgstr ""
+msgstr "행렬을 수정하여 x 및/또는 y 축을 따라 이동/변환 작업을 수행합니다. 속성 *e* 및 *f* 에만 영향을 줍니다: *[a, b, c, d, e, f] -> [a, b, c, d, tx*a + ty*c, tx*b + ty*d]*."
 
 #: ../../matrix.rst:107 8b15e98fb7734d2fb7d3a90c734616fd
 msgid "Translation effect in X direction. See attribute *e*."
-msgstr ""
+msgstr "X 방향의 이동 효과. 속성 *e* 를 참조하세요."
 
 #: ../../matrix.rst:109 1ac03cdeaadf47039b40d141265dad51
 msgid "Translation effect in Y direction. See attribute *f*."
-msgstr ""
+msgstr "Y 방향의 이동 효과. 속성 *f* 를 참조하세요."
 
 #: ../../matrix.rst:113 a7232949340949e6bee6b5a75b157849
 msgid ""
@@ -326,15 +326,15 @@ msgid ""
 "current matrix. Any of *m1* or *m2* may be the current matrix. Be aware "
 "that matrix multiplication is not commutative. So the sequence of *m1*, "
 "*m2* is important."
-msgstr ""
+msgstr "행렬 곱 *m1 * m2* 를 계산하고 결과를 현재 행렬에 저장합니다. *m1* 또는 *m2* 중 하나가 현재 행렬일 수 있습니다. 행렬 곱셈은 가환적이지 않습니다. 따라서 *m1*, *m2* 의 순서가 중요합니다."
 
 #: ../../matrix.rst:115 c868c7bce6e24c17aefb279a2b589bad
 msgid "First (left) matrix."
-msgstr ""
+msgstr "첫 번째(왼쪽) 행렬."
 
 #: ../../matrix.rst:118 6a23a720cc824c018154df578fbe2287
 msgid "Second (right) matrix."
-msgstr ""
+msgstr "두 번째(오른쪽) 행렬."
 
 #: ../../matrix.rst:123 c1c62753df994db5a29eaf60b74d5311
 msgid ""
@@ -342,29 +342,29 @@ msgid ""
 "matrix. Returns *1* if *m* is not invertible (\"degenerate\"). In this "
 "case the current matrix **will not change**. Returns *0* if *m* is "
 "invertible, and the current matrix is replaced with the inverted *m*."
-msgstr ""
+msgstr "*m* 의 역행렬을 계산하고 결과를 현재 행렬에 저장합니다. *m* 이 역행렬이 없으면(\"degenerate\") *1* 을 반환합니다. 이 경우 현재 행렬은 **변경되지 않습니다**. *m* 이 역행렬이 있으면 *0* 을 반환하고 현재 행렬은 역행렬 *m* 으로 대체됩니다."
 
 #: ../../matrix.rst:125 6f3f8c966b71407b9e3b02488f7f4034
 msgid "Matrix to be inverted. If not provided, the current matrix will be used."
-msgstr ""
+msgstr "역행렬을 계산할 행렬. 제공되지 않으면 현재 행렬이 사용됩니다."
 
 #: ../../matrix.rst e8077cac107d4551bdd9b1c1d14a4952
 msgid "Return type"
-msgstr ""
+msgstr "반환 유형"
 
 #: ../../matrix.rst:132 db229e59a31b455b98ea5ccfa578122a
 msgid ""
 "Scaling in X-direction **(width)**. For example, a value of 0.5 performs "
 "a shrink of the **width** by a factor of 2. If a < 0, a left-right flip "
 "will (additionally) occur."
-msgstr ""
+msgstr "X 방향 **(너비)** 스케일링. 예를 들어, 0.5 값은 **너비** 를 2배로 축소합니다. a < 0이면 좌우 뒤집기가 (추가로) 발생합니다."
 
 #: ../../matrix.rst 6fcedf91827d4c289e6a645364d76ea6
 #: 8654b40d08014804b0c0e8c304580291 96cbe6754a4b4f99bb7e0e80e180c0a6
 #: afc20c369a9f4c739bc1f16197754859 c2c0c17a6a334d9daf1a246b0a95ca15
 #: fab66c3105f3412b8e17b401ecfe57ab fceb1d67502e44b49baa260b088dd68f
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../matrix.rst:134 ../../matrix.rst:140 ../../matrix.rst:146
 #: ../../matrix.rst:152 ../../matrix.rst:158 ../../matrix.rst:164
@@ -372,38 +372,38 @@ msgstr ""
 #: 5804209069a04b28ae858ceb0466f4d1 5b5b333b8cb346858ac4e11335709c2a
 #: 789de033d5c0443997dabc1c08157dbc 867fd680a9e9402583480286d03e27ca
 msgid "float"
-msgstr ""
+msgstr "float"
 
 #: ../../matrix.rst:138 c229f8ba4d804490b761e624fe313b6d
 msgid ""
 "Causes a shearing effect: each `Point(x, y)` will become `Point(x, y - "
 "b*x)`. Therefore, horizontal lines will be \"tilt\"."
-msgstr ""
+msgstr "기울이기 효과를 발생시킵니다: 각 `Point(x, y)` 는 `Point(x, y - b*x)` 가 됩니다. 따라서 수평선이 \"기울어집니다\"."
 
 #: ../../matrix.rst:144 7b98255d69974126bcf901feb1b268f6
 msgid ""
 "Causes a shearing effect: each `Point(x, y)` will become `Point(x - c*y, "
 "y)`. Therefore, vertical lines will be \"tilt\"."
-msgstr ""
+msgstr "기울이기 효과를 발생시킵니다: 각 `Point(x, y)` 는 `Point(x - c*y, y)` 가 됩니다. 따라서 수직선이 \"기울어집니다\"."
 
 #: ../../matrix.rst:150 ac4f38489ad847b7827dcac0e26521a5
 msgid ""
 "Scaling in Y-direction **(height)**. For example, a value of 1.5 performs"
 " a stretch of the **height** by 50%. If d < 0, an up-down flip will "
 "(additionally) occur."
-msgstr ""
+msgstr "Y 방향 **(높이)** 스케일링. 예를 들어, 1.5 값은 **높이** 를 50% 늘립니다. d < 0이면 상하 뒤집기가 (추가로) 발생합니다."
 
 #: ../../matrix.rst:156 9660c53c0df84ae99b72badb3989dddf
 msgid ""
 "Causes a horizontal shift effect: Each *Point(x, y)* will become *Point(x"
 " + e, y)*. Positive (negative) values of *e* will shift right (left)."
-msgstr ""
+msgstr "수평 이동 효과를 발생시킵니다: 각 *Point(x, y)* 는 *Point(x + e, y)* 가 됩니다. *e* 의 양수(음수) 값은 오른쪽(왼쪽)으로 이동합니다."
 
 #: ../../matrix.rst:162 96c71528239744f1b8cd967c2e46cb62
 msgid ""
 "Causes a vertical shift effect: Each *Point(x, y)* will become *Point(x, "
 "y - f)*. Positive (negative) values of *f* will shift down (up)."
-msgstr ""
+msgstr "수직 이동 효과를 발생시킵니다: 각 *Point(x, y)* 는 *Point(x, y - f)* 가 됩니다. *f* 의 양수(음수) 값은 아래(위)로 이동합니다."
 
 #: ../../matrix.rst:168 fbbefd1680244e43b84002ed9a436dec
 msgid ""
@@ -411,86 +411,86 @@ msgid ""
 "integer multiples of 90 degrees. Usually this is used to confirm that "
 "(axis-aligned) rectangles before the transformation are still axis-"
 "aligned rectangles afterwards."
-msgstr ""
+msgstr "직선형은 기울이기가 없고 모든 회전이 90도의 정수 배수임을 의미합니다. 일반적으로 이것은 변환 전의 (축 정렬) 사각형이 변환 후에도 여전히 축 정렬 사각형임을 확인하는 데 사용됩니다."
 
 #: ../../matrix.rst:170 36d4d94103214600af41eafe39212e90
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../matrix.rst:174 90ffe958045f48d090dba5ba44f73165
 msgid ""
 "This class adheres to the Python sequence protocol, so components can be "
 "accessed via their index, too. Also refer to :ref:`SequenceTypes`."
-msgstr ""
+msgstr "이 클래스는 Python 시퀀스 프로토콜을 따르므로 구성 요소는 인덱스를 통해 액세스할 수도 있습니다. :ref:`SequenceTypes` 도 참조하세요."
 
 #: ../../matrix.rst:175 ae28f509b9434158ad3509b43fcadd26
 msgid ""
 "Matrices can be used with arithmetic operators almost like ordinary "
 "numbers: they can be added, subtracted, multiplied or divided -- see "
 "chapter :ref:`Algebra`."
-msgstr ""
+msgstr "행렬은 일반 숫자처럼 산술 연산자와 함께 사용할 수 있습니다: 더하기, 빼기, 곱하기 또는 나누기를 할 수 있습니다 -- :ref:`Algebra` 장을 참조하세요."
 
 #: ../../matrix.rst:176 8bec4a086d304bbb9bfd022e4556dd29
 msgid ""
 "Matrix multiplication is **not commutative** -- changing the sequence of "
 "the multiplicands will change the result in general. So it can quickly "
 "become unclear which result a transformation will yield."
-msgstr ""
+msgstr "행렬 곱셈은 **가환적이지 않습니다** -- 곱하는 순서를 변경하면 일반적으로 결과가 변경됩니다. 따라서 변환이 어떤 결과를 산출할지 빠르게 불명확해질 수 있습니다."
 
 #: ../../matrix.rst:180 281fd31e543c4617a40894e7ac37597e
 msgid "Examples"
-msgstr ""
+msgstr "예제"
 
 #: ../../matrix.rst:181 401084daabc9429b9009d38c9e0f2aec
 msgid ""
 "Here are examples that illustrate some of the achievable effects. All "
 "pictures show some text, inserted under control of some matrix and "
 "relative to a fixed reference point (the red dot)."
-msgstr ""
+msgstr "달성 가능한 효과 중 일부를 보여주는 예제입니다. 모든 그림은 일부 행렬의 제어 하에 삽입되고 고정된 참조점(빨간 점)을 기준으로 하는 일부 텍스트를 보여줍니다."
 
 #: ../../matrix.rst:183 ef95f7140bc84ceb80f3fe9cc5ffe0d2
 msgid "The :ref:`Identity` matrix performs no operation."
-msgstr ""
+msgstr ":ref:`Identity` 행렬은 작업을 수행하지 않습니다."
 
 #: ../../matrix.rst:188 a80fc2a091374e8cb6815dfe8672bddd
 msgid ""
 "The scaling matrix `Matrix(2, 0.5)` stretches by a factor of 2 in "
 "horizontal, and shrinks by factor 0.5 in vertical direction."
-msgstr ""
+msgstr "스케일링 행렬 `Matrix(2, 0.5)` 는 수평으로 2배 늘리고 수직으로 0.5배 축소합니다."
 
 #: ../../matrix.rst:193 9699134c66a146af9068adb90948b8f2
 msgid ""
 "Attributes :attr:`Matrix.e` and :attr:`Matrix.f` shift horizontally and, "
 "respectively vertically. In the following 10 to the right and 20 down."
-msgstr ""
+msgstr "속성 :attr:`Matrix.e` 및 :attr:`Matrix.f` 는 각각 수평 및 수직으로 이동합니다. 다음에서는 오른쪽으로 10, 아래로 20 이동합니다."
 
 #: ../../matrix.rst:198 168fe9a931a94651ac55f633dffbe987
 msgid "A negative :attr:`Matrix.a` causes a left-right flip."
-msgstr ""
+msgstr "음수 :attr:`Matrix.a` 는 좌우 뒤집기를 발생시킵니다."
 
 #: ../../matrix.rst:203 f2cb4722af2e45f6ac67fda814935ea4
 msgid "A negative :attr:`Matrix.d` causes an up-down flip."
-msgstr ""
+msgstr "음수 :attr:`Matrix.d` 는 상하 뒤집기를 발생시킵니다."
 
 #: ../../matrix.rst:208 28cc582a5ec24205816af0c892b692d1
 msgid "Attribute :attr:`Matrix.b` tilts upwards / downwards along the x-axis."
-msgstr ""
+msgstr "속성 :attr:`Matrix.b` 는 x축을 따라 위/아래로 기울어집니다."
 
 #: ../../matrix.rst:213 a2b77644fc61456690d3603561dae948
 msgid "Attribute :attr:`Matrix.c` tilts left / right along the y-axis."
-msgstr ""
+msgstr "속성 :attr:`Matrix.c` 는 y축을 따라 왼쪽/오른쪽으로 기울어집니다."
 
 #: ../../matrix.rst:218 bd842bfbd48b44509584185764d44373
 msgid ""
 "Matrix `Matrix(beta)` performs counterclockwise rotations for positive "
 "angles `beta`."
-msgstr ""
+msgstr "행렬 `Matrix(beta)` 는 양수 각도 `beta` 에 대해 반시계 방향 회전을 수행합니다."
 
 #: ../../matrix.rst:223 ac0b2cc97b1347ab9f63fa8f97f50072
 msgid "Show some effects on a rectangle::"
-msgstr ""
+msgstr "사각형에 대한 일부 효과 표시::"
 
 #: ../../footer.rst:46 2a49496b580540908297c502618954b2
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -154,6 +154,18 @@
                     return "出力フォーマット";
                 }
 
+            } else if (lang == "ko") {
+                if (str=="File type") {
+                    return "파일 유형";
+                } else if (str=="Document Formats") {
+                    return "문서 형식";
+                } else if (str=="Image Formats") {
+                    return "이미지 형식";
+                } else if (str=="Input formats") {
+                    return "입력 형식";
+                } else if (str=="Output formats") {
+                    return "출력 형식";
+                }
             }
 
             return str;

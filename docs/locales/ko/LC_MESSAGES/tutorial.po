@@ -21,29 +21,29 @@ msgstr ""
 
 #: ../../header.rst:-1 af1c872c0c8149488a828ec57db0d05a
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 5f296e40a5a84c7db71c20c23cf034c9
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "|PyMuPDF| 는 PDF(및 기타) 문서의 데이터 추출, 분석, 변환 및 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 6ce8107c629e456a909666cce87fe6bd
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../tutorial.rst:8 939af6d1c28b485eb4ff9f7d7027d32c
 msgid "Tutorial"
-msgstr ""
+msgstr "튜토리얼"
 
 #: ../../tutorial.rst:12 4f39e913a37d45aaaae25d581b6b21a5
 msgid ""
 "This tutorial will show you the use of |PyMuPDF|, |MuPDF| in Python, step"
 " by step."
-msgstr ""
+msgstr "이 튜토리얼은 Python에서 |PyMuPDF|, |MuPDF| 사용법을 단계별로 보여줍니다."
 
 #: ../../tutorial.rst:14 5a427c507e6b44479862e8eb2c0a69ba
 msgid ""
@@ -51,43 +51,43 @@ msgid ""
 "FB2 and EPUB formats, so does |PyMuPDF| [#f1]_. Nevertheless, for the "
 "sake of brevity we will only talk about PDF files. At places where indeed"
 " only PDF files are supported, this will be mentioned explicitly."
-msgstr ""
+msgstr "|MuPDF| 가 PDF뿐만 아니라 XPS, OpenXPS, CBZ, CBR, FB2, EPUB 형식도 지원하므로 |PyMuPDF| 도 마찬가지입니다 [#f1]_. 그러나 간결성을 위해 PDF 파일만 다룹니다. PDF 파일만 지원되는 경우에는 명시적으로 언급합니다."
 
 #: ../../tutorial.rst:16 b2c324e1eda6484681a5b98002f9f022
 msgid ""
 "In addition to this introduction, please do visit PyMuPDF's `YouTube "
 "Channel <https://www.youtube.com/@PyMuPDF>`_ which covers most of the "
 "following in the form of YouTube \"Shorts\" and longer videos."
-msgstr ""
+msgstr "이 소개 외에도 |PyMuPDF| 의 `YouTube 채널 <https://www.youtube.com/@PyMuPDF>`_ 을 방문하시기 바랍니다. YouTube \"Shorts\" 및 더 긴 비디오 형식으로 대부분의 내용을 다루고 있습니다."
 
 #: ../../tutorial.rst:19 c23da3317c5d43fdadba3fa7c99c3afc
 msgid "Importing the Bindings"
-msgstr ""
+msgstr "바인딩 가져오기"
 
 #: ../../tutorial.rst:20 a04dcd4a09c3420f950b46d664276cd8
 msgid ""
 "The Python bindings to MuPDF are made available by this import statement."
 " We also show here how your version can be checked::"
-msgstr ""
+msgstr "이 import 문으로 |MuPDF| 에 대한 Python 바인딩을 사용할 수 있습니다. 여기서 버전을 확인하는 방법도 보여줍니다::"
 
 #: ../../tutorial.rst:30 56adbb5b22484758912815cc290316d8
 msgid "Note on the Name *fitz*"
-msgstr ""
+msgstr "*fitz* 이름에 대한 참고사항"
 
 #: ../../tutorial.rst:32 3b2a413d1d2040d38bbc841d83f98d16
 msgid ""
 "Old versions of |PyMuPDF| had their **Python** import name as `fitz`. "
 "Newer versions use `pymupdf` instead, and offer `fitz` as a fallback so "
 "that old code will still work."
-msgstr ""
+msgstr "이전 버전의 |PyMuPDF| 는 **Python** import 이름이 `fitz` 였습니다. 최신 버전은 대신 `pymupdf` 를 사용하며, 이전 코드가 계속 작동하도록 `fitz` 를 대체 옵션으로 제공합니다."
 
 #: ../../tutorial.rst:34 e7ad072736bc434da33243355f43a143
 msgid "The reason for the name `fitz` is a historical curiosity:"
-msgstr ""
+msgstr "`fitz` 라는 이름의 이유는 역사적인 호기심입니다:"
 
 #: ../../tutorial.rst:36 0a1388985e214bc8803f67a3cdc99664
 msgid "The original rendering library for MuPDF was called *Libart*."
-msgstr ""
+msgstr "|MuPDF| 의 원래 렌더링 라이브러리는 *Libart* 라고 불렸습니다."
 
 #: ../../tutorial.rst:38 6bb98d1d5fd843a9a823b5a023f389e8
 msgid ""
@@ -97,92 +97,92 @@ msgid ""
 "Ghostscript graphics library, but has instead become the rendering engine"
 " powering MuPDF.\"* (Quoted from `Wikipedia "
 "<https://en.wikipedia.org/wiki/MuPDF>`_)."
-msgstr ""
+msgstr "*\"Artifex Software가 MuPDF 프로젝트를 인수한 후, 개발 초점은 \"Fitz\"라는 새로운 현대적인 그래픽 라이브러리 작성으로 옮겨졌습니다. Fitz는 원래 노후화된 Ghostscript 그래픽 라이브러리를 대체하기 위한 R&D 프로젝트로 의도되었지만, 대신 MuPDF를 구동하는 렌더링 엔진이 되었습니다.\"* (`Wikipedia <https://en.wikipedia.org/wiki/MuPDF>`_ 에서 인용)."
 
 #: ../../tutorial.rst:42 f0b608072e0948f0a8d5019e86f78ae4
 msgid ""
 "Use of legacy name `fitz` can fail if defunct pypi.org package `fitz` is "
 "installed; see :ref:`problems-after-installation`."
-msgstr ""
+msgstr "사용되지 않는 pypi.org 패키지 `fitz` 가 설치된 경우 레거시 이름 `fitz` 사용이 실패할 수 있습니다. :ref:`problems-after-installation` 을 참조하세요."
 
 #: ../../tutorial.rst:48 5b6f4f47d3d14b3dabbafb6419e1bfd3
 msgid "Opening a Document"
-msgstr ""
+msgstr "문서 열기"
 
 #: ../../tutorial.rst:50 bad87b705ed349689aeb233740a2a4dd
 msgid ""
 "To access a :ref:`supported document<Supported_File_Types>`, it must be "
 "opened with the following statement::"
-msgstr ""
+msgstr ":ref:`지원되는 문서<Supported_File_Types>` 에 액세스하려면 다음 문으로 열어야 합니다::"
 
 #: ../../tutorial.rst:54 8ee29d11c6664eaba2d74e39fe256992
 msgid ""
 "This creates the :ref:`Document` object *doc*. *filename* must be a "
 "Python string (or a `pathlib.Path`) specifying the name of an existing "
 "file."
-msgstr ""
+msgstr "이것은 :ref:`Document` 객체 *doc* 을 생성합니다. *filename* 은 기존 파일의 이름을 지정하는 Python 문자열(또는 `pathlib.Path`)이어야 합니다."
 
 #: ../../tutorial.rst:56 fd7dc22114c4467ea703f11c5e4ddad9
 msgid ""
 "It is also possible to open a document from memory data, or to create a "
 "new, empty PDF. See :ref:`Document` for details. You can also use "
 ":ref:`Document` as a *context manager*."
-msgstr ""
+msgstr "메모리 데이터에서 문서를 열거나 새로운 빈 PDF를 생성할 수도 있습니다. 자세한 내용은 :ref:`Document` 를 참조하세요. :ref:`Document` 를 *context manager* 로 사용할 수도 있습니다."
 
 #: ../../tutorial.rst:58 e53b2ee3b09744bba7d0a597e3110a06
 msgid ""
 "A document contains many attributes and functions. Among them are meta "
 "information (like \"author\" or \"subject\"), number of total pages, "
 "outline and encryption information."
-msgstr ""
+msgstr "문서에는 많은 속성과 함수가 포함되어 있습니다. 그 중에는 메타 정보(\"author\" 또는 \"subject\" 등), 총 페이지 수, 개요 및 암호화 정보가 있습니다."
 
 #: ../../tutorial.rst:61 ed2d7a85b35c446faacb3600235eef21
 msgid "Some :ref:`Document` Methods and Attributes"
-msgstr ""
+msgstr "일부 :ref:`Document` 메서드 및 속성"
 
 #: ../../tutorial.rst:64 3b4470725538483087f6877a0b238a75
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../tutorial.rst:64 348a919c08be4e7bacbcbdebf6aadceb
 msgid "**Description**"
-msgstr ""
+msgstr "**설명**"
 
 #: ../../tutorial.rst:66 3c58bb5e0cfd4357bf595f5730c490f5
 msgid ":attr:`Document.page_count`"
-msgstr ""
+msgstr ":attr:`Document.page_count`"
 
 #: ../../tutorial.rst:66 71bcf48456184a0a864819c5c6c6b639
 msgid "the number of pages (*int*)"
-msgstr ""
+msgstr "페이지 수 (*int*)"
 
 #: ../../tutorial.rst:67 a9ca3bea8587466696f8c3a412c51474
 msgid ":attr:`Document.metadata`"
-msgstr ""
+msgstr ":attr:`Document.metadata`"
 
 #: ../../tutorial.rst:67 5d63c2f5c2bf442da412566cddc8f0da
 msgid "the metadata (*dict*)"
-msgstr ""
+msgstr "메타데이터 (*dict*)"
 
 #: ../../tutorial.rst:68 3a230f9d11cf49c8abaabfc21332281a
 msgid ":meth:`Document.get_toc`"
-msgstr ""
+msgstr ":meth:`Document.get_toc`"
 
 #: ../../tutorial.rst:68 670c25d439184b3d864535494e4bc345
 msgid "get the table of contents (*list*)"
-msgstr ""
+msgstr "목차 가져오기 (*list*)"
 
 #: ../../tutorial.rst:69 4dbf36bdcc774cfe94f6fe488e23ab70
 msgid ":meth:`Document.load_page`"
-msgstr ""
+msgstr ":meth:`Document.load_page`"
 
 #: ../../tutorial.rst:69 6a5260a61382415882e9d006c179fe90
 msgid "read a :ref:`Page`"
-msgstr ""
+msgstr ":ref:`Page` 읽기"
 
 #: ../../tutorial.rst:73 d6bc5b209b1c4e7aa5b367e616992438
 msgid "Accessing Meta Data"
-msgstr ""
+msgstr "메타데이터 액세스"
 
 #: ../../tutorial.rst:74 5eeb7a67a3834701bda60567079af358
 msgid ""
@@ -194,83 +194,83 @@ msgid ""
 " chapter :ref:`Document`. The meta data fields are strings or ``None`` if"
 " not otherwise indicated. Also be aware that not all of them always "
 "contain meaningful data -- even if they are not ``None``."
-msgstr ""
+msgstr "|PyMuPDF| 는 표준 메타데이터를 완전히 지원합니다. :attr:`Document.metadata` 는 다음 키를 가진 Python 딕셔너리입니다. **모든 문서 타입** 에서 사용할 수 있지만, 모든 항목이 항상 데이터를 포함하지는 않을 수 있습니다. 의미와 형식에 대한 자세한 내용은 각 매뉴얼(예: PDF의 경우 :ref:`AdobeManual`)을 참조하세요. 추가 정보는 :ref:`Document` 장에서도 찾을 수 있습니다. 메타데이터 필드는 달리 표시되지 않는 한 문자열 또는 ``None`` 입니다. 또한 모든 필드가 항상 의미 있는 데이터를 포함하는 것은 아니라는 점에 유의하세요. ``None`` 이 아니더라도 그렇습니다."
 
 #: ../../tutorial.rst:77 6c9a21d704a241029ce9b7f001b7bac5
 msgid "Key"
-msgstr ""
+msgstr "키"
 
 #: ../../tutorial.rst:77 8400973337594bcf8e3da33817744ccf
 msgid "Value"
-msgstr ""
+msgstr "값"
 
 #: ../../tutorial.rst:79 6aa5ce470f8642c4af491e28af8bc999
 msgid "producer"
-msgstr ""
+msgstr "producer"
 
 #: ../../tutorial.rst:79 52ee9d5cf1d94e4e824f1486804c0a49
 msgid "producer (producing software)"
-msgstr ""
+msgstr "생성자(생성 소프트웨어)"
 
 #: ../../tutorial.rst:80 85a0fa96090940f499052abc68aac361
 msgid "format"
-msgstr ""
+msgstr "format"
 
 #: ../../tutorial.rst:80 cd1a7dc5cfca479ca59b0e5e2b00f5bb
 msgid "format: 'PDF-1.4', 'EPUB', etc."
-msgstr ""
+msgstr "형식: 'PDF-1.4', 'EPUB' 등"
 
 #: ../../tutorial.rst:81 96773e4fde41492a8fbc9d8e0dfffe01
 msgid "encryption"
-msgstr ""
+msgstr "encryption"
 
 #: ../../tutorial.rst:81 4b242b9f88fb40e4847a8ad0358789ec
 msgid "encryption method used if any"
-msgstr ""
+msgstr "사용된 암호화 방법(있는 경우)"
 
 #: ../../tutorial.rst:82 520e1f5cffc3419faccbecacb778ad88
 #: adc5542c41534ce68fe9d02192b1f9e0
 msgid "author"
-msgstr ""
+msgstr "작성자"
 
 #: ../../tutorial.rst:83 d593bfa2f3f1464ca98020a5d8cc2d74
 msgid "modDate"
-msgstr ""
+msgstr "modDate"
 
 #: ../../tutorial.rst:83 49db626a877e41699ba02058512b97d9
 msgid "date of last modification"
-msgstr ""
+msgstr "마지막 수정 날짜"
 
 #: ../../tutorial.rst:84 ac0f4c311d9d4f91b366556afa0eac07
 #: cad667882e9247ed9a8465e9e8f6f30e
 msgid "keywords"
-msgstr ""
+msgstr "키워드"
 
 #: ../../tutorial.rst:85 4a12c1d082794891871985009346217e
 #: 9afee53342a24f749bd6b1695ceba4ca
 msgid "title"
-msgstr ""
+msgstr "제목"
 
 #: ../../tutorial.rst:86 0659f2376ae84f0694559432c6acc6ab
 msgid "creationDate"
-msgstr ""
+msgstr "creationDate"
 
 #: ../../tutorial.rst:86 c3e9c7f2af964de1a4ea55d6dfc87ae7
 msgid "date of creation"
-msgstr ""
+msgstr "생성 날짜"
 
 #: ../../tutorial.rst:87 f7336bfddb6c47da8c979a965fd0e200
 msgid "creator"
-msgstr ""
+msgstr "creator"
 
 #: ../../tutorial.rst:87 cde7dc3a8d604edeb4df81869876cc12
 msgid "creating application"
-msgstr ""
+msgstr "생성 애플리케이션"
 
 #: ../../tutorial.rst:88 59f646e95f21440aab80a6d9eaee2cb5
 #: dfcc9986b7404e3ea4869973f3300afb
 msgid "subject"
-msgstr ""
+msgstr "주제"
 
 #: ../../tutorial.rst:91 e212f47f482f4ba086c347c1ee602818
 msgid ""
@@ -284,95 +284,95 @@ msgid ""
 "as a whole, inspect or modify it using a package like `lxml`_ and then "
 "store the result back into the PDF. If you want, you can also delete this"
 " data altogether."
-msgstr ""
+msgstr "이러한 표준 메타데이터 외에도 PDF 버전 1.4부터 시작하는 **PDF 문서** 는 소위 *\"metadata streams\"* (:data:`stream` 도 참조)를 포함할 수도 있습니다. 이러한 스트림의 정보는 XML로 인코딩됩니다. |PyMuPDF| 는 의도적으로 이 목적을 위한 XML 구성 요소를 포함하지 않습니다(:ref:`PyMuPDF Xml class<Xml>` 는 :ref:`Story` 객체의 DOM 콘텐츠에 액세스하기 위한 헬퍼 클래스입니다). 따라서 그 안에 포함된 정보에 대한 직접 액세스를 지원하지 않습니다. 그러나 스트림 전체를 추출하고 `lxml`_ 같은 패키지를 사용하여 검사하거나 수정한 다음 결과를 PDF에 다시 저장할 수 있습니다. 원하는 경우 이 데이터를 완전히 삭제할 수도 있습니다."
 
 #: ../../tutorial.rst:93 5ec202ac5c494be3bf62e68bf5ba28b1
 msgid ""
 "There are two utility scripts in the repository that `metadata import "
 "(PDF only)`_ resp. `metadata export`_ metadata from resp. to CSV files."
-msgstr ""
+msgstr "저장소에는 CSV 파일에서 메타데이터를 가져오거나(`metadata import (PDF only)`_) CSV 파일로 내보내는(`metadata export`_) 두 가지 유틸리티 스크립트가 있습니다."
 
 #: ../../tutorial.rst:96 1d31369f6b884d08a61b700b01e9e7b1
 msgid "Working with Outlines"
-msgstr ""
+msgstr "개요 작업"
 
 #: ../../tutorial.rst:97 fe8e22242a324f349fca363f8d0f6348
 msgid ""
 "The easiest way to get all outlines (also called \"bookmarks\") of a "
 "document, is by loading its *table of contents*::"
-msgstr ""
+msgstr "문서의 모든 개요(\"bookmarks\"라고도 함)를 가져오는 가장 쉬운 방법은 *목차* 를 로드하는 것입니다::"
 
 #: ../../tutorial.rst:101 4fe54a9ca0244cd9871ba72a155cbe95
 msgid ""
 "This will return a Python list of lists *[[lvl, title, page, ...], ...]* "
 "which looks much like a conventional table of contents found in books."
-msgstr ""
+msgstr "이것은 책에서 볼 수 있는 일반적인 목차와 매우 유사한 Python 리스트의 리스트 *[[lvl, title, page, ...], ...]* 를 반환합니다."
 
 #: ../../tutorial.rst:103 a0df1526a42e4d88bf1fb24bf14c2392
 msgid ""
 "*lvl* is the hierarchy level of the entry (starting from 1), *title* is "
 "the entry's title, and *page* the page number (1-based!). Other "
 "parameters describe details of the bookmark target."
-msgstr ""
+msgstr "*lvl* 은 항목의 계층 레벨(1부터 시작), *title* 은 항목의 제목, *page* 는 페이지 번호(1 기반!)입니다. 다른 매개변수는 북마크 대상의 세부 정보를 설명합니다."
 
 #: ../../tutorial.rst:105 f60efb5302364edfb64c7775c185929b
 msgid ""
 "There are two utility scripts in the repository that `toc import (PDF "
 "only)`_ resp. `toc export`_ table of contents from resp. to CSV files."
-msgstr ""
+msgstr "저장소에는 CSV 파일에서 목차를 가져오거나(`toc import (PDF only)`_) CSV 파일로 내보내는(`toc export`_) 두 가지 유틸리티 스크립트가 있습니다."
 
 #: ../../tutorial.rst:108 f7e0d8ac5cd64bbfb19d5a7680f37840
 msgid "Working with Pages"
-msgstr ""
+msgstr "페이지 작업"
 
 #: ../../tutorial.rst:109 bea68ab57a6a4ec49fa98a57625daec3
 msgid ":ref:`Page` handling is at the core of MuPDF's functionality."
-msgstr ""
+msgstr ":ref:`Page` 처리는 |MuPDF| 기능의 핵심입니다."
 
 #: ../../tutorial.rst:111 705fbd37cfd04f5eb2725ee74973716c
 msgid ""
 "You can render a page into a raster or vector (SVG) image, optionally "
 "zooming, rotating, shifting or shearing it."
-msgstr ""
+msgstr "페이지를 래스터 또는 벡터(SVG) 이미지로 렌더링할 수 있으며, 선택적으로 확대/축소, 회전, 이동 또는 기울이기를 할 수 있습니다."
 
 #: ../../tutorial.rst:112 07346e73ca2f4851bcb7243ed707f0c5
 msgid ""
 "You can extract a page's text and images in many formats and search for "
 "text strings."
-msgstr ""
+msgstr "페이지의 텍스트와 이미지를 여러 형식으로 추출하고 텍스트 문자열을 검색할 수 있습니다."
 
 #: ../../tutorial.rst:113 b10390460b7e469d933d4b0bca64cbd8
 msgid ""
 "For PDF documents many more methods are available to add text or images "
 "to pages."
-msgstr ""
+msgstr "PDF 문서의 경우 페이지에 텍스트나 이미지를 추가하는 더 많은 메서드를 사용할 수 있습니다."
 
 #: ../../tutorial.rst:115 634af7e840c34aba910ebc8b50aac6b1
 msgid ""
 "First, a :ref:`Page` must be created. This is a method of "
 ":ref:`Document`::"
-msgstr ""
+msgstr "먼저 :ref:`Page` 를 생성해야 합니다. 이것은 :ref:`Document` 의 메서드입니다::"
 
 #: ../../tutorial.rst:120 e13781020ec34c48a1d29405c5d4063b
 msgid ""
 "Any integer `-∞ < pno < page_count` is possible here. Negative numbers "
 "count backwards from the end, so *doc[-1]* is the last page, like with "
 "Python sequences."
-msgstr ""
+msgstr "여기서는 `-∞ < pno < page_count` 범위의 정수가 가능합니다. 음수는 끝에서 역순으로 계산되므로 Python 시퀀스와 같이 *doc[-1]* 은 마지막 페이지입니다."
 
 #: ../../tutorial.rst:122 4e28316907e444489cfbf10a12e27bba
 msgid ""
 "Some more advanced way would be using the document as an **iterator** "
 "over its pages::"
-msgstr ""
+msgstr "더 고급 방법은 문서를 페이지에 대한 **반복자** 로 사용하는 것입니다::"
 
 #: ../../tutorial.rst:136 84e73234fd424852a2b36c0bc15b2d9d
 msgid "Once you have your page, here is what you would typically do with it:"
-msgstr ""
+msgstr "페이지를 얻으면 일반적으로 다음과 같은 작업을 수행합니다:"
 
 #: ../../tutorial.rst:139 088737b71af34948b17fbe30a60a9dc4
 msgid "Inspecting the Links, Annotations or Form Fields of a Page"
-msgstr ""
+msgstr "페이지의 링크, 주석 또는 양식 필드 검사"
 
 #: ../../tutorial.rst:140 80600b8ed5664159a8aad4e5b6706037
 msgid ""
@@ -380,32 +380,32 @@ msgid ""
 "viewer software. If you click while your cursor shows a hand symbol, you "
 "will usually be taken to the target that is encoded in that hot area. "
 "Here is how to get all links::"
-msgstr ""
+msgstr "링크는 문서가 뷰어 소프트웨어로 표시될 때 \"hot areas\"로 표시됩니다. 커서가 손 기호를 표시하는 동안 클릭하면 일반적으로 해당 hot area에 인코딩된 대상으로 이동합니다. 모든 링크를 가져오는 방법은 다음과 같습니다::"
 
 #: ../../tutorial.rst:145 5b90391005b24d46b953ffde747dbd80
 msgid ""
 "*links* is a Python list of dictionaries. For details see "
 ":meth:`Page.get_links`."
-msgstr ""
+msgstr "*links* 는 딕셔너리의 Python 리스트입니다. 자세한 내용은 :meth:`Page.get_links` 를 참조하세요."
 
 #: ../../tutorial.rst:147 19b388140fd44ace88779d4d2f85e3f5
 msgid "You can also use an iterator which emits one link at a time::"
-msgstr ""
+msgstr "한 번에 하나의 링크를 생성하는 반복자를 사용할 수도 있습니다::"
 
 #: ../../tutorial.rst:152 972adb409c6b4d1781d1976cb040f944
 msgid ""
 "If dealing with a PDF document page, there may also exist annotations "
 "(:ref:`Annot`) or form fields (:ref:`Widget`), each of which have their "
 "own iterators::"
-msgstr ""
+msgstr "PDF 문서 페이지를 다루는 경우 주석(:ref:`Annot`) 또는 양식 필드(:ref:`Widget`)가 있을 수도 있으며, 각각 고유한 반복자를 가집니다::"
 
 #: ../../tutorial.rst:162 354960511fbd4e299b3561f27464ffa6
 msgid "Rendering a Page"
-msgstr ""
+msgstr "페이지 렌더링"
 
 #: ../../tutorial.rst:163 4b29e0e4b9f04b54a4b12db45462cebe
 msgid "This example creates a **raster** image of a page's content::"
-msgstr ""
+msgstr "이 예제는 페이지 콘텐츠의 **래스터** 이미지를 생성합니다::"
 
 #: ../../tutorial.rst:167 b23c4b5d3b5345f0add5cb0dffaa6255
 msgid ""
@@ -417,7 +417,7 @@ msgid ""
 "mirroring, shifting, shearing, etc. For example: to create an **RGBA** "
 "image (i.e. containing an alpha channel), specify *pix = "
 "page.get_pixmap(alpha=True)*."
-msgstr ""
+msgstr "``pix`` 는 (이 경우) 페이지의 **RGB** 이미지를 포함하는 :ref:`Pixmap` 객체로, 다양한 용도로 사용할 준비가 되어 있습니다. :meth:`Page.get_pixmap` 메서드는 이미지를 제어하기 위한 많은 변형을 제공합니다: 해상도/DPI, 색 공간(예: 그레이스케일 이미지 또는 감산 색상 체계의 이미지 생성), 투명도, 회전, 미러링, 이동, 기울이기 등. 예를 들어: **RGBA** 이미지(즉, 알파 채널 포함)를 생성하려면 *pix = page.get_pixmap(alpha=True)* 를 지정하세요."
 
 #: ../../tutorial.rst:169 e2331fb68ff848cab6245b27ba5f4079
 msgid ""
@@ -426,55 +426,55 @@ msgid ""
 " in pixels) and ``stride`` (number of bytes of one horizontal image "
 "line). Attribute ``samples`` represents a rectangular area of bytes "
 "representing the image data (a Python ``bytes`` object)."
-msgstr ""
+msgstr ":ref:`Pixmap` 은 아래에서 참조되는 많은 메서드와 속성을 포함합니다. 그 중에는 정수 ``width``, ``height`` (각각 픽셀 단위) 및 ``stride`` (한 수평 이미지 라인의 바이트 수)가 있습니다. 속성 ``samples`` 는 이미지 데이터를 나타내는 바이트의 사각형 영역(Python ``bytes`` 객체)을 나타냅니다."
 
 #: ../../tutorial.rst:171 03e8c67cd34a4299bbacfe8abd40de63
 msgid ""
 "You can also create a **vector** image of a page by using "
 ":meth:`Page.get_svg_image`. Refer to this `Vector Image Support page`_ "
 "for details."
-msgstr ""
+msgstr ":meth:`Page.get_svg_image` 를 사용하여 페이지의 **벡터** 이미지를 생성할 수도 있습니다. 자세한 내용은 `Vector Image Support page`_ 를 참조하세요."
 
 #: ../../tutorial.rst:174 c887d409be174ceca947d6b32e881d03
 msgid "Saving the Page Image in a File"
-msgstr ""
+msgstr "파일에 페이지 이미지 저장"
 
 #: ../../tutorial.rst:175 5e39659faf42451083abd892ba3bdb4e
 msgid "We can simply store the image in a PNG file::"
-msgstr ""
+msgstr "이미지를 PNG 파일에 간단히 저장할 수 있습니다::"
 
 #: ../../tutorial.rst:180 7ef7b19218354906a6c5d511a0672a1f
 msgid "Displaying the Image in GUIs"
-msgstr ""
+msgstr "GUI에서 이미지 표시"
 
 #: ../../tutorial.rst:181 f6651c84f3d54689abdaff0d00a3095e
 msgid ""
 "We can also use it in GUI dialog managers. :attr:`Pixmap.samples` "
 "represents an area of bytes of all the pixels as a Python bytes object. "
 "Here are some examples, find more in the `examples`_ directory."
-msgstr ""
+msgstr "GUI 대화 상자 관리자에서도 사용할 수 있습니다. :attr:`Pixmap.samples` 는 모든 픽셀의 바이트 영역을 Python bytes 객체로 나타냅니다. 다음은 몇 가지 예입니다. `examples`_ 디렉토리에서 더 많은 예를 찾을 수 있습니다."
 
 #: ../../tutorial.rst:184 93b0ff029516467ca4a36bb526aeb687
 msgid "wxPython"
-msgstr ""
+msgstr "wxPython"
 
 #: ../../tutorial.rst:185 6f03843027834dda8394ee85d04238d5
 msgid ""
 "Consult their documentation for adjustments to RGB(A) pixmaps and, "
 "potentially, specifics for your wxPython release::"
-msgstr ""
+msgstr "RGB(A) pixmap 조정 및 wxPython 릴리스별 세부 사항에 대해서는 해당 문서를 참조하세요::"
 
 #: ../../tutorial.rst:193 b6f1e9b15675411e9bd7023777e4b99a
 msgid "Tkinter"
-msgstr ""
+msgstr "Tkinter"
 
 #: ../../tutorial.rst:194 c11e72b65c0e4368a0fe00c748909105
 msgid "Please also see section 3.19 of the `Pillow documentation`_::"
-msgstr ""
+msgstr "`Pillow documentation`_ 의 섹션 3.19도 참조하세요::"
 
 #: ../../tutorial.rst:203 41e53493133b4606b75fc48aa4b02d6b
 msgid "The following **avoids using Pillow**::"
-msgstr ""
+msgstr "다음은 **Pillow 사용을 피합니다**::"
 
 #: ../../tutorial.rst:210 2d36aa26bccf4e5ba49ede95aef20a49
 msgid ""
@@ -482,98 +482,98 @@ msgid ""
 "supported** document, `here it is!`_. It can also zoom into pages, and it"
 " runs under Python 2 or 3. It requires the extremely handy `PySimpleGUI`_"
 " pure Python package."
-msgstr ""
+msgstr "**지원되는 모든** 문서를 페이지로 나누는 완전한 Tkinter 스크립트를 찾고 있다면 `여기 있습니다!`_. 페이지 확대도 가능하며 Python 2 또는 3에서 실행됩니다. 매우 편리한 `PySimpleGUI`_ 순수 Python 패키지가 필요합니다."
 
 #: ../../tutorial.rst:213 9a88cb97b2d9452ab197250569501e5f
 msgid "PyQt4, PyQt5, PySide"
-msgstr ""
+msgstr "PyQt4, PyQt5, PySide"
 
 #: ../../tutorial.rst:214 daeac83261ba4066a7dc604d3aa562f2
 msgid "Please also see section 3.16 of the `Pillow documentation`_::"
-msgstr ""
+msgstr "`Pillow documentation`_ 의 섹션 3.16도 참조하세요::"
 
 #: ../../tutorial.rst:223 b85add3e93e4499b89e82f1646430a26
 msgid ""
 "Again, you also can get along **without using Pillow.** Qt's `QImage` "
 "luckily supports native Python pointers, so the following is the "
 "recommended way to create Qt images::"
-msgstr ""
+msgstr "다시 말하지만, **Pillow를 사용하지 않고도** 진행할 수 있습니다. Qt의 `QImage` 는 다행히 네이티브 Python 포인터를 지원하므로 다음은 Qt 이미지를 생성하는 권장 방법입니다::"
 
 #: ../../tutorial.rst:233 0fcb7bc54009424fa20575e22fb06d0e
 msgid "Extracting Text and Images"
-msgstr ""
+msgstr "텍스트 및 이미지 추출"
 
 #: ../../tutorial.rst:234 f5900cc6c4924334a0f4bf4d1bdae4ae
 msgid ""
 "We can also extract all text, images and other information of a page in "
 "many different forms, and levels of detail::"
-msgstr ""
+msgstr "페이지의 모든 텍스트, 이미지 및 기타 정보를 다양한 형식과 세부 수준으로 추출할 수도 있습니다::"
 
 #: ../../tutorial.rst:238 48bff694040b45549010d3b53435733b
 msgid ""
 "Use one of the following strings for *opt* to obtain different formats "
 "[#f2]_:"
-msgstr ""
+msgstr "다양한 형식을 얻으려면 *opt* 에 다음 문자열 중 하나를 사용하세요 [#f2]_:"
 
 #: ../../tutorial.rst:240 3c9203fe338a46629695295936dc44a4
 msgid ""
 "**\"text\"**: (default) plain text with line breaks. No formatting, no "
 "text position details, no images."
-msgstr ""
+msgstr "**\"text\"**: (기본값) 줄바꿈이 있는 일반 텍스트. 서식 없음, 텍스트 위치 세부 정보 없음, 이미지 없음."
 
 #: ../../tutorial.rst:242 ef523faacbb4433e9599b78451f9a623
 msgid "**\"blocks\"**: generate a list of text blocks (= paragraphs)."
-msgstr ""
+msgstr "**\"blocks\"**: 텍스트 블록(= 단락) 목록 생성."
 
 #: ../../tutorial.rst:244 494f2cbaf4dc4d3595b54a18d8165a4f
 msgid "**\"words\"**: generate a list of words (strings not containing spaces)."
-msgstr ""
+msgstr "**\"words\"**: 단어 목록 생성(공백을 포함하지 않는 문자열)."
 
 #: ../../tutorial.rst:246 f95d696f7efa4e48a4fe4018638ee139
 msgid ""
 "**\"html\"**: creates a full visual version of the page including any "
 "images. This can be displayed with your internet browser."
-msgstr ""
+msgstr "**\"html\"**: 이미지를 포함한 페이지의 전체 시각적 버전 생성. 인터넷 브라우저로 표시할 수 있습니다."
 
 #: ../../tutorial.rst:248 8f24748d78b04cc6b92c29fcae8ff8ca
 msgid ""
 "**\"dict\"** / **\"json\"**: same information level as HTML, but provided"
 " as a Python dictionary or resp. JSON string. See "
 ":meth:`TextPage.extractDICT` for details of its structure."
-msgstr ""
+msgstr "**\"dict\"** / **\"json\"**: HTML과 동일한 정보 수준이지만 Python 딕셔너리 또는 JSON 문자열로 제공됩니다. 구조에 대한 자세한 내용은 :meth:`TextPage.extractDICT` 를 참조하세요."
 
 #: ../../tutorial.rst:250 266283a205584bb98dd88e0282b81b8a
 msgid ""
 "**\"rawdict\"** / **\"rawjson\"**: a super-set of **\"dict\"** / "
 "**\"json\"**. It additionally provides character detail information like "
 "XML. See :meth:`TextPage.extractRAWDICT` for details of its structure."
-msgstr ""
+msgstr "**\"rawdict\"** / **\"rawjson\"**: **\"dict\"** / **\"json\"** 의 상위 집합. XML과 같은 문자 세부 정보를 추가로 제공합니다. 구조에 대한 자세한 내용은 :meth:`TextPage.extractRAWDICT` 를 참조하세요."
 
 #: ../../tutorial.rst:252 be5015a7daf84be89659b718295dcaf6
 msgid ""
 "**\"xhtml\"**: text information level as the TEXT version but includes "
 "images. Can also be displayed by internet browsers."
-msgstr ""
+msgstr "**\"xhtml\"**: TEXT 버전과 동일한 텍스트 정보 수준이지만 이미지를 포함합니다. 인터넷 브라우저로도 표시할 수 있습니다."
 
 #: ../../tutorial.rst:254 6a9fccccc2af470dbe418b64d95196fb
 msgid ""
 "**\"xml\"**: contains no images, but full position and font information "
 "down to each single text character. Use an XML module to interpret."
-msgstr ""
+msgstr "**\"xml\"**: 이미지는 포함하지 않지만 각 단일 텍스트 문자까지 전체 위치 및 글꼴 정보를 포함합니다. XML 모듈을 사용하여 해석합니다."
 
 #: ../../tutorial.rst:256 c2fb29629d574544ba6240118706a993
 msgid ""
 "To give you an idea about the output of these alternatives, we did text "
 "example extracts. See :ref:`Appendix1`."
-msgstr ""
+msgstr "이러한 대안의 출력에 대한 아이디어를 제공하기 위해 텍스트 예제 추출을 수행했습니다. :ref:`Appendix1` 을 참조하세요."
 
 #: ../../tutorial.rst:259 6fcbe8fa549f4672940aa6a7baa43298
 msgid "Searching for Text"
-msgstr ""
+msgstr "텍스트 검색"
 
 #: ../../tutorial.rst:260 055f0da706d34efba1868870cc7ac25e
 msgid "You can find out, exactly where on a page a certain text string appears::"
-msgstr ""
+msgstr "페이지에서 특정 텍스트 문자열이 정확히 어디에 나타나는지 확인할 수 있습니다::"
 
 #: ../../tutorial.rst:264 fa6460b021d44b8aba602b1940777f99
 msgid ""
@@ -581,7 +581,7 @@ msgid ""
 "surrounds one occurrence of the string \"mupdf\" (case insensitive). You "
 "could use this information to e.g. highlight those areas (PDF only) or "
 "create a cross reference of the document."
-msgstr ""
+msgstr "이것은 사각형 목록(:ref:`Rect` 참조)을 제공하며, 각각은 문자열 \"mupdf\" 의 한 번 발생을 둘러쌉니다(대소문자 구분 안 함). 이 정보를 사용하여 예를 들어 해당 영역을 강조 표시하거나(PDF만) 문서의 상호 참조를 생성할 수 있습니다."
 
 #: ../../tutorial.rst:266 9602ff0fbee54febb5a9bce0eb7643a8
 msgid ""
@@ -590,23 +590,23 @@ msgid ""
 "contain details on how the :ref:`TextPage`, :ref:`Device` and "
 ":ref:`DisplayList` classes can be used for a more direct control, e.g. "
 "when performance considerations suggest it."
-msgstr ""
+msgstr ":ref:`cooperation` 장과 데모 프로그램 `demo.py`_ 및 `demo-lowlevel.py`_ 도 살펴보세요. 특히 성능 고려 사항이 제안될 때 :ref:`TextPage`, :ref:`Device` 및 :ref:`DisplayList` 클래스를 더 직접적으로 제어하는 방법에 대한 세부 정보를 포함합니다."
 
 #: ../../tutorial.rst:273 d532b1e3d0b249d5863b7d1af292f56f
 msgid "Stories: Generating PDF from HTML Source"
-msgstr ""
+msgstr "Stories: HTML 소스에서 PDF 생성"
 
 #: ../../tutorial.rst:275 416352710d134781921a3400fd5b5ef0
 msgid ""
 "The :ref:`Story` class is a new feature of PyMuPDF version 1.21.0. It "
 "represents support for MuPDF's **\"story\"** interface."
-msgstr ""
+msgstr ":ref:`Story` 클래스는 |PyMuPDF| 버전 1.21.0의 새로운 기능입니다. |MuPDF| 의 **\"story\"** 인터페이스 지원을 나타냅니다."
 
 #: ../../tutorial.rst:277 accd3e3fc6d547b78b274237642033d6
 msgid ""
 "The following is a quote from the book `\"MuPDF Explored\"`_ by Robin "
 "Watts from `Artifex`_:"
-msgstr ""
+msgstr "다음은 `Artifex`_ 의 Robin Watts가 쓴 `\"MuPDF Explored\"`_ 책에서 인용한 내용입니다:"
 
 #: ../../tutorial.rst:281 47e500970eb842949a968db6adee0910
 msgid ""
@@ -616,7 +616,7 @@ msgid ""
 "newspapers. If you consider a traditional newspaper layout, it will "
 "consist of various news articles (stories) that are laid out into "
 "multiple columns, possibly across multiple pages.*"
-msgstr ""
+msgstr "*Stories는 Document Writers가 제공하는 것과 같은 장치에서 사용할 수 있도록 스타일이 지정된 콘텐츠를 쉽게 레이아웃하는 방법을 제공합니다(...). story의 개념은 데스크톱 출판에서 나왔으며, 이는 차례로(...) 신문에서 가져온 것입니다. 전통적인 신문 레이아웃을 고려하면 여러 열로 배치되고 여러 페이지에 걸칠 수 있는 다양한 뉴스 기사(stories)로 구성됩니다.*"
 
 #: ../../tutorial.rst:283 27ebf650cfb746b6ae9e42bdde508478
 msgid ""
@@ -626,26 +626,26 @@ msgid ""
 " can then be drawn to an output device. This keeps the concept of the "
 "text itself (the story) to be separated from the areas into which the "
 "text should be flowed (the layout).*"
-msgstr ""
+msgstr "*따라서 |MuPDF| 는 스타일 정보가 있는 텍스트 흐름을 나타내기 위해 story를 사용합니다. story 사용자는 story가 배치될 사각형 시퀀스를 제공할 수 있으며, 배치된 텍스트는 출력 장치에 그려질 수 있습니다. 이것은 텍스트 자체(story)의 개념을 텍스트가 흐를 영역(레이아웃)과 분리된 상태로 유지합니다.*"
 
 #: ../../tutorial.rst:287 7da64d937fe84390a33b56158c76d219
 msgid ""
 "A Story works somewhat similar to an internet browser: It faithfully "
 "parses and renders HTML hypertext and also optional stylesheets (CSS). "
 "But its **output is a PDF** -- not web pages."
-msgstr ""
+msgstr "Story는 인터넷 브라우저와 다소 유사하게 작동합니다: HTML 하이퍼텍스트와 선택적 스타일시트(CSS)를 충실하게 구문 분석하고 렌더링합니다. 그러나 **출력은 PDF** 입니다. 웹 페이지가 아닙니다."
 
 #: ../../tutorial.rst:290 290d5414b6754a0a8cec4ef553811e70
 msgid ""
 "When creating a :ref:`Story`, the input from up to three different "
 "information sources is taken into account. All these items are optional."
-msgstr ""
+msgstr ":ref:`Story` 를 생성할 때 최대 세 가지 다른 정보 소스의 입력이 고려됩니다. 이러한 항목은 모두 선택 사항입니다."
 
 #: ../../tutorial.rst:292 b76811f3a6e94ca48849af027b1e4aa7
 msgid ""
 "HTML source code, either a Python string or **created by the script** "
 "using methods of :ref:`Xml`."
-msgstr ""
+msgstr "HTML 소스 코드, Python 문자열이거나 :ref:`Xml` 의 메서드를 사용하여 **스크립트로 생성된** 것."
 
 #: ../../tutorial.rst:294 631005d36d9d478eb1222c6746a62f78
 msgid ""
@@ -653,14 +653,14 @@ msgid ""
 "can be used to provide styling information (text font size, color, etc.) "
 "like it would happen for web pages. Obviously, this string may also be "
 "read from a file."
-msgstr ""
+msgstr "CSS(Cascaded Style Sheet) 소스 코드, Python 문자열로 제공됩니다. CSS는 웹 페이지에서와 같이 스타일 정보(텍스트 글꼴 크기, 색상 등)를 제공하는 데 사용할 수 있습니다. 명백히 이 문자열은 파일에서 읽을 수도 있습니다."
 
 #: ../../tutorial.rst:296 b555903aaf064df4ac02bf4379ecd84b
 msgid ""
 "An :ref:`Archive` **must be used** whenever the DOM references images, or"
 " uses text fonts except the standard :ref:`Base-14-Fonts`, CJK fonts and "
 "the NOTO fonts generated into the PyMuPDF binary."
-msgstr ""
+msgstr "DOM이 이미지를 참조하거나 표준 :ref:`Base-14-Fonts`, CJK 글꼴 및 |PyMuPDF| 바이너리에 생성된 NOTO 글꼴을 제외한 텍스트 글꼴을 사용할 때마다 :ref:`Archive` **를 사용해야 합니다**."
 
 #: ../../tutorial.rst:299 5a5a7775caf44157ab99d4fb18a08da0
 msgid ""
@@ -669,14 +669,14 @@ msgid ""
 "extend **provided** HTML: text can be deleted or replaced, or its styling"
 " can be changed. Text -- for example extracted from databases -- can also"
 " be added and fill template-like HTML documents."
-msgstr ""
+msgstr ":ref:`API<Xml>` 는 원하는 스타일 정보를 포함하여 처음부터 DOM을 생성할 수 있게 합니다. 또한 **제공된** HTML을 수정하거나 확장하는 데 사용할 수 있습니다: 텍스트를 삭제하거나 교체하거나 스타일을 변경할 수 있습니다. 데이터베이스에서 추출한 것과 같은 텍스트도 추가하고 템플릿과 같은 HTML 문서를 채울 수 있습니다."
 
 #: ../../tutorial.rst:301 eff1f356f57a4a5baa32893df82ccc7f
 msgid ""
 "It is **not required** to provide syntactically complete HTML documents: "
 "snippets like `<b>Hello <i>World!</i></b>` are fully accepted, and many /"
 " most syntax errors are automatically corrected."
-msgstr ""
+msgstr "구문적으로 완전한 HTML 문서를 제공할 **필요는 없습니다**: `<b>Hello <i>World!</i></b>` 와 같은 스니펫이 완전히 허용되며 많은/대부분의 구문 오류가 자동으로 수정됩니다."
 
 #: ../../tutorial.rst:303 365fa2cc06434ed8ad7429aaf3a63265
 msgid ""
@@ -684,7 +684,7 @@ msgid ""
 "document. This happens via the new :ref:`DocumentWriter` class. The "
 "programmer calls its methods to create a new empty page, and passes "
 "rectangles to the Story to fill them."
-msgstr ""
+msgstr "HTML이 완료된 것으로 간주되면 PDF 문서를 생성하는 데 사용할 수 있습니다. 이것은 새로운 :ref:`DocumentWriter` 클래스를 통해 수행됩니다. 프로그래머는 메서드를 호출하여 새로운 빈 페이지를 만들고 Story에 사각형을 전달하여 채웁니다."
 
 #: ../../tutorial.rst:305 3291ca47108e47b19f4b0bc0a5a4027b
 msgid ""
@@ -693,23 +693,23 @@ msgid ""
 "land in which rectangle or on which page is automatically determined by "
 "the story itself -- it cannot be influenced other than by providing the "
 "rectangles."
-msgstr ""
+msgstr "story는 차례로 더 많은 콘텐츠가 작성되기를 기다리고 있는지 여부를 나타내는 완료 코드를 반환합니다. 콘텐츠의 어느 부분이 어떤 사각형이나 어떤 페이지에 배치될지는 story 자체에 의해 자동으로 결정됩니다. 사각형을 제공하는 것 외에는 영향을 줄 수 없습니다."
 
 #: ../../tutorial.rst:307 bd9d9dd769be42d4b2431ad4fac946e4
 msgid ""
 "Please see the :ref:`Stories recipes<RecipesStories>` for a number of "
 "typical use cases."
-msgstr ""
+msgstr "일반적인 사용 사례는 :ref:`Stories recipes<RecipesStories>` 를 참조하세요."
 
 #: ../../tutorial.rst:311 b4514f2b40064533bbf026420a0260d7
 msgid "PDF Maintenance"
-msgstr ""
+msgstr "PDF 유지보수"
 
 #: ../../tutorial.rst:312 76f8cae636954def812f6bd6aa4d9077
 msgid ""
 "PDFs are the only document type that can be **modified** using PyMuPDF. "
 "Other file types are read-only."
-msgstr ""
+msgstr "PDF는 |PyMuPDF| 를 사용하여 **수정** 할 수 있는 유일한 문서 타입입니다. 다른 파일 타입은 읽기 전용입니다."
 
 #: ../../tutorial.rst:314 6d192d43c9e24232be29c65e1e0c1018
 msgid ""
@@ -718,50 +718,50 @@ msgid ""
 "here :meth:`Document.convert_to_pdf`, and also look at the demo script "
 "`pdf-converter.py`_ which can convert any :ref:`supported "
 "document<Supported_File_Types>` to PDF."
-msgstr ""
+msgstr "그러나 **모든 문서** (이미지 포함)를 PDF로 변환한 다음 변환 결과에 모든 |PyMuPDF| 기능을 적용할 수 있습니다. 자세한 내용은 :meth:`Document.convert_to_pdf` 를 참조하고, 모든 :ref:` 지원되는 문서<Supported_File_Types>` 를 PDF로 변환할 수 있는 데모 스크립트 `pdf-converter.py`_ 도 살펴보세요."
 
 #: ../../tutorial.rst:316 05d7bbe4027a4e9b98372c4707c22cd4
 msgid ""
 ":meth:`Document.save()` always stores a PDF in its current (potentially "
 "modified) state on disk."
-msgstr ""
+msgstr ":meth:`Document.save()` 는 항상 PDF를 현재(잠재적으로 수정된) 상태로 디스크에 저장합니다."
 
 #: ../../tutorial.rst:318 400c516b51f0441a9c6ac7d433101329
 msgid ""
 "You normally can choose whether to save to a new file, or just append "
 "your modifications to the existing one (\"incremental save\"), which "
 "often is very much faster."
-msgstr ""
+msgstr "일반적으로 새 파일에 저장할지 또는 기존 파일에 수정 사항만 추가할지(\"incremental save\") 선택할 수 있으며, 후자가 종종 훨씬 빠릅니다."
 
 #: ../../tutorial.rst:320 57fdfcd11a1245249d7e837f37b43094
 msgid ""
 "The following describes ways how you can manipulate PDF documents. This "
 "description is by no means complete: much more can be found in the "
 "following chapters."
-msgstr ""
+msgstr "다음은 PDF 문서를 조작하는 방법을 설명합니다. 이 설명은 결코 완전하지 않습니다. 다음 장에서 더 많은 내용을 찾을 수 있습니다."
 
 #: ../../tutorial.rst:323 ec4c85ec57124203b67f52652f082b88
 msgid "Modifying, Creating, Re-arranging and Deleting Pages"
-msgstr ""
+msgstr "페이지 수정, 생성, 재배열 및 삭제"
 
 #: ../../tutorial.rst:324 625ab390c172404fbdc7aa9520874495
 msgid ""
 "There are several ways to manipulate the so-called **page tree** (a "
 "structure describing all the pages) of a PDF:"
-msgstr ""
+msgstr "PDF의 소위 **페이지 트리** (모든 페이지를 설명하는 구조)를 조작하는 여러 방법이 있습니다:"
 
 #: ../../tutorial.rst:326 159259eb9e4145daa6c13b2ad767f12e
 msgid ""
 ":meth:`Document.delete_page` and :meth:`Document.delete_pages` delete "
 "pages."
-msgstr ""
+msgstr ":meth:`Document.delete_page` 및 :meth:`Document.delete_pages` 는 페이지를 삭제합니다."
 
 #: ../../tutorial.rst:328 473d5897fff649019f539d6232e91f44
 msgid ""
 ":meth:`Document.copy_page`, :meth:`Document.fullcopy_page` and "
 ":meth:`Document.move_page` copy or move a page to other locations within "
 "the same document."
-msgstr ""
+msgstr ":meth:`Document.copy_page`, :meth:`Document.fullcopy_page` 및 :meth:`Document.move_page` 는 페이지를 같은 문서 내의 다른 위치로 복사하거나 이동합니다."
 
 #: ../../tutorial.rst:330 1e6c19e64c734426bec58da4dfbe7e0b
 msgid ""
@@ -770,84 +770,84 @@ msgid ""
 "integers must all be in range *0 <= i < page_count*. When executed, all "
 "pages **missing** in this list will be deleted. Remaining pages will "
 "occur **in the sequence and as many times (!) as you specify them**."
-msgstr ""
+msgstr ":meth:`Document.select` 는 PDF를 선택한 페이지로 축소합니다. 매개변수는 유지하려는 페이지 번호의 시퀀스 [#f3]_ 입니다. 이러한 정수는 모두 *0 <= i < page_count* 범위에 있어야 합니다. 실행되면 이 목록에 **없는** 모든 페이지가 삭제됩니다. 남은 페이지는 **시퀀스에서 지정한 횟수만큼(!) 나타납니다**."
 
 #: ../../tutorial.rst:332 1032d54636274cfab2c769409afa76e0
 msgid "So you can easily create new PDFs with"
-msgstr ""
+msgstr "따라서 다음과 같은 새 PDF를 쉽게 만들 수 있습니다:"
 
 #: ../../tutorial.rst:334 e8415caf00594110bef2b948c89abcbd
 msgid "the first or last 10 pages,"
-msgstr ""
+msgstr "처음 또는 마지막 10페이지,"
 
 #: ../../tutorial.rst:335 fc336f721207413b95dce987329adfad
 msgid "only the odd or only the even pages (for doing double-sided printing),"
-msgstr ""
+msgstr "홀수 페이지만 또는 짝수 페이지만(양면 인쇄용),"
 
 #: ../../tutorial.rst:336 3a6929bd1e7d4e178ef1549c9c67d87a
 msgid "pages that **do** or **don't** contain a given text,"
-msgstr ""
+msgstr "주어진 텍스트를 **포함하는** 또는 **포함하지 않는** 페이지,"
 
 #: ../../tutorial.rst:337 968ba746356447208207a1cee391ea52
 msgid "reverse the page sequence, ..."
-msgstr ""
+msgstr "페이지 시퀀스 반전, ..."
 
 #: ../../tutorial.rst:339 1c2ed724e9564be1a8841011462e53a1
 msgid "... whatever you can think of."
-msgstr ""
+msgstr "... 생각할 수 있는 모든 것."
 
 #: ../../tutorial.rst:341 3a7dc1aa206e4858a930d0cc0ce437cf
 msgid ""
 "The saved new document will contain links, annotations and bookmarks that"
 " are still valid (i.a.w. either pointing to a selected page or to some "
 "external resource)."
-msgstr ""
+msgstr "저장된 새 문서는 여전히 유효한 링크, 주석 및 북마크를 포함합니다(즉, 선택한 페이지 또는 일부 외부 리소스를 가리킴)."
 
 #: ../../tutorial.rst:343 62273df02f3a43edaca93b7b9899b551
 msgid ""
 ":meth:`Document.insert_page` and :meth:`Document.new_page` insert new "
 "pages."
-msgstr ""
+msgstr ":meth:`Document.insert_page` 및 :meth:`Document.new_page` 는 새 페이지를 삽입합니다."
 
 #: ../../tutorial.rst:345 62ec5bdcc4854cc0ab7b5a9c5de8295e
 msgid ""
 "Pages themselves can moreover be modified by a range of methods (e.g. "
 "page rotation, annotation and link maintenance, text and image "
 "insertion)."
-msgstr ""
+msgstr "페이지 자체는 다양한 메서드(예: 페이지 회전, 주석 및 링크 유지보수, 텍스트 및 이미지 삽입)로 수정할 수 있습니다."
 
 #: ../../tutorial.rst:348 f481a1f85523458ba716bfffa017ecc2
 msgid "Joining and Splitting PDF Documents"
-msgstr ""
+msgstr "PDF 문서 결합 및 분할"
 
 #: ../../tutorial.rst:350 5c4f9e715c364f99ab85e02a35390a54
 msgid ""
 "Method :meth:`Document.insert_pdf` copies pages **between different** PDF"
 " documents. Here is a simple **joiner** example (*doc1* and *doc2* being "
 "opened PDFs)::"
-msgstr ""
+msgstr ":meth:`Document.insert_pdf` 메서드는 **다른** PDF 문서 간에 페이지를 복사합니다. 다음은 간단한 **결합** 예제입니다(*doc1* 및 *doc2* 는 열린 PDF)::"
 
 #: ../../tutorial.rst:355 76e1ca6378be4c7780b008c6aa0147b1
 msgid ""
 "Here is a snippet that **splits** *doc1*. It creates a new document of "
 "its first and its last 10 pages::"
-msgstr ""
+msgstr "다음은 *doc1* 을 **분할** 하는 스니펫입니다. 처음 10페이지와 마지막 10페이지로 새 문서를 만듭니다::"
 
 #: ../../tutorial.rst:362 425d928677684aaebd2c13acc306cc3a
 msgid ""
 "More can be found in the :ref:`Document` chapter. Also have a look at "
 "`PDFjoiner.py`_."
-msgstr ""
+msgstr "더 많은 내용은 :ref:`Document` 장에서 찾을 수 있습니다. `PDFjoiner.py`_ 도 살펴보세요."
 
 #: ../../tutorial.rst:365 3a32f81f55af4ff2942e6a5bda5351e4
 msgid "Embedding Data"
-msgstr ""
+msgstr "데이터 임베딩"
 
 #: ../../tutorial.rst:367 e8c1a07274464e69b5716d2cfcd333a2
 msgid ""
 "PDFs can be used as containers for arbitrary data (executables, other "
 "PDFs, text or binary files, etc.) much like ZIP archives."
-msgstr ""
+msgstr "PDF는 ZIP 아카이브와 매우 유사하게 임의의 데이터(실행 파일, 다른 PDF, 텍스트 또는 바이너리 파일 등)의 컨테이너로 사용할 수 있습니다."
 
 #: ../../tutorial.rst:369 e53116859c304e5d8cae52bca7615d49
 msgid ""
@@ -856,17 +856,17 @@ msgid ""
 "the Wiki on `dealing with embedding files`_, or the example scripts "
 "`embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and "
 "`embedded-list.py`_."
-msgstr ""
+msgstr "|PyMuPDF| 는 :ref:`Document` ``embfile_*`` 메서드 및 속성을 통해 이 기능을 완전히 지원합니다. 자세한 내용은 :ref:`Appendix 3` 을 읽거나, `dealing with embedding files`_ 에 대한 Wiki를 참조하거나, 예제 스크립트 `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, `embedded-list.py`_ 를 살펴보세요."
 
 #: ../../tutorial.rst:373 7e063cc85bf74b67af328699883eabcd
 msgid "Saving"
-msgstr ""
+msgstr "저장"
 
 #: ../../tutorial.rst:375 ddc980f323444d9a888df621e5e4413a
 msgid ""
 "As mentioned above, :meth:`Document.save` will **always** save the "
 "document in its current state."
-msgstr ""
+msgstr "위에서 언급한 대로 :meth:`Document.save` 는 **항상** 문서를 현재 상태로 저장합니다."
 
 #: ../../tutorial.rst:377 938eb4bca93d44e7ad9d9db6a21b0197
 msgid ""
@@ -874,216 +874,216 @@ msgid ""
 "``incremental=True``. This process is (usually) **extremely fast**, since"
 " changes are **appended to the original file** without completely "
 "rewriting it."
-msgstr ""
+msgstr "``incremental=True`` 옵션을 지정하여 변경 사항을 **원본 PDF** 에 다시 쓸 수 있습니다. 이 프로세스는 (일반적으로) **매우 빠릅니다**. 파일을 완전히 다시 쓰지 않고 변경 사항을 **원본 파일에 추가** 하기 때문입니다."
 
 #: ../../tutorial.rst:379 34a90e8b41204457b27c7bf4c896ed07
 msgid ""
 ":meth:`Document.save` options correspond to options of MuPDF's command "
 "line utility *mutool clean*, see the following table."
-msgstr ""
+msgstr ":meth:`Document.save` 옵션은 |MuPDF| 의 명령줄 유틸리티 *mutool clean* 의 옵션에 해당합니다. 다음 표를 참조하세요."
 
 #: ../../tutorial.rst:382 1163070c3e2e478c9edfeeef99960201
 msgid "**Save Option**"
-msgstr ""
+msgstr "**저장 옵션**"
 
 #: ../../tutorial.rst:382 94311b1ebca3478a8d7bf6f6d522fd8b
 msgid "**mutool**"
-msgstr ""
+msgstr "**mutool**"
 
 #: ../../tutorial.rst:382 962d3ef8846c431c8e9dfdf9d487bfb1
 msgid "**Effect**"
-msgstr ""
+msgstr "**효과**"
 
 #: ../../tutorial.rst:384 b65cf8acc8bc476f8334931a4c8a17b8
 msgid "garbage=1"
-msgstr ""
+msgstr "garbage=1"
 
 #: ../../tutorial.rst:384 6b4221531c1b4915975145d5a46840f9
 msgid "g"
-msgstr ""
+msgstr "g"
 
 #: ../../tutorial.rst:384 b773213735d5433a912d7d50de094b58
 msgid "garbage collect unused objects"
-msgstr ""
+msgstr "사용하지 않는 객체 가비지 수집"
 
 #: ../../tutorial.rst:385 9bb3557107484b32b9d48ee883975e41
 msgid "garbage=2"
-msgstr ""
+msgstr "garbage=2"
 
 #: ../../tutorial.rst:385 e5d8266ec4434156843ae8d329cb1234
 msgid "gg"
-msgstr ""
+msgstr "gg"
 
 #: ../../tutorial.rst:385 5d1cd64ee4a44495b52e5808a4c51ebf
 msgid "in addition to 1, compact :data:`xref` tables"
-msgstr ""
+msgstr "1에 추가하여 :data:`xref` 테이블 압축"
 
 #: ../../tutorial.rst:386 5846a30c454d494b9cb77c2612b7e3ba
 msgid "garbage=3"
-msgstr ""
+msgstr "garbage=3"
 
 #: ../../tutorial.rst:386 8499a2c0b7254ddfbc44cba627532452
 msgid "ggg"
-msgstr ""
+msgstr "ggg"
 
 #: ../../tutorial.rst:386 349d1afd120c468c8663d3467baf0a1d
 msgid "in addition to 2, merge duplicate objects"
-msgstr ""
+msgstr "2에 추가하여 중복 객체 병합"
 
 #: ../../tutorial.rst:387 f97513200d184db2818ef3272e06659d
 msgid "garbage=4"
-msgstr ""
+msgstr "garbage=4"
 
 #: ../../tutorial.rst:387 8818b59f9bf3464e8ff2acae77c152f2
 msgid "gggg"
-msgstr ""
+msgstr "gggg"
 
 #: ../../tutorial.rst:387 c284ddf0b0794e979bfa728c57373d83
 msgid "in addition to 3, merge duplicate stream content"
-msgstr ""
+msgstr "3에 추가하여 중복 스트림 콘텐츠 병합"
 
 #: ../../tutorial.rst:388 7874a21a2a374610abddf1cbd7efb717
 msgid "clean=True"
-msgstr ""
+msgstr "clean=True"
 
 #: ../../tutorial.rst:388 c1e6bac1097a452a8399150c1e9c8279
 msgid "cs"
-msgstr ""
+msgstr "cs"
 
 #: ../../tutorial.rst:388 9ddc64830c9040ed8451f02ed2741816
 msgid "clean and sanitize content streams"
-msgstr ""
+msgstr "콘텐츠 스트림 정리 및 정화"
 
 #: ../../tutorial.rst:389 c2f486c396c84db0ba07db1c9ee5a7ae
 msgid "deflate=True"
-msgstr ""
+msgstr "deflate=True"
 
 #: ../../tutorial.rst:389 49a98a67d15747c98e6ca70bb53f3c51
 msgid "z"
-msgstr ""
+msgstr "z"
 
 #: ../../tutorial.rst:389 37e910e46f2247d3a69e36dbd0748d94
 msgid "deflate uncompressed streams"
-msgstr ""
+msgstr "압축되지 않은 스트림 압축"
 
 #: ../../tutorial.rst:390 7ffbd7aa96264ff1902b58f73b4fd092
 msgid "deflate_images=True"
-msgstr ""
+msgstr "deflate_images=True"
 
 #: ../../tutorial.rst:390 83ea4c4b317d488092885540eb84f939
 msgid "i"
-msgstr ""
+msgstr "i"
 
 #: ../../tutorial.rst:390 4e719956c06a4d49bb8d10a19576ee42
 msgid "deflate image streams"
-msgstr ""
+msgstr "이미지 스트림 압축"
 
 #: ../../tutorial.rst:391 c33f6052e9494538ae7f4e1191c64fd2
 msgid "deflate_fonts=True"
-msgstr ""
+msgstr "deflate_fonts=True"
 
 #: ../../tutorial.rst:391 9786f972e1be4a16b85ffee8b754ec19
 msgid "f"
-msgstr ""
+msgstr "f"
 
 #: ../../tutorial.rst:391 79fefb0533874ecb8a096e7db7f10332
 msgid "deflate fontfile streams"
-msgstr ""
+msgstr "글꼴 파일 스트림 압축"
 
 #: ../../tutorial.rst:392 423d166f2fc54b4498a9377a2dd30960
 msgid "ascii=True"
-msgstr ""
+msgstr "ascii=True"
 
 #: ../../tutorial.rst:392 a67143a6cbe040c590ae0a63a0fe9234
 msgid "a"
-msgstr ""
+msgstr "a"
 
 #: ../../tutorial.rst:392 59590f861522439b8f81250d3941e06c
 msgid "convert binary data to ASCII format"
-msgstr ""
+msgstr "바이너리 데이터를 ASCII 형식으로 변환"
 
 #: ../../tutorial.rst:393 86236a9e66cf4150970d92080d6e1583
 msgid "linear=True"
-msgstr ""
+msgstr "linear=True"
 
 #: ../../tutorial.rst:393 5893e24f2faa4060ba0c43aa63dbd263
 msgid "l"
-msgstr ""
+msgstr "l"
 
 #: ../../tutorial.rst:393 0dec5675398e49978e78651893a99395
 msgid "create a linearized version"
-msgstr ""
+msgstr "선형화된 버전 생성"
 
 #: ../../tutorial.rst:394 febbe58d4b104f8bbe950ccccccb1859
 msgid "expand=True"
-msgstr ""
+msgstr "expand=True"
 
 #: ../../tutorial.rst:394 ef0e028a01314e21a0d744ca0d2ad01f
 msgid "d"
-msgstr ""
+msgstr "d"
 
 #: ../../tutorial.rst:394 09ec7a0736e34a67aa68a9542195d17e
 msgid "decompress all streams"
-msgstr ""
+msgstr "모든 스트림 압축 해제"
 
 #: ../../tutorial.rst:397 e917b060c085407fb80a474e3bec75e9
 msgid ""
 "For an explanation of terms like ``object``, ``stream``, ``xref`` consult"
 " the :ref:`Glossary` chapter."
-msgstr ""
+msgstr "``object``, ``stream``, ``xref`` 와 같은 용어에 대한 설명은 :ref:`Glossary` 장을 참조하세요."
 
 #: ../../tutorial.rst:399 dcb5dc3e6c3a41349a7db5e5052ed2e0
 msgid ""
 "For example, ``mutool clean -ggggz file.pdf`` yields excellent "
 "compression results. It corresponds to ``doc.save(filename, garbage=4, "
 "deflate=True)``."
-msgstr ""
+msgstr "예를 들어 ``mutool clean -ggggz file.pdf`` 는 우수한 압축 결과를 제공합니다. 이것은 ``doc.save(filename, garbage=4, deflate=True)`` 에 해당합니다."
 
 #: ../../tutorial.rst:402 c79ea0512d3b44e78f142255268af6ac
 msgid "Closing"
-msgstr ""
+msgstr "닫기"
 
 #: ../../tutorial.rst:403 f745b8b8cfd64cd0955b6d9c72baa5f3
 msgid ""
 "It is often desirable to \"close\" a document to relinquish control of "
 "the underlying file to the OS, while your program continues."
-msgstr ""
+msgstr "프로그램이 계속 실행되는 동안 기본 파일에 대한 제어를 OS에 반환하기 위해 문서를 \"닫는\" 것이 종종 바람직합니다."
 
 #: ../../tutorial.rst:405 6ec44b753b01413a9bcbd6b21a1310d7
 msgid ""
 "This can be achieved by the :meth:`Document.close` method. Apart from "
 "closing the underlying file, buffer areas associated with the document "
 "will be freed."
-msgstr ""
+msgstr "이것은 :meth:`Document.close` 메서드로 달성할 수 있습니다. 기본 파일을 닫는 것 외에도 문서와 연결된 버퍼 영역이 해제됩니다."
 
 #: ../../tutorial.rst:408 88cb960755d5457da5441939ff0c836d
 msgid "Further Reading"
-msgstr ""
+msgstr "추가 읽기"
 
 #: ../../tutorial.rst:409 079337447add4588b00679495c0756c6
 msgid ""
 "Also have a look at PyMuPDF's `Wiki`_ pages. Especially those named in "
 "the sidebar under title **\"Recipes\"** cover over 15 topics written in "
 "\"How-To\" style."
-msgstr ""
+msgstr "|PyMuPDF| 의 `Wiki`_ 페이지도 살펴보세요. 특히 사이드바의 **\"Recipes\"** 제목 아래에 나열된 항목은 \"How-To\" 스타일로 작성된 15개 이상의 주제를 다룹니다."
 
 #: ../../tutorial.rst:411 4ff206365d3c46319f8786732294335f
 msgid ""
 "This document also contains a :ref:`FAQ`. This chapter has close "
 "connection to the aforementioned recipes, and it will be extended with "
 "more content over time."
-msgstr ""
+msgstr "이 문서에는 :ref:`FAQ` 도 포함되어 있습니다. 이 장은 앞서 언급한 recipes와 밀접한 관련이 있으며, 시간이 지나면서 더 많은 콘텐츠로 확장될 것입니다."
 
 #: ../../tutorial.rst:418 8469cb98a4bc46da95e015537403452d
 msgid "Footnotes"
-msgstr ""
+msgstr "각주"
 
 #: ../../tutorial.rst:419 7abfecf3e58542b0859cd575498948f7
 msgid ""
 "PyMuPDF lets you also open several image file types just like normal "
 "documents. See section :ref:`ImageFiles` in chapter :ref:`Pixmap` for "
 "more comments."
-msgstr ""
+msgstr "|PyMuPDF| 는 일반 문서처럼 여러 이미지 파일 타입을 열 수 있게 합니다. 자세한 내용은 :ref:`Pixmap` 장의 :ref:`ImageFiles` 섹션을 참조하세요."
 
 #: ../../tutorial.rst:421 70b740aad28644b395c85b6a12f20f0e
 msgid ""
@@ -1091,7 +1091,7 @@ msgid ""
 "another PyMuPDF class, :ref:`TextPage`. The names of these methods "
 "correspond to the argument string passed to :meth:`Page.get_text` \\:  "
 "*Page.get_text(\"dict\")* is equivalent to *TextPage.extractDICT()* \\."
-msgstr ""
+msgstr ":meth:`Page.get_text` 는 다른 |PyMuPDF| 클래스인 :ref:`TextPage` 의 여러 메서드에 대한 편의 래퍼입니다. 이러한 메서드의 이름은 :meth:`Page.get_text` 에 전달된 인수 문자열에 해당합니다: *Page.get_text(\"dict\")* 는 *TextPage.extractDICT()* 와 동일합니다."
 
 #: ../../tutorial.rst:423 13eddbfd7bd64cd49e523d76972c7368
 msgid ""
@@ -1100,9 +1100,9 @@ msgid ""
 "examples are Python tuples and lists. But *array.array*, *numpy.array* "
 "and PyMuPDF's \"geometry\" objects (:ref:`Algebra`) are sequences, too. "
 "Refer to :ref:`SequenceTypes` for details."
-msgstr ""
+msgstr "\"Sequences\"는 시퀀스 프로토콜을 준수하는 Python 객체입니다. 이러한 객체는 *__getitem__()* 이라는 메서드를 구현합니다. 가장 잘 알려진 예는 Python 튜플과 리스트입니다. 그러나 *array.array*, *numpy.array* 및 |PyMuPDF| 의 \"geometry\" 객체(:ref:`Algebra`)도 시퀀스입니다. 자세한 내용은 :ref:`SequenceTypes` 를 참조하세요."
 
 #: ../../footer.rst:46 34f591e7f8ab491b884b15a32b4f508e
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

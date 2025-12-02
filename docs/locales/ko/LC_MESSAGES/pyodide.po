@@ -21,87 +21,87 @@ msgstr ""
 
 #: ../../header.rst:-1 9e4f1d023e4c4a2f9b1789603aba1601
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 02180e9a6b5e48f88c53ee91a688adb1
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 c68f782efd8344ff9fbda1a7566d3151
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../pyodide.rst:4 b63880b098224734b9b2dc4c700c8ef3
 msgid "Pyodide"
-msgstr ""
+msgstr "Pyodide"
 
 #: ../../pyodide.rst:8 ef1d306e03734c209cc1de803b563abf
 msgid "Overview"
-msgstr ""
+msgstr "개요"
 
 #: ../../pyodide.rst:11 a4f52f95cfaf4399817388f7e5cdb9c0
 msgid ""
 "`Pyodide <https://pyodide.org>`_ is a client-side Python implementation "
 "that runs in a web browser."
-msgstr ""
+msgstr "`Pyodide <https://pyodide.org>`_ 는 웹 브라우저에서 실행되는 클라이언트 측 Python 구현입니다."
 
 #: ../../pyodide.rst:14 414c957de5624f6ba708ad075d3d7a63
 msgid "The Pyodide build of PyMuPDF is currently experimental."
-msgstr ""
+msgstr "|PyMuPDF| 의 Pyodide 빌드는 현재 실험적입니다."
 
 #: ../../pyodide.rst:18 1199cc39832d45bdaa78306e41d821e5
 msgid "Building a PyMuPDF wheel for Pyodide"
-msgstr ""
+msgstr "Pyodide용 |PyMuPDF| 휠 빌드"
 
 #: ../../pyodide.rst:20 75ac11d9769c49a1afefaeaf2e66c13e
 msgid ""
 "A PyMuPDF wheel for Pyodide can be built by running "
 "`scripts/gh_release.py` with some environmental variable settings. This "
 "is regularly tested on Github by `.github/workflows/test_pyodide.yml`."
-msgstr ""
+msgstr "일부 환경 변수 설정과 함께 `scripts/gh_release.py` 를 실행하여 Pyodide용 |PyMuPDF| 휠을 빌드할 수 있습니다. 이것은 `.github/workflows/test_pyodide.yml` 에 의해 GitHub에서 정기적으로 테스트됩니다."
 
 #: ../../pyodide.rst:24 cf08249abe844603bd188263b0fabb48
 msgid ""
 "Here is an example of this, a single Linux command (to be run with the "
 "current directory set to a PyMuPDF checkout), that builds a Pyodide "
 "wheel::"
-msgstr ""
+msgstr "다음은 |PyMuPDF| 체크아웃으로 현재 디렉토리를 설정한 상태에서 실행할 단일 Linux 명령으로 Pyodide 휠을 빌드하는 예제입니다::"
 
 #: ../../pyodide.rst:33 9801c86b124048eaa3483bd780ea6964
 msgid "This does the following (all inside Python venv's):"
-msgstr ""
+msgstr "다음 작업을 수행합니다 (모두 Python venv 내부에서):"
 
 #: ../../pyodide.rst:35 de17df8ffe044736b9751eb4efeb9640
 msgid ""
 "Download (git clone and pip install) and customise a Pyodide build "
 "environment."
-msgstr ""
+msgstr "Pyodide 빌드 환경을 다운로드(git clone 및 pip install)하고 사용자 정의합니다."
 
 #: ../../pyodide.rst:36 00d95a72eea642cf9a06eea851573b78
 msgid "Download (git clone) the latest MuPDF."
-msgstr ""
+msgstr "최신 |MuPDF| 를 다운로드(git clone)합니다."
 
 #: ../../pyodide.rst:37 25c3416cee3a43639827a6237c3a3012
 msgid "Build MuPDF and PyMuPDF in the Pyodide build environment."
-msgstr ""
+msgstr "Pyodide 빌드 환경에서 |MuPDF| 와 |PyMuPDF| 를 빌드합니다."
 
 #: ../../pyodide.rst:38 096c442727774ebd99b66b131e42786f
 msgid "Create a wheel in `dist/`."
-msgstr ""
+msgstr "`dist/` 에 휠을 생성합니다."
 
 #: ../../pyodide.rst:40 47aca590fd0649b99cc760c1fbb7029d
 msgid ""
 "For more information, see the comments for functions "
 "`build_pyodide_wheel()` and `pyodide_setup()` in `scripts/gh_release.py`."
-msgstr ""
+msgstr "자세한 내용은 `scripts/gh_release.py` 의 함수 `build_pyodide_wheel()` 및 `pyodide_setup()` 에 대한 주석을 참조하세요."
 
 #: ../../pyodide.rst:45 c4fc80be31774fb2b23cda8d96a10202
 msgid "Using a Pyodide wheel"
-msgstr ""
+msgstr "Pyodide 휠 사용"
 
 #: ../../pyodide.rst:48 108ac7eb8b964c2cbc563d9761406088
 msgid ""
@@ -109,45 +109,45 @@ msgid ""
 "`PyMuPDF/dist/PyMuPDF-1.24.2-cp311-cp311-emscripten_3_1_32_wasm32.whl`) "
 "to a webserver which has been configured to allow Cross-origin resource "
 "sharing (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)."
-msgstr ""
+msgstr "휠(예: `PyMuPDF/dist/PyMuPDF-1.24.2-cp311-cp311-emscripten_3_1_32_wasm32.whl`) 을 Cross-origin resource sharing(https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)을 허용하도록 구성된 웹 서버에 업로드합니다."
 
 #: ../../pyodide.rst:54 14b102796b7a4d779c994b61aa456eb6
 msgid ""
 "The wheel can be used in a Pyodide console running in a web browser, or a"
 " JupyterLite notebook running in a web browser."
-msgstr ""
+msgstr "휠은 웹 브라우저에서 실행되는 Pyodide 콘솔 또는 웹 브라우저에서 실행되는 JupyterLite 노트북에서 사용할 수 있습니다."
 
 #: ../../pyodide.rst:57 298d17eab9bf4ac091904aa16a7b051b
 msgid "To create a Pyodide console, go to:"
-msgstr ""
+msgstr "Pyodide 콘솔을 만들려면 다음으로 이동하세요:"
 
 #: ../../pyodide.rst:59 f04d4a5529e5478090c9afdca37eab57
 msgid "https://pyodide.org/en/stable/console.html"
-msgstr ""
+msgstr "https://pyodide.org/en/stable/console.html"
 
 #: ../../pyodide.rst:61 2ed99e58360846728a2003c28a75ccce
 msgid "To create a JupyterLite notebook, go to:"
-msgstr ""
+msgstr "JupyterLite 노트북을 만들려면 다음으로 이동하세요:"
 
 #: ../../pyodide.rst:63 87c3dae4109c4bf4ab0ea41e5f5decfd
 msgid "https://jupyterlite.readthedocs.io/en/latest/_static/lab/index.html"
-msgstr ""
+msgstr "https://jupyterlite.readthedocs.io/en/latest/_static/lab/index.html"
 
 #: ../../pyodide.rst:66 ae8220ec6a5d45e78e3c2f569bab9574
 msgid ""
 "In both these cases, one can use the following code to download the wheel"
 " (replace `url` with the URL of the uploaded wheel) and import it::"
-msgstr ""
+msgstr "두 경우 모두 다음 코드를 사용하여 휠을 다운로드(`url` 을 업로드된 휠의 URL로 교체)하고 가져올 수 있습니다::"
 
 #: ../../pyodide.rst:74 89859ac6e1a347a7b279e57b128fb282
 msgid ""
 "Note that `micropip.install()` does not work, because of PyMuPDF's use of"
 " shared libraries."
-msgstr ""
+msgstr "|PyMuPDF| 가 공유 라이브러리를 사용하기 때문에 `micropip.install()` 이 작동하지 않습니다."
 
 #: ../../pyodide.rst:79 4fc797af4a414bd8b824e6adf8ea5e56
 msgid "Loading a PDF document from a URL into PyMuPDF"
-msgstr ""
+msgstr "URL에서 |PyMuPDF| 로 PDF 문서 로드"
 
 #: ../../pyodide.rst:82 df1f0a64f0ec4ac29b93e91709cbb966
 msgid ""
@@ -156,13 +156,13 @@ msgid ""
 "`pyodide.http` module that uses javascript internally, which one can use "
 "to download into a `bytes` instance, which can be used to create a "
 "PyMuPDF `Document` instance::"
-msgstr ""
+msgstr "Pyodide 브라우저 콘솔에는 일반 네트워크 액세스가 없으므로 예를 들어 `urllib.request.urlopen(url)` 이 실패합니다. 하지만 Pyodide에는 내부적으로 javascript를 사용하는 내장 `pyodide.http` 모듈이 있어, 이를 사용하여 `bytes` 인스턴스로 다운로드할 수 있으며, 이를 사용하여 |PyMuPDF| `Document` 인스턴스를 만들 수 있습니다::"
 
 #: ../../pyodide.rst:93 d9380bc488b14d1b863f1225ee39edfe
 msgid "It looks like this only works with `https://`, not `http://`."
-msgstr ""
+msgstr "이것은 `http://` 가 아닌 `https://` 에서만 작동하는 것 같습니다."
 
 #: ../../footer.rst:46 4640d757601c44b9a9490b7d6bff2214
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -21,43 +21,43 @@ msgstr ""
 
 #: ../../index.rst:39 952c2d69888a45e9b0da6e043ddab148
 msgid "About"
-msgstr ""
+msgstr "소개"
 
 #: ../../index.rst:50 83a8e5dd2a9b4d099b68e52044113c27
 msgid "User Guide"
-msgstr ""
+msgstr "사용자 가이드"
 
 #: ../../index.rst:62 d17242cca69d431c8485f8ab5b729f2e
 msgid "How to Guide"
-msgstr ""
+msgstr "사용 방법 가이드"
 
 #: ../../index.rst:69 7466b8745c424beaac09483b379e1f16
 msgid "API Reference"
-msgstr ""
+msgstr "API 참조"
 
 #: ../../index.rst:82 b24fcc31226540bc96465c601658ca98
 msgid "Other"
-msgstr ""
+msgstr "기타"
 
 #: ../../header.rst:-1 43d585d8a38b489ca647a0f6d7ee01dd
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 6af6f9115aea4bcba5a905e65f50def7
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 d0fa97b60e13424eb62997400c445a63
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../index.rst:20 3275915a8da84e58bd47e046c54375d2
 msgid "Welcome to |PyMuPDF|"
-msgstr "PyMuPDF에 오신 것을 환영합니다"
+msgstr "|PyMuPDF| 에 오신 것을 환영합니다"
 
 #: ../../index.rst:22 443397ce6ddd47f5b1d2c0008cd4b639
 msgid ""

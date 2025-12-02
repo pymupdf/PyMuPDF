@@ -21,29 +21,29 @@ msgstr ""
 
 #: ../../header.rst:-1 b2d82d593c664654bc418e7afdf9e7b4
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 b78b5807c07e4a528626a4138223e8de
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 5b3592575d784e428d8d959c1aa99173
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:7
 #: cee0b81d77af4629884ac5a2a380da5c
 msgid "Common Issues and their Solutions"
-msgstr ""
+msgstr "일반적인 문제 및 해결 방법"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:10
 #: 947c39129d6446e094c38d03760b989a
 msgid "How To Dynamically Clean Up Corrupt :title:`PDFs`"
-msgstr ""
+msgstr "손상된 :title:`PDF` 를 동적으로 정리하는 방법"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:12
 #: 984b7de620ae4755bdc3dd0117a5c862
@@ -51,14 +51,14 @@ msgid ""
 "This shows a potential use of |PyMuPDF| with another Python PDF library "
 "(the excellent pure Python package `pdfrw "
 "<https://pypi.python.org/pypi/pdfrw>`_ is used here as an example)."
-msgstr ""
+msgstr "이것은 다른 Python PDF 라이브러리와 함께 |PyMuPDF| 를 사용하는 잠재적 사용 사례를 보여줍니다(여기서는 우수한 순수 Python 패키지 `pdfrw <https://pypi.python.org/pypi/pdfrw>`_ 를 예제로 사용합니다)."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:14
 #: efd17fd3443d4f67899e6f4e8c9bf24e
 msgid ""
 "If a clean, non-corrupt / decompressed PDF is needed, one could "
 "dynamically invoke PyMuPDF to recover from many problems like so::"
-msgstr ""
+msgstr "깨끗하고 손상되지 않은/압축 해제된 PDF가 필요한 경우, 다음과 같이 |PyMuPDF| 를 동적으로 호출하여 많은 문제에서 복구할 수 있습니다::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:50
 #: 3936184480104b60b59e5f2d35b8ae89
@@ -70,12 +70,12 @@ msgid ""
 "<http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_. "
 "However, you must invoke it as a separate process via *subprocess.Popen*,"
 " using stdin and stdout as communication vehicles."
-msgstr ""
+msgstr "명령줄 유틸리티 *pdftk* (`available <https://www.pdflabs.com/tools/pdftk-the-pdf-toolkit/>`_ 는 Windows 전용이지만 `Wine <https://www.winehq.org/>`_ 에서도 실행된다고 보고됨)를 사용하여 유사한 결과를 얻을 수 있습니다. 자세한 내용은 `here <http://www.overthere.co.uk/2013/07/22/improving-pypdf2-with-pdftk/>`_ 를 참조하세요. 하지만 stdin과 stdout을 통신 수단으로 사용하여 *subprocess.Popen* 을 통해 별도 프로세스로 호출해야 합니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:55
 #: fe7e596e66ca4a86a1fe34324a9a62b4
 msgid "How to Convert Any Document to |PDF|"
-msgstr ""
+msgstr "모든 문서를 |PDF| 로 변환하는 방법"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:57
 #: ac5c06eafcda49af9010b5dfe0e339ba
@@ -83,43 +83,43 @@ msgid ""
 "Here is a script that converts any |PyMuPDF| :ref:`supported "
 "document<Supported_File_Types>` to a |PDF|. These include XPS, EPUB, FB2,"
 " CBZ and image formats, including multi-page TIFF images."
-msgstr ""
+msgstr "다음은 |PyMuPDF| 가 :ref:`지원하는 문서<Supported_File_Types>` 를 |PDF| 로 변환하는 스크립트입니다. 여기에는 XPS, EPUB, FB2, CBZ 및 다중 페이지 TIFF 이미지를 포함한 이미지 형식이 포함됩니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:59
 #: 256a7ef1c5ab469695bfaa2724670908
 msgid ""
 "It features maintaining any metadata, table of contents and links "
 "contained in the source document::"
-msgstr ""
+msgstr "소스 문서에 포함된 모든 메타데이터, 목차 및 링크를 유지하는 기능이 있습니다::"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:131
 #: 5aee482ebb684ec799994f2a82dbfc75
 msgid "Changing Annotations: Unexpected Behaviour"
-msgstr ""
+msgstr "주석 변경: 예상치 못한 동작"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:134
 #: cc0c26247fea4639ae1751eb8901a600
 msgid "Problem"
-msgstr ""
+msgstr "문제"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:135
 #: 70437532335143b8b58a1d4c9a8568cb
 msgid "There are two scenarios:"
-msgstr ""
+msgstr "두 가지 시나리오가 있습니다:"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:137
 #: 081715c0d34b4ed6b9e63c8a63a7ac2d
 msgid ""
 "**Updating** an annotation with PyMuPDF which was created by some other "
 "software."
-msgstr ""
+msgstr "다른 소프트웨어로 생성된 주석을 |PyMuPDF| 로 **업데이트** 하는 경우."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:138
 #: c4827e1b0a8f4af4ad46ecbb0abffa2b
 msgid ""
 "**Creating** an annotation with PyMuPDF and later changing it with some "
 "other software."
-msgstr ""
+msgstr "|PyMuPDF| 로 주석을 **생성** 한 후 다른 소프트웨어로 변경하는 경우."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:140
 #: 4237e934234748d3abf9e524336a4243
@@ -128,7 +128,7 @@ msgid ""
 "annotation icon or text font, the fill color or line dashing have "
 "disappeared, line end symbols have changed their size or even have "
 "disappeared too, etc."
-msgstr ""
+msgstr "두 경우 모두 주석 아이콘이나 텍스트 글꼴이 다르게 표시되거나, 채우기 색상이나 선의 파선이 사라지거나, 선 끝 기호의 크기가 변경되거나 사라지는 등의 의도하지 않은 변경이 발생할 수 있습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:143
 #: ../../recipes-common-issues-and-their-solutions.rst:182
@@ -136,7 +136,7 @@ msgstr ""
 #: 0110a2da1aa6417a956feea6fd30428c 32fb7855910549f2ad7c953701ac3c0e
 #: c6624f27d1fa44b2a2f88b1c10495ca9
 msgid "Cause"
-msgstr ""
+msgstr "원인"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:144
 #: 0c44e7ae5501406d90e73396b2cfde02
@@ -145,7 +145,7 @@ msgid ""
 "application. Some annotation types may not be supported, or not be "
 "supported fully or some details may be handled in a different way than in"
 " another application. **There is no standard.**"
-msgstr ""
+msgstr "주석 유지 관리는 각 PDF 유지 관리 애플리케이션마다 다르게 처리됩니다. 일부 주석 유형은 지원되지 않거나 완전히 지원되지 않을 수 있으며, 일부 세부 사항은 다른 애플리케이션과 다른 방식으로 처리될 수 있습니다. **표준이 없습니다.**"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:146
 #: 11bea0e065f94a779ec3d22653833179
@@ -153,7 +153,7 @@ msgid ""
 "Almost always a PDF application also comes with its own icons (file "
 "attachments, sticky notes and stamps) and its own set of supported text "
 "fonts. For example:"
-msgstr ""
+msgstr "거의 항상 PDF 애플리케이션은 자체 아이콘(파일 첨부, 스티커 메모 및 스탬프)과 자체 지원 텍스트 글꼴 세트를 제공합니다. 예를 들어:"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:148
 #: 54046db1813c480aa6d0dfaafd081e7f
@@ -163,43 +163,43 @@ msgid ""
 " no bold variations. When changing a 'FreeText' annotation created by "
 "some other app, its font will probably not be recognized nor accepted and"
 " be replaced by Helvetica."
-msgstr ""
+msgstr "(Py-) |MuPDF| 는 'FreeText' 주석에 대해 다음 5가지 기본 글꼴만 지원합니다: Helvetica, Times-Roman, Courier, ZapfDingbats 및 Symbol -- 기울임꼴/굵게 변형 없음. 다른 앱으로 생성된 'FreeText' 주석을 변경할 때 해당 글꼴은 인식되지 않거나 허용되지 않을 가능성이 높으며 Helvetica로 대체됩니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:150
 #: 0616819cfbea4e98806d1310924671ec
 msgid ""
 "PyMuPDF supports all PDF text markers (highlight, underline, strikeout, "
 "squiggly), but these types cannot be updated with Adobe Acrobat Reader."
-msgstr ""
+msgstr "|PyMuPDF| 는 모든 PDF 텍스트 마커(강조, 밑줄, 취소선, 물결선)를 지원하지만, 이러한 유형은 Adobe Acrobat Reader로 업데이트할 수 없습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:152
 #: 7109456d991a465085055b08e8e3e36f
 msgid ""
 "In most cases there also exists limited support for line dashing which "
 "causes existing dashes to be replaced by straight lines. For example:"
-msgstr ""
+msgstr "대부분의 경우 선 파선에 대한 제한적인 지원이 있어 기존 파선이 직선으로 대체됩니다. 예를 들어:"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:154
 #: 832b05a803034cb2b31a6a163b766c80
 msgid ""
 "PyMuPDF fully supports all line dashing forms, while other viewers only "
 "accept a limited subset."
-msgstr ""
+msgstr "|PyMuPDF| 는 모든 선 파선 형식을 완전히 지원하지만, 다른 뷰어는 제한된 하위 집합만 허용합니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:158
 #: 608cca13d68e48038902234a11344e7d
 msgid "Solutions"
-msgstr ""
+msgstr "해결 방법"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:159
 #: f22d020f442e4ee9a04d2d148fb2e24a
 msgid "Unfortunately there is not much you can do in most of these cases."
-msgstr ""
+msgstr "안타깝게도 대부분의 경우 할 수 있는 일이 많지 않습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:161
 #: 31e1179fb95e4328b53c8cdba8f45e53
 msgid "Stay with the same software for **creating and changing** an annotation."
-msgstr ""
+msgstr "주석을 **생성하고 변경** 할 때 동일한 소프트웨어를 사용하세요."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:162
 #: 2c32e4727b8b4bd8ab345f1bb2dab832
@@ -207,49 +207,49 @@ msgid ""
 "When using PyMuPDF to change an \"alien\" annotation, try to **avoid** "
 ":meth:`Annot.update`. The following methods **can be used without it,** "
 "so that the original appearance should be maintained:"
-msgstr ""
+msgstr "\"외부\" 주석을 변경할 때 |PyMuPDF| 를 사용하는 경우 :meth:`Annot.update` 를 **피하세요**. 다음 메서드는 **이것 없이 사용할 수 있으며**, 원래 모양이 유지됩니다:"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:164
 #: 5f2c568a7ab34cd6908429c03002c3b8
 msgid ":meth:`Annot.set_rect` (location changes)"
-msgstr ""
+msgstr ":meth:`Annot.set_rect` (위치 변경)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:165
 #: f970043a80bc4905bfbc38378bef6cf7
 msgid ":meth:`Annot.set_flags` (annotation behaviour)"
-msgstr ""
+msgstr ":meth:`Annot.set_flags` (주석 동작)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:166
 #: 89d8eeabb0864857bebb1dbd0b5837ac
 msgid ":meth:`Annot.set_info` (meta information, except changes to *content*)"
-msgstr ""
+msgstr ":meth:`Annot.set_info` (메타 정보, *content* 변경 제외)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:167
 #: 8d145d703a694245bf8816344d618fca
 msgid ":meth:`Annot.set_popup` (create popup or change its rect)"
-msgstr ""
+msgstr ":meth:`Annot.set_popup` (팝업 생성 또는 rect 변경)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:168
 #: ec8d39e7fcf1408083026bfb2854b761
 msgid ""
 ":meth:`Annot.set_oc` (add / remove reference to optional content "
 "information)"
-msgstr ""
+msgstr ":meth:`Annot.set_oc` (선택적 콘텐츠 정보에 대한 참조 추가/제거)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:169
 #: 6b85081690ed4886ba03d08a836e7b4e
 msgid ":meth:`Annot.set_open`"
-msgstr ""
+msgstr ":meth:`Annot.set_open`"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:170
 #: 90e51807c8d44cc1861553f1df436100
 msgid ":meth:`Annot.update_file` (file attachment changes)"
-msgstr ""
+msgstr ":meth:`Annot.update_file` (파일 첨부 변경)"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:174
 #: dee4c83bcb6a49afb8cd17e74037844d
 msgid "Missing or Unreadable Extracted Text"
-msgstr ""
+msgstr "누락되거나 읽을 수 없는 추출된 텍스트"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:175
 #: c1c8dec56daa4bac965e78b95eb48c58
@@ -258,26 +258,26 @@ msgid ""
 "text may be missing, or may not appear in the reading sequence visible on"
 " your screen, or contain garbled characters (like a ? or a \"TOFU\" "
 "symbol), etc. This can be caused by a number of different problems."
-msgstr ""
+msgstr "텍스트 추출이 예상대로 작동하지 않는 경우가 많습니다: 텍스트가 누락되거나 화면에 표시되는 읽기 순서에 나타나지 않거나 문자 깨짐(예: ? 또는 \"TOFU\" 기호)이 포함될 수 있습니다. 이것은 여러 다른 문제로 인해 발생할 수 있습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:178
 #: 1339e236dda1461f94aa74a5c03ef680
 msgid "Problem: no text is extracted"
-msgstr ""
+msgstr "문제: 텍스트가 추출되지 않음"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:179
 #: 10f358276c8043138089b5f17c8602a0
 msgid ""
 "Your PDF viewer does display text, but you cannot select it with your "
 "cursor, and text extraction delivers nothing."
-msgstr ""
+msgstr "PDF 뷰어는 텍스트를 표시하지만 커서로 선택할 수 없고 텍스트 추출 결과가 없습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:183
 #: f6463d656f7d4526b79aa27ea3adcfd6
 msgid ""
 "You may be looking at an image embedded in the PDF page (e.g. a scanned "
 "PDF)."
-msgstr ""
+msgstr "PDF 페이지에 포함된 이미지를 보고 있을 수 있습니다(예: 스캔된 PDF)."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:184
 #: 4bda75cc75a84b058bdf9ae2b455a597
@@ -286,13 +286,13 @@ msgid ""
 "using little lines and curves. E.g. a capital \"D\" could be painted by a"
 " line \"|\" and a left-open semi-circle, an \"o\" by an ellipse, and so "
 "on."
-msgstr ""
+msgstr "PDF 작성자가 글꼴을 사용하지 않고 작은 선과 곡선을 사용하여 텍스트를 **시뮬레이션** 했습니다. 예를 들어 대문자 \"D\"는 선 \"|\"와 왼쪽 열린 반원으로 그려질 수 있고, \"o\"는 타원으로 그려질 수 있습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:187
 #: ../../recipes-common-issues-and-their-solutions.rst:200
 #: 4c8ffe1feebe4a46ba615d636a0cf8c7 5ba7c372d3a145a2983fe0d7161d79c0
 msgid "Solution"
-msgstr ""
+msgstr "해결 방법"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:188
 #: b4995dfcae78413486e26863052e0649
@@ -300,19 +300,19 @@ msgid ""
 "Use an OCR software like `OCRmyPDF <https://pypi.org/project/ocrmypdf/>`_"
 " to insert a hidden text layer underneath the visible page. The resulting"
 " PDF should behave as expected."
-msgstr ""
+msgstr "`OCRmyPDF <https://pypi.org/project/ocrmypdf/>`_ 와 같은 OCR 소프트웨어를 사용하여 표시되는 페이지 아래에 숨겨진 텍스트 레이어를 삽입하세요. 결과 PDF는 예상대로 작동해야 합니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:191
 #: 1288979557ce452bb405ebe625a9fe85
 msgid "Problem: unreadable text"
-msgstr ""
+msgstr "문제: 읽을 수 없는 텍스트"
 
 #: ../../recipes-common-issues-and-their-solutions.rst:192
 #: b9738107688a468fb12503d2923c9223
 msgid ""
 "Text extraction does not deliver the text in readable order, duplicates "
 "some text, or is otherwise garbled."
-msgstr ""
+msgstr "텍스트 추출이 읽을 수 있는 순서로 텍스트를 제공하지 않거나, 일부 텍스트가 중복되거나, 그렇지 않으면 문자 깨짐이 발생합니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:196
 #: 1287dd9e37d94aae87d08382d28337b0
@@ -321,7 +321,7 @@ msgid ""
 "sequence in which the text is **coded in the file** deviates from the "
 "reading order. The motivation behind may be technical or protection of "
 "data against unwanted copies."
-msgstr ""
+msgstr "개별 문자는 읽을 수 있지만( \"<?>\" 기호 없음), 텍스트가 **파일에 인코딩된** 순서가 읽기 순서와 다릅니다. 그 배경에는 기술적 이유나 원치 않는 복사로부터 데이터를 보호하려는 의도가 있을 수 있습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:197
 #: f63ebf6449ee40bdaa62ce0cbe979f7b
@@ -330,21 +330,21 @@ msgid ""
 "characters. The font may indeed be unsupported by MuPDF, or the PDF "
 "creator may haved used a font that displays readable text, but on purpose"
 " obfuscates the originating corresponding unicode character."
-msgstr ""
+msgstr "많은 \"<?>\" 기호가 발생하여 |MuPDF| 가 이러한 문자를 해석할 수 없음을 나타냅니다. 글꼴이 실제로 |MuPDF| 에서 지원되지 않을 수 있거나, PDF 작성자가 읽을 수 있는 텍스트를 표시하지만 의도적으로 원본 해당 유니코드 문자를 난독화하는 글꼴을 사용했을 수 있습니다."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:201
 #: 70176f300c204737999ad6e71bb79baa
 msgid "Use layout preserving text extraction: `python -m fitz gettext file.pdf`."
-msgstr ""
+msgstr "레이아웃을 유지하는 텍스트 추출을 사용하세요: `python -m fitz gettext file.pdf`."
 
 #: ../../recipes-common-issues-and-their-solutions.rst:202
 #: 4b4ceb3c473b47a9b06e9bb658885b14
 msgid ""
 "If other text extraction tools also don't work, then the only solution "
 "again is OCRing the page."
-msgstr ""
+msgstr "다른 텍스트 추출 도구도 작동하지 않으면, 다시 유일한 해결책은 페이지를 OCR 처리하는 것입니다."
 
 #: ../../footer.rst:46 07c9714719d541aeb1f5ae9b443f8e23
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

@@ -21,23 +21,23 @@ msgstr ""
 
 #: ../../header.rst:-1 bbc8f87339104f1898b46c688e53d1bf
 msgid "Artifex"
-msgstr ""
+msgstr "Artifex"
 
 #: ../../header.rst:-1 c349cfed692041d1831e68981b1432f3
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
-msgstr ""
+msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 ccc1347133a5468990182905e2e49042
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
-msgstr ""
+msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../outline.rst:7 ac9aff233a8946e286c95d2a2f9a8e13
 msgid "Outline"
-msgstr ""
+msgstr "Outline"
 
 #: ../../outline.rst:9 7a3be59ed3114a5c8bffd3f17bbb2211
 msgid ""
@@ -48,89 +48,89 @@ msgid ""
 "items in \"horizontal\" or downward direction. The full tree of all "
 "outline items for e.g. a conventional table of contents (TOC) can be "
 "recovered by following these \"pointers\"."
-msgstr ""
+msgstr "문서 개요(또는 \"북마크\"라고도 함)는 :ref:`Document` 의 속성입니다(:attr:`Document.outline` 참조). ``None`` 이 아니면 문서의 첫 번째 개요 항목을 나타냅니다. 그 속성은 이 항목의 특성을 정의하고 \"수평\" 또는 아래 방향으로 다른 개요 항목을 가리킵니다. 예를 들어 일반적인 목차(TOC)의 모든 개요 항목의 전체 트리는 이러한 \"포인터\"를 따라 복구할 수 있습니다."
 
 #: ../../outline.rst:12 b45a2c09637c4f3e9d2b01f1ba92a39f
 msgid "**Method / Attribute**"
-msgstr ""
+msgstr "**메서드 / 속성**"
 
 #: ../../outline.rst:12 47ad240edf4f474fa4acbc5fda0372cb
 msgid "**Short Description**"
-msgstr ""
+msgstr "**간단한 설명**"
 
 #: ../../outline.rst:14 be403d58c4de4b12a011b9ed0d0e543f
 msgid ":attr:`Outline.down`"
-msgstr ""
+msgstr ":attr:`Outline.down`"
 
 #: ../../outline.rst:14 247939926687419fbfef8ca1aca02f0d
 msgid "next item downwards"
-msgstr ""
+msgstr "아래로 다음 항목"
 
 #: ../../outline.rst:15 96c69672ce3043259545e0e655eb91db
 msgid ":attr:`Outline.next`"
-msgstr ""
+msgstr ":attr:`Outline.next`"
 
 #: ../../outline.rst:15 4a5f23f96cf749c7872473b681590785
 msgid "next item same level"
-msgstr ""
+msgstr "같은 레벨의 다음 항목"
 
 #: ../../outline.rst:16 c573402a06284cd492bec3c1d27d1e3d
 msgid ":attr:`Outline.page`"
-msgstr ""
+msgstr ":attr:`Outline.page`"
 
 #: ../../outline.rst:16 506be6a2e42d4302bdbc7b4e28e2394d
 msgid "page number (0-based)"
-msgstr ""
+msgstr "페이지 번호(0부터 시작)"
 
 #: ../../outline.rst:17 f119da14666b4fd3b371cf4ffc3e472a
 msgid ":attr:`Outline.title`"
-msgstr ""
+msgstr ":attr:`Outline.title`"
 
 #: ../../outline.rst:17 76ae4b21a6a6447da64b2d5e96423ea6
 msgid "title"
-msgstr ""
+msgstr "제목"
 
 #: ../../outline.rst:18 a5fad59c22974e90b9ea8aad24218452
 msgid ":attr:`Outline.uri`"
-msgstr ""
+msgstr ":attr:`Outline.uri`"
 
 #: ../../outline.rst:18 841c94119419481b8d836018ece01af9
 msgid "string further specifying outline target"
-msgstr ""
+msgstr "개요 대상을 추가로 지정하는 문자열"
 
 #: ../../outline.rst:19 8cfeb148873e49c09a78d54e1a2f77c6
 msgid ":attr:`Outline.is_external`"
-msgstr ""
+msgstr ":attr:`Outline.is_external`"
 
 #: ../../outline.rst:19 8a8f02b1287645c8905eec8793a1b5b6
 msgid "target outside document"
-msgstr ""
+msgstr "문서 외부 대상"
 
 #: ../../outline.rst:20 5de9d126a21d480a9e1ca3476bebb4d3
 msgid ":attr:`Outline.is_open`"
-msgstr ""
+msgstr ":attr:`Outline.is_open`"
 
 #: ../../outline.rst:20 7fc18da2ba4d4cbe9f3b2a82d39f02da
 msgid "whether sub-outlines are open or collapsed"
-msgstr ""
+msgstr "하위 개요가 열려 있는지 접혀 있는지 여부"
 
 #: ../../outline.rst:21 6aa64d2eff674fa2890310aecbb14167
 msgid ":attr:`Outline.dest`"
-msgstr ""
+msgstr ":attr:`Outline.dest`"
 
 #: ../../outline.rst:21 0a87f99431e642139f4b43d536359abe
 msgid "points to destination details object"
-msgstr ""
+msgstr "대상 세부 정보 객체를 가리킴"
 
 #: ../../outline.rst:24 5ed102082bf84d049ca1f0ce22437f31
 msgid "**Class API**"
-msgstr ""
+msgstr "**클래스 API**"
 
 #: ../../outline.rst:30 7b0ddca9a47d4e648ebdab93710cb150
 msgid ""
 "The next outline item on the next level down. Is ``None`` if the item has"
 " no children."
-msgstr ""
+msgstr "다음 레벨의 다음 개요 항목. 항목에 자식이 없으면 ``None`` 입니다."
 
 #: ../../outline.rst 057e37ce84814a1c8c344aab938047f2
 #: 1e93414e062d488e892d2f22750666de 76ab3bd1d70641f185a95f718ad0bb69
@@ -138,62 +138,62 @@ msgstr ""
 #: bc6ef4078c8a4c91a859ae4437517df7 e5dc2bd2705743d59033178491288a7a
 #: ea89654da5734c92aa2797336d8dfbc6
 msgid "type"
-msgstr ""
+msgstr "유형"
 
 #: ../../outline.rst:32 8b64d66496a54db0908a0f6af0d7969e
 msgid ":ref:`Outline`"
-msgstr ""
+msgstr ":ref:`Outline`"
 
 #: ../../outline.rst:36 b8f40bec44ec498a866b8b610465788d
 msgid ""
 "The next outline item at the same level as this item. Is ``None`` if this"
 " is the last one in its level."
-msgstr ""
+msgstr "이 항목과 같은 레벨의 다음 개요 항목. 이것이 해당 레벨의 마지막 항목이면 ``None`` 입니다."
 
 #: ../../outline.rst:38 78788e777e334a73bb007bf2b10702b8
 msgid "`Outline`"
-msgstr ""
+msgstr "`Outline`"
 
 #: ../../outline.rst:42 e0f2f185ffc545688e36397b2ab22051
 msgid "The page number (0-based) this bookmark points to."
-msgstr ""
+msgstr "이 북마크가 가리키는 페이지 번호(0부터 시작)."
 
 #: ../../outline.rst:44 f47207285d9f4747a109ad0f93928b78
 msgid "int"
-msgstr ""
+msgstr "int"
 
 #: ../../outline.rst:48 53ed66d010ce46c8a8afa6580844ac5d
 msgid "The item's title as a string or ``None``."
-msgstr ""
+msgstr "항목의 제목(문자열) 또는 ``None``."
 
 #: ../../outline.rst:50 ../../outline.rst:83 f43c0734193d4aedae69249948755e99
 #: fc9bbc88a2e842c090ac4d2ea7adf221
 msgid "str"
-msgstr ""
+msgstr "str"
 
 #: ../../outline.rst:54 d0a15fed61c5446e815f91424b141eab
 msgid ""
 "Indicator showing whether any sub-outlines should be expanded (``True``) "
 "or be collapsed (``False``). This information is interpreted by PDF "
 "reader software."
-msgstr ""
+msgstr "하위 개요가 확장되어야 하는지(``True``) 접혀야 하는지(``False``)를 나타내는 표시기입니다. 이 정보는 PDF 리더 소프트웨어에 의해 해석됩니다."
 
 #: ../../outline.rst:56 ../../outline.rst:62 1e2367a870064e0ab9fefe235f8f9199
 #: 309c517aaa49400181d997b03fb6d487
 msgid "bool"
-msgstr ""
+msgstr "bool"
 
 #: ../../outline.rst:60 eabf7026067444bd881e44370ac424e5
 msgid ""
 "A bool specifying whether the target is outside (``True``) of the current"
 " document."
-msgstr ""
+msgstr "대상이 현재 문서 외부(``True``)인지 여부를 지정하는 bool입니다."
 
 #: ../../outline.rst:66 6e1ed475f293437aa748d4d40f55bbc0
 msgid ""
 "A string specifying the link target. The meaning of this property should "
 "be evaluated in conjunction with property `is_external`:"
-msgstr ""
+msgstr "링크 대상을 지정하는 문자열입니다. 이 속성의 의미는 `is_external` 속성과 함께 평가해야 합니다:"
 
 #: ../../outline.rst:70 048200e34ebe4f88b8f6ecdfad9e9724
 msgid ""
@@ -202,7 +202,7 @@ msgid ""
 "or similar), another file (``uri`` starts with ``file:`` or ``file://``) "
 "or some other service like an e-mail address (``uri`` starts with "
 "``mailto:``)."
-msgstr ""
+msgstr "`is_external` 이 true: ``uri`` 는 현재 PDF 외부의 대상을 가리키며, 인터넷 리소스(``uri`` 가 ``http://`` 또는 유사한 것으로 시작), 다른 파일(``uri`` 가 ``file:`` 또는 ``file://`` 로 시작) 또는 이메일 주소와 같은 기타 서비스(``uri`` 가 ``mailto:`` 로 시작)일 수 있습니다."
 
 #: ../../outline.rst:76 e2b37e452977480aadfbf5e2b8eb7ced
 msgid ""
@@ -212,17 +212,17 @@ msgid ""
 "format varies for other document types, for example "
 "\"../FixedDoc.fdoc#PG_2_LNK_1\" for page number 2 (1-based) in an XPS "
 "document."
-msgstr ""
+msgstr "`is_external` 이 false: ``uri`` 는 `None` 이거나 내부 위치를 가리킵니다. PDF 문서의 경우, 이것은 1부터 시작하는(!) 페이지 번호 *nnnn* 을 나타내는 *#nnnn* 이거나 이름이 지정된 위치여야 합니다. 형식은 다른 문서 유형에 따라 다릅니다. 예를 들어 XPS 문서의 페이지 번호 2(1부터 시작)의 경우 \"../FixedDoc.fdoc#PG_2_LNK_1\"입니다."
 
 #: ../../outline.rst:87 0774302e2b4a4cc5be36f90e97235665
 msgid "The link destination details object."
-msgstr ""
+msgstr "링크 대상 세부 정보 객체."
 
 #: ../../outline.rst:89 2c95888d87c844888823cf7c4bfbdd8d
 msgid ":ref:`linkDest`"
-msgstr ""
+msgstr ":ref:`linkDest`"
 
 #: ../../footer.rst:46 3da3281d20a349b2afbe0ca6afa704a3
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 
