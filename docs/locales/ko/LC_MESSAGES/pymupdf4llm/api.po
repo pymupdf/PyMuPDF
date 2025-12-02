@@ -1,18 +1,18 @@
 # SOME DESCRIPTIVE TITLE.
-# Copyright (C) 2015-2025, Artifex
+# Copyright (C) 2015-2024, Artifex
 # This file is distributed under the same license as the PyMuPDF package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2024.
 #
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PyMuPDF 1.26.7\n"
+"Project-Id-Version: PyMuPDF 1.24.10\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-11-26 17:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: ko\n"
-"Language-Team: ko <LL@li.org>\n"
+"Language: ja\n"
+"Language-Team: ja <LL@li.org>\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -41,813 +41,533 @@ msgstr ""
 
 #: ../../pymupdf4llm/api.rst:12 e4fe663d1ee04cf7bbc808eeb9ce308b
 msgid "The |PyMuPDF4LLM| API"
-msgstr ""
+msgstr "|PyMuPDF4LLM| API"
 
 #: ../../footer.rst:46 1ed68f4bf8fd45fab04f7a49fba09f0a
 msgid "This documentation covers all versions up to |version|."
 msgstr ""
 
-#~ msgid "Prints the version of the library."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Reads the pages of the file and"
-#~ " outputs the text of its pages "
-#~ "in |JSON| format."
-#~ msgstr ""
-
-#~ msgid "Parameters"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "the file, to be specified either "
-#~ "as a file path string, or as "
-#~ "a |PyMuPDF| :class:`Document` (created via "
-#~ "`pymupdf.open`). In order to use "
-#~ "`pathlib.Path` specifications, Python file-"
-#~ "like objects, documents in memory etc."
-#~ " you **must** use a |PyMuPDF| "
-#~ ":class:`Document`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "specify the desired image resolution in"
-#~ " dots per inch. Default value is "
-#~ "150."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "specify the desired image format via "
-#~ "its extension. Default is \"png\" "
-#~ "(portable network graphics). Another popular"
-#~ " format may be \"jpg\". Possible "
-#~ "values are all :ref:`supported output "
-#~ "formats <Supported_File_Types>`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "store images in this folder. Relevant"
-#~ " if `write_images=True`. Default is the "
-#~ "path of the script directory."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "optional, the pages to consider for "
-#~ "output (caution: specify 0-based page "
-#~ "numbers). If omitted (`None`) all pages"
-#~ " are processed."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please note that page ``header`` / "
-#~ "``footer`` exclusion is not applicable "
-#~ "to |JSON| output as it aims to "
-#~ "always represent all data for the "
-#~ "included pages."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Reads the pages of the file and"
-#~ " outputs the text of its pages "
-#~ "in |Markdown| format. How this should"
-#~ " happen in detail can be influenced"
-#~ " by a number of parameters. Please"
-#~ " note that **support for building "
-#~ "page chunks** from the |Markdown| text"
-#~ " is supported."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "does a simple check for the "
-#~ "general background color of the pages"
-#~ " (default is ``True``). If any text"
-#~ " or vector has this color it "
-#~ "will be ignored. May increase detection"
-#~ " accuracy."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "specify the desired image resolution in"
-#~ " dots per inch. Relevant only if "
-#~ "`write_images=True`. Default value is 150."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "like `write_images`, but images will be"
-#~ " included in the markdown text as "
-#~ "base64-encoded strings. Ignores `write_images` "
-#~ "and `image_path` if used. This may "
-#~ "drastically increase the size of your"
-#~ " markdown text."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "a value of `True` enforces "
-#~ "`page_chunks=True` and adds key \"words\" "
-#~ "to each page dictionary. Its value "
-#~ "is a list of words as delivered"
-#~ " by PyMuPDF's `Page` method "
-#~ "`get_text(\"words\")`. The sequence of the "
-#~ "words in this list is the same "
-#~ "as the extracted text."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "(New in v.0.0.19) Overwrites or sets "
-#~ "the desired image file name of "
-#~ "written images. Useful when the document"
-#~ " is provided as a memory object "
-#~ "(which has no inherent file name)."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "limit the font size to consider "
-#~ "for text extraction. If the font "
-#~ "size is lower than what is set "
-#~ "then the text won't be considered "
-#~ "for extraction. Default is `3`, meaning"
-#~ " only text with a font size `>="
-#~ " 3` will be considered for "
-#~ "extraction."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "boolean to switch on/off footer content."
-#~ " This parameter controls whether we "
-#~ "want to include or omit the footer"
-#~ " content from all the document pages."
-#~ " Useful if the document has "
-#~ "repetitive footer content which doesn't "
-#~ "add any value to the overall "
-#~ "extraction data. Default is `True` "
-#~ "meaning that footer content will be "
-#~ "considered."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "generate text output even when "
-#~ "overlapping images / graphics. This text"
-#~ " then appears after the respective "
-#~ "image. If `write_images=True` this parameter"
-#~ " may be `False` to suppress "
-#~ "repetition of text on images."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "use this to limit dealing with "
-#~ "excess amounts of vector graphics "
-#~ "elements. Scientific documents, or pages "
-#~ "simulating text via graphics commands "
-#~ "may contain tens of thousands of "
-#~ "these objects. As vector graphics are"
-#~ " analyzed for multiple purposes, runtime"
-#~ " may quickly become intolerable. With "
-#~ "this parameter, all vector graphics will"
-#~ " be ignored if their count exceeds"
-#~ " the threshold. **Changed in v0.0.19:** "
-#~ "The page will still be processed, "
-#~ "and text, tables and images should "
-#~ "be extracted."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "use this if you want to provide"
-#~ " your own header detection logic. "
-#~ "This may be a callable or an "
-#~ "object having a method named "
-#~ "`get_header_id`. It must accept a text"
-#~ " span (a span dictionary as contained"
-#~ " in :meth:`~.extractDICT`) and a keyword"
-#~ " parameter \"page\" (which is the "
-#~ "owning :ref:`Page <page>` object). It "
-#~ "must return a string \"\" or up"
-#~ " to 6 \"#\" characters followed by"
-#~ " 1 space. If omitted (`None`), a "
-#~ "full document scan will be performed "
-#~ "to find the most popular font "
-#~ "sizes and derive header levels based "
-#~ "on them. To completely avoid this "
-#~ "behavior specify `hdr_info=lambda s, "
-#~ "page=None: \"\"` or `hdr_info=False`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "boolean to switch on/off header content."
-#~ " This parameter controls whether we "
-#~ "want to include or omit the header"
-#~ " content from all the document pages."
-#~ " Useful if the document has "
-#~ "repetitive header content which doesn't "
-#~ "add any value to the overall "
-#~ "extraction data. Default is `True` "
-#~ "meaning that header content will be "
-#~ "considered."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "if ``True`` includes text even when "
-#~ "completely transparent. Default is ``False``:"
-#~ " transparent text will be ignored "
-#~ "which usually increases detection accuracy."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "if `True` then mono-spaced text "
-#~ "does not receive special formatting. "
-#~ "Code blocks will no longer be "
-#~ "generated. This value is set to "
-#~ "`True` if `extract_words=True` is used."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "(New in v.0.0.20) Disregard vector "
-#~ "graphics on the page. This may "
-#~ "help detecting text correctly when pages"
-#~ " are very crowded (often the case "
-#~ "for documents representing presentation "
-#~ "slides). Also speeds up processing time."
-#~ " This automatically prevents table "
-#~ "detection."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "(New in v.0.0.20) Disregard images on"
-#~ " the page. This may help detecting"
-#~ " text correctly when pages are very"
-#~ " crowded (often the case for "
-#~ "documents representing presentation slides). "
-#~ "Also speeds up processing time."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "this must be a ``0 <= value "
-#~ "< 1``. Images are ignored if "
-#~ "`width / page.rect.width <= image_size_limit`"
-#~ " or `height / page.rect.height <= "
-#~ "image_size_limit`. For instance, the default"
-#~ " value 0.05 means that to be "
-#~ "considered for inclusion, an image's "
-#~ "width and height must be larger "
-#~ "than 5% of the page's width and"
-#~ " height, respectively."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "a float or a sequence of 2 "
-#~ "or 4 floats specifying page borders. "
-#~ "Only objects inside the margins will "
-#~ "be considered for output.  * `margin=f`"
-#~ " yields `(f, f, f, f)` for "
-#~ "`(left, top, right, bottom)`. * `(top,"
-#~ " bottom)` yields  `(0, top, 0, "
-#~ "bottom)`. * To always read full "
-#~ "pages **(default)**, use `margins=0`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "a float or a sequence of 2 "
-#~ "or 4 floats specifying page borders. "
-#~ "Only objects inside the margins will "
-#~ "be considered for output."
-#~ msgstr ""
-
-#~ msgid "`margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`."
-#~ msgstr ""
-
-#~ msgid "`(top, bottom)` yields  `(0, top, 0, bottom)`."
-#~ msgstr ""
-
-#~ msgid "To always read full pages **(default)**, use `margins=0`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "if `True` the output will be a "
-#~ "list of `Document.page_count` dictionaries "
-#~ "(one per page). Each dictionary has "
-#~ "the following structure:  - **\"metadata\"**"
-#~ " - a dictionary consisting of the "
-#~ "document's metadata :attr:`Document.metadata`, "
-#~ "enriched with additional keys "
-#~ "**\"file_path\"** (the file name), "
-#~ "**\"page_count\"** (number of pages in "
-#~ "document), and **\"page_number\"** (1-based "
-#~ "page number).  - **\"toc_items\"** - a"
-#~ " list of Table of Contents items "
-#~ "pointing to this page. Each item "
-#~ "of this list has the format `[lvl,"
-#~ " title, pagenumber]`, where `lvl` is "
-#~ "the hierarchy level, `title` a string"
-#~ " and `pagenumber` as a 1-based page"
-#~ " number.  - **\"tables\"** - a list"
-#~ " of tables on this page. Each "
-#~ "item is a dictionary with keys "
-#~ "\"bbox\", \"row_count\" and \"col_count\". Key"
-#~ " \"bbox\" is a `pymupdf.Rect` in "
-#~ "tuple format of the table's position "
-#~ "on the page.  - **\"images\"** - a"
-#~ " list of images on the page. "
-#~ "This a copy of page method "
-#~ ":meth:`Page.get_image_info`.  - **\"graphics\"** -"
-#~ " a list of vector graphics rectangles"
-#~ " on the page. This is a list"
-#~ " of boundary boxes of clustered "
-#~ "vector graphics as delivered by method"
-#~ " :meth:`Page.cluster_drawings`.  - **\"text\"** -"
-#~ " page content as |Markdown| text.  -"
-#~ " **\"words\"** - if `extract_words=True` "
-#~ "was used. This is a list of "
-#~ "tuples `(x0, y0, x1, y1, \"wordstring\","
-#~ " bno, lno, wno)` as delivered by "
-#~ "`page.get_text(\"words\")`. The **sequence** of "
-#~ "these tuples however is the same "
-#~ "as produced in the markdown text "
-#~ "string and thus honors multi-column "
-#~ "text. This is also true for text"
-#~ " in tables: words are extracted in"
-#~ " the sequence of table row cells."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "if `True` the output will be a "
-#~ "list of `Document.page_count` dictionaries "
-#~ "(one per page). Each dictionary has "
-#~ "the following structure:"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**\"metadata\"** - a dictionary consisting "
-#~ "of the document's metadata "
-#~ ":attr:`Document.metadata`, enriched with additional"
-#~ " keys **\"file_path\"** (the file name),"
-#~ " **\"page_count\"** (number of pages in "
-#~ "document), and **\"page_number\"** (1-based "
-#~ "page number)."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**\"toc_items\"** - a list of Table "
-#~ "of Contents items pointing to this "
-#~ "page. Each item of this list has"
-#~ " the format `[lvl, title, pagenumber]`, "
-#~ "where `lvl` is the hierarchy level, "
-#~ "`title` a string and `pagenumber` as "
-#~ "a 1-based page number."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**\"tables\"** - a list of tables "
-#~ "on this page. Each item is a "
-#~ "dictionary with keys \"bbox\", \"row_count\""
-#~ " and \"col_count\". Key \"bbox\" is a"
-#~ " `pymupdf.Rect` in tuple format of "
-#~ "the table's position on the page."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**\"images\"** - a list of images "
-#~ "on the page. This a copy of "
-#~ "page method :meth:`Page.get_image_info`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**\"graphics\"** - a list of vector "
-#~ "graphics rectangles on the page. This"
-#~ " is a list of boundary boxes of"
-#~ " clustered vector graphics as delivered "
-#~ "by method :meth:`Page.cluster_drawings`."
-#~ msgstr ""
-
-#~ msgid "**\"text\"** - page content as |Markdown| text."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "**\"words\"** - if `extract_words=True` was"
-#~ " used. This is a list of tuples"
-#~ " `(x0, y0, x1, y1, \"wordstring\", "
-#~ "bno, lno, wno)` as delivered by "
-#~ "`page.get_text(\"words\")`. The **sequence** of "
-#~ "these tuples however is the same "
-#~ "as produced in the markdown text "
-#~ "string and thus honors multi-column "
-#~ "text. This is also true for text"
-#~ " in tables: words are extracted in"
-#~ " the sequence of table row cells."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "specify a desired page height. For "
-#~ "relevance see the `page_width` parameter. "
-#~ "If using the default `None`, the "
-#~ "document will appear as one large "
-#~ "page with a width of `page_width`. "
-#~ "Consequently in this case, no markdown"
-#~ " page separators will occur (except "
-#~ "the final one), respectively only one"
-#~ " page chunk will be returned."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "if ``True`` inserts a string ``--- "
-#~ "end of page=n ---`` at the end "
-#~ "of each page output. Intended for "
-#~ "debugging purposes. The page number if"
-#~ " 0-based. The separator string is "
-#~ "wrapped with line breaks. Default is "
-#~ "``False``."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "specify a desired page width. This "
-#~ "is ignored for documents with a "
-#~ "fixed page width like PDF, XPS "
-#~ "etc. **Reflowable** documents however, like"
-#~ " e-books, office [#f2]_ or text files"
-#~ " have no fixed page dimensions and"
-#~ " by default are assumed to have "
-#~ "Letter format width (612) and an "
-#~ "**\"infinite\"** page height. This means "
-#~ "that the **full document is treated "
-#~ "as one large page.**"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Default is `False`. A value of "
-#~ "`True` displays a text-based progress"
-#~ " bar as pages are being converted "
-#~ "to Markdown. It will look similar "
-#~ "to the following::  Processing input.pdf..."
-#~ " [====================                    ] (148/291)"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Default is `False`. A value of "
-#~ "`True` displays a text-based progress"
-#~ " bar as pages are being converted "
-#~ "to Markdown. It will look similar "
-#~ "to the following::"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Processing input.pdf... [===================="
-#~ "                    ] (148/291)"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "see: :meth:`table detection strategy "
-#~ "<Page.find_tables>`. Default is `\"lines_strict\"`"
-#~ " which ignores background colors. In "
-#~ "some occasions, other strategies may be"
-#~ " more successful, for example `\"lines\"`"
-#~ " which uses all vector graphics "
-#~ "objects for detection.  **Changed in "
-#~ "v0.0.19:** A value of `None` will "
-#~ "not perform any table detection at "
-#~ "all. This may be useful when you"
-#~ " know that your document contains no"
-#~ " tables. Execution time savings can "
-#~ "be significant."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "(New in v.0.0.19) Default is `False`."
-#~ " A value of `True` will use the"
-#~ " glyph number of the characters "
-#~ "instead of the character itself if "
-#~ "the font does not store the "
-#~ "Unicode value."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "when encountering images or vector "
-#~ "graphics, images will be created from"
-#~ " the respective page area and stored"
-#~ " in the specified folder. |Markdown| "
-#~ "references will be generated pointing to"
-#~ " these images. Any text contained in"
-#~ " these areas will not be included "
-#~ "in the text output (but appear as"
-#~ " part of the images). Therefore, if"
-#~ " for instance your document has text"
-#~ " written on full page images, make"
-#~ " sure to set this parameter to "
-#~ "`False`."
-#~ msgstr ""
-
-#~ msgid "Returns"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Either a string of the combined "
-#~ "text of all selected document pages, "
-#~ "or a list of dictionaries."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please see :ref:`PyMuPDF Layout and "
-#~ "parameter caveats <pymupdf_layout_and_pymupdf4llm_api>`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Reads the pages of the file and"
-#~ " outputs the text of its pages "
-#~ "in |TXT| format."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "if `True` then mono-spaced text "
-#~ "does not receive special formatting. "
-#~ "Code blocks will no longer be "
-#~ "generated."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Create a `pdf_markdown_reader.PDFMarkdownReader` "
-#~ "using the `LlamaIndex`_ package. Please "
-#~ "note that this package will **not "
-#~ "automatically be installed** when installing"
-#~ " **pymupdf4llm**."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "For details on the possible arguments,"
-#~ " please consult the LlamaIndex "
-#~ "documentation [#f1]_."
-#~ msgstr ""
-
-#~ msgid "raises"
-#~ msgstr ""
-
-#~ msgid "`NotImplementedError`: Please install required `LlamaIndex`_ package."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "a `pdf_markdown_reader.PDFMarkdownReader` and issues"
-#~ " message \"Successfully imported LlamaIndex\"."
-#~ " Please note that this method needs"
-#~ " several seconds to execute. For "
-#~ "details on using the markdown reader "
-#~ "please see below."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Create an object which maps text "
-#~ "font sizes to the respective number "
-#~ "of '#' characters which are used "
-#~ "by Markdown syntax to indicate header"
-#~ " levels. The object is created by "
-#~ "scanning the document for font size "
-#~ "\"popularity\". The most popular font "
-#~ "size and all smaller sizes are "
-#~ "used for body text. Larger font "
-#~ "sizes are mapped to the respective "
-#~ "header levels - which correspond to "
-#~ "the HTML tags `<h1>` to `<h6>`."
-#~ msgstr ""
-
-#~ msgid "All font sizes are rounded to integer values."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "If more than 6 header levels would"
-#~ " be required, then the largest number"
-#~ " smaller than the `<h6>` font size"
-#~ " is used for body text."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please note that creating the object "
-#~ "will read and inspect the text of"
-#~ " the entire document - independently "
-#~ "of reading the document again in "
-#~ "the `to_markdown()` method subsequently. "
-#~ "Method `to_markdown()` by default **will "
-#~ "create this object** if you do not"
-#~ " override its `hdr_info=None` parameter."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "the file, to be specified either "
-#~ "as a file path string, or as "
-#~ "a |PyMuPDF| Document (created via "
-#~ "`pymupdf.open`). In order to use "
-#~ "`pathlib.Path` specifications, Python file-"
-#~ "like objects, documents in memory etc."
-#~ " you **must** use a |PyMuPDF| "
-#~ "Document."
-#~ msgstr ""
-
-#~ msgid "optional, the pages to consider. If omitted all pages are processed."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "the default font size limit for "
-#~ "body text. Only used when the "
-#~ "document scan does not deliver valid "
-#~ "information."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "the maximum number of header levels "
-#~ "to be used. Valid values are in"
-#~ " `range(1, 7)`. The default is 6, "
-#~ "which corresponds to the HTML tags "
-#~ "`<h1>` to `<h6>`. A smaller value "
-#~ "will limit the number of generated "
-#~ "header levels. For instance, a value "
-#~ "of 3 will only generate header "
-#~ "tags \"#\", \"##\" and \"###\". Body "
-#~ "text will be assumed for all font"
-#~ " sizes smaller than the one "
-#~ "corresponding to \"###\"."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Return appropriate markdown header prefix. "
-#~ "This is either \"\" or a string"
-#~ " of \"#\" characters followed by a"
-#~ " space."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Given a text span from a "
-#~ "\"dict\"\" extraction, determine the markdown"
-#~ " header prefix string of 0 to n"
-#~ " concatenated '#' characters."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "a dictionary containing the text span"
-#~ " information. This is the same "
-#~ "dictionary as returned by "
-#~ "`page.get_text(\"dict\")`."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "the owning page object. This can "
-#~ "be used when additional information "
-#~ "needs to be extracted."
-#~ msgstr ""
-
-#~ msgid "a string of \"#\" characters followed by a space."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "A dictionary mapping (integer) font "
-#~ "sizes to Markdown header strings like"
-#~ " ``{14: '# ', 12: '## '}``. The"
-#~ " dictionary is created by the "
-#~ ":class:`IdentifyHeaders` constructor. The keys "
-#~ "are the font sizes of the text "
-#~ "spans in the document. The values "
-#~ "are the respective header strings."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "An integer value indicating the font "
-#~ "size limit for body text. This is"
-#~ " computed as ``min(header_id.keys()) - 1``."
-#~ " In the above example, body_limit "
-#~ "would be 11."
-#~ msgstr ""
-
-#~ msgid "**How to limit header levels (example)**"
-#~ msgstr ""
-
-#~ msgid "Limit the generated header levels to 3::"
-#~ msgstr ""
-
-#~ msgid "**How to provide your own header logic (example 1)**"
-#~ msgstr ""
-
-#~ msgid "Provide your own function which uses pre-determined, fixed font sizes::"
-#~ msgstr ""
-
-#~ msgid "**How to provide your own header logic (example 2)**"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This user function uses the document's"
-#~ " Table of Contents -- under the "
-#~ "assumption that the bookmark text is "
-#~ "also present as a header line on"
-#~ " the page (which certainly need not"
-#~ " be the case!)::"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Create an object which uses the "
-#~ "document's Table of Contents (TOC) to"
-#~ " determine header levels. Upon object "
-#~ "creation, the table of contents is "
-#~ "read via the `Document.get_toc()` method. "
-#~ "The TOC data is then used to "
-#~ "determine header levels in the "
-#~ "`to_markdown()` method."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This is an alternative to "
-#~ ":class:`IdentifyHeaders`. Instead of running "
-#~ "through the full document to identify"
-#~ " font sizes, it uses the document's"
-#~ " Table Of Contents (TOC) to identify"
-#~ " headers on pages. Like "
-#~ ":class:`IdentifyHeaders`, this also is no "
-#~ "guarantee to find headers, but for "
-#~ "well-built Table of Contents, there "
-#~ "is a good chance for more "
-#~ "correctly identifying header lines on "
-#~ "document pages than the font-size-"
-#~ "based approach."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "It also has the advantage of being"
-#~ " much faster than the font-size-"
-#~ "based approach, as it does not "
-#~ "execute a full document scan or "
-#~ "even access any of the document "
-#~ "pages."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Examples where this approach works very"
-#~ " well are the Adobe's files on "
-#~ "PDF documentation."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Please note that this feature **does "
-#~ "not read document pages** where the "
-#~ "table of contents may exist as "
-#~ "normal standard text. It only accesses"
-#~ " data as provided by the "
-#~ "`Document.get_toc()` method. It will not "
-#~ "identify any headers for documents where"
-#~ " the table of contents is not "
-#~ "available as a collection of bookmarks."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Return appropriate markdown header prefix. "
-#~ "This is either an empty string or"
-#~ " a string of \"#\" characters "
-#~ "followed by a space."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "Given a text span from a \"dict\""
-#~ " extraction variant, determine the markdown"
-#~ " header prefix string of 0 to n"
-#~ " concatenated \"#\" characters."
-#~ msgstr ""
-
-#~ msgid "**How to use class TocHeaders**"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This is a version of previous "
-#~ "**example 2** that uses :class:`TocHeaders`"
-#~ " for header identification::"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "This is the only method of the "
-#~ "markdown reader you should currently use"
-#~ " to extract markdown data. Please in"
-#~ " any case ignore methods `aload_data()` "
-#~ "and `lazy_load_data()`. Other methods like "
-#~ "`use_doc_meta()` may or may not make "
-#~ "sense. For more information, please "
-#~ "consult the LlamaIndex documentation [#f1]_."
-#~ msgstr ""
-
-#~ msgid "Under the hood the method will execute `to_markdown()`."
-#~ msgstr ""
-
-#~ msgid "a list of `LlamaIndexDocument` documents - one for each page."
-#~ msgstr ""
-
-#~ msgid ""
-#~ "For a list of changes, please see"
-#~ " file `CHANGES.md "
-#~ "<https://github.com/pymupdf/RAG/blob/main/CHANGES.md>`_."
-#~ msgstr ""
-
-#~ msgid "Footnotes"
-#~ msgstr ""
-
-#~ msgid "`LlamaIndex documentation <https://docs.llamaindex.ai/en/stable/>`_"
-#~ msgstr ""
-
-#~ msgid ""
-#~ "When using PyMuPDF-Pro, supported office"
-#~ " documents are converted internally into"
-#~ " a PDF-like format. Therefore, they"
-#~ " **will have fixed page dimensions** "
-#~ "and be no longer \"reflowable\". "
-#~ "Consequently, the page width and page"
-#~ " height specifications will be ignored "
-#~ "as well in these cases."
-#~ msgstr ""
+msgid "Prints the version of the library."
+msgstr ""
+
+msgid "Reads the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that **support for building page chunks** from the |Markdown| text is supported."
+msgstr ""
+
+msgid "the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`."
+msgstr ""
+
+msgid "|PyMuPDFLayoutMode_Ignored| does a simple check for the general background color of the pages (default is ``True``). If any text or vector has this color it will be ignored. May increase detection accuracy."
+msgstr ""
+
+msgid "specify the desired image resolution in dots per inch. Relevant only if `write_images=True` or `embed_images=True`. Default value is 150."
+msgstr ""
+
+msgid "|PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page."
+msgstr ""
+
+msgid "|PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high."
+msgstr ""
+
+msgid "like `write_images`, but images will be included in the markdown text as base64-encoded strings. Mutually exclusive with `write_images` and ignores `image_path`. This may drastically increase the size of your markdown text."
+msgstr ""
+
+msgid "|PyMuPDFLayoutMode_Ignored| a value of `True` enforces `page_chunks=True` and adds key "words" to each page dictionary. Its value is a list of words as delivered by PyMuPDF's `Page` method `get_text("words")`. The sequence of the words in this list is the same as the extracted text."
+msgstr ""
+
+msgid "Overwrites or sets the desired image file name of written images. Useful when the document is provided as a memory object (which has no inherent file name)."
+msgstr ""
+
+msgid "|PyMuPDFLayoutMode_Ignored| limit the font size to consider for text extraction. If the font size is lower than what is set then the text won't be considered for extraction. Default is `3`, meaning only text with a font size `>= 3` will be considered for extraction."
+msgstr ""
+
+msgid "|PyMuPDFLayoutMode_Valid| boolean to switch on/off page footer content. This parameter controls whether to include or omit footer text from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered."
+msgstr ""
+
+
+msgid "generate text output even when overlapping images / graphics. This text then appears after the respective image."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| use this to limit dealing with excess amounts of vector graphics elements. Scientific documents, or pages simulating text via graphics commands may contain tens of thousands of these objects. As vector graphics are analyzed for multiple purposes, runtime may quickly become intolerable. With this parameter, all vector graphics will be ignored if their count exceeds the threshold."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| use this if you want to provide your own header detection logic. This may be a callable or an object having a method named `get_header_id`. It must accept a text span (a span dictionary as contained in :meth:`~.extractDICT`) and a keyword parameter "page" (which is the owning :ref:`Page <page>` object). It must return a string "" or up to 6 "#" characters followed by 1 space. If omitted (`None`), a full document scan will be performed to find the most popular font sizes and derive header levels based on them. To completely avoid this behavior specify `hdr_info=lambda s, page=None: ""` or `hdr_info=False`."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Valid| boolean to switch on/off page header content. This parameter controls whether we want to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be considered."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| if ``True`` includes text even when completely transparent. Default is ``False``: transparent text will be ignored which usually increases detection accuracy."
+msgstr ""
+
+
+
+msgid "if `True` then mono-spaced text lines do not receive special formatting. Code blocks will no longer be generated. This value is set to `True` if `extract_words=True` is used."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| (New in v.0.0.20) Disregard vector graphics on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time. This automatically prevents table detection."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| (New in v.0.0.20) Disregard images on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time."
+msgstr ""
+
+
+
+msgid "specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`."
+msgstr ""
+
+
+
+msgid "store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| this must be a ``0 <= value < 1``. Images are ignored if `width / page.rect.width <= image_size_limit` or `height / page.rect.height <= image_size_limit`. For instance, the default value 0.05 means that to be considered for inclusion, an image's width and height must be larger than 5% of the page's width and height, respectively."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| a float or a sequence of 2 or 4 floats specifying page borders. Only objects inside the margins will be considered for output."
+msgstr ""
+
+
+
+msgid "`margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`."
+msgstr ""
+
+
+
+msgid "`(top, bottom)` yields  `(0, top, 0, bottom)`."
+msgstr ""
+
+
+
+msgid "To always read full pages **(default)**, use `margins=0`."
+msgstr ""
+
+
+
+msgid "if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:"
+msgstr ""
+
+
+
+msgid "**\"metadata\"** - a dictionary consisting of the document's metadata :attr:`Document.metadata`, enriched with additional keys **\"file_path\"** (the file name), **\"page_count\"** (number of pages in document), and **\"page_number\"** (1-based page number)."
+msgstr ""
+
+
+
+msgid "**\"toc_items\"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` as a 1-based page number."
+msgstr ""
+
+
+
+msgid "**\"tables\"** - a list of tables on this page. Each item is a dictionary with keys \"bbox\", \"row_count\" and \"col_count\". Key \"bbox\" is a `pymupdf.Rect` in tuple format of the table's position on the page."
+msgstr ""
+
+
+
+msgid "**\"images\"** - |PyMuPDFLayoutMode_EmptyList| a list of images on the page. This a copy of page method :meth:`Page.get_image_info`."
+msgstr ""
+
+
+
+msgid "**\"graphics\"** - |PyMuPDFLayoutMode_EmptyList| a list of vector graphics rectangles on the page. This is a list of boundary boxes of clustered vector graphics as delivered by method :meth:`Page.cluster_drawings`."
+msgstr ""
+
+
+
+msgid "**\"text\"** - page content as |Markdown| text."
+msgstr ""
+
+
+
+msgid "**\"words\"** - |PyMuPDFLayoutMode_EmptyList| if `extract_words=True` was used. This is a list of tuples `(x0, y0, x1, y1, \"wordstring\", bno, lno, wno)` as delivered by `page.get_text(\"words\")`. The **sequence** of these tuples however is the same as produced in the markdown text string and thus honors multi-column text. This is also true for text in tables: words are extracted in the sequence of table row cells."
+msgstr ""
+
+
+
+msgid "specify a desired page height. For relevance see the `page_width` parameter. If using the default `None`, the document will appear as one large page with a width of `page_width`. Consequently in this case, no markdown page separators will occur (except the final one), respectively only one page chunk will be returned."
+msgstr ""
+
+
+
+msgid "if ``True`` inserts a string ``--- end of page=n ---`` at the end of each page output. Intended for debugging purposes. The page number is 0-based. The separator string is wrapped with line breaks. Default is ``False``."
+msgstr ""
+
+
+
+
+msgid "specify a desired page width. This is ignored for documents with a fixed page width like PDF, XPS etc. **Reflowable** documents however, like e-books, office [#f2]_ or text files have no fixed page dimensions. They by default are assumed to have Letter format width (612) and an **unlimited** page height. This means that the **full document is treated as one large page.**"
+msgstr ""
+
+
+
+msgid "optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Any Python sequence with integer items is accepted. The sequence is sorted and processed to only contain unique items."
+msgstr ""
+
+
+
+msgid "Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| see: :meth:`table detection strategy <Page.find_tables>`. Default is `"lines_strict"` which ignores background colors. In some occasions, other strategies may be more successful, for example `"lines"` which uses all vector graphics objects for detection."
+msgstr ""
+
+
+
+msgid "|PyMuPDFLayoutMode_Ignored| (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value."
+msgstr ""
+
+
+
+msgid "when encountering images or vector graphics, images will be created from the respective page area and stored in the specified folder. |Markdown| references will be generated pointing to these images. Any text contained in these areas will not be included in the text output (but appear as part of the images). Therefore, if for instance your document has text written on full page images, make sure to set this parameter to `False`."
+msgstr ""
+
+
+
+msgid "If using :ref:`PyMuPDF Layout <pymupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference."
+msgstr ""
+
+
+
+msgid "Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`."
+msgstr ""
+
+
+
+msgid "Reads the pages of the file and outputs the text of its pages in |TXT| format."
+msgstr ""
+
+
+msgid "|PyMuPDFLayoutMode_Valid|. This method is only available with PyMuPDF Layout."
+msgstr ""
+
+
+
+msgid "the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`."
+msgstr ""
+
+
+
+msgid "boolean to switch on/off page header content. This parameter controls whether to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be written."
+msgstr ""
+
+
+
+msgid "boolean to switch on/off page footer content. This parameter controls whether to include or omit the footer content from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be written."
+msgstr ""
+
+
+
+msgid "if `True` then mono-spaced text lines do not receive special formatting. No blocks will be written and text lines will be written continuously."
+msgstr ""
+
+
+msgid "optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Any Python sequence with integer items is accepted. The sequence is sorted and processed to only contain unique items."
+msgstr ""
+
+
+
+msgid "generate text output also when overlapping images / graphics. This text then appears after the respective image reference. Images (i.e. \"picture\" areas) however will not be written to the text output but appear as a text line in the output like `==> picture [width x height] <==`."
+msgstr ""
+
+
+
+msgid "Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used."
+msgstr ""
+
+
+
+msgid "Parses the document and the specified pages and converts the result into a |JSON|-formatted string."
+msgstr ""
+
+
+
+
+msgid "the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`."
+msgstr ""
+
+
+
+msgid "specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used."
+msgstr ""
+
+
+
+msgid "specify the desired image format via its extension. Default is \"png\" (portable network graphics). Another popular format may be \"jpg\". Possible values are all :ref:`supported output formats <Supported_File_Types>`. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used."
+msgstr ""
+
+
+
+msgid "store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory. Page areas classified as \"picture\" will be written as image files to the specified location. The image file names will be of the format `{image_path}/{filename}-pagenumber-image_number.{image_format}`."
+msgstr ""
+
+
+
+msgid "generate text output for text that is written upon areas that are classified as \"picture\" by the layout module. This may be especially be useful when picture content is not stored."
+msgstr ""
+
+
+
+msgid "display a progress bar during processing."
+msgstr ""
+
+
+
+msgid "store image binaries for \"picture\" boundary boxes. Base64-encoded images are included in the JSON output. Ignores `image_path` if used. This may drastically increase the size of your JSON text."
+msgstr ""
+
+
+
+msgid "store image files \"picture\" boundary boxes.when encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output."
+msgstr ""
+
+
+
+msgid "optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`."
+msgstr ""
+
+
+
+msgid "Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout>`."
+msgstr ""
+
+
+
+msgid "Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex`_ package. Please note that this package will **not automatically be installed** when installing **pymupdf4llm**."
+msgstr ""
+
+
+
+msgid "For details on the possible arguments, please consult the LlamaIndex documentation [#f1]_."
+msgstr ""
+
+
+
+msgid "`NotImplementedError`: Please install required `LlamaIndex`_ package."
+msgstr ""
+
+
+
+msgid "a `pdf_markdown_reader.PDFMarkdownReader` and issues message "Successfully imported LlamaIndex". Please note that this method needs several seconds to execute. For details on using the markdown reader please see below."
+msgstr ""
+
+
+
+msgid "This class is not available in \"layout mode\", i.e. if the import of pymupdf4llm has happened **after** the statement ``import pymupdf.layout``."
+msgstr ""
+
+
+
+msgid "Create an object which maps text font sizes to the respective number of '#' characters which are used by Markdown syntax to indicate header levels. The object is created by scanning the document for font size \"popularity\". The most popular font size and all smaller sizes are used for body text. Larger font sizes are mapped to the respective header levels - which correspond to the HTML tags `<h1>` to `<h6>`."
+msgstr ""
+
+
+
+msgid "All font sizes are rounded to integer values."
+msgstr ""
+
+
+
+msgid "If more than 6 header levels would be required, then the largest number smaller than the `<h6>` font size is used for body text."
+msgstr ""
+
+
+
+msgid "Please note that creating the object will read and inspect the text of the entire document - independently of reading the document again in the `to_markdown()` method subsequently. Method `to_markdown()` by default **will create this object** if you do not override its `hdr_info=None` parameter."
+msgstr ""
+
+
+
+msgid "the file, to be specified either as a file path string, or as a |PyMuPDF| Document (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| Document."
+msgstr ""
+
+
+
+msgid "optional, the pages to consider. If omitted all pages are processed."
+msgstr ""
+
+
+
+msgid "the default font size limit for body text. Only used when the document scan does not deliver valid information."
+msgstr ""
+
+
+
+msgid "the maximum number of header levels to be used. Valid values are in `range(1, 7)`. The default is 6, which corresponds to the HTML tags `<h1>` to `<h6>`. A smaller value will limit the number of generated header levels. For instance, a value of 3 will only generate header tags \"#\", \"##\" and \"###\". Body text will be assumed for all font sizes smaller than the one corresponding to \"###\"."
+msgstr ""
+
+
+
+msgid "Return appropriate markdown header prefix. This is either \"\" or a string of \"#\" characters followed by a space."
+msgstr ""
+
+
+
+msgid "Given a text span from a \"dict\" extraction, determine the markdown header prefix string of 0 to n concatenated '#' characters."
+msgstr ""
+
+
+
+msgid "a dictionary containing the text span information. This is the same dictionary as returned by `page.get_text(\"dict\")`."
+msgstr ""
+
+
+
+msgid "the owning page object. This can be used when additional information needs to be extracted."
+msgstr ""
+
+
+
+msgid "a string of \"#\" characters followed by a space."
+msgstr ""
+
+
+
+msgid "A dictionary mapping (integer) font sizes to Markdown header strings like ``{14: '# ', 12: '## '}``. The dictionary is created by the :class:`IdentifyHeaders` constructor. The keys are the font sizes of the text spans in the document. The values are the respective header strings."
+msgstr ""
+
+
+
+msgid "An integer value indicating the font size limit for body text. This is computed as ``min(header_id.keys()) - 1``. In the above example, body_limit would be 11."
+msgstr ""
+
+
+
+msgid "**How to limit header levels (example)**"
+msgstr ""
+
+
+
+msgid "Limit the generated header levels to 3::"
+msgstr ""
+
+
+
+msgid "**How to provide your own header logic (example 1)**"
+msgstr ""
+
+
+
+msgid "Provide your own function which uses pre-determined, fixed font sizes::"
+msgstr ""
+
+
+
+msgid "**How to provide your own header logic (example 2)**"
+msgstr ""
+
+
+
+msgid "This user function uses the document's Table of Contents -- under the assumption that the bookmark text is also present as a header line on the page (which certainly need not be the case!)::"
+msgstr ""
+
+
+
+msgid "Create an object which uses the document's Table of Contents (TOC) to determine header levels. Upon object creation, the table of contents is read via the `Document.get_toc()` method. The TOC data is then used to determine header levels in the `to_markdown()` method."
+msgstr ""
+
+
+
+msgid "This is an alternative to :class:`IdentifyHeaders`. Instead of running through the full document to identify font sizes, it uses the document's Table Of Contents (TOC) to identify headers on pages. Like :class:`IdentifyHeaders`, this also is no guarantee to find headers, but for well-built Table of Contents, there is a good chance for more correctly identifying header lines on document pages than the font-size-based approach."
+msgstr ""
+
+
+msgid "It also has the advantage of being much faster than the font-size-based approach, as it does not execute a full document scan or even access any of the document pages."
+msgstr ""
+
+
+
+msgid "Examples where this approach works very well are the Adobe's files on PDF documentation."
+msgstr ""
+
+
+
+msgid "Please note that this feature **does not read document pages** where the table of contents may exist as normal standard text. It only accesses data as provided by the `Document.get_toc()` method. It will not identify any headers for documents where the table of contents is not available as a collection of bookmarks."
+msgstr ""
+
+
+msgid "Return appropriate markdown header prefix. This is either an empty string or a string of \"#\" characters followed by a space."
+msgstr ""
+
+
+
+msgid "Given a text span from a \"dict\" extraction variant, determine the markdown header prefix string of 0 to n concatenated \"#\" characters."
+msgstr ""
+
+
+msgid "a dictionary containing the text span information. This is the same dictionary as returned by `page.get_text(\"dict\")`."
+msgstr ""
+
+
+
+msgid "the owning page object. This can be used when additional information needs to be extracted."
+msgstr ""
+
+
+
+msgid "a string of \"#\" characters followed by a space."
+msgstr ""
+
+
+
+msgid "**How to use class TocHeaders**"
+msgstr ""
+
+
+
+msgid "This is a version of previous **example 2** that uses :class:`TocHeaders` for header identification::"
+msgstr ""
+
+
+
+msgid "This is the only method of the markdown reader you should currently use to extract markdown data. Please in any case ignore methods `aload_data()` and `lazy_load_data()`. Other methods like `use_doc_meta()` may or may not make sense. For more information, please consult the LlamaIndex documentation [#f1]_."
+msgstr ""
+
+
+
+msgid "Under the hood the method will execute `to_markdown()`."
+msgstr ""
+
+
+
+msgid "a list of `LlamaIndexDocument` documents - one for each page."
+msgstr ""
+
+
+
+msgid "For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/RAG/blob/main/CHANGES.md>`_."
+msgstr ""
+
+
+
+msgid "`LlamaIndex documentation <https://docs.llamaindex.ai/en/stable/>`_"
+msgstr ""
+
+
+
+msgid "When using PyMuPDF-Pro, supported office documents are converted internally into a PDF-like format. Therefore, they **will have fixed page dimensions** and be no longer "reflowable". Consequently, the page width and page height specifications will be ignored as well in these cases."
+msgstr ""
+
+
+
+msgid "Footnotes"
+msgstr ""
+
+
 
