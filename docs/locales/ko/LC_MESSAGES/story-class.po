@@ -319,7 +319,7 @@ msgid ""
 "archive will temporarily be constructed. So, instead of `story = "
 "pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))`, one can also "
 "shorter write `story = pymupdf.Story(archive=\"myfolder\")`."
-msgstr "렌더링을 위한 리소스를 로드할 :ref:`Archive`. 현재 지원되는 리소스 타입은 이미지와 텍스트 글꼴입니다. 생략하면 스토리는 이러한 데이터를 찾으려고 시도하지 않으므로 불완전한 출력을 생성할 수 있습니다.  .. note:: 실제 아카이브 대신 :ref:`Archive` 를 **생성** 하기 위한 유효한 인수도 제공할 수 있습니다. 이 경우 아카이브가 임시로 구성됩니다. 따라서 `story = pymupdf.Story(archive=pymupdf.Archive(\"myfolder\"))` 대신 `story = pymupdf.Story(archive=\"myfolder\")` 로 더 짧게 쓸 수도 있습니다."
+msgstr ""
 
 #: ../../story-class.rst:110 4050936d618a42da8eecf6ab4e063d8b
 msgid ""
@@ -443,7 +443,7 @@ msgid ""
 "`(mediabox, rect, ctm)`:  * mediabox: None or rect for new page. * rect: "
 "The next rect into which content should be placed. * ctm: None or a "
 "`Matrix`."
-msgstr "`(rect_num: int, filled: Rect)` 를 받아 `(mediabox, rect, ctm)` 를 반환하는 호출 가능한 객체:  * mediabox: 새 페이지의 None 또는 rect. * rect: 콘텐츠가 배치될 다음 rect. * ctm: None 또는 `Matrix`."
+msgstr ""
 
 #: ../../story-class.rst:160 09db40fd97944cc3bdc056101682d345
 msgid ""
@@ -471,7 +471,7 @@ msgid ""
 "     An `ElementPosition` with an extra `.page_num` member. Typically "
 "called multiple times as we generate elements that are headings or have "
 "an id."
-msgstr "None 또는 `(position: ElementPosition)` 를 받는 호출 가능한 객체:  * position: 추가 `.page_num` 멤버를 가진 `ElementPosition`. 일반적으로 제목이거나 id를 가진 요소를 생성할 때 여러 번 호출됩니다."
+msgstr ""
 
 #: ../../story-class.rst:166 25928f4a5c5f491488b15662e26bc608
 msgid "None, or a callable taking `(position: ElementPosition)`:"
@@ -539,7 +539,7 @@ msgid ""
 "A callable taking `(rect_num: int, filled: Rect)` and returning "
 "`(mediabox, rect, ctm)`:  * mediabox: None or rect for new page. * rect: "
 "The next rect into which content should be placed. * ctm: A `Matrix`."
-msgstr "`(rect_num: int, filled: Rect)` 를 받아 `(mediabox, rect, ctm)` 를 반환하는 호출 가능한 객체:  * mediabox: 새 페이지의 None 또는 rect. * rect: 콘텐츠가 배치될 다음 rect. * ctm: `Matrix`."
+msgstr ""
 
 #: ../../story-class.rst:201 9c7835ef50c04228a8a373880c57f7ec
 msgid ""
@@ -662,7 +662,7 @@ msgid ""
 "behaves monotonically when given rect `fn(parameter`) as `parameter` "
 "increases. This usually means that both width and height increase or stay"
 " unchanged as `parameter` increases."
-msgstr "부동 소수점 `parameter` 를 받아 `pymupdf.Rect()` 를 반환하는 호출 가능한 객체. rect가 비어 있으면 스토리가 맞지 않는다고 가정하고 `self.place()` 를 호출하지 않습니다. `parameter` 가 증가할 때 rect `fn(parameter`)가 주어지면 `self.place()` 가 단조롭게 동작하도록 보장해야 합니다. 이것은 일반적으로 `parameter` 가 증가할 때 너비와 높이가 모두 증가하거나 변경되지 않음을 의미합니다."
+msgstr ""
 
 #: ../../story-class.rst:260 c6955c50c2ba4885973d0c3f04c0e2c5
 msgid ""

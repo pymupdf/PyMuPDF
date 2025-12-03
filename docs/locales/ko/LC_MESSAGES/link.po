@@ -187,7 +187,7 @@ msgid ""
 " Omitted keys will leave the resp. property unchanged. To e.g. remove "
 "dashing use: *\"dashes\": []*. If dashes is not an empty sequence, "
 "\"style\" will automatically be set to \"D\" (dashed)."
-msgstr ":attr:`border` 속성에 의해 반환되는 딕셔너리로, 키 *\"width\"*(*float*), *\"style\"*(*str*) 및 *\"dashes\"*(*sequence*)를 가집니다. 생략된 키는 해당 속성을 변경하지 않습니다. 예를 들어 점선을 제거하려면: *\"dashes\": []* 를 사용하세요. dashes가 빈 시퀀스가 아니면 \"style\"이 자동으로 \"D\"(점선)로 설정됩니다."
+msgstr ":attr:`border` 속성에 의해 반환되는 딕셔너리로, 키 *\"width\"* (*float*), *\"style\"* (*str*) 및 *\"dashes\"* (*sequence*)를 가집니다. 생략된 키는 해당 속성을 변경하지 않습니다. 예를 들어 점선을 제거하려면: *\"dashes\": []* 를 사용하세요. dashes가 빈 시퀀스가 아니면 \"style\"이 자동으로 \"D\"(점선)로 설정됩니다."
 
 #: ../../link.rst:41 ../../link.rst:42 ../../link.rst:43 ../../link.rst:54
 #: 0f652b3dc1754811b0fd20b619f58221 2a2addfc429e4856a5b9d38ccc565155
@@ -286,7 +286,7 @@ msgid ""
 "of the page, *I* (Inset) = a simulated engraved rectangle that appears to"
 " be recessed below the surface of the page, *U* (Underline) = a single "
 "line along the bottom of the annotation rectangle."
-msgstr "*style* -- 1바이트 테두리 스타일: *S*(Solid) = 주석을 둘러싸는 실선 사각형, *D*(Dashed) = 링크를 둘러싸는 점선 사각형, 점선 패턴은 *dashes* 항목으로 지정됨, *B*(Beveled) = 페이지 표면 위로 올라온 것처럼 보이는 시뮬레이션된 볼록한 사각형, *I*(Inset) = 페이지 표면 아래로 들어간 것처럼 보이는 시뮬레이션된 각인된 사각형, *U*(Underline) = 주석 사각형 하단을 따라가는 단일 선."
+msgstr "*style* -- 1바이트 테두리 스타일: *S* (Solid) = 주석을 둘러싸는 실선 사각형, *D* (Dashed) = 링크를 둘러싸는 점선 사각형, 점선 패턴은 *dashes* 항목으로 지정됨, *B* (Beveled) = 페이지 표면 위로 올라온 것처럼 보이는 시뮬레이션된 볼록한 사각형, *I* (Inset) = 페이지 표면 아래로 들어간 것처럼 보이는 시뮬레이션된 각인된 사각형, *U* (Underline) = 주석 사각형 하단을 따라가는 단일 선."
 
 #: ../../link.rst:90 052b846ac7bf4348bb05373fe93c7f66
 msgid "The area that can be clicked in untransformed coordinates."

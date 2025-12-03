@@ -406,7 +406,7 @@ msgstr "**클래스 API**"
 
 #: ../../annot.rst:75 b763b56670344531ae43994d27d0e054
 msgid "Changed in v1.19.2: added support of dpi parameter."
-msgstr ""
+msgstr "v1.19.2에서 변경됨: dpi 매개변수 지원 추가."
 
 #: ../../annot.rst:77 571f3475af9d4fd8af0faef1dae8b761
 msgid ""
@@ -414,6 +414,8 @@ msgid ""
 "untransformed coordinates. The pixmap's :ref:`IRect` equals "
 "*Annot.rect.irect* (see below). **All parameters are keyword only.**"
 msgstr ""
+"변환되지 않은 좌표에서 페이지에 표시되는 대로 주석에서 pixmap을 생성합니다. pixmap의 :ref:`IRect` 는 "
+"*Annot.rect.irect* 와 같습니다(아래 참조). **모든 매개변수는 키워드 전용입니다.**"
 
 #: ../../annot.rst 038416b4a91041e89e078df4fe4f5636
 #: 046b68e35745422e8e27b6ad4743720b 0ef49f86e0bd43f78e79e32e94eeea45
@@ -480,7 +482,7 @@ msgid ""
 " about some background, e.g. look for \"Premultiplied alpha\" `in this "
 "online glossary "
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
-msgstr "`alpha=True` 인 경우 픽스맵은 *\"premultiplied\"* 픽셀을 가집니다. 배경에 대해 알아보려면 예를 들어 이 온라인 용어집 <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 \"Premultiplied alpha\"를 찾아보세요."
+msgstr "`alpha=True` 인 경우 픽스맵은 *\"premultiplied\"* 픽셀을 가집니다. 배경에 대해 알아보려면 예를 들어 이 온라인 용어집<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 \"Premultiplied alpha\"를 찾아보세요."
 
 #: ../../annot.rst:112 ../../annot.rst:133 059d5413f3154aaa8134479d9629d7da
 #: 5b109c06581d4245b9034c003ef2e32f
@@ -506,7 +508,7 @@ msgid ""
 ":meth:`TextPage.extractXML` * \"dict\" -- :meth:`TextPage.extractDICT` * "
 "\"json\" -- :meth:`TextPage.extractJSON` * \"rawdict\" -- "
 ":meth:`TextPage.extractRAWDICT`"
-msgstr "(위치 전용) 원하는 형식 - 다음 값 중 하나. 이 메서드는 :ref:`Page` 의 동일한 이름의 메서드와 정확히 동일하게 작동합니다.  * \"text\" -- :meth:`TextPage.extractTEXT`, 기본값 * \"blocks\" -- :meth:`TextPage.extractBLOCKS` * \"words\" -- :meth:`TextPage.extractWORDS` * \"html\" -- :meth:`TextPage.extractHTML` * \"xhtml\" -- :meth:`TextPage.extractXHTML` * \"xml\" -- :meth:`TextPage.extractXML` * \"dict\" -- :meth:`TextPage.extractDICT` * \"json\" -- :meth:`TextPage.extractJSON` * \"rawdict\" -- :meth:`TextPage.extractRAWDICT`"
+msgstr ""
 
 #: ../../annot.rst:116 f5480fbc3f3f42fba82218a8e4aec39e
 msgid ""
@@ -714,7 +716,7 @@ msgid ""
 "The :data:`xref` of another annotation.  .. note:: Must refer to an "
 "existing annotation on this page. Setting this property requires no "
 "subsequent `update()`."
-msgstr "다른 주석의 :data:`xref`.  .. note:: 이 페이지의 기존 주석을 참조해야 합니다. 이 속성을 설정하는 데 후속 `update()` 가 필요하지 않습니다."
+msgstr ""
 
 #: ../../annot.rst:201 9e9d820407064710884e6a66aa7f7f55
 msgid "The :data:`xref` of another annotation."
@@ -823,7 +825,7 @@ msgid ""
 ":data:`fontsize` 20 must not exceed 190 points. So please make sure that "
 "the following inequality is true: `pymupdf.get_text_length(text, "
 "fontname=\"tibo\", fontsize=20) <= 190`."
-msgstr "'Stamp' 주석의 이름을 설정하면 사각형이 **변경되지 않으며**, 텍스트도 어떤 방식으로도 레이아웃되지 않습니다. :ref:`StampIcons` 에서 표준 텍스트를 선택하는 경우(`\"STAMP_\"` 뒤의 **정확한** 이름 부분), 원래 레이아웃을 받아야 합니다. **임의의 텍스트**는 대문자로 변경되지 않지만, 그대로 \"Times-Bold\" 글꼴로 작성되며 **한 줄**에 가로로 중앙 정렬되고 맞추기 위해 단축됩니다. 텍스트가 완전히 표시되도록 하려면 :data:`fontsize` 20을 사용한 길이가 190포인트를 초과하지 않아야 합니다. 따라서 다음 부등식이 참인지 확인하세요: `pymupdf.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190`."
+msgstr "'Stamp' 주석의 이름을 설정하면 사각형이 **변경되지 않으며**, 텍스트도 어떤 방식으로도 레이아웃되지 않습니다. :ref:`StampIcons` 에서 표준 텍스트를 선택하는 경우(`\"STAMP_\"` 뒤의 **정확한** 이름 부분), 원래 레이아웃을 받아야 합니다. **임의의 텍스트** 는 대문자로 변경되지 않지만, 그대로 \"Times-Bold\" 글꼴로 작성되며 **한 줄** 에 가로로 중앙 정렬되고 맞추기 위해 단축됩니다. 텍스트가 완전히 표시되도록 하려면 :data:`fontsize` 20을 사용한 길이가 190포인트를 초과하지 않아야 합니다. 따라서 다음 부등식이 참인지 확인하세요: `pymupdf.get_text_length(text, fontname=\"tibo\", fontsize=20) <= 190`."
 
 #: ../../annot.rst:266 215783824e424078a9c68252ef072b76
 msgid ""
@@ -1075,7 +1077,7 @@ msgid ""
 "a dictionary with keys *filename*, *ufilename*, *desc* (description), "
 "*size* (uncompressed file size), *length* (compressed length) for "
 "FileAttachment annot types, else ``None``."
-msgstr "FileAttachment 주석 타입의 경우 *filename*, *ufilename*, *desc*(설명), *size*(압축되지 않은 파일 크기), *length*(압축된 길이) 키를 가진 딕셔너리, 그렇지 않으면 ``None``."
+msgstr "FileAttachment 주석 타입의 경우 *filename*, *ufilename*, *desc* (설명), *size* (압축되지 않은 파일 크기), *length* (압축된 길이) 키를 가진 딕셔너리, 그렇지 않으면 ``None``."
 
 #: ../../annot.rst:382 fff1e94235db41658c4a47630907af7b
 msgid "Returns attached file content."
@@ -1095,7 +1097,7 @@ msgstr "첨부 파일의 내용을 업데이트합니다. 모든 인수는 선�
 msgid ""
 "the new file content. Omit to only change meta-information.  *(Changed in"
 " version 1.14.13)* *io.BytesIO* is now also supported."
-msgstr "새 파일 내용. 메타 정보만 변경하려면 생략하세요.  *(버전 1.14.13에서 변경됨)* *io.BytesIO* 도 이제 지원됩니다."
+msgstr ""
 
 #: ../../annot.rst:397 13e705e69a1d425184d4be574725693d
 msgid "the new file content. Omit to only change meta-information."
@@ -1135,7 +1137,7 @@ msgid ""
 "compression (str, opt.) name of compression filter stream      (bytes, "
 "requ.) the sound file content =========== "
 "======================================================="
-msgstr "사운드 오디오 파일 및 관련 속성. 가능한 딕셔너리 키는 다음과 같으며, \"rate\"와 \"stream\"만 항상 존재합니다.  =========== ======================================================= 키         설명 =========== ======================================================= rate        (float, 필수) 초당 샘플 수 channels    (int, 선택) 사운드 채널 수 bps         (int, 선택) 채널당 샘플 값당 비트 수 encoding    (str, 선택) 인코딩 형식: Raw, Signed, muLaw, ALaw compression (str, 선택) 압축 필터 이름 stream      (bytes, 필수) 사운드 파일 내용 =========== ========================================================"
+msgstr ""
 
 #: ../../annot.rst:412 df0e243fcf034592a8492436e6e1659a
 msgid ""

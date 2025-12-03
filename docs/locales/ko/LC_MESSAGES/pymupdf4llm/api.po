@@ -28,7 +28,7 @@ msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr ""
-"|PyMuPDF|는 PDF(및 기타) 문서의 데이터 추출, 분석, 변환 및 조작을 위한 고성능 Python 라이브러리입니다."
+"|PyMuPDF| 는 PDF(및 기타) 문서의 데이터 추출, 분석, 변환 및 조작을 위한 고성능 Python 라이브러리입니다."
 
 #: ../../header.rst:-1 92d346afb67b4f3ab88c5a1064a46694
 msgid ""
@@ -56,7 +56,7 @@ msgid ""
 "a number of parameters. Please note that **support for building page "
 "chunks** from the |Markdown| text is supported."
 msgstr ""
-"파일의 페이지를 읽고 |Markdown| 형식으로 페이지 텍스트를 출력합니다. 세부 사항은 여러 매개변수로 제어할 수 있습니다. |Markdown| 텍스트에서 **페이지 청크 구축 지원**이 지원됩니다."
+"파일의 페이지를 읽고 |Markdown| 형식으로 페이지 텍스트를 출력합니다. 세부 사항은 여러 매개변수로 제어할 수 있습니다. |Markdown| 텍스트에서 **페이지 청크 구축 지원** 이 지원됩니다."
 
 #: ../../pymupdf4llm/api.rst 13d669ad26754dc0b5dd18b71aaaa6e7
 #: 9f1452580faf4a6282a5888330a95503 9f18803cca3b49628d55a64c7a8473ee
@@ -74,7 +74,7 @@ msgid ""
 "`pathlib.Path` specifications, Python file-like objects, documents in "
 "memory etc. you **must** use a |PyMuPDF| :class:`Document`."
 msgstr ""
-"파일 경로 문자열 또는 |PyMuPDF| :class:`Document` (`pymupdf.open`으로 생성)로 지정할 파일입니다. `pathlib.Path` 사양, Python 파일과 같은 객체, 메모리의 문서 등을 사용하려면 **반드시** |PyMuPDF| :class:`Document`를 사용해야 합니다."
+"파일 경로 문자열 또는 |PyMuPDF| :class:`Document` (`pymupdf.open` 으로 생성)로 지정할 파일입니다. `pathlib.Path` 사양, Python 파일과 같은 객체, 메모리의 문서 등을 사용하려면 **반드시** |PyMuPDF| :class:`Document` 를 사용해야 합니다."
 
 #: ../../pymupdf4llm/api.rst:73 5b01dd3e313a4f1183943c524048c4a3
 msgid ""
@@ -90,14 +90,14 @@ msgid ""
 "specify the desired image resolution in dots per inch. Relevant only if "
 "`write_images=True` or `embed_images=True`. Default value is 150."
 msgstr ""
-"인치당 도트 수로 원하는 이미지 해상도를 지정합니다. `write_images=True` 또는 `embed_images=True`인 경우에만 관련됩니다. 기본값은 150입니다."
+"인치당 도트 수로 원하는 이미지 해상도를 지정합니다. `write_images=True` 또는 `embed_images=True` 인 경우에만 관련됩니다. 기본값은 150입니다."
 
 #: ../../pymupdf4llm/api.rst:77 41ff8c59beb54152b76219649e55269d
 msgid ""
 "|PyMuPDFLayoutMode_Valid| use :ref:`OCR capability "
 "<pymupdf_layout_ocr_support>` to help analyse the page."
 msgstr ""
-"|PyMuPDFLayoutMode_Valid| 페이지 분석을 돕기 위해 :ref:`OCR 기능 <pymupdf_layout_ocr_support>`을 사용합니다."
+"|PyMuPDFLayoutMode_Valid| 페이지 분석을 돕기 위해 :ref:`OCR 기능 <pymupdf_layout_ocr_support>` 을 사용합니다."
 
 #: ../../pymupdf4llm/api.rst:79 d3e8adb5845748eeacc23caba37adfb9
 msgid ""
@@ -119,7 +119,7 @@ msgid ""
 "ignores `image_path`. This may drastically increase the size of your "
 "markdown text."
 msgstr ""
-"`write_images`와 유사하지만 이미지가 base64 인코딩된 문자열로 마크다운 텍스트에 포함됩니다. `write_images`와 상호 배타적이며 `image_path`를 무시합니다. 마크다운 텍스트의 크기를 크게 증가시킬 수 있습니다."
+"`write_images` 와 유사하지만 이미지가 base64 인코딩된 문자열로 마크다운 텍스트에 포함됩니다. `write_images` 와 상호 배타적이며 `image_path` 를 무시합니다. 마크다운 텍스트의 크기를 크게 증가시킬 수 있습니다."
 
 #: ../../pymupdf4llm/api.rst:83 cbd2e3785be64256b6c64d96627ce87c
 msgid ""
@@ -128,7 +128,7 @@ msgid ""
 "words as delivered by PyMuPDF's `Page` method `get_text(\"words\")`. The "
 "sequence of the words in this list is the same as the extracted text."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| `True` 값은 `page_chunks=True`를 강제하고 각 페이지 딕셔너리에 \"words\" 키를 추가합니다. 그 값은 |PyMuPDF|의 `Page` 메서드 `get_text(\"words\")`에서 제공하는 단어 목록입니다. 이 목록의 단어 순서는 추출된 텍스트와 동일합니다."
+"|PyMuPDFLayoutMode_Ignored| `True` 값은 `page_chunks=True` 를 강제하고 각 페이지 딕셔너리에 \"words\" 키를 추가합니다. 그 값은 |PyMuPDF| 의 `Page` 메서드 `get_text(\"words\")` 에서 제공하는 단어 목록입니다. 이 목록의 단어 순서는 추출된 텍스트와 동일합니다."
 
 #: ../../pymupdf4llm/api.rst:85 a9fcde34b67b4aac85960a2058a8384d
 msgid ""
@@ -145,7 +145,7 @@ msgid ""
 "won't be considered for extraction. Default is `3`, meaning only text "
 "with a font size `>= 3` will be considered for extraction."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| 텍스트 추출을 위해 고려할 폰트 크기를 제한합니다. 폰트 크기가 설정된 값보다 작으면 텍스트가 추출 대상에서 제외됩니다. 기본값은 `3`이며, 폰트 크기가 `>= 3`인 텍스트만 추출 대상으로 고려됩니다."
+"|PyMuPDFLayoutMode_Ignored| 텍스트 추출을 위해 고려할 폰트 크기를 제한합니다. 폰트 크기가 설정된 값보다 작으면 텍스트가 추출 대상에서 제외됩니다. 기본값은 `3` 이며, 폰트 크기가 `>= 3` 인 텍스트만 추출 대상으로 고려됩니다."
 
 #: ../../pymupdf4llm/api.rst:89 a09091d58eb74cb4953110f6516b8f92
 msgid ""
@@ -155,7 +155,7 @@ msgid ""
 "which doesn't add any value to the overall extraction data. Default is "
 "`True` meaning that footer content will be considered."
 msgstr ""
-"|PyMuPDFLayoutMode_Valid| 페이지 푸터 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 푸터 텍스트를 포함할지 생략할지를 제어합니다. 문서에 반복적인 푸터 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True`이며 푸터 콘텐츠가 고려됩니다."
+"|PyMuPDFLayoutMode_Valid| 페이지 푸터 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 푸터 텍스트를 포함할지 생략할지를 제어합니다. 문서에 반복적인 푸터 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True` 이며 푸터 콘텐츠가 고려됩니다."
 
 #: ../../pymupdf4llm/api.rst:91 18670d8b86384ed99d85b86b0328a4ca
 msgid ""
@@ -188,7 +188,7 @@ msgid ""
 " avoid this behavior specify `hdr_info=lambda s, page=None: \"\"` or "
 "`hdr_info=False`."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| 자체 헤더 감지 로직을 제공하려면 이것을 사용하세요. 이것은 호출 가능한 객체이거나 `get_header_id`라는 메서드를 가진 객체일 수 있습니다. 텍스트 스팬(:meth:`~.extractDICT`에 포함된 스팬 딕셔너리)과 키워드 매개변수 \"page\"(소유 :ref:`Page <page>` 객체)를 받아야 합니다. 빈 문자열 \"\" 또는 최대 6개의 \"#\" 문자 뒤에 공백 1개를 반환해야 합니다. 생략(`None`)하면 전체 문서 스캔을 수행하여 가장 인기 있는 폰트 크기를 찾고 이를 기반으로 헤더 수준을 파생합니다. 이 동작을 완전히 피하려면 `hdr_info=lambda s, page=None: \"\"` 또는 `hdr_info=False`를 지정하세요."
+"|PyMuPDFLayoutMode_Ignored| 자체 헤더 감지 로직을 제공하려면 이것을 사용하세요. 이것은 호출 가능한 객체이거나 `get_header_id` 라는 메서드를 가진 객체일 수 있습니다. 텍스트 스팬(:meth:`~.extractDICT` 에 포함된 스팬 딕셔너리)과 키워드 매개변수 \"page\"(소유 :ref:`Page <page>` 객체)를 받아야 합니다. 빈 문자열 \"\" 또는 최대 6개의 \"#\" 문자 뒤에 공백 1개를 반환해야 합니다. 생략(`None`)하면 전체 문서 스캔을 수행하여 가장 인기 있는 폰트 크기를 찾고 이를 기반으로 헤더 수준을 파생합니다. 이 동작을 완전히 피하려면 `hdr_info=lambda s, page=None: \"\"` 또는 `hdr_info=False` 를 지정하세요."
 
 #: ../../pymupdf4llm/api.rst:97 a35f46ec3a53486fa48b3655d9e9c97d
 msgid ""
@@ -199,7 +199,7 @@ msgid ""
 "extraction data. Default is `True` meaning that header content will be "
 "considered."
 msgstr ""
-"|PyMuPDFLayoutMode_Valid| 페이지 헤더 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 헤더 콘텐츠를 포함할지 생략할지를 제어합니다. 문서에 반복적인 헤더 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True`이며 헤더 콘텐츠가 고려됩니다."
+"|PyMuPDFLayoutMode_Valid| 페이지 헤더 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 헤더 콘텐츠를 포함할지 생략할지를 제어합니다. 문서에 반복적인 헤더 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True` 이며 헤더 콘텐츠가 고려됩니다."
 
 #: ../../pymupdf4llm/api.rst:99 28b04a679d88497e96269ee7f0812e9e
 msgid ""
@@ -207,7 +207,7 @@ msgid ""
 "completely transparent. Default is ``False``: transparent text will be "
 "ignored which usually increases detection accuracy."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| ``True``이면 완전히 투명한 경우에도 텍스트를 포함합니다. 기본값은 ``False``입니다: 투명한 텍스트는 무시되며 일반적으로 감지 정확도를 높입니다."
+"|PyMuPDFLayoutMode_Ignored| ``True`` 이면 완전히 투명한 경우에도 텍스트를 포함합니다. 기본값은 ``False`` 입니다: 투명한 텍스트는 무시되며 일반적으로 감지 정확도를 높입니다."
 
 #: ../../pymupdf4llm/api.rst:101 36820cc6604844b2a4d5375a7cd5792f
 msgid ""
@@ -215,7 +215,7 @@ msgid ""
 "Code blocks will no longer be generated. This value is set to `True` if "
 "`extract_words=True` is used."
 msgstr ""
-"`True`이면 고정 폭 텍스트 줄이 특별한 형식을 받지 않습니다. 코드 블록이 더 이상 생성되지 않습니다. `extract_words=True`가 사용되면 이 값은 `True`로 설정됩니다."
+"`True` 이면 고정 폭 텍스트 줄이 특별한 형식을 받지 않습니다. 코드 블록이 더 이상 생성되지 않습니다. `extract_words=True` 가 사용되면 이 값은 `True` 로 설정됩니다."
 
 #: ../../pymupdf4llm/api.rst:103 bff188eabaf94192af91641c85c1e98d
 msgid ""
@@ -243,14 +243,14 @@ msgid ""
 "Possible values are all :ref:`supported output formats "
 "<Supported_File_Types>`."
 msgstr ""
-"확장자를 통해 원하는 이미지 형식을 지정합니다. 기본값은 \"png\"(portable network graphics)입니다. 다른 인기 있는 형식은 \"jpg\"일 수 있습니다. 가능한 값은 모든 :ref:`지원되는 출력 형식 <Supported_File_Types>`입니다."
+"확장자를 통해 원하는 이미지 형식을 지정합니다. 기본값은 \"png\"(portable network graphics)입니다. 다른 인기 있는 형식은 \"jpg\"일 수 있습니다. 가능한 값은 모든 :ref:`지원되는 출력 형식 <Supported_File_Types>` 입니다."
 
 #: ../../pymupdf4llm/api.rst:109 adbd88cd1ca14c1ba5ee08b2109bce36
 msgid ""
 "store images in this folder. Relevant if `write_images=True`. Default is "
 "the path of the script directory."
 msgstr ""
-"이 폴더에 이미지를 저장합니다. `write_images=True`인 경우 관련됩니다. 기본값은 스크립트 디렉토리의 경로입니다."
+"이 폴더에 이미지를 저장합니다. `write_images=True` 인 경우 관련됩니다. 기본값은 스크립트 디렉토리의 경로입니다."
 
 #: ../../pymupdf4llm/api.rst:111 afeb57cfa94f4015b4e1e6c1c2e6e125
 #, python-format
@@ -262,7 +262,7 @@ msgid ""
 "height must be larger than 5% of the page's width and height, "
 "respectively."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| 이것은 ``0 <= value < 1``이어야 합니다. `width / page.rect.width <= image_size_limit` 또는 `height / page.rect.height <= image_size_limit`이면 이미지가 무시됩니다. 예를 들어, 기본값 0.05는 포함을 고려하려면 이미지의 너비와 높이가 각각 페이지 너비와 높이의 5%보다 커야 함을 의미합니다."
+"|PyMuPDFLayoutMode_Ignored| 이것은 ``0 <= value < 1`` 이어야 합니다. `width / page.rect.width <= image_size_limit` 또는 `height / page.rect.height <= image_size_limit` 이면 이미지가 무시됩니다. 예를 들어, 기본값 0.05는 포함을 고려하려면 이미지의 너비와 높이가 각각 페이지 너비와 높이의 5%보다 커야 함을 의미합니다."
 
 #: ../../pymupdf4llm/api.rst:113 85475d5ce25043fe947f058364b6d756
 msgid ""
@@ -272,7 +272,6 @@ msgid ""
 "top, right, bottom)`. * `(top, bottom)` yields  `(0, top, 0, bottom)`. * "
 "To always read full pages **(default)**, use `margins=0`."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| 페이지 여백을 지정하는 float 또는 2개 또는 4개의 float 시퀀스. 여백 내부의 객체만 출력 대상으로 고려됩니다.  * `margin=f`는 `(left, top, right, bottom)`에 대해 `(f, f, f, f)`를 생성합니다. * `(top, bottom)`는 `(0, top, 0, bottom)`를 생성합니다. * 항상 전체 페이지를 읽으려면 **(기본값)**, `margins=0`을 사용하세요."
 
 #: ../../pymupdf4llm/api.rst:113 3fb6f34f01ff47e3a66ae8c810ee06e0
 msgid ""
@@ -284,15 +283,15 @@ msgstr ""
 
 #: ../../pymupdf4llm/api.rst:115 801899e2be22416aa50f59d49696821f
 msgid "`margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`."
-msgstr "`margin=f`는 `(left, top, right, bottom)`에 대해 `(f, f, f, f)`를 생성합니다."
+msgstr "`margin=f` 는 `(left, top, right, bottom)` 에 대해 `(f, f, f, f)` 를 생성합니다."
 
 #: ../../pymupdf4llm/api.rst:116 387562b55d82431291823c1801fd50a4
 msgid "`(top, bottom)` yields  `(0, top, 0, bottom)`."
-msgstr "`(top, bottom)`는 `(0, top, 0, bottom)`를 생성합니다."
+msgstr "`(top, bottom)` 는 `(0, top, 0, bottom)` 를 생성합니다."
 
 #: ../../pymupdf4llm/api.rst:117 cdd8cebf2e1948a0a421609fc71375f2
 msgid "To always read full pages **(default)**, use `margins=0`."
-msgstr "항상 전체 페이지를 읽으려면 **(기본값)**, `margins=0`을 사용하세요."
+msgstr "항상 전체 페이지를 읽으려면 **(기본값)**, `margins=0` 을 사용하세요."
 
 #: ../../pymupdf4llm/api.rst:119 34c0664f16c740c7aca19e3a24e79e08
 msgid ""
@@ -322,14 +321,13 @@ msgid ""
 "honors multi-column text. This is also true for text in tables: words are"
 " extracted in the sequence of table row cells."
 msgstr ""
-"`True`이면 출력은 `Document.page_count` 딕셔너리 목록(페이지당 하나)이 됩니다. 각 딕셔너리는 다음 구조를 가집니다:  - **\"metadata\"** - 문서의 메타데이터 :attr:`Document.metadata`로 구성된 딕셔너리이며, 추가 키 **\"file_path\"** (파일 이름), **\"page_count\"** (문서의 페이지 수), **\"page_number\"** (1-기반 페이지 번호)로 보강됩니다.  - **\"toc_items\"** - 이 페이지를 가리키는 목차 항목 목록. 이 목록의 각 항목은 `[lvl, title, pagenumber]` 형식을 가지며, 여기서 `lvl`은 계층 수준, `title`은 문자열, `pagenumber`는 1-기반 페이지 번호입니다.  - **\"tables\"** - 이 페이지의 테이블 목록. 각 항목은 \"bbox\", \"row_count\", \"col_count\" 키를 가진 딕셔너리입니다. \"bbox\" 키는 페이지에서 테이블 위치의 튜플 형식인 `pymupdf.Rect`입니다.  - **\"images\"** - |PyMuPDFLayoutMode_EmptyList| 페이지의 이미지 목록. 이것은 페이지 메서드 :meth:`Page.get_image_info`의 복사본입니다.  - **\"graphics\"** - |PyMuPDFLayoutMode_EmptyList| 페이지의 벡터 그래픽 사각형 목록. 이것은 메서드 :meth:`Page.cluster_drawings`에서 제공하는 클러스터링된 벡터 그래픽의 경계 상자 목록입니다.  - **\"text\"** - |Markdown| 텍스트로 된 페이지 콘텐츠.  - **\"words\"** - |PyMuPDFLayoutMode_EmptyList| `extract_words=True`가 사용된 경우. 이것은 `page.get_text(\"words\")`에서 제공하는 튜플 `(x0, y0, x1, y1, \"wordstring\", bno, lno, wno)` 목록입니다. 그러나 이러한 튜플의 **순서**는 마크다운 텍스트 문자열에서 생성된 것과 동일하므로 다중 열 텍스트를 존중합니다. 테이블의 텍스트에도 적용됩니다: 단어는 테이블 행 셀의 순서로 추출됩니다."
 
 #: ../../pymupdf4llm/api.rst:119 26276a827ba549e7ae6680403a0325be
 msgid ""
 "if `True` the output will be a list of `Document.page_count` dictionaries"
 " (one per page). Each dictionary has the following structure:"
 msgstr ""
-"`True`이면 출력은 `Document.page_count` 딕셔너리 목록(페이지당 하나)이 됩니다. 각 딕셔너리는 다음 구조를 가집니다:"
+"`True` 이면 출력은 `Document.page_count` 딕셔너리 목록(페이지당 하나)이 됩니다. 각 딕셔너리는 다음 구조를 가집니다:"
 
 #: ../../pymupdf4llm/api.rst:121 412ffcdcfd664b5a9cdca7475bb6c793
 msgid ""
@@ -338,7 +336,7 @@ msgid ""
 "**\"file_path\"** (the file name), **\"page_count\"** (number of pages in"
 " document), and **\"page_number\"** (1-based page number)."
 msgstr ""
-"**\"metadata\"** - 문서의 메타데이터 :attr:`Document.metadata`로 구성된 딕셔너리이며, 추가 키 **\"file_path\"** (파일 이름), **\"page_count\"** (문서의 페이지 수), **\"page_number\"** (1-기반 페이지 번호)로 보강됩니다."
+"**\"metadata\"** - 문서의 메타데이터 :attr:`Document.metadata` 로 구성된 딕셔너리이며, 추가 키 **\"file_path\"** (파일 이름), **\"page_count\"** (문서의 페이지 수), **\"page_number\"** (1-기반 페이지 번호)로 보강됩니다."
 
 #: ../../pymupdf4llm/api.rst:123 e102e7dfa70942fabc2932205ec555ed
 msgid ""
@@ -347,7 +345,7 @@ msgid ""
 "where `lvl` is the hierarchy level, `title` a string and `pagenumber` as "
 "a 1-based page number."
 msgstr ""
-"**\"toc_items\"** - 이 페이지를 가리키는 목차 항목 목록. 이 목록의 각 항목은 `[lvl, title, pagenumber]` 형식을 가지며, 여기서 `lvl`은 계층 수준, `title`은 문자열, `pagenumber`는 1-기반 페이지 번호입니다."
+"**\"toc_items\"** - 이 페이지를 가리키는 목차 항목 목록. 이 목록의 각 항목은 `[lvl, title, pagenumber]` 형식을 가지며, 여기서 `lvl` 은 계층 수준, `title` 은 문자열, `pagenumber` 는 1-기반 페이지 번호입니다."
 
 #: ../../pymupdf4llm/api.rst:125 697bc1bf53f943a6a77a7e73b4ed9069
 msgid ""
@@ -355,14 +353,14 @@ msgid ""
 " with keys \"bbox\", \"row_count\" and \"col_count\". Key \"bbox\" is a "
 "`pymupdf.Rect` in tuple format of the table's position on the page."
 msgstr ""
-"**\"tables\"** - 이 페이지의 테이블 목록. 각 항목은 \"bbox\", \"row_count\", \"col_count\" 키를 가진 딕셔너리입니다. \"bbox\" 키는 페이지에서 테이블 위치의 튜플 형식인 `pymupdf.Rect`입니다."
+"**\"tables\"** - 이 페이지의 테이블 목록. 각 항목은 \"bbox\", \"row_count\", \"col_count\" 키를 가진 딕셔너리입니다. \"bbox\" 키는 페이지에서 테이블 위치의 튜플 형식인 `pymupdf.Rect` 입니다."
 
 #: ../../pymupdf4llm/api.rst:127 f4902a3e2743455b879b8e485c311e6e
 msgid ""
 "**\"images\"** - |PyMuPDFLayoutMode_EmptyList| a list of images on the "
 "page. This a copy of page method :meth:`Page.get_image_info`."
 msgstr ""
-"**\"images\"** - |PyMuPDFLayoutMode_EmptyList| 페이지의 이미지 목록. 이것은 페이지 메서드 :meth:`Page.get_image_info`의 복사본입니다."
+"**\"images\"** - |PyMuPDFLayoutMode_EmptyList| 페이지의 이미지 목록. 이것은 페이지 메서드 :meth:`Page.get_image_info` 의 복사본입니다."
 
 #: ../../pymupdf4llm/api.rst:129 247ba43947304db2939158ac691bb939
 msgid ""
@@ -371,7 +369,7 @@ msgid ""
 "clustered vector graphics as delivered by method "
 ":meth:`Page.cluster_drawings`."
 msgstr ""
-"**\"graphics\"** - |PyMuPDFLayoutMode_EmptyList| 페이지의 벡터 그래픽 사각형 목록. 이것은 메서드 :meth:`Page.cluster_drawings`에서 제공하는 클러스터링된 벡터 그래픽의 경계 상자 목록입니다."
+"**\"graphics\"** - |PyMuPDFLayoutMode_EmptyList| 페이지의 벡터 그래픽 사각형 목록. 이것은 메서드 :meth:`Page.cluster_drawings` 에서 제공하는 클러스터링된 벡터 그래픽의 경계 상자 목록입니다."
 
 #: ../../pymupdf4llm/api.rst:131 57d71d3b3a3249569cbda9768c424bda
 msgid "**\"text\"** - page content as |Markdown| text."
@@ -386,7 +384,7 @@ msgid ""
 "string and thus honors multi-column text. This is also true for text in "
 "tables: words are extracted in the sequence of table row cells."
 msgstr ""
-"**\"words\"** - |PyMuPDFLayoutMode_EmptyList| `extract_words=True`가 사용된 경우. 이것은 `page.get_text(\"words\")`에서 제공하는 튜플 `(x0, y0, x1, y1, \"wordstring\", bno, lno, wno)` 목록입니다. 그러나 이러한 튜플의 **순서**는 마크다운 텍스트 문자열에서 생성된 것과 동일하므로 다중 열 텍스트를 존중합니다. 테이블의 텍스트에도 적용됩니다: 단어는 테이블 행 셀의 순서로 추출됩니다."
+"**\"words\"** - |PyMuPDFLayoutMode_EmptyList| `extract_words=True` 가 사용된 경우. 이것은 `page.get_text(\"words\")` 에서 제공하는 튜플 `(x0, y0, x1, y1, \"wordstring\", bno, lno, wno)` 목록입니다. 그러나 이러한 튜플의 **순서** 는 마크다운 텍스트 문자열에서 생성된 것과 동일하므로 다중 열 텍스트를 존중합니다. 테이블의 텍스트에도 적용됩니다: 단어는 테이블 행 셀의 순서로 추출됩니다."
 
 #: ../../pymupdf4llm/api.rst:135 a4eb7467e30b421a95b8c99919ecbce6
 msgid ""
@@ -396,7 +394,7 @@ msgid ""
 "markdown page separators will occur (except the final one), respectively "
 "only one page chunk will be returned."
 msgstr ""
-"원하는 페이지 높이를 지정합니다. 관련성은 `page_width` 매개변수를 참조하세요. 기본값 `None`을 사용하면 문서가 `page_width` 너비의 하나의 큰 페이지로 나타납니다. 결과적으로 이 경우 마크다운 페이지 구분자가 발생하지 않으며(마지막 것 제외), 각각 하나의 페이지 청크만 반환됩니다."
+"원하는 페이지 높이를 지정합니다. 관련성은 `page_width` 매개변수를 참조하세요. 기본값 `None` 을 사용하면 문서가 `page_width` 너비의 하나의 큰 페이지로 나타납니다. 결과적으로 이 경우 마크다운 페이지 구분자가 발생하지 않으며(마지막 것 제외), 각각 하나의 페이지 청크만 반환됩니다."
 
 #: ../../pymupdf4llm/api.rst:137 3d9536256eb44ab18b73999b0e0a94ef
 msgid ""
@@ -405,7 +403,7 @@ msgid ""
 "0-based. The separator string is wrapped with line breaks. Default is "
 "``False``."
 msgstr ""
-"``True``이면 각 페이지 출력 끝에 문자열 ``--- end of page=n ---``를 삽입합니다. 디버깅 목적으로 사용됩니다. 페이지 번호는 0-기반입니다. 구분자 문자열은 줄바꿈으로 감싸집니다. 기본값은 ``False``입니다."
+"``True`` 이면 각 페이지 출력 끝에 문자열 ``--- end of page=n ---`` 를 삽입합니다. 디버깅 목적으로 사용됩니다. 페이지 번호는 0-기반입니다. 구분자 문자열은 줄바꿈으로 감싸집니다. 기본값은 ``False`` 입니다."
 
 #: ../../pymupdf4llm/api.rst:139 9cb78dc09dde4bdb80163561a09b2df7
 msgid ""
@@ -416,7 +414,7 @@ msgid ""
 "**unlimited** page height. This means that the **full document is treated"
 " as one large page.**"
 msgstr ""
-"원하는 페이지 너비를 지정합니다. PDF, XPS 등 고정 페이지 너비를 가진 문서에서는 무시됩니다. 그러나 **재배치 가능한** 문서(예: 전자책, 오피스 [#f2]_ 또는 텍스트 파일)는 고정 페이지 크기가 없습니다. 기본적으로 Letter 형식 너비(612)와 **무제한** 페이지 높이를 가진 것으로 가정됩니다. 이것은 **전체 문서가 하나의 큰 페이지로 처리됨**을 의미합니다."
+"원하는 페이지 너비를 지정합니다. PDF, XPS 등 고정 페이지 너비를 가진 문서에서는 무시됩니다. 그러나 **재배치 가능한** 문서(예: 전자책, 오피스 [#f2]_ 또는 텍스트 파일)는 고정 페이지 크기가 없습니다. 기본적으로 Letter 형식 너비(612)와 **무제한** 페이지 높이를 가진 것으로 가정됩니다. 이것은 **전체 문서가 하나의 큰 페이지로 처리됨** 을 의미합니다."
 
 #: ../../pymupdf4llm/api.rst:141 ../../pymupdf4llm/api.rst:171
 #: 951850c1f7ff4f798dca7dda5b985f12 d4db9adce2fe428ab58a3903b6e897f9
@@ -437,7 +435,7 @@ msgid ""
 "used if installed, otherwise the built-in text based progress bar is "
 "used."
 msgstr ""
-"기본값은 `False`입니다. `True` 값은 페이지가 변환되는 동안 진행 표시줄을 표시합니다. `tqdm <https://pypi.org/project/tqdm/>`_ 패키지가 설치되어 있으면 사용되고, 그렇지 않으면 내장 텍스트 기반 진행 표시줄이 사용됩니다."
+"기본값은 `False` 입니다. `True` 값은 페이지가 변환되는 동안 진행 표시줄을 표시합니다. `tqdm <https://pypi.org/project/tqdm/>`_ 패키지가 설치되어 있으면 사용되고, 그렇지 않으면 내장 텍스트 기반 진행 표시줄이 사용됩니다."
 
 #: ../../pymupdf4llm/api.rst:145 2db14405113e40179eb2edf68e69b579
 msgid ""
@@ -447,7 +445,7 @@ msgid ""
 "successful, for example `\"lines\"` which uses all vector graphics "
 "objects for detection."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| 참조: :meth:`테이블 감지 전략 <Page.find_tables>`. 기본값은 배경색을 무시하는 `\"lines_strict\"`입니다. 경우에 따라 다른 전략이 더 성공적일 수 있습니다. 예를 들어 모든 벡터 그래픽 객체를 감지에 사용하는 `\"lines\"`입니다."
+"|PyMuPDFLayoutMode_Ignored| 참조: :meth:`테이블 감지 전략 <Page.find_tables>`. 기본값은 배경색을 무시하는 `\"lines_strict\"` 입니다. 경우에 따라 다른 전략이 더 성공적일 수 있습니다. 예를 들어 모든 벡터 그래픽 객체를 감지에 사용하는 `\"lines\"` 입니다."
 
 #: ../../pymupdf4llm/api.rst:147 abf44d2845b94d018e86396e471a2797
 msgid ""
@@ -455,7 +453,7 @@ msgid ""
 " of `True` will use the glyph number of the characters instead of the "
 "character itself if the font does not store the Unicode value."
 msgstr ""
-"|PyMuPDFLayoutMode_Ignored| (v.0.0.19에서 새로 추가됨) 기본값은 `False`입니다. `True` 값은 폰트가 유니코드 값을 저장하지 않는 경우 문자 자체 대신 문자의 글리프 번호를 사용합니다."
+"|PyMuPDFLayoutMode_Ignored| (v.0.0.19에서 새로 추가됨) 기본값은 `False` 입니다. `True` 값은 폰트가 유니코드 값을 저장하지 않는 경우 문자 자체 대신 문자의 글리프 번호를 사용합니다."
 
 #: ../../pymupdf4llm/api.rst:149 dfec1fde53d145b4a723e9686dc1ad55
 msgid ""
@@ -472,7 +470,6 @@ msgid ""
 "extracted from these areas and included in the output  after the "
 "respective image reference."
 msgstr ""
-"이미지나 벡터 그래픽을 만나면 해당 페이지 영역에서 이미지가 생성되어 지정된 폴더에 저장됩니다. |Markdown| 참조가 이러한 이미지를 가리키도록 생성됩니다. 이러한 영역에 포함된 텍스트는 텍스트 출력에 포함되지 않습니다(이미지의 일부로 나타남). 따라서 예를 들어 문서에 전체 페이지 이미지에 텍스트가 작성된 경우 이 매개변수를 `False`로 설정해야 합니다.  :ref:`PyMuPDF Layout <pymupdf-layout>`을 사용하는 경우 레이아웃 모듈에 의해 \"picture\"로 분류된 경계 상자는 이미지로 처리됩니다 - 덮고 있을 수 있는 텍스트, 이미지 또는 벡터 그래픽의 혼합과 무관합니다. `force_text=True`가 사용되면 텍스트는 여전히 이러한 영역에서 추출되어 해당 이미지 참조 뒤에 출력에 포함됩니다."
 
 #: ../../pymupdf4llm/api.rst:149 93ccd09a15134624a2ab4a2288ba6171
 msgid ""
@@ -483,7 +480,7 @@ msgid ""
 "part of the images). Therefore, if for instance your document has text "
 "written on full page images, make sure to set this parameter to `False`."
 msgstr ""
-"이미지나 벡터 그래픽을 만나면 해당 페이지 영역에서 이미지가 생성되어 지정된 폴더에 저장됩니다. |Markdown| 참조가 이러한 이미지를 가리키도록 생성됩니다. 이러한 영역에 포함된 텍스트는 텍스트 출력에 포함되지 않습니다(이미지의 일부로 나타남). 따라서 예를 들어 문서에 전체 페이지 이미지에 텍스트가 작성된 경우 이 매개변수를 `False`로 설정해야 합니다."
+"이미지나 벡터 그래픽을 만나면 해당 페이지 영역에서 이미지가 생성되어 지정된 폴더에 저장됩니다. |Markdown| 참조가 이러한 이미지를 가리키도록 생성됩니다. 이러한 영역에 포함된 텍스트는 텍스트 출력에 포함되지 않습니다(이미지의 일부로 나타남). 따라서 예를 들어 문서에 전체 페이지 이미지에 텍스트가 작성된 경우 이 매개변수를 `False` 로 설정해야 합니다."
 
 #: ../../pymupdf4llm/api.rst:151 250eaf1b38694043b90736d4d9a821ce
 msgid ""
@@ -494,7 +491,7 @@ msgid ""
 "extracted from these areas and included in the output  after the "
 "respective image reference."
 msgstr ""
-":ref:`PyMuPDF Layout <pymupdf-layout>`을 사용하는 경우 레이아웃 모듈에 의해 \"picture\"로 분류된 경계 상자는 이미지로 처리됩니다 - 덮고 있을 수 있는 텍스트, 이미지 또는 벡터 그래픽의 혼합과 무관합니다. `force_text=True`가 사용되면 텍스트는 여전히 이러한 영역에서 추출되어 해당 이미지 참조 뒤에 출력에 포함됩니다."
+":ref:`PyMuPDF Layout <pymupdf-layout>` 을 사용하는 경우 레이아웃 모듈에 의해 \"picture\"로 분류된 경계 상자는 이미지로 처리됩니다 - 덮고 있을 수 있는 텍스트, 이미지 또는 벡터 그래픽의 혼합과 무관합니다. `force_text=True` 가 사용되면 텍스트는 여전히 이러한 영역에서 추출되어 해당 이미지 참조 뒤에 출력에 포함됩니다."
 
 #: ../../pymupdf4llm/api.rst 0d07c67350cb436fb33e8aad838f6779
 #: 598d4d5d997b46ae9c685c56a12f8d30 6c9887cf2f934da0a3139fe4efef9133
@@ -507,7 +504,7 @@ msgid ""
 "Either a string of the combined text of all selected document pages, or a"
 " list of dictionaries if `page_chunks=True`."
 msgstr ""
-"선택된 모든 문서 페이지의 결합된 텍스트 문자열이거나 `page_chunks=True`인 경우 딕셔너리 목록입니다."
+"선택된 모든 문서 페이지의 결합된 텍스트 문자열이거나 `page_chunks=True` 인 경우 딕셔너리 목록입니다."
 
 #: ../../pymupdf4llm/api.rst:159 5b52df94b00743b6a3926949923c8769
 msgid ""
@@ -532,7 +529,7 @@ msgid ""
 " add any value to the overall extraction data. Default is `True` meaning "
 "that header content will be written."
 msgstr ""
-"페이지 헤더 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 헤더 콘텐츠를 포함할지 생략할지를 제어합니다. 문서에 반복적인 헤더 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True`이며 헤더 콘텐츠가 작성됩니다."
+"페이지 헤더 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 헤더 콘텐츠를 포함할지 생략할지를 제어합니다. 문서에 반복적인 헤더 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True` 이며 헤더 콘텐츠가 작성됩니다."
 
 #: ../../pymupdf4llm/api.rst:167 67bec0a4a60e463496475cd96362ffeb
 msgid ""
@@ -542,14 +539,14 @@ msgid ""
 " add any value to the overall extraction data. Default is `True` meaning "
 "that footer content will be written."
 msgstr ""
-"페이지 푸터 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 푸터 콘텐츠를 포함할지 생략할지를 제어합니다. 문서에 반복적인 푸터 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True`이며 푸터 콘텐츠가 작성됩니다."
+"페이지 푸터 콘텐츠를 켜거나 끄는 부울 값입니다. 이 매개변수는 모든 문서 페이지에서 푸터 콘텐츠를 포함할지 생략할지를 제어합니다. 문서에 반복적인 푸터 콘텐츠가 있어 전체 추출 데이터에 가치를 추가하지 않는 경우에 유용합니다. 기본값은 `True` 이며 푸터 콘텐츠가 작성됩니다."
 
 #: ../../pymupdf4llm/api.rst:169 fb77c695d98d4c95aa3263b6b6d780b7
 msgid ""
 "if `True` then mono-spaced text lines do not receive special formatting. "
 "No blocks will be written and text lines will be written continuously."
 msgstr ""
-"`True`이면 고정 폭 텍스트 줄이 특별한 형식을 받지 않습니다. 블록이 작성되지 않고 텍스트 줄이 연속적으로 작성됩니다."
+"`True` 이면 고정 폭 텍스트 줄이 특별한 형식을 받지 않습니다. 블록이 작성되지 않고 텍스트 줄이 연속적으로 작성됩니다."
 
 #: ../../pymupdf4llm/api.rst:173 1b962ab25f1847bcbeca72a0b761b13e
 msgid ""
@@ -559,7 +556,7 @@ msgid ""
 "appear as a text line in the output like `==> picture [width x height] "
 "<==`."
 msgstr ""
-"이미지/그래픽과 겹치는 경우에도 텍스트 출력을 생성합니다. 이 텍스트는 해당 이미지 참조 뒤에 나타납니다. 그러나 이미지(즉, \"picture\" 영역)는 텍스트 출력에 작성되지 않고 `==> picture [width x height] <==`와 같은 텍스트 줄로 출력에 나타납니다."
+"이미지/그래픽과 겹치는 경우에도 텍스트 출력을 생성합니다. 이 텍스트는 해당 이미지 참조 뒤에 나타납니다. 그러나 이미지(즉, \"picture\" 영역)는 텍스트 출력에 작성되지 않고 `==> picture [width x height] <==` 와 같은 텍스트 줄로 출력에 나타납니다."
 
 #: ../../pymupdf4llm/api.rst:180 5d81ef685e2d4f0db6010c6fe5be7a9d
 msgid ""
@@ -584,7 +581,7 @@ msgid ""
 "<Supported_File_Types>`. Only relevant if one of the parameters "
 "`write_images=True` or `embed_images=True` is used."
 msgstr ""
-"확장자를 통해 원하는 이미지 형식을 지정합니다. 기본값은 \"png\"(portable network graphics)입니다. 다른 인기 있는 형식은 \"jpg\"일 수 있습니다. 가능한 값은 모든 :ref:`지원되는 출력 형식 <Supported_File_Types>`입니다. `write_images=True` 또는 `embed_images=True` 매개변수 중 하나가 사용된 경우에만 관련됩니다."
+"확장자를 통해 원하는 이미지 형식을 지정합니다. 기본값은 \"png\"(portable network graphics)입니다. 다른 인기 있는 형식은 \"jpg\"일 수 있습니다. 가능한 값은 모든 :ref:`지원되는 출력 형식 <Supported_File_Types>` 입니다. `write_images=True` 또는 `embed_images=True` 매개변수 중 하나가 사용된 경우에만 관련됩니다."
 
 #: ../../pymupdf4llm/api.rst:190 1be020ddc3ca4fbe9f5fd73c3298040b
 msgid ""
@@ -594,7 +591,7 @@ msgid ""
 "names will be of the format `{image_path}/{filename}-pagenumber-"
 "image_number.{image_format}`."
 msgstr ""
-"이 폴더에 이미지를 저장합니다. `write_images=True`인 경우 관련됩니다. 기본값은 스크립트 디렉토리의 경로입니다. \"picture\"로 분류된 페이지 영역은 지정된 위치에 이미지 파일로 작성됩니다. 이미지 파일 이름은 `{image_path}/{filename}-pagenumber-image_number.{image_format}` 형식입니다."
+"이 폴더에 이미지를 저장합니다. `write_images=True` 인 경우 관련됩니다. 기본값은 스크립트 디렉토리의 경로입니다. \"picture\"로 분류된 페이지 영역은 지정된 위치에 이미지 파일로 작성됩니다. 이미지 파일 이름은 `{image_path}/{filename}-pagenumber-image_number.{image_format}` 형식입니다."
 
 #: ../../pymupdf4llm/api.rst:192 984764256bf04d99b89ba80370d8541c
 msgid ""
@@ -614,7 +611,7 @@ msgid ""
 "images are included in the JSON output. Ignores `image_path` if used. "
 "This may drastically increase the size of your JSON text."
 msgstr ""
-"\"picture\" 경계 상자에 대한 이미지 바이너리를 저장합니다. Base64 인코딩된 이미지가 JSON 출력에 포함됩니다. 사용된 경우 `image_path`를 무시합니다. 이것은 JSON 텍스트의 크기를 크게 증가시킬 수 있습니다."
+"\"picture\" 경계 상자에 대한 이미지 바이너리를 저장합니다. Base64 인코딩된 이미지가 JSON 출력에 포함됩니다. 사용된 경우 `image_path` 를 무시합니다. 이것은 JSON 텍스트의 크기를 크게 증가시킬 수 있습니다."
 
 #: ../../pymupdf4llm/api.rst:198 13a91b7cc1f04969b4e871b8c7920989
 msgid ""
@@ -631,7 +628,7 @@ msgid ""
 " numbers). If omitted (`None`) all pages are processed. Specify any valid"
 " Python sequence containing integers between `0` and `page_count - 1`."
 msgstr ""
-"선택 사항, 출력을 위해 고려할 페이지(주의: 0-기반 페이지 번호 지정). 생략(`None`)하면 모든 페이지가 처리됩니다. `0`과 `page_count - 1` 사이의 정수를 포함하는 유효한 Python 시퀀스를 지정하세요."
+"선택 사항, 출력을 위해 고려할 페이지(주의: 0-기반 페이지 번호 지정). 생략(`None`)하면 모든 페이지가 처리됩니다. `0` 과 `page_count - 1` 사이의 정수를 포함하는 유효한 Python 시퀀스를 지정하세요."
 
 #: ../../pymupdf4llm/api.rst:205 47988e45549446179f8420be32191824
 msgid ""
@@ -648,7 +645,7 @@ msgid ""
 "package. Please note that this package will **not automatically be "
 "installed** when installing **pymupdf4llm**."
 msgstr ""
-"`LlamaIndex`_ 패키지를 사용하여 `pdf_markdown_reader.PDFMarkdownReader`를 생성합니다. 이 패키지는 **pymupdf4llm** 설치 시 **자동으로 설치되지 않습니다**."
+"`LlamaIndex`_ 패키지를 사용하여 `pdf_markdown_reader.PDFMarkdownReader` 를 생성합니다. 이 패키지는 **pymupdf4llm** 설치 시 **자동으로 설치되지 않습니다**."
 
 #: ../../pymupdf4llm/api.rst:212 ac6f0e13b9034f77a6222df6d6f0a966
 msgid ""
@@ -672,7 +669,7 @@ msgid ""
 "several seconds to execute. For details on using the markdown reader "
 "please see below."
 msgstr ""
-"`pdf_markdown_reader.PDFMarkdownReader`를 생성하고 \"Successfully imported LlamaIndex\" 메시지를 발행합니다. 이 메서드는 실행하는 데 몇 초가 필요합니다. 마크다운 리더 사용에 대한 자세한 내용은 아래를 참조하세요."
+"`pdf_markdown_reader.PDFMarkdownReader` 를 생성하고 \"Successfully imported LlamaIndex\" 메시지를 발행합니다. 이 메서드는 실행하는 데 몇 초가 필요합니다. 마크다운 리더 사용에 대한 자세한 내용은 아래를 참조하세요."
 
 #: ../../pymupdf4llm/api.rst:222 ../../pymupdf4llm/api.rst:350
 #: 59202f45ef284beea61e2fb7c2b74d47 71f2f0dd222a44589ed37b4ae0fd4ad7
@@ -688,7 +685,7 @@ msgid ""
 " for body text. Larger font sizes are mapped to the respective header "
 "levels - which correspond to the HTML tags `<h1>` to `<h6>`."
 msgstr ""
-"텍스트 폰트 크기를 마크다운 구문에서 헤더 레벨을 나타내는 데 사용되는 '#' 문자 수에 매핑하는 객체를 생성합니다. 이 객체는 문서에서 폰트 크기 \"인기도\"를 스캔하여 생성됩니다. 가장 인기 있는 폰트 크기와 모든 작은 크기는 본문 텍스트에 사용됩니다. 더 큰 폰트 크기는 해당 헤더 레벨에 매핑됩니다 - 이는 HTML 태그 `<h1>`에서 `<h6>`에 해당합니다."
+"텍스트 폰트 크기를 마크다운 구문에서 헤더 레벨을 나타내는 데 사용되는 '#' 문자 수에 매핑하는 객체를 생성합니다. 이 객체는 문서에서 폰트 크기 \"인기도\"를 스캔하여 생성됩니다. 가장 인기 있는 폰트 크기와 모든 작은 크기는 본문 텍스트에 사용됩니다. 더 큰 폰트 크기는 해당 헤더 레벨에 매핑됩니다 - 이는 HTML 태그 `<h1>` 에서 `<h6>` 에 해당합니다."
 
 #: ../../pymupdf4llm/api.rst:229 a5f1efbaa3ec4a3fa953b61ecb108cb5
 msgid "All font sizes are rounded to integer values."
@@ -718,7 +715,7 @@ msgid ""
 "specifications, Python file-like objects, documents in memory etc. you "
 "**must** use a |PyMuPDF| Document."
 msgstr ""
-"파일 경로 문자열 또는 `pymupdf.open`을 통해 생성된 |PyMuPDF| Document로 지정할 파일입니다. `pathlib.Path` 사양, Python 파일과 같은 객체, 메모리의 문서 등을 사용하려면 **반드시** |PyMuPDF| Document를 사용해야 합니다."
+"파일 경로 문자열 또는 `pymupdf.open` 을 통해 생성된 |PyMuPDF| Document로 지정할 파일입니다. `pathlib.Path` 사양, Python 파일과 같은 객체, 메모리의 문서 등을 사용하려면 **반드시** |PyMuPDF| Document를 사용해야 합니다."
 
 #: ../../pymupdf4llm/api.rst:238 ca89a89858a54fcbbb852141997e973c
 msgid "optional, the pages to consider. If omitted all pages are processed."
@@ -740,7 +737,7 @@ msgid ""
 "\"#\", \"##\" and \"###\". Body text will be assumed for all font sizes "
 "smaller than the one corresponding to \"###\"."
 msgstr ""
-"사용할 최대 헤더 레벨 수. 유효한 값은 `range(1, 7)`입니다. 기본값은 6이며, 이는 HTML 태그 `<h1>`에서 `<h6>`에 해당합니다. 더 작은 값은 생성되는 헤더 레벨 수를 제한합니다. 예를 들어, 값 3은 헤더 태그 \"#\", \"##\", \"###\"만 생성합니다. 본문 텍스트는 \"###\"에 해당하는 폰트 크기보다 작은 모든 폰트 크기에 대해 가정됩니다."
+"사용할 최대 헤더 레벨 수. 유효한 값은 `range(1, 7)` 입니다. 기본값은 6이며, 이는 HTML 태그 `<h1>` 에서 `<h6>` 에 해당합니다. 더 작은 값은 생성되는 헤더 레벨 수를 제한합니다. 예를 들어, 값 3은 헤더 태그 \"#\", \"##\", \"###\"만 생성합니다. 본문 텍스트는 \"###\"에 해당하는 폰트 크기보다 작은 모든 폰트 크기에 대해 가정됩니다."
 
 #: ../../pymupdf4llm/api.rst:247 15756bee4cc048d0804e9ad2b8711c6b
 msgid ""
@@ -762,7 +759,7 @@ msgid ""
 "a dictionary containing the text span information. This is the same "
 "dictionary as returned by `page.get_text(\"dict\")`."
 msgstr ""
-"`page.get_text(\"dict\")`에 의해 반환되는 것과 동일한 텍스트 스팬 정보를 포함하는 딕셔너리입니다."
+"`page.get_text(\"dict\")` 에 의해 반환되는 것과 동일한 텍스트 스팬 정보를 포함하는 딕셔너리입니다."
 
 #: ../../pymupdf4llm/api.rst:253 ../../pymupdf4llm/api.rst:372
 #: 3f4de965af784b5aa3bc9c1d0da99386 4fb44301f96d4a76813aaaf15f5dbf3f
@@ -784,7 +781,7 @@ msgid ""
 ":class:`IdentifyHeaders` constructor. The keys are the font sizes of the "
 "text spans in the document. The values are the respective header strings."
 msgstr ""
-"정수 폰트 크기를 ``{14: '# ', 12: '## '}``와 같은 마크다운 헤더 문자열에 매핑하는 딕셔너리입니다. 이 딕셔너리는 :class:`IdentifyHeaders` 생성자에 의해 생성됩니다. 키는 문서의 텍스트 스팬 폰트 크기입니다. 값은 해당 헤더 문자열입니다."
+"정수 폰트 크기를 ``{14: '# ', 12: '## '}`` 와 같은 마크다운 헤더 문자열에 매핑하는 딕셔너리입니다. 이 딕셔너리는 :class:`IdentifyHeaders` 생성자에 의해 생성됩니다. 키는 문서의 텍스트 스팬 폰트 크기입니다. 값은 해당 헤더 문자열입니다."
 
 #: ../../pymupdf4llm/api.rst:263 c5a884c560bc48cfb1e711db69d97d70
 msgid ""
@@ -792,7 +789,7 @@ msgid ""
 "computed as ``min(header_id.keys()) - 1``. In the above example, "
 "body_limit would be 11."
 msgstr ""
-"본문 텍스트의 폰트 크기 제한을 나타내는 정수 값. 이는 ``min(header_id.keys()) - 1``로 계산됩니다. 위 예시에서 body_limit은 11이 됩니다."
+"본문 텍스트의 폰트 크기 제한을 나타내는 정수 값. 이는 ``min(header_id.keys()) - 1`` 로 계산됩니다. 위 예시에서 body_limit은 11이 됩니다."
 
 #: ../../pymupdf4llm/api.rst:269 18f9b62b612f43cb98b8bc9395d2e91d
 msgid "**How to limit header levels (example)**"
@@ -841,7 +838,7 @@ msgid ""
 "correctly identifying header lines on document pages than the font-size-"
 "based approach."
 msgstr ""
-"이것은 :class:`IdentifyHeaders`의 대안입니다. 전체 문서를 통해 폰트 크기를 식별하는 대신, 문서의 목차(TOC)를 사용하여 페이지의 헤더를 식별합니다. :class:`IdentifyHeaders`와 마찬가지로, 이것도 헤더를 찾는 것을 보장하지는 않지만, 잘 구성된 목차의 경우 폰트 크기 기반 접근 방식보다 문서 페이지의 헤더 줄을 더 정확하게 식별할 가능성이 높습니다."
+"이것은 :class:`IdentifyHeaders` 의 대안입니다. 전체 문서를 통해 폰트 크기를 식별하는 대신, 문서의 목차(TOC)를 사용하여 페이지의 헤더를 식별합니다. :class:`IdentifyHeaders` 와 마찬가지로, 이것도 헤더를 찾는 것을 보장하지는 않지만, 잘 구성된 목차의 경우 폰트 크기 기반 접근 방식보다 문서 페이지의 헤더 줄을 더 정확하게 식별할 가능성이 높습니다."
 
 #: ../../pymupdf4llm/api.rst:358 6ba9148a06a44cd0b05fab409c4283a1
 msgid ""
@@ -891,7 +888,7 @@ msgid ""
 "This is a version of previous **example 2** that uses :class:`TocHeaders`"
 " for header identification::"
 msgstr ""
-"이것은 헤더 식별을 위해 :class:`TocHeaders`를 사용하는 이전 **예제 2**의 버전입니다::"
+"이것은 헤더 식별을 위해 :class:`TocHeaders` 를 사용하는 이전 **예제 2** 의 버전입니다::"
 
 #: ../../pymupdf4llm/api.rst:398 a4a87f3efb6d472d80ff03a5b8a23c65
 msgid ""
@@ -901,11 +898,11 @@ msgid ""
 "`use_doc_meta()` may or may not make sense. For more information, please "
 "consult the LlamaIndex documentation [#f1]_."
 msgstr ""
-"이것은 현재 마크다운 데이터를 추출하는 데 사용해야 하는 마크다운 리더의 유일한 메서드입니다. 어떤 경우에도 `aload_data()` 및 `lazy_load_data()` 메서드를 무시하세요. `use_doc_meta()`와 같은 다른 메서드는 의미가 있을 수도 있고 없을 수도 있습니다. 자세한 내용은 LlamaIndex 문서 [#f1]_ 를 참조하세요."
+"이것은 현재 마크다운 데이터를 추출하는 데 사용해야 하는 마크다운 리더의 유일한 메서드입니다. 어떤 경우에도 `aload_data()` 및 `lazy_load_data()` 메서드를 무시하세요. `use_doc_meta()` 와 같은 다른 메서드는 의미가 있을 수도 있고 없을 수도 있습니다. 자세한 내용은 LlamaIndex 문서 [#f1]_ 를 참조하세요."
 
 #: ../../pymupdf4llm/api.rst:400 df377eb2611b45ad9e06938903718a76
 msgid "Under the hood the method will execute `to_markdown()`."
-msgstr "내부적으로 메서드는 `to_markdown()`을 실행합니다."
+msgstr "내부적으로 메서드는 `to_markdown()` 을 실행합니다."
 
 #: ../../pymupdf4llm/api.rst:402 afdbf4a1f22542639e7a55416dbdda7c
 msgid "a list of `LlamaIndexDocument` documents - one for each page."
@@ -934,7 +931,7 @@ msgid ""
 "width and page height specifications will be ignored as well in these "
 "cases."
 msgstr ""
-"PyMuPDF-Pro를 사용할 때 지원되는 오피스 문서는 내부적으로 PDF와 유사한 형식으로 변환됩니다. 따라서 **고정 페이지 크기**를 가지며 더 이상 \"재배치 가능\"하지 않습니다. 결과적으로 이러한 경우 페이지 너비 및 페이지 높이 사양도 무시됩니다."
+"PyMuPDF-Pro를 사용할 때 지원되는 오피스 문서는 내부적으로 PDF와 유사한 형식으로 변환됩니다. 따라서 **고정 페이지 크기** 를 가지며 더 이상 \"재배치 가능\"하지 않습니다. 결과적으로 이러한 경우 페이지 너비 및 페이지 높이 사양도 무시됩니다."
 
 #: ../../footer.rst:48 1ed68f4bf8fd45fab04f7a49fba09f0a
 msgid "This documentation covers all versions up to |version|."

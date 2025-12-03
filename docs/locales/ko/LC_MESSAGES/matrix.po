@@ -214,7 +214,7 @@ msgstr "매개변수 없이 영 행렬 *Matrix(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)* �
 msgid ""
 "*zoom-** and *shear-** specify zoom or shear values (float) and create a "
 "zoom or shear matrix, respectively."
-msgstr "*zoom-** 및 *shear-**는 확대/축소 또는 기울이기 값(float)을 지정하고 각각 확대/축소 또는 기울이기 행렬을 생성합니다."
+msgstr "*zoom-** 및 *shear-** 는 확대/축소 또는 기울이기 값(float)을 지정하고 각각 확대/축소 또는 기울이기 행렬을 생성합니다."
 
 #: ../../matrix.rst:65 3772827e3c4e46efaa66e0541654fbde
 msgid "For \"matrix\" a **new copy** of another matrix will be made."

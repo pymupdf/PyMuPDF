@@ -146,7 +146,7 @@ msgid ""
 "This can happen if PyMuPDF's legacy name `fitz` is used (for example "
 "`import fitz` instead of `import pymupdf`), and an unrelated Python "
 "package called `fitz` (https://pypi.org/project/fitz/) is installed."
-msgstr "PyMuPDF의 레거시 이름 `fitz` 를 사용하는 경우(예: `import pymupdf` 대신 `import fitz`) 및 관련 없는 Python 패키지 `fitz`(https://pypi.org/project/fitz/) 가 설치된 경우 발생할 수 있습니다."
+msgstr "PyMuPDF의 레거시 이름 `fitz` 를 사용하는 경우(예: `import pymupdf` 대신 `import fitz`) 및 관련 없는 Python 패키지 `fitz` (https://pypi.org/project/fitz/)가 설치된 경우 발생할 수 있습니다."
 
 #: ../../installation.rst:92 f32677d324ec471f8b25f4becffc62f5
 msgid ""
