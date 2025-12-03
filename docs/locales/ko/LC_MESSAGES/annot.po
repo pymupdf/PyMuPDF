@@ -482,7 +482,7 @@ msgid ""
 " about some background, e.g. look for \"Premultiplied alpha\" `in this "
 "online glossary "
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
-msgstr "`alpha=True` 인 경우 픽스맵은 *\"premultiplied\"* 픽셀을 가집니다. 배경에 대해 알아보려면 예를 들어 `이 온라인 용어집<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 \"Premultiplied alpha\"를 찾아보세요."
+msgstr "`alpha=True` 인 경우 픽스맵은 *\"premultiplied\"* 픽셀을 가집니다. 배경에 대해 알아보려면 예를 들어 `이 온라인 용어집 <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 \"Premultiplied alpha\"를 찾아보세요."
 
 #: ../../annot.rst:112 ../../annot.rst:133 059d5413f3154aaa8134479d9629d7da
 #: 5b109c06581d4245b9034c003ef2e32f
