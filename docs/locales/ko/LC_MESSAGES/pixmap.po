@@ -1818,9 +1818,9 @@ msgstr "SVG에서 **벡터 이미지** 가 필요한 경우 먼저 PDF로 변환
 msgid ""
 "To also set the alpha property, add an additional step to this method by "
 "dropping or adding an alpha channel to the result."
-msgstr ""
+msgstr "알파 속성도 설정하려면 결과에 알파 채널을 제거하거나 추가하여 이 메서드에 추가 단계를 더하십시오."
 
 #: ../../footer.rst:46 e3d72edf62c54080b2839fccccec965e
 msgid "This documentation covers all versions up to |version|."
-msgstr ""
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 
