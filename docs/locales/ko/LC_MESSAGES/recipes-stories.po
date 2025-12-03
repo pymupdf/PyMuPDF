@@ -471,7 +471,7 @@ msgstr "`docs/samples/national-capitals.py` 간단한 추가 코드를 사용하
 
 #: ../../recipes-stories.rst:355 d786bb83c47a488a86e7603d731dac6b
 msgid "Multi-page output simulating **repeating header rows**"
-msgstr "**반복되는 헤더 행**을 시뮬레이션하는 다중 페이지 출력"
+msgstr "**반복되는 헤더 행** 을 시뮬레이션하는 다중 페이지 출력"
 
 #: ../../recipes-stories.rst:356 64263c3cea7742dcafd285f9c1d9a690
 msgid "Alternating table row background colors"

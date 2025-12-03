@@ -267,7 +267,7 @@ msgstr "a == b"
 
 #: ../../algebra.rst:77 634c54d1d21d471fabf558849def45e4
 msgid "``True`` if *bool(a-b)* is ``False`` (\"b\" may be \"a-like\")."
-msgstr "*bool(a-b)* 가 ``False`` 이면 ``True``(\"b\"는 \"a-like\"일 수 있음)."
+msgstr "*bool(a-b)* 가 ``False`` 이면 ``True`` (\"b\"는 \"a-like\"일 수 있음)."
 
 #: ../../algebra.rst:81 d34c2f644c4b4e6090e0e70255dd2ac5
 msgid "Please note an important difference to usual arithmetic:"
