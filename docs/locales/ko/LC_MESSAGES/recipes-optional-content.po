@@ -176,7 +176,7 @@ msgstr "예를 들어, 사용자가 필요에 따라 언어를 전환할 수 있
 
 #: ../../recipes-optional-content.rst:54 2975f48b256e4d7f954291ed0f71b2e4
 msgid "Please have a look at `this Jupyter Notebook`_ and execute it as desired."
-msgstr "`this Jupyter Notebook`_ 을 확인하고 원하는 대로 실행하세요."
+msgstr "`이 Jupyter Notebook`_ 을 확인하고 원하는 대로 실행하세요."
 
 #: ../../recipes-optional-content.rst:56 5a66d6db462b491488acb6e94488a590
 msgid ""

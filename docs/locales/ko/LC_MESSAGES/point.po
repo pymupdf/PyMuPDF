@@ -171,7 +171,7 @@ msgid ""
 "is the length of the shortest line connecting to one of the rectangle "
 "sides * is calculated to the **finite version** of it * is zero if it "
 "**contains** the point"
-msgstr "*x* 까지의 거리. 이것이 :data:`rect_like` 인 경우, 거리는 * 사각형의 한 변에 연결하는 가장 짧은 선의 길이 * **유한 버전** 에 대해 계산됨 * 점을 **포함** 하면 0"
+msgstr ""
 
 #: ../../point.rst:54 ae37d128ae1440f3bbd8ed1ea99f2152
 msgid "the distance to *x*. If this is :data:`rect_like`, then the distance"

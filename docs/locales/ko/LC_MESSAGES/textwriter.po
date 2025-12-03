@@ -326,7 +326,7 @@ msgid ""
 "tw.append((50,100), text, font=font, small_caps=True) >>> "
 "tw.write_text(page) >>> doc.ez_save(\"x.pdf\")  will produce this PDF "
 "text:  .. image:: images/img-smallcaps.*"
-msgstr "*(v1.18.15에서 새로 추가)* 글꼴에서 문자의 작은 대문자 버전을 찾습니다. 존재하면 해당 값을 사용합니다. 그렇지 않으면 원래 문자(이 글꼴 또는 대체 글꼴)가 사용됩니다. 대체 글꼴은 작은 대문자를 반환하지 않습니다. 예를 들어, 이 코드 조각::  >>> doc = pymupdf.open() >>> page = doc.new_page() >>> text = \"PyMuPDF: the Python bindings for MuPDF\" >>> font = pymupdf.Font(\"figo\")  # 작은 대문자가 있는 글꼴 선택 >>> tw = pymupdf.TextWriter(page.rect) >>> tw.append((50,100), text, font=font, small_caps=True) >>> tw.write_text(page) >>> doc.ez_save(\"x.pdf\")  는 이 PDF 텍스트를 생성합니다:  .. image:: images/img-smallcaps.*"
+msgstr ""
 
 #: ../../textwriter.rst:79 46eb184e73ae4219ac1e4bed06322f56
 msgid ""
@@ -437,7 +437,7 @@ msgid ""
 "on text overflow do nothing, warn, or raise an exception. Overflow text "
 "will never be written. **Changed in v1.18.9:**  * Default is ``None``. * "
 "The list of overflow lines will be returned."
-msgstr "텍스트 오버플로우 시 아무 작업도 하지 않거나 경고를 표시하거나 예외를 발생시킵니다. 오버플로우 텍스트는 절대 작성되지 않습니다. **v1.18.9에서 변경:**  * 기본값은 ``None`` 입니다. * 오버플로우 줄 목록이 반환됩니다."
+msgstr ""
 
 #: ../../textwriter.rst:128 0e6db582f2eb4eb28e4c2efbd9fb40e1
 msgid ""
@@ -513,7 +513,7 @@ msgstr "*(v1.18.4에서 새로 추가)* :data:`OCG` 또는 :data:`OCMD` 의 :dat
 msgid ""
 "The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).  "
 ".. image:: images/img-rendermode.*"
-msgstr "PDF `Tr` 연산자 값. 값: 0 (기본값), 1, 2, 3 (보이지 않음).  .. image:: images/img-rendermode.*"
+msgstr ""
 
 #: ../../textwriter.rst:151 78528b40a6544fe0a046dee8ae6857ef
 msgid "The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible)."

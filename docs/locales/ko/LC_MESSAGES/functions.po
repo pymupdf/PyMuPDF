@@ -629,15 +629,14 @@ msgstr ":meth:`paper_size` 에서 지원하는 모든 형식 이름."
 
 #: ../../functions.rst:97 6a4b32efe8dd4b0bb8cfd7c6d4b2e4d8
 msgid ":ref:`Rect`"
-msgstr ""
+msgstr ":ref:`Rect`"
 
 #: ../../functions.rst:98 81a23800b837456cbe9205a60c034ab2
 msgid ""
 "*pymupdf.Rect(0, 0, width, height)* with *width, "
 "height=pymupdf.paper_size(s)*."
 msgstr ""
-"*width, height=pymupdf.paper_size(s)* 를 사용한 *pymupdf.Rect(0, 0, width, "
-"height)*."
+"*width, height=pymupdf.paper_size(s)* 를 사용한 *pymupdf.Rect(0, 0, width, height)*."
 
 #: ../../functions.rst:109 69c645e94932478f9f3362f568160204
 msgid ""
@@ -701,7 +700,7 @@ msgid ""
 "If any `pylogging*` arg is not ``None``, we write to `Python's logging "
 "system <https://docs.python.org/3/library/logging.html>`_."
 msgstr ""
-"`pylogging*` 인수가 ``None``이 아니면 `Python의 로깅 시스템 <https://docs.python.org/3/library/logging.html>`_ 에 씁니다."
+"`pylogging*` 인수가 ``None`` 이 아니면 `Python의 로깅 시스템 <https://docs.python.org/3/library/logging.html>`_ 에 씁니다."
 
 #: ../../functions.rst:144 ../../functions.rst:156 ../../functions.rst:270
 #: 69f05cfe1b654ab19e0011a944260bec 7558bf3ff3b845559657a578039f1ef0
@@ -715,6 +714,7 @@ msgid ""
 "a given sRGB color integer as it occurs in :meth:`Page.get_text` "
 "dictionaries \"dict\" and \"rawdict\"."
 msgstr ""
+":meth:`Page.get_text` 딕셔너리 \"dict\" 및 \"rawdict\" 에서 발생하는 것처럼 주어진 sRGB 색상 정수에 대한 PDF 색상 삼중(빨강, 녹색, 파랑)을 반환하는 편의 함수."
 
 #: ../../functions.rst:148 ../../functions.rst:160
 #: 017bfb28972946b7afeddc4aa2d96999 7ff4d5ab9e154081be8ea600c0631ffd
@@ -722,6 +722,7 @@ msgid ""
 "an integer of format RRGGBB, where each color component is an integer in "
 "range(255)."
 msgstr ""
+"RRGGBB 형식의 정수로, 각 색상 구성 요소는 range(255)의 정수입니다."
 
 #: ../../functions.rst:150 37c7bbd5421d4b18b180482fc18889da
 msgid ""
@@ -729,12 +730,14 @@ msgid ""
 "representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` "
 "(red)."
 msgstr ""
+"동일한 색상을 나타내는 *0 <= item <= 1* 구간의 float 항목을 가진 튜플(빨강, 녹색, 파랑). 예: `sRGB_to_pdf(0xff0000) = (1, 0, 0)` (빨강)."
 
 #: ../../functions.rst:158 b3779d6ff2064b7191d22f03dc12b37d
 msgid ""
 "Convenience function returning a color (red, green, blue) for a given "
 "*sRGB* color integer."
 msgstr ""
+"주어진 *sRGB* 색상 정수에 대한 색상(빨강, 녹색, 파랑)을 반환하는 편의 함수."
 
 #: ../../functions.rst:162 c2e711f095d845dcbbb6d1599bf1d8bb
 msgid ""
@@ -742,6 +745,7 @@ msgid ""
 "representing the same color. Example `sRGB_to_pdf(0xff0000) = (255, 0, "
 "0)` (red)."
 msgstr ""
+"동일한 색상을 나타내는 `range(256)` 의 정수 항목을 가진 튜플(빨강, 녹색, 파랑). 예: `sRGB_to_pdf(0xff0000) = (255, 0, 0)` (빨강)."
 
 #: ../../functions.rst:168 ../../functions.rst:183 ../../functions.rst:198
 #: ../../functions.rst:211 0330c6db37ba44e7b01d3331832a082a
@@ -763,10 +767,12 @@ msgid ""
 "<https://github.com/adobe-type-tools/agl-"
 "aglfn/blob/master/glyphlist.txt>`_."
 msgstr ""
+"일부 글리프의 이름. 이 함수는 `Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_ 에 기반합니다."
 
 #: ../../functions.rst:175 9cab0f810cd041b7b19a385d41b3de4d
 msgid "the unicode. Invalid ``name`` entries return `0xfffd (65533)`."
-msgstr ""
+msgstr "유니코드. 유효하지 않은 ``name`` 항목은 `0xfffd (65533)` 을 반환합니다."
 
 #: ../../functions.rst:177 ../../functions.rst:205 ../../functions.rst:218
 #: 8ae7164314a54d298a84c72740a19a67 bdcaf136335b4029a886ece439c7db85
@@ -791,14 +797,15 @@ msgid ""
 "`Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
 "aglfn/blob/master/glyphlist.txt>`_."
 msgstr ""
+"예를 들어 `ord(\"ß\")` 로 주어진 유니코드. 이 함수는 `Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_ 에 기반합니다."
 
 #: ../../functions.rst:190 85951f82646148b184f726f54c1aacd6
 msgid ""
 "the glyph name. E.g. `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` returns "
 "`'Adieresis'`."
 msgstr ""
-"글리프 이름. 예: `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` 는 `'Adieresis'` 를 "
-"반환합니다."
+"글리프 이름. 예: `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` 는 `'Adieresis'` 를 반환합니다."
 
 #: ../../functions.rst:192 bd7a7f8035ae48c1b94b6a14beff47cc
 msgid ""
@@ -1045,12 +1052,6 @@ msgid ""
 "abs(p2 * m - p1 * m)    5.0   .. image:: images/img-planish.png    "
 ":scale: 40"
 msgstr ""
-"회전과 이동을 결합한 행렬::     >>> p1 = pymupdf.Point(1, 1)    >>> p2 = "
-"pymupdf.Point(4, 5)    >>> abs(p2 - p1)  # 점 사이의 거리    5.0    >>> m = "
-"pymupdf.planish_line(p1, p2)    >>> p1 * m    Point(0.0, 0.0)    >>> p2 *"
-" m    Point(5.0, -5.960464477539063e-08)    >>> # 결과 점 사이의 거리    >>> "
-"abs(p2 * m - p1 * m)    5.0   .. image:: images/img-planish.png    "
-":scale: 40"
 
 #: ../../functions.rst:295 80b98e912fd147ed91827592eef3d5ad
 msgid "a matrix which combines a rotation and a translation::"
@@ -1360,24 +1361,6 @@ msgid ""
 "returned by the image blocks of :meth:`Page.get_text` using \"dict\" or "
 "\"rawdict\" options are also supported."
 msgstr ""
-"예외는 발생하지 않습니다. 오류가 발생하면 `None` 이 반환됩니다. 그렇지 않으면 다음 항목이 있습니다::     In [2]:"
-" pymupdf.image_profile(open(\"nur-ruhig.jpg\", \"rb\").read())    Out[2]:"
-"    {'width': 439,    'height': 501,    'orientation': 0,  # 자연 방향 "
-"(EXIF에서)    'transform': (1.0, 0.0, 0.0, 1.0, 0.0, 0.0),  # 방향 행렬    "
-"'xres': 96,    'yres': 96,    'colorspace': 3,    'bpc': 8,    'ext': "
-"'jpeg',    'cs-name': 'DeviceRGB'}  `orientation` 에 인코딩된 **Exif** 정보 및 이에"
-" 해당하는 `transform` 행렬과의 관계는 다음과 같습니다(MuPDF 문서에서 인용, *ccw* = 반시계 방향):     "
-"0. 정의되지 않음    1. 0도 반시계 방향 회전. (Exif = 1)    2. 90도 반시계 방향 회전. (Exif = 8)"
-"    3. 180도 반시계 방향 회전. (Exif = 3)    4. 270도 반시계 방향 회전. (Exif = 6)    5. "
-"X축으로 뒤집기. (Exif = 2)    6. X축으로 뒤집은 후 90도 반시계 방향 회전. (Exif = 5)    7. "
-"X축으로 뒤집은 후 180도 반시계 방향 회전. (Exif = 4)    8. X축으로 뒤집은 후 270도 반시계 방향 회전. "
-"(Exif = 7)   .. note::     * 일부 \"특수\" 이미지(FAX 인코딩, RAW 형식 등)의 경우 이 메서드는 "
-"작동하지 않습니다. 그러나 PyMuPDF에서 :meth:`Document.extract_image` 를 사용하거나 "
-"`Pixmap(doc, xref)` 를 통해 픽스맵을 생성하는 등으로 이러한 이미지를 계속 작업할 수 있습니다. 이러한 메서드는 "
-"결과를 반환하기 전에 특수 이미지를 자동으로 PNG 형식으로 변환합니다.    * PDF에 포함된 이미지의 속성은 "
-":data:`xref` 를 통해 가져올 수도 있습니다. 이 경우 원시 스트림을 추출해야 합니다: "
-"`pymupdf.image_profile(doc.xref_stream_raw(xref))`.    * \"dict\" 또는 "
-"\"rawdict\" 옵션을 사용하는 :meth:`Page.get_text` 의 이미지 블록으로 반환된 이미지도 지원됩니다."
 
 #: ../../functions.rst:452 f365046aab6a422ab4ee8b73d543f9cd
 msgid ""
@@ -1557,17 +1540,6 @@ msgid ""
 "index in this list equals the value of a `\"seqno\"` in dictionaries as "
 "returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`."
 msgstr ""
-"텍스트, 이미지 또는 그리기 객체를 둘러싸는 사각형 목록. 각 항목은 `(type, (x0, y0, x1, y1))` 튜플이며, 두"
-" 번째 튜플은 사각형 좌표로 구성되고 *type* 은 다음 값 중 하나입니다. `layers=True` 인 경우 OCG 이름 또는 "
-"`None` 을 포함하는 세 번째 항목이 있습니다: `(type, (x0, y0, x1, y1), None)`.  * "
-"`\"fill-text\"` -- 일반 텍스트(문자 경계 없이 그려짐) * `\"stroke-text\"` -- 문자 경계만 "
-"표시하는 텍스트 * `\"ignore-text\"` -- 표시되지 않아야 하는 텍스트(예: OCR 텍스트 레이어에서 사용) * "
-"`\"fill-path\"` -- 채우기 색상으로 그리기(경계 없음) * `\"stroke-path\"` -- 경계로 그리기(채우기"
-" 색상 없음) * `\"fill-image\"` -- 이미지 표시 * `\"fill-shade\"` -- 음영 표시  항목 시퀀스는"
-" 페이지의 모양을 구축하기 위해 **이러한 명령이 실행되는 순서**를 나타냅니다. 따라서 항목의 bbox가 이전 항목과 교차하거나 "
-"포함하는 경우 이전 항목이 (부분적으로) 덮이거나 숨겨질 수 있습니다.   따라서 이 목록을 사용하여 이러한 상황을 감지할 수 "
-"있습니다. 이 목록의 항목 인덱스는 :meth:`Page.get_drawings` 및 "
-":meth:`Page.get_texttrace` 에서 반환된 딕셔너리의 `\"seqno\"` 값과 같습니다."
 
 #: ../../functions.rst:543 cea75236177747a387f9c237fd0cbcdd
 msgid ""
@@ -1992,7 +1964,7 @@ msgstr "리스트 디바이스를 통해 페이지를 실행하고 디스플레�
 
 #: ../../functions.rst:698 25c2a3b94c1848eeb595b0de57aa1246
 msgid ":ref:`DisplayList`"
-msgstr ""
+msgstr ":ref:`DisplayList`"
 
 #: ../../functions.rst:699 7c69c8db929044cea53feea2943ed7b7
 msgid "the display list of the page."

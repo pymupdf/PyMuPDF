@@ -239,7 +239,7 @@ msgid ""
 "*Resources* has an object as its value, which in turn is a dictionary "
 "with keys like *ExtGState* (with the value *<</R7 26 0 R>>*, which is "
 "another dictionary), etc."
-msgstr "이 예제는 **중첩된** dictionary 값의 구문도 보여줍니다: *Resources* 는 그 값으로 객체를 가지며, 이 객체는 *ExtGState*(값은 *<</R7 26 0 R>>* 로, 또 다른 dictionary)와 같은 키를 가진 dictionary입니다."
+msgstr "이 예제는 **중첩된** dictionary 값의 구문도 보여줍니다: *Resources* 는 그 값으로 객체를 가지며, 이 객체는 *ExtGState* (값은 *<</R7 26 0 R>>* 로, 또 다른 dictionary)와 같은 키를 가진 dictionary입니다."
 
 #: ../../glossary.rst:108 acf84ed282d0488ca9ec42cb7a8b05cd
 msgid ""

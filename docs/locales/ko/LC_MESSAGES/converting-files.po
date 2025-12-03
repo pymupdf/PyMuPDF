@@ -49,7 +49,7 @@ msgid ""
 "converted to |PDF| by using the :meth:`Document.convert_to_pdf` method. "
 "This method returns a buffer of data which can then be utilized by "
 "|PyMuPDF| to create a new |PDF|."
-msgstr ":ref:`|PyMuPDF| 가 지원하는 문서 유형<HowToOpenAFile>` 은 :meth:`Document.convert_to_pdf` 메서드를 사용하여 쉽게 |PDF| 로 변환할 수 있습니다. 이 메서드는 데이터 버퍼를 반환하며, 이를 |PyMuPDF| 에서 사용하여 새로운 |PDF| 를 생성할 수 있습니다."
+msgstr ":ref:`PyMuPDF 가 지원하는 문서 유형<HowToOpenAFile>` 은 :meth:`Document.convert_to_pdf` 메서드를 사용하여 쉽게 |PDF| 로 변환할 수 있습니다. 이 메서드는 데이터 버퍼를 반환하며, 이를 |PyMuPDF| 에서 사용하여 새로운 |PDF| 를 생성할 수 있습니다."
 
 #: ../../converting-files.rst:18 ../../converting-files.rst:38
 #: ../../converting-files.rst:62 ../../converting-files.rst:82

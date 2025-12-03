@@ -247,7 +247,7 @@ msgid ""
 "installed `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_, "
 "there are also new \"reserved\" fontnames available, which are listed in "
 ":attr:`fitz_fonts` and in the table further down."
-msgstr ":ref:`Base-14-Fonts` 또는 CJK 글꼴 이름 중 하나. (올바른 철자를 주의하세요) \"Arial\", \"Times\", \"Times Roman\"과 같은 몇 가지 다른 이름도 가능합니다. *(v1.17.5에서 변경됨)* `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 를 설치한 경우, :attr:`fitz_fonts` 및 아래 표에 나열된 새로운 \"예약된\" 글꼴 이름도 사용할 수 있습니다."
+msgstr ""
 
 #: ../../font.rst:62 4f54e9a21f4e4cdd94eb896e84a11207
 msgid ""
@@ -440,7 +440,7 @@ msgid ""
 "Sans Fallback\" size (compressed 400 KB vs. 1.65 MB) -- **and** it "
 "provides the weights bold, italic, bold-italic -- which the universal "
 "font doesn't."
-msgstr "*(v1.17.5의 새로운 기능)* 선택적으로, `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ (`pip install pymupdf-fonts`)를 설치하면 일부 새로운 \"예약된\" 글꼴 이름 코드를 사용할 수 있습니다. **\"Fira Mono\"**는 고정폭 산세리프 글꼴 세트이고 **FiraGO**는 모든 라틴 문자(키릴 문자 및 그리스 문자 포함)와 태국어, 아랍어, 히브리어 및 데바나가리어를 지원하는 또 다른 비세리프 \"범용\" 글꼴 세트입니다 -- 하지만 CJK 언어는 지원하지 않습니다. FiraGO 글꼴의 크기는 \"Droid Sans Fallback\" 크기의 1/4에 불과합니다(압축 시 400 KB vs. 1.65 MB) -- **그리고** 굵게, 이탤릭, 굵은 이탤릭 가중치를 제공합니다 -- 범용 글꼴은 제공하지 않습니다."
+msgstr "*(v1.17.5의 새로운 기능)* 선택적으로, `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ (`pip install pymupdf-fonts`)를 설치하면 일부 새로운 \"예약된\" 글꼴 이름 코드를 사용할 수 있습니다. **\"Fira Mono\"** 는 고정폭 산세리프 글꼴 세트이고 **FiraGO** 는 모든 라틴 문자(키릴 문자 및 그리스 문자 포함)와 태국어, 아랍어, 히브리어 및 데바나가리어를 지원하는 또 다른 비세리프 \"범용\" 글꼴 세트입니다 -- 하지만 CJK 언어는 지원하지 않습니다. FiraGO 글꼴의 크기는 \"Droid Sans Fallback\" 크기의 1/4에 불과합니다(압축 시 400 KB vs. 1.65 MB) -- **그리고** 굵게, 이탤릭, 굵은 이탤릭 가중치를 제공합니다 -- 범용 글꼴은 제공하지 않습니다."
 
 #: ../../font.rst:107 51115005ef5b45048d055b7507f8bde1
 msgid ""

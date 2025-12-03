@@ -467,7 +467,7 @@ msgstr "그리기는 반시계 방향으로 `왼쪽 아래 -> 왼쪽 위` 모서
 msgid ""
 ":data:`rect_like` or :data:`quad_like`.  *Changed in version 1.14.5:*  "
 "Quads are now also supported."
-msgstr ":data:`rect_like` 또는 :data:`quad_like`.  *버전 1.14.5에서 변경됨:* 이제 Quads도 지원됩니다."
+msgstr ""
 
 #: ../../shape.rst:153 0704abfebefe4fe78ed8116b1a8491c3
 msgid ":data:`rect_like` or :data:`quad_like`."
@@ -511,7 +511,7 @@ msgstr "원의 반지름. 양수여야 합니다."
 msgid ""
 "`Point(center.x - radius, center.y)`.  .. image:: images/img-drawcircle.*"
 "    :scale: 60"
-msgstr "`Point(center.x - radius, center.y)`.  .. image:: images/img-drawcircle.*    :scale: 60"
+msgstr ""
 
 #: ../../shape.rst:174 2debffa3cd414df1912ce3b384b1301c
 msgid "`Point(center.x - radius, center.y)`."
@@ -537,7 +537,7 @@ msgid ""
 "the end point, *p3*. The following is a filled quarter ellipse segment. "
 "The yellow area is oriented **clockwise:**  .. image:: images/img-"
 "drawCurve.png    :align: center"
-msgstr "끝점 *p3*. 다음은 채워진 1/4 타원 세그먼트입니다. 노란색 영역은 **시계 방향** 으로 향합니다:  .. image:: images/img-drawCurve.png    :align: center"
+msgstr ""
 
 #: ../../shape.rst:186 13f26770deb8487da263851084fcf4e9
 msgid ""
@@ -577,7 +577,7 @@ msgid ""
 "following invocation to create logically connected pies charts. Examples:"
 "  .. image:: images/img-drawSector1.*  .. image:: images/img-"
 "drawSector2.*"
-msgstr "호의 다른 끝점. 논리적으로 연결된 파이 차트를 만들기 위한 후속 호출의 시작점으로 사용할 수 있습니다. 예:  .. image:: images/img-drawSector1.*  .. image:: images/img-drawSector2.*"
+msgstr ""
 
 #: ../../shape.rst:208 0043e2c7a86744b4a2bc4d7f0bce8a4b
 msgid ""
@@ -681,7 +681,7 @@ msgid ""
 "expected with these rules. For an in-depth explanation, see "
 ":ref:`AdobeManual`, pp. 137 ff. Here is an example to demonstrate the "
 "difference."
-msgstr "채우기 작업에 **\"even-odd rule\"**을 요청합니다. 기본값은 ``False`` 이므로 **\"nonzero winding number rule\"**이 사용됩니다. 이러한 규칙은 영역이 겹치는 곳에 채우기 색상을 적용하는 대체 방법입니다. 상당히 복잡한 모양에서만 이러한 규칙으로 다른 동작이 예상됩니다. 자세한 설명은 :ref:`AdobeManual` 137페이지 이하를 참조하세요. 차이를 보여주는 예제는 다음과 같습니다."
+msgstr "채우기 작업에 **\"even-odd rule\"** 을 요청합니다. 기본값은 ``False`` 이므로 **\"nonzero winding number rule\"** 이 사용됩니다. 이러한 규칙은 영역이 겹치는 곳에 채우기 색상을 적용하는 대체 방법입니다. 상당히 복잡한 모양에서만 이러한 규칙으로 다른 동작이 예상됩니다. 자세한 설명은 :ref:`AdobeManual` 137페이지 이하를 참조하세요. 차이를 보여주는 예제는 다음과 같습니다."
 
 #: ../../shape.rst:266 c674e567b1e5433eaf84acd80acc23dc
 msgid ""
@@ -729,7 +729,7 @@ msgid ""
 "*rotate* parameter. Please have a look at the following picture. The "
 "small red dots indicate the positions of *point* in each of the four "
 "possible cases.  .. image:: images/img-inserttext.*    :scale: 33"
-msgstr "픽셀 단위로 *text* 의 첫 번째 문자의 왼쪽 아래 위치. 이것이 *rotate* 매개변수와 함께 어떻게 작동하는지 이해하는 것이 중요합니다. 다음 그림을 참조하세요. 작은 빨간 점은 네 가지 가능한 경우 각각에서 *point* 의 위치를 나타냅니다.  .. image:: images/img-inserttext.*    :scale: 33"
+msgstr ""
 
 #: ../../shape.rst:299 1521f8f6fbea43a0be0deb7904e4623c
 msgid ""
@@ -862,7 +862,7 @@ msgid ""
 "negative**: no execution. The value returned is the space deficit to "
 "store text lines. Enlarge rectangle, decrease *fontsize*, decrease text "
 "amount, etc."
-msgstr "**양수 또는 0인 경우**: 성공적인 실행. 반환된 값은 픽셀 단위의 사용되지 않은 사각형 줄 공간입니다. 이것은 안전하게 무시할 수 있습니다 -- 또는 사각형을 최적화하고 후속 항목을 배치하는 데 사용할 수 있습니다.  **음수인 경우**: 실행되지 않음. 반환된 값은 텍스트 줄을 저장하기 위한 공간 부족입니다. 사각형을 확대하고, *fontsize* 를 줄이고, 텍스트 양을 줄이는 등을 수행하세요."
+msgstr ""
 
 #: ../../shape.rst:359 ff434ea0b01748d3a22351b8914d1de9
 msgid ""
@@ -1320,7 +1320,7 @@ msgid ""
 "parameters and the specified border width. You can use this value to "
 "simulate **bold text** without using another font: choose the same value "
 "for *fill* and *color* and an appropriate value for *border_width*."
-msgstr "렌더 모드 2의 경우 글리프가 채워지고 스트로크되며, 두 색상 매개변수와 지정된 테두리 너비를 사용합니다. 다른 글꼴을 사용하지 않고 **굵은 텍스트**를 시뮬레이션하려면 이 값을 사용할 수 있습니다: *fill* 과 *color* 에 동일한 값을 선택하고 *border_width* 에 적절한 값을 선택하세요."
+msgstr "렌더 모드 2의 경우 글리프가 채워지고 스트로크되며, 두 색상 매개변수와 지정된 테두리 너비를 사용합니다. 다른 글꼴을 사용하지 않고 **굵은 텍스트** 를 시뮬레이션하려면 이 값을 사용할 수 있습니다: *fill* 과 *color* 에 동일한 값을 선택하고 *border_width* 에 적절한 값을 선택하세요."
 
 #: ../../shape.rst:613 44ab50cc9488478cbafcd5e8d9859763
 msgid ""
