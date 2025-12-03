@@ -266,8 +266,7 @@ msgid ""
 "then **(1)** graphically indicate table and column borders, and **(2)** "
 "then extract text based on this information."
 msgstr ""
-"따라서 이러한 페이지 영역에서 표 형식 데이터를 추출하려면 테이블 영역(즉, 경계 상자)을 **식별**
-하는 방법을 찾은 다음 **(1)** "
+"따라서 이러한 페이지 영역에서 표 형식 데이터를 추출하려면 테이블 영역(즉, 경계 상자)을 **식별** 하는 방법을 찾은 다음 **(1)** "
 "테이블 및 열 경계를 그래픽으로 표시하고 **(2)** 이 정보를 기반으로 텍스트를 추출해야 합니다."
 
 #: ../../recipes-text.rst:127 a113658ef8c641279d0583854610b700

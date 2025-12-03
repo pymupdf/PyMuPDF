@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-12-03 09:30+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -17,41 +17,42 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../../header.rst:-1 26b7c00502e4429388cabf9a042f5238
+#: ../../header.rst:-1 abe8297b843740e8818a779fc28f5e03
 msgid "Artifex"
 msgstr "Artifex"
 
-#: ../../header.rst:-1 7a2feb7c7c9a4331ab92ee52778c6ed3
+#: ../../header.rst:-1 2a09517c326c4536ad593b77a7c34643
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
-#: ../../header.rst:-1 6f902b541af847b1b3f894dde5be9209
+#: ../../header.rst:-1 8e302b086c9d4b94a25e05794331fde6
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
-#: ../../faq.rst:7 6ac2612360e64fa9b4c17369cb8c60f3
+#: ../../faq.rst:7 7cb40df6997749398b9eb35022cc8f6e
 msgid "FAQ"
 msgstr "자주 묻는 질문"
 
-#: ../../faq.rst:9 dcceb2d26f344dca90e1cf158b5648f4
-msgid "A collection of recipes in "How-To" format for using PyMuPDF."
-msgstr "PyMuPDF 사용을 위한 "사용 방법" 형식의 레시피 모음입니다."
+#: ../../faq.rst:9 e705c9c730c74868ad8d1f1495bccfb2
+#, fuzzy
+msgid "A collection of recipes in “How-To” format for using PyMuPDF."
+msgstr "PyMuPDF 사용을 위한 \"사용 방법\" 형식의 레시피 모음입니다."
 
-#: ../../faq.rst:12 5c72bd18a4a24c00a6a60585bc9f17d3
+#: ../../faq.rst:12 76435ac8e35648f08fd41ecd9c4cf967
 msgid "Please see:"
 msgstr "다음을 참조하세요:"
 
-#: ../../faq.rst:14 9b73bbc3abad40ddbe598984f532aa9d
+#: ../../faq.rst:14 8f2e64a1c0fc4275bdecc52010b788ff
 msgid ":ref:`Recipes: Table of Contents<RecipesTOC>`"
 msgstr ":ref:`레시피: 목차<RecipesTOC>`"
 
-#: ../../footer.rst:46 c31113147f904375bfc8ba0a1e1c1959
+#: ../../footer.rst:57 570a7f5b861040448158d8294efe49f2
 msgid "This documentation covers all versions up to |version|."
 msgstr "이 문서는 |version| 버전까지의 모든 버전을 다룹니다."
 

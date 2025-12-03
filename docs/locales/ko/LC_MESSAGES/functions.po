@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.26.7\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-25 23:33+0000\n"
+"POT-Creation-Date: 2025-12-03 09:30+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: ko\n"
@@ -17,799 +17,940 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Generated-By: Babel 2.10.3\n"
+"Generated-By: Babel 2.17.0\n"
 
-#: ../../header.rst:-1 4362cd8e08a74daebc63e2250a1293cd
+#: ../../header.rst:-1 d5eaf8f36ea24d1fa23ebb1e8e41a90a
 msgid "Artifex"
 msgstr "Artifex"
 
-#: ../../header.rst:-1 8c3fd3acd0a54dacaaaea104c5ca20e2
+#: ../../header.rst:-1 8b803decc5f34c5fb8ad982980d7c72a
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF는 PDF 및 기타 문서의 데이터 추출, 분석, 변환, 조작을 위한 고성능 Python 라이브러리입니다."
 
-#: ../../header.rst:-1 7d4f452edf45487b8855a2fdb4b7f37b
+#: ../../header.rst:-1 e66a1624a18842059b9907685b6c923b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
-#: ../../functions.rst:5 764415be522b4af7bed822bf808d3c81
+#: ../../functions.rst:5 09639c24e337417f91e7de56ce3925a9
 msgid "Functions"
 msgstr "함수"
 
-#: ../../functions.rst:6 7d85734965b44884afa1f60ccbb9fce3
+#: ../../functions.rst:6 d241bcc35bc04fe898c335516878e3b2
 msgid ""
 "The following are miscellaneous functions and attributes on a fairly low-"
 "level technical detail."
 msgstr "다음은 상당히 낮은 수준의 기술 세부 사항에 대한 다양한 함수 및 속성입니다."
 
-#: ../../functions.rst:8 87eea67bd6bd469c809cfb2f400fd0ac
+#: ../../functions.rst:8 59b2d7e5074348b69fc146b45b000d70
 msgid ""
 "Some functions provide detail access to PDF structures. Others are "
 "stripped-down, high performance versions of other functions which provide"
 " more information."
-msgstr "일부 함수는 PDF 구조에 대한 세부 액세스를 제공합니다. 다른 함수들은 더 많은 정보를 제공하는 다른 함수들의 간소화된 고성능 버전입니다."
+msgstr ""
+"일부 함수는 PDF 구조에 대한 세부 액세스를 제공합니다. 다른 함수들은 더 많은 정보를 제공하는 다른 함수들의 간소화된 고성능 "
+"버전입니다."
 
-#: ../../functions.rst:10 3e757537a03d4b07bdcba164caba05f3
+#: ../../functions.rst:10 ea218c4b21c34a54b5241255f2274c27
 msgid "Yet others are handy, general-purpose utilities."
 msgstr "또 다른 함수들은 편리한 범용 유틸리티입니다."
 
-#: ../../functions.rst:14 3a980a38ec2e42368864c2737353297a
+#: ../../functions.rst:14 26226f6d78b94bbfbc116c90ec1b1667
 msgid "**Function**"
 msgstr "**함수**"
 
-#: ../../functions.rst:14 53d11d16c6cb41359e0d1eb9434091a8
+#: ../../functions.rst:14 8b717e28bda34d8bb8d5d4a899346921
 msgid "**Short Description**"
 msgstr "**간단한 설명**"
 
-#: ../../functions.rst:16 add8a0f8af544090bd2b69bec2a08b06
+#: ../../functions.rst:16 4fa827142fed47519193771ca5b08092
 msgid ":attr:`Annot.apn_bbox`"
 msgstr ""
 
-#: ../../functions.rst:16 5e6c725340da4680b4b2182ec97992ef
+#: ../../functions.rst:16 5e724998a2fe42beb8664ac646bf06a5
 msgid "PDF only: bbox of the appearance object"
 msgstr "PDF 전용: 외관 객체의 bbox"
 
-#: ../../functions.rst:17 0e00e13e8cd249aea5b27907a5924ac2
+#: ../../functions.rst:17 e888ae87ebb64c36a00f993c271f9619
 msgid ":attr:`Annot.apn_matrix`"
 msgstr ""
 
-#: ../../functions.rst:17 f099fa1353fa448486e549396e8c85c4
+#: ../../functions.rst:17 fb98b796e0944e88843ee6b73c5462c8
 msgid "PDF only: the matrix of the appearance object"
 msgstr "PDF 전용: 외관 객체의 행렬"
 
-#: ../../functions.rst:18 04cb195c672149e79a5dbf453e0dd2d2
+#: ../../functions.rst:18 c82ca559939b4f2999f22b393c9c49c5
 msgid ":attr:`Page.is_wrapped`"
 msgstr ""
 
-#: ../../functions.rst:18 733534121ca84a7dae39d79a0e4fdf8e
+#: ../../functions.rst:18 8b72a57f280b43758c83633f4cab7d86
 msgid "check whether contents wrapping is present"
 msgstr "콘텐츠 래핑이 있는지 확인"
 
-#: ../../functions.rst:19 6070d8798ae847c7b81482b126630c8a
+#: ../../functions.rst:19 5ef421856e0e4d2283f1bfc84b188fff
 msgid ":meth:`adobe_glyph_names`"
 msgstr ""
 
-#: ../../functions.rst:19 3e1263f453fb48c78527c09031c8dfda
+#: ../../functions.rst:19 3472f840e3f842c182821e72f04801f6
 msgid "list of glyph names defined in **Adobe Glyph List**"
 msgstr "**Adobe Glyph List** 에 정의된 글리프 이름 목록"
 
-#: ../../functions.rst:20 8540cf95e6284b908e38968f6e2b84b1
+#: ../../functions.rst:20 752b3e5acbe2461694cdae2a674c5f9f
 msgid ":meth:`adobe_glyph_unicodes`"
 msgstr ""
 
-#: ../../functions.rst:20 868c1c4b39334083b57fc6f75dc63c73
+#: ../../functions.rst:20 5328c789e05a4c84bb18faf4f590624c
 msgid "list of unicodes defined in **Adobe Glyph List**"
 msgstr "**Adobe Glyph List** 에 정의된 유니코드 목록"
 
-#: ../../functions.rst:21 b9f2db6bdc1f4375b9d86730afc564cf
+#: ../../functions.rst:21 31f74aa2555c4a34831b22a7e91f4d78
 msgid ":meth:`Annot.clean_contents`"
 msgstr ""
 
-#: ../../functions.rst:21 c89e0a09bfd5482e9a00164e53985cdb
+#: ../../functions.rst:21 2f6aed921d3244e9864151ff2181d926
 msgid "PDF only: clean the annot's :data:`contents` object"
 msgstr "PDF 전용: 주석의 :data:`contents` 객체 정리"
 
-#: ../../functions.rst:22 32cff1b105fc415ab1df92fb4a1367ee
+#: ../../functions.rst:22 8b78b1dcdb9e48ec904da6e3afd94f81
 msgid ":meth:`Annot.set_apn_bbox`"
 msgstr ""
 
-#: ../../functions.rst:22 490b8142dc73479a84f8532efe1a7dd0
+#: ../../functions.rst:22 1f6854c2e8d647daa789426623c1beb8
 msgid "PDF only: set the bbox of the appearance object"
 msgstr "PDF 전용: 외관 객체의 bbox 설정"
 
-#: ../../functions.rst:23 825eafcadc4840a6b3da5b4eae9803b5
+#: ../../functions.rst:23 3857c8ee2f5748ffaa4bb8a896d72d65
 msgid ":meth:`Annot.set_apn_matrix`"
 msgstr ""
 
-#: ../../functions.rst:23 bd593d88e1054999ba94daf514352282
+#: ../../functions.rst:23 8e746324795541b98d2337928d494ac9
 msgid "PDF only: set the matrix of the appearance object"
 msgstr "PDF 전용: 외관 객체의 행렬 설정"
 
-#: ../../functions.rst:24 c442dc2915174eb9bca27cc7aaec5a63
+#: ../../functions.rst:24 fe9bc78339d044edb57af998111e0e94
 msgid ":meth:`ConversionHeader`"
 msgstr ""
 
-#: ../../functions.rst:24 39f5b60624524140bcf3d19279f48605
+#: ../../functions.rst:24 c9d53709f3ec4313886ef34c2592dc2a
 msgid "return header string for *get_text* methods"
 msgstr "*get_text* 메서드에 대한 헤더 문자열 반환"
 
-#: ../../functions.rst:25 2832c8a25ff645c1833824445cd50d2e
+#: ../../functions.rst:25 f42819297e9c4f5a9d89b2bd6705b29d
 msgid ":meth:`ConversionTrailer`"
 msgstr ""
 
-#: ../../functions.rst:25 809aa5cd142a4d28927bdedc1f5d789a
+#: ../../functions.rst:25 6c0ab36cb3184db4a0865841dad35fb3
 msgid "return trailer string for *get_text* methods"
 msgstr "*get_text* 메서드에 대한 트레일러 문자열 반환"
 
-#: ../../functions.rst:26 793c18c2f91c4349a65f71f6504d9872
+#: ../../functions.rst:26 5e2606a6e2424e1abef37d5a5336d192
 msgid ":meth:`Document.del_xml_metadata`"
 msgstr ""
 
-#: ../../functions.rst:26 2c210b89288b437482fee9c882c0c7a4
+#: ../../functions.rst:26 ed1d451869034ee1818820271d019376
 msgid "PDF only: remove XML metadata"
 msgstr "PDF 전용: XML 메타데이터 제거"
 
-#: ../../functions.rst:27 0bd03bc3092d4f75ab36f591dd57098a
+#: ../../functions.rst:27 732e7fffe1c647dab7c6d9fcf6828ce2
 msgid ":meth:`Document.get_char_widths`"
 msgstr ""
 
-#: ../../functions.rst:27 cb86339da05542aaafc997cf781c9fb9
+#: ../../functions.rst:27 351bf40e0c10489fa167be35cbeede88
 msgid "PDF only: return a list of glyph widths of a font"
 msgstr "PDF 전용: 글꼴의 글리프 너비 목록 반환"
 
-#: ../../functions.rst:28 56fc88a38fce4ad58e50e488249dc90a
+#: ../../functions.rst:28 9ec9c0e0a2694a88b5162cedf7e99d3c
 msgid ":meth:`Document.get_new_xref`"
 msgstr ""
 
-#: ../../functions.rst:28 950c2315e268432ca322e1428ccede80
+#: ../../functions.rst:28 8a4cabef920b48208011d74894909090
 msgid "PDF only: create and return a new :data:`xref` entry"
 msgstr "PDF 전용: 새로운 :data:`xref` 항목 생성 및 반환"
 
-#: ../../functions.rst:29 496d02cad3d94be590dc49051170a1c4
+#: ../../functions.rst:29 25a750f17eb440d7afc91b91de3c51dc
 msgid ":meth:`Document.is_stream`"
 msgstr ""
 
-#: ../../functions.rst:29 586f78f3e3d24a80bc537b10b6756ccb
+#: ../../functions.rst:29 80d8b21e19054578869eb0f4170ed472
 msgid "PDF only: check whether an :data:`xref` is a stream object"
 msgstr "PDF 전용: :data:`xref` 가 스트림 객체인지 확인"
 
-#: ../../functions.rst:30 578b7d1ff1d6471a84f62fa135e05681
+#: ../../functions.rst:30 b7e1dc4e790c41619345dbe8ca19c53f
 msgid ":meth:`Document.xml_metadata_xref`"
 msgstr ""
 
-#: ../../functions.rst:30 253ad5dd537940c684f95c34413e9613
+#: ../../functions.rst:30 e969dc0606e341eaaa57453eb8eef3fe
 msgid "PDF only: return XML metadata :data:`xref` number"
 msgstr "PDF 전용: XML 메타데이터 :data:`xref` 번호 반환"
 
-#: ../../functions.rst:31 4f8b6a367f104e19b3686d48c220b2e8
+#: ../../functions.rst:31 d7b9b54aaece4890a119fc28f0b0213d
 msgid ":meth:`Document.xref_length`"
 msgstr ""
 
-#: ../../functions.rst:31 944580e1219b4d6da596e2f0ecac1e0c
+#: ../../functions.rst:31 0d5124e0366f4b279c0caecef1badf22
 msgid "PDF only: return length of :data:`xref` table"
 msgstr "PDF 전용: :data:`xref` 테이블의 길이 반환"
 
-#: ../../functions.rst:32 9e00d8d6db8640a48b68b28cce3d2d56
+#: ../../functions.rst:32 7e5cb32316f046989fdfc51b848af3a5
 msgid ":meth:`EMPTY_IRECT`"
 msgstr ""
 
 #: ../../functions.rst:32 ../../functions.rst:34
-#: 4f93c48b456e40edb3bf54e18372fbcd 8885468553b943e2804495b185674bdb
+#: 72f212b14bbe40e991e86ece2cc1c252 db2699336cdf40c7acc4bcbba7fc31cd
 msgid "return the (standard) empty / invalid rectangle"
 msgstr "(표준) 빈/유효하지 않은 사각형 반환"
 
-#: ../../functions.rst:33 116425823f97476ba4ef170d8f70b2a5
+#: ../../functions.rst:33 18064cd07e9b45088a8b5121afcc373a
 msgid ":meth:`EMPTY_QUAD`"
 msgstr ""
 
-#: ../../functions.rst:33 1db98794aff94fc58a84179249ea06eb
+#: ../../functions.rst:33 2d74cea507794a8cabc329254264d867
 msgid "return the (standard) empty / invalid quad"
 msgstr "(표준) 빈/유효하지 않은 쿼드 반환"
 
-#: ../../functions.rst:34 9000c9e5d6c6449ea2fac2877457a80c
+#: ../../functions.rst:34 ca50d2c7ddf8434698c2247b7063acff
 msgid ":meth:`EMPTY_RECT`"
 msgstr ""
 
-#: ../../functions.rst:35 a2378f40c3bd4ff68bf33e9d7f8d55a0
+#: ../../functions.rst:35 89d408ccc68d4ce39653e0d907c85295
 msgid ":meth:`get_pdf_now`"
 msgstr ""
 
-#: ../../functions.rst:35 e3d896a505e3415f91020a611d1b60cb
+#: ../../functions.rst:35 48f14174d2e34dbfb19df27001f24fec
 msgid "return the current timestamp in PDF format"
 msgstr "PDF 형식의 현재 타임스탬프 반환"
 
-#: ../../functions.rst:36 44be0971a3e943d4b339543e89c7d3e5
+#: ../../functions.rst:36 cbcbe41ecf5e43edad6d095ce00f09c1
 msgid ":meth:`get_pdf_str`"
 msgstr ""
 
-#: ../../functions.rst:36 d222dad1da46497a90683f26ca17b272
+#: ../../functions.rst:36 39f2a8a1b0c143298f9393ea1ed57297
 msgid "return PDF-compatible string"
 msgstr "PDF 호환 문자열 반환"
 
-#: ../../functions.rst:37 97fc6fa0db4446d9884dd169f4279dba
+#: ../../functions.rst:37 3d87a50d6b304a6191cd03adecdbf8c5
 msgid ":meth:`get_text_length`"
 msgstr ""
 
-#: ../../functions.rst:37 110ac58da1a44ce2999975602c6c0e1a
+#: ../../functions.rst:37 8c4282d6eaab449490037c18b06197cc
 msgid "return string length for a given font & :data:`fontsize`"
 msgstr "주어진 글꼴 및 :data:`fontsize` 에 대한 문자열 길이 반환"
 
-#: ../../functions.rst:38 c90ff4bd56b84326a2666157890bfd03
+#: ../../functions.rst:38 33b7cf546f184f529efbb76c2b68f01c
 msgid ":meth:`glyph_name_to_unicode`"
 msgstr ""
 
-#: ../../functions.rst:38 401f5bf92bb74478b4d7029ec15dd089
+#: ../../functions.rst:38 cef00a6424564bb88d7ff3da7f59a57f
 msgid "return unicode from a glyph name"
 msgstr "글리프 이름에서 유니코드 반환"
 
-#: ../../functions.rst:39 99beef3b550a46ba98443a9d326de35b
+#: ../../functions.rst:39 b92854863247412db8a57b9e4dec0ff2
 msgid ":meth:`image_profile`"
 msgstr ""
 
-#: ../../functions.rst:39 143bc56e8ef9413e96b151d77c64ae6f
+#: ../../functions.rst:39 0babe345f56341e08a6ce5c46190ae85
 msgid "return a dictionary of basic image properties"
 msgstr "기본 이미지 속성의 딕셔너리 반환"
 
-#: ../../functions.rst:40 2290ac67413048f9a7e8bc3c1bed82da
+#: ../../functions.rst:40 d15b2478761c42778f75793f3b52e20f
 msgid ":meth:`INFINITE_IRECT`"
 msgstr ""
 
 #: ../../functions.rst:40 ../../functions.rst:42
-#: 6c93c70e175b4feebad851e5e2d302e5 db34282539ff4d0cbcbb59a0746f4ad5
+#: 531c629266ac4ddf9cf8b93162d99d86 9e3ea8aaed944e1b9dec93f4527643f6
 msgid "return the (only existing) infinite rectangle"
 msgstr "(유일하게 존재하는) 무한 사각형 반환"
 
-#: ../../functions.rst:41 15427ddf5f9d40ea95e44583d180da0e
+#: ../../functions.rst:41 06d5cc18fcbf40d6bb99b294dade3c86
 msgid ":meth:`INFINITE_QUAD`"
 msgstr ""
 
-#: ../../functions.rst:41 c51f25d2a9ab403aaf35fdc880ac80ea
+#: ../../functions.rst:41 efe4f04d259c43cfa7a294ef6b37e674
 msgid "return the (only existing) infinite quad"
 msgstr "(유일하게 존재하는) 무한 쿼드 반환"
 
-#: ../../functions.rst:42 9c580aaf4136403aa2944098c657ef29
+#: ../../functions.rst:42 4ebe8dc0e1a94750958a022b23527ae7
 msgid ":meth:`INFINITE_RECT`"
 msgstr ""
 
-#: ../../functions.rst:43 ffa25a10067248539ecece4ed9e0453d
+#: ../../functions.rst:43 810dbb2ba3574ea4a2a27ea13faeb3ed
 msgid ":meth:`make_table`"
 msgstr ""
 
-#: ../../functions.rst:43 7533bf849012437cbd56f1d3ab66a42c
+#: ../../functions.rst:43 1d2dd96b457c447080a9455ad8ba3d02
 msgid "split rectangle in sub-rectangles"
 msgstr "사각형을 하위 사각형으로 분할"
 
-#: ../../functions.rst:44 312874e2effa4bc0bfd1300774e3a463
+#: ../../functions.rst:44 4efadc8238ca4c81880285681a275b59
 msgid ":meth:`Page.clean_contents`"
 msgstr ""
 
-#: ../../functions.rst:44 01e6fccf3e744a89a6858df35f24007a
+#: ../../functions.rst:44 78470e69571940789a87fa57faa9e6db
 msgid "PDF only: clean the page's :data:`contents` objects"
 msgstr "PDF 전용: 페이지의 :data:`contents` 객체 정리"
 
-#: ../../functions.rst:45 3dd8b9b45ab44ebba9d1b686be8dc50b
+#: ../../functions.rst:45 6083fb6360c44b32b75dce123ed47366
 msgid ":meth:`Page.get_bboxlog`"
 msgstr ""
 
-#: ../../functions.rst:45 dfbe6b6c5f9f47fd88042b9ae17531f3
+#: ../../functions.rst:45 73f845fdf7ef46e4971320b572f4db8b
 msgid "list of rectangles that envelop text, drawing or image objects"
 msgstr "텍스트, 그리기 또는 이미지 객체를 둘러싸는 사각형 목록"
 
-#: ../../functions.rst:46 c65e19fd4d02409cb4543812fa3b43d4
+#: ../../functions.rst:46 80028783aab041c69b426c082d2aa6df
 msgid ":meth:`Page.get_contents`"
 msgstr ""
 
-#: ../../functions.rst:46 299985f0af5147d7aa248ec6d462f2d1
+#: ../../functions.rst:46 74a19434f8f246f19e61fe238b478907
 msgid "PDF only: return a list of content :data:`xref` numbers"
 msgstr "PDF 전용: 콘텐츠 :data:`xref` 번호 목록 반환"
 
-#: ../../functions.rst:47 c2ceb3b6204947318ef0c33b8b87b0d3
+#: ../../functions.rst:47 019c93458efe4182a147120a0cc10b3e
 msgid ":meth:`Page.get_displaylist`"
 msgstr ""
 
-#: ../../functions.rst:47 c37180301960473ba34f6e7663b61b99
+#: ../../functions.rst:47 a44e43abf2dc456f8337f43c185d948e
 msgid "create the page's display list"
 msgstr "페이지의 디스플레이 리스트 생성"
 
-#: ../../functions.rst:48 5b0003105f4240f88525d89fa0c0908d
+#: ../../functions.rst:48 58150969be474967b037cf952a6c031f
 msgid ":meth:`Page.get_text_blocks`"
 msgstr ""
 
-#: ../../functions.rst:48 dd0afb0850654e8695ffc98210144dc8
+#: ../../functions.rst:48 f0b458ff737845fea22ed316da32926a
 msgid "extract text blocks as a Python list"
 msgstr "텍스트 블록을 Python 리스트로 추출"
 
-#: ../../functions.rst:49 76e04262af69408e9a63c3184fb7bad0
+#: ../../functions.rst:49 216b4f80f83c4bbcb187c35eb3ee8e40
 msgid ":meth:`Page.get_text_words`"
 msgstr ""
 
-#: ../../functions.rst:49 9f393e28ef804590afa7ec5de0048155
+#: ../../functions.rst:49 9895bb7c031d4f20b8a5191f4dfd8167
 msgid "extract text words as a Python list"
 msgstr "텍스트 단어를 Python 리스트로 추출"
 
-#: ../../functions.rst:50 1c8ae2f8f1f84b618bf7807fb1a10cc4
+#: ../../functions.rst:50 1112723c3d914a8eb485016e2e43eb25
 msgid ":meth:`Page.get_texttrace`"
 msgstr ""
 
-#: ../../functions.rst:50 e214fbbc63ae4d19a39fbd35f361f107
+#: ../../functions.rst:50 7a2b3074f96a4a2284ec5f7fceb0f40f
 msgid "low-level text information"
 msgstr "저수준 텍스트 정보"
 
-#: ../../functions.rst:51 c12d9e81a4f14a1ead2ead8d7f981a7c
+#: ../../functions.rst:51 9b6b7e72a5104179aa2df4fd9adbbbcf
 msgid ":meth:`Page.read_contents`"
 msgstr ""
 
-#: ../../functions.rst:51 4ea4aa95a0e74da39d80427e97d0c2f4
+#: ../../functions.rst:51 934be2410e654699924480d3599ec1fb
 msgid "PDF only: get complete, concatenated /Contents source"
 msgstr "PDF 전용: 완전하고 연결된 /Contents 소스 가져오기"
 
-#: ../../functions.rst:52 0a7b92c5ce184b8696922871f9786f30
+#: ../../functions.rst:52 d3db73a2b79141b0bed19fdd1f6ca764
 msgid ":meth:`Page.run`"
 msgstr ""
 
-#: ../../functions.rst:52 e20ec70bf4894a6aa07e7a11aaf63d9e
+#: ../../functions.rst:52 4902d89cf4b144069ba225a193fe2332
 msgid "run a page through a device"
 msgstr "디바이스를 통해 페이지 실행"
 
-#: ../../functions.rst:53 f318ac76d76d4865bd43843061a922e7
+#: ../../functions.rst:53 0b2357ceef874b5c81bd4ac101078751
 msgid ":meth:`Page.set_contents`"
 msgstr ""
 
-#: ../../functions.rst:53 efe0c81605704542bfd7c295f5f6ccce
+#: ../../functions.rst:53 140d86f801f447ba932d4d0da1636bdf
 msgid "PDF only: set page's :data:`contents` to some :data:`xref`"
 msgstr "PDF 전용: 페이지의 :data:`contents` 를 일부 :data:`xref` 로 설정"
 
-#: ../../functions.rst:54 4eb1f3fa01d74d89bd9e13660d80aace
+#: ../../functions.rst:54 4607ba0bc87a49029f60b94358164e9a
 msgid ":meth:`Page.wrap_contents`"
 msgstr ""
 
-#: ../../functions.rst:54 1e1087f91ea540e786db6751528af559
+#: ../../functions.rst:54 71d87e984ed1426f994fbda70a1d5acc
 msgid "wrap contents with stacking commands"
 msgstr "스택 명령으로 콘텐츠 래핑"
 
-#: ../../functions.rst:55 09fa362cbcc546d5bf5d8ff7ab48a08e
+#: ../../functions.rst:55 eab975358f5e45f88237eb38bf7efcc2
 msgid ":meth:`css_for_pymupdf_font`"
 msgstr ""
 
-#: ../../functions.rst:55 e8300bd4f1b44f5db6278ec60b77cd26
+#: ../../functions.rst:55 7369ac5afa2a4f87af7504d05e2e95ec
 msgid "create CSS source for a font in package pymupdf_fonts"
 msgstr "pymupdf_fonts 패키지의 글꼴에 대한 CSS 소스 생성"
 
-#: ../../functions.rst:56 f03759eda97c48b2a48fa4f9b0fedb9a
+#: ../../functions.rst:56 ea96727f97604aa2be9fd94c2b0e4e99
 msgid ":meth:`paper_rect`"
 msgstr ""
 
-#: ../../functions.rst:56 b1fb4ea8173343e4b372c4196e07d4ea
+#: ../../functions.rst:56 4a64de49215140bb9095a7b744a6b10c
 msgid "return rectangle for a known paper format"
 msgstr "알려진 용지 형식에 대한 사각형 반환"
 
-#: ../../functions.rst:57 18bd1781e96740a0bd73013a3d7b664c
+#: ../../functions.rst:57 63fe68f42d76418396af541b4387963f
 msgid ":meth:`paper_size`"
 msgstr ""
 
-#: ../../functions.rst:57 4c71d20789bf4aafba9b403c91023308
+#: ../../functions.rst:57 bac6f74069d54638915a9402b2fdd32b
 msgid "return width, height for a known paper format"
 msgstr "알려진 용지 형식에 대한 너비, 높이 반환"
 
-#: ../../functions.rst:58 448bae55c0144a77bf34e084c2087748
+#: ../../functions.rst:58 9d17a64027f048e89712567847e77387
 msgid ":meth:`paper_sizes`"
 msgstr ""
 
-#: ../../functions.rst:58 a4b88a6f83704283b1d067b9b422950b
+#: ../../functions.rst:58 0a3c490c678640d69903658293fb99cd
 msgid "dictionary of pre-defined paper formats"
 msgstr "사전 정의된 용지 형식의 딕셔너리"
 
-#: ../../functions.rst:59 b534913dfb3a46caa10a1f68b16f99f5
+#: ../../functions.rst:59 95cabe729c624a44a074886bc5ba5370
 msgid ":meth:`planish_line`"
 msgstr ""
 
-#: ../../functions.rst:59 dfa9809478844cd3a030cab4d9dfd1c2
+#: ../../functions.rst:59 2c80744fd3094705a838e077b3751f09
 msgid "matrix to map a line to the x-axis"
 msgstr "선을 x축에 매핑하는 행렬"
 
-#: ../../functions.rst:60 73b07e7023524c939f290cfec3c5147d
+#: ../../functions.rst:60 6d4a42f1a6034615a841e64b17bd95c6
 msgid ":meth:`recover_char_quad`"
 msgstr ""
 
-#: ../../functions.rst:60 5d790e90a6db4ee39f6b9c7eaeaabaee
+#: ../../functions.rst:60 7509fe7ee06541f2a83976c0820c751f
 msgid "compute the quad of a char (\"rawdict\")"
 msgstr "문자(\"rawdict\")의 쿼드 계산"
 
-#: ../../functions.rst:61 c7b763ff7e8242908671eb76801b55c5
+#: ../../functions.rst:61 2dd22daf6b254298b3521c5d8c0c2fc1
 msgid ":meth:`recover_line_quad`"
 msgstr ""
 
-#: ../../functions.rst:61 907e455060ee4289a865a3187bb4704e
+#: ../../functions.rst:61 c17fb3f0647848dd9b2d0c9f3375a900
 msgid "compute the quad of a subset of line spans"
 msgstr "라인 스팬의 하위 집합의 쿼드 계산"
 
-#: ../../functions.rst:62 7f4adbdf1e7345cd91ccb084d979616b
+#: ../../functions.rst:62 69103e21e70648a2ab8f3cedab21fa40
 msgid ":meth:`recover_quad`"
 msgstr ""
 
-#: ../../functions.rst:62 0077aa420f404be69c0b00c321022093
+#: ../../functions.rst:62 d6b90efa394f4fc98f8d557ba6118854
 msgid "compute the quad of a span (\"dict\", \"rawdict\")"
 msgstr "스팬(\"dict\", \"rawdict\")의 쿼드 계산"
 
-#: ../../functions.rst:63 02efaa1a3ddc4f1c8aa20484a700e7e4
+#: ../../functions.rst:63 e95190855477414fa2fc9b2a462e4d1f
 msgid ":meth:`recover_span_quad`"
 msgstr ""
 
-#: ../../functions.rst:63 8ce412850eb445b78abe6ca665a2a77f
+#: ../../functions.rst:63 dae88b36bbbb4bbcbe86f14575a8c742
 msgid "compute the quad of a subset of span characters"
 msgstr "스팬 문자의 하위 집합의 쿼드 계산"
 
-#: ../../functions.rst:64 c8a3bffef95e412ca257c252d6bff657
+#: ../../functions.rst:64 a538219c85a948b5bc32b5a86f54ee04
 msgid ":meth:`set_messages`"
 msgstr ""
 
-#: ../../functions.rst:64 ae0c40a4b5ed4b718dfb8abc492ca10e
+#: ../../functions.rst:64 76a9ba8c6de9444caf517346bcd72399
 msgid "set destination of |PyMuPDF| messages."
 msgstr "|PyMuPDF| 메시지의 대상 설정."
 
-#: ../../functions.rst:65 0d4e3f46893442b5b8eba64b982bf3f2
+#: ../../functions.rst:65 fdb49d59408d4dec91a14dde94092f4f
 msgid ":meth:`sRGB_to_pdf`"
 msgstr ""
 
-#: ../../functions.rst:65 d696f1caa15445b6bb8d91e71984f0a4
+#: ../../functions.rst:65 f871b9297499486d852fd3f0e8a3676a
 msgid "return PDF RGB color tuple from an sRGB integer"
 msgstr "sRGB 정수에서 PDF RGB 색상 튜플 반환"
 
-#: ../../functions.rst:66 65f3ad24442c445fb34dae8002131da9
+#: ../../functions.rst:66 327a435d7e884c0a902aafda1893f6a7
 msgid ":meth:`sRGB_to_rgb`"
 msgstr ""
 
-#: ../../functions.rst:66 3d999340cd904162a8038d1a4126b947
+#: ../../functions.rst:66 246a589ca6424f2b9c09f5e823900a8d
 msgid "return (R, G, B) color tuple from an sRGB integer"
 msgstr "sRGB 정수에서 (R, G, B) 색상 튜플 반환"
 
-#: ../../functions.rst:67 766d7f863ca4428e842619c0ebca36ef
+#: ../../functions.rst:67 c26211e2c9694a568170ed73ec08e6f6
 msgid ":meth:`unicode_to_glyph_name`"
 msgstr ""
 
-#: ../../functions.rst:67 6d5f5fe4327b4bf9b8aae045c9bf2b99
+#: ../../functions.rst:67 d3eb6eb48d2d404eaaa3e9647e0a61f0
 msgid "return glyph name from a unicode"
 msgstr "유니코드에서 글리프 이름 반환"
 
-#: ../../functions.rst:68 b9b504a041b94a4f8519153749eb4825
+#: ../../functions.rst:68 ac57370c0a6f47c3bed79dff45b3725c
 msgid ":meth:`get_tessdata`"
 msgstr ""
 
-#: ../../functions.rst:68 a2891d94940c4cf8a54ab447f7b15370
+#: ../../functions.rst:68 e421bbfb598845dbb4469660bec7f8ca
 msgid "locates the language support of the Tesseract-OCR installation"
 msgstr "Tesseract-OCR 설치의 언어 지원 위치 찾기"
 
-#: ../../functions.rst:69 f1824ee678fd459f92586806ad603df7
+#: ../../functions.rst:69 30abe7bbaaf24d3ba1760238b668f05b
 msgid ":meth:`colors_pdf_dict`"
 msgstr ""
 
-#: ../../functions.rst:69 0d099e9629fb4b689e08965adfc300e0
+#: ../../functions.rst:69 939ec09248774b08b319cff1387a78b3
 msgid "return dict of color names."
 msgstr "색상 이름의 딕셔너리 반환."
 
-#: ../../functions.rst:70 8dffcc2057e74973bf33f55a5145efa7
+#: ../../functions.rst:70 08f7a427489c42dc81382f68ac951d07
 msgid ":meth:`colors_wx_list`"
 msgstr ""
 
-#: ../../functions.rst:70 df83f96c7f9049f9a2135f8c7c3e1f45
+#: ../../functions.rst:70 c03e3b32246e48eca7222869de63d165
 msgid "return list of color names."
 msgstr "색상 이름의 리스트 반환."
 
-#: ../../functions.rst:71 a7d1b2ff6e7b499991be2827f2ce182f
+#: ../../functions.rst:71 00ff5455c39348df865165ef97c332e5
 msgid ":attr:`fitz_fontdescriptors`"
 msgstr ""
 
-#: ../../functions.rst:71 2bd5030a1ab34dfea799a7bac792e409
+#: ../../functions.rst:71 29c5c32218fe4af9b066941c79193e99
 msgid "dictionary of available supplement fonts"
 msgstr "사용 가능한 보조 글꼴의 딕셔너리"
 
-#: ../../functions.rst:72 213d79bfa9874a63ac1a4cfeb7032132
+#: ../../functions.rst:72 5e5557a7d7264b349905502aa39e0262
 msgid ":attr:`PYMUPDF_MESSAGE`"
 msgstr ""
 
-#: ../../functions.rst:72 01828b10e24e4ca7a6ec84f910c2955e
+#: ../../functions.rst:72 12be48b55f14460a82c486c307066c6b
 msgid "destination of |PyMuPDF| messages."
 msgstr "|PyMuPDF| 메시지의 대상."
 
-#: ../../functions.rst:73 fe68fe9641d94830aac3959ef70a3a46
+#: ../../functions.rst:73 93033092a17644e796bdfc012b3fe2ed
 msgid ":attr:`pdfcolor`"
 msgstr ""
 
-#: ../../functions.rst:73 19755c9b06fb412fac21ab46d85760d4
+#: ../../functions.rst:73 e11234c49747439eb115b333174c8a11
 msgid "dictionary of almost 500 RGB colors in PDF format."
 msgstr "PDF 형식의 약 500개의 RGB 색상 딕셔너리."
 
-#: ../../functions.rst:78 688881b3cb454361936fad432734136c
+#: ../../functions.rst:78 7731072bafdc4e0e948164d83aac73e6
 msgid ""
 "Convenience function to return width and height of a known paper format "
 "code. These values are given in pixels for the standard resolution 72 "
 "pixels = 1 inch."
-msgstr "알려진 용지 형식 코드의 너비와 높이를 반환하는 편의 함수. 이러한 값은 표준 해상도 72 픽셀 = 1 인치에 대한 픽셀 단위로 제공됩니다."
+msgstr ""
+"알려진 용지 형식 코드의 너비와 높이를 반환하는 편의 함수. 이러한 값은 표준 해상도 72 픽셀 = 1 인치에 대한 픽셀 단위로 "
+"제공됩니다."
 
-#: ../../functions.rst:80 df6f7db7c5e64bb99187e217a5e55d94
+#: ../../functions.rst:80 97f1a71cac764c60a6158645492260ad
 msgid ""
 "Currently defined formats include **'A0'** through **'A10'**, **'B0'** "
 "through **'B10'**, **'C0'** through **'C10'**, **'Card-4x6'**, **'Card-"
 "5x7'**, **'Commercial'**, **'Executive'**, **'Invoice'**, **'Ledger'**, "
 "**'Legal'**, **'Legal-13'**, **'Letter'**, **'Monarch'** and **'Tabloid-"
 "Extra'**, each in either portrait or landscape format."
-msgstr "현재 정의된 형식에는 **'A0'** 부터 **'A10'**, **'B0'** 부터 **'B10'**, **'C0'** 부터 **'C10'**, **'Card-4x6'**, **'Card-5x7'**, **'Commercial'**, **'Executive'**, **'Invoice'**, **'Ledger'**, **'Legal'**, **'Legal-13'**, **'Letter'**, **'Monarch'** 및 **'Tabloid-Extra'** 가 포함되며, 각각 세로 또는 가로 형식으로 제공됩니다."
+msgstr ""
+"현재 정의된 형식에는 **'A0'** 부터 **'A10'**, **'B0'** 부터 **'B10'**, **'C0'** 부터 "
+"**'C10'**, **'Card-4x6'**, **'Card-5x7'**, **'Commercial'**, "
+"**'Executive'**, **'Invoice'**, **'Ledger'**, **'Legal'**, "
+"**'Legal-13'**, **'Letter'**, **'Monarch'** 및 **'Tabloid-Extra'** 가 포함되며,"
+" 각각 세로 또는 가로 형식으로 제공됩니다."
 
-#: ../../functions.rst:82 1227353c5f80413d8e4366aaa7e00301
+#: ../../functions.rst:82 dc2a6be14366471dac1a6479494f9346
 msgid ""
 "A format name must be supplied as a string (case **in** \\sensitive), "
 "optionally suffixed with \"-L\" (landscape) or \"-P\" (portrait). No "
 "suffix defaults to portrait."
-msgstr "형식 이름은 문자열로 제공해야 하며(대소문자 **구분 안 함**), 선택적으로 \"-L\"(가로) 또는 \"-P\"(세로) 접미사를 붙일 수 있습니다. 접미사가 없으면 기본값은 세로입니다."
+msgstr ""
+"형식 이름은 문자열로 제공해야 하며(대소문자 **구분 안 함**), 선택적으로 \"-L\"(가로) 또는 \"-P\"(세로) 접미사를"
+" 붙일 수 있습니다. 접미사가 없으면 기본값은 세로입니다."
 
-#: ../../functions.rst 0859ddc790de48e98a47485cde669401
-#: 09aae792d39a4719b5feaf0ab83fff20 19bfd0356987458d83477865a5d1a227
-#: 49070de6bbd648339c39152b16917361 5abb2b0067e04d25a6a480258935ec7b
-#: 64942c1bcabb4af8b61d6c1763fa9ec1 7e3314757aad4fc1a94940b29ca6827c
-#: 813511b4bfb04affbe03c50f1c74e9c8 82b50464d79647069ebf77eb5eaa2f72
-#: 89cb96a7503f42ea8e5af77eae2653a1 92ffa13c8ae94cb2b2fa323e85adf355
-#: 99b800f8ef394726a8cf31b1e64c2e16 9d31e1e684094f7b843f37fca583e403
-#: 9fd573cd7d544e0aa4901376821e273b a1c3d38ad8b348718a4c58ba8de0d1f6
-#: a36d22d544834da3858edb86ef6f1644 ac8c99d18c2b4b9bb781c6f88660d86b
-#: b6d2ba4ce7ea4aeda4dcafbeb54f8f0d b770518ae6a749dbb83e9e8e640a10ee
-#: cd5810abe8154ef1bb614e2940eece1a f11cee020a504c72a63ce27fbbd09651
-#: fa237829f2624242ba676a501a682730 fe1aebb4ec3b40bd940fea19abc2ba9f
+#: ../../functions.rst 03018f66ae484e3db8b6ad2826a044cf
+#: 0a0669e521764612bda971525dda452a 12ea19fbec324aef8554866eb1efd555
+#: 17b4cefc4a164f34978aa987685343a9 1b57ba0eba1e416191010aa7a215b711
+#: 1cab8cc500bf48f18a85666579c09fbc 2e96fcb875274281a1347e2eb8addec5
+#: 31229e3f712b437c916b0d922411d521 34b10c8b64ee455e952eb5d9cf6b1a80
+#: 3613e5ea12d44c5ab4fa219e92529752 398a306ab671437a9988c3756ab7f425
+#: 4d5566460617441d84c1f6d527cd4344 509f8e751d5e457699d9a42dc3f0644e
+#: 58d7dd92da694affb15906f8055cb2f3 60884d82c6ed41c6b0fb30f10c530bc3
+#: 6f3e16b01a7e48b7b1286e84bec92f65 70099bc7029b4653a4ce215f5ea21068
+#: a5509eb13e9646f48b334f69990300d2 a89151cf3f0740db85a479f2b9b73349
+#: aba1d83a80594c35822fea6ded9b9e92 abb1fc81a69a4ce39c3973f59c1ad4b4
+#: b2e60629a7ef4d0cb426b6f6e36f1f6f deb835e391664727a28f3d7f49008950
 msgid "Parameters"
 msgstr "매개변수"
 
-#: ../../functions.rst:84 58f6fc5980274479b8466f9943b239a0
+#: ../../functions.rst:84 868bc857e3eb4ca9a79d072abe89f452
 msgid ""
 "any format name from above in upper or lower case, like *\"A4\"* or "
 "*\"letter-l\"*."
 msgstr "위의 형식 이름 중 하나를 대문자 또는 소문자로 지정합니다. 예: *\"A4\"* 또는 *\"letter-l\"*."
 
-#: ../../functions.rst 03f1fe2e5c3943e183598885bc51d1dc
-#: 1857900ce17a4569876c842ed42c6268 20b469d28e6e4ef18b3176a5e74627d3
-#: 20f0ad032864401e8e11b10c90f9c24b 27537b59f5694129a544cd09ee1e4957
-#: 2e112e3af1b74659bdb9c43d7db12a74 3062eec0ad0247d28f2f532f9cd5cce4
-#: 51bd37f77a214f6a8d3c6918723b9eea 5a94a14aae9b4984be7e3591cb6101df
-#: 6b1952aa0aa84cbe8c865623124268ab 6cf6024e798045079d4c6551e3a7b175
-#: 8bbd1c084844464088dab98f7d9f4965 9caea92222fe4cdc8432df38e26f83c6
-#: acae4a31653a4d72b4a2e701c6c059b0 ad60dbf189334ee5a807f1faec163c26
-#: b13938ce54e342d49bb6ee61f3927459 bd9c2eff50e34f239e7589f9e6ad949c
-#: d3cd059ede494646bac809314f2a7aa3 dedeff11b7fe409fa341704aee20d714
-#: f446e807ba984edf862a261ccd18ee92 f661f3aea2174106b4f7c07557d2937d
-#: fcea4521481d45bb8138e2bc86f57dd6 fd35d8681ef34d8882c8131bfbb9325f
-#: ffae2284aadc4ea5b7ce903b300110e5
+#: ../../functions.rst 022a9111972c43f4ac95797e47e55115
+#: 0c19eadddcc246f6b494636250447fd1 1227b7b4025342248b7726eb436fd672
+#: 1344025ac05b4743ab3452c49485b456 16ed36a80352404c9f6b780307f76f2c
+#: 1a3722844c9c4028b4ca575c633677f8 1e874c6b85ad41ff8d39bd66d4b10459
+#: 20d12996ad564b01a013abcf0a595b1b 20ffe31a11ee480896d6d653dbfabe62
+#: 2b70ab4546fa4726935510a1e9c6ea1e 32862398c7664800a5f7d7e0ac8dd3a4
+#: 468d0e15495548d081abcad8b54b977b 5629f3d073a446cb8a7d2cad64ae5a6e
+#: 72190288375c4d32a56d69d0e5939fe5 741a274045a04f929fcfa2c3b8b92f2d
+#: 88398cfff97c477db1e260b56fb9eb7b 8d70daaf324943269c7d19f63b2cc8fe
+#: 8d9d283148974c8ca3abfd33d28287fe 90882dfe77d24383867c3af45e603974
+#: a3c6fbb9de8a4f588b1c288c68c4cca3 aab4d395713b4379a065a2abb64849de
+#: b546dccfca404e0580e50b1fc6e5ad44 c709831c399146dfb8bd4fe3167a8938
+#: f354716ed65b417ca129e97964f83aa0
 msgid "Return type"
 msgstr "반환 타입"
 
-#: ../../functions.rst 241f189d177b4abe8781c1323a0ec686
-#: 269469e84adb406bba0203eeb27db4ea 3002f251a3b34a938e7f3b2d8ff54f55
-#: 393bd2c99abb435c9096087b1340609a 4c3f97315cf04d0891ea76a1bc4cdec7
-#: 4ce3f7bf85464affb653fdc3cde40999 4d87d3c54e3f482fbeae0695ccae2f3d
-#: 54eed5b94cd8484089e327a49e09c976 6b22f8b9a6ca4d4cbc8cc4d236263067
-#: 7c586b43f1e2413b82c7aec73497ad09 7d42f6afd5844f1caca525f80b3c1328
-#: 8bc58d3f2fc9447e98d7349da31213de a168611b4d644084a80c9ebf51127c66
-#: a636bdbee8ca4bb993b51dab8564eb04 afce09bb4d3e4e5dad5ccfaa3e62395a
-#: b4b81ec6ce2548c6a66b0675d31bd1d6 b7e7fb7a4c2747b1adf7a8583f8654c4
-#: b8cab8292e6e4f3ea1b79e200dca449d be0506cde75249c5b7cf35d1ae34c87d
-#: c02e22251e0c496c99819e2bbfd566f2 e1d0fe254797467e8a7b7fe3ea0ae483
-#: e1de8b977cf8465eb45cad2ef5f5e0dd eb4281b814a647efb2ad231baf1ca7ae
-#: f468fa01ceb94ad8ac3451a68a33ae39 fda237d8691b4a959eeca8fe09b6bbae
+#: ../../functions.rst 054986a55bd8412684d7d1053e95c27a
+#: 0f142076b64b4989b3743f8c7ef4cc0a 32f469a0c91b4a868a39b83f799dd678
+#: 349444e692d0463e96ec95137f014f3c 3b461c671ee044138d2bdc62333e42d0
+#: 3df66e6bef0d4ea7bf65e4b3638bfb69 5902d0ef2d20466abff84b79b17d8841
+#: 6573f0a01dc743d892cfd7006b7cfd57 71a7252151694deab2d3caf80063f899
+#: 7d76e05a4b3a4af7b9cad032b510bac6 87784bbec007408e8916cc06e9591342
+#: 94c68ca6fcc44b10a660ad293abeeff5 97ee6ea8100b4074aaa5cf8a2c54ab88
+#: 9f4a7c0053e141358a36dadc8edd4499 a181be36d67549dab9959ecd33a5c311
+#: a20bf25fcc4c453cb352fd964286b1a3 a4183c4f8c0f43eb9e5d7c163475b746
+#: a66431d0340e41be826a4392175765a7 b6ec04a4323e457488d3a34c4e2dd176
+#: d2a6377848154565a05fc9112dd958ca db6ae0d1dc96463cb4f8ccf9885b98d0
+#: df98ff1830f843c7b39c5f50c02a93b2 e03a4ce2cc7248f5952c69d5abcf55b9
+#: e532dd33e4cf433a87145131fdb015b3 f4d244d00c2845ec820bba3e866fd756
 msgid "Returns"
 msgstr "반환값"
 
-#: ../../functions.rst:87 b4296412402b46a4965f9ad12430f3a5
+#: ../../functions.rst:87 b03cca1df3ff43cab3ebafdcc5ea4396
 msgid ""
 "*(width, height)* of the paper format. For an unknown format *(-1, -1)* "
 "is returned. Examples: *pymupdf.paper_size(\"A4\")* returns *(595, 842)* "
 "and *pymupdf.paper_size(\"letter-l\")* delivers *(792, 612)*."
-msgstr "용지 형식의 *(너비, 높이)*. 알 수 없는 형식의 경우 *(-1, -1)* 이 반환됩니다. 예: *pymupdf.paper_size(\"A4\")* 는 *(595, 842)* 를 반환하고 *pymupdf.paper_size(\"letter-l\")* 는 *(792, 612)* 를 반환합니다."
+msgstr ""
+"용지 형식의 *(너비, 높이)*. 알 수 없는 형식의 경우 *(-1, -1)* 이 반환됩니다. 예: "
+"*pymupdf.paper_size(\"A4\")* 는 *(595, 842)* 를 반환하고 "
+"*pymupdf.paper_size(\"letter-l\")* 는 *(792, 612)* 를 반환합니다."
 
-#: ../../functions.rst:93 5b13894197174f5b9b605cf39be91764
+#: ../../functions.rst:93 39ac61c8acfe4795ad45ca2ed8ae6b2a
 msgid "Convenience function to return a :ref:`Rect` for a known paper format."
 msgstr "알려진 용지 형식에 대한 :ref:`Rect` 를 반환하는 편의 함수."
 
-#: ../../functions.rst:95 2b01808a6f984885ad72685e42b6ba34
+#: ../../functions.rst:95 79ce3e075e8047c38fdca8e47040ce19
 msgid "any format name supported by :meth:`paper_size`."
 msgstr ":meth:`paper_size` 에서 지원하는 모든 형식 이름."
 
-#: ../../functions.rst:97 398230d02c1a4139a2c25e15afd00441
+#: ../../functions.rst:97 6a4b32efe8dd4b0bb8cfd7c6d4b2e4d8
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../functions.rst:98 3bcbeafd12094f66b7da10fbb6e44d13
+#: ../../functions.rst:98 81a23800b837456cbe9205a60c034ab2
 msgid ""
 "*pymupdf.Rect(0, 0, width, height)* with *width, "
 "height=pymupdf.paper_size(s)*."
-msgstr "*width, height=pymupdf.paper_size(s)* 를 사용한 *pymupdf.Rect(0, 0, width, height)*."
+msgstr ""
+"*width, height=pymupdf.paper_size(s)* 를 사용한 *pymupdf.Rect(0, 0, width, "
+"height)*."
 
-#: ../../functions.rst:109 dfd4fa5a7ed645d687e1add0d26f8fd9
+#: ../../functions.rst:109 69c645e94932478f9f3362f568160204
 msgid ""
 "Sets destination of |PyMuPDF| messages to a file descriptor, a file, an "
 "existing stream or `Python's logging system "
 "<https://docs.python.org/3/library/logging.html>`_."
-msgstr "|PyMuPDF| 메시지의 대상을 파일 디스크립터, 파일, 기존 스트림 또는 `Python의 로깅 시스템 <https://docs.python.org/3/library/logging.html>`_ 로 설정합니다."
+msgstr ""
+"|PyMuPDF| 메시지의 대상을 파일 디스크립터, 파일, 기존 스트림 또는 `Python의 로깅 시스템 "
+"<https://docs.python.org/3/library/logging.html>`_ 로 설정합니다."
 
-#: ../../functions.rst:113 7ca7d103b38f48e6807607f1b5fb4e04
+#: ../../functions.rst:113 7cbb49615dd5446788c1e7343992b3bd
 msgid "Usually one would only set one arg, or one or more `pylogging*` args."
 msgstr "일반적으로 하나의 인수만 설정하거나 하나 이상의 `pylogging*` 인수를 설정합니다."
 
-#: ../../functions.rst:115 d3110ebcfa014f9a9e9dffbfb07b8429
+#: ../../functions.rst:115 41d549d619b941e490f0d67a2715a734
 msgid ""
 "A text specification of destination; for details see description of "
 "environmental variable `PYMUPDF_MESSAGE`."
 msgstr "대상의 텍스트 사양. 자세한 내용은 환경 변수 `PYMUPDF_MESSAGE` 의 설명을 참조하세요."
 
-#: ../../functions.rst:118 f2568fbdee6a469e86d30e697b54e228
+#: ../../functions.rst:118 489041f4541c47ef9f9e52c6ae05cc96
 msgid "Write to file descriptor."
 msgstr "파일 디스크립터에 쓰기."
 
-#: ../../functions.rst:120 3005a922a0bd4a02926e0a5b40014183
+#: ../../functions.rst:120 47f7f62ceba74f72adcdf0944e9bbb79
 msgid ""
 "Write to existing stream, which must have methods `.write(text)` and "
 "`.flush()`."
 msgstr "기존 스트림에 쓰기. `.write(text)` 및 `.flush()` 메서드가 있어야 합니다."
 
-#: ../../functions.rst:123 7bae0338bdf7484c9e843251d5c4268e
+#: ../../functions.rst:123 deed94f7b3d04f22b1978ac275a22d14
 msgid "Write to a file."
 msgstr "파일에 쓰기."
 
-#: ../../functions.rst:125 629d6fa80e1140f48a18cd82a8d2631d
+#: ../../functions.rst:125 d6010f301c214ee981634923329e3b3e
 msgid "Append to a file."
 msgstr "파일에 추가."
 
-#: ../../functions.rst:127 af3dad1d6ce942b8bc8207879fb6e153
+#: ../../functions.rst:127 581212acd9564c1d982afd047cead7b8
 msgid "Write to Python's `logging` system."
 msgstr "Python의 `logging` 시스템에 쓰기."
 
-#: ../../functions.rst:129 edef27de299d43b580f0142468f71ade
+#: ../../functions.rst:129 7082305f15f14e479a4f01f1b5e7cea6
 msgid "Write to Python's `logging` system using specified Logger."
 msgstr "지정된 Logger를 사용하여 Python의 `logging` 시스템에 쓰기."
 
-#: ../../functions.rst:131 97f0f14a9c6543069de109bdaa320698
+#: ../../functions.rst:131 05eb0dcaf9644b748efa489fccc348d2
 msgid "Write to Python's `logging` system using specified level."
 msgstr "지정된 레벨을 사용하여 Python의 `logging` 시스템에 쓰기."
 
-#: ../../functions.rst:133 54a6240e34794f1d8f029e59eef09948
+#: ../../functions.rst:133 cedfea3990d24cf1a7929a33284b11a0
 msgid ""
 "Write to Python's `logging` system using specified logger name. Only used"
 " if `pylogging_logger` is ``None``. Default is `pymupdf`."
-msgstr "지정된 로거 이름을 사용하여 Python의 `logging` 시스템에 쓰기. `pylogging_logger` 가 ``None`` 인 경우에만 사용됩니다. 기본값은 `pymupdf` 입니다."
+msgstr ""
+"지정된 로거 이름을 사용하여 Python의 `logging` 시스템에 쓰기. `pylogging_logger` 가 ``None`` "
+"인 경우에만 사용됩니다. 기본값은 `pymupdf` 입니다."
 
-#: ../../functions.rst:190 5176a1a461ef43a1bfbefacc552c8a8b
+#: ../../functions.rst:137 777f45cd7d524f84942d9fe412c18edd
+#, fuzzy
+msgid ""
+"If any `pylogging*` arg is not ``None``, we write to `Python's logging "
+"system <https://docs.python.org/3/library/logging.html>`_."
+msgstr ""
+
+#: ../../functions.rst:144 ../../functions.rst:156 ../../functions.rst:270
+#: 69f05cfe1b654ab19e0011a944260bec 7558bf3ff3b845559657a578039f1ef0
+#: c30fc7f1a9e343bbb4c5e4c8fbbfb032
+#, fuzzy
+msgid "*New in v1.17.4*"
+msgstr ""
+
+#: ../../functions.rst:146 895bc494383147339ecd407d7f8feece
+msgid ""
+"Convenience function returning a PDF color triple (red, green, blue) for "
+"a given sRGB color integer as it occurs in :meth:`Page.get_text` "
+"dictionaries \"dict\" and \"rawdict\"."
+msgstr ""
+
+#: ../../functions.rst:148 ../../functions.rst:160
+#: 017bfb28972946b7afeddc4aa2d96999 7ff4d5ab9e154081be8ea600c0631ffd
+msgid ""
+"an integer of format RRGGBB, where each color component is an integer in "
+"range(255)."
+msgstr ""
+
+#: ../../functions.rst:150 37c7bbd5421d4b18b180482fc18889da
+msgid ""
+"a tuple (red, green, blue) with float items in interval *0 <= item <= 1* "
+"representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` "
+"(red)."
+msgstr ""
+
+#: ../../functions.rst:158 b3779d6ff2064b7191d22f03dc12b37d
+msgid ""
+"Convenience function returning a color (red, green, blue) for a given "
+"*sRGB* color integer."
+msgstr ""
+
+#: ../../functions.rst:162 c2e711f095d845dcbbb6d1599bf1d8bb
+msgid ""
+"a tuple (red, green, blue) with integer items in `range(256)` "
+"representing the same color. Example `sRGB_to_pdf(0xff0000) = (255, 0, "
+"0)` (red)."
+msgstr ""
+
+#: ../../functions.rst:168 ../../functions.rst:183 ../../functions.rst:198
+#: ../../functions.rst:211 0330c6db37ba44e7b01d3331832a082a
+#: 59756c59d51a4bf59c7c44211fc57b99 c8e9f36450234d3293d8445774911e5d
+#: d0ad94f8dbd24dd5adb1fc709cde1c9e
+#, fuzzy
+msgid "*New in v1.18.0*"
+msgstr ""
+
+#: ../../functions.rst:170 18f6f71df9e4437e91b15db0811f02e1
+#, fuzzy
+msgid ""
+"Return the unicode number of a glyph name based on the **Adobe Glyph "
+"List**."
+msgstr ""
+
+#: ../../functions.rst:172 2ea221eaae354e3a8696af8d26a6727c
+msgid ""
+"the name of some glyph. The function is based on the `Adobe Glyph List "
+"<https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_."
+msgstr ""
+
+#: ../../functions.rst:175 9cab0f810cd041b7b19a385d41b3de4d
+msgid "the unicode. Invalid ``name`` entries return `0xfffd (65533)`."
+msgstr ""
+
+#: ../../functions.rst:177 ../../functions.rst:205 ../../functions.rst:218
+#: 8ae7164314a54d298a84c72740a19a67 bdcaf136335b4029a886ece439c7db85
+#: e4acb745507b430e8af6df66d695d76c
+#, fuzzy
+msgid ""
+"A similar functionality is provided by package `fontTools "
+"<https://pypi.org/project/fonttools/>`_ in its *agl* sub-package."
+msgstr ""
+
+#: ../../functions.rst:185 75a5eea668644ca5ad66e78b8f46f33b
+#, fuzzy
+msgid ""
+"Return the glyph name of a unicode number, based on the **Adobe Glyph "
+"List**."
+msgstr ""
+
+#: ../../functions.rst:187 65f19a9b48e14e2caf273c0cd10e1127
+#: 96ee3f05d61747f7adbf5b5d3abd3e7a
+msgid ""
+"the unicode given by e.g. `ord(\"ß\")`. The function is based on the "
+"`Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
+"aglfn/blob/master/glyphlist.txt>`_."
+msgstr ""
+
+#: ../../functions.rst:190 85951f82646148b184f726f54c1aacd6
 msgid ""
 "the glyph name. E.g. `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` returns "
 "`'Adieresis'`."
-msgstr "글리프 이름. 예: `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` 는 `'Adieresis'` 를 반환합니다."
+msgstr ""
+"글리프 이름. 예: `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` 는 `'Adieresis'` 를 "
+"반환합니다."
 
-#: ../../functions.rst:192 2d968ce1f4004533b122972fdbbabdf7
+#: ../../functions.rst:192 bd7a7f8035ae48c1b94b6a14beff47cc
 msgid ""
 "A similar functionality is provided by package `fontTools "
 "<https://pypi.org/project/fonttools/>`_: in its *agl* sub-package."
-msgstr "유사한 기능은 패키지 `fontTools <https://pypi.org/project/fonttools/>`_ 의 *agl* 하위 패키지에서 제공됩니다."
+msgstr ""
+"유사한 기능은 패키지 `fontTools <https://pypi.org/project/fonttools/>`_ 의 *agl* 하위"
+" 패키지에서 제공됩니다."
 
-#: ../../functions.rst:200 cdc27cc2524340f49b6cc45e587c802c
+#: ../../functions.rst:200 ea6d8435122e4e03b457b6c4f74f77f2
 msgid "Return a list of glyph names defined in the **Adobe Glyph List**."
 msgstr "**Adobe Glyph List** 에 정의된 글리프 이름 목록을 반환합니다."
 
-#: ../../functions.rst:203 2fd087c0315e407ea96067edc1c4393c
+#: ../../functions.rst:203 67cf198df6114dd3804a1ba80c9c67ce
 msgid "list of strings."
 msgstr "문자열 목록."
 
-#: ../../functions.rst:213 a02dfb86773a455382f6a6c0268d3499
+#: ../../functions.rst:213 0041733db7e64ba8a5350f0ea22c9eec
 msgid ""
 "Return a list of unicodes for there exists a glyph name in the **Adobe "
 "Glyph List**."
 msgstr "**Adobe Glyph List** 에 글리프 이름이 존재하는 유니코드 목록을 반환합니다."
 
-#: ../../functions.rst:216 b7378500b7af448d86db01202a45986c
+#: ../../functions.rst:216 1a1ca8f4c0ee415cac54b1fbbf966aac
 msgid "list of integers."
 msgstr "정수 목록."
 
-#: ../../functions.rst:224 44322f42c7554831ac045bccb97dbc3c
+#: ../../functions.rst:224 91d0f084f22d40789e29edca8cc4b512
 msgid "*New in v1.21.0*"
 msgstr "*v1.21.0의 새로운 기능*"
 
-#: ../../functions.rst:226 24ae3761fb07422393846de0c9c3fa88
+#: ../../functions.rst:226 bfdbc87798434761bc202a2afdb0db2a
 msgid "**Utility function for use with \"Story\" applications.**"
 msgstr "**\"Story\" 애플리케이션에서 사용하기 위한 유틸리티 함수.**"
 
-#: ../../functions.rst:228 fd42be5d92474036bd944ca8660478de
+#: ../../functions.rst:228 eb5487e982fa40b08c6ef9ec4d4d585f
 msgid ""
 "Create CSS `@font-face` items for the given fontcode in pymupdf-fonts. "
 "Creates a CSS font-family for all fonts starting with string "
 "\"fontcode\"."
-msgstr "pymupdf-fonts에서 주어진 fontcode에 대한 CSS `@font-face` 항목을 생성합니다. 문자열 \"fontcode\"로 시작하는 모든 글꼴에 대한 CSS font-family를 생성합니다."
+msgstr ""
+"pymupdf-fonts에서 주어진 fontcode에 대한 CSS `@font-face` 항목을 생성합니다. 문자열 "
+"\"fontcode\"로 시작하는 모든 글꼴에 대한 CSS font-family를 생성합니다."
 
-#: ../../functions.rst:230 a814b536199949e891f96f03e13d68a2
+#: ../../functions.rst:230 136c05d535f84f80ba229db14ba5e027
 msgid ""
 "The font naming convention in package pymupdf-fonts is \"fontcode<sf>\", "
 "where the suffix \"sf\" is one of \"\" (empty), \"it\"/\"i\", "
 "\"bo\"/\"b\" or \"bi\". These suffixes thus represent the regular, "
 "italic, bold or bold-italic variants of that font."
-msgstr "패키지 pymupdf-fonts의 글꼴 명명 규칙은 \"fontcode<sf>\"이며, 여기서 접미사 \"sf\"는 \"\"(비어 있음), \"it\"/\"i\", \"bo\"/\"b\" 또는 \"bi\" 중 하나입니다. 이러한 접미사는 따라서 해당 글꼴의 일반, 기울임꼴, 굵게 또는 굵은 기울임꼴 변형을 나타냅니다."
+msgstr ""
+"패키지 pymupdf-fonts의 글꼴 명명 규칙은 \"fontcode<sf>\"이며, 여기서 접미사 \"sf\"는 \"\"(비어 "
+"있음), \"it\"/\"i\", \"bo\"/\"b\" 또는 \"bi\" 중 하나입니다. 이러한 접미사는 따라서 해당 글꼴의 "
+"일반, 기울임꼴, 굵게 또는 굵은 기울임꼴 변형을 나타냅니다."
 
-#: ../../functions.rst:232 ee523a99cc234e859fb1a6cabd4448c4
+#: ../../functions.rst:232 73f3ec03772745dcb664d3338f909e69
 msgid "For example, font code \"notos\" refers to fonts"
 msgstr "예를 들어, 글꼴 코드 \"notos\"는 다음 글꼴을 나타냅니다"
 
-#: ../../functions.rst:234 1624cd3ce5cb41d68b00cfbdefbab550
+#: ../../functions.rst:234 ab848e07a9544eb0a4a64619cb70670d
 msgid "\"notos\" - \"Noto Sans Regular\""
 msgstr "\"notos\" - \"Noto Sans Regular\""
 
-#: ../../functions.rst:235 b5bfb596ccb74dcf835b39d8f7d13881
+#: ../../functions.rst:235 f820847aafbf425fa170b1083abd9056
 msgid "\"notosit\" - \"Noto Sans Italic\""
 msgstr "\"notosit\" - \"Noto Sans Italic\""
 
-#: ../../functions.rst:236 f4b764ed2d584d8893bf0b2de910b9cf
+#: ../../functions.rst:236 524c95238e1f4af6945c40428fea8d5a
 msgid "\"notosbo\" - \"Noto Sans Bold\""
 msgstr "\"notosbo\" - \"Noto Sans Bold\""
 
-#: ../../functions.rst:237 a8b2daa11b7845f3bed1ce18440ef016
+#: ../../functions.rst:237 d6a7415ca6e448e0afcac405b692a483
 msgid "\"notosbi\" - \"Noto Sans Bold Italic\""
 msgstr "\"notosbi\" - \"Noto Sans Bold Italic\""
 
-#: ../../functions.rst:239 cb8e8390629f4d188e7e1dbc5af60b03
+#: ../../functions.rst:239 7682199165a64e699943ec683a5dbae8
 msgid ""
 "The function creates (up to) four CSS `@font-face` definitions and "
 "collectively assigns the `font-family` name \"notos\" to them (or the "
 "\"name\" value if provided). Associated font buffers are placed / added "
 "to the provided archive."
-msgstr "함수는 (최대) 4개의 CSS `@font-face` 정의를 생성하고 `font-family` 이름 \"notos\"(또는 제공된 경우 \"name\" 값)를 집합적으로 할당합니다. 연결된 글꼴 버퍼는 제공된 아카이브에 배치/추가됩니다."
+msgstr ""
+"함수는 (최대) 4개의 CSS `@font-face` 정의를 생성하고 `font-family` 이름 \"notos\"(또는 제공된 "
+"경우 \"name\" 값)를 집합적으로 할당합니다. 연결된 글꼴 버퍼는 제공된 아카이브에 배치/추가됩니다."
 
-#: ../../functions.rst:241 b1578620590c4d49a662b6873f7c33e7
+#: ../../functions.rst:241 d60c58db166f4865ba6c5a96c0935714
 msgid ""
 "To use the font in the Python API for :ref:`Story`, execute "
 "`.set_font(fontcode)` (or \"name\" if given). The correct font weight or "
 "style will automatically be selected as required."
-msgstr ":ref:`Story` 의 Python API에서 글꼴을 사용하려면 `.set_font(fontcode)` (또는 주어진 경우 \"name\")를 실행하세요. 올바른 글꼴 두께 또는 스타일이 필요에 따라 자동으로 선택됩니다."
+msgstr ""
+":ref:`Story` 의 Python API에서 글꼴을 사용하려면 `.set_font(fontcode)` (또는 주어진 경우 "
+"\"name\")를 실행하세요. 올바른 글꼴 두께 또는 스타일이 필요에 따라 자동으로 선택됩니다."
 
-#: ../../functions.rst:243 5c4c7320f1f8400e924e56c72a17c2c3
+#: ../../functions.rst:243 f4c204d386b647d0a61c376c3c13681d
 msgid ""
 "For example to replace the \"sans-serif\" HTML standard (i.e. Helvetica) "
 "with the above \"notos\", execute the following. Whenever \"sans-serif\" "
 "is used (whether explicitly or implicitly), the Noto Sans fonts will be "
 "selected."
-msgstr "예를 들어 위의 \"notos\"로 \"sans-serif\" HTML 표준(즉, Helvetica)을 대체하려면 다음을 실행하세요. \"sans-serif\"가 사용될 때마다(명시적으로든 암시적으로든) Noto Sans 글꼴이 선택됩니다."
+msgstr ""
+"예를 들어 위의 \"notos\"로 \"sans-serif\" HTML 표준(즉, Helvetica)을 대체하려면 다음을 "
+"실행하세요. \"sans-serif\"가 사용될 때마다(명시적으로든 암시적으로든) Noto Sans 글꼴이 선택됩니다."
 
-#: ../../functions.rst:245 3ab4384a20d149669910ef03ad792c3a
+#: ../../functions.rst:245 eabaed48beb946e58d8a1dc9579bb770
 msgid ""
 "`CSS = pymupdf.css_for_pymupdf_font(\"notos\", name=\"sans-serif\", "
 "archive=...)`"
-msgstr "`CSS = pymupdf.css_for_pymupdf_font(\"notos\", name=\"sans-serif\", archive=...)`"
+msgstr ""
+"`CSS = pymupdf.css_for_pymupdf_font(\"notos\", name=\"sans-serif\", "
+"archive=...)`"
 
-#: ../../functions.rst:247 3206db2b9e4548d9873d135de0833c62
+#: ../../functions.rst:247 45820ea5c1c34abe9086286b089e5835
 msgid "Expects and returns the CSS source, with the new CSS definitions appended."
 msgstr "CSS 소스를 받아서 새로운 CSS 정의가 추가된 CSS 소스를 반환합니다."
 
-#: ../../functions.rst:249 a2d622ad8ee347cdbf24cf65b46dd835
+#: ../../functions.rst:249 f8e31e8254fc4695a916866897562c67
 msgid ""
 "one of the font codes present in package `pymupdf-fonts "
 "<https://pypi.org/project/pymupdf-fonts/>`_ (usually) representing the "
 "regular version of the font family."
-msgstr "패키지 `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 에 있는 글꼴 코드 중 하나(일반적으로 글꼴 패밀리의 일반 버전을 나타냄)."
+msgstr ""
+"패키지 `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 에 있는 글꼴 코드"
+" 중 하나(일반적으로 글꼴 패밀리의 일반 버전을 나타냄)."
 
-#: ../../functions.rst:250 3e43aa6f3cb7415c856593e0c2009f4d
+#: ../../functions.rst:250 92f43cf88a624b93bd22752d8bf64bd1
 msgid ""
 "any already existing CSS source, or `None`. The function will append its "
 "new definitions to this. This is the string that **must be used** as "
 "`user_css` when creating the :ref:`Story`."
-msgstr "기존 CSS 소스 또는 `None`. 함수는 새로운 정의를 여기에 추가합니다. 이것은 :ref:`Story` 를 생성할 때 `user_css` 로 **사용해야 하는** 문자열입니다."
+msgstr ""
+"기존 CSS 소스 또는 `None`. 함수는 새로운 정의를 여기에 추가합니다. 이것은 :ref:`Story` 를 생성할 때 "
+"`user_css` 로 **사용해야 하는** 문자열입니다."
 
-#: ../../functions.rst:251 96d99d7375ed4394a4e5ec1661857dde
+#: ../../functions.rst:251 513bb69848834f1b8ee131ac15a8d498
 msgid ""
 ":ref:`Archive`, **mandatory**. All font binaries (i.e. up to four) found "
 "for \"fontcode\" will be added to the archive. This is the archive that "
 "**must be used** as `archive` when creating the :ref:`Story`."
-msgstr ":ref:`Archive`, **필수**. \"fontcode\"에 대해 찾은 모든 글꼴 바이너리(최대 4개)가 아카이브에 추가됩니다. 이것은 :ref:`Story` 를 생성할 때 `archive` 로 **사용해야 하는** 아카이브입니다."
+msgstr ""
+":ref:`Archive`, **필수**. \"fontcode\"에 대해 찾은 모든 글꼴 바이너리(최대 4개)가 아카이브에 "
+"추가됩니다. 이것은 :ref:`Story` 를 생성할 때 `archive` 로 **사용해야 하는** 아카이브입니다."
 
-#: ../../functions.rst:252 efd7cc2ac7184a718e3bdc84648becc0
+#: ../../functions.rst:252 5497d854266c41399b06bd35ad5f9084
 msgid ""
 "the name under which the \"fontcode\" fonts should be found. If omitted, "
 "\"fontcode\" will be used."
 msgstr "\"fontcode\" 글꼴을 찾을 이름. 생략하면 \"fontcode\"가 사용됩니다."
 
-#: ../../functions.rst:255 d17bb0f3f24845159c50104934ef2fc9
+#: ../../functions.rst:255 f98ee439f50d4dfe8df6c0efbd7b7815
 msgid ""
 "Modified CSS, with appended `@font-face` statements for each font variant"
 " of fontcode. Fontbuffers associated with \"fontcode\" will have been "
@@ -823,64 +964,80 @@ msgid ""
 "'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', "
 "'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', "
 "'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])`."
-msgstr "fontcode의 각 글꼴 변형에 대한 `@font-face` 문이 추가된 수정된 CSS. \"fontcode\"와 연결된 Fontbuffers가 'archive'에 추가됩니다. 함수는 자동으로 최대 4개의 글꼴 변형을 찾습니다. 모든 pymupdf-fonts(수학이나 음악 등 특수 목적이 아닌 것)는 일반, 굵게, 기울임꼴 및 굵은 기울임꼴 변형을 가지고 있습니다. 현재 사용 가능한 글꼴 코드를 확인하려면 `pymupdf.fitz_fontdescriptors.keys()` 를 확인하세요. 이것은 `dict_keys(['cascadia', 'cascadiai', 'cascadiab', 'cascadiabi', 'figbo', 'figo', 'figbi', 'figit', 'fimbo', 'fimo', 'spacembo', 'spacembi', 'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', 'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', 'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])` 와 같은 것을 보여줍니다."
+msgstr ""
+"fontcode의 각 글꼴 변형에 대한 `@font-face` 문이 추가된 수정된 CSS. \"fontcode\"와 연결된 "
+"Fontbuffers가 'archive'에 추가됩니다. 함수는 자동으로 최대 4개의 글꼴 변형을 찾습니다. 모든 pymupdf-"
+"fonts(수학이나 음악 등 특수 목적이 아닌 것)는 일반, 굵게, 기울임꼴 및 굵은 기울임꼴 변형을 가지고 있습니다. 현재 사용 "
+"가능한 글꼴 코드를 확인하려면 `pymupdf.fitz_fontdescriptors.keys()` 를 확인하세요. 이것은 "
+"`dict_keys(['cascadia', 'cascadiai', 'cascadiab', 'cascadiabi', 'figbo', "
+"'figo', 'figbi', 'figit', 'fimbo', 'fimo', 'spacembo', 'spacembi', "
+"'spacemit', 'spacemo', 'math', 'music', 'symbol1', 'symbol2', 'notosbo', "
+"'notosbi', 'notosit', 'notos', 'ubuntu', 'ubuntubo', 'ubuntubi', "
+"'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', 'ubuntmit'])` 와 같은 것을 "
+"보여줍니다."
 
-#: ../../functions.rst:257 9c918c7741a8450fadc38bb8e6d8248e
+#: ../../functions.rst:257 3526f7b9559347458786dc7c33a512d5
 msgid ""
 "Here is a complete snippet for using the \"Noto Sans\" font instead of "
 "\"Helvetica\"::"
 msgstr "\"Helvetica\" 대신 \"Noto Sans\" 글꼴을 사용하는 완전한 코드 조각입니다::"
 
-#: ../../functions.rst:272 b6bf01dfadf043f89d73dc2362986d56
+#: ../../functions.rst:272 48272a37d69845059cb56a9a1f7d309d
 msgid ""
 "Convenience function to split a rectangle into sub-rectangles of equal "
 "size. Returns a list of `rows` lists, each containing `cols` :ref:`Rect` "
 "items. Each sub-rectangle can then be addressed by its row and column "
 "index."
-msgstr "사각형을 동일한 크기의 하위 사각형으로 분할하는 편의 함수. `rows` 리스트의 리스트를 반환하며, 각 리스트는 `cols` 개의 :ref:`Rect` 항목을 포함합니다. 각 하위 사각형은 행 및 열 인덱스로 주소를 지정할 수 있습니다."
+msgstr ""
+"사각형을 동일한 크기의 하위 사각형으로 분할하는 편의 함수. `rows` 리스트의 리스트를 반환하며, 각 리스트는 `cols` 개의"
+" :ref:`Rect` 항목을 포함합니다. 각 하위 사각형은 행 및 열 인덱스로 주소를 지정할 수 있습니다."
 
-#: ../../functions.rst:274 2379b768d70b429e80b9ee76ff6affc6
+#: ../../functions.rst:274 5536e164169a48f4bdd4363a4f4836d1
 msgid "the rectangle to split."
 msgstr "분할할 사각형."
 
-#: ../../functions.rst:275 bc2cff2237ae4cc2b772925cc341db0f
+#: ../../functions.rst:275 5f0d1ca61442423c8f9a62f957ac7d34
 msgid "the desired number of columns."
 msgstr "원하는 열 수."
 
-#: ../../functions.rst:276 bb04dcac38e94e4ea02e6ce480164b8f
+#: ../../functions.rst:276 ee278d86b78145a58993d0a15b118289
 msgid "the desired number of rows."
 msgstr "원하는 행 수."
 
-#: ../../functions.rst:277 afead5470e7e4b4ba96f6b47fa94c27f
+#: ../../functions.rst:277 06fb832e511d432a92019b0b3e60d399
 msgid ""
 "a list of :ref:`Rect` objects of equal size, whose union equals *rect*. "
 "Here is the layout of a 3x4 table created by `cell = "
 "pymupdf.make_table(rect, cols=4, rows=3)`:"
-msgstr "동일한 크기의 :ref:`Rect` 객체 리스트. 이들의 합집합은 *rect* 와 같습니다. `cell = pymupdf.make_table(rect, cols=4, rows=3)` 로 생성된 3x4 테이블의 레이아웃은 다음과 같습니다:"
+msgstr ""
+"동일한 크기의 :ref:`Rect` 객체 리스트. 이들의 합집합은 *rect* 와 같습니다. `cell = "
+"pymupdf.make_table(rect, cols=4, rows=3)` 로 생성된 3x4 테이블의 레이아웃은 다음과 같습니다:"
 
-#: ../../functions.rst:287 3cf17d4592c24625a3c0f8b4ccf257b9
+#: ../../functions.rst:287 8bba6d4c49f7447da9e1223dd3e1e7d7
 msgid "New in version 1.16.2)*"
 msgstr "*버전 1.16.2의 새로운 기능*"
 
-#: ../../functions.rst:289 3de02919aba44c58882ea49db6a70ca4
+#: ../../functions.rst:289 2442a2770c3c4ff4af3b3eb24a2a6f1c
 msgid ""
 "Return a matrix which maps the line from p1 to p2 to the x-axis such that"
 " p1 will become (0,0) and p2 a point with the same distance to (0,0)."
-msgstr "p1에서 p2로의 선을 x축에 매핑하는 행렬을 반환합니다. p1은 (0,0)이 되고 p2는 (0,0)까지의 동일한 거리를 가진 점이 됩니다."
+msgstr ""
+"p1에서 p2로의 선을 x축에 매핑하는 행렬을 반환합니다. p1은 (0,0)이 되고 p2는 (0,0)까지의 동일한 거리를 가진 점이"
+" 됩니다."
 
-#: ../../functions.rst:291 d5051adab1c74eff8ca8bbcac46881e6
+#: ../../functions.rst:291 ea959e9b36794857b92ea27d46682d48
 msgid "starting point of the line."
 msgstr "선의 시작점."
 
-#: ../../functions.rst:292 0739796326eb427b8251e930406ec398
+#: ../../functions.rst:292 9e2c74d180cb496b89b4fed901585712
 msgid "end point of the line."
 msgstr "선의 끝점."
 
-#: ../../functions.rst:294 b3f32ee30e7e408ea53d346c946793b4
+#: ../../functions.rst:294 82cd715a4eaa45dca15ea53c40895156
 msgid ":ref:`Matrix`"
 msgstr ":ref:`Matrix`"
 
-#: ../../functions.rst:295 80f96c88c5c54adb87efd7e63247f4cf
+#: ../../functions.rst:295 b686e23a96744387bcbaa202c667de89
 msgid ""
 "a matrix which combines a rotation and a translation::     >>> p1 = "
 "pymupdf.Point(1, 1)    >>> p2 = pymupdf.Point(4, 5)    >>> abs(p2 - p1)  "
@@ -889,192 +1046,222 @@ msgid ""
 "-5.960464477539063e-08)    >>> # distance of the resulting points    >>> "
 "abs(p2 * m - p1 * m)    5.0   .. image:: images/img-planish.png    "
 ":scale: 40"
-msgstr "회전과 이동을 결합한 행렬::     >>> p1 = pymupdf.Point(1, 1)    >>> p2 = pymupdf.Point(4, 5)    >>> abs(p2 - p1)  # 점 사이의 거리    5.0    >>> m = pymupdf.planish_line(p1, p2)    >>> p1 * m    Point(0.0, 0.0)    >>> p2 * m    Point(5.0, -5.960464477539063e-08)    >>> # 결과 점 사이의 거리    >>> abs(p2 * m - p1 * m)    5.0   .. image:: images/img-planish.png    :scale: 40"
+msgstr ""
+"회전과 이동을 결합한 행렬::     >>> p1 = pymupdf.Point(1, 1)    >>> p2 = "
+"pymupdf.Point(4, 5)    >>> abs(p2 - p1)  # 점 사이의 거리    5.0    >>> m = "
+"pymupdf.planish_line(p1, p2)    >>> p1 * m    Point(0.0, 0.0)    >>> p2 *"
+" m    Point(5.0, -5.960464477539063e-08)    >>> # 결과 점 사이의 거리    >>> "
+"abs(p2 * m - p1 * m)    5.0   .. image:: images/img-planish.png    "
+":scale: 40"
 
-#: ../../functions.rst:295 85ea149f226e4e2ca4d42190a34693e5
+#: ../../functions.rst:295 80b98e912fd147ed91827592eef3d5ad
 msgid "a matrix which combines a rotation and a translation::"
 msgstr "회전과 이동을 결합한 행렬::"
 
-#: ../../functions.rst:319 d7085018534f47e2b428476e6d18257b
+#: ../../functions.rst:319 b8be325123d8488bb925de622de9d53c
 msgid ""
 "A dictionary of pre-defines paper formats. Used as basis for "
 ":meth:`paper_size`."
 msgstr "사전 정의된 용지 형식의 딕셔너리. :meth:`paper_size` 의 기반으로 사용됩니다."
 
-#: ../../functions.rst:325 1100f2cd223244e098a59cab294695cd
+#: ../../functions.rst:325 406401efed724a1887a2096b373b32b3
 msgid "New in v1.17.5"
 msgstr "*v1.17.5의 새로운 기능*"
 
-#: ../../functions.rst:327 611b74fc7f2f49e7be426fe3db89be8f
+#: ../../functions.rst:327 7a0262b74b314f1fa78cc0f0f957e5b5
 msgid ""
 "A dictionary of usable fonts from repository `pymupdf-fonts "
 "<https://pypi.org/project/pymupdf-fonts/>`_. Items are keyed by their "
 "reserved fontname and provide information like this::"
-msgstr "저장소 `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 에서 사용 가능한 글꼴의 딕셔너리. 항목은 예약된 글꼴 이름으로 키가 지정되며 다음과 같은 정보를 제공합니다::"
+msgstr ""
+"저장소 `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ 에서 사용 가능한 "
+"글꼴의 딕셔너리. 항목은 예약된 글꼴 이름으로 키가 지정되며 다음과 같은 정보를 제공합니다::"
 
-#: ../../functions.rst:343 43582b0da1f84beba44a5e36e2cdd048
+#: ../../functions.rst:343 9187429ec1b74d7ca17a69875896bb76
 msgid "If `pymupdf-fonts` is not installed, the dictionary is empty."
 msgstr "`pymupdf-fonts` 가 설치되지 않은 경우 딕셔너리는 비어 있습니다."
 
-#: ../../functions.rst:345 5c5c8927cd35468f8b40e91051754525
+#: ../../functions.rst:345 201981860f614a1da8206b560d991027
 msgid ""
 "The dictionary keys can be used to define a :ref:`Font` via e.g. `font = "
 "pymupdf.Font(\"fimo\")` -- just like you can do it with the builtin fonts"
 " \"Helvetica\" and friends."
-msgstr "딕셔너리 키는 예를 들어 `font = pymupdf.Font(\"fimo\")` 를 통해 :ref:`Font` 를 정의하는 데 사용할 수 있습니다 -- 내장 글꼴 \"Helvetica\" 등과 동일하게 사용할 수 있습니다."
+msgstr ""
+"딕셔너리 키는 예를 들어 `font = pymupdf.Font(\"fimo\")` 를 통해 :ref:`Font` 를 정의하는 데 "
+"사용할 수 있습니다 -- 내장 글꼴 \"Helvetica\" 등과 동일하게 사용할 수 있습니다."
 
-#: ../../functions.rst:351 829280be90364ab59d34ab8bcb9ee3a5
+#: ../../functions.rst:351 96bc790c2f3c41eab4eb03e2bbb91044
 msgid ""
 "If in `os.environ` when |PyMuPDF| is imported, sets destination of "
 "|PyMuPDF| messages. Otherwise messages are sent to `sys.stdout`."
-msgstr "|PyMuPDF| 가 가져올 때 `os.environ` 에 있으면 |PyMuPDF| 메시지의 대상을 설정합니다. 그렇지 않으면 메시지는 `sys.stdout` 으로 전송됩니다."
+msgstr ""
+"|PyMuPDF| 가 가져올 때 `os.environ` 에 있으면 |PyMuPDF| 메시지의 대상을 설정합니다. 그렇지 않으면 "
+"메시지는 `sys.stdout` 으로 전송됩니다."
 
-#: ../../functions.rst:355 2a7234b598ca4be78a6ed7fd2cd0e68b
+#: ../../functions.rst:355 d3a34a5171b84ddc975fd680a2c1d896
 msgid ""
 "If the value starts with `fd:`, the remaining text should be an integer "
 "file descriptor to which messages are written."
 msgstr "값이 `fd:` 로 시작하면 나머지 텍스트는 메시지가 기록되는 정수 파일 디스크립터여야 합니다."
 
-#: ../../functions.rst:358 52dfedc05920490596eb9bb364ca70ad
+#: ../../functions.rst:358 26b2a3b05c144932bd212022dc818718
 msgid "For example `PYMUPDF_MESSAGE=fd:2` will send messages to stderr."
 msgstr "예를 들어 `PYMUPDF_MESSAGE=fd:2` 는 메시지를 stderr로 보냅니다."
 
-#: ../../functions.rst:360 c2c608b9dd754c2095660836dded1873
+#: ../../functions.rst:360 a9af399eca6b4eafacdee7e4514b60ca
 msgid ""
 "If the value starts with `path:`, the remaining text is the path of a "
 "file to which messages are written. If the file already exists, it is "
 "truncated."
 msgstr "값이 `path:` 로 시작하면 나머지 텍스트는 메시지가 기록되는 파일의 경로입니다. 파일이 이미 존재하면 잘립니다."
 
-#: ../../functions.rst:364 f8a67537ff5540058906057a31801f10
+#: ../../functions.rst:364 0d31927b8e434b3680bbc7e7a528b8ba
 msgid ""
 "If the value starts with `path+:`, the remaining text is the path of file"
 " to which messages are written. If the file already exists, we append "
 "output."
 msgstr "값이 `path+:` 로 시작하면 나머지 텍스트는 메시지가 기록되는 파일의 경로입니다. 파일이 이미 존재하면 출력을 추가합니다."
 
-#: ../../functions.rst:369 a97a4cc6ac8941099d31bee564b661d6
+#: ../../functions.rst:369 367ef9d38b324a2e92535daa15463fd4
 msgid ""
 "If the value starts with `logging:`, messages are written to `Python's "
 "logging system <https://docs.python.org/3/library/logging.html>`_. The "
 "remaining text can contain comma-separated name=value items:"
-msgstr "값이 `logging:` 로 시작하면 메시지는 `Python의 로깅 시스템 <https://docs.python.org/3/library/logging.html>`_ 에 기록됩니다. 나머지 텍스트는 쉼표로 구분된 name=value 항목을 포함할 수 있습니다:"
+msgstr ""
+"값이 `logging:` 로 시작하면 메시지는 `Python의 로깅 시스템 "
+"<https://docs.python.org/3/library/logging.html>`_ 에 기록됩니다. 나머지 텍스트는 쉼표로 "
+"구분된 name=value 항목을 포함할 수 있습니다:"
 
-#: ../../functions.rst:373 85f8ee63e7c242de87aa78d6da95ec89
+#: ../../functions.rst:373 727cdb80e0e9424b82a78c9fcf4131ea
 msgid "`level=<int>` sets the logging level."
 msgstr "`level=<int>` 는 로깅 레벨을 설정합니다."
 
-#: ../../functions.rst:374 ced54a7765f14a2c90cc9b941ac3cdaf
+#: ../../functions.rst:374 cbd781fbde1b482097f102a847dc8399
 msgid "`name=<str>` sets the logger name (default is `pymupdf`)."
 msgstr "`name=<str>` 는 로거 이름을 설정합니다(기본값은 `pymupdf`)."
 
-#: ../../functions.rst:376 79d9e976d47c48d2b2f5d924b71d2bdd
+#: ../../functions.rst:376 4f25318185b745a7af1b120f78e29eb8
 msgid "Other items are ignored."
 msgstr "다른 항목은 무시됩니다."
 
-#: ../../functions.rst:378 e6049a9e63db495e951e0a96d3dbe162
+#: ../../functions.rst:378 df67601c54d341f5bd7a2d06718b136b
 msgid "Other prefixes will cause an error."
 msgstr "다른 접두사는 오류를 발생시킵니다."
 
-#: ../../functions.rst:380 cea43b4378c542439ade76acf38cef95
+#: ../../functions.rst:380 d06c09c69e114e30aa122b24d91ad8c4
 msgid "Also see `set_messages()`."
 msgstr "`set_messages()` 도 참조하세요."
 
-#: ../../functions.rst:387 d33f434c014340318a8b4f2408cf37ee
+#: ../../functions.rst:387 834d76807609499695b186421da0488e
 msgid "New in v1.19.6"
 msgstr "*v1.19.6의 새로운 기능*"
 
-#: ../../functions.rst:389 2d49cc1b71804cc6add57d8ac8aeeb40
+#: ../../functions.rst:389 f0b470d4413e4923a64200e0e1451914
 msgid ""
 "Contains about 500 RGB colors in PDF format with the color name as key. "
 "To see what is there, you can obviously look at "
 "`pymupdf.pdfcolor.keys()`."
-msgstr "색상 이름을 키로 하는 PDF 형식의 약 500개의 RGB 색상을 포함합니다. 내용을 확인하려면 `pymupdf.pdfcolor.keys()` 를 확인할 수 있습니다."
+msgstr ""
+"색상 이름을 키로 하는 PDF 형식의 약 500개의 RGB 색상을 포함합니다. 내용을 확인하려면 "
+"`pymupdf.pdfcolor.keys()` 를 확인할 수 있습니다."
 
-#: ../../functions.rst:391 210b4f32e51c447c920aa1e17090177d
+#: ../../functions.rst:391 c5aa4f5a3e6541f99de68bb1b49ffc9c
 msgid "Examples:"
 msgstr "예제:"
 
-#: ../../functions.rst:393 78b6aa54c3d8499c933344b9d67aa935
+#: ../../functions.rst:393 6198f065e39e4bdf98f3451ff9481bd5
 msgid "`pymupdf.pdfcolor[\"red\"] = (1.0, 0.0, 0.0)`"
 msgstr "`pymupdf.pdfcolor[\"red\"] = (1.0, 0.0, 0.0)`"
 
-#: ../../functions.rst:394 25976b6b069c4a278c407ca0a6e0dd34
+#: ../../functions.rst:394 46ae89359e384ceeb868dd2014c8c5a1
 msgid ""
 "`pymupdf.pdfcolor[\"skyblue\"] = (0.5294117647058824, 0.807843137254902, "
 "0.9215686274509803)`"
-msgstr "`pymupdf.pdfcolor[\"skyblue\"] = (0.5294117647058824, 0.807843137254902, 0.9215686274509803)`"
+msgstr ""
+"`pymupdf.pdfcolor[\"skyblue\"] = (0.5294117647058824, 0.807843137254902, "
+"0.9215686274509803)`"
 
-#: ../../functions.rst:395 036d984bb9494bfb970022074689d37d
+#: ../../functions.rst:395 4fba859674ef468190d4d2fa416c1319
 msgid ""
 "`pymupdf.pdfcolor[\"wheat\"] = (0.9607843137254902, 0.8705882352941177, "
 "0.7019607843137254)`"
-msgstr "`pymupdf.pdfcolor[\"wheat\"] = (0.9607843137254902, 0.8705882352941177, 0.7019607843137254)`"
+msgstr ""
+"`pymupdf.pdfcolor[\"wheat\"] = (0.9607843137254902, 0.8705882352941177, "
+"0.7019607843137254)`"
 
-#: ../../functions.rst:401 8e917a8067e94f15b90b52ee3016acc1
+#: ../../functions.rst:401 9772c54652e641db860a29f83e7fbe2d
 msgid ""
 "Convenience function to return the current local timestamp in PDF "
 "compatible format, e.g. *D:20170501121525-04'00'* for local datetime May "
 "1, 2017, 12:15:25 in a timezone 4 hours westward of the UTC meridian."
-msgstr "현재 로컬 타임스탬프를 PDF 호환 형식으로 반환하는 편의 함수. 예: UTC 자오선에서 서쪽으로 4시간 떨어진 시간대의 2017년 5월 1일 12:15:25 로컬 날짜/시간에 대한 *D:20170501121525-04'00'*."
+msgstr ""
+"현재 로컬 타임스탬프를 PDF 호환 형식으로 반환하는 편의 함수. 예: UTC 자오선에서 서쪽으로 4시간 떨어진 시간대의 2017년"
+" 5월 1일 12:15:25 로컬 날짜/시간에 대한 *D:20170501121525-04'00'*."
 
-#: ../../functions.rst:404 f9d2422e60aa4b95b2387399f8819412
+#: ../../functions.rst:404 5d740fbd9b1d47ff9ed232843a7ff7b5
 msgid "current local PDF timestamp."
 msgstr "현재 로컬 PDF 타임스탬프."
 
-#: ../../functions.rst:410 7c48f1b5388547b9847fe88c7fbcd18a
+#: ../../functions.rst:410 0e8f792a9cd24c8bb5ee20240c898e8a
 msgid "New in version 1.14.7"
 msgstr "*버전 1.14.7의 새로운 기능*"
 
-#: ../../functions.rst:412 64c91a6941404cf293748277c1e40776
+#: ../../functions.rst:412 0a47fb8a49c04869ba92bff096b077ba
 msgid ""
 "Calculate the length of text on output with a given **builtin** font, "
 ":data:`fontsize` and encoding."
 msgstr "주어진 **내장** 글꼴, :data:`fontsize` 및 인코딩으로 출력 시 텍스트 길이를 계산합니다."
 
-#: ../../functions.rst:414 1b351f62d3ce47ba820d95770c3b7ccf
+#: ../../functions.rst:414 fdc381a3ed7e4fe1aabff23f87dfa215
 msgid "the text string."
 msgstr "텍스트 문자열."
 
-#: ../../functions.rst:415 7a65fc2611854e61ae76f3d30079961a
+#: ../../functions.rst:415 ec72804a2b8d4774987c66c5a1e9040c
 msgid ""
 "the font name. Must be one of either the :ref:`Base-14-Fonts` or the CJK "
 "fonts, identified by their \"reserved\" fontnames (see table in "
 ":meth:`Page.insert_font`)."
-msgstr "글꼴 이름. :ref:`Base-14-Fonts` 또는 \"예약된\" 글꼴 이름으로 식별되는 CJK 글꼴 중 하나여야 합니다(:meth:`Page.insert_font` 의 표 참조)."
+msgstr ""
+"글꼴 이름. :ref:`Base-14-Fonts` 또는 \"예약된\" 글꼴 이름으로 식별되는 CJK 글꼴 중 하나여야 "
+"합니다(:meth:`Page.insert_font` 의 표 참조)."
 
-#: ../../functions.rst:416 932954ed0adf44ef9900d8f882a388e7
+#: ../../functions.rst:416 8bd3348d8d3442778d7f1dae48bc7156
 msgid "the :data:`fontsize`."
 msgstr ":data:`fontsize`."
 
-#: ../../functions.rst:417 d499111356cf4e9081c8c3c2912a57bd
+#: ../../functions.rst:417 ca5639a68e354aea8a51fc71a8a482e6
 msgid ""
 "the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic "
 "(Russian) are available. Relevant for Base-14 fonts \"Helvetica\", "
 "\"Courier\" and \"Times\" and their variants only. Make sure to use the "
 "same value as in the corresponding text insertion."
-msgstr "사용할 인코딩. 0 = Latin 외에 1 = Greek 및 2 = Cyrillic(러시아어)을 사용할 수 있습니다. Base-14 글꼴 \"Helvetica\", \"Courier\" 및 \"Times\"와 그 변형에만 관련됩니다. 해당 텍스트 삽입에서와 동일한 값을 사용해야 합니다."
+msgstr ""
+"사용할 인코딩. 0 = Latin 외에 1 = Greek 및 2 = Cyrillic(러시아어)을 사용할 수 있습니다. Base-14"
+" 글꼴 \"Helvetica\", \"Courier\" 및 \"Times\"와 그 변형에만 관련됩니다. 해당 텍스트 삽입에서와 "
+"동일한 값을 사용해야 합니다."
 
-#: ../../functions.rst:419 9120edd3ebae44b4acc13d6f9de3fc03
+#: ../../functions.rst:419 acc35bea49374d9b96b4a881331de8c3
 msgid ""
 "the length in points the string will have (e.g. when used in "
 ":meth:`Page.insert_text`)."
 msgstr "문자열이 가질 포인트 단위의 길이(예: :meth:`Page.insert_text` 에서 사용할 때)."
 
-#: ../../functions.rst:421 79cef2d8477740418dbe285f8a7e7d06
+#: ../../functions.rst:421 3dd546e78759471eb2f4224830083feb
 msgid ""
 "This function will only do the calculation -- it won't insert font nor "
 "text."
 msgstr "이 함수는 계산만 수행합니다 -- 글꼴이나 텍스트를 삽입하지 않습니다."
 
-#: ../../functions.rst:423 00b63292efa741d3a51b9a25802baf30
+#: ../../functions.rst:423 a55852432419412b8ce47fa7e5754945
 msgid ""
 "The :ref:`Font` class offers a similar method, :meth:`Font.text_length`, "
 "which supports Base-14 fonts and any font with a character map (CMap, "
 "Type 0 fonts)."
-msgstr ":ref:`Font` 클래스는 유사한 메서드 :meth:`Font.text_length` 를 제공하며, Base-14 글꼴과 문자 맵(CMap, Type 0 글꼴)이 있는 모든 글꼴을 지원합니다."
+msgstr ""
+":ref:`Font` 클래스는 유사한 메서드 :meth:`Font.text_length` 를 제공하며, Base-14 글꼴과 문자 "
+"맵(CMap, Type 0 글꼴)이 있는 모든 글꼴을 지원합니다."
 
-#: ../../functions.rst:425 cfcfc76eb218486fa8b032c6c50ab81e
+#: ../../functions.rst:425 244877b50d8d4d8daf1796a23b9b76bc
 msgid ""
 "If you use this function to determine the required rectangle width for "
 "the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that"
@@ -1084,9 +1271,14 @@ msgid ""
 "pymupdf.get_text_length(text)*. So either (1) do the same, or (2) use "
 "something like *pymupdf.get_text_length(text + \"'\")* for your "
 "calculation."
-msgstr "이 함수를 사용하여 (:ref:`Page` 또는 :ref:`Shape`) *insert_textbox* 메서드에 필요한 사각형 너비를 결정하는 경우, 이들은 **문자 단위** 로 계산한다는 점에 유의하세요. 반올림 효과로 인해 대부분 약간 더 큰 숫자가 됩니다: *sum([pymupdf.get_text_length(c) for c in text]) > pymupdf.get_text_length(text)*. 따라서 (1) 동일하게 수행하거나 (2) 계산에 *pymupdf.get_text_length(text + \"'\")* 와 같은 것을 사용하세요."
+msgstr ""
+"이 함수를 사용하여 (:ref:`Page` 또는 :ref:`Shape`) *insert_textbox* 메서드에 필요한 사각형 "
+"너비를 결정하는 경우, 이들은 **문자 단위** 로 계산한다는 점에 유의하세요. 반올림 효과로 인해 대부분 약간 더 큰 숫자가 "
+"됩니다: *sum([pymupdf.get_text_length(c) for c in text]) > "
+"pymupdf.get_text_length(text)*. 따라서 (1) 동일하게 수행하거나 (2) 계산에 "
+"*pymupdf.get_text_length(text + \"'\")* 와 같은 것을 사용하세요."
 
-#: ../../functions.rst:431 763b708ba6ae4ddab04cf7af4a0c1d41
+#: ../../functions.rst:431 27bb3947e15d491f9ae1a90557ac93c6
 msgid ""
 "Make a PDF-compatible string: if the text contains code points *ord(c) > "
 "255*, then it will be converted to UTF-16BE with BOM as a hexadecimal "
@@ -1094,45 +1286,54 @@ msgid ""
 " it will return the string enclosed in (round) brackets, replacing any "
 "characters outside the ASCII range with some special code. Also, every "
 "\"(\", \")\" or backslash is escaped with a backslash."
-msgstr "PDF 호환 문자열 생성: 텍스트에 코드 포인트 *ord(c) > 255* 가 포함되어 있으면 BOM이 있는 UTF-16BE로 변환되어 *<feff...>* 와 같이 \"<>\" 괄호로 둘러싸인 16진수 문자 문자열이 됩니다. 그렇지 않으면 (둥근) 괄호로 둘러싸인 문자열을 반환하며, ASCII 범위 밖의 모든 문자를 특수 코드로 대체합니다. 또한 모든 \"(\", \")\" 또는 백슬래시는 백슬래시로 이스케이프됩니다."
+msgstr ""
+"PDF 호환 문자열 생성: 텍스트에 코드 포인트 *ord(c) > 255* 가 포함되어 있으면 BOM이 있는 UTF-16BE로 "
+"변환되어 *<feff...>* 와 같이 \"<>\" 괄호로 둘러싸인 16진수 문자 문자열이 됩니다. 그렇지 않으면 (둥근) 괄호로 "
+"둘러싸인 문자열을 반환하며, ASCII 범위 밖의 모든 문자를 특수 코드로 대체합니다. 또한 모든 \"(\", \")\" 또는 "
+"백슬래시는 백슬래시로 이스케이프됩니다."
 
-#: ../../functions.rst:433 c2b249b32f5f45e889b055dec35c3b1c
+#: ../../functions.rst:433 b4ad5c5ee1984abb8dd55c5b805e766b
 msgid "the object to convert"
 msgstr "변환할 객체"
 
-#: ../../functions.rst:436 1acb62d7d240428ab032edcf601996ca
+#: ../../functions.rst:436 fe9be159fa444a69823866ee3a644680
 msgid "PDF-compatible string enclosed in either *()* or *<>*."
 msgstr "*()* 또는 *<>* 로 둘러싸인 PDF 호환 문자열."
 
-#: ../../functions.rst:442 702d8585021a43eba297b69d4836db1d
+#: ../../functions.rst:442 d31809b727e34900979c3b181d3eaad1
 msgid "New in v1.16.7"
 msgstr "*v1.16.7의 새로운 기능*"
 
-#: ../../functions.rst:443 d731f027bad84dc4a0c0fa97dddbc2ba
+#: ../../functions.rst:443 d24cd05f8ec8403d9c6de79d9ab0d3dd
 msgid ""
 "Changed in v1.19.5: also return natural image orientation extracted from "
 "EXIF data if present."
 msgstr "v1.19.5에서 변경됨: EXIF 데이터가 있으면 추출된 자연 이미지 방향도 반환합니다."
 
-#: ../../functions.rst:444 27b180112c374ac4a920954d1634ef4d
+#: ../../functions.rst:444 9c4baadc4f9146b19f4058938d9378d0
 msgid ""
 "Changed in v1.22.5: always return `None` in error cases instead of an "
 "empty dictionary."
 msgstr "v1.22.5에서 변경됨: 오류 경우 빈 딕셔너리 대신 항상 `None` 을 반환합니다."
 
-#: ../../functions.rst:446 9803cc75c9f044399d2dda1e316afe12
+#: ../../functions.rst:446 a4aa625db89144ea89c9a3f2dbf7ffab
 msgid ""
 "Show important properties of an image provided as a memory area. Its main"
 " purpose is to avoid using other Python packages just to determine them."
-msgstr "메모리 영역으로 제공된 이미지의 중요한 속성을 표시합니다. 주요 목적은 이를 결정하기 위해 다른 Python 패키지를 사용하는 것을 피하는 것입니다."
+msgstr ""
+"메모리 영역으로 제공된 이미지의 중요한 속성을 표시합니다. 주요 목적은 이를 결정하기 위해 다른 Python 패키지를 사용하는 것을"
+" 피하는 것입니다."
 
-#: ../../functions.rst:448 fdf0ee2300ce40418b494c923b925202
+#: ../../functions.rst:448 bd286756e9cf47ccb4c584863393000b
 msgid ""
 "either an image in memory or an **opened** file. An image in memory may "
 "be any of the formats `bytes`, `bytearray` or `io.BytesIO`."
-msgstr "메모리의 이미지 또는 **열린** 파일. 메모리의 이미지는 `bytes`, `bytearray` 또는 `io.BytesIO` 형식 중 하나일 수 있습니다."
+msgstr ""
+"메모리의 이미지 또는 **열린** 파일. 메모리의 이미지는 `bytes`, `bytearray` 또는 `io.BytesIO` 형식 "
+"중 하나일 수 있습니다."
 
-#: ../../functions.rst:451 fe8ea596a2524046aa4127a94283a123
+#: ../../functions.rst:451 ae650862b48c4011b850d0daa225794c
+#, python-brace-format
 msgid ""
 "No exception is ever raised. In case of an error, `None` is returned. "
 "Otherwise, there are the following items::     In [2]: "
@@ -1161,116 +1362,130 @@ msgid ""
 "returned by the image blocks of :meth:`Page.get_text` using \"dict\" or "
 "\"rawdict\" options are also supported."
 msgstr ""
-"예외는 발생하지 않습니다. 오류가 발생하면 `None` 이 반환됩니다. 그렇지 않으면 다음 항목이 있습니다::     In [2]: "
-"pymupdf.image_profile(open(\"nur-ruhig.jpg\", \"rb\").read())    Out[2]:"
-"    {'width': 439,    'height': 501,    'orientation': 0,  # 자연 방향 (EXIF에서)    'transform': (1.0, 0.0, 0.0, 1.0, 0.0, 0.0),  "
-"# 방향 행렬    'xres': 96,    'yres': 96,    'colorspace': 3,"
-"    'bpc': 8,    'ext': 'jpeg',    'cs-name': 'DeviceRGB'}  `orientation` 에 인코딩된 **Exif** 정보 및 이에 해당하는 `transform` 행렬과의 관계는 다음과 같습니다(MuPDF 문서에서 인용, *ccw* = 반시계 방향):     0. 정의되지 않음    1. 0도 반시계 방향 회전. (Exif = 1)    2. 90도 반시계 방향 회전. (Exif = 8)"
-"    3. 180도 반시계 방향 회전. (Exif = 3)    4. 270도 반시계 방향 회전."
-" (Exif = 6)    5. X축으로 뒤집기. (Exif = 2)    6. X축으로 뒤집은 후 90도 반시계 방향 회전."
-" (Exif = 5)    7. X축으로 뒤집은 후 180도 반시계 방향 회전."
-" (Exif = 4)    8. X축으로 뒤집은 후 270도 반시계 방향 회전."
-" (Exif = 7)   .. note::     * 일부 \"특수\" 이미지(FAX 인코딩, "
-"RAW 형식 등)의 경우 이 메서드는 작동하지 않습니다. 그러나 PyMuPDF에서 "
-":meth:`Document.extract_image` 를 사용하거나 `Pixmap(doc, xref)` 를 통해 픽스맵을 생성하는 등으로 이러한 이미지를 계속 작업할 수 있습니다."
-" 이러한 메서드는 결과를 반환하기 전에 특수 이미지를 자동으로 PNG 형식으로 변환합니다."
-"    * PDF에 포함된 이미지의 속성은 :data:`xref` 를 통해 가져올 수도 있습니다. 이 경우 원시 스트림을 추출해야 합니다: "
-"`pymupdf.image_profile(doc.xref_stream_raw(xref))`."
-"    * \"dict\" 또는 \"rawdict\" 옵션을 사용하는 :meth:`Page.get_text` 의 이미지 블록으로 반환된 이미지도 지원됩니다."
+"예외는 발생하지 않습니다. 오류가 발생하면 `None` 이 반환됩니다. 그렇지 않으면 다음 항목이 있습니다::     In [2]:"
+" pymupdf.image_profile(open(\"nur-ruhig.jpg\", \"rb\").read())    Out[2]:"
+"    {'width': 439,    'height': 501,    'orientation': 0,  # 자연 방향 "
+"(EXIF에서)    'transform': (1.0, 0.0, 0.0, 1.0, 0.0, 0.0),  # 방향 행렬    "
+"'xres': 96,    'yres': 96,    'colorspace': 3,    'bpc': 8,    'ext': "
+"'jpeg',    'cs-name': 'DeviceRGB'}  `orientation` 에 인코딩된 **Exif** 정보 및 이에"
+" 해당하는 `transform` 행렬과의 관계는 다음과 같습니다(MuPDF 문서에서 인용, *ccw* = 반시계 방향):     "
+"0. 정의되지 않음    1. 0도 반시계 방향 회전. (Exif = 1)    2. 90도 반시계 방향 회전. (Exif = 8)"
+"    3. 180도 반시계 방향 회전. (Exif = 3)    4. 270도 반시계 방향 회전. (Exif = 6)    5. "
+"X축으로 뒤집기. (Exif = 2)    6. X축으로 뒤집은 후 90도 반시계 방향 회전. (Exif = 5)    7. "
+"X축으로 뒤집은 후 180도 반시계 방향 회전. (Exif = 4)    8. X축으로 뒤집은 후 270도 반시계 방향 회전. "
+"(Exif = 7)   .. note::     * 일부 \"특수\" 이미지(FAX 인코딩, RAW 형식 등)의 경우 이 메서드는 "
+"작동하지 않습니다. 그러나 PyMuPDF에서 :meth:`Document.extract_image` 를 사용하거나 "
+"`Pixmap(doc, xref)` 를 통해 픽스맵을 생성하는 등으로 이러한 이미지를 계속 작업할 수 있습니다. 이러한 메서드는 "
+"결과를 반환하기 전에 특수 이미지를 자동으로 PNG 형식으로 변환합니다.    * PDF에 포함된 이미지의 속성은 "
+":data:`xref` 를 통해 가져올 수도 있습니다. 이 경우 원시 스트림을 추출해야 합니다: "
+"`pymupdf.image_profile(doc.xref_stream_raw(xref))`.    * \"dict\" 또는 "
+"\"rawdict\" 옵션을 사용하는 :meth:`Page.get_text` 의 이미지 블록으로 반환된 이미지도 지원됩니다."
 
-#: ../../functions.rst:452 6c919d4bab45428dbd8afb4362c1639b
+#: ../../functions.rst:452 f365046aab6a422ab4ee8b73d543f9cd
 msgid ""
 "No exception is ever raised. In case of an error, `None` is returned. "
 "Otherwise, there are the following items::"
 msgstr "예외는 발생하지 않습니다. 오류가 발생하면 `None` 이 반환됩니다. 그렇지 않으면 다음 항목이 있습니다::"
 
-#: ../../functions.rst:467 b9c14ed655074650822790e551f4ca7d
+#: ../../functions.rst:467 0a3c370635a74f479d534ebf96ff9900
 msgid ""
 "There is the following relation to **Exif** information encoded in "
 "`orientation`, and correspondingly in the `transform` matrix-like (quoted"
 " from MuPDF documentation, *ccw* = counter-clockwise):"
-msgstr "`orientation` 에 인코딩된 **Exif** 정보 및 이에 해당하는 `transform` 행렬과의 관계는 다음과 같습니다(MuPDF 문서에서 인용, *ccw* = 반시계 방향):"
+msgstr ""
+"`orientation` 에 인코딩된 **Exif** 정보 및 이에 해당하는 `transform` 행렬과의 관계는 다음과 "
+"같습니다(MuPDF 문서에서 인용, *ccw* = 반시계 방향):"
 
-#: ../../functions.rst:469 19e611ede392404ba77fd6f75497a37d
+#: ../../functions.rst:469 d75fb78e754140279e17dde7e31c4e01
 msgid "Undefined"
 msgstr "정의되지 않음"
 
-#: ../../functions.rst:470 32314d4117e54bddb20d74a136422abf
+#: ../../functions.rst:470 b480ec9529c54f6f9e09c19692e33f54
 msgid "0 degree ccw rotation. (Exif = 1)"
 msgstr "0도 반시계 방향 회전. (Exif = 1)"
 
-#: ../../functions.rst:471 781696a0f9f242fe89d413224e12432e
+#: ../../functions.rst:471 25587535c5224fac9824b413e690ff06
 msgid "90 degree ccw rotation. (Exif = 8)"
 msgstr "90도 반시계 방향 회전. (Exif = 8)"
 
-#: ../../functions.rst:472 589888419f494f768f3287b5f5fa3e86
+#: ../../functions.rst:472 f6cf386d1e9e450b8d71f709dcf0eb6f
 msgid "180 degree ccw rotation. (Exif = 3)"
 msgstr "180도 반시계 방향 회전. (Exif = 3)"
 
-#: ../../functions.rst:473 f01ff82a9eed4b9f844b157ad3881ef5
+#: ../../functions.rst:473 139d003f85c4423c9cbb2eccc8f4c541
 msgid "270 degree ccw rotation. (Exif = 6)"
 msgstr "270도 반시계 방향 회전. (Exif = 6)"
 
-#: ../../functions.rst:474 0446ad252a924396aaeed11ed1109b46
+#: ../../functions.rst:474 dc1ea011d6f74d078d9e198ba656d4d0
 msgid "flip on X. (Exif = 2)"
 msgstr "X축으로 뒤집기. (Exif = 2)"
 
-#: ../../functions.rst:475 26416c1428b9417cb36e3f04129eb26b
+#: ../../functions.rst:475 2d185d52566946e2870d9cb80628b63f
 msgid "flip on X, then rotate ccw by 90 degrees. (Exif = 5)"
 msgstr "X축으로 뒤집은 후 90도 반시계 방향 회전. (Exif = 5)"
 
-#: ../../functions.rst:476 7bf8066761234bc9b89b24615ac9ff55
+#: ../../functions.rst:476 33f9468536364528a46aab5370439e20
 msgid "flip on X, then rotate ccw by 180 degrees. (Exif = 4)"
 msgstr "X축으로 뒤집은 후 180도 반시계 방향 회전. (Exif = 4)"
 
-#: ../../functions.rst:477 e588846b59874666b6702e6ff455f044
+#: ../../functions.rst:477 424b2838db7f419694385fa5eff04abc
 msgid "flip on X, then rotate ccw by 270 degrees. (Exif = 7)"
 msgstr "X축으로 뒤집은 후 270도 반시계 방향 회전. (Exif = 7)"
 
-#: ../../functions.rst:482 b2e5bec7f40640858d351ef7a4d13151
+#: ../../functions.rst:482 5e9805b4707e468198b7d77d011a26fd
 msgid ""
 "For some \"exotic\" images (FAX encodings, RAW formats and the like), "
 "this method will not work. You can however still work with such images in"
 " PyMuPDF, e.g. by using :meth:`Document.extract_image` or create pixmaps "
 "via `Pixmap(doc, xref)`. These methods will automatically convert exotic "
 "images to the PNG format before returning results."
-msgstr "일부 \"특수\" 이미지(FAX 인코딩, RAW 형식 등)의 경우 이 메서드는 작동하지 않습니다. 그러나 PyMuPDF에서 :meth:`Document.extract_image` 를 사용하거나 `Pixmap(doc, xref)` 를 통해 픽스맵을 생성하는 등으로 이러한 이미지를 계속 작업할 수 있습니다. 이러한 메서드는 결과를 반환하기 전에 특수 이미지를 자동으로 PNG 형식으로 변환합니다."
+msgstr ""
+"일부 \"특수\" 이미지(FAX 인코딩, RAW 형식 등)의 경우 이 메서드는 작동하지 않습니다. 그러나 PyMuPDF에서 "
+":meth:`Document.extract_image` 를 사용하거나 `Pixmap(doc, xref)` 를 통해 픽스맵을 생성하는"
+" 등으로 이러한 이미지를 계속 작업할 수 있습니다. 이러한 메서드는 결과를 반환하기 전에 특수 이미지를 자동으로 PNG 형식으로 "
+"변환합니다."
 
-#: ../../functions.rst:483 60dfbff3781a411aa5ac084ed06bc481
+#: ../../functions.rst:483 39ee6e4ff50f4fc1bc0a90cf4b141a03
 msgid ""
 "You can also get the properties of images embedded in a PDF, via their "
 ":data:`xref`. In this case make sure to extract the raw stream: "
 "`pymupdf.image_profile(doc.xref_stream_raw(xref))`."
-msgstr "PDF에 포함된 이미지의 속성은 :data:`xref` 를 통해 가져올 수도 있습니다. 이 경우 원시 스트림을 추출해야 합니다: `pymupdf.image_profile(doc.xref_stream_raw(xref))`."
+msgstr ""
+"PDF에 포함된 이미지의 속성은 :data:`xref` 를 통해 가져올 수도 있습니다. 이 경우 원시 스트림을 추출해야 합니다: "
+"`pymupdf.image_profile(doc.xref_stream_raw(xref))`."
 
-#: ../../functions.rst:484 68c194bfed0d449c9f716b2f8c1e9a6d
+#: ../../functions.rst:484 5d7229a1558045eab12f2a4a6c855d76
 msgid ""
 "Images as returned by the image blocks of :meth:`Page.get_text` using "
 "\"dict\" or \"rawdict\" options are also supported."
-msgstr "\"dict\" 또는 \"rawdict\" 옵션을 사용하는 :meth:`Page.get_text` 의 이미지 블록으로 반환된 이미지도 지원됩니다."
+msgstr ""
+"\"dict\" 또는 \"rawdict\" 옵션을 사용하는 :meth:`Page.get_text` 의 이미지 블록으로 반환된 "
+"이미지도 지원됩니다."
 
-#: ../../functions.rst:491 841e72c301064b7d8cd16a7659df3715
+#: ../../functions.rst:491 4c052d2131a14058938b56d3418e131d
 msgid ""
 "Return the header string required to make a valid document out of page "
 "text outputs."
 msgstr "페이지 텍스트 출력으로 유효한 문서를 만들기 위해 필요한 헤더 문자열을 반환합니다."
 
 #: ../../functions.rst:493 ../../functions.rst:505
-#: 98ab75da842e44f0aba2173690b17420 be09e3df54dd47cc9a0f9dad37daf7ba
+#: 12aff9588a3141ceb5a3d8365a3228bf e15e0919c03e4689962a3d7f0cbfd1f1
 msgid "type of document. Use the same as the output parameter of *get_text()*."
 msgstr "문서 타입. *get_text()* 의 출력 매개변수와 동일하게 사용하세요."
 
-#: ../../functions.rst:495 91d48bdf66814693aa7ac8c87d1d2704
+#: ../../functions.rst:495 451d5274d5404d8795385325e59833bb
 msgid "optional arbitrary name to use in output types \"json\" and \"xml\"."
 msgstr "출력 타입 \"json\" 및 \"xml\"에서 사용할 선택적 임의 이름."
 
-#: ../../functions.rst:503 8f75e703912b484cad9c58f9ef286a30
+#: ../../functions.rst:503 89b80fb501af4a16b7a9476a55a22270
 msgid ""
 "Return the trailer string required to make a valid document out of page "
 "text outputs. See :meth:`Page.get_text` for an example."
-msgstr "페이지 텍스트 출력으로 유효한 문서를 만들기 위해 필요한 트레일러 문자열을 반환합니다. 예제는 :meth:`Page.get_text` 를 참조하세요."
+msgstr ""
+"페이지 텍스트 출력으로 유효한 문서를 만들기 위해 필요한 트레일러 문자열을 반환합니다. 예제는 "
+":meth:`Page.get_text` 를 참조하세요."
 
-#: ../../functions.rst:513 7bf3dbf728174900a685386f86d7b613
+#: ../../functions.rst:513 74049436f1104036ae9fea6fab3f8454
 msgid ""
 "Delete an object containing XML-based metadata from the PDF. (Py-) MuPDF "
 "does not support XML-based metadata. Use this if you want to make sure "
@@ -1279,45 +1494,52 @@ msgid ""
 "may override what you store in the conventional dictionary. This method "
 "deletes any such reference, and the corresponding PDF object will be "
 "deleted during next garbage collection of the file."
-msgstr "PDF에서 XML 기반 메타데이터를 포함하는 객체를 삭제합니다. (Py-) MuPDF는 XML 기반 메타데이터를 지원하지 않습니다. 기존 메타데이터 딕셔너리가 독점적으로 사용되도록 하려면 이것을 사용하세요. 많은 타사 PDF 프로그램이 자체 메타데이터를 XML 형식으로 삽입하므로 기존 딕셔너리에 저장한 내용을 덮어쓸 수 있습니다. 이 메서드는 이러한 참조를 삭제하며, 해당 PDF 객체는 다음 파일 가비지 수집 중에 삭제됩니다."
+msgstr ""
+"PDF에서 XML 기반 메타데이터를 포함하는 객체를 삭제합니다. (Py-) MuPDF는 XML 기반 메타데이터를 지원하지 않습니다."
+" 기존 메타데이터 딕셔너리가 독점적으로 사용되도록 하려면 이것을 사용하세요. 많은 타사 PDF 프로그램이 자체 메타데이터를 XML "
+"형식으로 삽입하므로 기존 딕셔너리에 저장한 내용을 덮어쓸 수 있습니다. 이 메서드는 이러한 참조를 삭제하며, 해당 PDF 객체는 "
+"다음 파일 가비지 수집 중에 삭제됩니다."
 
-#: ../../functions.rst:519 62c4ccaa8b8c436c990340d78e6341c0
+#: ../../functions.rst:519 5db2a02465744688ab3e7c8aa58850d4
 msgid ""
 "Return the XML-based metadata :data:`xref` of the PDF if present -- also "
 "refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve "
 "the content via :meth:`Document.xref_stream` and then work with it using "
 "some XML software."
-msgstr "PDF의 XML 기반 메타데이터 :data:`xref` 가 있으면 반환합니다 -- :meth:`Document.del_xml_metadata` 도 참조하세요. :meth:`Document.xref_stream` 을 통해 콘텐츠를 검색한 다음 일부 XML 소프트웨어를 사용하여 작업할 수 있습니다."
+msgstr ""
+"PDF의 XML 기반 메타데이터 :data:`xref` 가 있으면 반환합니다 -- "
+":meth:`Document.del_xml_metadata` 도 참조하세요. :meth:`Document.xref_stream` 을"
+" 통해 콘텐츠를 검색한 다음 일부 XML 소프트웨어를 사용하여 작업할 수 있습니다."
 
-#: ../../functions.rst:522 28fca2e874754c1b8e1f76de939f070b
+#: ../../functions.rst:522 8fbcc03c4196406eacf3af64dba64c1d
 msgid ":data:`xref` of PDF file level XML metadata -- or 0 if none exists."
 msgstr "PDF 파일 레벨 XML 메타데이터의 :data:`xref` -- 없으면 0."
 
-#: ../../functions.rst:528 bb22cba4009542cf9cbe10b1bdf7d0a0
+#: ../../functions.rst:528 6b8b6c79577e42c1a405e89e84d55806
 msgid "Run a page through a device."
 msgstr "디바이스를 통해 페이지 실행."
 
-#: ../../functions.rst:530 b59467cb760a428cb9a1ad3ddc2372f5
+#: ../../functions.rst:530 79f4006550f34f108fbceb98de33b368
 msgid "Device, obtained from one of the :ref:`Device` constructors."
 msgstr "디바이스, :ref:`Device` 생성자 중 하나에서 얻음."
 
-#: ../../functions.rst:533 764e316039514bc2b1c84a2a3613584f
+#: ../../functions.rst:533 c3fd75078a914ad5a5569e5547dd1af9
 msgid ""
 "Transformation to apply to the page. Set it to :ref:`Identity` if no "
 "transformation is desired."
 msgstr "페이지에 적용할 변환. 변환이 필요 없으면 :ref:`Identity` 로 설정하세요."
 
-#: ../../functions.rst:540 132d218ecda54d83a572eccb181b290d
+#: ../../functions.rst:540 3a6b7151b4a6425ab6f57671e6361a36
 msgid "New in v1.19.0"
 msgstr "*v1.19.0의 새로운 기능*"
 
-#: ../../functions.rst:541 eb0d8183af6d46dcaa937647ed837885
+#: ../../functions.rst:541 630cdd26bd544107b791cfb24730326a
 msgid ""
 "Changed in v1.22.0: optionally also return the OCG name applicable to the"
 " boundary box."
 msgstr "v1.22.0에서 변경됨: 선택적으로 경계 상자에 적용 가능한 OCG 이름도 반환합니다."
 
-#: ../../functions.rst:543 2b307ac70a2c47239fe84735d4ea5dcc
+#: ../../functions.rst:543 d9826653f5074292942cba6ac72b5123
 msgid ""
 "a list of rectangles that envelop text, image or drawing objects. Each "
 "item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple "
@@ -1336,138 +1558,165 @@ msgid ""
 "hidden.   So this list can be used to detect such situations. An item's "
 "index in this list equals the value of a `\"seqno\"` in dictionaries as "
 "returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`."
-msgstr "텍스트, 이미지 또는 그리기 객체를 둘러싸는 사각형 목록. 각 항목은 `(type, (x0, y0, x1, y1))` 튜플이며, 두 번째 튜플은 사각형 좌표로 구성되고 *type* 은 다음 값 중 하나입니다. `layers=True` 인 경우 OCG 이름 또는 `None` 을 포함하는 세 번째 항목이 있습니다: `(type, (x0, y0, x1, y1), None)`.  * `\"fill-text\"` -- 일반 텍스트(문자 경계 없이 그려짐) * `\"stroke-text\"` -- 문자 경계만 표시하는 텍스트 * `\"ignore-text\"` -- 표시되지 않아야 하는 텍스트(예: OCR 텍스트 레이어에서 사용) * `\"fill-path\"` -- 채우기 색상으로 그리기(경계 없음) * `\"stroke-path\"` -- 경계로 그리기(채우기 색상 없음) * `\"fill-image\"` -- 이미지 표시 * `\"fill-shade\"` -- 음영 표시  항목 시퀀스는 페이지의 모양을 구축하기 위해 **이러한 명령이 실행되는 순서**를 나타냅니다. 따라서 항목의 bbox가 이전 항목과 교차하거나 포함하는 경우 이전 항목이 (부분적으로) 덮이거나 숨겨질 수 있습니다.   따라서 이 목록을 사용하여 이러한 상황을 감지할 수 있습니다. 이 목록의 항목 인덱스는 :meth:`Page.get_drawings` 및 :meth:`Page.get_texttrace` 에서 반환된 딕셔너리의 `\"seqno\"` 값과 같습니다."
+msgstr ""
+"텍스트, 이미지 또는 그리기 객체를 둘러싸는 사각형 목록. 각 항목은 `(type, (x0, y0, x1, y1))` 튜플이며, 두"
+" 번째 튜플은 사각형 좌표로 구성되고 *type* 은 다음 값 중 하나입니다. `layers=True` 인 경우 OCG 이름 또는 "
+"`None` 을 포함하는 세 번째 항목이 있습니다: `(type, (x0, y0, x1, y1), None)`.  * "
+"`\"fill-text\"` -- 일반 텍스트(문자 경계 없이 그려짐) * `\"stroke-text\"` -- 문자 경계만 "
+"표시하는 텍스트 * `\"ignore-text\"` -- 표시되지 않아야 하는 텍스트(예: OCR 텍스트 레이어에서 사용) * "
+"`\"fill-path\"` -- 채우기 색상으로 그리기(경계 없음) * `\"stroke-path\"` -- 경계로 그리기(채우기"
+" 색상 없음) * `\"fill-image\"` -- 이미지 표시 * `\"fill-shade\"` -- 음영 표시  항목 시퀀스는"
+" 페이지의 모양을 구축하기 위해 **이러한 명령이 실행되는 순서**를 나타냅니다. 따라서 항목의 bbox가 이전 항목과 교차하거나 "
+"포함하는 경우 이전 항목이 (부분적으로) 덮이거나 숨겨질 수 있습니다.   따라서 이 목록을 사용하여 이러한 상황을 감지할 수 "
+"있습니다. 이 목록의 항목 인덱스는 :meth:`Page.get_drawings` 및 "
+":meth:`Page.get_texttrace` 에서 반환된 딕셔너리의 `\"seqno\"` 값과 같습니다."
 
-#: ../../functions.rst:543 1b114fa4f3f64d72bd937199e3a3d2f7
+#: ../../functions.rst:543 cea75236177747a387f9c237fd0cbcdd
 msgid ""
 "a list of rectangles that envelop text, image or drawing objects. Each "
 "item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple "
 "consists of rectangle coordinates, and *type* is one of the following "
 "values. If `layers=True`, there is a third item containing the OCG name "
 "or `None`: `(type, (x0, y0, x1, y1), None)`."
-msgstr "텍스트, 이미지 또는 그리기 객체를 둘러싸는 사각형 목록. 각 항목은 `(type, (x0, y0, x1, y1))` 튜플이며, 두 번째 튜플은 사각형 좌표로 구성되고 *type* 은 다음 값 중 하나입니다. `layers=True` 인 경우 OCG 이름 또는 `None` 을 포함하는 세 번째 항목이 있습니다: `(type, (x0, y0, x1, y1), None)`."
+msgstr ""
+"텍스트, 이미지 또는 그리기 객체를 둘러싸는 사각형 목록. 각 항목은 `(type, (x0, y0, x1, y1))` 튜플이며, 두"
+" 번째 튜플은 사각형 좌표로 구성되고 *type* 은 다음 값 중 하나입니다. `layers=True` 인 경우 OCG 이름 또는 "
+"`None` 을 포함하는 세 번째 항목이 있습니다: `(type, (x0, y0, x1, y1), None)`."
 
-#: ../../functions.rst:545 abf0c36f44e04ee8a5a2afa7b724f5a1
+#: ../../functions.rst:545 bd57ae852199441396045da3900fa159
 msgid "`\"fill-text\"` -- normal text (painted without character borders)"
 msgstr "`\"fill-text\"` -- 일반 텍스트(문자 경계 없이 그려짐)"
 
-#: ../../functions.rst:546 37dd54d3f17044c6b337bff4655966a0
+#: ../../functions.rst:546 73652bbb988548bf9aecacbdf1d31641
 msgid "`\"stroke-text\"` -- text showing character borders only"
 msgstr "`\"stroke-text\"` -- 문자 경계만 표시하는 텍스트"
 
-#: ../../functions.rst:547 849119a86cd44565a26d3541b70c0516
+#: ../../functions.rst:547 4d516464739349f3a0019a924497c287
 msgid ""
 "`\"ignore-text\"` -- text that should not be displayed (e.g. as used by "
 "OCR text layers)"
 msgstr "`\"ignore-text\"` -- 표시되지 않아야 하는 텍스트(예: OCR 텍스트 레이어에서 사용)"
 
-#: ../../functions.rst:548 aec96117beef420c82608445b9e8819a
+#: ../../functions.rst:548 3be92a4cabce42a19d1018efd7b77e1a
 msgid "`\"fill-path\"` -- drawing with fill color (and no border)"
 msgstr "`\"fill-path\"` -- 채우기 색상으로 그리기(경계 없음)"
 
-#: ../../functions.rst:549 b1d6ad4002a641048ce03e94bd21d5bb
+#: ../../functions.rst:549 5d82465ff84b4562a2c5ecc802effabd
 msgid "`\"stroke-path\"` -- drawing with border (and no fill color)"
 msgstr "`\"stroke-path\"` -- 경계로 그리기(채우기 색상 없음)"
 
-#: ../../functions.rst:550 b0e26ed279dc4820a41a7f8a4e615183
+#: ../../functions.rst:550 af1203ba9d33446facef8a91f01f7559
 msgid "`\"fill-image\"` -- displays an image"
 msgstr "`\"fill-image\"` -- 이미지 표시"
 
-#: ../../functions.rst:551 7ad6ff9b7faf470cbe306351c31df8ec
+#: ../../functions.rst:551 650de20fff594c48b1df187a0852978d
 msgid "`\"fill-shade\"` -- display a shading"
 msgstr "`\"fill-shade\"` -- 음영 표시"
 
-#: ../../functions.rst:553 218f82ee4e624649b8e8a57969e46706
+#: ../../functions.rst:553 ef60b6dd48c44a5b8181df41a22356a2
 msgid ""
 "The item sequence represents the **sequence in which these commands are "
 "executed** to build the page's appearance. Therefore, if an item's bbox "
 "intersects or contains that of a previous item, then the previous item "
 "may be (partially) covered / hidden."
-msgstr "항목 시퀀스는 페이지의 모양을 구축하기 위해 **이러한 명령이 실행되는 순서** 를 나타냅니다. 따라서 항목의 bbox가 이전 항목과 교차하거나 포함하는 경우 이전 항목이 (부분적으로) 덮이거나 숨겨질 수 있습니다."
+msgstr ""
+"항목 시퀀스는 페이지의 모양을 구축하기 위해 **이러한 명령이 실행되는 순서** 를 나타냅니다. 따라서 항목의 bbox가 이전 "
+"항목과 교차하거나 포함하는 경우 이전 항목이 (부분적으로) 덮이거나 숨겨질 수 있습니다."
 
-#: ../../functions.rst:556 5593f221ed344831866cbd474df50bc3
+#: ../../functions.rst:556 fa7f832dc453447d83d333bd0edaa9aa
 msgid ""
 "So this list can be used to detect such situations. An item's index in "
 "this list equals the value of a `\"seqno\"` in dictionaries as returned "
 "by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`."
-msgstr "따라서 이 목록을 사용하여 이러한 상황을 감지할 수 있습니다. 이 목록의 항목 인덱스는 :meth:`Page.get_drawings` 및 :meth:`Page.get_texttrace` 에서 반환된 딕셔너리의 `\"seqno\"` 값과 같습니다."
+msgstr ""
+"따라서 이 목록을 사용하여 이러한 상황을 감지할 수 있습니다. 이 목록의 항목 인덱스는 "
+":meth:`Page.get_drawings` 및 :meth:`Page.get_texttrace` 에서 반환된 딕셔너리의 "
+"`\"seqno\"` 값과 같습니다."
 
-#: ../../functions.rst:563 1b4ab5c71554402a9c63ee38f27e71cb
+#: ../../functions.rst:563 e6e86279727b44108e80bd887f5dec4b
 msgid "New in v1.18.16"
 msgstr "*v1.18.16의 새로운 기능*"
 
-#: ../../functions.rst:564 83fdfa37d163451e9ff96def5e0de5c0
+#: ../../functions.rst:564 4a8a69681c1f4dd58e655d55319a42bd
 msgid "Changed in v1.19.0: added key \"seqno\"."
 msgstr "v1.19.0에서 변경됨: 키 \"seqno\" 추가."
 
-#: ../../functions.rst:565 916f4cdfdeda417abeea07844d42deca
+#: ../../functions.rst:565 8ec88b876f364e48be39bb7321df5b78
 msgid ""
 "Changed in v1.19.1: stroke and fill colors now always are either RGB or "
 "GRAY"
 msgstr "v1.19.1에서 변경됨: 스트로크 및 채우기 색상이 이제 항상 RGB 또는 GRAY입니다"
 
-#: ../../functions.rst:566 8c99ffdc891844ad872fd6def677e08b
+#: ../../functions.rst:566 6262d51351704e3cb0b74e4a397e4d17
 msgid ""
 "Changed in v1.19.3: span and character bboxes are now also correct if "
 "`dir != (1, 0)`."
 msgstr "v1.19.3에서 변경됨: `dir != (1, 0)` 인 경우에도 스팬 및 문자 bbox가 이제 올바릅니다."
 
-#: ../../functions.rst:567 03678344ac2e4f0ba4e15f06b3b558d0
+#: ../../functions.rst:567 7b239315a5da4ad49a8e0934405a7fd3
 msgid "Changed in v1.22.0: add new dictionary key \"layer\"."
 msgstr "v1.22.0에서 변경됨: 새로운 딕셔너리 키 \"layer\" 추가."
 
-#: ../../functions.rst:570 6d08591e52224bc08f77d6dcb26d9a04
+#: ../../functions.rst:570 834e9d9810714938bfbf774e17193982
 msgid ""
 "Return low-level text information of the page. The method is available "
 "for **all** document types. The result is a list of Python dictionaries "
 "with the following content::"
-msgstr "페이지의 저수준 텍스트 정보를 반환합니다. 이 메서드는 **모든** 문서 타입에서 사용할 수 있습니다. 결과는 다음 내용을 가진 Python 딕셔너리 목록입니다::"
+msgstr ""
+"페이지의 저수준 텍스트 정보를 반환합니다. 이 메서드는 **모든** 문서 타입에서 사용할 수 있습니다. 결과는 다음 내용을 가진 "
+"Python 딕셔너리 목록입니다::"
 
-#: ../../functions.rst:606 cc0d6a11bdbc410cb9411001f8e05eee
+#: ../../functions.rst:606 8b58904760d74cf1b106164af7de1954
 msgid "Details:"
 msgstr "세부사항:"
 
-#: ../../functions.rst:608 11f8d880efa247139f7f83220839a83a
+#: ../../functions.rst:608 63e3f59519b34151ba92179d999fb9ee
 msgid ""
 "Information above tagged with \"(1)\" has the same meaning and value as "
 "explained in :ref:`TextPage`."
 msgstr "\"(1)\"로 태그된 위의 정보는 :ref:`TextPage` 에서 설명한 것과 동일한 의미와 값을 가집니다."
 
-#: ../../functions.rst:610 4d9d835859f449e0a40b7667d81451a8
+#: ../../functions.rst:610 adef9c5a97be49e783885187ce3815e0
 msgid ""
 "Please note that the font ``flags`` value will never contain a "
 "*superscript* flag bit: the detection of superscripts is done within "
 "MuPDF :ref:`TextPage` code -- it is not a property of any font."
-msgstr "글꼴 ``flags`` 값에는 *위첨자* 플래그 비트가 포함되지 않습니다: 위첨자 감지는 MuPDF :ref:`TextPage` 코드 내에서 수행됩니다 -- 이것은 어떤 글꼴의 속성도 아닙니다."
+msgstr ""
+"글꼴 ``flags`` 값에는 *위첨자* 플래그 비트가 포함되지 않습니다: 위첨자 감지는 MuPDF :ref:`TextPage` "
+"코드 내에서 수행됩니다 -- 이것은 어떤 글꼴의 속성도 아닙니다."
 
-#: ../../functions.rst:611 d9f311aa264940be9b1fd7dc476446f3
+#: ../../functions.rst:611 42e4ea3c18d54211b94b728f0c637564
 msgid ""
 "Also note, that the text *color* is encoded as the usual tuple of floats "
 "0 <= f <= 1 -- not in sRGB format. Depending on `span[\"type\"]`, "
 "interpret this as fill color or stroke color."
-msgstr "텍스트 *color* 는 일반적인 float 튜플 0 <= f <= 1로 인코딩됩니다 -- sRGB 형식이 아닙니다. `span[\"type\"]` 에 따라 이를 채우기 색상 또는 스트로크 색상으로 해석하세요."
+msgstr ""
+"텍스트 *color* 는 일반적인 float 튜플 0 <= f <= 1로 인코딩됩니다 -- sRGB 형식이 아닙니다. "
+"`span[\"type\"]` 에 따라 이를 채우기 색상 또는 스트로크 색상으로 해석하세요."
 
-#: ../../functions.rst:613 c32efb528d114e888542af9a76a9477a
+#: ../../functions.rst:613 c064211d745e47be945feb7030afbad2
 msgid "There are 3 text span types:"
 msgstr "3가지 텍스트 스팬 타입이 있습니다:"
 
-#: ../../functions.rst:615 ea8c6854860c4abc84f35271f246cf6f
+#: ../../functions.rst:615 fbf31286bd4548fd975462e964233915
 msgid ""
 "0: Filled text -- equivalent to PDF text rendering mode 0 (`0 Tr`, the "
 "default in PDF), only each character's \"inside\" is shown."
-msgstr "0: 채워진 텍스트 -- PDF 텍스트 렌더링 모드 0(`0 Tr`, PDF의 기본값)과 동일하며, 각 문자의 \"내부\"만 표시됩니다."
+msgstr ""
+"0: 채워진 텍스트 -- PDF 텍스트 렌더링 모드 0(`0 Tr`, PDF의 기본값)과 동일하며, 각 문자의 \"내부\"만 "
+"표시됩니다."
 
-#: ../../functions.rst:616 8c5b60838d0043ad832b76f6964725ec
+#: ../../functions.rst:616 941b2c374d584068847e1546fdbdf66c
 msgid ""
 "1: Stroked text -- equivalent to `1 Tr`, only the character borders are "
 "shown."
 msgstr "1: 스트로크 텍스트 -- `1 Tr` 와 동일하며, 문자 경계만 표시됩니다."
 
-#: ../../functions.rst:617 aad83dab705242819a32cf3d87f3fcd2
+#: ../../functions.rst:617 d2fc5c83a61a4d4f8edd462b343a794f
 msgid "3: Ignored text -- equivalent to `3 Tr` (hidden text)."
 msgstr "3: 무시된 텍스트 -- `3 Tr`(숨겨진 텍스트)와 동일합니다."
 
-#: ../../functions.rst:619 95d1e914c8254b37a6c64251be78ac76
+#: ../../functions.rst:619 82c0b57a08e74995b7bfc0b18220c635
 #, python-format
 msgid ""
 "Line width in this context is important only for processing "
@@ -1480,33 +1729,43 @@ msgid ""
 "identical in every aspect, except for their types, which are 0, resp 1. "
 "It is your responsibility to handle this type of situation - in "
 ":meth:`Page.get_text`, MuPDF is doing this for you."
-msgstr "이 맥락에서 선 너비는 `span[\"type\"] != 0` 처리에만 중요합니다: 문자 경계선의 두께를 결정합니다. 이 값은 텍스트 데이터와 함께 전혀 제공되지 않을 수 있습니다. 이 경우 :data:`fontsize` 의 5% 값(`span[\"size\"] * 0,05`)이 생성됩니다. 종종 PDF의 \"인위적인\" 굵은 텍스트는 `2 Tr` 로 생성됩니다. 이 경우에 해당하는 스팬 타입은 없습니다. 대신 해당 텍스트는 두 개의 연속된 스팬으로 표현됩니다 -- 타입이 각각 0과 1인 것을 제외하고 모든 면에서 동일합니다. 이러한 상황을 처리하는 것은 사용자의 책임입니다 - :meth:`Page.get_text` 에서는 MuPDF가 이를 수행합니다."
+msgstr ""
+"이 맥락에서 선 너비는 `span[\"type\"] != 0` 처리에만 중요합니다: 문자 경계선의 두께를 결정합니다. 이 값은 "
+"텍스트 데이터와 함께 전혀 제공되지 않을 수 있습니다. 이 경우 :data:`fontsize` 의 5% "
+"값(`span[\"size\"] * 0,05`)이 생성됩니다. 종종 PDF의 \"인위적인\" 굵은 텍스트는 `2 Tr` 로 "
+"생성됩니다. 이 경우에 해당하는 스팬 타입은 없습니다. 대신 해당 텍스트는 두 개의 연속된 스팬으로 표현됩니다 -- 타입이 각각 "
+"0과 1인 것을 제외하고 모든 면에서 동일합니다. 이러한 상황을 처리하는 것은 사용자의 책임입니다 - "
+":meth:`Page.get_text` 에서는 MuPDF가 이를 수행합니다."
 
-#: ../../functions.rst:620 606f56ad2fa34ddb82e2171ac68c7ae0
+#: ../../functions.rst:620 b0c07cf4d26348589ec94ed16a6c3372
 msgid ""
 "For data compactness, the character's unicode is provided here. Use "
 "built-in function `chr()` for the character itself."
 msgstr "데이터 압축을 위해 여기에 문자의 유니코드가 제공됩니다. 문자 자체는 내장 함수 `chr()` 을 사용하세요."
 
-#: ../../functions.rst:621 eafb5c8d2c0a47fe87b904f337b62657
+#: ../../functions.rst:621 3c60ceeb1f4f4171b04db58fdec4733e
 msgid ""
 "The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is "
 "invisible text, 1 (100%) is intransparent. Depending on `span[\"type\"]`,"
 " interpret this value as *fill* opacity or, resp. *stroke* opacity."
-msgstr "스팬 텍스트의 알파/불투명도 값, `0 <= opacity <= 1`, 0은 보이지 않는 텍스트, 1(100%)은 불투명합니다. `span[\"type\"]` 에 따라 이 값을 *fill* 불투명도 또는 *stroke* 불투명도로 해석하세요."
+msgstr ""
+"스팬 텍스트의 알파/불투명도 값, `0 <= opacity <= 1`, 0은 보이지 않는 텍스트, 1(100%)은 불투명합니다. "
+"`span[\"type\"]` 에 따라 이 값을 *fill* 불투명도 또는 *stroke* 불투명도로 해석하세요."
 
-#: ../../functions.rst:622 eb23d9902fba49d087006466112feef8
+#: ../../functions.rst:622 b237cc55d5244595a4d9e0f2faf43ec2
 msgid ""
 "*(Changed in v1.19.0)* This value is equal or close to `char[\"bbox\"]` "
 "of \"rawdict\". In particular, the bbox **height** value is always "
 "computed as if **\"small glyph heights\"** had been requested."
-msgstr "*(v1.19.0에서 변경됨)* 이 값은 \"rawdict\"의 `char[\"bbox\"]` 와 같거나 가깝습니다. 특히 bbox **height** 값은 항상 **\"small glyph heights\"** 가 요청된 것처럼 계산됩니다."
+msgstr ""
+"*(v1.19.0에서 변경됨)* 이 값은 \"rawdict\"의 `char[\"bbox\"]` 와 같거나 가깝습니다. 특히 bbox"
+" **height** 값은 항상 **\"small glyph heights\"** 가 요청된 것처럼 계산됩니다."
 
-#: ../../functions.rst:623 3ef916cf4c6d4625b153f657810bcaac
+#: ../../functions.rst:623 d0aece89209341f4995bd44237ffb0bd
 msgid "*(New in v1.19.0)* This is the union of all character bboxes."
 msgstr "*(v1.19.0의 새로운 기능)* 이것은 모든 문자 bbox의 합집합입니다."
 
-#: ../../functions.rst:624 b64b0fd0a2f8435aada9591350d3276e
+#: ../../functions.rst:624 4a2dea33adee4c3f934f477d8961d184
 msgid ""
 "*(New in v1.19.0)* Enumerates the commands that build up the page's "
 "appearance. Can be used to find out whether text is effectively hidden by"
@@ -1515,45 +1774,55 @@ msgid ""
 " (parts of) this text span, one may assume that such an object hides the "
 "resp. text. Different text spans have identical sequence numbers if they "
 "were created in one go."
-msgstr "*(v1.19.0의 새로운 기능)* 페이지의 모양을 구축하는 명령을 열거합니다. 텍스트가 \"나중에\" 그려지거나 어떤 객체 *위에* 그려진 객체에 의해 효과적으로 숨겨지는지 확인하는 데 사용할 수 있습니다. 따라서 더 높은 시퀀스 번호를 가진 그리기 또는 이미지가 있고, 그 bbox가 이 텍스트 스팬의 (일부)와 겹치는 경우, 그러한 객체가 해당 텍스트를 숨긴다고 가정할 수 있습니다. 다른 텍스트 스팬은 한 번에 생성된 경우 동일한 시퀀스 번호를 가집니다."
+msgstr ""
+"*(v1.19.0의 새로운 기능)* 페이지의 모양을 구축하는 명령을 열거합니다. 텍스트가 \"나중에\" 그려지거나 어떤 객체 "
+"*위에* 그려진 객체에 의해 효과적으로 숨겨지는지 확인하는 데 사용할 수 있습니다. 따라서 더 높은 시퀀스 번호를 가진 그리기 또는"
+" 이미지가 있고, 그 bbox가 이 텍스트 스팬의 (일부)와 겹치는 경우, 그러한 객체가 해당 텍스트를 숨긴다고 가정할 수 "
+"있습니다. 다른 텍스트 스팬은 한 번에 생성된 경우 동일한 시퀀스 번호를 가집니다."
 
-#: ../../functions.rst:625 4e53fc30ab4b434a8dd462b37df55b15
+#: ../../functions.rst:625 746e13f904994ba1b391640966cb9cce
 msgid ""
 "*(New in v1.22.0)* The name of the Optional Content Group (OCG) if "
 "applicable or `None`."
 msgstr "*(v1.22.0의 새로운 기능)* 해당하는 경우 Optional Content Group (OCG)의 이름 또는 `None`."
 
-#: ../../functions.rst:627 18fcebc358184f629a5dac8dd24f561d
+#: ../../functions.rst:627 39e39ef69db145bb8fd6d7a429821aa0
 msgid ""
 "Here is a list of similarities and differences of `page.get_texttrace()` "
 "compared to `page.get_text(\"rawdict\")`:"
-msgstr "`page.get_text(\"rawdict\")` 와 비교한 `page.get_texttrace()` 의 유사점과 차이점 목록입니다:"
+msgstr ""
+"`page.get_text(\"rawdict\")` 와 비교한 `page.get_texttrace()` 의 유사점과 차이점 "
+"목록입니다:"
 
-#: ../../functions.rst:629 10242bfca81e4c638b761ecd11ecc22b
+#: ../../functions.rst:629 917f1c8f176a4ed594b134848132c93c
 msgid ""
 "The method is up to **twice as fast,** compared to \"rawdict\" "
 "extraction. Depends on the amount of text."
 msgstr "이 메서드는 \"rawdict\" 추출과 비교하여 **최대 2배 빠릅니다**. 텍스트 양에 따라 다릅니다."
 
-#: ../../functions.rst:630 563d2bcc5e534c8aa65c037cb918a041
+#: ../../functions.rst:630 1bed3805162b46efbe3f575d925a99b2
 msgid ""
 "The returned data is very **much smaller in size** -- although it "
 "provides more information."
 msgstr "반환된 데이터는 **크기가 훨씬 작습니다** -- 더 많은 정보를 제공하지만."
 
-#: ../../functions.rst:631 22d9ce68958844f9b04f8ce7c51e84a7
+#: ../../functions.rst:631 a1624b170eb441899e89639c83c5bec8
 msgid ""
 "Additional types of text **invisibility can be detected**: opacity = 0 or"
 " type > 1 or overlapping bbox of an object with a higher sequence number."
-msgstr "추가 유형의 텍스트 **보이지 않음을 감지할 수 있습니다**: opacity = 0 또는 type > 1 또는 더 높은 시퀀스 번호를 가진 객체의 겹치는 bbox."
+msgstr ""
+"추가 유형의 텍스트 **보이지 않음을 감지할 수 있습니다**: opacity = 0 또는 type > 1 또는 더 높은 시퀀스 "
+"번호를 가진 객체의 겹치는 bbox."
 
-#: ../../functions.rst:632 b7e1c0e67b62467e9bdadba9d42d6c6b
+#: ../../functions.rst:632 8a4627bf3e3b4ccdab047276202cf1cc
 msgid ""
 "If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you "
 "may still be able to deduct desired information from the glyph id."
-msgstr "MuPDF가 인식되지 않은 문자에 대해 유니코드 0xFFFD(65533)를 반환하는 경우, 글리프 id에서 원하는 정보를 추론할 수 있을 수 있습니다."
+msgstr ""
+"MuPDF가 인식되지 않은 문자에 대해 유니코드 0xFFFD(65533)를 반환하는 경우, 글리프 id에서 원하는 정보를 추론할 수"
+" 있을 수 있습니다."
 
-#: ../../functions.rst:633 b1f31df6bda84153ace8673ae63e9996
+#: ../../functions.rst:633 9e5fc14c54d74d61a2dc0d327be33a78
 msgid ""
 "The `span[\"chars\"]` **contains no spaces**, **except** the document "
 "creator has explicitly coded them. They **will never be generated** like "
@@ -1561,9 +1830,13 @@ msgid ""
 "doing your own computations here, the width of a space character is "
 "given. This value is derived from the font where possible. Otherwise the "
 "value of a fallback font is taken."
-msgstr "`span[\"chars\"]` 는 **공백을 포함하지 않습니다**, **문서 작성자가 명시적으로 코딩한 경우를 제외하고**. :meth:`Page.get_text` 메서드에서 발생하는 것처럼 **절대 생성되지 않습니다**. 여기서 자체 계산을 수행하는 데 도움이 되도록 공백 문자의 너비가 제공됩니다. 이 값은 가능한 경우 글꼴에서 파생됩니다. 그렇지 않으면 대체 글꼴의 값이 사용됩니다."
+msgstr ""
+"`span[\"chars\"]` 는 **공백을 포함하지 않습니다**, **문서 작성자가 명시적으로 코딩한 경우를 제외하고**. "
+":meth:`Page.get_text` 메서드에서 발생하는 것처럼 **절대 생성되지 않습니다**. 여기서 자체 계산을 수행하는 데 "
+"도움이 되도록 공백 문자의 너비가 제공됩니다. 이 값은 가능한 경우 글꼴에서 파생됩니다. 그렇지 않으면 대체 글꼴의 값이 "
+"사용됩니다."
 
-#: ../../functions.rst:634 c94dc74956874bfa8ac4c59d48c0cc87
+#: ../../functions.rst:634 15ac82aad6cb4e3a9170eca749052958
 msgid ""
 "There is no effort to organize text like it happens for a :ref:`TextPage`"
 " (the hierarchy of blocks, lines, spans, and characters). Characters are "
@@ -1574,70 +1847,83 @@ msgid ""
 "span characters are sorted in any particular order -- you must make sense"
 " of the info yourself, taking `span[\"dir\"]`, `span[\"wmode\"]`, etc. "
 "into account."
-msgstr ":ref:`TextPage` 에서 발생하는 것처럼 텍스트를 구성하려는 시도가 없습니다(블록, 라인, 스팬 및 문자의 계층 구조). 문자는 단순히 순차적으로 하나씩 추출되어 스팬에 배치됩니다. 스팬의 특성이 변경될 때마다 새로운 스팬이 시작됩니다. 따라서 동일한 스팬에서 다른 `origin.y` 값을 가진 문자를 찾을 수 있습니다(이는 다른 라인에 나타날 것임을 의미). 스팬 문자가 특정 순서로 정렬되어 있다고 가정할 수 없습니다 -- `span[\"dir\"]`, `span[\"wmode\"]` 등을 고려하여 정보를 직접 이해해야 합니다."
+msgstr ""
+":ref:`TextPage` 에서 발생하는 것처럼 텍스트를 구성하려는 시도가 없습니다(블록, 라인, 스팬 및 문자의 계층 구조). "
+"문자는 단순히 순차적으로 하나씩 추출되어 스팬에 배치됩니다. 스팬의 특성이 변경될 때마다 새로운 스팬이 시작됩니다. 따라서 동일한 "
+"스팬에서 다른 `origin.y` 값을 가진 문자를 찾을 수 있습니다(이는 다른 라인에 나타날 것임을 의미). 스팬 문자가 특정 "
+"순서로 정렬되어 있다고 가정할 수 없습니다 -- `span[\"dir\"]`, `span[\"wmode\"]` 등을 고려하여 정보를"
+" 직접 이해해야 합니다."
 
-#: ../../functions.rst:652 7acddc7741614360bf17d5596c8cc5ab
+#: ../../functions.rst:652 a0c67b42ef3e49e0b1f2ac26995741aa
 msgid "Ligatures are represented like this:"
 msgstr "합자는 다음과 같이 표현됩니다:"
 
-#: ../../functions.rst:636 e72abf836baf467c93105d9dde8d8035
+#: ../../functions.rst:636 3c824ed918b34e58861b077c4365477f
 msgid ""
 "MuPDF handles the following ligatures: \"fi\", \"ff\", \"fl\", \"ft\", "
 "\"st\", \"ffi\", and \"ffl\" (only the first 3 are mostly ever used). If "
 "the page contains e.g. ligature \"fi\", you will find the following two "
 "character items subsequent to each other::"
-msgstr "MuPDF는 다음 합자를 처리합니다: \"fi\", \"ff\", \"fl\", \"ft\", \"st\", \"ffi\", \"ffl\" (처음 3개만 주로 사용됨). 페이지에 예를 들어 합자 \"fi\"가 포함되어 있으면 다음 두 문자 항목이 서로 연속으로 나타납니다::"
+msgstr ""
+"MuPDF는 다음 합자를 처리합니다: \"fi\", \"ff\", \"fl\", \"ft\", \"st\", \"ffi\", "
+"\"ffl\" (처음 3개만 주로 사용됨). 페이지에 예를 들어 합자 \"fi\"가 포함되어 있으면 다음 두 문자 항목이 서로 "
+"연속으로 나타납니다::"
 
-#: ../../functions.rst:641 d46f58a609804bea982da0876d2ba90f
+#: ../../functions.rst:641 bcc79b6581f34f9280c07f51f267b1ba
 msgid ""
 "This means that the bbox of the first ligature character is the area "
 "containing the complete, compound glyph. Subsequent ligature components "
 "are recognizable by their glyph value -1 and a bbox of width zero."
-msgstr "이것은 첫 번째 합자 문자의 bbox가 완전한 복합 글리프를 포함하는 영역임을 의미합니다. 후속 합자 구성 요소는 글리프 값 -1과 너비가 0인 bbox로 인식할 수 있습니다."
+msgstr ""
+"이것은 첫 번째 합자 문자의 bbox가 완전한 복합 글리프를 포함하는 영역임을 의미합니다. 후속 합자 구성 요소는 글리프 값 -1과"
+" 너비가 0인 bbox로 인식할 수 있습니다."
 
-#: ../../functions.rst:642 5f6b5b48f4684036ad328bffca38325a
+#: ../../functions.rst:642 7817cb437109492a80ade1f89c34b3cf
 msgid ""
 "You may want to replace those 2 or 3 char tuples by one, that represents "
 "the ligature itself. Use the following mapping of ligatures to unicodes:"
 msgstr "2개 또는 3개의 문자 튜플을 합자 자체를 나타내는 하나로 대체할 수 있습니다. 다음 합자-유니코드 매핑을 사용하세요:"
 
-#: ../../functions.rst:644 889bc72258b64c39bbba09ab96188589
+#: ../../functions.rst:644 aaebcaafe03144fbb8992f69ed5c8f00
 msgid "`\"ff\" -> 0xFB00`"
 msgstr "`\"ff\" -> 0xFB00`"
 
-#: ../../functions.rst:645 950a98981e9b4f3cad52eca1073f9df2
+#: ../../functions.rst:645 939984a5e5e04878ae04eea7858b9f77
 msgid "`\"fi\" -> 0xFB01`"
 msgstr "`\"fi\" -> 0xFB01`"
 
-#: ../../functions.rst:646 897debd680f84f00b2b72a621eb0ef78
+#: ../../functions.rst:646 d3fed8f13cba4ce885dd69100891d76e
 msgid "`\"fl\" -> 0xFB02`"
 msgstr "`\"fl\" -> 0xFB02`"
 
-#: ../../functions.rst:647 06805958e3a24f58ba7fe31f2c71b37c
+#: ../../functions.rst:647 b9933ebf7ec545d8a6c748b98f667811
 msgid "`\"ffi\" -> 0xFB03`"
 msgstr "`\"ffi\" -> 0xFB03`"
 
-#: ../../functions.rst:648 108d095c0546443c9aed1a351b544e51
+#: ../../functions.rst:648 e0514a34957c47a78d18f3dda4d2429d
 msgid "`\"ffl\" -> 0xFB04`"
 msgstr "`\"ffl\" -> 0xFB04`"
 
-#: ../../functions.rst:649 685cc70784514cb8b5c01b88bff6ab68
+#: ../../functions.rst:649 37fa3ab049b5470c812eb68f92a34b47
 msgid "`\"ft\" -> 0xFB05`"
 msgstr "`\"ft\" -> 0xFB05`"
 
-#: ../../functions.rst:650 0b2c082689e24ccca607cf35dac9ca2f
+#: ../../functions.rst:650 837026b002484cd789d83dcb6b644892
 msgid "`\"st\" -> 0xFB06`"
 msgstr "`\"st\" -> 0xFB06`"
 
-#: ../../functions.rst:652 3916ffdd9f474f4a8021e3466c4251ec
+#: ../../functions.rst:652 50f11c41758d4ce0bf5813b7baecd6c0
 msgid ""
 "So you may want to replace the two example tuples above by the following "
 "single one: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (there is usually"
 " no need to lookup the correct glyph id for 0xFB01 in the resp. font, but"
 " you may execute `font.has_glyph(0xFB01)` and use its return value)."
-msgstr "따라서 위의 두 예제 튜플을 다음 단일 튜플로 대체할 수 있습니다: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (일반적으로 해당 글꼴에서 0xFB01에 대한 올바른 글리프 id를 조회할 필요는 없지만, `font.has_glyph(0xFB01)` 을 실행하고 반환 값을 사용할 수 있습니다)."
+msgstr ""
+"따라서 위의 두 예제 튜플을 다음 단일 튜플로 대체할 수 있습니다: `(0xFB01, glyph, (x, y), (x0, y0, "
+"x1, y1))` (일반적으로 해당 글꼴에서 0xFB01에 대한 올바른 글리프 id를 조회할 필요는 없지만, "
+"`font.has_glyph(0xFB01)` 을 실행하고 반환 값을 사용할 수 있습니다)."
 
-#: ../../functions.rst:654 57e26aabbddd4a9f9a02d4b02c1ef955
+#: ../../functions.rst:654 222e9b82b659431db35af8eeffb194f6
 msgid ""
 "**Changed in v1.19.3:** Similar to other text extraction methods, the "
 "character and span bboxes envelop the character quads. To recover the "
@@ -1645,65 +1931,76 @@ msgid ""
 ":meth:`recover_char_quad` or :meth:`recover_span_quad` as explained in "
 ":ref:`textpagedict`. Use either `None` or `span[\"dir\"]` for the writing"
 " direction."
-msgstr "**v1.19.3에서 변경됨:** 다른 텍스트 추출 메서드와 유사하게, 문자 및 스팬 bbox는 문자 쿼드를 둘러쌉니다. 쿼드를 복구하려면 :ref:`textpagedict` 에서 설명한 것과 동일한 메서드 :meth:`recover_quad`, :meth:`recover_char_quad` 또는 :meth:`recover_span_quad` 를 따르세요. 쓰기 방향에는 `None` 또는 `span[\"dir\"]` 을 사용하세요."
+msgstr ""
+"**v1.19.3에서 변경됨:** 다른 텍스트 추출 메서드와 유사하게, 문자 및 스팬 bbox는 문자 쿼드를 둘러쌉니다. 쿼드를 "
+"복구하려면 :ref:`textpagedict` 에서 설명한 것과 동일한 메서드 :meth:`recover_quad`, "
+":meth:`recover_char_quad` 또는 :meth:`recover_span_quad` 를 따르세요. 쓰기 방향에는 "
+"`None` 또는 `span[\"dir\"]` 을 사용하세요."
 
-#: ../../functions.rst:656 c735d25ff37c439293d1c84142159a58
+#: ../../functions.rst:656 f5faf881db3d4a9487a05fef55996648
 msgid ""
 "**Changed in v1.21.1:** If applicable, the name of the OCG is shown in "
 "`\"layer\"`."
 msgstr "**v1.21.1에서 변경됨:** 해당하는 경우 OCG의 이름이 `\"layer\"` 에 표시됩니다."
 
-#: ../../functions.rst:662 73cb0ecbc9904cfd9eedd2cf201a34ac
+#: ../../functions.rst:662 48bf0e585e944bd7b52be8feaac35c5e
 msgid ""
 "Ensures that the page's so-called graphics state is balanced and new "
 "content can be inserted correctly."
 msgstr "페이지의 소위 그래픽 상태가 균형을 이루고 새 콘텐츠가 올바르게 삽입될 수 있도록 합니다."
 
-#: ../../functions.rst:664 2fce8c9f6cfc4f5580d8dbfbdac54581
+#: ../../functions.rst:664 eae68e69d2064990b1bf9c7ed594f48c
 msgid ""
 "In versions 1.24.1+ of PyMuPDF the method was improved and is being "
 "executed automatically as required, so you should no longer need to "
 "concern yourself with it."
 msgstr "PyMuPDF 버전 1.24.1+에서 이 메서드가 개선되어 필요에 따라 자동으로 실행되므로 더 이상 신경 쓸 필요가 없습니다."
 
-#: ../../functions.rst:666 6ca70959e73644b19510f3250902df9a
+#: ../../functions.rst:666 de7bdd81791342039a777f36b3120609
 msgid "We discourage using :meth:`Page.clean_contents` to achieve this."
 msgstr "이를 달성하기 위해 :meth:`Page.clean_contents` 사용을 권장하지 않습니다."
 
-#: ../../functions.rst:672 fbfdfc139dba4d859c7e23c259a08157
+#: ../../functions.rst:672 59ea1ae4764a4a79b7293e1e4acf5bfc
 msgid ""
 "Indicate whether the page's so-called graphic state is balanced. If "
 "`False`, :meth:`Page.wrap_contents` should be executed if new content is "
 "inserted (only relevant in `overlay=True` mode). In newer versions "
 "(1.24.1+), this check and corresponding adjustments are automatically "
 "executed -- you therefore should not be concerned about this anymore."
-msgstr "페이지의 소위 그래픽 상태가 균형을 이루는지 나타냅니다. `False` 인 경우 새 콘텐츠가 삽입되면 :meth:`Page.wrap_contents` 를 실행해야 합니다(`overlay=True` 모드에서만 관련됨). 최신 버전(1.24.1+)에서는 이 확인 및 해당 조정이 자동으로 실행됩니다 -- 따라서 더 이상 신경 쓸 필요가 없습니다."
+msgstr ""
+"페이지의 소위 그래픽 상태가 균형을 이루는지 나타냅니다. `False` 인 경우 새 콘텐츠가 삽입되면 "
+":meth:`Page.wrap_contents` 를 실행해야 합니다(`overlay=True` 모드에서만 관련됨). 최신 "
+"버전(1.24.1+)에서는 이 확인 및 해당 조정이 자동으로 실행됩니다 -- 따라서 더 이상 신경 쓸 필요가 없습니다."
 
-#: ../../functions.rst:680 de1474a27a3c4f17a4b06482b9593875
+#: ../../functions.rst:680 77bfdbb9ea154021880b68f407cec45e
 msgid ""
 "Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.  Use "
 ":meth:`Page.get_text` with the \"blocks\" option instead."
-msgstr ":meth:`TextPage.extractBLOCKS` 의 더 이상 사용되지 않는 래퍼. 대신 \"blocks\" 옵션을 사용하는 :meth:`Page.get_text` 를 사용하세요."
+msgstr ""
+":meth:`TextPage.extractBLOCKS` 의 더 이상 사용되지 않는 래퍼. 대신 \"blocks\" 옵션을 사용하는 "
+":meth:`Page.get_text` 를 사용하세요."
 
-#: ../../functions.rst:688 88b9617fbc71462e867dbd12dd918d79
+#: ../../functions.rst:688 38ae57f9f7514e3ebe8a9c79b5610c01
 msgid ""
 "Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use "
 ":meth:`Page.get_text` with the \"words\" option instead."
-msgstr ":meth:`TextPage.extractWORDS` 의 더 이상 사용되지 않는 래퍼. 대신 \"words\" 옵션을 사용하는 :meth:`Page.get_text` 를 사용하세요."
+msgstr ""
+":meth:`TextPage.extractWORDS` 의 더 이상 사용되지 않는 래퍼. 대신 \"words\" 옵션을 사용하는 "
+":meth:`Page.get_text` 를 사용하세요."
 
-#: ../../functions.rst:696 e63d78e973014b5da39d398c04e37cd0
+#: ../../functions.rst:696 3cb9ebe8577f4992ad02eb07f1b73bfe
 msgid "Run a page through a list device and return its display list."
 msgstr "리스트 디바이스를 통해 페이지를 실행하고 디스플레이 리스트를 반환합니다."
 
-#: ../../functions.rst:698 18c7a9bcd3614b61abe4ffa70c25080c
+#: ../../functions.rst:698 25c2a3b94c1848eeb595b0de57aa1246
 msgid ":ref:`DisplayList`"
 msgstr ""
 
-#: ../../functions.rst:699 95ce406969764ffea7a51bd7cb001954
+#: ../../functions.rst:699 7c69c8db929044cea53feea2943ed7b7
 msgid "the display list of the page."
 msgstr "페이지의 디스플레이 리스트."
 
-#: ../../functions.rst:705 2f7950caaff2497e85a41efaf8b7ab40
+#: ../../functions.rst:705 fb125de099214795adc6e298598a8f7c
 msgid ""
 "PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of "
 "a page. May be empty or contain multiple integers. If the page is cleaned"
@@ -1712,20 +2009,27 @@ msgid ""
 ":meth:`Document.xref_stream` using an item of this list. Method "
 ":meth:`Page.read_contents` in contrast walks through this list and "
 "concatenates the corresponding sources into one `bytes` object."
-msgstr "PDF 전용: 페이지의 :data:`contents` 객체의 :data:`xref` 목록을 검색합니다. 비어 있거나 여러 정수를 포함할 수 있습니다. 페이지가 정리된 경우(:meth:`Page.clean_contents`) 항목은 하나 이하입니다. 각 `/Contents` 객체의 \"source\"는 이 목록의 항목을 사용하여 :meth:`Document.xref_stream` 으로 개별적으로 읽을 수 있습니다. 반면 :meth:`Page.read_contents` 메서드는 이 목록을 순회하고 해당 소스를 하나의 `bytes` 객체로 연결합니다."
+msgstr ""
+"PDF 전용: 페이지의 :data:`contents` 객체의 :data:`xref` 목록을 검색합니다. 비어 있거나 여러 정수를 "
+"포함할 수 있습니다. 페이지가 정리된 경우(:meth:`Page.clean_contents`) 항목은 하나 이하입니다. 각 "
+"`/Contents` 객체의 \"source\"는 이 목록의 항목을 사용하여 :meth:`Document.xref_stream` "
+"으로 개별적으로 읽을 수 있습니다. 반면 :meth:`Page.read_contents` 메서드는 이 목록을 순회하고 해당 소스를 "
+"하나의 `bytes` 객체로 연결합니다."
 
-#: ../../functions.rst:713 0e0e858c5fb34899bf5b31067d9f6cf0
+#: ../../functions.rst:713 7fe9d0c499fd470cb67a324f854cddfc
 msgid ""
 "PDF only: Let the page's `/Contents` key point to this xref. Any "
 "previously used contents objects will be ignored and can be removed via "
 "garbage collection."
-msgstr "PDF 전용: 페이지의 `/Contents` 키가 이 xref를 가리키도록 합니다. 이전에 사용된 모든 콘텐츠 객체는 무시되며 가비지 수집을 통해 제거할 수 있습니다."
+msgstr ""
+"PDF 전용: 페이지의 `/Contents` 키가 이 xref를 가리키도록 합니다. 이전에 사용된 모든 콘텐츠 객체는 무시되며 "
+"가비지 수집을 통해 제거할 수 있습니다."
 
-#: ../../functions.rst:719 5d1261cb25b84350a7512c2587a9a33e
+#: ../../functions.rst:719 3aa3a5c37b1c4a4381ccad00ba9b8aa9
 msgid "Changed in v1.17.6"
 msgstr "v1.17.6에서 변경됨"
 
-#: ../../functions.rst:721 246c4ca104b04817bab2b24be75d9bcb
+#: ../../functions.rst:721 60a2a8926c0a40e4b525cb12714eb91a
 msgid ""
 "PDF only: Clean and concatenate all :data:`contents` objects associated "
 "with this page. \"Cleaning\" includes syntactical corrections, "
@@ -1733,78 +2037,103 @@ msgid ""
 "Discrepancies between :data:`contents` and :data:`resources` objects will"
 " also be corrected if sanitize is true. See :meth:`Page.get_contents` for"
 " more details."
-msgstr "PDF 전용: 이 페이지와 연결된 모든 :data:`contents` 객체를 정리하고 연결합니다. \"정리\"에는 구문 수정, 표준화 및 콘텐츠 스트림의 \"예쁘게 인쇄\"가 포함됩니다. sanitize가 true이면 :data:`contents` 와 :data:`resources` 객체 간의 불일치도 수정됩니다. 자세한 내용은 :meth:`Page.get_contents` 를 참조하세요."
+msgstr ""
+"PDF 전용: 이 페이지와 연결된 모든 :data:`contents` 객체를 정리하고 연결합니다. \"정리\"에는 구문 수정, "
+"표준화 및 콘텐츠 스트림의 \"예쁘게 인쇄\"가 포함됩니다. sanitize가 true이면 :data:`contents` 와 "
+":data:`resources` 객체 간의 불일치도 수정됩니다. 자세한 내용은 :meth:`Page.get_contents` 를 "
+"참조하세요."
 
-#: ../../functions.rst:723 301ef7e95bd144f8b88b541724fc0d58
+#: ../../functions.rst:723 cc05b36c964b4065952275eeb2a4f884
 msgid ""
 "Changed in version 1.16.0 Annotations are no longer implicitly cleaned by"
 " this method. Use :meth:`Annot.clean_contents` separately."
-msgstr "버전 1.16.0에서 변경됨: 주석은 이 메서드에 의해 더 이상 암시적으로 정리되지 않습니다. :meth:`Annot.clean_contents` 를 별도로 사용하세요."
+msgstr ""
+"버전 1.16.0에서 변경됨: 주석은 이 메서드에 의해 더 이상 암시적으로 정리되지 않습니다. "
+":meth:`Annot.clean_contents` 를 별도로 사용하세요."
 
-#: ../../functions.rst:725 fb9142fcb2a94012a3fdd682a262552a
+#: ../../functions.rst:725 cef2a0b0383148ddb6c4fb2a831d9901
 msgid ""
 "*(new in v1.17.6)* if true, synchronization between resources and their "
 "actual use in the contents object is snychronized. For example, if a font"
 " is not actually used for any text of the page, then it will be deleted "
 "from the `/Resources/Font` object."
-msgstr "*(v1.17.6의 새로운 기능)* true이면 리소스와 콘텐츠 객체에서의 실제 사용 간의 동기화가 이루어집니다. 예를 들어, 글꼴이 페이지의 어떤 텍스트에도 실제로 사용되지 않으면 `/Resources/Font` 객체에서 삭제됩니다."
+msgstr ""
+"*(v1.17.6의 새로운 기능)* true이면 리소스와 콘텐츠 객체에서의 실제 사용 간의 동기화가 이루어집니다. 예를 들어, "
+"글꼴이 페이지의 어떤 텍스트에도 실제로 사용되지 않으면 `/Resources/Font` 객체에서 삭제됩니다."
 
-#: ../../functions.rst:727 fc916fcfc1a14c108f31a9985fbb06f9
+#: ../../functions.rst:727 e719525edd8b42b5adb8783ffc991f7f
 msgid ""
 "This is a complex function which may generate large amounts of new data "
 "and render old data unused. It is **not recommended** using it together "
 "with the **incremental save** option. Also note that the resulting "
 "singleton new */Contents* object is **uncompressed**. So you should save "
 "to a **new file** using options *\"deflate=True, garbage=3\"*."
-msgstr "이것은 대량의 새 데이터를 생성하고 이전 데이터를 사용하지 않게 만들 수 있는 복잡한 함수입니다. **증분 저장** 옵션과 함께 사용하는 것은 **권장되지 않습니다**. 또한 결과 단일 */Contents* 객체는 **압축되지 않습니다**. 따라서 *\"deflate=True, garbage=3\"* 옵션을 사용하여 **새 파일** 에 저장해야 합니다."
+msgstr ""
+"이것은 대량의 새 데이터를 생성하고 이전 데이터를 사용하지 않게 만들 수 있는 복잡한 함수입니다. **증분 저장** 옵션과 함께 "
+"사용하는 것은 **권장되지 않습니다**. 또한 결과 단일 */Contents* 객체는 **압축되지 않습니다**. 따라서 "
+"*\"deflate=True, garbage=3\"* 옵션을 사용하여 **새 파일** 에 저장해야 합니다."
 
-#: ../../functions.rst:729 ee091ea4bbad4137bdf94b65bf7e1505
+#: ../../functions.rst:729 1b0ce37aead64fe190eb5958ec06bf93
 msgid ""
 "Do not any longer use this method to ensure correct insertions on PDF "
 "pages. Since PyMuPDF version 1.24.2 this is taken care of automatically."
-msgstr "PDF 페이지에 올바른 삽입을 보장하기 위해 이 메서드를 더 이상 사용하지 마세요. PyMuPDF 버전 1.24.2부터는 이것이 자동으로 처리됩니다."
+msgstr ""
+"PDF 페이지에 올바른 삽입을 보장하기 위해 이 메서드를 더 이상 사용하지 마세요. PyMuPDF 버전 1.24.2부터는 이것이 "
+"자동으로 처리됩니다."
 
-#: ../../functions.rst:735 da8e22bf756d4516a6435fef2ee406ef
+#: ../../functions.rst:735 159e3c751b6f49b8a75890a4fd563d0a
 msgid ""
 "*New in version 1.17.0.* Return the concatenation of all :data:`contents`"
 " objects associated with the page -- without cleaning or otherwise "
 "modifying them. Use this method whenever you need to parse this source in"
 " its entirety without having to bother how many separate contents objects"
 " exist."
-msgstr "*버전 1.17.0의 새로운 기능.* 페이지와 연결된 모든 :data:`contents` 객체의 연결을 반환합니다 -- 정리하거나 수정하지 않고. 별도의 콘텐츠 객체가 몇 개나 있는지 신경 쓸 필요 없이 전체 소스를 구문 분석해야 할 때마다 이 메서드를 사용하세요."
+msgstr ""
+"*버전 1.17.0의 새로운 기능.* 페이지와 연결된 모든 :data:`contents` 객체의 연결을 반환합니다 -- 정리하거나 "
+"수정하지 않고. 별도의 콘텐츠 객체가 몇 개나 있는지 신경 쓸 필요 없이 전체 소스를 구문 분석해야 할 때마다 이 메서드를 "
+"사용하세요."
 
-#: ../../functions.rst:744 0ea4768fd42d4fcdb406a86bb35b0b3c
+#: ../../functions.rst:744 f820b3ca222e41ea9342c19ea2280afc
 msgid ""
 "Clean the :data:`contents` streams associated with the annotation. This "
 "is the same type of action which :meth:`Page.clean_contents` performs -- "
 "just restricted to this annotation."
-msgstr "주석과 연결된 :data:`contents` 스트림을 정리합니다. 이것은 :meth:`Page.clean_contents` 가 수행하는 것과 동일한 작업입니다 -- 단지 이 주석으로 제한됩니다."
+msgstr ""
+"주석과 연결된 :data:`contents` 스트림을 정리합니다. 이것은 :meth:`Page.clean_contents` 가 "
+"수행하는 것과 동일한 작업입니다 -- 단지 이 주석으로 제한됩니다."
 
-#: ../../functions.rst:751 c48de20f6397476e88558a5f14a2c96c
+#: ../../functions.rst:751 057944b45dbf427097061759690378f5
 msgid ""
 "Return a list of character glyphs and their widths for a font that is "
 "present in the document. A font must be specified by its PDF cross "
 "reference number :data:`xref`. This function is called automatically from"
 " :meth:`Page.insert_text` and :meth:`Page.insert_textbox`. So you should "
 "rarely need to do this yourself."
-msgstr "문서에 있는 글꼴에 대한 문자 글리프 및 너비 목록을 반환합니다. 글꼴은 PDF 교차 참조 번호 :data:`xref` 로 지정해야 합니다. 이 함수는 :meth:`Page.insert_text` 및 :meth:`Page.insert_textbox` 에서 자동으로 호출됩니다. 따라서 직접 수행할 필요는 거의 없습니다."
+msgstr ""
+"문서에 있는 글꼴에 대한 문자 글리프 및 너비 목록을 반환합니다. 글꼴은 PDF 교차 참조 번호 :data:`xref` 로 지정해야"
+" 합니다. 이 함수는 :meth:`Page.insert_text` 및 :meth:`Page.insert_textbox` 에서 "
+"자동으로 호출됩니다. 따라서 직접 수행할 필요는 거의 없습니다."
 
-#: ../../functions.rst:753 005b7266f7284e90bab8b77be14c642e
+#: ../../functions.rst:753 f608a923d1b240efb8dc4a1e2ad76be7
 msgid ""
 "cross reference number of a font embedded in the PDF. To find a font "
 ":data:`xref`, use e.g. *doc.get_page_fonts(pno)* of page number *pno* and"
 " take the first entry of one of the returned list entries."
-msgstr "PDF에 포함된 글꼴의 교차 참조 번호. 글꼴 :data:`xref` 를 찾으려면 예를 들어 페이지 번호 *pno* 의 *doc.get_page_fonts(pno)* 를 사용하고 반환된 목록 항목 중 하나의 첫 번째 항목을 가져옵니다."
+msgstr ""
+"PDF에 포함된 글꼴의 교차 참조 번호. 글꼴 :data:`xref` 를 찾으려면 예를 들어 페이지 번호 *pno* 의 "
+"*doc.get_page_fonts(pno)* 를 사용하고 반환된 목록 항목 중 하나의 첫 번째 항목을 가져옵니다."
 
-#: ../../functions.rst:755 c40931be83a048c2b0e4d6547935db08
+#: ../../functions.rst:755 18a15dfc86674db5b7ddd87e97061c89
 msgid ""
 "limits the number of returned entries. The default of 256 is enforced for"
 " all fonts that only support 1-byte characters, so-called \"simple "
 "fonts\" (checked by this method). All :ref:`Base-14-Fonts` are simple "
 "fonts."
-msgstr "반환된 항목 수를 제한합니다. 256의 기본값은 1바이트 문자만 지원하는 소위 \"simple fonts\"(이 메서드로 확인됨)에 대해 적용됩니다. 모든 :ref:`Base-14-Fonts` 는 simple fonts입니다."
+msgstr ""
+"반환된 항목 수를 제한합니다. 256의 기본값은 1바이트 문자만 지원하는 소위 \"simple fonts\"(이 메서드로 확인됨)에"
+" 대해 적용됩니다. 모든 :ref:`Base-14-Fonts` 는 simple fonts입니다."
 
-#: ../../functions.rst:758 c0afe718bd2442b18653b0b77f36b88c
+#: ../../functions.rst:758 374d9ca3517b46e79684baafbe452c8a
 msgid ""
 "a list of *limit* tuples. Each character *c* has an entry  *(g, w)* in "
 "this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is "
@@ -1812,181 +2141,203 @@ msgid ""
 " actual width for some :data:`fontsize` can be calculated as *w * "
 "fontsize*. For simple fonts, the *g* entry can always be safely ignored. "
 "In all other cases *g* is the basis for graphically representing *c*."
-msgstr "*limit* 튜플 목록. 각 문자 *c* 는 *ord(c)* 인덱스를 가진 이 목록에 *(g, w)* 항목을 가집니다. 튜플의 항목 *g* (정수)는 문자의 글리프 id이고, float *w* 는 정규화된 너비입니다. 일부 :data:`fontsize` 에 대한 실제 너비는 *w * fontsize* 로 계산할 수 있습니다. simple fonts의 경우 *g* 항목은 항상 안전하게 무시할 수 있습니다. 다른 모든 경우 *g* 는 *c* 를 그래픽으로 표현하는 기반입니다."
+msgstr ""
+"*limit* 튜플 목록. 각 문자 *c* 는 *ord(c)* 인덱스를 가진 이 목록에 *(g, w)* 항목을 가집니다. 튜플의 "
+"항목 *g* (정수)는 문자의 글리프 id이고, float *w* 는 정규화된 너비입니다. 일부 :data:`fontsize` 에 "
+"대한 실제 너비는 *w * fontsize* 로 계산할 수 있습니다. simple fonts의 경우 *g* 항목은 항상 안전하게 "
+"무시할 수 있습니다. 다른 모든 경우 *g* 는 *c* 를 그래픽으로 표현하는 기반입니다."
 
-#: ../../functions.rst:760 d14f388f645f450e95a675c15496f9d0
+#: ../../functions.rst:760 9a82c0fef9f946ee931dcac730381625
 msgid "This function calculates the pixel width of a string called *text*::"
 msgstr "이 함수는 *text* 라는 문자열의 픽셀 너비를 계산합니다::"
 
-#: ../../functions.rst:772 8580164da36b4e0c9468ee8d665d36ac
+#: ../../functions.rst:772 1d63e80ff1044164bb37ffb75d916ca9
 msgid "New in version 1.14.14"
 msgstr "*버전 1.14.14의 새로운 기능*"
 
-#: ../../functions.rst:774 e5ce7ef74ebc4d4f8905c40e607a49ce
+#: ../../functions.rst:774 0499a7e490f54f6f9c36861c661dd5dd
 msgid ""
 "PDF only: Check whether the object represented by :data:`xref` is a "
 ":data:`stream` type. Return is ``False`` if not a PDF or if the number is"
 " outside the valid xref range."
-msgstr "PDF 전용: :data:`xref` 로 표현된 객체가 :data:`stream` 타입인지 확인합니다. PDF가 아니거나 숫자가 유효한 xref 범위를 벗어나면 ``False`` 를 반환합니다."
+msgstr ""
+"PDF 전용: :data:`xref` 로 표현된 객체가 :data:`stream` 타입인지 확인합니다. PDF가 아니거나 숫자가 "
+"유효한 xref 범위를 벗어나면 ``False`` 를 반환합니다."
 
-#: ../../functions.rst:776 2cbd0ce6bddd4eb7894ddab3fda4d4c8
+#: ../../functions.rst:776 6ece02cfe6fd4a0ebd3c0babd63401bc
 msgid ":data:`xref` number."
 msgstr ":data:`xref` 번호."
 
-#: ../../functions.rst:778 9a6d0c88e56045e394739af6408a6b4e
+#: ../../functions.rst:778 1ae7201b78294f7cb4822bbe2b16c89e
 msgid ""
 "``True`` if the object definition is followed by data wrapped in keyword "
 "pair *stream*, *endstream*."
 msgstr "객체 정의 뒤에 키워드 쌍 *stream*, *endstream* 으로 둘러싸인 데이터가 오면 ``True``."
 
-#: ../../functions.rst:784 5b978581dd6b490e8af4afbf4586ca56
+#: ../../functions.rst:784 824395dad4454308bb3acc094f1e1f49
 msgid ""
 "Increase the :data:`xref` by one entry and return that number. This can "
 "then be used to insert a new object."
 msgstr ":data:`xref` 를 하나의 항목만큼 증가시키고 해당 번호를 반환합니다. 이것은 새 객체를 삽입하는 데 사용할 수 있습니다."
 
-#: ../../functions.rst:786 948cbb06043d486e90adbfb3b3275fa8
+#: ../../functions.rst:786 b74f53e6f461419798c38d5d157d1ddb
 msgid ""
 "int :returns: the number of the new :data:`xref` entry. Please note, that"
 " only a new entry in the PDF's cross reference table is created. At this "
 "point, there will not yet exist a PDF object associated with it. To "
 "create an (empty) object with this number use `doc.update_xref(xref, "
 "\"<<>>\")`."
-msgstr "int :returns: 새 :data:`xref` 항목의 번호. PDF의 교차 참조 테이블에만 새 항목이 생성됩니다. 이 시점에는 아직 연결된 PDF 객체가 존재하지 않습니다. 이 번호로 (빈) 객체를 생성하려면 `doc.update_xref(xref, \"<<>>\")` 를 사용하세요."
+msgstr ""
+"int :returns: 새 :data:`xref` 항목의 번호. PDF의 교차 참조 테이블에만 새 항목이 생성됩니다. 이 시점에는"
+" 아직 연결된 PDF 객체가 존재하지 않습니다. 이 번호로 (빈) 객체를 생성하려면 `doc.update_xref(xref, "
+"\"<<>>\")` 를 사용하세요."
 
-#: ../../functions.rst:793 e932ac5caa9f4c298a13a6d379dd7a51
+#: ../../functions.rst:793 31b915dba1a44258a1cf9373421e9f58
 msgid "Return length of :data:`xref` table."
 msgstr ":data:`xref` 테이블의 길이를 반환합니다."
 
-#: ../../functions.rst:796 f840df5df4b545b1bbf730bf184c5803
+#: ../../functions.rst:796 aeeeacbd76704c80be24a494e9f339de
 msgid "the number of entries in the :data:`xref` table."
 msgstr ":data:`xref` 테이블의 항목 수."
 
-#: ../../functions.rst:802 b5d9bd2f14554b25bbb8fb9470c51da6
+#: ../../functions.rst:802 994bdeb47ece44ed86fdb81eee8a599d
 msgid ""
 "Compute the quadrilateral of a text span extracted via options \"dict\" "
 "or \"rawdict\" of :meth:`Page.get_text`."
-msgstr ":meth:`Page.get_text` 의 \"dict\" 또는 \"rawdict\" 옵션을 통해 추출된 텍스트 스팬의 사각형을 계산합니다."
+msgstr ""
+":meth:`Page.get_text` 의 \"dict\" 또는 \"rawdict\" 옵션을 통해 추출된 텍스트 스팬의 사각형을 "
+"계산합니다."
 
-#: ../../functions.rst:804 91a864a4261a4b1abf61f04339ba4ede
+#: ../../functions.rst:804 ff5b2345f37b49ada7b219718699d919
 msgid ""
 "`line[\"dir\"]` of the owning line.  Use `None` for a span from "
 ":meth:`Page.get_texttrace`."
-msgstr "소유 라인의 `line[\"dir\"]`. :meth:`Page.get_texttrace` 에서 가져온 스팬의 경우 `None` 을 사용하세요."
+msgstr ""
+"소유 라인의 `line[\"dir\"]`. :meth:`Page.get_texttrace` 에서 가져온 스팬의 경우 `None` 을"
+" 사용하세요."
 
 #: ../../functions.rst:805 ../../functions.rst:815 ../../functions.rst:826
-#: 7033d11e092540f4ba156c04a297c691 74f50cf2036e4339af0cf16e7378d340
-#: 994444b97874454798b14763f2d63fca
+#: 3de95b885fdb4ae3af31bdbf11c40283 4502b3c80d88444093eabb36474662d2
+#: 843e47e4ce234f268a145146bbef3077
 msgid "the span."
 msgstr "스팬."
 
-#: ../../functions.rst:806 ddc5c01bb3e44f12bf7284bf4fe74e81
+#: ../../functions.rst:806 58171abb89e5477197c19eda22c274ae
 msgid ""
 "the :ref:`Quad` of the span, usable for text marker annotations "
 "('Highlight', etc.)."
 msgstr "스팬의 :ref:`Quad`, 텍스트 마커 주석('Highlight' 등)에 사용 가능."
 
-#: ../../functions.rst:812 f9901afa0a67408ebc90c04e01c93f8a
+#: ../../functions.rst:812 7ab76daee93b418ead8cbe0eb161c1c0
 msgid ""
 "Compute the quadrilateral of a text character extracted via option "
 "\"rawdict\" of :meth:`Page.get_text`."
 msgstr ":meth:`Page.get_text` 의 \"rawdict\" 옵션을 통해 추출된 텍스트 문자의 사각형을 계산합니다."
 
 #: ../../functions.rst:814 ../../functions.rst:825
-#: 67860855da1c47c8828ebecc90f766d6 7da81809c8ba42679d5e884d49b6878f
+#: cbcfe2d2f449448fab8201428f6897c5 d64beaf47b2f47e78d08e91ac32d1e07
 msgid ""
 "`line[\"dir\"]` of the owning line. Use `None` for a span from "
 ":meth:`Page.get_texttrace`."
-msgstr "소유 라인의 `line[\"dir\"]`. :meth:`Page.get_texttrace` 에서 가져온 스팬의 경우 `None` 을 사용하세요."
+msgstr ""
+"소유 라인의 `line[\"dir\"]`. :meth:`Page.get_texttrace` 에서 가져온 스팬의 경우 `None` 을"
+" 사용하세요."
 
-#: ../../functions.rst:816 131dbbd284734ed089c4778deb4dd003
+#: ../../functions.rst:816 0de58fc1e9b343c2b2d6d719c82d5cc9
 msgid "the character."
 msgstr "문자."
 
-#: ../../functions.rst:817 f88cafc7c32a4d6fad1b6135cd5cc40f
+#: ../../functions.rst:817 b0444b9caf674df4a28978df8d452580
 msgid ""
 "the :ref:`Quad` of the character, usable for text marker annotations "
 "('Highlight', etc.)."
 msgstr "문자의 :ref:`Quad`, 텍스트 마커 주석('Highlight' 등)에 사용 가능."
 
-#: ../../functions.rst:823 d59e0653bc4246c7a9357ca70c5860b0
+#: ../../functions.rst:823 2383e87ea4f74ca3b4dbf8fac78fae8c
 msgid ""
 "Compute the quadrilateral of a subset of characters of a span extracted "
 "via option \"rawdict\" of :meth:`Page.get_text`."
 msgstr ":meth:`Page.get_text` 의 \"rawdict\" 옵션을 통해 추출된 스팬의 문자 하위 집합의 사각형을 계산합니다."
 
-#: ../../functions.rst:827 dadf644469074a32aa88fc7fdcf7698b
+#: ../../functions.rst:827 fe3fd7ff9c464621843bea5d3d910e20
 msgid ""
 "the characters to consider. If given, the selected extraction option must"
 " be \"rawdict\"."
 msgstr "고려할 문자. 주어진 경우 선택된 추출 옵션은 \"rawdict\"여야 합니다."
 
-#: ../../functions.rst:828 dfa12d94ceb3431eb63330adacb7bfe9
+#: ../../functions.rst:828 80bc82b9eab8453389713a6186de07d5
 msgid ""
 "the :ref:`Quad` of the selected characters, usable for text marker "
 "annotations ('Highlight', etc.)."
 msgstr "선택된 문자의 :ref:`Quad`, 텍스트 마커 주석('Highlight' 등)에 사용 가능."
 
-#: ../../functions.rst:834 6aa28bd6817943bfbb2746f7a6243580
+#: ../../functions.rst:834 5a8cf6fbcf4d4ef1be7317c9ccef6471
 msgid ""
 "Compute the quadrilateral of a subset of spans of a text line extracted "
 "via options \"dict\" or \"rawdict\" of :meth:`Page.get_text`."
-msgstr ":meth:`Page.get_text` 의 \"dict\" 또는 \"rawdict\" 옵션을 통해 추출된 텍스트 라인의 스팬 하위 집합의 사각형을 계산합니다."
+msgstr ""
+":meth:`Page.get_text` 의 \"dict\" 또는 \"rawdict\" 옵션을 통해 추출된 텍스트 라인의 스팬 하위 "
+"집합의 사각형을 계산합니다."
 
-#: ../../functions.rst:836 78daeef8140c41a8a9c0b8b6c4532d1b
+#: ../../functions.rst:836 c22d97f050f94943b1509a1116b1ec58
 msgid "the line."
 msgstr "라인."
 
-#: ../../functions.rst:837 e903ee7d5d594fc1811c896806a6bb8e
+#: ../../functions.rst:837 93ca3f15067647d68628fc26d746709c
 msgid ""
 "a sub-list of `line[\"spans\"]`. If omitted, the full line quad will be "
 "returned."
 msgstr "`line[\"spans\"]` 의 하위 목록. 생략하면 전체 라인 쿼드가 반환됩니다."
 
-#: ../../functions.rst:838 4d44abbf27ac4dd98103b18718b1b07a
+#: ../../functions.rst:838 7bd8eeabe2254422bf223a1658cb6d04
 msgid ""
 "the :ref:`Quad` of the selected line spans, usable for text marker "
 "annotations ('Highlight', etc.)."
 msgstr "선택된 라인 스팬의 :ref:`Quad`, 텍스트 마커 주석('Highlight' 등)에 사용 가능."
 
-#: ../../functions.rst:844 4afcc06f3e38430bafe222f1079b22a0
+#: ../../functions.rst:844 64e462661be944f3a62a6df56af9d839
 msgid "Detect Tesseract language support folder."
 msgstr "Tesseract 언어 지원 폴더 감지."
 
-#: ../../functions.rst:846 cab287431498493d97889bd9dc044f9d
+#: ../../functions.rst:846 36cd291815a54fe890dfc549855cb135
 msgid ""
 "This function is used to enable OCR via Tesseract even if the language "
 "support folder is not specified directly or in environment variable "
 "TESSDATA_PREFIX."
-msgstr "이 함수는 언어 지원 폴더가 직접 또는 환경 변수 TESSDATA_PREFIX에 지정되지 않은 경우에도 Tesseract를 통해 OCR을 활성화하는 데 사용됩니다."
+msgstr ""
+"이 함수는 언어 지원 폴더가 직접 또는 환경 변수 TESSDATA_PREFIX에 지정되지 않은 경우에도 Tesseract를 통해 "
+"OCR을 활성화하는 데 사용됩니다."
 
-#: ../../functions.rst:850 9ae2a9e271bd4bee918746c9384d309b
+#: ../../functions.rst:850 9df72e40b69a45bf8734dc507588842b
 msgid "If <tessdata> is set we return it directly."
 msgstr "<tessdata>가 설정되어 있으면 직접 반환합니다."
 
-#: ../../functions.rst:852 ff58521ec09244cf9af0e5556f7a846f
+#: ../../functions.rst:852 6ad23f9268db4f50b930607a1e593e11
 msgid "Otherwise we return `os.environ['TESSDATA_PREFIX']` if set."
 msgstr "그렇지 않으면 설정된 경우 `os.environ['TESSDATA_PREFIX']` 를 반환합니다."
 
-#: ../../functions.rst:854 e6350e60bfa84e9e9bc83ba51e45b115
+#: ../../functions.rst:854 81a272ead43746849c211778e4f173f6
 msgid ""
 "Otherwise we search for a Tesseract installation and return its language "
 "support folder."
 msgstr "그렇지 않으면 Tesseract 설치를 검색하고 언어 지원 폴더를 반환합니다."
 
-#: ../../functions.rst:857 0e05c86bfe6f46f1b4451934cd24174b
+#: ../../functions.rst:857 05770e4eb5f248e1b9c0b632023d3c3e
 msgid "Otherwise we raise an exception."
 msgstr "그렇지 않으면 예외를 발생시킵니다."
 
-#: ../../functions.rst:867 ec04b5d7ae7c4b2698bdbf79b6fee421
+#: ../../functions.rst:867 6165db22dfb447e784347e5fffeb9159
 msgid ""
 "Return the (unique) infinite rectangle `Rect(-2147483648.0, "
 "-2147483648.0, 2147483520.0, 2147483520.0)`, resp. the :ref:`IRect` and "
 ":ref:`Quad` counterparts. It is the largest possible rectangle: all valid"
 " rectangles are contained in it."
-msgstr "(유일한) 무한 사각형 `Rect(-2147483648.0, -2147483648.0, 2147483520.0, 2147483520.0)` 또는 이에 해당하는 :ref:`IRect` 및 :ref:`Quad` 를 반환합니다. 이것은 가능한 가장 큰 사각형입니다: 모든 유효한 사각형이 포함됩니다."
+msgstr ""
+"(유일한) 무한 사각형 `Rect(-2147483648.0, -2147483648.0, 2147483520.0, "
+"2147483520.0)` 또는 이에 해당하는 :ref:`IRect` 및 :ref:`Quad` 를 반환합니다. 이것은 가능한 가장 "
+"큰 사각형입니다: 모든 유효한 사각형이 포함됩니다."
 
-#: ../../functions.rst:877 0089e42de5e24fdc9314358b9f612356
+#: ../../functions.rst:877 0a193887c7ac4df6b78c43a679165d96
 msgid ""
 "Return the \"standard\" empty and invalid rectangle `Rect(2147483520.0, "
 "2147483520.0, -2147483648.0, -2147483648.0)` resp. quad. Its top-left and"
@@ -1994,22 +2345,30 @@ msgid ""
 "rectangle. It will e.g. be used to indicate empty bboxes in "
 "`page.get_text(\"dict\")` dictionaries. There are however infinitely many"
 " empty or invalid rectangles."
-msgstr "\"표준\" 빈 및 유효하지 않은 사각형 `Rect(2147483520.0, 2147483520.0, -2147483648.0, -2147483648.0)` 또는 이에 해당하는 쿼드를 반환합니다. 왼쪽 위 및 오른쪽 아래 점 값이 무한 사각형과 비교하여 반대입니다. 예를 들어 `page.get_text(\"dict\")` 딕셔너리에서 빈 bbox를 나타내는 데 사용됩니다. 그러나 무한히 많은 빈 또는 유효하지 않은 사각형이 있습니다."
+msgstr ""
+"\"표준\" 빈 및 유효하지 않은 사각형 `Rect(2147483520.0, 2147483520.0, -2147483648.0, "
+"-2147483648.0)` 또는 이에 해당하는 쿼드를 반환합니다. 왼쪽 위 및 오른쪽 아래 점 값이 무한 사각형과 비교하여 "
+"반대입니다. 예를 들어 `page.get_text(\"dict\")` 딕셔너리에서 빈 bbox를 나타내는 데 사용됩니다. 그러나 "
+"무한히 많은 빈 또는 유효하지 않은 사각형이 있습니다."
 
-#: ../../functions.rst:883 fea470f568524b038bb0e30aed353ec9
+#: ../../functions.rst:883 57941cc8bfe54662a58baa544596de42
 msgid ""
 "Returns a dict mapping lower-case color name to `(red, green, blue)` "
 "tuple, and `red`, `green`, `blue` are floats in range 0..1."
-msgstr "소문자 색상 이름을 `(red, green, blue)` 튜플에 매핑하는 딕셔너리를 반환하며, `red`, `green`, `blue` 는 0..1 범위의 float입니다."
+msgstr ""
+"소문자 색상 이름을 `(red, green, blue)` 튜플에 매핑하는 딕셔너리를 반환하며, `red`, `green`, "
+"`blue` 는 0..1 범위의 float입니다."
 
-#: ../../functions.rst:888 c23cf90537d54067a5727d87647c89d2
+#: ../../functions.rst:888 501128a84def4aeb9ded0eb35633124b
 msgid ""
 "Returns a list of `(colorname, red, green, blue)` tuples, where "
 "`colorname` is upper case and `red`, `green`, `blue` are integers in "
 "range 0..255."
-msgstr "`(colorname, red, green, blue)` 튜플 목록을 반환하며, 여기서 `colorname` 은 대문자이고 `red`, `green`, `blue` 는 0..255 범위의 정수입니다."
+msgstr ""
+"`(colorname, red, green, blue)` 튜플 목록을 반환하며, 여기서 `colorname` 은 대문자이고 "
+"`red`, `green`, `blue` 는 0..255 범위의 정수입니다."
 
-#: ../../footer.rst:46 e369c07a6dfc4a3d9e7f48a78f52b9bf
+#: ../../footer.rst:57 3f2e7072cb5c4a93ab763b29d4244bc2
 msgid "This documentation covers all versions up to |version|."
 msgstr "이 문서는 |version|까지의 모든 버전을 다룹니다."
 
