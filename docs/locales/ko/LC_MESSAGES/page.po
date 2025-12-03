@@ -3280,7 +3280,7 @@ msgid ""
 msgstr ""
 "예약된 글꼴 이름은 대소문자를 혼합하여 지정할 수 있으며 여전히 올바른 내장 글꼴 정의와 일치합니다: \"helv\", "
 "\"Helv\", \"HELV\", \"Helvetica\" 등의 글꼴 이름은 모두 동일한 글꼴 정의 \"Helvetica\"로 "
-"이어집니다. 하지만 :ref:`Page` 관점에서 이것들은 **다른 참조**입니다. 페이지에서 동일한 글꼴의 서로 다른 "
+"이어집니다. 하지만 :ref:`Page` 관점에서 이것들은 **다른 참조** 입니다. 페이지에서 동일한 글꼴의 서로 다른 "
 "*encoding* 변형(라틴어, 그리스어, 키릴 문자)을 사용할 때 이 사실을 활용할 수 있습니다."
 
 #: ../../page.rst:1164 ef07701a528349508e27adfd4b1b8ed5
@@ -5507,7 +5507,7 @@ msgstr ""
 
 #: ../../page.rst:1973 483d3d2a28a64e1db8c84814f5b62553
 msgid "These changes are **permanent** and cannot be reverted."
-msgstr "이러한 변경 사항은 **영구적**이며 되돌릴 수 없습니다."
+msgstr "이러한 변경 사항은 **영구적** 이며 되돌릴 수 없습니다."
 
 #: ../../page.rst:1977 49b350e20d564e5ca4be60761eebd7f6
 msgid ""
@@ -5597,7 +5597,7 @@ msgid ""
 "<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
 "/combine-pages/combine.py>`_),"
 msgstr ""
-"기존 PDF 파일의 \"n-up\" 버전 생성, 여러 입력 페이지를 **하나의 출력 페이지**로 결합(예제 `combine.py "
+"기존 PDF 파일의 \"n-up\" 버전 생성, 여러 입력 페이지를 **하나의 출력 페이지** 로 결합(예제 `combine.py "
 "<https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples"
 "/combine-pages/combine.py>`_ 참조),"
 
@@ -6533,7 +6533,7 @@ msgid ""
 "potentially being invisible or only partially visible if the cropbox "
 "(representing the visible page part) is smaller."
 msgstr ""
-"이전 알고리즘은 이미지를 이 교차점으로 **축소**시켰습니다. 이제 이미지는 :attr:`Page.mediabox` 의 어디에나 있을 수 있으며, cropbox(보이는 페이지 부분을 나타냄)가 더 작으면 보이지 않거나 부분적으로만 보일 수 있습니다."
+"이전 알고리즘은 이미지를 이 교차점으로 **축소** 시켰습니다. 이제 이미지는 :attr:`Page.mediabox` 의 어디에나 있을 수 있으며, cropbox(보이는 페이지 부분을 나타냄)가 더 작으면 보이지 않거나 부분적으로만 보일 수 있습니다."
 
 #: ../../page.rst:2533 bb430f8f65514d70b8096713c386f20f
 msgid ""

@@ -1684,7 +1684,7 @@ msgstr "1: 스트로크 텍스트 -- `1 Tr` 와 동일하며, 문자 경계만 �
 
 #: ../../functions.rst:617 d2fc5c83a61a4d4f8edd462b343a794f
 msgid "3: Ignored text -- equivalent to `3 Tr` (hidden text)."
-msgstr "3: 무시된 텍스트 -- `3 Tr`(숨겨진 텍스트)와 동일합니다."
+msgstr "3: 무시된 텍스트 -- `3 Tr` (숨겨진 텍스트)와 동일합니다."
 
 #: ../../functions.rst:619 82c0b57a08e74995b7bfc0b18220c635
 #, python-format
@@ -2340,5 +2340,5 @@ msgstr ""
 
 #: ../../footer.rst:57 3f2e7072cb5c4a93ab763b29d4244bc2
 msgid "This documentation covers all versions up to |version|."
-msgstr "이 문서는 |version|까지의 모든 버전을 다룹니다."
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 

@@ -133,7 +133,7 @@ msgid ""
 " rectangle. It is mainly used for technical purposes -- e.g. when a "
 "function call should ignore a formally required rectangle argument. This "
 "rectangle is not empty."
-msgstr "**정확히 하나의 \"무한\" 사각형**이 있으며, `x0 = y0 = FZ_MIN_INF_RECT` 및 `x1 = y1 = FZ_MAX_INF_RECT` 로 정의됩니다. 이것은 다른 모든 사각형을 포함합니다. 이것은 주로 기술적 목적으로 사용됩니다 -- 예를 들어 함수 호출이 형식적으로 필요한 사각형 인수를 무시해야 할 때. 이 사각형은 비어 있지 않습니다."
+msgstr "**정확히 하나의 \"무한\" 사각형** 이 있으며, `x0 = y0 = FZ_MIN_INF_RECT` 및 `x1 = y1 = FZ_MAX_INF_RECT` 로 정의됩니다. 이것은 다른 모든 사각형을 포함합니다. 이것은 주로 기술적 목적으로 사용됩니다 -- 예를 들어 함수 호출이 형식적으로 필요한 사각형 인수를 무시해야 할 때. 이 사각형은 비어 있지 않습니다."
 
 #: ../../rect.rst:32 3fd9c878f8a345649eececf661fa6d0d
 msgid ""
@@ -585,7 +585,7 @@ msgstr "사각형의 영역을 계산하며, 매개변수 없이는 *abs(rect)* 
 msgid ""
 "Specify required unit: respective squares of *px* (pixels, default), *in*"
 " (inches), *cm* (centimeters), or *mm* (millimeters)."
-msgstr "필요한 단위 지정: *px*(픽셀, 기본값), *in*(인치), *cm*(센티미터) 또는 *mm*(밀리미터)의 각각의 제곱."
+msgstr "필요한 단위 지정: *px* (픽셀, 기본값), *in* (인치), *cm* (센티미터) 또는 *mm* (밀리미터)의 각각의 제곱."
 
 #: ../../rect.rst:170 f1fdbdae13644bca9624eea1bed293ba
 msgid ""

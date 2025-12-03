@@ -5497,7 +5497,7 @@ msgstr ""
 
 #: ../../document.rst:1856 e236c029a3ea49058156a22bdd86f213
 msgid "Changed in v1.19.4: return a dictionary if `named == True`."
-msgstr "v1.19.4에서 변경됨: `named == True`이면 딕셔너리를 반환합니다."
+msgstr "v1.19.4에서 변경됨: `named == True` 이면 딕셔너리를 반환합니다."
 
 #: ../../document.rst:1858 20899e634db84dc9930c742969c15306
 msgid ""
@@ -5601,7 +5601,7 @@ msgstr ""
 
 #: ../../document.rst:1890 cfbc337f74774c9e873b301a3cadb5af
 msgid "PDF only: Return the :data:`xref` of the document's XML metadata."
-msgstr "PDF 전용: 문서의 XML 메타데이터의 :data:`xref`를 반환합니다."
+msgstr "PDF 전용: 문서의 XML 메타데이터의 :data:`xref` 를 반환합니다."
 
 #: ../../document.rst:1899 0e955bcdf14d4dbcb8657f98cd3631f4
 msgid ""

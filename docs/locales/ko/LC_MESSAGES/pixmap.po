@@ -924,7 +924,7 @@ msgid ""
 "sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. "
 "Default is ``None``. For example, a typical choice for RGB would be "
 "`opaque=(255, 255, 255)` (white)."
-msgstr "알파 값을 무시하고 이 색상을 완전히 투명하게 설정합니다. :attr:`Pixmap.n` 길이의 `range(256)` 정수 시퀀스. 기본값은 ``None`` 입니다. 예를 들어 RGB의 일반적인 선택은 `opaque=(255, 255, 255)`(흰색)입니다."
+msgstr "알파 값을 무시하고 이 색상을 완전히 투명하게 설정합니다. :attr:`Pixmap.n` 길이의 `range(256)` 정수 시퀀스. 기본값은 ``None`` 입니다. 예를 들어 RGB의 일반적인 선택은 `opaque=(255, 255, 255)` (흰색)입니다."
 
 #: ../../pixmap.rst:293 e617ef83731c4689a35511a90c29ceeb
 msgid ""
@@ -1176,7 +1176,7 @@ msgid ""
 "premultiplication, set this parameter to `True`. To learn about some "
 "background, e.g. look for `\"Premultiplied alpha\" on this page "
 "<https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_."
-msgstr "픽스맵의 색상 공간이 투명도가 있는 RGB인 경우, 알파 값이 이미 색상 구성 요소 빨강/녹색/파랑(소위 \"사전 곱셈\")에 곱해져 있을 수도 있고 아닐 수도 있습니다. 사전 곱셈을 취소하려면 이 매개변수를 `True` 로 설정하세요. 배경에 대한 자세한 내용은 예를 들어 이 페이지 <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 에서 `\"Premultiplied alpha\"` 를 찾아보세요."
+msgstr "픽스맵의 색상 공간이 투명도가 있는 RGB인 경우, 알파 값이 이미 색상 구성 요소 빨강/녹색/파랑(소위 \"사전 곱셈\")에 곱해져 있을 수도 있고 아닐 수도 있습니다. 사전 곱셈을 취소하려면 이 매개변수를 `True` 로 설정하세요. 배경에 대한 자세한 내용은 예를 들어 이 페이지 에서 `\"Premultiplied alpha\" <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_ 를 찾아보세요."
 
 #: ../../pixmap.rst:412 c5f67c82cc1b4a078d120281dc779a59
 msgid "For details on other parameters see the Pillow documentation."
@@ -1365,7 +1365,7 @@ msgid ""
 "The colorspace of the pixmap. This value may be ``None`` if the image is "
 "to be treated as a so-called *image mask* or *stencil mask* (currently "
 "happens for extracted PDF document images only)."
-msgstr "픽스맵의 색상 공간. 이미지가 소위 *이미지 마스크* 또는 *스텐실 마스크*로 처리되는 경우(현재 추출된 PDF 문서 이미지에만 적용) 이 값은 ``None`` 일 수 있습니다."
+msgstr "픽스맵의 색상 공간. 이미지가 소위 *이미지 마스크* 또는 *스텐실 마스크* 로 처리되는 경우(현재 추출된 PDF 문서 이미지에만 적용) 이 값은 ``None`` 일 수 있습니다."
 
 #: ../../pixmap.rst:491 b6cfc944281042b38f313e221d8208ee
 msgid ":ref:`Colorspace`"
@@ -1441,7 +1441,7 @@ msgid ""
 "example an RGB-rendered letter page has a samples size of almost 1.4 MB. "
 "So consider assigning a new variable to it or use the `memoryview` "
 "version :attr:`Pixmap.samples_mv` (new in v1.18.17)."
-msgstr "기본 데이터는 일반적으로 **큰** 메모리 영역이며, 이 속성에 접근할 때마다 `bytes` 복사본이 생성됩니다: 예를 들어 RGB로 렌더링된 레터 페이지는 samples 크기가 거의 1.4MB입니다. 따라서 새 변수에 할당하거나 `memoryview` 버전 :attr:`Pixmap.samples_mv`(v1.18.17에서 새로 추가됨)를 사용하세요."
+msgstr "기본 데이터는 일반적으로 **큰** 메모리 영역이며, 이 속성에 접근할 때마다 `bytes` 복사본이 생성됩니다: 예를 들어 RGB로 렌더링된 레터 페이지는 samples 크기가 거의 1.4MB입니다. 따라서 새 변수에 할당하거나 `memoryview` 버전 :attr:`Pixmap.samples_mv` (v1.18.17에서 새로 추가됨)를 사용하세요."
 
 #: ../../pixmap.rst:535 028c2991fa3746d8ba4fcb1363e0ac36
 msgid ""

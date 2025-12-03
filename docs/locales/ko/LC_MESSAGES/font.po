@@ -1024,5 +1024,5 @@ msgstr "내장 Python 모듈 `array` 는 속도와 낮은 메모리 요구 사�
 
 #: ../../footer.rst:46 3dc04747492b4b4bac6e2c6af8d83002
 msgid "This documentation covers all versions up to |version|."
-msgstr "이 문서는 |version|까지의 모든 버전을 다룹니다."
+msgstr "이 문서는 |version| 까지의 모든 버전을 다룹니다."
 

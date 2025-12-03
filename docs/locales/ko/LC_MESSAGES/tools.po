@@ -276,7 +276,7 @@ msgid ""
 "character, span, line or block bboxes that have a height of *font size*. "
 "If `False` (standard setting when PyMuPDF is imported), bbox height will "
 "be based on font properties and normally equal *line height*."
-msgstr "생략하거나 `None` 이면 현재 설정이 반환됩니다. 다른 값의 경우 *bool()* 함수가 적용되어 전역 변수가 설정됩니다. `True` 인 경우 :meth:`Page.search_for` 및 :meth:`Page.get_text` 메서드는 *글꼴 크기*의 높이를 가진 문자, 스팬, 줄 또는 블록 bbox를 반환합니다. `False` 인 경우(PyMuPDF를 가져올 때의 표준 설정) bbox 높이는 글꼴 속성을 기반으로 하며 일반적으로 *줄 높이*와 같습니다."
+msgstr "생략하거나 `None` 이면 현재 설정이 반환됩니다. 다른 값의 경우 *bool()* 함수가 적용되어 전역 변수가 설정됩니다. `True` 인 경우 :meth:`Page.search_for` 및 :meth:`Page.get_text` 메서드는 *글꼴 크기* 의 높이를 가진 문자, 스팬, 줄 또는 블록 bbox를 반환합니다. `False` 인 경우(PyMuPDF를 가져올 때의 표준 설정) bbox 높이는 글꼴 속성을 기반으로 하며 일반적으로 *줄 높이* 와 같습니다."
 
 #: ../../tools.rst:68 ../../tools.rst:81 ../../tools.rst:95
 #: a176f0944378445b9d91fe21cb93ad4d d1b2c5f192854ac09a19db50d3b38655
