@@ -231,7 +231,7 @@ msgstr "사용된 암호화 방법(있는 경우)"
 #: ../../tutorial.rst:82 520e1f5cffc3419faccbecacb778ad88
 #: adc5542c41534ce68fe9d02192b1f9e0
 msgid "author"
-msgstr "작성자"
+msgstr "author"
 
 #: ../../tutorial.rst:83 d593bfa2f3f1464ca98020a5d8cc2d74
 msgid "modDate"
@@ -244,12 +244,12 @@ msgstr "마지막 수정 날짜"
 #: ../../tutorial.rst:84 ac0f4c311d9d4f91b366556afa0eac07
 #: cad667882e9247ed9a8465e9e8f6f30e
 msgid "keywords"
-msgstr "키워드"
+msgstr "keywords"
 
 #: ../../tutorial.rst:85 4a12c1d082794891871985009346217e
 #: 9afee53342a24f749bd6b1695ceba4ca
 msgid "title"
-msgstr "제목"
+msgstr "title"
 
 #: ../../tutorial.rst:86 0659f2376ae84f0694559432c6acc6ab
 msgid "creationDate"
@@ -270,7 +270,7 @@ msgstr "생성 애플리케이션"
 #: ../../tutorial.rst:88 59f646e95f21440aab80a6d9eaee2cb5
 #: dfcc9986b7404e3ea4869973f3300afb
 msgid "subject"
-msgstr "주제"
+msgstr "subject"
 
 #: ../../tutorial.rst:91 e212f47f482f4ba086c347c1ee602818
 msgid ""
