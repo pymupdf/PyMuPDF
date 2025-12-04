@@ -2004,7 +2004,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `combine.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/combine-pages/combine.py>`_),
       * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/posterize-document/posterize.py>`_),
-      * include PDF-based vector images like company logos, watermarks, etc., see `svg-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/svg-logo.py>`_, which puts an SVG-based logo on each page.
+      * include PDF-based vector images like company logos, watermarks, etc., see `svg.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/insert-logo/svg.py>`_, which puts an SVG-based logo on each page.
 
       :arg rect_like rect: where to place the image on current page. Must be finite and its intersection with the page must not be empty.
       :arg docsrc: source PDF document containing the page. Must be a different document object, but may be the same file.
