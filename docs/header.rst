@@ -165,7 +165,7 @@
     </style>
 
     <div id="searchAndLangugeHolder">
-        <form class="sidebar-search-container top" method="get" action="search.html" role="search">
+        <form id="headerSearchWidget" class="sidebar-search-container top" method="get" action="search.html" role="search">
           <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
           <input type="hidden" name="check_keywords" value="yes">
           <input type="hidden" name="area" value="default">
@@ -201,7 +201,6 @@
     <script>
         // highlightSelectedLanguage
         var url_string = window.location.href;
-
 
         if (document.getElementsByTagName('html')[0].getAttribute('lang')=="en") {
             document.getElementById("button-select-en").style.backgroundColor = "#ff6600";

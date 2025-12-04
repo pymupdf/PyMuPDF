@@ -3,6 +3,13 @@
 
 .. _pymupdf-layout:
 
+.. raw:: html
+
+    <script>
+        document.getElementById("headerSearchWidget").action = '../search.html';
+    </script>
+
+
 
 PyMuPDF Layout
 ===========================================================================

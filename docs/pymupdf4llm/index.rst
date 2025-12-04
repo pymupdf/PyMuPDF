@@ -4,6 +4,13 @@
 .. _pymupdf4llm:
 
 
+.. raw:: html
+
+    <script>
+        document.getElementById("headerSearchWidget").action = '../search.html';
+    </script>
+
+
 PyMuPDF4LLM
 ===========================================================================
 

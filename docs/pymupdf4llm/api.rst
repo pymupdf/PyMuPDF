@@ -1,5 +1,11 @@
 .. include:: ../header.rst
 
+.. raw:: html
+
+    <script>
+        document.getElementById("headerSearchWidget").action = '../search.html';
+    </script>
+
 
 .. |PyMuPDFLayoutMode_Ignored| raw:: html
 
