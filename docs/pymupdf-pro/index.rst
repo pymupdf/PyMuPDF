@@ -1,8 +1,13 @@
 
 .. include:: ../header.rst
 
-
 .. _pymupdf-pro:
+
+.. raw:: html
+
+    <script>
+        document.getElementById("headerSearchWidget").action = '../search.html';
+    </script>
 
 PyMuPDF Pro
 =============
