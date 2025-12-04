@@ -434,13 +434,13 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 .. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-toc/import.py
 .. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-toc/export.py
 .. _Vector Image Support page: https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support
-.. _examples: https://github.com/pymupdf/PyMuPDF/tree/master/examples
+.. _examples: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples
 .. _Pillow documentation: https://Pillow.readthedocs.io
 .. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/browse-document/browse.py
 .. _PySimpleGUI: https://pypi.org/project/PySimpleGUI/
 .. _demo.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py
 .. _demo-lowlevel.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py
-.. _"MuPDF Explored": https://mupdf.com/docs/mupdf-explored.html
+.. _"MuPDF Explored": https://mupdf.com/docs/mupdf_explored.pdf
 .. _Artifex: https://www.artifex.com
 .. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/convert-document/convert.py
 .. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py
