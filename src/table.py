@@ -1531,7 +1531,7 @@ class Table:
 
     def extract(self, **kwargs) -> list:
         if not CHARS_MADE:
-            make_chars()
+            make_chars(self.page)
 
         chars = CHARS
         table_arr = []
