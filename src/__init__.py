@@ -7795,7 +7795,7 @@ class Page:
             txtpy = linklist[i]
             text = JM_StrAsChar(txtpy)
             if not text:
-                message("skipping bad link / annot item %i.", i)
+                message("skipping bad link / annot item %i." % i)
                 continue
             try:
                 annot = mupdf.pdf_add_object( page.doc(), JM_pdf_obj_from_str( page.doc(), text))
@@ -15907,7 +15907,7 @@ def JM_get_fontextension(doc, xref):
         elif mupdf.pdf_name_eq(obj, PDF_NAME('OpenType')):
             return "otf"
         else:
-            message("unhandled font type '%s'", mupdf.pdf_to_name(obj))
+            message("unhandled font type '%s'" % mupdf.pdf_to_name(obj))
 
     return "n/a"
 
