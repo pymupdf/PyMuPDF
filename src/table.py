@@ -110,6 +110,17 @@ TABLE_DETECTOR_FLAGS = (
 white_spaces = set(string.whitespace)  # for checking white space only cells
 
 
+def rect_in_rect(inner, outer):
+    """Check whether rectangle 'inner' is fully inside rectangle 'outer'."""
+    return (
+        1
+        and inner[0] >= outer[0]
+        and inner[1] >= outer[1]
+        and inner[2] <= outer[2]
+        and inner[3] <= outer[3]
+    )
+
+
 def _iou(r1, r2):
     """Compute intersection over union of two rectangles."""
     ix = max(0, min(r1[2], r2[2]) - max(r1[0], r2[0]))
@@ -126,7 +137,7 @@ def intersects_words_h(bbox, y, word_rects) -> bool:
     """Check whether any of the words in bbox are cut through by
     horizontal line y.
     """
-    return any(r.y0 < y < r.y1 for r in word_rects if r in bbox)
+    return any(r.y0 < y < r.y1 for r in word_rects if rect_in_rect(r, bbox))
 
 
 def get_table_dict_from_rect(textpage, rect):
@@ -182,7 +193,9 @@ def make_table_from_bbox(textpage, word_rects, rect):
     for i in range(len(nypos) - 1):
         row_box = pymupdf.Rect(bbox.x0, nypos[i], bbox.x1, nypos[i + 1])
         # Sub-select words in this row and sort them by left coordinate
-        row_words = sorted([r for r in word_rects if r in row_box], key=lambda r: r.x0)
+        row_words = sorted(
+            [r for r in word_rects if rect_in_rect(r, row_box)], key=lambda r: r.x0
+        )
         # Sub-select x values that do not cut through words
         this_xpos = [x for x in nxpos if not any(r.x0 < x < r.x1 for r in row_words)]
         for j in range(len(this_xpos) - 1):
