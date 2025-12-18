@@ -89,7 +89,7 @@ from pymupdf import mupdf
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
-TEXTPAGE = None
+TEXTPAGE = None  # textpage for cell text extraction
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
 FLAGS = (
@@ -118,6 +118,18 @@ def rect_in_rect(inner, outer):
         and inner[1] >= outer[1]
         and inner[2] <= outer[2]
         and inner[3] <= outer[3]
+    )
+
+
+def chars_in_rect(CHARS, rect):
+    """Check whether any of the chars in CHAR are inside rectangle 'rect'."""
+    return any(
+        1
+        and rect[0] <= c["x0"]
+        and c["x1"] <= rect[2]
+        and rect[1] <= c["y0"]
+        and rect[3] >= c["y1"]
+        for c in CHARS
     )
 
 
@@ -1509,6 +1521,7 @@ class TableHeader:
 class Table:
     def __init__(self, page, cells):
         self.page = page
+        self.textpage = None
         self.cells = cells
         self.header = self._get_header()  # PyMuPDF extension
 
@@ -1601,7 +1614,7 @@ class Table:
             for j, cell in enumerate(row):
                 if cell is not None:
                     cells[i][j] = extract_cells(
-                        TEXTPAGE, cell_boxes[i][j], markdown=True
+                        self.textpage, cell_boxes[i][j], markdown=True
                     )
 
         if fill_empty:  # fill "None" cells where possible
@@ -1734,12 +1747,11 @@ class Table:
 
             Returns True if any spans are bold else False.
             """
-            blocks = page.get_text("dict", flags=pymupdf.TEXTFLAGS_TEXT, clip=bbox)[
-                "blocks"
-            ]
-            spans = [s for b in blocks for l in b["lines"] for s in l["spans"]]
-
-            return any(s["flags"] & pymupdf.TEXT_FONT_BOLD for s in spans)
+            return any(
+                c["bold"]
+                for c in CHARS
+                if rect_in_rect((c["x0"], c["y0"], c["x1"], c["y1"]), bbox)
+            )
 
         try:
             row = self.rows[0]
@@ -2021,6 +2033,7 @@ class TableFinder:
 
     def __init__(self, page, settings=None):
         self.page = weakref.proxy(page)
+        self.textpage = None
         self.settings = TableSettings.resolve(settings)
         self.edges = self.get_edges()
         self.intersections = edges_to_intersections(
@@ -2165,7 +2178,6 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
-    global TEXTPAGE
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
@@ -2184,6 +2196,9 @@ def make_chars(page, clip=None):
             for span in sorted(line["spans"], key=lambda s: s["bbox"][0]):
                 fontname = span["font"]
                 fontsize = span["size"]
+                span_bold = bool(
+                    span["flags"] & pymupdf.TEXT_FONT_BOLD or span["char_flags"] & 8
+                )
                 color = pymupdf.sRGB_to_pdf(span["color"])
                 for char in sorted(span["chars"], key=lambda c: c["bbox"][0]):
                     bbox = pymupdf.Rect(char["bbox"])
@@ -2207,6 +2222,7 @@ def make_chars(page, clip=None):
                         "size": fontsize if upright else bbox.y1 - bbox.y0,
                         "stroking_color": color,
                         "stroking_pattern": None,
+                        "bold": span_bold,
                         "text": text,
                         "top": bbox.y0,
                         "upright": upright,
@@ -2217,6 +2233,7 @@ def make_chars(page, clip=None):
                         "y1": bbox_ctm.y1,
                     }
                     CHARS.append(char_dict)
+    return TEXTPAGE
 
 
 # ------------------------------------------------------------------------
@@ -2316,7 +2333,7 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                         repeat = True  # keep checking the rest
 
             # move rect 0 over to result list if there is some text in it
-            if not white_spaces.issuperset(page.get_textbox(prect0, textpage=TEXTPAGE)):
+            if chars_in_rect(CHARS, prect0):
                 # contains text, so accept it as a table bbox candidate
                 new_rects.append(prect0)
             del prects[0]  # remove from rect list
@@ -2599,9 +2616,9 @@ def find_tables(
     paths=None,  # accept vector graphics as parameter
 ):
     pymupdf._warn_layout_once()
-    global CHARS, EDGES
-    CHARS = []
-    EDGES = []
+    CHARS.clear()
+    EDGES.clear()
+    TEXTPAGE = None
     old_small = bool(pymupdf.TOOLS.set_small_glyph_heights())  # save old value
     pymupdf.TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
     if page.rotation != 0:
@@ -2669,7 +2686,7 @@ def find_tables(
         tset = TableSettings.resolve(settings=settings)
         page.table_settings = tset
 
-        make_chars(page, clip=clip)  # create character list of page
+        TEXTPAGE = make_chars(page, clip=clip)  # create character list of page
         make_edges(
             page,
             clip=clip,
@@ -2680,7 +2697,7 @@ def find_tables(
         )  # create lines and curves
 
         tbf = TableFinder(page, settings=tset)
-
+        tbf.textpage = TEXTPAGE  # store textpage for later use
         if boxes:
             # only keep Finder tables that match a layout box
             tbf.tables = [
@@ -2706,5 +2723,6 @@ def find_tables(
         if old_xref is not None:
             page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
         pymupdf.TOOLS.unset_quad_corrections(old_quad_corrections)
-
+    for table in tbf.tables:
+        table.textpage = TEXTPAGE
     return tbf
