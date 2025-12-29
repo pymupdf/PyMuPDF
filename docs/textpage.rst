@@ -48,11 +48,21 @@ For a description of what this class is all about, see Appendix 2.
 
       Textpage content as a list of text lines grouped by block. Each list items looks like this::
 
-         (x0, y0, x1, y1, "lines in the block", block_no, block_type)
+         ``(x0, y0, x1, y1, "lines in the block", block_no, block_type)``
 
-      The first four entries are the block's bbox coordinates, *block_type* is 1 for an image block, 0 for text. *block_no* is the block sequence number. Multiple text lines are joined via line breaks.
+      The first four entries are the block's bbox coordinates, *block_type* is 1 for an image block, 3 for a vector block, and 0 for text. *block_no* is the block sequence number. Multiple text lines are joined via line breaks.
 
-      For an image block, its bbox and a text line with some image meta information is included -- **not the image content**.
+      For an **image block**, its bbox and a text line with some image meta information is included -- not the image **content**. Image blocks are included only if the extraction flag bit :data:`TEXT_PRESERVE_IMAGES` is set. An image block tuple will look like this::
+
+         ``(x0, y0, x1, y1, "<image: colorspace-name, w: width, h: height, bpc: bits_per_component>\n", block_no, 1)``
+
+      For a **vector block**, the following item will be included. Vector blocks are included only if the extraction flag bit :data:`TEXT_COLLECT_VECTORS` is set. A vector block tuple will look like this::
+
+         ``(x0, y0, x1, y1, "<vector stroked, color: #rrggbb, alpha: 255, is-rect: true, continues: false>\n", block_no, 3)``
+
+      The keyword "vector" is followed by either "stroked" or "filled". The color is given in HTML (hexadecimal RGB) format. Property ``is-rect`` is true, if the vector is not a curve and parallel to the x- or y-axis. So in essence is either a real rectangle or a line segment. Property ``continues`` indicates whether the vector is part of a path (and not the first item).
+
+      .. note:: When no further details are needed (as provided by :meth:`Page.get_drawings`), then this is an **inexpensive** way to extract basic vector graphics information. Another major advantage is that all block types (text, images and vectors) are included in the output in the same order as they are present in the page's :data:`contents` stream.
 
       This is a high-speed method with just enough information to output plain text in desired reading sequence.
 
@@ -200,7 +210,24 @@ blocks          *list* of block dictionaries
 
 Block Dictionaries
 ~~~~~~~~~~~~~~~~~~
-Block dictionaries come in two different formats for **image blocks** and for **text blocks**.
+Block dictionaries come in different formats for **vector blocks**, **image blocks** and **text blocks**. Vector blocks are included only if the extraction flag bit :data:`TEXT_COLLECT_VECTORS` is set. Image blocks are included only if the extraction flag bit :data:`TEXT_PRESERVE_IMAGES` is set.
+
+**Vector block:**
+
+=============== =========================================================================================================================
+**Key**             **Value**
+=============== =========================================================================================================================
+type            3 = vector (``int``)
+bbox            vector bbox on page (:data:`rect_like`)
+number          block count (``int``)
+stroked         either stroked (``True``) or filled (``False``) (``bool``)
+isrect          whether the vector is axis-parallel (``bool``). Can be a line or a rectangle. Curves or diagonal lines are ``False``.
+continues       whether the vector is (not the first) part of a sequence of vectors in a path (``bool``).
+color           sRGB integer, e.g. 0xRRGGBB (``int``).
+alpha           Transparency, a value in ``range(256)`` (``int``).
+=============== =========================================================================================================================
+
+This information is a true subset of the output of :meth:`Page.get_drawings`. Its advantage is its speed (because it is extracted with one :ref:`TextPage` creation) and the fact that vector blocks are included in the overall page content sequence together with text and images.
 
 **Image block:**
 
