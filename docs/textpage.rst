@@ -222,12 +222,12 @@ bbox            vector bbox on page (:data:`rect_like`)
 number          block count (``int``)
 stroked         either stroked (``True``) or filled (``False``) (``bool``)
 isrect          whether the vector is axis-parallel (``bool``). Can be a line or a rectangle. Curves or diagonal lines are ``False``.
-continues       whether the vector is (not the first) part of a sequence of vectors in a path (``bool``).
+continues       whether the vector is (not the last) part of a sequence of vectors in a *path* (``bool``).
 color           sRGB integer, e.g. 0xRRGGBB (``int``).
 alpha           Transparency, a value in ``range(256)`` (``int``).
 =============== =========================================================================================================================
 
-This information is a true subset of the output of :meth:`Page.get_drawings`. Its advantage is its speed (because it is extracted with one :ref:`TextPage` creation) and the fact that vector blocks are included in the overall page content sequence together with text and images.
+This information is a true subset of the output of :meth:`Page.get_drawings`. Its advantage is its speed (because it is extracted alongside one :ref:`TextPage` creation) and the fact that vector blocks are included in the overall page content sequence together with text and images.
 
 **Image block:**
 
