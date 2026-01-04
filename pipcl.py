@@ -96,6 +96,7 @@ class Package:
         ...                         name = 'foo',
         ...                         path_i = 'foo.i',
         ...                         outdir = 'build',
+        ...                         source_extra = 'wibble.c',
         ...                         )
         ...                 return [
         ...                         ('build/foo.py', 'foo/__init__.py'),
@@ -107,8 +108,10 @@ class Package:
         ...
         ...             def sdist():
         ...                 return [
+        ...                         'pyproject.toml',
         ...                         'foo.i',
         ...                         'bar.i',
+        ...                         'wibble.c',
         ...                         'setup.py',
         ...                         'pipcl.py',
         ...                         'wdev.py',
@@ -159,6 +162,12 @@ class Package:
 
         >>> with open('pipcl_test/bar.i', 'w') as f:
         ...     _ = f.write( '\\n')
+
+        >>> with open('pipcl_test/wibble.c', 'w') as f:
+        ...     _ = f.write( '\\n')
+
+        >>> with open('pipcl_test/pyproject.toml', 'w') as f:
+        ...     pass
 
         >>> with open('pipcl_test/README', 'w') as f:
         ...     _ = f.write(textwrap.dedent("""
@@ -253,6 +262,19 @@ class Package:
 
         >>> t0 = time.time()
         >>> os.utime('pipcl_test/build/foo.i.cpp')
+        >>> _ = subprocess.run(
+        ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
+        ...         shell=1, check=1)
+        >>> assert os.path.getmtime('pipcl_test/build/foo.py') <= t0
+        >>> so = glob.glob('pipcl_test/build/*.so')
+        >>> assert len(so) == 1
+        >>> so = so[0]
+        >>> assert os.path.getmtime(so) > t0
+
+    Check that touching wibble.c does not run swig, but does recompile/link.
+
+        >>> t0 = time.time()
+        >>> os.utime('pipcl_test/wibble.c')
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
@@ -1802,7 +1824,7 @@ def build_extension(
 
     for path_source in [path_cpp] + source_extra:
         path_o = f'{path_source}.obj' if windows() else f'{path_source}.o'
-        path_os.append(f' {path_o}')
+        path_os.append(path_o)
 
         prerequisites_path = f'{path_o}.d'
 
