@@ -911,11 +911,17 @@ def test_bboxlog_2885():
     
     bbl = page.get_bboxlog()
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'invalid marked content and clip nesting'
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == ''
+    else:
+        assert wt == 'invalid marked content and clip nesting'
     
     bbl = page.get_bboxlog(layers=True)
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'invalid marked content and clip nesting'
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == ''
+    else:
+        assert wt == 'invalid marked content and clip nesting'
 
 def test_3081():
     '''
@@ -1757,7 +1763,10 @@ def test_3569():
                 '</svg>\n'
                 )
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )'
+    else:
+        assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
 
 def test_3450():
     # This issue is a slow-down, so we just show time taken - it's not safe

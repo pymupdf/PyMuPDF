@@ -387,7 +387,10 @@ def test_3705():
     assert texts1 == texts0
 
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        expected = ''
+        assert wt == expected
+    elif pymupdf.mupdf_version_tuple >= (1, 27):
         expected = 'format error: No common ancestor in structure tree\nstructure tree broken, assume tree is missing'
         expected = '\n'.join([expected] * 56)
         assert wt == expected
