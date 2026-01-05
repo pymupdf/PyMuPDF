@@ -32,7 +32,9 @@ def test_2548():
     # This checks that PyMuPDF 1.23.7 fixes this bug, and also that earlier
     # versions with updated MuPDF also fix the bug.
     rebased = hasattr(pymupdf, 'mupdf')
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        expected = ''
+    elif pymupdf.mupdf_version_tuple >= (1, 27):
         expected = 'format error: No common ancestor in structure tree\nstructure tree broken, assume tree is missing'
         expected = '\n'.join([expected] * 5)
     else:
