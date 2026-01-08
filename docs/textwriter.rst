@@ -125,10 +125,12 @@ Using this object entails three steps:
       :arg float fontsize: the :data:`fontsize`.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
       :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is ``False``. If ``True``, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
-      :arg bool warn: on text overflow do nothing, warn, or raise an exception. Overflow text will never be written. **Changed in v1.18.9:**
+      :arg bool warn: on text overflow do nothing (``None``), warn (``True``), or raise an exception (``False``). Overflow text will never be written. **Changed in v1.18.9:**
 
         * Default is ``None``.
         * The list of overflow lines will be returned.
+        * When ``None`` or ``True`` the partial text will be written.
+        * When ``False``, and an exception is raised, the text *will not* be written.
 
       :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
 
