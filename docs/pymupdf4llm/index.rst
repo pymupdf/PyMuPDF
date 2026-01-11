@@ -36,11 +36,11 @@ Features
 Functionality
 --------------------
 
-- This package converts the pages of a file to text in **Markdown** format using |PyMuPDF|.
+- This package converts the pages of a file to plain text or in **Markdown** format using |PyMuPDF|.
 
-- Standard text and tables are detected, brought in the right reading sequence and then together converted to **GitHub**-compatible **Markdown** text.
+- Standard text and tables are detected, brought in the right reading sequence and then together converted to **GitHub**-compatible **Markdown** text. Tables in plain text output mode are rendered using the `tabulate <https://pypi.org/project/tabulate/>`_ package.
 
-- Header lines are identified via the font size and appropriately prefixed with one or more `#` tags.
+- Header lines are identified via the font size and appropriately prefixed with one or more `#` tags. When using the package together with :ref:`PyMuPDF Layout <https://pypi.org/project/pymupdf-layout/>`_, titels, section headers and page headers and footers are detected.
 
 - Bold, italic, mono-spaced text and code blocks are detected and formatted accordingly. Similar applies to ordered and unordered lists.
 
