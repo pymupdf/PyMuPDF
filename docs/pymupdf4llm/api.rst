@@ -44,6 +44,7 @@ The |PyMuPDF4LLM| API
     detect_bg_color: bool = True, \
     dpi: int = 150, \
     use_ocr: bool = True, \
+    ocr_language: str = "eng", \
     ocr_dpi: int = 400, \
     embed_images: bool = False, \
     extract_words: bool = False, \
@@ -81,6 +82,8 @@ The |PyMuPDF4LLM| API
     :arg int dpi: specify the desired image resolution in dots per inch. Relevant only if `write_images=True` or `embed_images=True`. Default value is 150.
 
     :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
 
     :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
@@ -128,7 +131,7 @@ The |PyMuPDF4LLM| API
 
         - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` as a 1-based page number.
 
-        - **"tables"** - a list of tables on this page. Each item is a dictionary with keys "bbox", "row_count" and "col_count". Key "bbox" is a `pymupdf.Rect` in tuple format of the table's position on the page.
+        - **"tables"** - |PyMuPDFLayoutMode_EmptyList| a list of tables on this page. Each item is a dictionary with keys "bbox", "row_count" and "col_count". Key "bbox" is a `pymupdf.Rect` in tuple format of the table's position on the page.
 
         - **"images"** - |PyMuPDFLayoutMode_EmptyList| a list of images on the page. This a copy of page method :meth:`Page.get_image_info`.
 
@@ -137,6 +140,17 @@ The |PyMuPDF4LLM| API
         - **"text"** - page content as |Markdown| text.
 
         - **"words"** - |PyMuPDFLayoutMode_EmptyList| if `extract_words=True` was used. This is a list of tuples `(x0, y0, x1, y1, "wordstring", bno, lno, wno)` as delivered by `page.get_text("words")`. The **sequence** of these tuples however is the same as produced in the markdown text string and thus honors multi-column text. This is also true for text in tables: words are extracted in the sequence of table row cells.
+
+        - **"text"** - page content as |Markdown| text.
+
+        - **"page_boxes"** - |PyMuPDFLayoutMode_Valid| a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
+
+            {
+                "index": 0-based integer index of the box in reading sequence
+                "class": str,  # one of "text", "picture", "table", etc.
+                "bbox": [x0, y0, x1, y1],  # boundary box coordinates
+                "pos": (start, stop)  # 0-based integers: bbox_text = chunk["text"][start:stop]
+            }
 
     :arg float page_height: specify a desired page height. For relevance see the `page_width` parameter. If using the default `None`, the document will appear as one large page with a width of `page_width`. Consequently in this case, no markdown page separators will occur (except the final one), respectively only one page chunk will be returned.
 
@@ -168,6 +182,12 @@ The |PyMuPDF4LLM| API
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+
     :arg bool header: boolean to switch on/off page header content. This parameter controls whether to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be written.
 
     :arg bool footer: boolean to switch on/off page footer content. This parameter controls whether to include or omit the footer content from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be written.
@@ -180,6 +200,28 @@ The |PyMuPDF4LLM| API
 
     :arg bool show_progress: Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used.
     
+    :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
+
+        - **"metadata"** - a dictionary consisting of the document's metadata :attr:`Document.metadata`, enriched with additional keys **"file_path"** (the file name), **"page_count"** (number of pages in document), and **"page_number"** (1-based page number).
+
+        - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` as a 1-based page number.
+
+        - **"tables"** - empty list.
+        - **"images"** - empty list.
+        - **"graphics"** - empty list.
+        - **"words"** - empty list.
+
+        - **"text"** - page content as plain text.
+
+        - **"page_boxes"** - a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
+
+            {
+                "index": 0-based integer index of the box in reading sequence
+                "class": str,  # one of "text", "picture", "table", etc.
+                "bbox": [x0, y0, x1, y1],  # boundary box coordinates
+                "pos": (start, stop)  # 0-based integers: bbox_text = chunk["text"][start:stop]
+            }
+
 
 .. method:: to_json(doc: pymupdf.Document | str, *, **kwargs) -> str
 
@@ -188,6 +230,12 @@ The |PyMuPDF4LLM| API
     .. important:: |PyMuPDFLayoutMode_Valid|. This method is only available with PyMuPDF Layout.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
+
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
     :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
 
@@ -205,6 +253,24 @@ The |PyMuPDF4LLM| API
 
     :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
 
+
+.. method:: get_key_values(doc: pymupdf.Document | str) -> list[dict]
+
+    Parse the document if it is a **Form PDF** and extract key-value pairs from all form fields (widgets).
+    
+    Please note that this method is only relevant for PDF documents that contain widgets. Otherwise, an empty list will be returned.
+
+    The function is always available -- independently of whether you are using |PyMuPDF Layout <pymupdf-layout>| or not.
+
+    Each dictionary item has the following structure::
+
+        {
+            "field_name": str,      # the full name of the form field, components separated by dots
+            {
+                "value": str        # the field value as string
+                "pages": list       # list of 0-based page numbers where the field appears
+            }
+        }    
 
 .. note::
 
