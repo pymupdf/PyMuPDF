@@ -146,10 +146,10 @@ The |PyMuPDF4LLM| API
         - **"page_boxes"** - |PyMuPDFLayoutMode_Valid| a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
 
             {
-                "index": 0-based integer index of the box in reading sequence
-                "class": str,  # one of "text", "picture", "table", etc.
+                "index": int,              # 0-based integer index of the box in reading sequence
+                "class": str,              # one of "text", "picture", "table", etc.
                 "bbox": [x0, y0, x1, y1],  # boundary box coordinates
-                "pos": (start, stop)  # 0-based integers: bbox_text = chunk["text"][start:stop]
+                "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
             }
 
     :arg float page_height: specify a desired page height. For relevance see the `page_width` parameter. If using the default `None`, the document will appear as one large page with a width of `page_width`. Consequently in this case, no markdown page separators will occur (except the final one), respectively only one page chunk will be returned.
@@ -216,10 +216,10 @@ The |PyMuPDF4LLM| API
         - **"page_boxes"** - a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
 
             {
-                "index": 0-based integer index of the box in reading sequence
-                "class": str,  # one of "text", "picture", "table", etc.
+                "index": int,              # 0-based integer index of the box in reading sequence
+                "class": str,              # one of "text", "picture", "table", etc.
                 "bbox": [x0, y0, x1, y1],  # boundary box coordinates
-                "pos": (start, stop)  # 0-based integers: bbox_text = chunk["text"][start:stop]
+                "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
             }
 
 
@@ -267,8 +267,8 @@ The |PyMuPDF4LLM| API
         {
             "field_name": str,      # the full name of the form field, components separated by dots
             {
-                "value": str        # the field value as string
-                "pages": list       # list of 0-based page numbers where the field appears
+                "value": str,       # the field value as string
+                "pages": list,      # list of 0-based page numbers where the field appears
             }
         }    
 
