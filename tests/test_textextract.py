@@ -111,7 +111,7 @@ def test_extract4():
         out = pymupdf.mupdf.FzOutput( buffer_)
         writer = pymupdf.mupdf.FzDocumentWriter(
                 out,
-                'text,space-guess={space_guess}',
+                f'text,space-guess={space_guess}',
                 pymupdf.mupdf.FzDocumentWriter.OutputType_DOCX,
                 )
         device = pymupdf.mupdf.fz_begin_page(writer, pymupdf.mupdf.fz_bound_page(page))
