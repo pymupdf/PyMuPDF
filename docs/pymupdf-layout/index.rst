@@ -10,7 +10,7 @@
     </script>
 
 
-
+ 
 PyMuPDF Layout
 ===========================================================================
 
@@ -18,6 +18,12 @@ PyMuPDF Layout
 |PyMuPDF Layout| is a lightweight layout analysis extension for |PyMuPDF| that turns PDFs into clean, structured data with minimal setup. It’s fast, accurate, and efficient without any GPU requirement.
 
 It is an optional, but recommended, addition to the |PyMuPDF| library especially if you are required to more accurately extract structured data with better semantic information.
+
+
+.. raw:: html
+
+   <button id="tryButton" class="cta orange" onclick="window.location='https://demo.pymupdf.io'">Try Demo</button>
+   <p></p>
 
 
 Installing
