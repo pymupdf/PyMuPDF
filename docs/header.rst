@@ -94,8 +94,14 @@
             margin-left:10px;
         }
 
+        #visit-pymupdf-io {
+            width:23%;
+            min-width:130px;
+            margin:8px 2% 0 0; 
+        }
+
         .sidebar-search-container.top {
-            width: 65%;
+            width: 40%;
         }
 
         #button-select-en {
@@ -165,6 +171,7 @@
     </style>
 
     <div id="searchAndLangugeHolder">
+        <button id="visit-pymupdf-io" class="cta orange" onclick="window.location='https://pymupdf.io?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">pymupdf.io</button>
         <form id="headerSearchWidget" class="sidebar-search-container top" method="get" action="search.html" role="search">
           <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
           <input type="hidden" name="check_keywords" value="yes">
