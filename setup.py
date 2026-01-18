@@ -665,6 +665,7 @@ def build():
     add('p', f'{g_root}/src/_wxcolors.py', to_dir)
     add('p', f'{g_root}/src/_apply_pages.py', to_dir)
     add('p', f'{g_root}/src/build/extra.py', to_dir)
+    add('p', b'', f'{to_dir}/py.typed')
     if path_so_leaf:
         add('p', f'{g_root}/src/build/{path_so_leaf}', to_dir)
 
