@@ -10,16 +10,12 @@ import textwrap
 
 def test_codespell():
     '''
-    Check rebased Python code with codespell.
+    Check Python code with codespell.
     '''
     if os.environ.get('PYODIDE_ROOT'):
         print('test_codespell(): not running on Pyodide - cannot run child processes.')
         return
         
-    if not hasattr(pymupdf, 'mupdf'):
-        print('Not running codespell with classic implementation.')
-        return
-    
     if platform.system() == 'Windows':
         # Git commands seem to fail on Github Windows runners.
         print(f'test_codespell(): Not running on Windows')

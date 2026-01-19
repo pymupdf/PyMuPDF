@@ -6,10 +6,6 @@ def test_objectstream1():
     This option compresses PDF object definitions into a special object type
     "ObjStm". We test its presence by searching for that /Type.
     """
-    if not hasattr(pymupdf, "mupdf"):
-        # only implemented for rebased
-        return
-
     # make some arbitrary page with content
     text = "Hello, World! Hallo, Welt!"
     doc = pymupdf.open()
@@ -32,10 +28,6 @@ def test_objectstream2():
     This option compresses PDF object definitions into a special object type
     "ObjStm". We test its presence by searching for that /Type.
     """
-    if not hasattr(pymupdf, "mupdf"):
-        # only implemented for rebased
-        return
-
     # make some arbitrary page with content
     text = "Hello, World! Hallo, Welt!"
     doc = pymupdf.open()
@@ -58,9 +50,6 @@ def test_objectstream3():
     """Test ez_save().
     Should automatically use object streams
     """
-    if not hasattr(pymupdf, "mupdf"):
-        # only implemented for rebased
-        return
     import io
 
     fp = io.BytesIO()

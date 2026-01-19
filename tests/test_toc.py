@@ -128,14 +128,12 @@ def test_2788():
     # Also test Page.get_links() bugfix from #2817.
     for page in document:
         page.get_links()
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                "syntax error: expected 'obj' keyword (0 3 ?)\n"
-                "trying to repair broken xref\n"
-                "repairing PDF document"
-                ), f'{wt=}'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == (
+            "syntax error: expected 'obj' keyword (0 3 ?)\n"
+            "trying to repair broken xref\n"
+            "repairing PDF document"
+            ), f'{wt=}'
 
 
 def test_toc_count():

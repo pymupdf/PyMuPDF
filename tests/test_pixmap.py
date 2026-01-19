@@ -184,7 +184,7 @@ def test_3050():
                 for xx in x:
                     yield (xx, yy)
         n = 0
-        # We use a small subset of the image because non-optimised rebase gets
+        # We use a small subset of the image because non-optimised build gets
         # very slow.
         for pos in product(range(100), range(100)):
             if sum(pix.pixel(pos[0], pos[1])) >= 600:
@@ -247,15 +247,13 @@ def test_3072():
     pix = page_49.get_pixmap(clip=rect, matrix=zoom)
     image_save_path = f'{out}/2.jpg'
     pix.save(image_save_path, jpg_quality=95)
-    rebase = hasattr(pymupdf, 'mupdf')
-    if rebase:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
-                "encountered syntax errors; page may not be correct\n"
-                "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
-                "encountered syntax errors; page may not be correct"
-                )
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == (
+            "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
+            "encountered syntax errors; page may not be correct\n"
+            "syntax error: cannot find ExtGState resource 'BlendMode0'\n"
+            "encountered syntax errors; page may not be correct"
+            )
 
 def test_3134():
     doc = pymupdf.Document()
