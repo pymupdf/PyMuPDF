@@ -50,11 +50,8 @@ def test_707727():
     print(f'{rms=}', flush=1)
     pix0.save(os.path.normpath(f'{__file__}/../../tests/test_707727_pix0.png'))
     pix1.save(os.path.normpath(f'{__file__}/../../tests/test_707727_pix1.png'))
-    if pymupdf.mupdf_version_tuple >= (1, 25, 2):
-        # New sanitising gives small fp rounding errors.
-        assert rms < 0.05
-    else:
-        assert rms == 0
+    # New sanitising gives small fp rounding errors.
+    assert rms < 0.05
 
 
 def test_707721():

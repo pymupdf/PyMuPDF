@@ -399,12 +399,8 @@ def test_2108():
         print(f'')
 
     print(f'{pymupdf.mupdf_version_tuple=}')
-    if pymupdf.mupdf_version_tuple >= (1, 21, 2):
-        print('Asserting text==text_expected')
-        assert text == text_expected
-    else:
-        print('Asserting text!=text_expected')
-        assert text != text_expected
+    print('Asserting text==text_expected')
+    assert text == text_expected
 
 
 def test_2238():
@@ -412,11 +408,8 @@ def test_2238():
     doc = pymupdf.open(filepath)
     wt = pymupdf.TOOLS.mupdf_warnings()
     wt_expected = ''
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        wt_expected += 'garbage bytes before version marker\n'
-        wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
-    else:
-        wt_expected += 'format error: cannot recognize version marker\n'
+    wt_expected += 'garbage bytes before version marker\n'
+    wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
     wt_expected += 'trying to repair broken xref\n'
     wt_expected += 'repairing PDF document'
     assert wt == wt_expected, f'{wt=}'
@@ -1606,18 +1599,17 @@ def test_open2():
     with open(path_out, 'w') as f:
         json.dump(results, f, indent=4, sort_keys=1)
         
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
-            results_expected = json.load(f)
-        if results != results_expected:
-            print(f'results != results_expected:')
-            def show(r, name):
-                text = json.dumps(r, indent=4, sort_keys=1)
-                print(f'{name}:')
-                print(textwrap.indent(text, '    '))
-            show(results_expected, 'results_expected')
-            show(results, 'results')
-            assert 0
+    with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
+        results_expected = json.load(f)
+    if results != results_expected:
+        print(f'results != results_expected:')
+        def show(r, name):
+            text = json.dumps(r, indent=4, sort_keys=1)
+            print(f'{name}:')
+            print(textwrap.indent(text, '    '))
+        show(results_expected, 'results_expected')
+        show(results, 'results')
+        assert 0
     
 
 def test_533():
@@ -1773,10 +1765,7 @@ def test_3905():
     else:
         assert 0
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
-    else:
-        assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
+    assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
 
 def test_3624():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
@@ -1822,10 +1811,7 @@ def test_4034():
         pixmap2 = document[0].get_pixmap()
     rms = gentle_compare.pixmaps_rms(pixmap1, pixmap2)
     print(f'test_4034(): Comparison of original/cleaned page 0 pixmaps: {rms=}.')
-    if pymupdf.mupdf_version_tuple < (1, 25, 2):
-        assert 30 < rms < 50
-    else:
-        assert rms == 0
+    assert rms == 0
 
 def test_4309():
     document = pymupdf.open()
@@ -1842,11 +1828,8 @@ def test_4263():
     command = f'pymupdf clean -linear {path} {path_out}'
     print(f'Running: {command}')
     cp = subprocess.run(command, shell=1, check=0)
-    if pymupdf.mupdf_version_tuple < (1, 26):
-        assert cp.returncode == 0
-    else:
-        # Support for linerarisation dropped in MuPDF-1.26.
-        assert cp.returncode
+    # Support for linerarisation dropped in MuPDF-1.26.
+    assert cp.returncode
 
 def test_4224():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4224.pdf')
@@ -1856,9 +1839,6 @@ def test_4224():
             path_pixmap = f'{path}.{page.number}.png'
             pixmap.save(path_pixmap)
             print(f'Have created: {path_pixmap}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'format error: negative code in 1d faxd\npadding truncated image'
 
 def test_4319():
     # Have not seen this test reproduce issue #4319, but keeping it anyway.

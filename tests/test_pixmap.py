@@ -195,11 +195,7 @@ def test_3050():
         path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3050_expected.png')
         rms = gentle_compare.pixmaps_rms(path_expected, path_out2)
         print(f'{rms=}')
-        if pymupdf.mupdf_version_tuple < (1, 26):
-            # Slight differences in rendering from fix for mupdf bug 708274.
-            assert rms < 0.2
-        else:
-            assert rms == 0
+        assert rms == 0
         wt = pymupdf.TOOLS.mupdf_warnings()
         if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
             assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
@@ -416,11 +412,7 @@ def test_3448():
     path_diff = os.path.normpath(f'{__file__}/../../tests/test_3448-diff.png')
     diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 1 < rms < 2
-    else:
-        assert rms == 0
+    assert rms == 0
 
 
 def test_3854():
@@ -442,9 +434,6 @@ def test_3854():
         # MuPDF using external third-party libs gives slightly different
         # behaviour.
         assert rms < 2
-    elif pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # # Prior to fix for mupdf bug 708274.
-        assert 0.5 < rms < 2
     else:
         assert rms == 0
 
@@ -558,14 +547,9 @@ def test_4423():
             print(f'Exception: {e}')
             ee = e
         
-        if (1, 25, 5) <= pymupdf.mupdf_version_tuple < (1, 26):
-            assert ee, f'Did not receive the expected exception.'
-            wt = pymupdf.TOOLS.mupdf_warnings()
-            assert wt == 'dropping unclosed output'
-        else:
-            assert not ee, f'Received unexpected exception: {e}'
-            wt = pymupdf.TOOLS.mupdf_warnings()
-            assert wt == 'format error: cannot find object in xref (56 0 R)\nformat error: cannot find object in xref (68 0 R)'
+        assert not ee, f'Received unexpected exception: {e}'
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'format error: cannot find object in xref (56 0 R)\nformat error: cannot find object in xref (68 0 R)'
 
 
 def test_4445():
@@ -587,10 +571,7 @@ def test_4445():
         pixmap = page.get_pixmap()
         print(f'{pixmap.width=}')
         print(f'{pixmap.height=}')
-        if pymupdf.mupdf_version_tuple >= (1, 26):
-            assert (pixmap.width, pixmap.height) == (792, 612)
-        else:
-            assert (pixmap.width, pixmap.height) == (612, 792)
+        assert (pixmap.width, pixmap.height) == (792, 612)
         if 0:
             path_pixmap = f'{path}.png'
             pixmap.save(path_pixmap)

@@ -446,16 +446,12 @@ def test_4147():
                         #print(f'        line')
                         for span in line['spans']:
                             #print(f'            span')
-                            if pymupdf.mupdf_version_tuple >= (1, 25, 2):
-                                #print(f'            span: {span["flags"]=:#x} {span["char_flags"]=:#x}')
-                                if expect_visible:
-                                    assert span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED
-                                else:
-                                    assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED)
-                                    assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_STROKED)
+                            #print(f'            span: {span["flags"]=:#x} {span["char_flags"]=:#x}')
+                            if expect_visible:
+                                assert span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED
                             else:
-                                #print(f'            span: {span["flags"]=:#x}')
-                                assert 'char_flags' not in span
+                                assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED)
+                                assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_STROKED)
                             # Check commit `add 'bidi' to span dict, add 'synthetic' to char dict.`
                             assert span['bidi'] == 0
                             for ch in span['chars']:
@@ -507,11 +503,7 @@ def test_4245():
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4245_diff.png')
     pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 0.1 < rms < 0.2
-    else:
-        assert rms < 0.01
+    assert rms < 0.01
 
 
 def test_4180():
@@ -532,11 +524,7 @@ def test_4180():
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_diff.png')
     pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 0.2 < rms < 0.3
-    else:
-        assert rms < 0.01
+    assert rms < 0.01
 
 
 def test_4182():
@@ -566,11 +554,7 @@ def test_4182():
     pixmap_diff.save(path_diff)
     rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 3 < rms < 3.5
-    else:
-        assert rms < 0.01
+    assert rms < 0.01
 
 
 def test_4179():
@@ -655,11 +639,7 @@ def test_4179():
         pixmap_diff.save(path_out_diff)
         print(f'Have saved to: {path_out_diff=}')
         print(f'{rms=}')
-        if pymupdf.mupdf_version_tuple < (1, 25, 5):
-            # Prior to fix for mupdf bug 708274, our rects are rendered slightly incorrectly.
-            assert 3.5 < rms < 4.5
-        else:
-            assert rms < 0.01
+        assert rms < 0.01
     
     finally:
         pymupdf.TOOLS.set_aa_level(aa)
