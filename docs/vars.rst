@@ -275,6 +275,10 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     32768 -- Request collecting text **decoration** properties. This includes text underlining and strikeout. In contrast to public awareness, these are not font properties, but are drawn separately as vector graphics or annotations on top of the text. In addition, the flag bit will also cause MuPDF to detect "fake bold" text. In many cases, Document creators **simulate bold** text by printing the same text multiple times with slight offsets. If this flag is set, such text will be marked as bold in the resulting text spans.
 
+.. py:data:: TEXT_LAZY_VECTORS
+
+    1048576 -- Delay vector blocks in the extraction slightly to avoid breaking what would otherwise be continuous lines of text.
+
 The following constants represent the default combinations of the above for text extraction and searching:
 
 .. py:data:: TEXTFLAGS_TEXT
