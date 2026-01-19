@@ -34,9 +34,8 @@ def test_font1():
     # Also check we can get font's bbox.
     bbox1 = font.bbox
     print(f'{bbox1=}')
-    if hasattr(pymupdf, 'mupdf'):
-        bbox2 = font.this.fz_font_bbox()
-        assert bbox2 == bbox1
+    bbox2 = font.this.fz_font_bbox()
+    assert bbox2 == bbox1
 
 
 def test_font2():
@@ -105,9 +104,6 @@ def test_fontarchive():
             ]
 
 def test_load_system_font():
-    if not hasattr(pymupdf, 'mupdf'):
-        print(f'test_load_system_font(): Not running on classic.')
-        return
     trace = list()
     def font_f(name, bold, italic, needs_exact_metrics):
         trace.append((name, bold, italic, needs_exact_metrics))
@@ -130,9 +126,6 @@ def test_load_system_font():
 
 
 def test_mupdf_subset_fonts2():
-    if not hasattr(pymupdf, 'mupdf'):
-        print('Not running on rebased.')
-        return
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     with pymupdf.open(path) as doc:
         n = len(doc)

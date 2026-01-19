@@ -631,7 +631,7 @@ def build():
                     )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
-    # Build rebased `extra` module.
+    # Build `extra` module.
     #
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
         path_so_leaf = _build_extension(
@@ -1094,8 +1094,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
                 f'{mupdf_local}/include',
                 )
     
-    # Build rebased extension module.
-    log('Building PyMuPDF rebased.')
+    log('Building PyMuPDF extension.')
     compile_extra_cpp = ''
     if darwin:
         # Avoids `error: cannot pass object of non-POD type
