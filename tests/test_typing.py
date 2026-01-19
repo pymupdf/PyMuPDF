@@ -9,6 +9,16 @@ def run(command, check=1):
     subprocess.run(command, shell=1, check=check)
 
 def test_py_typed():
+
+    if os.path.basename(__file__).startswith(f'test_fitz_'):
+        # Don't test the `fitz` alias, because mypy complains.
+        print(f'test_py_typed(): Not testing with fitz alias.')
+        return
+    
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_py_typed(): not running on Pyodide - cannot run child processes.')
+        return
+        
     print(f'test_py_typed(): {pymupdf.__path__=}')
     run('pip uninstall -y mypy')
     run('pip install mypy')
