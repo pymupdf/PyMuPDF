@@ -3081,7 +3081,6 @@ mupdf::FzRect JM_make_spanlist(
         float size = -1;
         unsigned flags = 0;
         
-        #if MUPDF_VERSION_GE(1, 25, 2)
         /* From mupdf:include/mupdf/fitz/structured-text.h:fz_stext_char::flags, which
         uses anonymous enum values:
         FZ_STEXT_STRIKEOUT = 1,
@@ -3092,7 +3091,6 @@ mupdf::FzRect JM_make_spanlist(
         FZ_STEXT_CLIPPED = 64
         */
         unsigned char_flags = 0;
-        #endif
         
         const char *font = "";
         unsigned argb = 0;
@@ -3121,25 +3119,17 @@ mupdf::FzRect JM_make_spanlist(
         fz_point origin = ch.m_internal->origin;
         style.size = ch.m_internal->size;
         style.flags = flags;
-        #if MUPDF_VERSION_GE(1, 25, 2)
         /* FZ_STEXT_SYNTHETIC is per-char, not per-span. */
         style.char_flags = ch.m_internal->flags & ~FZ_STEXT_SYNTHETIC;
-        #endif
         style.font = JM_font_name(ch.m_internal->font);
-        #if MUPDF_VERSION_GE(1, 25, 0)
-            style.argb = ch.m_internal->argb;
-        #else
-            style.argb = ch.m_internal->color;
-        #endif
+        style.argb = ch.m_internal->argb;
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
 
         if (0
                 || style.size != old_style.size
                 || style.flags != old_style.flags
-                #if MUPDF_VERSION_GE(1, 25, 2)
                 || style.char_flags != old_style.char_flags
-                #endif
                 || style.argb != old_style.argb
                 || strcmp(style.font, old_style.font) != 0
                 || style.bidi != old_style.bidi
@@ -3179,14 +3169,10 @@ mupdf::FzRect JM_make_spanlist(
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("I", style.flags));
             DICT_SETITEM_DROP(span, dictkey_bidi, Py_BuildValue("I", style.bidi));
-            #if MUPDF_VERSION_GE(1, 25, 2)
             DICT_SETITEM_DROP(span, dictkey_char_flags, Py_BuildValue("I", style.char_flags));
-            #endif
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
             DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("I", style.argb & 0xffffff));
-            #if MUPDF_VERSION_GE(1, 25, 0)
             DICT_SETITEMSTR_DROP(span, "alpha", Py_BuildValue("I", style.argb >> 24));
-            #endif
             DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", asc));
             DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", desc));
 
