@@ -687,9 +687,8 @@ def build():
             # Add Windows .lib files.
             mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
             add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
-            if mupdf_version_tuple >= (1, 26):
-                # MuPDF-1.25+ language bindings build also builds libmuthreads.
-                add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
+            # MuPDF-1.25+ language bindings build also builds libmuthreads.
+            add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
         elif darwin:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
@@ -983,10 +982,8 @@ def build_mupdf_unix(
     # a system limit, not the actual limit of the current shell, and there
     # doesn't seem to be a way to find the current shell's limit.
     #
-    build_prefix = f'PyMuPDF-'
-    if mupdf_version_tuple >= (1, 26):
-        # Avoid link command length problems seen on musllinux.
-        build_prefix = ''
+    # Avoid link command length problems seen on musllinux.
+    build_prefix = ''
     if pyodide:
         build_prefix += 'pyodide-'
     else:
