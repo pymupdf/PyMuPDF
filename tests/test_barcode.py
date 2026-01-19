@@ -4,9 +4,6 @@ import pymupdf
 
 
 def test_barcode():
-    if pymupdf.mupdf_version_tuple < (1, 26):
-        print(f'Not testing barcode because {pymupdf.mupdf_version=} < 1.26')
-        return
     path = os.path.normpath(f'{__file__}/../../tests/test_barcode_out.pdf')
     
     url = 'http://artifex.com'

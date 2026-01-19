@@ -225,9 +225,6 @@ def test_4125():
         if pv < (3, 11):
             # Python < 3.11 has less reliable memory usage so we exclude.
             print(f'test_4125(): Not checking on {platform.python_version()=} because < 3.11.')
-        elif pymupdf.mupdf_version_tuple < (1, 25, 2):
-            rss_delta_expected = 4915200 * (len(state.rsss) - 3)
-            assert abs(1 - rss_delta / rss_delta_expected) < 0.15, f'{rss_delta_expected=}'
         else:
             # Before the fix, each iteration would leak 4.9MB.
             rss_delta_max = 100*1000 * (len(state.rsss) - 3)
