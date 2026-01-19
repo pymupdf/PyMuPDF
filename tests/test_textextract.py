@@ -387,7 +387,7 @@ def test_3705():
     assert texts1 == texts0
 
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 28):
+    if pymupdf.mupdf_version_tuple >= (1, 27, 1):
         expected = ''
         assert wt == expected
     elif pymupdf.mupdf_version_tuple >= (1, 27):
