@@ -20,8 +20,6 @@ def test_py_typed():
         return
         
     print(f'test_py_typed(): {pymupdf.__path__=}')
-    run('pip uninstall -y mypy')
-    run('pip install mypy')
     root = os.path.abspath(f'{__file__}/../..')
     
     # Run mypy on this .py file; it will fail at `import pymypdf` if the
