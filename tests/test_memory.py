@@ -235,3 +235,116 @@ def test_4125():
         # we don't actually check.
         #
         print(f'Not checking results because non-Linux behaviour is too variable.')
+
+
+def _test_4751():
+    import gc
+    import tracemalloc
+    
+    def analysis(stream_data, do_iter=True):
+        pdf_info = pymupdf.Document(stream=stream_data, filetype='pdf')
+        tmp_list = range(len(pdf_info))
+        for page_num in tmp_list:
+            page = pdf_info[page_num]
+            raw_info = page.get_text('rawdict')['blocks']
+            page_widgets_list = page.widgets() 
+            if do_iter:
+                for widget_info in page_widgets_list:
+                    print(widget_info)
+            del page_widgets_list
+        pdf_info.close()
+        pdf_info = None
+        pymupdf.TOOLS.store_shrink(100)
+
+    file_path = os.path.normpath(f'{__file__}/../../tests/resources/test_4751.pdf')
+    
+    def log(text):
+        print(text, flush=1)
+
+    # We filter out all allocations where leaf-most frame is in tracemalloc
+    # itself, or in test_memory.py itself, because these are not relevant
+    # to finding leaks in pymupdf.
+    #
+    tm_filters = [
+            tracemalloc.Filter(inclusive=False, filename_pattern=tracemalloc.__file__, all_frames=True),
+            tracemalloc.Filter(inclusive=False, filename_pattern=__file__),
+            ]
+
+    def get_snapshot():
+        '''
+        Wrapper for tracemalloc.take_snapshot() that filters out blocks with
+        backtraces that we are not interested in.
+        '''
+        ret = tracemalloc.take_snapshot()
+        ret2 = ret.filter_traces(tm_filters)
+        #log(f'    {len(ret.traces)=} => {len(ret2.traces)=}')
+        return ret2
+
+    # Check that `analysis()` does not leak.
+    #
+    num_leaks = 0
+    with open(file_path,'rb') as f:
+        bytes_data = f.read()
+    
+    tracemalloc.start(30)
+    snapshot_prev = get_snapshot()
+    
+    for it in range(2):
+        log('')
+        log(f'{it=}')
+        
+        current, peak = tracemalloc.get_traced_memory()
+        log(f'    {current=} {peak=}')
+        
+        analysis(bytes_data)
+        gc.collect()
+        snapshot = get_snapshot()
+        
+        top_stats = snapshot.compare_to(snapshot_prev, 'traceback')
+        snapshot_prev = snapshot
+        
+        top_stats = sorted(top_stats, key=lambda x: -x.size_diff)
+        for block_num, stat in enumerate(top_stats[0:10]):
+            if stat.size_diff > 0:
+                log(f'    Leak detected')
+                log(f'    {block_num=} {stat.size_diff=}: {stat}')
+                bt = ''
+                for frame in stat.traceback:
+                    bt += f'        {frame.filename}:{frame.lineno}\n'
+                log(bt)
+                # We ignore extra allocations in the first iteration.
+                if it != 0:
+                    num_leaks += 1
+    
+    assert not num_leaks, f'{num_leaks=}'
+
+
+def test_4751():
+    # We run the actual test in a child process, because otherwise previous
+    # tests seem to effect the leak detection causing false positives. It's
+    # possible that these could be real leaks, but they are not the ones
+    # we are testing for here.
+    #
+    if os.path.basename(__file__).startswith(f'test_fitz_'):
+        # Don't test the `fitz` alias, because we assume our leafname.
+        print(f'test_4751(): Not testing with fitz alias.')
+        return
+    
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_4751(): not running on Pyodide - cannot run child processes.')
+        return
+    
+    python_version = [int(i) for i in platform.python_version_tuple()[:2]]
+    python_version_tuple = tuple(python_version)
+    if python_version_tuple < (3, 13):
+        # We see additional leaks with python-3.12.
+        print(f'test_4751(): not running because known to fail on python < 3.13: {platform.python_version_tuple()=}')
+        return
+    
+    import subprocess
+    env_extra = dict(PYTHONPATH = os.path.abspath(f'{__file__}/..'))
+    command = f'{sys.executable} -c "import test_memory; test_memory._test_4751()"'
+    print('', flush=1)
+    print(f'test_4751(): Running: {command!r}', flush=1)
+    print(f'test_4751(): With: {env_extra=}', flush=1)
+    subprocess.run(command, shell=1, check=1, env=os.environ | env_extra)
