@@ -1337,9 +1337,9 @@ static PyObject *lll_JM_get_annot_xref_list(pdf_obj *page_obj)
 //------------------------------------------------------------------------
 static PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj)
 {
-    PyObject* names = PyList_New(0);
     if (!page_obj.m_internal)
     {
+        PyObject* names = PyList_New(0);
         return names;
     }
     return lll_JM_get_annot_xref_list( page_obj.m_internal);
