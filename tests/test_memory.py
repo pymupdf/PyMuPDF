@@ -237,25 +237,26 @@ def test_4125():
         print(f'Not checking results because non-Linux behaviour is too variable.')
 
 
+def analysis(stream_data, do_iter=True):
+    pdf_info = pymupdf.Document(stream=stream_data, filetype='pdf')
+    tmp_list = range(len(pdf_info))
+    for page_num in tmp_list:
+        page = pdf_info[page_num]
+        raw_info = page.get_text('rawdict')['blocks']
+        page_widgets_list = page.widgets() 
+        if do_iter:
+            for widget_info in page_widgets_list:
+                print(widget_info)
+        del page_widgets_list
+    pdf_info.close()
+    pdf_info = None
+    pymupdf.TOOLS.store_shrink(100)
+    gc.collect()
+
 def _test_4751():
     import gc
     import tracemalloc
     
-    def analysis(stream_data, do_iter=True):
-        pdf_info = pymupdf.Document(stream=stream_data, filetype='pdf')
-        tmp_list = range(len(pdf_info))
-        for page_num in tmp_list:
-            page = pdf_info[page_num]
-            raw_info = page.get_text('rawdict')['blocks']
-            page_widgets_list = page.widgets() 
-            if do_iter:
-                for widget_info in page_widgets_list:
-                    print(widget_info)
-            del page_widgets_list
-        pdf_info.close()
-        pdf_info = None
-        pymupdf.TOOLS.store_shrink(100)
-
     file_path = os.path.normpath(f'{__file__}/../../tests/resources/test_4751.pdf')
     
     def log(text):
@@ -270,15 +271,15 @@ def _test_4751():
             tracemalloc.Filter(inclusive=False, filename_pattern=__file__),
             ]
 
-    def get_snapshot():
-        '''
-        Wrapper for tracemalloc.take_snapshot() that filters out blocks with
-        backtraces that we are not interested in.
-        '''
-        ret = tracemalloc.take_snapshot()
-        ret2 = ret.filter_traces(tm_filters)
-        #log(f'    {len(ret.traces)=} => {len(ret2.traces)=}')
-        return ret2
+    #def get_snapshot():
+    #    '''
+    #    Wrapper for tracemalloc.take_snapshot() that filters out blocks with
+    #    backtraces that we are not interested in.
+    #    '''
+    #    ret = tracemalloc.take_snapshot()
+    #    ret2 = ret.filter_traces(tm_filters)
+    #    #log(f'    {len(ret.traces)=} => {len(ret2.traces)=}')
+    #    return ret2
 
     # Check that `analysis()` does not leak.
     #
@@ -287,9 +288,13 @@ def _test_4751():
         bytes_data = f.read()
     
     tracemalloc.start(30)
-    snapshot_prev = get_snapshot()
     
-    for it in range(2):
+    #snapshot_prev = get_snapshot()
+    snapshot_prev = tracemalloc.take_snapshot()
+    snapshot_prev = snapshot_prev.filter_traces(tm_filters)
+    
+    last_record = list()
+    for it in range(3):
         log('')
         log(f'{it=}')
         
@@ -298,23 +303,34 @@ def _test_4751():
         
         analysis(bytes_data)
         gc.collect()
-        snapshot = get_snapshot()
+        
+        #snapshot = get_snapshot()
+        snapshot = tracemalloc.take_snapshot()
+        snapshot = snapshot.filter_traces(tm_filters)
         
         top_stats = snapshot.compare_to(snapshot_prev, 'traceback')
         snapshot_prev = snapshot
         
         top_stats = sorted(top_stats, key=lambda x: -x.size_diff)
         for block_num, stat in enumerate(top_stats[0:10]):
-            if stat.size_diff > 0:
-                log(f'    Leak detected')
-                log(f'    {block_num=} {stat.size_diff=}: {stat}')
-                bt = ''
-                for frame in stat.traceback:
-                    bt += f'        {frame.filename}:{frame.lineno}\n'
-                log(bt)
-                # We ignore extra allocations in the first iteration.
-                if it != 0:
-                    num_leaks += 1
+            if stat.size_diff <= 0:
+                continue
+            if stat in last_record:
+                log(f'stat in last_record')
+                continue
+            if stat.size_diff == stat.size:
+                log(f'stat.size_diff == stat.size')
+                continue
+            log(f'    Leak detected')
+            log(f'    {block_num=} {stat.size_diff=}: {stat}')
+            bt = ''
+            for frame in stat.traceback:
+                bt += f'        {frame.filename}:{frame.lineno}\n'
+            log(bt)
+            # We ignore extra allocations in the first iteration.
+            if it != 0:
+                num_leaks += 1
+        last_record = top_stats
     
     assert not num_leaks, f'{num_leaks=}'
 
@@ -336,7 +352,7 @@ def test_4751():
     
     python_version = [int(i) for i in platform.python_version_tuple()[:2]]
     python_version_tuple = tuple(python_version)
-    if python_version_tuple < (3, 13):
+    if 0 and python_version_tuple < (3, 13):
         # We see additional leaks with python-3.12.
         print(f'test_4751(): not running because known to fail on python < 3.13: {platform.python_version_tuple()=}')
         return

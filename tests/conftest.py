@@ -44,6 +44,7 @@ import pymupdf
 
 
 PYMUPDF_PYTEST_RESUME = os.environ.get('PYMUPDF_PYTEST_RESUME')
+PYMUPDF_PYTEST_STOP_BEFORE = os.environ.get('PYMUPDF_PYTEST_STOP_BEFORE')
 
 @pytest.fixture(autouse=True)
 def wrap(request):
@@ -63,6 +64,11 @@ def wrap(request):
             PYMUPDF_PYTEST_RESUME = None
         else:
             print(f'### {PYMUPDF_PYTEST_RESUME=}: Skipping {request.function.__name__=}.')
+            return
+    
+    if PYMUPDF_PYTEST_STOP_BEFORE:
+        if PYMUPDF_PYTEST_STOP == request.function.__name__:
+            print(f'### {PYMUPDF_PYTEST_STOP_BEFORE=}: Stopping before {request.function.__name__=}.')
             return
     
     wt = pymupdf.TOOLS.mupdf_warnings()
