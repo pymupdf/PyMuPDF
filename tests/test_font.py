@@ -206,6 +206,8 @@ def test_3780():
                 #    print(f'    {n}: {v!r}')
                 for i, block in enumerate(d['blocks']):
                     print(f'block {i}:')
+                    if block['type'] != 0:
+                        continue
                     for j, line in enumerate(block['lines']):
                         print(f'    line {j}:')
                         for k, span in enumerate(line['spans']):
