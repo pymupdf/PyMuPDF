@@ -308,16 +308,13 @@ def test_2270():
                 print(f'{text=}')
                 print(f'{getattr(textpage, "parent")=}')
 
-                if pymupdf.mupdf_version_tuple >= (1, 26):
-                    # Check Annotation.get_textpage()'s <clip> arg.
-                    clip = textBox.rect
-                    clip.x1 = clip.x0 + (clip.x1 - clip.x0) / 3
-                    textpage2 = textBox.get_textpage(clip=clip)
-                    text = textpage2.extractText()
-                    print(f'With {clip=}: {text=}')
-                    assert text == 'ab\n'
-                else:
-                    assert not hasattr(pymupdf.mupdf, 'FZ_STEXT_CLIP_RECT')
+                # Check Annotation.get_textpage()'s <clip> arg.
+                clip = textBox.rect
+                clip.x1 = clip.x0 + (clip.x1 - clip.x0) / 3
+                textpage2 = textBox.get_textpage(clip=clip)
+                text = textpage2.extractText()
+                print(f'With {clip=}: {text=}')
+                assert text == 'ab\n'
                     
 
 def test_2934_add_redact_annot():
@@ -492,11 +489,7 @@ def test_4047():
 
 def test_4079():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
-    if pymupdf.mupdf_version_tuple >= (1, 25, 5):
-        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
-    else:
-        # 2024-11-27 Expect incorrect behaviour.
-        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after_1.25.pdf')
+    path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
         
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
     with pymupdf.open(path_after) as document_after:

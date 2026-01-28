@@ -86,13 +86,11 @@ def test_wrapcontents():
     page.set_contents(xref)
     assert len(page.get_contents()) == 1
     page.clean_contents()
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
-            assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
-        else:
-            assert wt == 'PDF stream Length incorrect'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
+        assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
+    else:
+        assert wt == 'PDF stream Length incorrect'
 
 
 def test_page_clean_contents():
@@ -300,8 +298,8 @@ def test_2533():
     Search for a unique char on page and confirm that page.get_texttrace()
     returns the same bbox as the search method.
     """
-    if hasattr(pymupdf, 'mupdf') and not pymupdf.g_use_extra:
-        print('Not running test_2533() because rebased with use_extra=0 known to fail')
+    if not pymupdf.g_use_extra:
+        print('Not running test_2533() because use_extra=0 known to fail')
         return
     pymupdf.TOOLS.set_small_glyph_heights(True)
     try:
@@ -401,29 +399,20 @@ def test_2108():
         print(f'')
 
     print(f'{pymupdf.mupdf_version_tuple=}')
-    if pymupdf.mupdf_version_tuple >= (1, 21, 2):
-        print('Asserting text==text_expected')
-        assert text == text_expected
-    else:
-        print('Asserting text!=text_expected')
-        assert text != text_expected
+    print('Asserting text==text_expected')
+    assert text == text_expected
 
 
 def test_2238():
     filepath = f'{scriptdir}/resources/test2238.pdf'
     doc = pymupdf.open(filepath)
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        wt_expected = ''
-        if pymupdf.mupdf_version_tuple >= (1, 26):
-            wt_expected += 'garbage bytes before version marker\n'
-            wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
-        else:
-            wt_expected += 'format error: cannot recognize version marker\n'
-        wt_expected += 'trying to repair broken xref\n'
-        wt_expected += 'repairing PDF document'
-        assert wt == wt_expected, f'{wt=}'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    wt_expected = ''
+    wt_expected += 'garbage bytes before version marker\n'
+    wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
+    wt_expected += 'trying to repair broken xref\n'
+    wt_expected += 'repairing PDF document'
+    assert wt == wt_expected, f'{wt=}'
     first_page = doc.load_page(0).get_text('text', clip=pymupdf.INFINITE_RECT())
     last_page = doc.load_page(-1).get_text('text', clip=pymupdf.INFINITE_RECT())
 
@@ -619,7 +608,6 @@ def test_2596():
     page = doc.reload_page(page)
     pix1 = page.get_pixmap()
     assert pix1.samples == pix0.samples
-    rebased = hasattr(pymupdf, 'mupdf')
     if pymupdf.mupdf_version_tuple < (1, 26, 6):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'too many indirections (possible indirection cycle involving 24 0 R)'
@@ -747,14 +735,12 @@ def test_2710():
     print(f'test_2710(): {pymupdf.mupdf_version_tuple=}')
     # 2023-11-05: Currently broken in mupdf master.
     print(f'test_2710(): Not Checking page.rect and rect.')
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                "syntax error: cannot find ExtGState resource 'GS7'\n"
-                "syntax error: cannot find ExtGState resource 'GS8'\n"
-                "encountered syntax errors; page may not be correct"
-                )
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == (
+            "syntax error: cannot find ExtGState resource 'GS7'\n"
+            "syntax error: cannot find ExtGState resource 'GS8'\n"
+            "encountered syntax errors; page may not be correct"
+            )
 
 
 def test_2736():
@@ -930,8 +916,6 @@ def test_3081():
     path1 = os.path.abspath(f'{__file__}/../../tests/resources/1.pdf')
     path2 = os.path.abspath(f'{__file__}/../../tests/test_3081-2.pdf')
     
-    rebased = hasattr(pymupdf, 'mupdf')
-    
     import shutil
     import sys
     import traceback
@@ -953,9 +937,8 @@ def test_3081():
     page = document[0]
     fd2 = next_fd()
     document.close()
-    if rebased:
-        assert document.this is None
-        assert page.this is None
+    assert document.this is None
+    assert page.this is None
     try:
         document.page_count()
     except Exception as e:
@@ -970,10 +953,7 @@ def test_3081():
     except Exception as e:
         print(f'Received expected exception: {e}')
         #traceback.print_exc(file=sys.stdout)
-        if rebased:
-            assert str(e) == 'page is None'
-        else:
-            assert str(e) == 'orphaned object: parent is None'
+        assert str(e) == 'page is None'
     else:
         assert 0, 'Did not receive expected exception.'
     page = None
@@ -996,17 +976,11 @@ def test_3112_set_xml_metadata():
     document.set_xml_metadata('hello world')
 
 def test_archive_3126():
-    if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running because known to fail with classic.')
-        return
     p = os.path.abspath(f'{__file__}/../../tests/resources')
     p = pathlib.Path(p)
     archive = pymupdf.Archive(p)
     
 def test_3140():
-    if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running test_3140 on classic, because Page.insert_htmlbox() not available.')
-        return
     css2 = ''
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     oldfile = os.path.abspath(f'{__file__}/../../tests/test_3140_old.pdf')
@@ -1043,9 +1017,6 @@ def test_cli():
         print('test_cli(): not running on Pyodide - cannot run child processes.')
         return
         
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_cli(): Not running on classic because of fitz_old.')
-        return
     import subprocess
     subprocess.run(f'pymupdf -h', shell=1, check=1)
 
@@ -1108,9 +1079,6 @@ def test_cli_out():
         print('test_cli_out(): not running on Pyodide - cannot run child processes.')
         return
         
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_cli(): Not running on classic because of fitz_old.')
-        return
     import platform
     import re
     import subprocess
@@ -1395,10 +1363,6 @@ def relpath(path, start=None):
 
 def test_open():
 
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_open(): not running on classic.')
-        return
-    
     import re
     import textwrap
     import traceback
@@ -1635,24 +1599,20 @@ def test_open2():
     with open(path_out, 'w') as f:
         json.dump(results, f, indent=4, sort_keys=1)
         
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
-            results_expected = json.load(f)
-        if results != results_expected:
-            print(f'results != results_expected:')
-            def show(r, name):
-                text = json.dumps(r, indent=4, sort_keys=1)
-                print(f'{name}:')
-                print(textwrap.indent(text, '    '))
-            show(results_expected, 'results_expected')
-            show(results, 'results')
-            assert 0
+    with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
+        results_expected = json.load(f)
+    if results != results_expected:
+        print(f'results != results_expected:')
+        def show(r, name):
+            text = json.dumps(r, indent=4, sort_keys=1)
+            print(f'{name}:')
+            print(textwrap.indent(text, '    '))
+        show(results_expected, 'results_expected')
+        show(results, 'results')
+        assert 0
     
 
 def test_533():
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_533(): Not running on classic.')
-        return
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     doc = pymupdf.open(path)
     print()
@@ -1805,10 +1765,7 @@ def test_3905():
     else:
         assert 0
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
-    else:
-        assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
+    assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
 
 def test_3624():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
@@ -1854,10 +1811,7 @@ def test_4034():
         pixmap2 = document[0].get_pixmap()
     rms = gentle_compare.pixmaps_rms(pixmap1, pixmap2)
     print(f'test_4034(): Comparison of original/cleaned page 0 pixmaps: {rms=}.')
-    if pymupdf.mupdf_version_tuple < (1, 25, 2):
-        assert 30 < rms < 50
-    else:
-        assert rms == 0
+    assert rms == 0
 
 def test_4309():
     document = pymupdf.open()
@@ -1874,11 +1828,8 @@ def test_4263():
     command = f'pymupdf clean -linear {path} {path_out}'
     print(f'Running: {command}')
     cp = subprocess.run(command, shell=1, check=0)
-    if pymupdf.mupdf_version_tuple < (1, 26):
-        assert cp.returncode == 0
-    else:
-        # Support for linerarisation dropped in MuPDF-1.26.
-        assert cp.returncode
+    # Support for linerarisation dropped in MuPDF-1.26.
+    assert cp.returncode
 
 def test_4224():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4224.pdf')
@@ -1888,9 +1839,6 @@ def test_4224():
             path_pixmap = f'{path}.{page.number}.png'
             pixmap.save(path_pixmap)
             print(f'Have created: {path_pixmap}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'format error: negative code in 1d faxd\npadding truncated image'
 
 def test_4319():
     # Have not seen this test reproduce issue #4319, but keeping it anyway.

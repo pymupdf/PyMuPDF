@@ -18,28 +18,19 @@ def test_tesseract():
     path = os.path.abspath( f'{__file__}/../resources/2.pdf')
     doc = pymupdf.open( path)
     page = doc[5]
-    if hasattr(pymupdf, 'mupdf'):
-        # rebased.
-        if pymupdf.mupdf_version_tuple < (1, 25, 4):
-            tail = 'OCR initialisation failed'
-        else:
-            tail = 'Tesseract language initialisation failed'
-        if os.environ.get('PYODIDE_ROOT'):
-            e_expected = 'code=6: No OCR support in this build'
-            e_expected_type = pymupdf.mupdf.FzErrorUnsupported
-        else:
-            e_expected = f'code=3: {tail}'
-            if platform.system() == 'OpenBSD':
-                # 2023-12-12: For some reason the SWIG catch code only catches
-                # the exception as FzErrorBase.
-                e_expected_type = pymupdf.mupdf.FzErrorBase
-                print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
-            else:
-                e_expected_type = pymupdf.mupdf.FzErrorLibrary
+    tail = 'Tesseract language initialisation failed'
+    if os.environ.get('PYODIDE_ROOT'):
+        e_expected = 'code=6: No OCR support in this build'
+        e_expected_type = pymupdf.mupdf.FzErrorUnsupported
     else:
-        # classic.
-        e_expected = 'OCR initialisation failed'
-        e_expected_type = None
+        e_expected = f'code=3: {tail}'
+        if platform.system() == 'OpenBSD':
+            # 2023-12-12: For some reason the SWIG catch code only catches
+            # the exception as FzErrorBase.
+            e_expected_type = pymupdf.mupdf.FzErrorBase
+            print(f'OpenBSD workaround - expecting FzErrorBase, not FzErrorLibrary.')
+        else:
+            e_expected_type = pymupdf.mupdf.FzErrorLibrary
     tessdata_prefix = os.environ.get('TESSDATA_PREFIX')
     if tessdata_prefix:
         tp = page.get_textpage_ocr(full=True)
@@ -58,16 +49,6 @@ def test_tesseract():
                 assert type(e) == e_expected_type, f'{type(e)=} != {e_expected_type=}.'
         else:
             assert 0, f'Expected exception {e_expected!r}'
-        rebased = hasattr(pymupdf, 'mupdf')
-        if rebased:
-            wt = pymupdf.TOOLS.mupdf_warnings()
-            if pymupdf.mupdf_version_tuple < (1, 25, 4):
-                assert wt == (
-                        'UNHANDLED EXCEPTION!\n'
-                        'library error: Tesseract initialisation failed'
-                        )
-            else:
-                assert not wt
         
 
 def test_3842b():
@@ -89,13 +70,7 @@ def test_3842b():
             if 'No tessdata specified and Tesseract is not installed' in str(e):
                 pass
             else:
-                if pymupdf.mupdf_version_tuple < (1, 25, 4):
-                    assert 'OCR initialisation failed' in str(e)
-                    wt = pymupdf.TOOLS.mupdf_warnings()
-                    assert wt == 'UNHANDLED EXCEPTION!\nlibrary error: Tesseract initialisation failed\nUNHANDLED EXCEPTION!\nlibrary error: Tesseract initialisation failed', \
-                            f'Unexpected {wt=}'
-                else:
-                    assert 'Tesseract language initialisation failed' in str(e)
+                assert 'Tesseract language initialisation failed' in str(e)
 
 
 def test_3842():
