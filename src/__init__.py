@@ -9516,6 +9516,7 @@ class Page:
                 self.number = page.m_internal.number
         else:
             self.number = None
+        self.inserted_element_idx = None
 
     def __repr__(self):
         return self.__str__()
@@ -12450,6 +12451,24 @@ class Page:
 
         return spare_height, scale
 
+    def _get_new_element_index(self):
+        PREFIX = "fzImg"  # 'pymupdf image'
+        if self.inserted_element_idx is None:
+            doc = self.parent
+            ilst = [i[7] for i in doc.get_page_images(self.number)]
+            ilst += [i[1] for i in doc.get_page_xobjects(self.number)]
+            ilst += [i[4] for i in doc.get_page_fonts(self.number)]
+
+            i = 0
+            _imgname = PREFIX + "0"  # first name candidate
+            while _imgname in ilst:
+                i += 1
+                _imgname = PREFIX + str(i)
+            self.inserted_element_idx = i
+        else:
+            self.inserted_element_idx += 1
+        return PREFIX + str(self.inserted_element_idx)
+
     def insert_image(
             page,
             rect,
@@ -12539,15 +12558,7 @@ class Page:
         clip = r * ~page.transformation_matrix
 
         # Create a unique image reference name.
-        ilst = [i[7] for i in doc.get_page_images(page.number)]
-        ilst += [i[1] for i in doc.get_page_xobjects(page.number)]
-        ilst += [i[4] for i in doc.get_page_fonts(page.number)]
-        n = "fzImg"  # 'pymupdf image'
-        i = 0
-        _imgname = n + "0"  # first name candidate
-        while _imgname in ilst:
-            i += 1
-            _imgname = n + str(i)  # try new name
+        _imgname = page._get_new_element_index()
 
         if overlay:
             page.wrap_contents()  # ensure a balanced graphics state
@@ -13085,19 +13096,7 @@ class Page:
 
         matrix = calc_matrix(src_rect, tar_rect, keep=keep_proportion, rotate=rotate)
 
-        # list of existing /Form /XObjects
-        ilst = [i[1] for i in doc.get_page_xobjects(page.number)]
-        ilst += [i[7] for i in doc.get_page_images(page.number)]
-        ilst += [i[4] for i in doc.get_page_fonts(page.number)]
-
-        # create a name not in that list
-        n = "fzFrm"
-        i = 0
-        _imgname = n + "0"
-        while _imgname in ilst:
-            i += 1
-            _imgname = n + str(i)
-
+        _imgname = page._get_new_element_index()
         isrc = docsrc._graft_id  # used as key for graftmaps
         if doc._graft_id == isrc:
             raise ValueError("source document must not equal target")
