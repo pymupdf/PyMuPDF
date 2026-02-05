@@ -6204,6 +6204,14 @@ class Document:
                     f'{refs_old=} {m_internal_old=:#x} {m_internal_new=:#x}'
         return page
 
+    def repair(self):
+        '''
+        If we are a PDF document, does repair.
+        '''
+        pdf = _as_pdf_document(self, required=False)
+        if pdf.m_internal:
+            mupdf.pdf_check_document(pdf)
+    
     def resolve_link(self, uri=None, chapters=0):
         """Calculate internal link destination.
 
