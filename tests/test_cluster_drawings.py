@@ -45,3 +45,17 @@ def test_cluster3():
     page.draw_rect(r1)
     page.draw_rect(r2)
     assert page.cluster_drawings() == [r1, r2]
+
+
+def test_4599():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4599.pdf')
+    n = 0
+    with pymupdf.open(path) as document:
+        for page in document:
+            for clip in page.cluster_drawings():
+                print(clip)
+                n += 1
+    assert n == 3
+    
+    
