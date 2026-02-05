@@ -797,25 +797,35 @@ def build_mupdf_windows(
         ):
     
     assert mupdf_local
-
-    if overwrite_config:
-        mupdf_config_h = f'{mupdf_local}/include/mupdf/fitz/config.h'
-        prefix = '#define TOFU_CJK_EXT 1 /* PyMuPDF override. */\n'
-        with open(mupdf_config_h) as f:
-            text = f.read()
-        if text.startswith(prefix):
-            print(f'Not modifying {mupdf_config_h} because already has prefix {prefix!r}.')
-        else:
-            print(f'Prefixing {mupdf_config_h} with {prefix!r}.')
-            text = prefix + text
-            st = os.stat(mupdf_config_h)
-            with open(mupdf_config_h, 'w') as f:
-                f.write(text)
-            os.utime(mupdf_config_h, (st.st_atime, st.st_mtime))
-        
+    mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    log(f'{overwrite_config=}')
+    log(f'{mupdf_version_tuple=}')
     wp = pipcl.wdev.WindowsPython()
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
     windows_build_tail = f'build\\shared-{tesseract}{build_type}'
+    
+    if overwrite_config:
+        if mupdf_version_tuple >= (1, 28):
+            # Tell mupdf build to use, for example, `/Build "ReleaseTofuCjkExt|x64"`.
+            # This avoids the need for us to modify mupdf's config.h.
+            windows_build_tail += '-TOFU_CJK_EXT'
+            log(f'Appending, {windows_build_tail=}')
+        else:
+            log(f'modifying mupdf:include/mupdf/fitz/config.h')
+            mupdf_config_h = f'{mupdf_local}/include/mupdf/fitz/config.h'
+            prefix = '#define TOFU_CJK_EXT 1 /* PyMuPDF override. */\n'
+            with open(mupdf_config_h) as f:
+                text = f.read()
+            if text.startswith(prefix):
+                log(f'Not modifying {mupdf_config_h} because already has prefix {prefix!r}.')
+            else:
+                log(f'Prefixing {mupdf_config_h} with {prefix!r}.')
+                text = prefix + text
+                st = os.stat(mupdf_config_h)
+                with open(mupdf_config_h, 'w') as f:
+                    f.write(text)
+                os.utime(mupdf_config_h, (st.st_atime, st.st_mtime))
+    
     if g_py_limited_api:
         windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
