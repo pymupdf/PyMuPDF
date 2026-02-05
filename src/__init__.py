@@ -7865,6 +7865,7 @@ class Document:
             preserve_metadata=1,
             use_objstms=0,
             compression_effort=0,
+            raise_on_repair=False,
     ):
         from io import BytesIO
         bio = BytesIO()
@@ -7889,6 +7890,7 @@ class Document:
                 preserve_metadata=preserve_metadata,
                 use_objstms=use_objstms,
                 compression_effort=compression_effort,
+                raise_on_repair=raise_on_repair,
         )
         return bio.getvalue()
     
