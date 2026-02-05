@@ -4670,6 +4670,7 @@ class Document:
             preserve_metadata=1,
             use_objstms=1,
             compression_effort=0,
+            raise_on_repair=False,
             ):
         '''
         Save PDF using some different defaults
@@ -4694,6 +4695,7 @@ class Document:
                 preserve_metadata=preserve_metadata,
                 use_objstms=use_objstms,
                 compression_effort=compression_effort,
+                raise_on_repair=raise_on_repair,
                 )
 
     def find_bookmark(self, bm):
@@ -6481,9 +6483,11 @@ class Document:
             preserve_metadata=1,
             use_objstms=0,
             compression_effort=0,
+            raise_on_repair=False,
             ):
         # From %pythonprepend save
         #
+        is_repaired_pre = self.is_repaired
         """Save PDF to file, pathlib.Path or file pointer."""
         if self.is_closed or self.is_encrypted:
             raise ValueError("document closed or encrypted")
@@ -6547,6 +6551,9 @@ class Document:
             #log( f'{type(out)=} {type(out.this)=}')
             mupdf.pdf_write_document(pdf, out, opts)
             out.fz_close_output()
+        if raise_on_repair:
+            if self.is_repaired and not is_repaired_pre:
+                raise Exception(f'Document save did a repair')
 
     def save_snapshot(self, filename):
         """Save a file snapshot suitable for journalling."""
