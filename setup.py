@@ -1221,6 +1221,25 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
 
 
+def clean(all_):
+    pipcl.log(f'{all_=}')
+    ret = list()
+    ret.append(f'{g_root}/src/build')
+    
+    path_mupdf, _ = get_mupdf()
+    ret.append(f'{path_mupdf}/platform/c++')
+    ret.append(f'{path_mupdf}/platform/python')
+    if all_:
+        # Clean mupdf C library.
+        ret.append(f'{path_mupdf}/build')
+        ret.append(f'{path_mupdf}/platform/win32')
+        ret.append(f'{path_mupdf}/platform/win32/Release')
+        ret.append(f'{path_mupdf}/platform/win32/x64')
+    
+    pipcl.log(f'Returning: {ret=}')
+    return ret
+
+
 def sdist():
     ret = list()
     if PYMUPDF_SETUP_DUMMY == '1':
@@ -1385,6 +1404,7 @@ else:
             entry_points = entry_points,
         
             fn_build=build,
+            fn_clean=clean,
             fn_sdist=sdist,
         
             tag_python=tag_python,
