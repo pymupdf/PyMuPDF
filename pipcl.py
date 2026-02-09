@@ -1071,7 +1071,7 @@ class Package:
                 path = os.path.abspath(path)
                 assert path.startswith(self.root+os.sep), \
                         f'path={path!r} does not start with root={self.root+os.sep!r}'
-                log2(f'Removing: {path}')
+                log(f'Removing: {path}')
                 shutil.rmtree(path, ignore_errors=True)
 
 
