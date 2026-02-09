@@ -37,7 +37,7 @@ def _worker_init(
 def _stats_write(t, label):
     t = time.time() - t
     if t >= 10:
-        pymupdf.log(f'{os.getpid()=}: {t:2f}s: {label}.')
+        pymupdf.log(f'{os.getpid()=}: {t:2f}s: {label}.')   # pylint: disable=c-extension-no-member
 
 
 def _worker_fn(page_number):
@@ -45,7 +45,7 @@ def _worker_fn(page_number):
     if not _worker_state.document:
         if _worker_state.stats:
             t = time.time()
-        _worker_state.document = pymupdf.Document(_worker_state.path)   # pylint: disable=attribute-defined-outside-init
+        _worker_state.document = pymupdf.Document(_worker_state.path)   # pylint: disable=c-extension-no-member,attribute-defined-outside-init
         if _worker_state.stats:
             _stats_write(t, 'pymupdf.Document()')
     
@@ -146,7 +146,7 @@ def _fork(
                 if not document:
                     if stats:
                         t = time.time()
-                    document = pymupdf.Document(path)
+                    document = pymupdf.Document(path)   # pylint: disable=c-extension-no-member
                     if stats:
                         _stats_write(t, 'pymupdf.Document(path)')
                 
@@ -191,7 +191,7 @@ def _fork(
                     try:
                         childfn()
                     except Exception as e:
-                        pymupdf.log(f'{os.getpid()=}: childfn() => {e=}')
+                        pymupdf.log(f'{os.getpid()=}: childfn() => {e=}')   # pylint: disable=c-extension-no-member
                         raise
                 finally:
                     if verbose:
