@@ -87,6 +87,8 @@ from pymupdf import mupdf
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
 
+# pylint: disable=no-name-in-module
+
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
 TEXTPAGE = None  # textpage for cell text extraction
