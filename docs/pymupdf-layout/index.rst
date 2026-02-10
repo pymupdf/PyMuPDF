@@ -138,28 +138,53 @@ Now we can happily load Office files and convert them as follows::
 OCR support
 ~~~~~~~~~~~~~~~~~
 
+**Critical: Import pymupdf.layout FIRST**
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code-block:: python
+   :emphasize-lines: 1
+
+   import pymupdf.layout  # REQUIRED FIRST - enables OCR decision tree
+   import pymupdf4llm     # Now OCR heuristics are active
+
+   md_text = pymupdf4llm.to_markdown("scanned.pdf")
+   # Auto: detects image pages → OCR → markdown
+
+.. warning::
+   **Without `import pymupdf.layout`, OCR is NEVER attempted** - 
+   even if Tesseract and OpenCV are installed.
+
+**Complete Requirements** (all must be satisfied)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. list-table:: OCR Decision Prerequisites
+   :widths: 15 85
+   :header-rows: 1
+
+   * - Check
+     - Requirement
+   * - 1. Layout
+     - :ref:`PyMuPDF Layout is imported <pymupdf_layout_using>`
+   * - 2. OCR API
+     - :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` you have ``use_ocr`` enabled (this is set to ``True`` by default)
+   * - 3. Tesseract
+     - :ref:`Tesseract OCR is correctly installed <installation_ocr>`
+   * - 4. OpenCV
+     - Available in the Python environment (``pip install opencv-python``)
+
+**Smart OCR Heuristics** (Detailed)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 The new layout-sensitive |PyMuPDF4LLM| version also evaluates whether a page would benefit from applying OCR to it. If its heuristics come to this conclusion, the built-in Tesseract-OCR module is automatically invoked. Its results are then handled like normal page content.
- 
-If a page contains (roughly) no text at all, but is covered with images or many character-sized vectors, a check is made using `OpenCV <https://pypi.org/project/opencv-python/>`_ whether text is *probably* detectable on the page at all. This is done to tell apart image-based text from ordinary pictures (like photographs).
 
-If the page does contain text but too many characters are unreadable (like "�����"), OCR is also executed, but **for the affected text areas only** -- not the full page. This way, we avoid losing already existing text and other content like images and vectors.
+If a page contains (roughly) **no text at all**, but is covered with **images or many character-sized vectors**, a check is made using `OpenCV <https://pypi.org/project/opencv-python/>`_ whether text is *probably* detectable on the page at all. This is done to tell apart **image-based text** from ordinary pictures (like photographs).
 
-For these heuristics to work we need both, an existing :ref:`Tesseract installation <installation_ocr>` and the availability of `OpenCV <https://pypi.org/project/opencv-python/>`_ in the Python environment. If either is missing, no OCR is attempted at all.
+If the page **does contain text** but **too many characters are unreadable** (like "�����"), OCR is also executed, but **for the affected text areas only** – not the full page. This way, we avoid losing already existing text and other content like images and vectors.
 
-The decision tree for whether OCR is actually used or not depends on the following:
-
-1. :ref:`PyMuPDF Layout is imported <pymupdf_layout_using>`
-
-2. In the :ref:`PyMuPDF4LLM API <pymupdf4llm-api>` you have `use_ocr` enabled (this is set to `True` by default)
-
-3. :ref:`Tesseract is correctly installed <installation_ocr>`
-
-4. `OpenCV <https://pypi.org/project/opencv-python/>`_ is available in your Python environment
-
+**OCR Decision Tree**
+^^^^^^^^^^^^^^^^^^^^
 
 .. image:: ../images/layout-ocr-flow.png
-
-----
 
 .. _pymupdf_layout_and_pymupdf4llm_api:
 
