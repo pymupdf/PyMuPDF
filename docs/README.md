@@ -8,9 +8,17 @@ Welcome to the PyMuPDF documentation. This documentation relies on [Sphinx](http
 This README assumes you have [Sphinx v5.0.2 installed](https://www.sphinx-doc.org/en/master/usage/installation.html) on your system.
 
 
+## Dependencies
+
+pip install sphinxcontrib-googleanalytics
+pip install sphinx-notfound-page
+pip install sphinx-copybutton
+pip install sphinx-autobuild
+pip install furo
+
 ## Updating the documentation
 
-Within `docs` update the associated restructured text (`.rst`) files. These files represent the corresponding document pages. 
+Within `docs` update the associated restructured text (`.rst`) files. These files represent the corresponding document pages.
 
 ### Conventions
 
