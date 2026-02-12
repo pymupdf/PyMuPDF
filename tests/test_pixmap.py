@@ -509,7 +509,13 @@ def test_4435():
     with pymupdf.open(path) as document:
         page = document[2]
         print(f'Calling page.get_pixmap().', flush=1)
-        if pymupdf.mupdf_version_tuple >= (1, 27) and os.environ.get('PYODIDE_ROOT'):
+        if (
+                pymupdf.mupdf_version_tuple >= (1, 27)
+                and (
+                    os.environ.get('PYODIDE_ROOT')
+                    or (platform.system() == 'Windows' and sys.maxsize.bit_length()+1 == 32)
+                    )
+                ):
             # 2025-11-07: Expect alloc failure.
             try:
                 pixmap = page.get_pixmap(alpha=False, dpi=120)
