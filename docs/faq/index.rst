@@ -331,7 +331,7 @@ FAQ
     <div class="section" id="installation">
     <div class="section-header">
     <h2>Installation & Setup</h2>
-    <span class="count">51 questions</span>
+
     </div>
 
     <div class="faq">
@@ -341,17 +341,17 @@ FAQ
         <p>First, make sure you installed <code>pymupdf</code> (not <code>pymypdf</code> or <code>mupdf</code>):</p>
         <pre><code>pip install pymupdf</code></pre>
         <p>Second, verify your IDE (PyCharm, VS Code, etc.) is using the same Python interpreter and virtual environment where you installed it. Try running <code>python -c "import pymupdf; print(pymupdf.__doc__)"</code> directly in a terminal to isolate IDE issues.</p>
-        <p>Third, there is a separate PyPI package literally named <code>pymupdf</code> that has nothing to do with PyMuPDF. These two packages cannot coexist in the same environment. If you installed both, uninstall <code>pymupdf</code> and reinstall <code>pymupdf</code>.</p>
-        <div class="tip"><strong>Note:</strong> Starting from version 1.24.0, you can also use <code>import pymupdf</code> as an alternative to <code>import pymupdf</code>.</div>
+        <p>Third, there is a separate PyPI package literally named <code>fitz</code> that has nothing to do with PyMuPDF. These two packages cannot coexist in the same environment. If you installed both, uninstall <code>fitz</code> and reinstall <code>pymupdf</code>.</p>
+    <div class="tip"><strong>Note:</strong> Starting from version 1.24.0, you can also use <code>import pymupdf</code> as an alternative to <code>import fitz</code>.</div>
+    
     </div>
     </div>
 
     <div class="faq">
-    <div class="faq-q"><span class="marker">Q</span><span class="question">How do I install PyMuPDF on Apple Silicon (M1/M2/M3)?</span><span class="toggle">+</span></div>
+    <div class="faq-q"><span class="marker">Q</span><span class="question">How do I install PyMuPDF on Apple Silicon (M1/M2/M3/M4/M5)?</span><span class="toggle">+</span></div>
     <div class="faq-a">
-        <p>PyMuPDF now ships pre-built wheels for Apple Silicon. A simple <code>pip install pymupdf</code> should work. If it falls back to building from source (sdist), make sure you have SWIG installed first:</p>
-        <pre><code>brew install swig
-    pip install pymupdf</code></pre>
+        <p>PyMuPDF now ships pre-built wheels for Apple Silicon. A simple <code>pip install pymupdf</code> should work. </p>
+        <pre><code>pip install pymupdf</code></pre>
     </div>
     </div>
 
@@ -379,7 +379,7 @@ FAQ
     <div class="section" id="text-extraction">
     <div class="section-header">
     <h2>Text Extraction</h2>
-    <span class="count">110 questions</span>
+
     </div>
 
     <div class="faq">
@@ -472,7 +472,7 @@ FAQ
     <div class="section" id="table-extraction">
     <div class="section-header">
     <h2>Table Extraction</h2>
-    <span class="count">23 questions</span>
+
     </div>
 
     <div class="faq">
@@ -515,7 +515,7 @@ FAQ
     <div class="section" id="ocr">
     <div class="section-header">
     <h2>OCR</h2>
-    <span class="count">40 questions</span>
+
     </div>
 
     <div class="faq">
@@ -586,7 +586,7 @@ FAQ
     <div class="section" id="pymupdf4llm">
     <div class="section-header">
     <h2>PyMuPDF4LLM & AI Pipelines</h2>
-    <span class="count">66 questions</span>
+
     </div>
 
     <div class="faq">
@@ -653,7 +653,7 @@ FAQ
     <div class="section" id="images">
     <div class="section-header">
     <h2>Images & Pixmaps</h2>
-    <span class="count">70 questions</span>
+
     </div>
 
     <div class="faq">
@@ -711,7 +711,7 @@ FAQ
     <div class="section" id="text-insertion">
     <div class="section-header">
     <h2>Text Insertion</h2>
-    <span class="count">55 questions</span>
+
     </div>
 
     <div class="faq">
@@ -803,7 +803,7 @@ FAQ
     <div class="section" id="annotations">
     <div class="section-header">
     <h2>Annotations</h2>
-    <span class="count">112 questions</span>
+
     </div>
 
     <div class="faq">
@@ -854,7 +854,7 @@ FAQ
     <div class="section" id="forms">
     <div class="section-header">
     <h2>Forms & Widgets</h2>
-    <span class="count">31 questions</span>
+
     </div>
 
     <div class="faq">
@@ -906,7 +906,7 @@ FAQ
     <div class="section" id="fonts">
     <div class="section-header">
     <h2>Fonts</h2>
-    <span class="count">70 questions</span>
+
     </div>
 
     <div class="faq">
@@ -948,7 +948,7 @@ FAQ
     <div class="section" id="merge-split">
     <div class="section-header">
     <h2>Merging & Splitting PDFs</h2>
-    <span class="count">34 questions</span>
+
     </div>
 
     <div class="faq">
@@ -995,7 +995,7 @@ FAQ
     <div class="section" id="geometry">
     <div class="section-header">
     <h2>Geometry & Coordinates</h2>
-    <span class="count">130 questions</span>
+
     </div>
 
     <div class="faq">
@@ -1047,7 +1047,7 @@ FAQ
     <div class="section" id="performance">
     <div class="section-header">
     <h2>Performance & Large Files</h2>
-    <span class="count">20 questions</span>
+
     </div>
 
     <div class="faq">
@@ -1083,7 +1083,7 @@ FAQ
     <div class="section" id="conversion">
     <div class="section-header">
     <h2>Format Conversion</h2>
-    <span class="count">41 questions</span>
+
     </div>
 
     <div class="faq">
