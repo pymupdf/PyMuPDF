@@ -20,19 +20,35 @@ FAQ
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
     :root {
-    --bg: #0f1117;
-    --surface: #181a24;
-    --surface-hover: #1e2130;
-    --border: #2a2d3e;
-    --text: #d8d8e0;
-    --muted: #9898a8;
-    --accent: #e8943a;
-    --accent-dim: rgba(232,148,58,0.12);
-    --code-bg: #141620;
-    --green: #4ade80;
-    --blue: #60a5fa;
-    --red: #f87171;
-    --purple: #c084fc;
+        --bg: #0f1117;
+        --surface: #181a24;
+        --surface-hover: #1e2130;
+        --border: #2a2d3e;
+        --text: #d8d8e0;
+        --muted: #9898a8;
+        --accent: #e8943a;
+        --accent-dim: rgba(232,148,58,0.12);
+        --code-bg: #141620;
+        --green: #4ade80;
+        --blue: #60a5fa;
+        --red: #f87171;
+        --purple: #c084fc;
+    }
+    
+    body[data-theme="light"] {
+        --bg: #ffffff;
+        --surface: #f8f9fa;
+        --surface-hover: #e9ecef;
+        --border: #dee2e6;
+        --text: #212529;
+        --muted: #6c757d;
+        --accent: #d97706;
+        --accent-dim: rgba(217,119,6,0.08);
+        --code-bg: #f5f5f5;
+        --green: #16a34a;
+        --blue: #2563eb;
+        --red: #dc2626;
+        --purple: #9333ea;
     }
 
     .toc-drawer {
@@ -56,254 +72,248 @@ FAQ
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-    font-family: 'IBM Plex Sans', -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 15px;
-    line-height: 1.75;
-    -webkit-font-smoothing: antialiased;
+        font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 15px;
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
     }
 
     .container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 60px 24px;
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 60px 24px;
     }
 
     /* Header */
     .header {
-    margin-bottom: 56px;
-    padding-bottom: 40px;
-    border-bottom: 1px solid var(--border);
+        margin-bottom: 56px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid var(--border);
     }
 
     .header h1 {
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
+        font-size: 32px;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        margin-bottom: 12px;
     }
 
-    /*.header h1 span { color: var(--accent); }*/
-
     .header .subtitle {
-    font-size: 16px;
-    color: var(--muted);
-    line-height: 1.7;
-    max-width: 700px;
+        font-size: 16px;
+        color: var(--muted);
+        line-height: 1.7;
+        max-width: 700px;
     }
 
     .header .meta {
-    margin-top: 16px;
-    display: flex;
-    gap: 24px;
-    font-size: 13px;
-    color: var(--muted);
+        margin-top: 16px;
+        display: flex;
+        gap: 24px;
+        font-size: 13px;
+        color: var(--muted);
     }
 
     .header .meta .stat {
-    display: flex;
-    align-items: center;
-    gap: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }
 
     .header .meta .stat strong {
-    color: var(--accent);
-    font-weight: 600;
+        color: var(--accent);
+        font-weight: 600;
     }
 
     /* Navigation */
     .nav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 48px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 48px;
     }
 
     .nav a {
-    display: inline-block;
-    padding: 6px 14px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.15s;
+        display: inline-block;
+        padding: 6px 14px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 500;
+        transition: all 0.15s;
     }
 
     .nav a:hover {
-    color: var(--text);
-    border-color: var(--accent);
-    background: var(--accent-dim);
+        color: var(--text);
+        border-color: var(--accent);
+        background: var(--accent-dim);
     }
 
     /* Section */
     .section {
-    margin-bottom: 56px;
+        margin-bottom: 56px;
     }
 
     .section-header {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 28px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 28px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
     }
 
     .section-header h2 {
-    font-size: 22px;
-    font-weight: 600;
-    letter-spacing: -0.3px;
+        font-size: 22px;
+        font-weight: 600;
+        letter-spacing: -0.3px;
     }
 
     .section-header .count {
-    font-size: 12px;
-    color: var(--accent);
-    background: var(--accent-dim);
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-weight: 600;
+        font-size: 12px;
+        color: var(--accent);
+        background: var(--accent-dim);
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-weight: 600;
     }
 
     /* FAQ Item */
     .faq {
-    margin-bottom: 20px;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    overflow: hidden;
-    transition: border-color 0.15s;
+        margin-bottom: 20px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        transition: border-color 0.15s;
     }
 
     .faq:hover { border-color: #3a3d52; }
 
     .faq-q {
-    padding: 18px 22px;
-    background: var(--surface);
-    cursor: pointer;
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    user-select: none;
+        padding: 18px 22px;
+        background: var(--surface);
+        cursor: pointer;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        user-select: none;
     }
 
     .faq-q:hover { background: var(--surface-hover); }
 
     .faq-q .marker {
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 15px;
-    flex-shrink: 0;
-    margin-top: 1px;
+        color: var(--accent);
+        font-weight: 600;
+        font-size: 15px;
+        flex-shrink: 0;
+        margin-top: 1px;
     }
 
     .faq-q .question {
-    font-weight: 500;
-    font-size: 15px;
-    line-height: 1.6;
-    flex: 1;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 1.6;
+        flex: 1;
     }
 
     .faq-q .toggle {
-    color: var(--muted);
-    font-size: 18px;
-    flex-shrink: 0;
-    transition: transform 0.2s;
-    margin-top: 1px;
+        color: var(--muted);
+        font-size: 18px;
+        flex-shrink: 0;
+        transition: transform 0.2s;
+        margin-top: 1px;
     }
 
     .faq.open .faq-q .toggle { transform: rotate(45deg); }
 
     .faq-a {
-    display: none;
-    padding: 20px 22px 22px 48px;
-    border-top: 1px solid var(--border);
-    background: var(--bg);
+        display: none;
+        padding: 20px 22px 22px 48px;
+        border-top: 1px solid var(--border);
+        background: var(--bg);
     }
 
     .faq.open .faq-a { display: block; }
 
     .faq-a p {
-    margin-bottom: 14px;
-    color: var(--text);
-    line-height: 1.8;
+        margin-bottom: 14px;
+        color: var(--text);
+        line-height: 1.8;
     }
 
     .faq-a p:last-child { margin-bottom: 0; }
 
     .faq-a code {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    padding: 2px 6px;
-    border-radius: 4px;
-    color: var(--accent);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: var(--accent);
     }
 
     .faq-a pre {
-    background: var(--code-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px 18px;
-    margin: 14px 0;
-    overflow-x: auto;
+        background: var(--code-bg);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px 18px;
+        margin: 14px 0;
+        overflow-x: auto;
     }
 
     .faq-a pre code {
-    background: none;
-    border: none;
-    padding: 0;
-    font-size: 13px;
-    line-height: 1.7;
-    color: var(--text);
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 13px;
+        line-height: 1.7;
+        color: var(--text);
     }
 
     .faq-a .tip {
-    background: var(--accent-dim);
-    border-left: 3px solid var(--accent);
-    padding: 12px 16px;
-    border-radius: 0 6px 6px 0;
-    margin: 14px 0;
-    font-size: 14px;
-    color: var(--text);
+        background: var(--accent-dim);
+        border-left: 3px solid var(--accent);
+        padding: 12px 16px;
+        border-radius: 0 6px 6px 0;
+        margin: 14px 0;
+        font-size: 14px;
+        color: var(--text);
     }
 
     .faq-a .tip strong { color: var(--accent); }
 
     .faq-a a {
-    color: var(--blue);
-    text-decoration: none;
-    border-bottom: 1px solid transparent;
+        color: var(--blue);
+        text-decoration: none;
+        border-bottom: 1px solid transparent;
     }
 
     .faq-a a:hover { border-bottom-color: var(--blue); }
 
     .faq-a .source {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 12px;
-    font-style: italic;
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 12px;
+        font-style: italic;
     }
 
-    /* Footer */
-    .footer {
-    margin-top: 64px;
-    padding-top: 32px;
-    border-top: 1px solid var(--border);
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.7;
-    }
+  
 
     @media (max-width: 640px) {
-    .container { padding: 32px 16px; }
-    .header h1 { font-size: 24px; }
-    .nav { gap: 6px; }
-    .nav a { font-size: 12px; padding: 5px 10px; }
+        .container { padding: 32px 16px; }
+        .header h1 { font-size: 24px; }
+        .nav { gap: 6px; }
+        .nav a { font-size: 12px; padding: 5px 10px; }
     }
+
+    
+
+
     </style>
 
     <div class="container">
