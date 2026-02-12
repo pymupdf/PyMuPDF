@@ -56,6 +56,7 @@ This documentation covers all versions up to |version|.
    tutorial.rst
    rag.rst
    resources.rst
+   faq/index.rst
 
 
 
