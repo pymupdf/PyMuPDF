@@ -184,10 +184,13 @@ def test_2979():
     ), f"{pymupdf.TOOLS.set_small_glyph_heights()=}"
 
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert (
-        wt
-        == "bogus font ascent/descent values (3117 / -2463)\n... repeated 2 times..."
-    )
+    if pymupdf.mupdf_version_tuple >= (1, 28, 0):
+        assert ( wt == '' )
+    else:
+        assert (
+            wt
+            == "bogus font ascent/descent values (3117 / -2463)\n... repeated 2 times..."
+        )
 
 
 def test_3062():
