@@ -703,7 +703,7 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
                 break
             i += 1
     # add /NM key to object definition
-    annot = annot.replace("/Link", "/Link/NM(%s)" % name)
+    annot = annot.replace(f"/Link", f"/Link/NM({name})")
     return annot
 
 

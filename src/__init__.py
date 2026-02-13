@@ -4908,7 +4908,7 @@ class Document:
             raise ValueError("document close or encrypted")
         t, name = doc.xref_get_key(xref, "Subtype")
         if t != "name" or name not in ("/Image", "/Form"):
-            raise ValueError("bad object type at xref %i" % xref)
+            raise ValueError(f"bad object type at xref {xref}")
         t, oc = doc.xref_get_key(xref, "OC")
         if t != "xref":
             return 0
@@ -6702,7 +6702,7 @@ class Document:
             xref_limit = doc.xref_length()
         for xref in range(1, xref_limit):
             if not doc.xref_object(xref):
-                msg = "bad xref %i - clean PDF before scrubbing" % xref
+                msg = f"bad xref {xref} - clean PDF before scrubbing"
                 raise ValueError(msg)
             if javascript and doc.xref_get_key(xref, "S")[1] == "/JavaScript":
                 # a /JavaScript action object
@@ -6929,7 +6929,7 @@ class Document:
         valid_keys = set(keymap.keys())
         diff_set = set(m.keys()).difference(valid_keys)
         if diff_set != set():
-            msg = "bad dict key(s): %s" % diff_set
+            msg = f"bad dict key(s): {diff_set}"
             raise ValueError(msg)
 
         t, temp = doc.xref_get_key(-1, "Info")
@@ -6944,7 +6944,7 @@ class Document:
         if info_xref == 0:  # no prev metadata: get new xref
             info_xref = doc.get_new_xref()
             doc.update_object(info_xref, "<<>>")  # fill it with empty object
-            doc.xref_set_key(-1, "Info", "%i 0 R" % info_xref)
+            doc.xref_set_key(-1, "Info", f"{info_xref} 0 R")
         elif m == {}:  # remove existing metadata
             doc.xref_set_key(-1, "Info", "null")
             doc.init_doc()
@@ -6971,15 +6971,15 @@ class Document:
             raise ValueError("document close or encrypted")
         t, name = doc.xref_get_key(xref, "Subtype")
         if t != "name" or name not in ("/Image", "/Form"):
-            raise ValueError("bad object type at xref %i" % xref)
+            raise ValueError(f"bad object type at xref {xref}")
         if oc > 0:
             t, name = doc.xref_get_key(oc, "Type")
             if t != "name" or name not in ("/OCG", "/OCMD"):
-                raise ValueError("bad object type at xref %i" % oc)
+                raise ValueError(f"bad object type at xref {oc}")
         if oc == 0 and "OC" in doc.xref_get_keys(xref):
             doc.xref_set_key(xref, "OC", "null")
             return None
-        doc.xref_set_key(xref, "OC", "%i 0 R" % oc)
+        doc.xref_set_key(xref, "OC", f"{oc} 0 R")
         return None
 
     def set_ocmd(
@@ -7005,19 +7005,19 @@ class Document:
 
         def ve_maker(ve):
             if type(ve) not in (list, tuple) or len(ve) < 2:
-                raise ValueError("bad 've' format: %s" % ve)
+                raise ValueError(f"bad 've' format: {ve}")
             if ve[0].lower() not in ("and", "or", "not"):
-                raise ValueError("bad operand: %s" % ve[0])
+                raise ValueError(f"bad operand: {ve[0]}")
             if ve[0].lower() == "not" and len(ve) != 2:
-                raise ValueError("bad 've' format: %s" % ve)
-            item = "[/%s" % ve[0].title()
+                raise ValueError(f"bad 've' format: {ve}")
+            item = f"[/{ve[0].title()}"
             for x in ve[1:]:
                 if type(x) is int:
                     if x not in all_ocgs:
-                        raise ValueError("bad OCG %i" % x)
-                    item += " %i 0 R" % x
+                        raise ValueError(f"bad OCG {x}")
+                    item += f" {x} 0 R"
                 else:
-                    item += " %s" % ve_maker(x)
+                    item += f" {ve_maker(x)}"
             item += "]"
             return item
 
@@ -7026,9 +7026,9 @@ class Document:
         if ocgs and type(ocgs) in (list, tuple):  # some OCGs are provided
             s = set(ocgs).difference(all_ocgs)  # contains illegal xrefs
             if s != set():
-                msg = "bad OCGs: %s" % s
+                msg = f"bad OCGs: {s}"
                 raise ValueError(msg)
-            text += "/OCGs[" + " ".join(map(lambda x: "%i 0 R" % x, ocgs)) + "]"
+            text += "/OCGs[" + " ".join(map(lambda x: f"{x} 0 R", ocgs)) + "]"
 
         if policy:
             policy = str(policy).lower()
@@ -7039,11 +7039,11 @@ class Document:
                 "alloff": "AllOff",
             }
             if policy not in ("anyon", "allon", "anyoff", "alloff"):
-                raise ValueError("bad policy: %s" % policy)
-            text += "/P/%s" % pols[policy]
+                raise ValueError(f"bad policy: {policy}")
+            text += f"/P/{pols[policy]}"
 
         if ve:
-            text += "/VE%s" % ve_maker(ve)
+            text += f"/VE{ve_maker(ve)}"
 
         text += ">>"
 
@@ -7106,13 +7106,13 @@ class Document:
             Returns:
                 PDF label rule string wrapped in "<<", ">>".
             """
-            s = "%i<<" % label["startpage"]
+            s = f"{label['startpage']}<<"
             if label.get("prefix", "") != "":
-                s += "/P(%s)" % label["prefix"]
+                s += f"/P({label['prefix']})"
             if label.get("style", "") != "":
-                s += "/S/%s" % label["style"]
+                s += f"/S/{label['style']}"
             if label.get("firstpagenum", 1) > 1:
-                s += "/St %i" % label["firstpagenum"]
+                s += f"/St {label['firstpagenum']}"
             s += ">>"
             return s
 
@@ -7167,13 +7167,13 @@ class Document:
             t1 = toc[i]
             t2 = toc[i + 1]
             if not -1 <= t1[2] <= page_count:
-                raise ValueError("row %i: page number out of range" % i)
+                raise ValueError(f"row {i}: page number out of range")
             if (type(t2) not in (list, tuple)) or len(t2) not in (3, 4):
-                raise ValueError("bad row %i" % (i + 1))
+                raise ValueError(f"bad row {(i + 1)}")
             if (type(t2[0]) is not int) or t2[0] < 1:
-                raise ValueError("bad hierarchy level in row %i" % (i + 1))
+                raise ValueError(f"bad hierarchy level in row {(i + 1)}")
             if t2[0] > t1[0] + 1:
-                raise ValueError("bad hierarchy level in row %i" % (i + 1))
+                raise ValueError(f"bad hierarchy level in row {(i + 1)}")
         # no formal errors in toc --------------------------------------------------
 
         # --------------------------------------------------------------------------
@@ -7262,7 +7262,7 @@ class Document:
         for i, ol in enumerate(olitems):
             txt = "<<"
             if ol["count"] != 0:
-                txt += "/Count %i" % ol["count"]
+                txt += f"/Count {ol['count']}"
             try:
                 txt += ol["dest"]
             except Exception:
@@ -7271,33 +7271,33 @@ class Document:
                 pass
             try:
                 if ol["first"] > -1:
-                    txt += "/First %i 0 R" % xref[ol["first"]]
+                    txt += f"/First {xref[ol['first']]} 0 R"
             except Exception:
                 if g_exceptions_verbose >= 2:   exception_info()
                 pass
             try:
                 if ol["last"] > -1:
-                    txt += "/Last %i 0 R" % xref[ol["last"]]
+                    txt += f"/Last {xref[ol['last']]} 0 R"
             except Exception:
                 if g_exceptions_verbose >= 2:   exception_info()
                 pass
             try:
                 if ol["next"] > -1:
-                    txt += "/Next %i 0 R" % xref[ol["next"]]
+                    txt += f"/Next {xref[ol['next']]} 0 R"
             except Exception:
                 # Verbose in PyMuPDF/tests.
                 if g_exceptions_verbose >= 2:   exception_info()
                 pass
             try:
                 if ol["parent"] > -1:
-                    txt += "/Parent %i 0 R" % xref[ol["parent"]]
+                    txt += f"/Parent {xref[ol['parent']]} 0 R"
             except Exception:
                 # Verbose in PyMuPDF/tests.
                 if g_exceptions_verbose >= 2:   exception_info()
                 pass
             try:
                 if ol["prev"] > -1:
-                    txt += "/Prev %i 0 R" % xref[ol["prev"]]
+                    txt += f"/Prev {xref[ol['prev']]} 0 R"
             except Exception:
                 # Verbose in PyMuPDF/tests.
                 if g_exceptions_verbose >= 2:   exception_info()
@@ -7312,7 +7312,7 @@ class Document:
             if ol.get("color") and len(ol["color"]) == 3:
                 txt += f"/C[ {_format_g(tuple(ol['color']))}]"
             if ol.get("flags", 0) > 0:
-                txt += "/F %i" % ol["flags"]
+                txt += f"/F {ol['flags']}"
 
             if i == 0:  # special: this is the outline root
                 txt += "/Type/Outlines"  # so add the /Type entry
@@ -7587,13 +7587,13 @@ class Document:
                         gid_set.add(189)
                         unc_list = list(gid_set)
                         for unc in unc_list:
-                            unc_file.write("%i\n" % unc)
+                            unc_file.write(f"{unc}\n")
                     else:
                         args.append(f"--unicodes-file={uncfile_path}")
                         unc_set.add(255)
                         unc_list = list(unc_set)
                         for unc in unc_list:
-                            unc_file.write("%04x\n" % unc)
+                            unc_file.write(f"{unc:04x}\n")
 
                 # store fontbuffer as a file
                 with io.open(oldfont_path, "wb") as fontfile:
@@ -12502,7 +12502,7 @@ class Page:
                 raise ValueError("bad filename")
 
         if filename and not os.path.exists(filename):
-            raise FileNotFoundError("No such file: '%s'" % filename)
+            raise FileNotFoundError(f"No such file: '{filename}'")
         elif stream and type(stream) not in (bytes, bytearray, io.BytesIO):
             raise ValueError("stream must be bytes-like / BytesIO")
         elif pixmap and type(pixmap) is not Pixmap:
@@ -15335,7 +15335,7 @@ class Shape:
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
-            bdc = "/OC /%s BDC\n" % optcont
+            bdc = f"/OC /{optcont} BDC\n"
             emc = "EMC\n"
         else:
             bdc = emc = ""
@@ -15344,11 +15344,11 @@ class Shape:
         if alpha is None:
             alpha = ""
         else:
-            alpha = "/%s gs\n" % alpha
+            alpha = f"/{alpha} gs\n"
         nres = templ1(bdc, alpha, cm, left, top, fname, fontsize)
 
         if render_mode > 0:
-            nres += "%i Tr " % render_mode
+            nres += f"{render_mode} Tr "
             nres += _format_g(border_width * fontsize) + " w "
             if miter_limit is not None:
                 nres += _format_g(miter_limit) + " M "
@@ -15375,7 +15375,7 @@ class Shape:
             space -= lheight
             nlines += 1
 
-        nres += "\nET\n%sQ\n" % emc
+        nres += f"\nET\n{emc}Q\n"
 
         # =========================================================================
         #   end of text insertion
@@ -15443,7 +15443,7 @@ class Shape:
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
-            bdc = "/OC /%s BDC\n" % optcont
+            bdc = f"/OC /{optcont} BDC\n"
             emc = "EMC\n"
         else:
             bdc = emc = ""
@@ -15453,7 +15453,7 @@ class Shape:
         if alpha is None:
             alpha = ""
         else:
-            alpha = "/%s gs\n" % alpha
+            alpha = f"/{alpha} gs\n"
 
         if rotate % 90 != 0:
             raise ValueError("rotate must be multiple of 90")
@@ -15651,7 +15651,7 @@ class Shape:
         more = abs(more)
         if more < EPSILON:
             more = 0  # don't bother with epsilons
-        nres = "\nq\n%s%sBT\n" % (bdc, alpha) + cm  # initialize output buffer
+        nres = f"\nq\n{bdc}{alpha}BT\n" + cm  # initialize output buffer
         templ = lambda a, b, c, d: f"1 0 0 1 {_format_g((a, b))} Tm /{c} {_format_g(d)} Tf "
         # center, right, justify: output each line with its own specifics
         text_t = text.splitlines()  # split text in lines again
@@ -15691,7 +15691,7 @@ class Shape:
             nres += templ(left, top, fname, fontsize)
 
             if render_mode > 0:
-                nres += "%i Tr " % render_mode
+                nres += f"{render_mode} Tr "
                 nres += _format_g(border_width * fontsize) + " w "
                 if miter_limit is not None:
                     nres += _format_g(miter_limit) + " M "
@@ -15703,9 +15703,9 @@ class Shape:
                 nres += color_str
             if fill is not None:
                 nres += fill_str
-            nres += "%sTJ\n" % getTJstr(t, tj_glyphs, simple, ordering)
+            nres += f"{getTJstr(t, tj_glyphs, simple, ordering)}TJ\n"
 
-        nres += "ET\n%sQ\n" % emc
+        nres += f"ET\n{emc}Q\n"
 
         self.text_cont += nres
         self.updateRect(rect)
@@ -15747,25 +15747,25 @@ class Shape:
 
         optcont = self.page._get_optional_content(oc)
         if optcont is not None:
-            self.draw_cont = "/OC /%s BDC\n" % optcont + self.draw_cont
+            self.draw_cont = f"/OC /{optcont} BDC\n" + self.draw_cont
             emc = "EMC\n"
         else:
             emc = ""
 
         alpha = self.page._set_opacity(CA=stroke_opacity, ca=fill_opacity)
         if alpha is not None:
-            self.draw_cont = "/%s gs\n" % alpha + self.draw_cont
+            self.draw_cont = f"/{alpha} gs\n" + self.draw_cont
 
         if width != 1 and width != 0:
             self.draw_cont += _format_g(width) + " w\n"
 
         if lineCap != 0:
-            self.draw_cont = "%i J\n" % lineCap + self.draw_cont
+            self.draw_cont = f"{lineCap} J\n" + self.draw_cont
         if lineJoin != 0:
-            self.draw_cont = "%i j\n" % lineJoin + self.draw_cont
+            self.draw_cont = "{lineJoin} j\n" + self.draw_cont
 
         if dashes not in (None, "", "[] 0"):
-            self.draw_cont = "%s d\n" % dashes + self.draw_cont
+            self.draw_cont = f"{dashes} d\n" + self.draw_cont
 
         if closePath:
             self.draw_cont += "h\n"
@@ -16461,10 +16461,7 @@ class TextPage:
                     ):
                 img = block.i_image()
                 cs = img.colorspace()
-                text = "<image: %s, width: %d, height: %d, bpc: %d>" % (
-                        mupdf.fz_colorspace_name(cs),
-                        img.w(), img.h(), img.bpc()
-                        )
+                text = f"<image: {mupdf.fz_colorspace_name(cs)}, width: {img.w()}, height: {img.h()}, bpc: {img.bpc()}>"
                 blockrect = mupdf.fz_union_rect(blockrect, mupdf.FzRect(block.m_internal.bbox))
             if not mupdf.fz_is_empty_rect(blockrect):
                 litem = (
@@ -17042,7 +17039,7 @@ class TextWriter:
         # -------------------------------------------------------------------------
         nlines = len(new_lines)
         if nlines > max_lines:
-            msg = "Only fitting %i of %i lines." % (max_lines, nlines)
+            msg = f"Only fitting {max_lines} of {nlines} lines."
             if warn is None:
                 pass
             elif warn:
@@ -20066,7 +20063,7 @@ def JM_get_fontextension(doc, xref):
         elif mupdf.pdf_name_eq(obj, PDF_NAME('OpenType')):
             return "otf"
         else:
-            message("unhandled font type '%s'" % mupdf.pdf_to_name(obj))
+            message(f"unhandled font type '{mupdf.pdf_to_name(obj)}'")
 
     return "n/a"
 
@@ -21586,7 +21583,7 @@ def JM_set_object_value(obj, key, value):
         while len_ > 0:
             t = '/'.join(list_) # next high level
             if mupdf.pdf_is_indirect(mupdf.pdf_dict_getp(obj, JM_StrAsChar(t))):
-                raise Exception("path to '%s' has indirects", JM_StrAsChar(skey))
+                raise Exception(f"path to '{JM_StrAsChar(skey)}' has indirects")
             del list_[len_ - 1]   # del last sub-key
             len_ = len(list_)   # remaining length
     # Insert our eyecatcher. Will create all sub-paths in the chain, or
@@ -21594,10 +21591,10 @@ def JM_set_object_value(obj, key, value):
     mupdf.pdf_dict_putp(obj, key, mupdf.pdf_new_text_string(eyecatcher))
     testkey = mupdf.pdf_dict_getp(obj, key)
     if not mupdf.pdf_is_string(testkey):
-        raise Exception("cannot insert value for '%s'", key)
+        raise Exception(f"cannot insert value for '{key}'")
     temp = mupdf.pdf_to_text_string(testkey)
     if temp != eyecatcher:
-        raise Exception("cannot insert value for '%s'", key)
+        raise Exception(f"cannot insert value for '{key}'")
     # read the result as a string
     res = JM_object_to_buffer(obj, 1, 0)
     objstr = JM_EscapeStrFromBuffer(res)
@@ -23788,10 +23785,9 @@ def get_pdf_now() -> str:
     "Now" timestamp in PDF Format
     '''
     import time
-    tz = "%s'%s'" % (
-        str(abs(time.altzone // 3600)).rjust(2, "0"),
-        str((abs(time.altzone // 60) % 60)).rjust(2, "0"),
-    )
+    a = str(abs(time.altzone // 3600)).rjust(2, "0")
+    b = str((abs(time.altzone // 60) % 60)).rjust(2, "0")
+    tz = f"{a}'{b}'"
     tstamp = time.strftime("D:%Y%m%d%H%M%S", time.localtime())
     if time.altzone > 0:
         tstamp += "-" + tz
