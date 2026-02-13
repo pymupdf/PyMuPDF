@@ -33,6 +33,7 @@ FAQ
         --blue: #60a5fa;
         --red: #f87171;
         --purple: #c084fc;
+        --bgTransparent: rgba(15,17,23,0.95);
     }
     
     body[data-theme="light"] {
@@ -49,6 +50,7 @@ FAQ
         --blue: #2563eb;
         --red: #dc2626;
         --purple: #9333ea;
+        --bgTransparent: rgba(255, 255, 255, 0.95);
     }
 
     .toc-drawer {
@@ -67,6 +69,9 @@ FAQ
     #nav {
         position: sticky;
         top: 0;
+        background: var(--bgTransparent);
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -352,7 +357,7 @@ FAQ
         <pre><code>pip install pymupdf</code></pre>
         <p>Second, verify your IDE (PyCharm, VS Code, etc.) is using the same Python interpreter and virtual environment where you installed it. Try running <code>python -c "import pymupdf; print(pymupdf.__doc__)"</code> directly in a terminal to isolate IDE issues.</p>
         <p>Third, there is a separate PyPI package literally named <code>fitz</code> that has nothing to do with PyMuPDF. These two packages cannot coexist in the same environment. If you installed both, uninstall <code>fitz</code> and reinstall <code>pymupdf</code>.</p>
-    <div class="tip"><strong>Note:</strong> Starting from version 1.24.0, you can also use <code>import pymupdf</code> as an alternative to <code>import fitz</code>.</div>
+    <div class="tip"><strong>Note:</strong><code>import fitz</code> still works as a legacy alias, but <code>import pymupdf</code> is the recommended import since version 1.24.0.</div>
     
     </div>
     </div>
@@ -402,7 +407,7 @@ FAQ
         <p><code>"dict"</code> — Structured dictionary with blocks, lines, and spans including font information. Use this when you need font names, sizes, and colors.</p>
         <p><code>"rawdict"</code> — Like "dict" but with individual character-level positions. The most detailed but largest output. Use when you need exact character placement.</p>
         <p><code>"json"</code> / <code>"rawjson"</code> — Same as dict/rawdict but as JSON strings. Easier to save to a file for inspection.</p>
-        <div class="tip"><strong>Harald's advice:</strong> If you want to inspect the output structure, use <code>"json"</code> or <code>"rawjson"</code> and save to a file rather than trying to dump a deeply nested dict to CSV.</div>
+        <div class="tip"><strong>Tip:</strong> If you want to inspect the output structure, use <code>"json"</code> or <code>"rawjson"</code> and save to a file rather than trying to dump a deeply nested dict to CSV.</div>
     </div>
     </div>
 
@@ -465,7 +470,7 @@ FAQ
     for rect in areas:
         print(rect)  # pymupdf.Rect with coordinates</code></pre>
         <p>This returns a list of <code>Rect</code> objects showing where each occurrence appears. Note: regular expressions are not supported. If you need regex matching, first extract the full text with <code>get_text()</code>, find matches, then use <code>search_for()</code> to locate each match on the page.</p>
-        <div class="tip"><strong>Performance:</strong> Adding <code>quads=True</code> is actually slightly faster than the default, because rects are internally converted from quads.</div>
+        <div class="tip"><strong>Performance note:</strong> Adding <code>quads=True</code> is actually slightly faster than the default, because rects are internally converted from quads.</div>
     </div>
     </div>
 
@@ -603,7 +608,6 @@ FAQ
     <div class="faq-q"><span class="marker">Q</span><span class="question">Does PyMuPDF4LLM send my data to any external service or API?</span><span class="toggle">+</span></div>
     <div class="faq-a">
         <p><strong>No.</strong> PyMuPDF4LLM is completely derived from PyMuPDF. There is no access to anything beyond your local machine. No calls to any AI, LLM, RAG, or cloud service. Everything works exactly the same when all internet access is blocked. It is fully GDPR-compatible in terms of data processing.</p>
-        <p class="source">This is the most frequently asked question about PyMuPDF4LLM on Discord.</p>
     </div>
     </div>
 
@@ -817,9 +821,9 @@ FAQ
     </div>
 
     <div class="faq">
-    <div class="faq-q"><span class="marker">Q</span><span class="question">Does MuPDF support "cloudy" border style for annotations?</span><span class="toggle">+</span></div>
+    <div class="faq-q"><span class="marker">Q</span><span class="question">Does PyMuPDF support "cloudy" border style for annotations?</span><span class="toggle">+</span></div>
     <div class="faq-a">
-        <p>No. MuPDF only supports plain borders at the moment. The cloudy border effect (common in Adobe PDF annotations) is not implemented in MuPDF's C core, so it's not available through PyMuPDF either.</p>
+        <p>No. The cloudy border effect (common in Adobe PDF annotations) is not implemented in MuPDF's C core, so it's not available through PyMuPDF either.</p>
     </div>
     </div>
 
