@@ -13700,13 +13700,15 @@ class Pixmap:
             return self.n
         return mupdf.fz_pixmap_components(self.this)
 
-    def pdfocr_save(self, filename, compress=1, language=None, tessdata=None):
+    def pdfocr_save(self, filename, compress=1, language=None, tessdata=None, options=""):
         '''
         Save pixmap as an OCR-ed PDF page.
         '''
         tessdata = get_tessdata(tessdata)
         opts = mupdf.FzPdfocrOptions()
         opts.compress = compress
+        if options:
+            opts.options = options
         if language:
             opts.language_set2( language)
         if tessdata:
@@ -13721,7 +13723,7 @@ class Pixmap:
             finally:
                 out.fz_close_output()   # Avoid MuPDF warning.
 
-    def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None):
+    def pdfocr_tobytes(self, compress=True, language="eng", tessdata=None, options=""):
         """Save pixmap as an OCR-ed PDF page.
 
         Args:
@@ -13731,6 +13733,8 @@ class Pixmap:
             tessdata: (str) folder name of Tesseract's language support. If None
                     we use environment variable TESSDATA_PREFIX or search for
                     Tesseract installation.
+            options: (str) any Tesseract comma-separated options that can be
+                     given using Tesseract's "-c" CLI parameter.
         Notes:
             On failure, make sure Tesseract is installed and you have set
             <tessdata> or environment variable "TESSDATA_PREFIX" to the folder
@@ -13739,7 +13743,7 @@ class Pixmap:
         tessdata = get_tessdata(tessdata)
         from io import BytesIO
         bio = BytesIO()
-        self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata)
+        self.pdfocr_save(bio, compress=compress, language=language, tessdata=tessdata, options=options)
         return bio.getvalue()
 
     def pil_image(self):
