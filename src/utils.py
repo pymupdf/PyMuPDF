@@ -321,6 +321,7 @@ def get_textpage_ocr(
     dpi: int = 72,
     full: bool = False,
     tessdata: str = None,
+    options="",
 ) -> pymupdf.TextPage:
     """Create a Textpage from combined results of normal and OCR text parsing.
 
@@ -329,6 +330,8 @@ def get_textpage_ocr(
         language: (str) specify expected language(s). Default is "eng" (English).
         dpi: (int) resolution in dpi, default 72.
         full: (bool) whether to OCR the full page image, or only its images (default)
+        options: (str) any Tesseract comma-separated options that can be given
+                 using Tesseract's "-c" CLI parameter.
     """
     pymupdf.CheckParent(page)
     tessdata = pymupdf.get_tessdata(tessdata)
@@ -343,6 +346,7 @@ def get_textpage_ocr(
                     compress=False,
                     language=language,
                     tessdata=tessdata,
+                    options=options,
                     ),
                 )
         ocr_page = ocr_pdf.load_page(0)
@@ -376,7 +380,10 @@ def get_textpage_ocr(
                 pix = pymupdf.Pixmap(pix, 0)
             imgdoc = pymupdf.Document(
                     "pdf",
-                    pix.pdfocr_tobytes(language=language, tessdata=tessdata),
+                    pix.pdfocr_tobytes(
+                        language=language,
+                        tessdata=tessdata,
+                        options=options),
                     )  # pdf with OCRed page
             imgpage = imgdoc.load_page(0)  # read image as a page
             pix = None
