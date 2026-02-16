@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import subprocess
 
@@ -39,3 +40,6 @@ def test_py_typed():
     # if there is a local mupdf/ directory.
     #
     run(f'cd {root}/tests && mypy --no-incremental {os.path.abspath(__file__)}')
+
+def _test_4903(page: pymupdf.Page) -> float:  # In 1.27.1, error: Variable "pymupdf.Page" is not valid as a type
+    return page.rect.width  # In 1.27.1, error: pymupdf.Page? has no attribute "rect"
