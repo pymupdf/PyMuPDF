@@ -159,6 +159,64 @@ The decision tree for whether OCR is actually used or not depends on the followi
 
 .. image:: ../images/layout-ocr-flow.png
 
+
+.. _pymupdf_layout_ocr_engines:
+
+OCR engines
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Tesseract 
+""""""""""""""""""""""""""""""""""
+
+Tesseract is the default OCR engine used by |PyMuPDF4LLM| when the above criteria are met. It is a widely used open-source OCR engine that supports multiple languages and is known for its accuracy.
+
+
+.. _pymupdf_layout_rapid_ocr:
+
+RapidOCR 
+""""""""""""""""""""""""""""""""""
+
+If you want to use an OCR engine other than Tesseract, you can do so by providing your own OCR function via the `ocr_function` parameter of the :ref:`PyMuPDF4LLM API <pymupdf4llm-api>`. 
+
+If `RapidOCR <https://github.com/RapidAI/RapidOCR?tab=readme-ov-file>`_ and the RapidOCR ONNX Runtime are available, you can use a pre-made callable OCR function for it, which is provided in the `pymupdf4llm.ocr` module as `rapidocr_api.exec_ocr`. 
+
+
+Example
+''''''''''''''''''''''''''''
+::
+
+    from pymupdf4llm.ocr import rapidocr_api
+
+    md = pymupdf4llm.to_markdown(
+        doc,
+        ocr_function=rapidocr_api.exec_ocr,
+        force_ocr=True
+    )
+
+In this way RapidOCR can be used as an alternative OCR engine to Tesseract for all pages (if `force_ocr=True`) or just for those pages which meet the default criteria for applying OCR (if `force_ocr=False` or omitted). 
+
+
+RapidOCR & Tesseract side-by-side
+""""""""""""""""""""""""""""""""""
+
+If you want to use both OCR engines side-by-side, you can do so by implementing a custom OCR function which calls both OCR engines - one for bbox recognition (RapidOCR) and the other for text recognition (Tesseract) - and then combines their results.
+
+This pre-made callable OCR function can be found in the `pymupdf4llm.ocr` module as `rapidtess_api.exec_ocr`. 
+
+Example
+''''''''''''''''''''''''''''
+::
+
+    from pymupdf4llm.ocr import rapidtess_api
+
+    md = pymupdf4llm.to_markdown(
+        doc,
+        ocr_function=rapidtess_api.exec_ocr,
+        force_ocr=True
+    )
+
+
+
 ----
 
 .. _pymupdf_layout_and_pymupdf4llm_api:
