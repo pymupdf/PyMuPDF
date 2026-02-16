@@ -6,6 +6,8 @@ License:
     SPDX-License-Identifier: GPL-3.0-only
 '''
 
+from __future__ import annotations
+
 # To reduce startup times, we don't import everything we require here.
 #
 import atexit
@@ -474,9 +476,6 @@ OptFloat = typing.Optional[float]
 OptInt = typing.Union[int, None]
 OptSeq = typing.Optional[typing.Sequence]
 OptStr = typing.Optional[str]
-
-Page = 'Page_forward_decl'
-Point = 'Point_forward_decl'
 
 matrix_like = 'matrix_like'
 point_like = 'point_like'
@@ -6034,13 +6033,7 @@ class Document:
             return rc[1][1:]
         return "UseNone"
 
-    if sys.implementation.version < (3, 9):
-        # Appending `[Page]` causes `TypeError: 'ABCMeta' object is not subscriptable`.
-        _pages_ret = collections.abc.Iterable
-    else:
-        _pages_ret = collections.abc.Iterable[Page]
-
-    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> _pages_ret:
+    def pages(self, start: OptInt =None, stop: OptInt =None, step: OptInt =None) -> collections.abc.Iterable[Page]:
         """Return a generator iterator over a page range.
 
         Arguments have the same meaning as for the range() built-in.
@@ -14126,7 +14119,6 @@ class Pixmap:
             self._samples_mv.release()
 
 
-del Point
 class Point:
 
     def __abs__(self):
