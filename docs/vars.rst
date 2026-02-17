@@ -279,6 +279,10 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     1048576 -- Delay vector blocks in the extraction slightly to avoid breaking what would otherwise be continuous lines of text.
 
+.. py:data:: TEXT_FUZZY_VECTORS
+
+    2097152 -- 	If this option is set, we 'fuzzily' collect rectangular vectors of the same colour together. This enables us to spot where 'pixels' or 'slices' of vectors are used to create the appearance of characters on the page without exploding the storage and processing time requirements.
+
 The following constants represent the default combinations of the above for text extraction and searching:
 
 .. py:data:: TEXTFLAGS_TEXT
