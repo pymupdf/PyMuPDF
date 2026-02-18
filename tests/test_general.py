@@ -2195,3 +2195,13 @@ def test_4712m():
 def test_4746():
     archive = pymupdf.Archive('.')
     archive.add(__file__, 'foo')
+
+
+def test_4907():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4907.pdf')
+    with pymupdf.open(path) as document:
+        for i, page in enumerate(document):
+            print(f'{i=}')
+            display_list = page.get_displaylist(annots=False)
+            text_page = display_list.get_textpage()
