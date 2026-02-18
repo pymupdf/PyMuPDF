@@ -3,6 +3,7 @@
 Test PDF annotation insertions.
 """
 
+import copy
 import os
 import platform
 
@@ -674,3 +675,46 @@ def test_4447():
     
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4447.pdf')
     document.save(path_out)
+
+
+def test_4755():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4755.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4755_out.pdf')
+    
+    with pymupdf.open(path) as document:
+        for page_i, page in enumerate(document):
+            print(f'{page_i=}')
+            caret = page.add_caret_annot((50,50))
+
+            colours = [
+                    (0, 0, 1),
+                    (0, 1, 0),
+                    (1, 0, 0),
+                    ]
+            for annot_i, annot in enumerate(page.annots()):
+                print(f'{annot_i=}')
+                #if annot_i != 2:
+                #    continue
+                before_rect = copy.deepcopy(annot.rect)
+
+                def draw_rectangle(rect, c, w):
+                    drect = page.add_freetext_annot(rect, str(annot_i), text_color=c)
+                    drect.set_border(width=w)
+                    drect.update()
+
+                colour = colours[annot_i]
+                print(f'{colour=}')
+                draw_rectangle(annot.rect, colour, .3)
+
+                print(f'before: {annot.rect}=')
+                annot.set_rect(annot.rect)
+                print(f' after: {annot.rect}=')
+
+                print(f'difference: {annot.rect-before_rect=}')
+
+                draw_rectangle(annot.rect, (0, 1, 0), .3)
+                print()
+        document.save(path_out)
+        print(f'    {path=}.')
+        print(f'{path_out=}.')
