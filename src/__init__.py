@@ -31,6 +31,7 @@ import zipfile
 
 from . import extra
 import importlib.util
+import uuid
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -12521,12 +12522,8 @@ class Page:
         ilst += [i[1] for i in doc.get_page_xobjects(page.number)]
         ilst += [i[4] for i in doc.get_page_fonts(page.number)]
         n = "fzImg"  # 'pymupdf image'
-        i = 0
-        _imgname = n + "0"  # first name candidate
-        while _imgname in ilst:
-            i += 1
-            _imgname = n + str(i)  # try new name
-
+        # Use a uuid for uniqueness
+        _imgname = f"{n}{uuid.uuid4()}"
         if overlay:
             page.wrap_contents()  # ensure a balanced graphics state
         digests = doc.InsertedImages
