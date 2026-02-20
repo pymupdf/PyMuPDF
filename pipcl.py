@@ -914,10 +914,19 @@ class Package:
         '''
         ABI tag.
         '''
+        Py_GIL_DISABLED = sysconfig.get_config_var('Py_GIL_DISABLED')
         if self.tag_abi_:
             return self.tag_abi_
         elif self.py_limited_api:
+            assert Py_GIL_DISABLED != 1, \
+                    f'py_limited_api and Py_GIL_DISABLED are not supported together as of 2026-02-20, e.g. see PEP 803 and PEP 809.'
             return 'abi3'
+        elif Py_GIL_DISABLED == 1:
+            ret = ''
+            ret += 'cp'
+            ret += ''.join(platform.python_version().split('.')[:2])
+            ret += 't'
+            return ret
         else:
             return 'none'
 
