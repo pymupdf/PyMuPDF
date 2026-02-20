@@ -3424,6 +3424,7 @@ int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int bloc
     PyObject *text = NULL;
     fz_rect blockrect;
     mupdf::FzBuffer res;
+    int last_char;
     while (block)
     {
         switch (block->type)
@@ -3438,7 +3439,7 @@ int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int bloc
             case FZ_STEXT_BLOCK_TEXT:
                 blockrect = fz_empty_rect;
                 res = mupdf::fz_new_buffer(1024);
-                int last_char;
+                last_char = 10;
                 for (fz_stext_line* line = block->u.t.first_line; line; line = line->next)
                 {
                     fz_rect linerect = fz_empty_rect;
