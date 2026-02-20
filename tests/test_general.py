@@ -2004,7 +2004,7 @@ def test_4392():
         print('test_4392(): not running on Pyodide - cannot run child processes.')
         return
         
-    print()
+    print('', flush=1)
     path = os.path.normpath(f'{__file__}/../../tests/test_4392.py')
     with open(path, 'w') as f:
         f.write('import pymupdf\n')
@@ -2024,15 +2024,22 @@ def test_4392():
     e3 = subprocess.run(command, shell=1, check=0).returncode
     print(f'{e3=}')
     
-    print(f'{e1=} {e2=} {e3=}')
+    print(f'{e1=} {e2=} {e3=}', flush=1)
     
-    print(f'{pymupdf.swig_version=}')
-    print(f'{pymupdf.swig_version_tuple=}')
+    print(f'{pymupdf.swig_version=}', flush=1)
+    print(f'{pymupdf.swig_version_tuple=}', flush=1)
     
     assert e1 == 5
     if pymupdf.swig_version_tuple >= (4, 4):
-        assert e2 == 5
-        assert e3 == 0
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+            assert e2 == 4
+        else:
+            assert e2 == 5
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+            # GIL warning results in failure because of -Werror.
+            assert e3 == 1
+        else:
+            assert e3 == 0
     else:
         # We get SEGV's etc with older swig.
         if platform.system() == 'Windows':

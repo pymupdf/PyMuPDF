@@ -4,6 +4,7 @@ import platform
 import pymupdf
 import subprocess
 import sys
+import sysconfig
 
 
 def test_4767():
@@ -66,36 +67,51 @@ def test_4767():
                 paths.append(path)
         return paths
     
+    def get_stdout(cp):
+        '''
+        Strips free-threading warning.
+        '''
+        stdout = cp.stdout
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+            line0, stdout = stdout.split('\n', 1)
+            assert 'The global interpreter lock (GIL) has been enabled to load module \'pymupdf._extra\',' in line0
+        return stdout
+    
     cp = run(f'cd {testdir}/one/two && {sys.executable} -m pymupdf embed-extract {path} -name evil_entry')
-    print(cp.stdout)
     assert cp.returncode
-    assert cp.stdout == 'refusing to write stored name outside current directory: ../../test.txt\n'
+    stdout = get_stdout(cp)
+    print(f'{stdout=}')
+    assert stdout == 'refusing to write stored name outside current directory: ../../test.txt\n'
     assert not get_paths()
     
     cp = run(f'cd {testdir}/one/two && {sys.executable} -m pymupdf embed-extract {path} -name evil_entry -unsafe')
     assert cp.returncode == 0
-    assert cp.stdout == "saved entry 'evil_entry' as '../../test.txt'\n"
+    stdout = get_stdout(cp)
+    assert stdout == "saved entry 'evil_entry' as '../../test.txt'\n"
     paths = get_paths()
     print(f'{paths=}')
     assert paths == [f'{testdir}/test.txt']
     
     cp = run(f'cd {testdir}/one/two && {sys.executable} -m pymupdf embed-extract {path} -name evil_entry2')
     assert not cp.returncode
-    assert cp.stdout == "saved entry 'evil_entry2' as 'test2.txt'\n"
+    stdout = get_stdout(cp)
+    assert stdout == "saved entry 'evil_entry2' as 'test2.txt'\n"
     paths = get_paths()
     print(f'{paths=}')
     assert paths == [f'{testdir}/test.txt', f'{testdir}/one/two/test2.txt']
     
     cp = run(f'cd {testdir}/one/two && {sys.executable} -m pymupdf embed-extract {path} -name evil_entry2')
     assert cp.returncode
-    assert cp.stdout == "refusing to overwrite existing file with stored name: test2.txt\n"
+    stdout = get_stdout(cp)
+    assert stdout == "refusing to overwrite existing file with stored name: test2.txt\n"
     paths = get_paths()
     print(f'{paths=}')
     assert paths == [f'{testdir}/test.txt', f'{testdir}/one/two/test2.txt']
     
     cp = run(f'cd {testdir}/one/two && {sys.executable} -m pymupdf embed-extract {path} -name evil_entry2 -unsafe')
     assert not cp.returncode
-    assert cp.stdout == "saved entry 'evil_entry2' as 'test2.txt'\n"
+    stdout = get_stdout(cp)
+    assert stdout == "saved entry 'evil_entry2' as 'test2.txt'\n"
     paths = get_paths()
     print(f'{paths=}')
     assert paths == [f'{testdir}/test.txt', f'{testdir}/one/two/test2.txt']
