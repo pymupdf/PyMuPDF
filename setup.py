@@ -159,11 +159,6 @@ Environmental variables:
     
     PYMUPDF_SETUP_PY_LIMITED_API
         If not '0', we build for current Python's stable ABI.
-        
-        However if unset and we are on Python-3.13 or later, we do
-        not build for the stable ABI because as of 2025-03-04 SWIG
-        generates incorrect stable ABI code with Python-3.13 - see:
-        https://github.com/swig/swig/issues/3059
     
     PYMUPDF_SETUP_URL_WHEEL
         If set, we use an existing wheel instead of building a new wheel.
@@ -236,11 +231,7 @@ python_version_tuple = tuple(int(x) for x in platform.python_version_tuple()[:2]
 PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
 assert PYMUPDF_SETUP_PY_LIMITED_API in (None, '', '0', '1'), \
         f'Should be "", "0", "1" or undefined: {PYMUPDF_SETUP_PY_LIMITED_API=}.'
-if PYMUPDF_SETUP_PY_LIMITED_API is None and python_version_tuple >= (3, 13):
-    log(f'Not defaulting to Python limited api because {platform.python_version_tuple()=}.')
-    g_py_limited_api = False
-else:
-    g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API != '0')
+g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API != '0')
 
 PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
 log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
