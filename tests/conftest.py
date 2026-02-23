@@ -38,6 +38,11 @@ def install_required_packages():
 
 install_required_packages()
 
+
+@pytest.fixture(scope="session", autouse=True)
+def log_global_env_facts(record_testsuite_property):
+    record_testsuite_property('platform.python_version()', platform.python_version())
+
 # Need to import pymupdf only after we've installed pymupdf-fonts above,
 # because pymupdf imports pymupdf_fonts, and copes with import failure.
 import pymupdf
