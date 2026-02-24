@@ -1218,14 +1218,19 @@ def clean(all_):
     ret.append(f'{g_root}/src/build')
     
     path_mupdf, _ = get_mupdf()
-    ret.append(f'{path_mupdf}/platform/c++')
-    ret.append(f'{path_mupdf}/platform/python')
+    
+    # We remove mupdf directories directly with shutil.rmtree() instead of
+    # returning them to pipcl, because pipcl will deliberately fail if asked to
+    # remove things that are outside our checkout.
+    shutil.rmtree(f'{path_mupdf}/platform/c++', ignore_errors=True)
+    shutil.rmtree(f'{path_mupdf}/platform/python', ignore_errors=True)
+    
     if all_:
         # Clean mupdf C library.
-        ret.append(f'{path_mupdf}/build')
-        ret.append(f'{path_mupdf}/platform/win32')
-        ret.append(f'{path_mupdf}/platform/win32/Release')
-        ret.append(f'{path_mupdf}/platform/win32/x64')
+        shutil.rmtree(f'{path_mupdf}/build', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32/Release', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32/x64', ignore_errors=True)
     
     pipcl.log(f'Returning: {ret=}')
     return ret
@@ -1441,6 +1446,7 @@ else:
         elif darwin or os.environ.get('PYODIDE_ROOT'):
             # 2025-10-27: new swig-4.4.0 fails badly at runtime on macos.
             # 2025-11-06: similar for pyodide.
+            # 2026-02-24: Stil fails badly on macos with swig 4.4.1.
             ret.append('swig==4.3.1')
         else:
             ret.append('swig')
