@@ -1515,34 +1515,37 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False, tessdata=None)
 
-      **Optical Character Recognition** (**OCR**) technology can be used to extract text data for documents where text is in a raster image format throughout the page. Use this method to **OCR** a page for text extraction.
+      **Optical Character Recognition** (**OCR**) technology can be used to extract text data for pages where text is in raster image or vector graphic format. Use this method to **OCR** a page for subsequent text extraction.
 
-      This method returns a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
+      This method returns a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used.
 
       :arg int flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
       :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
-      :arg bool full: whether to OCR the full page, or just the displayed images.
-      :arg str tessdata: The name of Tesseract's language support folder `tessdata`. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`. Can be determined by function :meth:`get_tessdata`.
+      :arg bool full: whether to OCR the full page, or only page areas that contain no legible text.
+      :arg str tessdata: The name of Tesseract's language support folder `tessdata`. If omitted, the name is determined using function :meth:`get_tessdata`.
 
-      .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
+      .. note:: This method does **not** support a clip parameter -- OCR (full or partial) will always happen for the complete page rectangle.
 
       :returns:
       
          a :ref:`TextPage`. Execution may be significantly longer than :meth:`Page.get_textpage`.
 
-         For a full page OCR, **all text** will have the font "GlyphlessFont" from Tesseract. In case of partial OCR, normal text will keep its properties, and only text coming from images will have the GlyphlessFont.
+      For ``full=True`` OCR, **all text** will have the font "GlyphLessFont" from Tesseract. In case of partial OCR (``full=False``), legible normal text will keep its properties, and only recognized text will have the GlyphLessFont.
 
-         .. note::
-         
-            **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
+      Recognized / OCR text will follow (legible) normal text for partial OCR and will thus not be in reading order. Establishing reading order is -- as always -- your responsibility.
 
-            `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
+      .. note::
+      
+         Text extraction results, including any OCR, are stored in the returned :ref:`TextPage`. To access them, you must use the ``textpage`` parameter in all subsequent text extraction and search methods.
+
+         `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
 
       |history_begin|
 
       * New in v.1.19.0
       * Changed in v1.19.1: support full and partial OCRing a page.
+      * changed in v1.27.2: For partial OCR, **all** page areas outside legible text are now OCRed, not just those within images. This means that OCR will now also be performed for vector graphics, and for text containing illegible characters.
 
       |history_end|
 

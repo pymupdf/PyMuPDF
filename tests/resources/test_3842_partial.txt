@@ -1,0 +1,43 @@
+NIST SP 800-223  
+ 
+High-Performance Computing Security 
+February 2024 
+ 
+  
+iii 
+Table of Contents 
+1. Introduction ...................................................................................................................................1 
+2. HPC System Reference Architecture and Main Components ............................................................2 
+2.1.1. Components of the High-Performance Computing Zone ............................................................. 3 
+2.1.2. Components of the Data Storage Zone ........................................................................................ 4 
+2.1.3. Parallel File System ....................................................................................................................... 4 
+2.1.4. Archival and Campaign Storage .................................................................................................... 5 
+2.1.5. Burst Buffer .................................................................................................................................. 5 
+2.1.6. Components of the Access Zone .................................................................................................. 6 
+2.1.7. Components of the Management Zone ....................................................................................... 6 
+2.1.8. General Architecture and Characteristics .................................................................................... 6 
+2.1.9. Basic Services ................................................................................................................................ 7 
+2.1.10. Configuration Management ....................................................................................................... 7 
+2.1.11. HPC Scheduler and Workflow Management .............................................................................. 7 
+2.1.12. HPC Software .............................................................................................................................. 8 
+2.1.13. User Software ............................................................................................................................. 8 
+2.1.14. Site-Provided Software and Vendor Software ........................................................................... 8 
+2.1.15. Containerized Software in HPC .................................................................................................. 9 
+3. HPC Threat Analysis...................................................................................................................... 10 
+3.2.1. Access Zone Threats ................................................................................................................... 11 
+3.2.2. Management Zone Threats ........................................................................................................ 11 
+3.2.3. High-Performance Computing Zone Threats .............................................................................. 12 
+3.2.4. Data Storage Zone Threats ......................................................................................................... 12 
+4. HPC Security Posture, Challenges, and Recommendations ............................................................. 14 
+5. Conclusions .................................................................................................................................. 19 
+2.1. Main COMPONENNS..........cccccssccccssssccccssssccccssnsecccsssseeccessseeecsessseecssaseecsessseeceessseecseeaseecsessseeesessseeessstseeesD
+3.1. Key HPC Security Characteristics and Use REquireMent............cccsscccessscesseceessecesseeesssecesseeestteessteee LO
+3.2. Threats to HPC FUNCTION ZONES..........cesccesscesscesscesscesecsssesssecssscesscesscsseessessescesssesscessessssssssssssssssssees LO
+3.3. Other Threats ........cccccsccsscssscsssccssscssscssscssscsssesssesssscssscssessseesseeseessesscsssssssessessesssessssssssssssssssssssseesesLO
+4.1. HPC Access Control via Network SEgMeNtatiOn ..........:ccccscccsssccessecesssecesecesssecessecessecessteessecessteessee LO
+4.2. Compute Node Sanitization ...........cccccessccssssccessecessecesseecssseccseecsseecsseecesseesessscssssesssescssssessssesssessses
+LD
+4.3. Data Integrity Protection ............cccccccccccccsssssssscececccesssssssseceeccessscssssseeeccesesssssssseeesessssssstsssesesssssssesLOD
+4.4. SECUFING CONTAINELSS ........ccccssccccssssccccessseeccesseeccsssssecceesssecceessseccesssseecsessseeccsssssescsssssescssssssscssssesesesLO
+4.5. Achieving Security While Maintaining HPC Performance. ..........cc:cccssccsssseesssecessecesssecessecessseesseeesee LZ
+4.6. Challenges to HPC Security TOols...........c:ccccssccssseccsssecesseecesecessseccsseecssseecsseecseseecssesesstscssssesssessssessse LZ
