@@ -19,7 +19,61 @@ FAQ
 
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <style>
+
     :root {
+        --bg: #fff;
+        --surface: #f8f9fa;
+        --surface-hover: #e9ecef;
+        --border: #dee2e6;
+        --text: #0f1117;
+        --muted: #6c757d;
+        --accent: #d97706;
+        --accent-dim: rgba(217,119,6,0.08);
+        --code-bg: #f5f5f5;
+        --green: #16a34a;
+        --blue: #2563eb;
+        --red: #dc2626;
+        --purple: #9333ea;
+        --bgTransparent: rgba(255, 255, 255, 0.95);
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg: #0f1117;
+            --surface: #181a24;
+            --surface-hover: #1e2130;
+            --border: #2a2d3e;
+            --text: #d8d8e0;
+            --muted: #9898a8;
+            --accent: #e8943a;
+            --accent-dim: rgba(232,148,58,0.12);
+            --code-bg: #141620;
+            --green: #4ade80;
+            --blue: #60a5fa;
+            --red: #f87171;
+            --purple: #c084fc;
+            --bgTransparent: rgba(15,17,23,0.95);
+        }
+    }
+
+    body[data-theme="light"] {
+        --bg: #fff;
+        --surface: #f8f9fa;
+        --surface-hover: #e9ecef;
+        --border: #dee2e6;
+        --text: #0f1117;
+        --muted: #6c757d;
+        --accent: #d97706;
+        --accent-dim: rgba(217,119,6,0.08);
+        --code-bg: #f5f5f5;
+        --green: #16a34a;
+        --blue: #2563eb;
+        --red: #dc2626;
+        --purple: #9333ea;
+        --bgTransparent: rgba(255, 255, 255, 0.95);
+    }
+    
+    body[data-theme="dark"] {
         --bg: #0f1117;
         --surface: #181a24;
         --surface-hover: #1e2130;
@@ -35,23 +89,8 @@ FAQ
         --purple: #c084fc;
         --bgTransparent: rgba(15,17,23,0.95);
     }
+
     
-    body[data-theme="light"] {
-        --bg: #ffffff;
-        --surface: #f8f9fa;
-        --surface-hover: #e9ecef;
-        --border: #dee2e6;
-        --text: #212529;
-        --muted: #6c757d;
-        --accent: #d97706;
-        --accent-dim: rgba(217,119,6,0.08);
-        --code-bg: #f5f5f5;
-        --green: #16a34a;
-        --blue: #2563eb;
-        --red: #dc2626;
-        --purple: #9333ea;
-        --bgTransparent: rgba(255, 255, 255, 0.95);
-    }
 
     .toc-drawer {
         display: none !important;
@@ -84,6 +123,8 @@ FAQ
         line-height: 1.75;
         -webkit-font-smoothing: antialiased;
     }
+
+    
 
     .container {
         max-width: 900px;
@@ -316,6 +357,8 @@ FAQ
         .nav a { font-size: 12px; padding: 5px 10px; }
     }
 
+
+ 
     
 
 
