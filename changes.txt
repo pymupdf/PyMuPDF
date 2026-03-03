@@ -2,6 +2,11 @@ Change Log
 ==========
 
 
+**Changes in version 1.27.2**
+
+* Use MuPDF-1.27.2.
+
+
 **Changes in version 1.27.1** (2026-02-11)
 
 * Use MuPDF-1.27.1.
