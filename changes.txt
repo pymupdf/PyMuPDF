@@ -2,6 +2,19 @@ Change Log
 ==========
 
 
+**Changes in version 1.27.2**
+
+* Use MuPDF-1.27.2.
+
+* Fixed issues:
+
+  * **Fixed** `4903 <https://github.com/pymupdf/PyMuPDF/issues/4903>`_: Typing broken because of *_forward_decl
+  
+* Other:
+
+  * Retrospectively marked #4907 as fixed in pymupdf-1.27.1.
+
+
 **Changes in version 1.27.1** (2026-02-11)
 
 * Use MuPDF-1.27.1.
@@ -14,6 +27,7 @@ Change Log
   * **Fixed** `4790 <https://github.com/pymupdf/PyMuPDF/issues/4790>`_: Problem to delete pages on PDF
   * **Fixed** `4857 <https://github.com/pymupdf/PyMuPDF/issues/4857>`_: Package is missing py.typed file required for type checking
   * **Fixed** `4886 <https://github.com/pymupdf/PyMuPDF/issues/4886>`_: <IMG> width attribute behaviour seems wrong
+  * **Fixed** `4907 <https://github.com/pymupdf/PyMuPDF/issues/4907>`_: signal 11:SIGSEGV while using display_list.get_textpage()
 
 * Other:
 
