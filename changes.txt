@@ -13,6 +13,11 @@ Change Log
 * Other:
 
   * Retrospectively marked #4907 as fixed in pymupdf-1.27.1.
+  * Improved get_textpage_ocr().
+  
+    For partial OCR, **all** page areas outside legible text are now OCRed, not
+    just those within images. This means that OCR will now also be performed
+    for vector graphics, and for text containing illegible characters.
 
 
 **Changes in version 1.27.1** (2026-02-11)
