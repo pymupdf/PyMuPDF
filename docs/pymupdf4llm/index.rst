@@ -171,7 +171,12 @@ For **Office** document support, |PyMuPDF4LLM| works seamlessly with |PyMuPDF Pr
     md = pymupdf4llm.to_markdown("sample.doc")
 
 
+.. _pymupdf4llm_and_layout:
 
+PyMuPDF4LLM & PyMuPDF Layout
+-----------------------------------
+
+By default |PyMuPDF4LLM| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`use_layout` method.
 
 
 Further Resources
@@ -199,3 +204,5 @@ Blogs
 PyMuPDF4LLM Document Loader
 
 .. _PyMuPDF4LLM Document Loader: https://docs.langchain.com/oss/python/integrations/providers/pymupdf4llm/
+
+.. _layout analysis module: https://pypi.org/project/pymupdf-layout/
