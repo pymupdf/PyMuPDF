@@ -73,8 +73,8 @@ PyMuPDF Product Suite
 **Additional products** in the |PyMuPDF| product suite are:
    
 - |PyMuPDF Pro| adds support for Office document formats.
-- |PyMuPDF4LLM| is optimized for large language model (LLM) applications, providing enhanced text extraction and processing capabilities.
-- |PyMuPDF Layout| focuses on layout analysis and semantic understanding, ideal for document conversion and formatting tasks with enhanced results.
+- |PyMuPDF4LLM| is optimized for large language model (LLM) applications, providing enhanced text extraction and processing capabilities. 
+ It focuses on layout analysis and semantic understanding, ideal for document conversion and formatting tasks with enhanced results.
 
 .. note::
     All of the products above depend on the same core product - |PyMuPDF| and therefore have full access to all of its features.
@@ -89,64 +89,51 @@ PyMuPDF Products Comparison
 The following table illustrates what features the products offer:
 
 .. list-table:: PyMuPDF Products Comparison
-   :widths: 8 23 23 23 23
+   :widths: 10 30 30 30 
    :header-rows: 1
 
    * - 
      - PyMuPDF
      - PyMuPDF Pro
      - PyMuPDF4LLM
-     - PyMuPDF Layout
    * - **Input Documents**
      - `PDF`, `XPS`, `EPUB`, `CBZ`, `MOBI`, `FB2`, `SVG`, `TXT`, Images (*standard document types*)
      - *as PyMuPDF* and:
        `DOC`/`DOCX`, `XLS`/`XLSX`, `PPT`/`PPTX`, `HWP`/`HWPX`
      - *as PyMuPDF*
-     - *as PyMuPDF*
    * - **Output Documents**
      - Can convert any input document to `PDF`, `SVG` or Image
      - *as PyMuPDF*
-     - *as PyMuPDF* and:
-       Markdown (`MD`)
-     - *as PyMuPDF4LLM* and:
-       `JSON` or `TXT`
+     - *as PyMuPDF* and: 
+       Markdown (`MD`), `JSON` or `TXT`
    * - **Page Analysis**
      - Basic page analysis to return document structure
-     - *as PyMuPDF*
      - *as PyMuPDF*
      - Advanced Page Analysis with trained data for enhanced results
    * - **Data extraction**
      - Basic data extraction with structured layout information and bounding box data
      - *as PyMuPDF*
-     - Advanced data extraction with structure tags such as headings, lists, tables
-     - Advanced layout analysis and semantic understanding
+     - Advanced data extraction including layout analysis with semantic understanding and enhanced bounding box data
    * - **Table extraction**
      - Basic table extraction as part of text extraction
      - *as PyMuPDF*
-     - Advanced table extraction with cell structure and data types
-     - Superior table detection
+     - Advanced table extraction with cell structure, including support for merged cells and complex layouts
    * - **Image extraction**
      - Basic image extraction
      - *as PyMuPDF*
      - Advanced detection and rendering of image areas on page saving them to disk or embedding in MD output
-     - Superior detection of "picture" areas
    * - **Vector extraction**
      - Vector extraction and clustering
      - *as PyMuPDF*
-     - *as PyMuPDF*
-     - Superior detection of "picture" areas
+     - Superior detection of "picture" areas 
    * - **Popular RAG Integrations** 
-     - Langchane, LlamaIndex
+     - Langchain, LlamaIndex
      - *as PyMuPDF*
-     - *as PyMuPDF* and with some addiotnal help methods for RAG workflows
-     - *as PyMuPDF4LLM*
+     - *as PyMuPDF* and with some additional help methods for RAG workflows
    * - **OCR**
-     - On-demand invocation of built-in Tesseract for text detection on pages or images.
+     - On-demand invocation of built-in Tesseract for text detection on pages or images
      - *as PyMuPDF*
-     - *as PyMuPDF*
-     - Automatic OCR based on page content analysis.
-
-
+     - Automatic OCR based on page content analysis. OCR adapators for popular OCR engines available
 
 ----
 

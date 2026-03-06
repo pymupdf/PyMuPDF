@@ -41,7 +41,6 @@ This documentation covers all versions up to |version|.
    :maxdepth: 1
 
    about.rst
-   pymupdf-layout/index.rst
    pymupdf4llm/index.rst
    pymupdf-pro/index.rst
 
@@ -73,6 +72,7 @@ This documentation covers all versions up to |version|.
 
    module.rst
    classes.rst
+   pymupdf4llm/api.rst
    algebra.rst
    lowlevel.rst
    glossary.rst
