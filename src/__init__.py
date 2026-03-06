@@ -3045,6 +3045,11 @@ class Document:
         finally:
             JM_mupdf_show_errors = JM_mupdf_show_errors_old
     
+    def __iter__(self):
+        """Iterate over all pages in the document."""
+        for i in range(len(self)):
+            yield self[i]
+    
     def __len__(self) -> int:
         return self.page_count
 
