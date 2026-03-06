@@ -1,19 +1,13 @@
 .. include:: ../header.rst
 
-.. raw:: html
-
-    <script>
-        document.getElementById("headerSearchWidget").action = '../search.html';
-    </script>
-
 
 .. |PyMuPDFLayoutMode_Ignored| raw:: html
 
-    <cite style="font-size:12px;color:#000;background:#fff;border:1px solid #000;border-radius:5px;padding:3px;">Ignored by <a style="color:#000" href="../pymupdf-layout/">PyMuPDF Layout</a></cite>
+    <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;"><a href="#pymupdf4llm-api-layout">use_layout()</a> must be <span style="font-family:monospace;">False</span></cite>
 
 .. |PyMuPDFLayoutMode_Valid| raw:: html
 
-    <cite style="font-size:12px;color:#000;background-color:rgba(60,250,30,0.9);border-radius:5px;padding:3px;">Only valid with <a style="color:#000" href="../pymupdf-layout/">PyMuPDF Layout</a></cite>
+    <span></span>
 
 .. |PyMuPDFLayoutMode_EmptyList| raw:: html
 
@@ -29,30 +23,24 @@
 
 
 
-API
+The PyMuPDF4LLM API
 ===========================================================================
-
-The |PyMuPDF4LLM| API
---------------------------
 
 
 .. property:: version
 
     Prints the version of the library.
 
+
 .. method:: to_markdown(doc: pymupdf.Document | str, *, \
     detect_bg_color: bool = True, \
     dpi: int = 150, \
-    use_ocr: bool = True, \
-    ocr_language: str = "eng", \
-    ocr_dpi: int = 300, \
-    ocr_function: callable = None, \
-    force_ocr: bool = False, \
     embed_images: bool = False, \
     extract_words: bool = False, \
     filename: str | None = None, \
     fontsize_limit: float = 3, \
     footer: bool = True, \
+    force_ocr: bool = False, \
     force_text: bool = True, \
     graphics_limit: int = None, \
     hdr_info: Any = None, \
@@ -64,7 +52,10 @@ The |PyMuPDF4LLM| API
     image_format: str = "png", \
     image_path: str = "", \
     image_size_limit: float = 0.05, \
-    margins: int = 0, \
+    margins: float | list = 0, \
+    ocr_dpi: int = 300, \
+    ocr_function: callable = None, \
+    ocr_language: str = "eng", \
     page_chunks: bool = False, \
     page_height: float = None, \
     page_separators: bool = False, \
@@ -73,33 +64,16 @@ The |PyMuPDF4LLM| API
     show_progress: bool = False, \
     table_strategy: str = "lines_strict", \
     use_glyphs: bool = False, \
+    use_ocr: bool = True, \
     write_images: bool = False) -> str | list[dict]
 
     Reads the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that **support for building page chunks** from the |Markdown| text is supported.
-
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
     :arg bool detect_bg_color: |PyMuPDFLayoutMode_Ignored| does a simple check for the general background color of the pages (default is ``True``). If any text or vector has this color it will be ignored. May increase detection accuracy.
 
     :arg int dpi: specify the desired image resolution in dots per inch. Relevant only if `write_images=True` or `embed_images=True`. Default value is 150.
-
-    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page. This will OCR pages as determined by the default criteria.
-
-    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
-
-    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 300. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
-
-    :arg callable ocr_function: |PyMuPDFLayoutMode_Valid| if you want to provide your own :ref:`OCR function <pymupdf_layout_ocr_engines>`, specify it here. If omitted (`None`), the built-in Tesseract OCR engine will be used.
-
-    :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
-    
-        Only works when `ocr_function` is specified. 
-    
-        This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
-
-        .. warning:: 
-            Requires `ocr_function` to be specified otherwise an exception will be raised.
 
     :arg bool embed_images: like `write_images`, but images will be included in the markdown text as base64-encoded strings. Mutually exclusive with `write_images` and ignores `image_path`. This may drastically increase the size of your markdown text.
 
@@ -110,6 +84,15 @@ The |PyMuPDF4LLM| API
     :arg float fontsize_limit: |PyMuPDFLayoutMode_Ignored| limit the font size to consider for text extraction. If the font size is lower than what is set then the text won't be considered for extraction. Default is `3`, meaning only text with a font size `>= 3` will be considered for extraction.
 
     :arg bool footer: |PyMuPDFLayoutMode_Valid| boolean to switch on/off page footer content. This parameter controls whether to include or omit footer text from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
+
+    :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
+    
+        Only works when `ocr_function` is specified. 
+    
+        This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
+
+        .. warning:: 
+            Requires `ocr_function` to be specified otherwise an exception will be raised.
 
     :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image.
 
@@ -138,6 +121,12 @@ The |PyMuPDF4LLM| API
         * `margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`.
         * `(top, bottom)` yields  `(0, top, 0, bottom)`.
         * To always read full pages **(default)**, use `margins=0`.
+
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 300. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+
+    :arg callable ocr_function: |PyMuPDFLayoutMode_Valid| if you want to provide your own :ref:`OCR function <pymupdf_layout_ocr_engines>`, specify it here. If omitted (`None`), the built-in Tesseract OCR engine will be used.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
 
     :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
 
@@ -180,6 +169,8 @@ The |PyMuPDF4LLM| API
 
     :arg bool use_glyphs: |PyMuPDFLayoutMode_Ignored| (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value.
 
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page. This will OCR pages as determined by the default criteria.
+
     :arg bool write_images: when encountering images or vector graphics, images will be created from the respective page area and stored in the specified folder. |Markdown| references will be generated pointing to these images. Any text contained in these areas will not be included in the text output (but appear as part of the images). Therefore, if for instance your document has text written on full page images, make sure to set this parameter to `False`.
 
         If using :ref:`PyMuPDF Layout <pymupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference.
@@ -189,10 +180,7 @@ The |PyMuPDF4LLM| API
 
 .. method:: to_text(doc: pymupdf.Document | str, *, **kwargs) -> str
 
-
-    Reads the pages of the file and outputs the text of its pages in |TXT| format.
-
-    .. important:: |PyMuPDFLayoutMode_Valid|. This method is only available with PyMuPDF Layout.
+    Reads the pages of the file and outputs the text of its pages in plain text (|TXT|) format.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
@@ -240,8 +228,6 @@ The |PyMuPDF4LLM| API
 .. method:: to_json(doc: pymupdf.Document | str, *, **kwargs) -> str
 
     Parses the document and the specified pages and converts the result into a |JSON|-formatted string.
-    
-    .. important:: |PyMuPDFLayoutMode_Valid|. This method is only available with PyMuPDF Layout.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
@@ -268,13 +254,23 @@ The |PyMuPDF4LLM| API
     :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
 
 
+.. _pymupdf4llm-api-layout:
+
+
+.. method:: use_layout(yes: bool = True)
+
+    Switch on/off the use of the PyMuPDF Layout module. 
+    
+    If `yes=True` (default), the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
+
+
 .. method:: get_key_values(doc: pymupdf.Document | str) -> list[dict]
 
     Parse the document if it is a **Form PDF** and extract key-value pairs from all form fields (widgets).
     
     Please note that this method is only relevant for PDF documents that contain widgets. Otherwise, an empty list will be returned.
 
-    The function is always available -- independently of whether you are using |PyMuPDF Layout <pymupdf-layout>| or not.
+    The function is always available -- independently of whether you are using the PyMuPDF Layout module or not.
 
     Each dictionary item has the following structure::
 
@@ -489,7 +485,7 @@ This is a version of previous **example 2** that uses :class:`TocHeaders` for he
 
 -----
 
-For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/RAG/blob/main/CHANGES.md>`_.
+For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/pymupdf4llm/blob/main/CHANGES.md>`_.
 
 .. rubric:: Footnotes
 
@@ -505,4 +501,35 @@ For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/R
 .. _LlamaIndex: https://pypi.org/project/llama-index/
 
 
+.. raw:: html
 
+    /* this script is used to adjust the search widget and to add line breaks after parameters in the signature blocks for better readability */
+    <script>
+        document.getElementById("headerSearchWidget").action = '../search.html';
+        const params = document.querySelectorAll('.sig-param')
+        
+        params.forEach((param, index) => {
+            const next = param.nextSibling;
+            if (next && next.nodeType === 3) { // 3 = text node
+                const span = document.createElement('span');
+                if (index === params.length - 1) {
+                    span.className = 'sig-comma-last';
+                } else {
+                    param.classList.add('has-comma');
+                    span.className = 'sig-comma';
+                }
+                span.textContent = next.textContent;
+                next.replaceWith(span);
+            }    
+        });
+    </script>
+
+    <style>
+        .sig-comma {
+            display: none;
+        }
+        dt .sig-param.has-comma::after {
+            content: ",\A";
+            white-space: pre;
+        }
+    </style>
