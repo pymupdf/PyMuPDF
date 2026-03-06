@@ -98,7 +98,7 @@ For a description of what this class is all about, see Appendix 2.
 
    .. method:: extractJSON(sort=False)
 
-      Textpage content as a JSON string. Created by `json.dumps(TextPage.extractDICT())`. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
+      Textpage content as a JSON string. Created by `json.dumps(TextPage.extractDICT())`. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result :meth:`TextPage.extractDICT` to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
@@ -164,9 +164,9 @@ For a description of what this class is all about, see Appendix 2.
 
 Structure of Dictionary Outputs
 --------------------------------
-Methods :meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, :meth:`TextPage.extractRAWDICT`, and :meth:`TextPage.extractRAWJSON` return dictionaries, containing the page's text and image content. The dictionary structures of all four methods are almost equal. They strive to map the text page's information hierarchy of blocks, lines, spans and characters as precisely as possible, by representing each of these by its own sub-dictionary:
+Methods :meth:`TextPage.extractDICT`, :meth:`TextPage.extractJSON`, :meth:`TextPage.extractRAWDICT`, and :meth:`TextPage.extractRAWJSON` return dictionaries, containing the page's vector grphics, text and image content. The dictionary structures of all four methods are almost equal. They strive to map the text page's information hierarchy of blocks, lines, spans and characters as precisely as possible, by representing each of these by its own sub-dictionary:
 
-* A **page** consists of a list of **block dictionaries**.
+* A **page** consists of a list of **block dictionaries** for images, vectors and text.
 * A (text) **block** consists of a list of **line dictionaries**.
 * A **line** consists of a list of **span dictionaries**.
 * A **span** either consists of the text itself or, for the RAW variants, a list of **character dictionaries**.
@@ -214,18 +214,18 @@ Block dictionaries come in different formats for **vector blocks**, **image bloc
 
 **Vector block:**
 
-=============== =========================================================================================================================
+========== ==========================================================================================================================================
 **Key**             **Value**
-=============== =========================================================================================================================
-type            3 = vector (``int``)
-bbox            vector bbox on page (:data:`rect_like`)
-number          block count (``int``)
-stroked         either stroked (``True``) or filled (``False``) (``bool``)
-isrect          whether the vector is axis-parallel (``bool``). Can be a line or a rectangle. Curves or diagonal lines are ``False``.
-continues       whether the vector is (not the last) part of a sequence of vectors in a *path* (``bool``).
-color           sRGB integer, e.g. 0xRRGGBB (``int``).
-alpha           Transparency, a value in ``range(256)`` (``int``).
-=============== =========================================================================================================================
+========== ==========================================================================================================================================
+type       3 = vector (``int``)
+bbox       vector bbox on page (:data:`rect_like`)
+number     block count (``int``)
+stroked    either stroked (``True``) or filled (``False``) (``bool``)
+isrect     whether the vector is axis-parallel (``bool``). Can be a line or a rectangle. Curves and non axis-parallel lines are ``False``.
+continues  whether the vector is (not the last) part of a sequence of vectors in a *path* (``bool``).
+color      sRGB integer, e.g. 0xRRGGBB (``int``).
+alpha      Transparency, a value in ``range(256)`` (``int``).
+========== ==========================================================================================================================================
 
 This information is a true subset of the output of :meth:`Page.get_drawings`. Its advantage is its speed (because it is extracted alongside one :ref:`TextPage` creation) and the fact that vector blocks are included in the overall page content sequence together with text and images.
 
@@ -376,17 +376,23 @@ Bits 1 thru 4 are font properties, i.e. encoded in the font program. Please note
 
 *"char_flags"* is an integer, which represents extra character properties:
 
-* bit 0: strikeout.
-* bit 1: underline.
-* bit 2: synthetic (always 0, see char dictionary).
-* bit 3: filled.
-* bit 4: stroked.
-* bit 5: clipped.
+* bit 0, (``mupdf.FZ_STEXT_STRIKEOUT`` = 1). Text is striked out. Only meaningful if the extraction flag bit :data:`TEXT_COLLECT_STYLES` is set.
+* bit 1, (``mupdf.FZ_STEXT_UNDERLINE`` = 2). Text is underlined. Only meaningful if the extraction flag bit :data:`TEXT_COLLECT_STYLES` is set.
+* bit 2, (``mupdf.FZ_STEXT_SYNTHETIC`` = 4). Always 0. Shown as ``synthetic=True`` in character dictionary if it is a **generated** space.
+* bit 3, (``mupdf.FZ_STEXT_BOLD`` = 8). Text is bold. Set in addition to the font flag. Also set for "fake bold" if extraction flag bit :data:`TEXT_COLLECT_STYLES` is set.
+* bit 4, (``mupdf.FZ_STEXT_FILLED`` = 16). The glyphs of the text are **"filled"** graphics (the default).
+* bit 5, (``mupdf.FZ_STEXT_STROKED`` = 32). The glyphs of the text are **"stroked"** graphics.
+* bit 6, (``mupdf.FZ_STEXT_CLIPPED`` = 64). This is clipped text and can only be present if extraction flag bit :data:`TEXT_MEDIABOX_CLIP` was **not** set.
+* bit 7, (``mupdf.FZ_STEXT_UNICODE_IS_CID`` = 128). Only set if the extraction flag bit :data:`TEXT_USE_CID_FOR_UNKNOWN_UNICODE` is used.
+* bit 8, (``mupdf.FZ_STEXT_UNICODE_IS_GID`` = 256). Only set if the extraction flag bit :data:`TEXT_USE_GID_FOR_UNKNOWN_UNICODE` is used.
+* bit 9, (``mupdf.FZ_STEXT_SYNTHETIC_LARGE`` = 512). Currently not used in PyMuPDF.
 
-For example if not filled and not stroked (`if not (char_flags & 2**3 & 2**4):
-...`) then the text will be invisible.
+For example if not filled and not stroked then the text will be invisible. Can be tested like this::
 
-(`char_flags` is new in v1.25.2.)
+   >>> if not span["char_flags"] & mupdf.FZ_STEXT_FILLED & mupdf.FZ_STEXT_STROKED:
+         print(f"invisible text {span['text']=}")
+
+.. note:: The text layer of an OCR-ed page is usually (not always!) written as "ignored" text -- which means it is neither filled nor stroked. This is however not the only way to make text invisible. A better, but still incomplete invisibility check is the condition ``span["alpha"] == 0``.
 
 
 Character Dictionary for :meth:`extractRAWDICT`
@@ -397,11 +403,11 @@ Character Dictionary for :meth:`extractRAWDICT`
 =============== ===========================================================
 origin          character's left baseline point, :data:`point_like`
 bbox            character rectangle, :data:`rect_like`
-synthetic       bool.
+synthetic       bool. ``True`` if character is a generated space.
 c               the character (unicode)
 =============== ===========================================================
 
-(`synthetic` is new in v1.25.3.)
+Key `"synthetic"` is new in v1.25.3.0. It is `True`, if the character is a **generated space** -- i.e., not part of the original text, but created by MuPDF to fill gaps between words. Please note that this can only happen if extraction flag bit :data:`TEXT_INHIBIT_SPACES` is **not** set.
 
 This image shows the relationship between a character's bbox and its quad: |textpagechar|
 
