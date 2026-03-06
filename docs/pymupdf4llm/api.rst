@@ -259,7 +259,7 @@ The PyMuPDF4LLM API
 
 .. method:: use_layout(yes: bool = True)
 
-    Switch on/off the use of the PyMuPDF Layout module. 
+    Switch on/off the use of the :ref:`PyMuPDF Layout module <pymupdf4llm_and_layout>`. 
     
     If `yes=True` (default), the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
 
