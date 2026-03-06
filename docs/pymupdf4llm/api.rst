@@ -11,12 +11,11 @@
 
 .. |PyMuPDFLayoutMode_EmptyList| raw:: html
 
-    <cite style="font-size:12px;color:#000;background:#fff;border:1px solid #000;border-radius:5px;padding:3px;">Empty list with <a style="color:#000" href="../pymupdf-layout/">PyMuPDF Layout</a></cite>
-
+    <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <a href="#pymupdf4llm-api-layout">use_layout()</a> is <span style="font-family:monospace;">False</span></cite>
 
 .. |PyMuPDFLayoutMode_Unavailable| raw:: html
 
-    <cite style="font-size:12px;color:#000;background:#fff;border:1px solid #000;border-radius:5px;padding:3px;">Unavailable in <a style="color:#000" href="../pymupdf-layout/">PyMuPDF Layout</a></cite>
+    <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <a href="#pymupdf4llm-api-layout">use_layout()</a> is <span style="font-family:monospace;">False</span></cite>
 
 .. _pymupdf4llm-api:
 
