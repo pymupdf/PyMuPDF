@@ -332,7 +332,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
 
 
-      .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED|1, text=PDF_REDACT_TEXT_REMOVE|0)
+   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED|1, text=PDF_REDACT_TEXT_REMOVE|0)
 
       **PDF only**: Remove all **content** contained in any redaction rectangle on the page.
 
