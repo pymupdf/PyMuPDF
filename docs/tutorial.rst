@@ -366,7 +366,7 @@ Embedding Data
 
 PDFs can be used as containers for arbitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
-PyMuPDF fully supports this feature via :ref:`Document` ``embfile_*`` methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
+PyMuPDF fully supports this feature via :ref:`Document` ``embfile_*`` methods and attributes. For some detail read :ref:`Appendix2`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
 
 
 Saving
