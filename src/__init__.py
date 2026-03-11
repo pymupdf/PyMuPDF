@@ -10187,7 +10187,7 @@ class Page:
             annot = JM_get_annot_by_name(page, name)
         else:
             annot = JM_get_annot_by_xref(page, xref)
-        if annot.m_internal:
+        if annot:
             return Annot(annot)
 
     def _makePixmap(self, doc, ctm, cs, alpha=0, annots=1, clip=None):
