@@ -586,6 +586,9 @@ class Annot:
     def __init__(self, annot):
         assert isinstance( annot, mupdf.PdfAnnot)
         self.this = annot
+    
+    def __bool__(self):
+        return bool(self.this)
 
     def __repr__(self):
         parent = getattr(self, 'parent', '<>')
