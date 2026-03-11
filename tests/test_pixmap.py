@@ -18,6 +18,7 @@ import tempfile
 import pytest
 import textwrap
 import time
+import util
 
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
@@ -371,6 +372,8 @@ def test_3493():
 
 
 def test_3848():
+    if util.skip_slow_tests('test_3848'):
+        return
     if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
         # Takes 40m on Github.
         print(f'test_3848(): not running on valgrind because very slow.', flush=1)
@@ -509,6 +512,9 @@ def test_4336():
 
 
 def test_4435():
+    # This is slow, e.g. 224s.
+    if util.skip_slow_tests('test_4435'):
+        return
     print(f'{pymupdf.version=}')
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4435.pdf')
     with pymupdf.open(path) as document:
