@@ -13,12 +13,13 @@ from __future__ import annotations
 import atexit
 import binascii
 import collections
+import glob
+import importlib.util
 import inspect
 import io
 import math
 import os
 import pathlib
-import glob
 import re
 import string
 import sys
@@ -30,7 +31,6 @@ import weakref
 import zipfile
 
 from . import extra
-import importlib.util
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -11383,6 +11383,9 @@ class Page:
         mupdf.fz_run_page( page, dev, ctm, mupdf.FzCookie())
         mupdf.fz_close_device( dev)
 
+    def find_tables(self, **kwargs):
+        return table.find_tables(self, **kwargs)
+    
     @property
     def first_annot(self):
         """First annotation."""
@@ -25571,8 +25574,7 @@ recover_line_quad           = utils.recover_line_quad
 recover_quad                = utils.recover_quad
 recover_span_quad           = utils.recover_span_quad
 
-from .table import find_tables
-Page.find_tables = find_tables
+from . import table
 
 
 class FitzDeprecation(DeprecationWarning):
