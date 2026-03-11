@@ -1,4 +1,5 @@
 import pymupdf
+import util
 
 import gc
 import os
@@ -17,6 +18,8 @@ def test_2791():
     '''
     Check for memory leaks.
     '''
+    if util.skip_slow_tests('test_2791'):
+        return
     if os.environ.get('PYODIDE_ROOT'):
         print('test_2791(): not running on Pyodide - No module named \'psutil\'.')
         return
