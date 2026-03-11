@@ -43,3 +43,6 @@ def test_py_typed():
 
 def _test_4903(page: pymupdf.Page) -> float:  # In 1.27.1, error: Variable "pymupdf.Page" is not valid as a type
     return page.rect.width  # In 1.27.1, error: pymupdf.Page? has no attribute "rect"
+
+def _test_4932(page: pymupdf.Page):
+    page.find_tables()
