@@ -1637,7 +1637,6 @@ struct jm_lineart_device
     fz_rect pathrect = {};
     int clips = {};
     int linecount = {};
-    float linewidth = {};
     int path_type = {};
     long depth = {};
     size_t seqno = {};
@@ -1747,7 +1746,8 @@ static void jm_trace_text_span(
         fz_colorspace* colorspace,
         const float* color,
         float alpha,
-        size_t seqno
+        size_t seqno,
+        const fz_stroke_state* stroke
         )
 {
     //printf("extra.jm_trace_text_span(): seqno=%zi\n", seqno);
@@ -1900,24 +1900,22 @@ static void jm_trace_text_span(
     {
         rgb[0] = rgb[1] = rgb[2] = 0;
     }
-    double linewidth;
-    if (dev->linewidth > 0)  // width of character border
+    if (0)
     {
-        linewidth = (double) dev->linewidth;
+        std::cout << " fsize=" << fsize;
+        if (stroke)
+        {
+            std::cout  << " linewidth=" << stroke->linewidth;
+        }
+        std::cout << "\n";
     }
-    else
-    {
-	linewidth = fsize * 0.05;  // default: 5% of font size
-    }
-    if (0) std::cout
-            << " dev->linewidth=" << dev->linewidth
-            << " fsize=" << fsize
-            << " linewidth=" << linewidth
-            << "\n";
     dict_setitem_drop(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
     dict_setitem_drop(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
     dict_setitemstr_drop(span_dict, "opacity", PyFloat_FromDouble((double) alpha));
-    dict_setitemstr_drop(span_dict, "linewidth", PyFloat_FromDouble((double) linewidth));
+    if (stroke)
+        dict_setitemstr_drop(span_dict, "linewidth", PyFloat_FromDouble((double) stroke->linewidth));
+    else
+        dict_setitemstr_drop(span_dict, "linewidth", Py_None);
     dict_setitemstr_drop(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
     dict_setitem_drop(span_dict, dictkey_type, PyLong_FromLong((long) type));
     dict_setitem_drop(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
@@ -1987,7 +1985,7 @@ static void jm_fill_image_mask(
     jm_increase_seqno(ctx, dev);
 }
 
-static void jm_dev_linewidth(
+static void jm_stroke_path(
         fz_context* ctx,
         fz_device* dev_,
         const fz_path* path,
@@ -1999,11 +1997,6 @@ static void jm_dev_linewidth(
         fz_color_params color_params
         )
 {
-    jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    if (0) std::cout << "jm_dev_linewidth(): changing dev->linewidth from " << dev->linewidth
-            << " to stroke->linewidth=" << stroke->linewidth
-            << "\n";
-    dev->linewidth = stroke->linewidth;
     jm_increase_seqno(ctx, dev_);
 }
 
@@ -2015,13 +2008,14 @@ static void jm_trace_text(
         fz_colorspace* colorspace,
         const float* color,
         float alpha,
-        size_t seqno
+        size_t seqno,
+        const fz_stroke_state* stroke
         )
 {
     fz_text_span* span;
     for (span = text->head; span; span = span->next)
     {
-        jm_trace_text_span(dev, span, type, ctm, colorspace, color, alpha, seqno);
+        jm_trace_text_span(dev, span, type, ctm, colorspace, color, alpha, seqno, stroke);
     }
 }
 
@@ -2044,7 +2038,7 @@ jm_tracedraw_fill_text(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    jm_trace_text(dev, text, 0, ctm, colorspace, color, alpha, dev->seqno);
+    jm_trace_text(dev, text, 0, ctm, colorspace, color, alpha, dev->seqno, NULL);
     dev->seqno += 1;
 }
 
@@ -2062,7 +2056,7 @@ jm_tracedraw_stroke_text(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    jm_trace_text(dev, text, 1, ctm, colorspace, color, alpha, dev->seqno);
+    jm_trace_text(dev, text, 1, ctm, colorspace, color, alpha, dev->seqno, stroke);
     dev->seqno += 1;
 }
 
@@ -2076,7 +2070,7 @@ jm_tracedraw_ignore_text(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    jm_trace_text(dev, text, 3, ctm, nullptr, nullptr, 1, dev->seqno);
+    jm_trace_text(dev, text, 3, ctm, nullptr, nullptr, 1, dev->seqno, NULL);
     dev->seqno += 1;
 }
 
@@ -2105,7 +2099,7 @@ mupdf::FzDevice JM_new_texttrace_device(PyObject* out)
     dev->super.close_device = nullptr;    
     dev->super.drop_device = jm_lineart_drop_device;    
     dev->super.fill_path = jm_fill_path;
-    dev->super.stroke_path = jm_dev_linewidth;
+    dev->super.stroke_path = jm_stroke_path;
     dev->super.clip_path = nullptr;
     dev->super.clip_stroke_path = nullptr;
 
