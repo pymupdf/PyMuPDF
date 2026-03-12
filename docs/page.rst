@@ -783,9 +783,34 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; insert_textbox
       pair: oc; insert_textbox
 
-   .. method:: insert_textbox(rect, buffer, *, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, miter_limit=1, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0, overlay=True)
+   .. method:: insert_textbox(rect, buffer, \
+                *, \
+                align=TEXT_ALIGN_LEFT, \
+                border_width=1, \
+                color=None, \
+                encoding=TEXT_ENCODING_LATIN, \
+                expandtabs=8, \
+                fill=None, \
+                fill_opacity=1, \
+                fontfile=None, \
+                fontname="helv", \
+                fontsize=11, \
+                lineheight=None, \
+                miter_limit=1, \
+                morph=None, \
+                oc=0, \
+                overlay=True, \
+                render_mode=0, \
+                rotate=0, \
+                set_simple=False, \
+                stroke_opacity=1, \
+                )
 
-      PDF only: Insert text into the specified :data:`rect_like` *rect*. See :meth:`Shape.insert_textbox`.
+      PDF only: Insert text into the specified :data:`rect_like` *rect*.
+      
+      :arg overlay: see :meth:`Shape.commit`.
+      
+      For other args, see `Shape.insert_textbox`.
 
       |history_begin|
 
