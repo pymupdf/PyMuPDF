@@ -2223,6 +2223,7 @@ def test_4928():
     
 def test_4902():
     print()
+    print(f'test_4902(): {pymupdf.mupdf_version_tuple=}')
     with pymupdf.open() as doc:
         page = doc.new_page()
         text = 'Hello World'
@@ -2241,5 +2242,9 @@ def test_4902():
     with pymupdf.open('pdf', data) as doc:
         page = doc[0]
         spans = page.get_texttrace()
-        for span in spans:
-            print(f'test_4902(): {span["linewidth"]=}, should be {bw*fontsize=}.')
+        for i, span in enumerate(spans):
+            cs = ''.join([chr(cc[0]) for cc in span['chars']])
+            print(f'test_4902(): {i=} {span["linewidth"]=} {cs=}')
+        assert len(spans) == 2
+        assert spans[0]['linewidth'] is None
+        assert spans[1]['linewidth'] == 8.0
