@@ -2221,3 +2221,25 @@ def test_4928():
         except Exception as e:
             print(f'Ignoring expected exception: {e}')
     
+def test_4902():
+    print()
+    with pymupdf.open() as doc:
+        page = doc.new_page()
+        text = 'Hello World'
+        bw = 0.4
+        fontsize = 20
+        page.insert_text(
+                (72, 72),
+                text,
+                fontsize=fontsize,
+                render_mode=2,
+                color=(1, 0, 0),
+                fill=(0, 1, 0),
+                border_width=bw,
+                )
+        data = doc.tobytes()
+    with pymupdf.open('pdf', data) as doc:
+        page = doc[0]
+        spans = page.get_texttrace()
+        for span in spans:
+            print(f'test_4902(): {span["linewidth"]=}, should be {bw*fontsize=}.')
