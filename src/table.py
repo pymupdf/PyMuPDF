@@ -79,6 +79,7 @@ import html
 from collections.abc import Sequence
 from dataclasses import dataclass
 from operator import itemgetter
+from typing import Literal
 import weakref
 import pymupdf
 from pymupdf import mupdf
@@ -2038,6 +2039,16 @@ class TableFinder:
         self.textpage = None
         self.settings = TableSettings.resolve(settings)
         self.edges = self.get_edges()
+        if (
+            self.settings.horizontal_strategy == "text"
+            and self.settings.vertical_strategy != "text"
+        ):
+            extend_edges(self.edges, "h", self.settings.intersection_x_tolerance)
+        elif (
+            self.settings.vertical_strategy == "text"
+            and self.settings.horizontal_strategy != "text"
+        ):
+            extend_edges(self.edges, "v", self.settings.intersection_y_tolerance)
         self.intersections = edges_to_intersections(
             self.edges,
             self.settings.intersection_x_tolerance,
@@ -2728,3 +2739,68 @@ def find_tables(
     for table in tbf.tables:
         table.textpage = TEXTPAGE
     return tbf
+
+
+def extend_edges(
+    edges: list,
+    extend_orientation: Literal["h", "v"],
+    intersection_tolerance: float,
+) -> None:
+    """
+    Extend the edges to the nearest edge vertical to them
+    """
+    v_edges, h_edges = [
+        list(filter(lambda x: x["orientation"] == o, edges)) for o in ("v", "h")
+    ]
+
+    v_edges = sorted(v_edges, key=itemgetter("x0", "top"))
+    h_edges = sorted(h_edges, key=itemgetter("top", "x0"))
+
+    if extend_orientation == "h":
+        edges_to_extend = h_edges
+        other_edges = v_edges
+        first_prop_to_extend, second_prop_to_extend = "x0", "x1"
+        loc_prop = "top"
+        loc_prop_others = "x0"
+        first_prop_range, second_prop_range = "top", "bottom"
+    else:
+        edges_to_extend = v_edges
+        other_edges = h_edges
+        first_prop_to_extend, second_prop_to_extend = "top", "bottom"
+        loc_prop = "x0"
+        loc_prop_others = "top"
+        first_prop_range, second_prop_range = "x0", "x1"
+
+    for edge_to_extend in edges_to_extend:
+        loc = edge_to_extend[loc_prop]
+        edges_intersect_to_this_edge = [
+            edge
+            for edge in other_edges
+            if (loc - edge[second_prop_range] <= intersection_tolerance)
+            and (edge[first_prop_range] - loc <= intersection_tolerance)
+        ]
+        n_edges_intersect_to_this_edge = len(edges_intersect_to_this_edge)
+        if n_edges_intersect_to_this_edge > 1:
+            first_val_to_extend, second_val_to_extend = (
+                edge_to_extend[first_prop_to_extend],
+                edge_to_extend[second_prop_to_extend],
+            )
+            # Extend first value (left for horizontal, top for vertical)
+            for i in range(n_edges_intersect_to_this_edge):
+                loc_edge_i = edges_intersect_to_this_edge[i][loc_prop_others]
+                if first_val_to_extend - loc_edge_i < -intersection_tolerance:
+                    if i != 0:
+                        edge_to_extend[first_prop_to_extend] = (
+                            edges_intersect_to_this_edge[i - 1][loc_prop_others]
+                        )
+                    break
+
+            # Extend second value (right for horizontal, bottom for vertical)
+            for i in range(n_edges_intersect_to_this_edge - 1, -1, -1):
+                loc_edge_i = edges_intersect_to_this_edge[i][loc_prop_others]
+                if second_val_to_extend - loc_edge_i > -intersection_tolerance:
+                    if i != n_edges_intersect_to_this_edge - 1:
+                        edge_to_extend[second_prop_to_extend] = (
+                            edges_intersect_to_this_edge[i + 1][loc_prop_others]
+                        )
+                    break
