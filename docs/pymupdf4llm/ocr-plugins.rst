@@ -1,7 +1,10 @@
+.. include:: ../header.rst
+
+
 Default OCR Functions
 ======================
 
-PyMuPDF4LLM supports default OCR functions. They come in the form of plugins that are present in its `ocr` subpackage. They are based on currently 3 popular OCR engines, Tesseract OCR, RapidOCR and PaddleOCR. Some engines can be combined to make use of their strengths and mitigate their weaknesses. For example, Tesseract OCR is very good at **recognizing** text, while RapidOCR is better at **detecting** text bounding boxes in images with complex backgrounds. By combining the two engines, we can achieve better overall OCR results while at the samne time also reducing the overall OCR processing time.
+PyMuPDF4LLM supports default OCR functions. They come in the form of plugins that are present in its `ocr` subpackage. They are based on currently 3 popular OCR engines, Tesseract OCR, RapidOCR and PaddleOCR. Some engines can be combined to make use of their strengths and mitigate their weaknesses. For example, Tesseract OCR is very good at **recognizing** text, while RapidOCR is better at **detecting** text bounding boxes in images with complex backgrounds. By combining the two engines, we can achieve better overall OCR results while at the same time also reducing the overall OCR processing time.
 
 Here is an overview of the available default plugins:
 
@@ -15,7 +18,7 @@ rapidtess_api  RapidOCR + Tesseract OCR  Uses RapidOCR for text **detection** an
 paddletess_api PaddleOCR + Tesseract OCR Uses PaddleOCR for text **detection** and Tesseract OCR for text **recognition**
 ============== ========================= =================================================================================
 
-If not explicitely selected via the `ocr_function` parameter, PyMuPDF4LLM will check the availability of the three OCR engines and pick one of the above plugins in the following order of preference:
+If not explicitly selected via the `ocr_function` parameter, PyMuPDF4LLM will check the availability of the three OCR engines and pick one of the above plugins in the following order of preference:
 
 1. `rapidtess_api` (if both RapidOCR and Tesseract OCR are available)
 2. `paddletess_api` (if both PaddleOCR and Tesseract OCR are available)
@@ -38,7 +41,7 @@ The provided default plugins use the following **"hybrid"** OCR approach:
 
 In this way, all original content (text and other elements) is preserved and only **augmented** with the newly recognized text. This allows for a more accurate and complete text extraction while also preserving the original document structure and formatting as much as possible. It also allows for a more efficient OCR processing since only the non-extractable text is processed by the OCR engine. This can significantly reduce the overall processing time.
 
-It also increases the chances for a successful layout detection, because other original content like vectors remains intact and is not rendered to pixels.
+It also increases the chances for a successful layout detection, because other original content like vectors remain intact and will not be rendered to pixels.
 
 Forcing the Choice of a Default Plugin
 ---------------------------------------
@@ -69,7 +72,7 @@ If you want to use your own OCR function, you can do so as follows::
 
 Your plugin must accept at least the ``page`` parameter which is a PyMuPDF Page object. The other parameters are optional. The plugin must create (or extend) the text of the passed-in page object by simply inserting text (using any of PyMuPDF's text insertion methods). No return values expected.
 
-Be prepared to accept ``None`` or a PyMuPDF Pixmap object as the `pixmap` parameter, which is the rendered image of the page if provided. Parameters ``dpi`` and ``language`` are passed thru from the respective function parameters.
+Be prepared to accept ``None`` or a PyMuPDF Pixmap object as the `pixmap` parameter, which is the rendered image of the page if provided. Parameters ``dpi`` and ``language`` are passed through from the respective function parameters.
 
 
 Selecting Pages for OCR
@@ -110,7 +113,7 @@ The reason is one of the following values:
 * "chars_bad": more than 10% of all characters are illegible (i.e. Replacement Unicode characters)
 * "ocr_spans": there exist text spans created from previous OCR executions (render mode 3)
 * "vec_text": there exist suspected vector-based glyphs
-* "img_text": there exist images which probably contains recognizable text
+* "img_text": there exist images which (probably) contain recognizable text
 
 Based on this analysis, PyMuPDF4LLM will decide whether to invoke or skip OCR for a page. This is done to optimize processing time and resource usage by only performing OCR when it is likely to yield additional text content that cannot be extracted by other means.
 
@@ -129,7 +132,7 @@ You can override this logic in the following ways:
         analysis = analyze_page(page)
         if not analysis["needs_ocr"]:
             return None
-            
+
         # if OCR is recommended, you can decide differently based on your own insights, e.g.
         if analysis["reason"] == "ocr_spans":
             # we might want to accept previous OCR:
@@ -140,3 +143,4 @@ You can override this logic in the following ways:
 
     md_text = pymupdf4llm.to_markdown("input.pdf", force_ocr=True, ocr_function=my_ocr_function, ...)
 
+.. include:: ../footer.rst
