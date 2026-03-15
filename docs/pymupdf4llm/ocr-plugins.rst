@@ -130,14 +130,21 @@ You can override this logic in the following ways:
     def my_ocr_function(page, pixmap=None, dpi=300, language="eng"):
         # analyze the page content and perform OCR only if necessary
         analysis = analyze_page(page)
+
+        # inspect the items of the analysis dictionary to make your own
+        # decision about whether to perform OCR or not, e.g.:
         if not analysis["needs_ocr"]:
+            # accept decision NOT to perform OCR:
             return None
 
-        # if OCR is recommended, you can decide differently based on your own insights, e.g.
+        # if OCR is recommended, you can decide differently based on
+        # your own insights, e.g. we might want to accept previous OCR
+        # results and skip OCR if there are already text spans created
+        # from previous OCR executions (render mode 3):
         if analysis["reason"] == "ocr_spans":
-            # we might want to accept previous OCR:
             return None
 
+        # execute desired OCR engine
         rapidocr_api.exec_ocr(page, pixmap=pixmap, dpi=dpi, language=language)
         return None
 
