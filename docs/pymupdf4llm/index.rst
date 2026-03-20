@@ -188,7 +188,7 @@ PyMuPDF4LLM includes built-in OCR support for scanned documents and image-based 
 
 .. note::
 
-   If you want to use an OCR engine other than Tesseract, see :ref:`OCR Adaptors <ocr-adaptors>` for details on how to plug in your own OCR function.
+   If you want to use an OCR engine other than Tesseract, see :ref:`OCR Engines <ocr-engines>` for details.
 
 
 Hybrid OCR strategy
@@ -209,7 +209,7 @@ Auto-OCR Behaviour
 
 PyMuPDF4LLM inspects each page before extracting text. If a page contains **no selectable text** — meaning all content is rasterised into images — OCR is triggered automatically for that page.
 
-Pages that contain native text are never sent through OCR, even if they also contain embedded images. This keeps processing fast and avoids degrading already-clean text.
+Pages that contain native text only are never sent through OCR. This keeps processing fast and avoids degrading already-clean text.
 
 .. code-block:: python
 
@@ -275,6 +275,8 @@ Pages with no selectable text will return empty strings in this mode. This is us
 ----
 
 .. _ocr-adaptors:
+.. _ocr-engines:
+.. _ocr-plugins:
 
 OCR Engines
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

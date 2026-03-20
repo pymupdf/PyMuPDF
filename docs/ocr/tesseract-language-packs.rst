@@ -192,7 +192,7 @@ Replace ``fra`` with your target language code and adjust the tessdata path to m
 Using a Language with pymupdf4llm
 ----------------------------------
 
-Once a language pack is installed, pass its code to ``to_markdown()`` via the ``language`` parameter:
+Once a language pack is installed, pass its code to ``to_markdown()`` via the ``ocr_language`` parameter:
 
 .. code-block:: python
 
