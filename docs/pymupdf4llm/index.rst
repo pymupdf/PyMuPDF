@@ -32,6 +32,7 @@ Features
     - Support for image and vector graphics extraction.
     - Layout analysis for better semantic understanding of document structure.
     - Support for page chunking output.
+    - Automatic detection of pages which profit from OCR and support for various OCR engines.
     - Integration with :ref:`LlamaIndex <integration_with_llamaindex>` & :ref:`LangChain <integration_with_langchain>`.
 
 API
