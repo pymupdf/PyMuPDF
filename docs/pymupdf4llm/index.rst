@@ -276,98 +276,14 @@ Pages with no selectable text will return empty strings in this mode. This is us
 
 .. _ocr-adaptors:
 
-OCR Adaptors
-~~~~~~~~~~~~~
+OCR Engines
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-By default, PyMuPDF4LLM uses **Tesseract** for OCR. If you need a different OCR engine — for higher accuracy, language support, or cloud-based processing — you can plug in a custom adaptor.
+Other OCR Engines (OCR Adaptors or Plugins) can be used with PyMuPDF4LLM.
 
-Built-in Adaptors
-"""""""""""""""""""""""""
+See :doc:`ocr-plugins` for details on how to use different OCR engines with PyMuPDF4LLM, including Tesseract, RapidOCR, and how to implement your own custom OCR function.
 
-RapidOCR
-^^^^^^^^
 
-If `RapidOCR <https://github.com/RapidAI/RapidOCR?tab=readme-ov-file>`_ and the RapidOCR ONNX Runtime are available, you can use a pre-made callable OCR function for it, which is provided in the ``pymupdf4llm.ocr`` module as ``rapidocr_api.exec_ocr``.
-
-**Example**
-
-.. code-block:: python
-
-   from pymupdf4llm.ocr import rapidocr_api
-
-   md = pymupdf4llm.to_markdown(
-       doc,
-       ocr_function=rapidocr_api.exec_ocr,
-       force_ocr=True
-   )
-
-In this way RapidOCR can be used as an alternative OCR engine to Tesseract for all pages (if ``force_ocr=True``) or just for those pages which meet the default criteria for applying OCR (if ``force_ocr=False`` or omitted).
-
-RapidOCR & Tesseract Side-by-Side
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you want to use both OCR engines side-by-side, you can do so by implementing a custom OCR function which calls both OCR engines — one for bbox recognition (RapidOCR) and the other for text recognition (Tesseract) — and then combines their results.
-
-This pre-made callable OCR function can be found in the ``pymupdf4llm.ocr`` module as ``rapidtess_api.exec_ocr``.
-
-**Example**
-
-.. code-block:: python
-
-   from pymupdf4llm.ocr import rapidtess_api
-
-   md = pymupdf4llm.to_markdown(
-       doc,
-       ocr_function=rapidtess_api.exec_ocr,
-       force_ocr=True
-   )
-
-.. list-table::
-   :header-rows: 1
-   :widths: 35 25 40
-
-   * - Adaptor
-     - Engines
-     - Notes
-   * - ``rapidocr_api.exec_ocr``
-     - RapidOCR
-     - Requires RapidOCR and ONNX Runtime
-   * - ``rapidtess_api.exec_ocr``
-     - RapidOCR & Tesseract
-     - Better accuracy for bounding box detection and text recognition
-
-Writing a Custom Adaptor
-~~~~~~~~~~~~~~~~~~~~~~~~
-
-An OCR adaptor can be defined by passing your own Python ``ocr_function`` method which follows a protocol as follows:
-
-.. code-block:: python
-
-   def exec_ocr(page, dpi=300, pixmap=None):
-       """
-       Custom OCR function to replace the default Tesseract-based implementation.
-
-       Parameters:
-       - page: The PyMuPDF page object being processed.
-       - dpi: The resolution at which to render the page for OCR.
-       - pixmap: An optional pre-rendered pixmap of the page, if available.
-
-       If a Pixmap is provided, the DPI parameter is ignored. Otherwise, an RGB
-       Pixmap is created from the page at the specified DPI.
-       """
-
-       # Your custom OCR logic here.
-       # The method should render the OCR'ed text onto the page
-       # so that PyMuPDF4LLM can extract it as usual.
-
-       ...
-
-.. tip::
-
-   Custom adaptors receive a page or image object and must render what they "see" onto the source document.
-   PyMuPDF4LLM handles interpretation — your adaptor needs to handle the text recognition & rendering step.
-
-----
 
 OCR Language Support
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -387,7 +303,7 @@ Tesseract language packs must be installed separately on your system. For exampl
 
    sudo apt install tesseract-ocr-deu tesseract-ocr-fra
 
-See the next section on :ref:`installing Tesseract language packs <tesseract-language-packs>` for further details.
+See the page on :ref:`installing Tesseract language packs <tesseract-language-packs>` for further details.
 
 ----
 

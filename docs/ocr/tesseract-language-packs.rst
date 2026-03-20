@@ -199,10 +199,10 @@ Once a language pack is installed, pass its code to ``to_markdown()`` via the ``
    import pymupdf4llm
 
    # Single language
-   md = pymupdf4llm.to_markdown("document.pdf", language="fra")
+   md = pymupdf4llm.to_markdown("document.pdf", ocr_language="fra")
 
    # Multiple languages
-   md = pymupdf4llm.to_markdown("document.pdf", language="eng+fra+deu")
+   md = pymupdf4llm.to_markdown("document.pdf", ocr_language="eng+fra+deu")
 
 ----
 
