@@ -303,36 +303,8 @@ See :doc:`pyodide`.
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
-If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
-
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract’s language support data <https://github.com/tesseract-ocr/tessdata>`_.
-
-If not specified explicitly, PyMuPDF will attempt to find the installed
-Tesseract's tessdata, but this should probably not be relied upon.
-
-Otherwise PyMuPDF requires that Tesseract's language support folder is
-specified explicitly either in PyMuPDF OCR functions' `tessdata` arguments or
-`os.environ["TESSDATA_PREFIX"]`.
-
-So for a working OCR functionality, make sure to complete this checklist:
-
-1. Locate Tesseract's language support folder. Typically you will find it here:
-
-   * Windows: `C:/Program Files/Tesseract-OCR/tessdata`
-   * Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
-
-2. Specify the language support folder when calling PyMuPDF OCR functions:
-   
-   * Set the `tessdata` argument.
-   * Or set `os.environ["TESSDATA_PREFIX"]` from within Python.
-   * Or set environment variable `TESSDATA_PREFIX` before running Python, for example:
-   
-     * Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
-     * Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
+PyMuPDF's OCR features rely on the Tesseract OCR engine which is included by default in your installation. It includes the English language pack by default. To install additional Tesseract language packs to enable OCR for languages other than English, see :ref:`Tesseract Language Packs <tesseract-language-packs>` for instructions on how to do this on different platforms.
 
 
-.. note::
-
-  Find out more on the `official documentation for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
 
 .. include:: footer.rst

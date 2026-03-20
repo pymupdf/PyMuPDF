@@ -7,7 +7,7 @@ Change Log
 * Fixed issues:
 
   * **Fixed** `4902 <https://github.com/pymupdf/PyMuPDF/issues/4902>`_: Incorrect linewidth in elements returned by Page.get_texttrace()
-  * **Fixed** `4932 <https://github.com/pymupdf/PyMuPDF/issues/4932>`_: `"Page" has no attribute "find_tables" in PyMuPDF 1.27
+  * **Fixed** `4932 <https://github.com/pymupdf/PyMuPDF/issues/4932>`_: "Page" has no attribute "find_tables" in PyMuPDF 1.27
 
 * Other:
 
@@ -20,12 +20,12 @@ Change Log
 
 * Fixed issues:
 
-  * **Fixed** `4903 <https://github.com/pymupdf/PyMuPDF/issues/4903>`_: Typing broken because of *_forward_decl
+  * **Fixed** `4903 <https://github.com/pymupdf/PyMuPDF/issues/4903>`_: Typing broken because of `*_forward_decl`
   
 * Other:
 
   * Retrospectively marked #4907 as fixed in pymupdf-1.27.1.
-  * Improved get_textpage_ocr().
+  * Improved `get_textpage_ocr()`.
   
     For partial OCR, **all** page areas outside legible text are now OCRed, not
     just those within images. This means that OCR will now also be performed
