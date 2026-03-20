@@ -17,7 +17,7 @@ PyMuPDF4LLM
 |PyMuPDF4LLM| is a lightweight extension for |PyMuPDF| that turns PDFs into clean, structured data with minimal setup. It includes layout analysis *without* any GPU requirement.
 
 
-|PyMuPDF4LLM| is aimed to make it easier to extract document content in the format you need for **LLM** & **RAG** environments. It supports :ref:`Markdown <extracting_as_md>`, :ref:`JSON <extracting_as_json>` and :ref:`TXT <extracting_as_txt>` extraction, as well as :ref:`LlamaIndex <integration_with_llamaindex>` and :ref:`LangChain <integration_with_langchain>` integration.
+|PyMuPDF4LLM| makes it easy to extract document content in the format you need for **LLM** & **RAG** environments. It supports structured data extraction to :ref:`Markdown <extracting_as_md>`, :ref:`JSON <extracting_as_json>` and :ref:`TXT <extracting_as_txt>`, as well as :ref:`LlamaIndex <integration_with_llamaindex>` and :ref:`LangChain <integration_with_langchain>` integration.
 
 
 .. important::
@@ -178,6 +178,230 @@ PyMuPDF4LLM & PyMuPDF Layout
 -----------------------------------
 
 By default |PyMuPDF4LLM| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`use_layout` method.
+
+
+
+OCR
+--------
+
+PyMuPDF4LLM includes built-in OCR support for scanned documents and image-based PDFs. By default, OCR runs **automatically** when needed — you don't have to opt in. For more control, you can force OCR on specific pages, disable it entirely, or swap in a different OCR engine using the adaptor interface.
+
+.. note::
+
+   If you want to use an OCR engine other than Tesseract, see :ref:`OCR Adaptors <ocr-adaptors>` for details on how to plug in your own OCR function.
+
+
+Hybrid OCR strategy
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PyMuPDF4LLM applies OCR only when it is genuinely required to obtain the complete text of a PDF page. If a page already contains sufficient extractable text, OCR is skipped entirely — avoiding unnecessary work and eliminating the risk of degrading high-quality digital text.
+
+When OCR is needed, PyMuPDF4LLM automatically selects the most suitable OCR plugin available in the runtime environment, balancing detection accuracy with processing speed.
+
+Its built-in OCR plugins implement a Hybrid OCR strategy: only those regions lacking extractable, legible text are passed to the OCR engine. This selective approach typically reduces OCR processing time by around 50% while improving recognition accuracy, since the engine focuses exclusively on the problematic regions. The recognized text is then merged back into the original page, enriching it without disturbing existing digital content.
+
+
+----
+
+
+Auto-OCR Behaviour
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+PyMuPDF4LLM inspects each page before extracting text. If a page contains **no selectable text** — meaning all content is rasterised into images — OCR is triggered automatically for that page.
+
+Pages that contain native text are never sent through OCR, even if they also contain embedded images. This keeps processing fast and avoids degrading already-clean text.
+
+.. code-block:: python
+
+   import pymupdf4llm
+
+   # OCR runs automatically on any page with no selectable text
+   md_text = pymupdf4llm.to_markdown("scanned-document.pdf")
+
+The resulting Markdown is seamless — pages extracted via OCR and pages extracted natively are combined into a single output with no distinction between them.
+
+----
+
+How OCR is Triggered
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+There are two scenarios where OCR is applied automatically:
+
+**No text at all** — if a page contains roughly no text but is covered with images or many character-sized vectors, PyMuPDF4LLM checks whether text is *probably* detectable on the page. This distinguishes image-based text (e.g. a scanned document) from ordinary pictures like photographs.
+
+**Garbled text** — if a page does contain text but too many characters are unreadable (e.g. ``"�����"``), OCR is applied **for the affected text areas only**, not the full page. This preserves already-readable text, images, and vectors while recovering only what is broken.
+
+
+----
+
+Forcing OCR
+~~~~~~~~~~~~~
+
+In some cases you may want to force OCR even on pages that contain selectable text — for example, when the native text layer is corrupt, misencoded, or misaligned with the visual content.
+
+Use ``force_ocr=True`` to bypass the auto-detection check entirely:
+
+.. code-block:: python
+
+   md_text = pymupdf4llm.to_markdown("document.pdf", force_ocr=True)
+
+.. warning::
+
+   Forcing OCR on clean, text-based PDFs will slow down processing significantly and may reduce output quality. Only use ``force_ocr=True`` when you have reason to distrust the native text layer.
+
+You can also force OCR on specific pages rather than the whole document:
+
+.. code-block:: python
+
+   md_text = pymupdf4llm.to_markdown(
+       "document.pdf",
+       pages=[2, 3, 4],
+       force_ocr=True
+   )
+
+----
+
+Disabling OCR
+~~~~~~~~~~~~~
+
+To prevent OCR from running at all — even on pages with no selectable text — set ``use_ocr=False``:
+
+.. code-block:: python
+
+   md_text = pymupdf4llm.to_markdown("document.pdf", use_ocr=False)
+
+Pages with no selectable text will return empty strings in this mode. This is useful when you know your documents are always text-based, or when you want to handle OCR yourself in a downstream step.
+
+----
+
+.. _ocr-adaptors:
+
+OCR Adaptors
+~~~~~~~~~~~~~
+
+By default, PyMuPDF4LLM uses **Tesseract** for OCR. If you need a different OCR engine — for higher accuracy, language support, or cloud-based processing — you can plug in a custom adaptor.
+
+Built-in Adaptors
+"""""""""""""""""""""""""
+
+RapidOCR
+^^^^^^^^
+
+If `RapidOCR <https://github.com/RapidAI/RapidOCR?tab=readme-ov-file>`_ and the RapidOCR ONNX Runtime are available, you can use a pre-made callable OCR function for it, which is provided in the ``pymupdf4llm.ocr`` module as ``rapidocr_api.exec_ocr``.
+
+**Example**
+
+.. code-block:: python
+
+   from pymupdf4llm.ocr import rapidocr_api
+
+   md = pymupdf4llm.to_markdown(
+       doc,
+       ocr_function=rapidocr_api.exec_ocr,
+       force_ocr=True
+   )
+
+In this way RapidOCR can be used as an alternative OCR engine to Tesseract for all pages (if ``force_ocr=True``) or just for those pages which meet the default criteria for applying OCR (if ``force_ocr=False`` or omitted).
+
+RapidOCR & Tesseract Side-by-Side
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If you want to use both OCR engines side-by-side, you can do so by implementing a custom OCR function which calls both OCR engines — one for bbox recognition (RapidOCR) and the other for text recognition (Tesseract) — and then combines their results.
+
+This pre-made callable OCR function can be found in the ``pymupdf4llm.ocr`` module as ``rapidtess_api.exec_ocr``.
+
+**Example**
+
+.. code-block:: python
+
+   from pymupdf4llm.ocr import rapidtess_api
+
+   md = pymupdf4llm.to_markdown(
+       doc,
+       ocr_function=rapidtess_api.exec_ocr,
+       force_ocr=True
+   )
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 25 40
+
+   * - Adaptor
+     - Engines
+     - Notes
+   * - ``rapidocr_api.exec_ocr``
+     - RapidOCR
+     - Requires RapidOCR and ONNX Runtime
+   * - ``rapidtess_api.exec_ocr``
+     - RapidOCR & Tesseract
+     - Better accuracy for bounding box detection and text recognition
+
+Writing a Custom Adaptor
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+An OCR adaptor can be defined by passing your own Python ``ocr_function`` method which follows a protocol as follows:
+
+.. code-block:: python
+
+   def exec_ocr(page, dpi=300, pixmap=None):
+       """
+       Custom OCR function to replace the default Tesseract-based implementation.
+
+       Parameters:
+       - page: The PyMuPDF page object being processed.
+       - dpi: The resolution at which to render the page for OCR.
+       - pixmap: An optional pre-rendered pixmap of the page, if available.
+
+       If a Pixmap is provided, the DPI parameter is ignored. Otherwise, an RGB
+       Pixmap is created from the page at the specified DPI.
+       """
+
+       # Your custom OCR logic here.
+       # The method should render the OCR'ed text onto the page
+       # so that PyMuPDF4LLM can extract it as usual.
+
+       ...
+
+.. tip::
+
+   Custom adaptors receive a page or image object and must render what they "see" onto the source document.
+   PyMuPDF4LLM handles interpretation — your adaptor needs to handle the text recognition & rendering step.
+
+----
+
+OCR Language Support
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When using the default Tesseract adaptor, you can specify one or more languages using Tesseract's language codes.
+
+Specify the language to be used by the Tesseract OCR engine. Default is ``"eng"`` (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign ``"+"``, for example ``"eng+deu"`` for English and German.
+
+.. code-block:: python
+
+   md_text = pymupdf4llm.to_markdown("multilingual.pdf",
+                                      ocr_language="eng+deu")
+
+Tesseract language packs must be installed separately on your system. For example, on Ubuntu:
+
+.. code-block:: bash
+
+   sudo apt install tesseract-ocr-deu tesseract-ocr-fra
+
+See the next section on :ref:`installing Tesseract language packs <tesseract-language-packs>` for further details.
+
+----
+
+Performance Tips
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+OCR is the most compute-intensive part of the extraction pipeline. A few ways to keep it fast:
+
+- **Process only the pages you need** using the ``pages`` parameter to avoid running OCR on the entire document.
+- **Cache results** — write the output to disk after the first run so you don't re-process the same file.
+- **Use** ``force_ocr=False`` (the default) so clean pages skip OCR entirely.
+- **Resize images before passing to OCR** — very high DPI scans can slow Tesseract down without improving accuracy.
+
+----
 
 
 Further Resources
