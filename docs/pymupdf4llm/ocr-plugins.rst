@@ -1,7 +1,7 @@
 .. include:: ../header.rst
 
 
-Default OCR Functions
+OCR Plugins
 ======================
 
 PyMuPDF4LLM supports default OCR functions. They come in the form of plugins that are present in its `ocr` subpackage. They are based on currently 3 popular OCR engines, Tesseract OCR, RapidOCR and PaddleOCR. Some engines can be combined to make use of their strengths and mitigate their weaknesses. For example, Tesseract OCR is very good at **recognizing** text, while RapidOCR is better at **detecting** text bounding boxes in images with complex backgrounds. By combining the two engines, we can achieve better overall OCR results while at the same time also reducing the overall OCR processing time.
@@ -45,7 +45,17 @@ It also increases the chances for a successful layout detection, because other o
 
 Forcing the Choice of a Default Plugin
 ---------------------------------------
-The default plugins are designed to be used as is, without any need for configuration. However, if you want to use a specific plugin, you can do so by using the following approach (which enforces for instance using RapidOCR and skipping above selection process). Please note that all plugins have a function named `exec_ocr` that does the actual OCR::
+The default plugins are designed to be used as is, without any need for configuration. 
+
+However, if you want to use a specific plugin, you can do so by using the following approach (which enforces for instance using RapidOCR and skipping above selection process). Please note that all plugins have a function named `exec_ocr` that does the actual OCR.
+
+
+RapidOCR
+~~~~~~~~~
+
+If `RapidOCR <https://github.com/RapidAI/RapidOCR?tab=readme-ov-file>`_ and the RapidOCR ONNX Runtime are available, you can use a pre-made callable OCR function for it, which is provided in the ``pymupdf4llm.ocr`` module as ``rapidocr_api.exec_ocr``.
+
+.. code-block:: python
 
     import pymupdf4llm
     from pymupdf4llm.ocr import rapidocr_api
@@ -54,6 +64,40 @@ The default plugins are designed to be used as is, without any need for configur
 
     # Use my_ocr_function as the OCR function in PyMuPDF4LLM
     md_text = pymupdf4llm.to_markdown("input.pdf", ocr_function=my_ocr_function)
+
+
+RapidOCR & Tesseract Side-by-Side
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to use both OCR engines side-by-side, you can do so by implementing a custom OCR function which calls both OCR engines — one for bbox recognition (RapidOCR) and the other for text recognition (Tesseract) — and then combines their results.
+
+This pre-made callable OCR function can be found in the ``pymupdf4llm.ocr`` module as ``rapidtess_api.exec_ocr``.
+
+**Example**
+
+.. code-block:: python
+
+   from pymupdf4llm.ocr import rapidtess_api
+
+   md = pymupdf4llm.to_markdown(
+       doc,
+       ocr_function=rapidtess_api.exec_ocr,
+       force_ocr=True
+   )
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 25 40
+
+   * - Adaptor
+     - Engines
+     - Notes
+   * - ``rapidocr_api.exec_ocr``
+     - RapidOCR
+     - Requires RapidOCR and ONNX Runtime
+   * - ``rapidtess_api.exec_ocr``
+     - RapidOCR & Tesseract
+     - Better accuracy for bounding box detection and text recognition
 
 
 Providing your Own Plugin
