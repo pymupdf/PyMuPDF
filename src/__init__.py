@@ -10792,6 +10792,7 @@ class Page:
         pdfpage = _as_pdf_page(self)
         pclip = JM_rect_from_py(clip)
         mupdf.pdf_clip_page(pdfpage, pclip)
+        JM_refresh_links(pdfpage)
 
     def get_layout(self):
         """Try to access layout information."""
