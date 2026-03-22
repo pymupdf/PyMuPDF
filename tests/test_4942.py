@@ -1,4 +1,4 @@
-import pymupdf
+import pymupdf, os
 
 
 def test_4942():
