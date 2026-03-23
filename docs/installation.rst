@@ -332,7 +332,7 @@ So for a working OCR functionality, make sure to complete this checklist:
 
 .. note::
 
-    English language support is included by default in Tesseract insallation.
+    English language support is included by default in Tesseract installation.
 
     :ref:`Tesseract Language Packs <tesseract-language-packs>` for other languages must be installed separately, and the `tessdata` folder must be specified to PyMuPDF as described above, for OCR to work with those languages.
 
