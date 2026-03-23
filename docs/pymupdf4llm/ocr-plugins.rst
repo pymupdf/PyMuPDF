@@ -47,7 +47,7 @@ Forcing the Choice of a Default Plugin
 ---------------------------------------
 The default plugins are designed to be used as is, without any need for configuration. 
 
-However, if you want to use a specific plugin, you can do so by using the following approach (which enforces for instance using RapidOCR and skipping above selection process). Please note that all plugins have a function named `exec_ocr` that does the actual OCR.
+However, if you want to use a specific plugin, you can do so by using the following approach (which enforces for instance using RapidOCR and skipping the above selection process). Please note that all plugins have a function named `exec_ocr` that does the actual OCR.
 
 
 RapidOCR
@@ -71,7 +71,7 @@ RapidOCR & Tesseract Side-by-Side
 
 If you want to use both OCR engines side-by-side, you can do so by implementing a custom OCR function which calls both OCR engines — one for bbox recognition (RapidOCR) and the other for text recognition (Tesseract) — and then combines their results.
 
-This pre-made callable OCR function can be found in the ``pymupdf4llm.ocr`` module as ``rapidtess_api.exec_ocr``.
+This pre-made callable OCR function can be found in the ``pymupdf4llm.ocr`` module as ``rapidtess_api.exec_ocr()``.
 
 **Example**
 

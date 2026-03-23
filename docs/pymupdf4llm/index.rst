@@ -299,7 +299,7 @@ Specify the language to be used by the Tesseract OCR engine. Default is ``"eng"`
    md_text = pymupdf4llm.to_markdown("multilingual.pdf",
                                       ocr_language="eng+deu")
 
-Tesseract language packs must be installed separately on your system. For example, on Ubuntu:
+Tesseract language packs must be installed on your system. For example, on Ubuntu:
 
 .. code-block:: bash
 
