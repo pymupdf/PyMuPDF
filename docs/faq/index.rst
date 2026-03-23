@@ -1133,6 +1133,24 @@ FAQ
         <div class="tip"><strong>Note:</strong> Threading with GIL release was tested but found to have intolerable overhead. Multiprocessing is the better approach for parallelism.</div>
     </div>
     </div>
+    
+    <div class="faq">
+    <div class="faq-q"><span class="marker">Q</span><span class="question">Can I use multithreading with PyMuPDF, perhaps with <a href="https://docs.python.org/3/howto/free-threading-python.html">free-threading Python</a>?</span><span class="toggle">+</span></div>
+    <div class="faq-a">
+        <p>No, PyMuPDF does not support multithreaded use,
+        even with newer free-thread Python.
+
+        <p>Making PyMuPDF work with threads is a tricky problem.
+        The underlying MuPDF library only provides partial thread safety so the results would not be as performant as might be naively assumed,
+        and the implementation would inevitably introduce and expose subtle bugs.
+
+        <p>Any thread-safe implementation of PyMuPDF would also necessarily impose a single-threaded overhead.
+
+        <p>The preferred approach is to <a href="../recipes-multiprocessing.html">use multiple processes instead of multiple threads</a>.
+        This gives most of what is generally required,
+        with simplicity and guaranteed correctness.
+    </div>
+    </div>
 
     </div>
 
