@@ -544,6 +544,9 @@ def test_4435():
         print(f'Called page.get_pixmap().', flush=1)
     if pymupdf.mupdf_version_tuple < (1, 27):
         assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)\n... repeated 9 times...'
+    elif pymupdf.mupdf_version_tuple >= (1, 28, 0):
+        wt_expected = ('limit error: Overly large image\ncannot render glyph\n' * 42).rstrip()
+        assert pymupdf.TOOLS.mupdf_warnings() == wt_expected
 
 
 def test_4423():
