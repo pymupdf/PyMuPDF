@@ -431,6 +431,14 @@
       "created_at": "2026-03-08T06:47:03Z",
       "repoId": 6105714,
       "pullRequestNo": 4929
+    },
+    {
+      "name": "sakamotch",
+      "id": 229879120,
+      "comment_id": 4135474992,
+      "created_at": "2026-03-26T14:37:35Z",
+      "repoId": 6105714,
+      "pullRequestNo": 4955
     }
   ]
 }
