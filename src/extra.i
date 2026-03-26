@@ -2719,14 +2719,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     jm_lineart_device *dev = (jm_lineart_device *)dev_;
     //printf("extra.jm_lineart_stroke_path(): dev->seqno=%zi\n", dev->seqno);
     int i;
-    dev->pathfactor = 1;
-    if (ctm.a != 0 && fz_abs(ctm.a) == fz_abs(ctm.d)) {
-        dev->pathfactor = fz_abs(ctm.a);
-    } else {
-        if (ctm.b != 0 && fz_abs(ctm.b) == fz_abs(ctm.c)) {
-            dev->pathfactor = fz_abs(ctm.b);
-        }
-    }
+    dev->pathfactor = sqrtf(fabsf(ctm.a * ctm.d - ctm.b * ctm.c));
     dev->ctm = ctm; // fz_concat(ctm, trace_device_ptm);
     dev->path_type = STROKE_PATH;
 
@@ -2739,7 +2732,7 @@ jm_lineart_stroke_path(fz_context *ctx, fz_device *dev_, const fz_path *path,
     DICT_SETITEMSTR_DROP(dev->pathdict, "color", jm_lineart_color(colorspace, color));
     DICT_SETITEM_DROP(dev->pathdict, dictkey_width, Py_BuildValue("f", dev->pathfactor * stroke->linewidth));
     DICT_SETITEMSTR_DROP(dev->pathdict, "lineCap", Py_BuildValue("iii", stroke->start_cap, stroke->dash_cap, stroke->end_cap));
-    DICT_SETITEMSTR_DROP(dev->pathdict, "lineJoin", Py_BuildValue("f", dev->pathfactor * stroke->linejoin));
+    DICT_SETITEMSTR_DROP(dev->pathdict, "lineJoin", Py_BuildValue("f", (float)stroke->linejoin));
     if (!PyDict_GetItemString(dev->pathdict, "closePath")) {
         DICT_SETITEMSTR_DROP(dev->pathdict, "closePath", JM_BOOL(0));
     }
