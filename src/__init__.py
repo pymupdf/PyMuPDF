@@ -23208,11 +23208,7 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
     #log(f'{dev.pathdict=} {dev.clips=}')
     try:
         assert isinstance( ctm, mupdf.fz_matrix)
-        dev.pathfactor = 1
-        if ctm.a != 0 and abs(ctm.a) == abs(ctm.d):
-            dev.pathfactor = abs(ctm.a)
-        elif ctm.b != 0 and abs(ctm.b) == abs(ctm.c):
-            dev.pathfactor = abs(ctm.b)
+        dev.pathfactor = math.sqrt(abs(ctm.a * ctm.d - ctm.b * ctm.c))
         dev.ctm = mupdf.FzMatrix( ctm)  # fz_concat(ctm, dev_ptm);
         dev.path_type = trace_device_STROKE_PATH
 
@@ -23228,7 +23224,7 @@ def jm_lineart_stroke_path( dev, ctx, path, stroke, ctm, colorspace, color, alph
                 stroke.dash_cap,
                 stroke.end_cap,
                 )
-        dev.pathdict[ 'lineJoin'] = dev.pathfactor * stroke.linejoin
+        dev.pathdict[ 'lineJoin'] = float(stroke.linejoin)
         if 'closePath' not in dev.pathdict:
             #log('setting dev.pathdict["closePath"] to false')
             dev.pathdict['closePath'] = False
