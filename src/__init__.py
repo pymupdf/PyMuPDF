@@ -15761,7 +15761,7 @@ class Shape:
         if lineCap != 0:
             self.draw_cont = f"{lineCap} J\n" + self.draw_cont
         if lineJoin != 0:
-            self.draw_cont = "{lineJoin} j\n" + self.draw_cont
+            self.draw_cont = f"{lineJoin} j\n" + self.draw_cont
 
         if dashes not in (None, "", "[] 0"):
             self.draw_cont = f"{dashes} d\n" + self.draw_cont
