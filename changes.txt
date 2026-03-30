@@ -2,6 +2,15 @@ Change Log
 ==========
 
 
+**Changes in version **
+
+* Fixed issues:
+
+* Other:
+
+  * Fixed incorrect generation of `lineJoin j` in PDF content, introduced in 1.27.2.2.
+
+
 **Changes in version 1.27.2.2** (2026-03-20)
 
 * Fixed issues:
