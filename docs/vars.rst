@@ -241,9 +241,9 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     32 -- Generate a new line for every span. Not used ("off") in PyMuPDF, but available for your use. Every line in "dict", "json", "rawdict", "rawjson" will contain exactly one span.
 
-.. py:data:: TEXT_MEDIABOX_CLIP
+.. py:data:: TEXT_CLIP, TEXT_MEDIABOX_CLIP
 
-    64 -- Characters entirely outside a page's **mediabox** or contained in other "clipped" areas will be ignored. This is default in PyMuPDF.
+    64 -- Characters entirely outside a page's **mediabox** or contained in other "clipped" areas will be ignored. This is default in PyMuPDF. (TEXT_MEDIABOX_CLIP is an old alias.)
 
 .. py:data:: TEXT_USE_CID_FOR_UNKNOWN_UNICODE
 
