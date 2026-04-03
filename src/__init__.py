@@ -3052,14 +3052,15 @@ class Document:
                     self.page_count2 = extra.page_count_fz
 
             if len(self.page_count) > 1:
-                self.has_duplicate_images = True
+                has_duplicate_images = True
                 first_page_n_images = len(self.get_page_images(0))
                 for page in self.pages(start=1):
                     # we need at least one page with a different number of images
                     # to exclude full document duplication
                     if len(page.get_images()) != first_page_n_images:
-                        self.has_duplicate_images = False
+                        has_duplicate_images = False
                         break
+                self.has_duplicate_images = has_duplicate_images
 
             if self.has_duplicate_images:
                 self.images_xrefs_by_page = []
