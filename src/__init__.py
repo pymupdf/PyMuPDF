@@ -29,6 +29,7 @@ import typing
 import warnings
 import weakref
 import zipfile
+from operator import itemgetter
 
 from . import extra
 
@@ -2923,6 +2924,8 @@ class Document:
             self.is_encrypted = False
             self.is_encrypted = False
             self.metadata    = None
+            self.has_duplicate_images = False
+            self.images_xrefs_by_page = None
             self.FontInfos   = []
             self.Graftmaps   = {}
             self.ShownPages  = {}
@@ -3047,6 +3050,26 @@ class Document:
                     self.page_count2 = extra.page_count_pdf
                 else:
                     self.page_count2 = extra.page_count_fz
+
+            if len(self.page_count) > 1:
+                self.has_duplicate_images = True
+                first_page_n_images = len(self.get_page_images(0))
+                for page in self.pages(start=1):
+                    # we need at least one page with a different number of images
+                    # to exclude full document duplication
+                    if len(page.get_images()) != first_page_n_images:
+                        self.has_duplicate_images = False
+                        break
+
+            if self.has_duplicate_images:
+                self.images_xrefs_by_page = []
+                for page in self.pages():
+                    # store only images referenced by page
+                    page_xrefs = list(map(
+                        itemgetter("xref"),
+                        page.get_image_info(xrefs=True)
+                    ))
+                    self.images_xrefs_by_page = page_xrefs
         finally:
             JM_mupdf_show_errors = JM_mupdf_show_errors_old
     
@@ -5090,7 +5113,14 @@ class Document:
             return ()
         val = self._getPageInfo(pno, 2)
         if not full:
-            return [v[:-1] for v in val]
+            val = [v[:-1] for v in val]
+        if self.has_duplicate_images:
+            deduplicated_val = []
+            for v in val:
+                # v[0] is "xref"
+                if v[0] in self.images_xrefs_by_page[pno]:
+                    deduplicated_val.append(v)
+            return deduplicated_val
         return val
 
     def get_page_labels(self):
