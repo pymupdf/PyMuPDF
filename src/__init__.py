@@ -257,6 +257,8 @@ def log( text='', caller=1):
         line = frame_record.lineno
         function = frame_record.function
         text = f'{filename}:{line}:{function}(): {text}'
+        del stack
+        # Leaving <stack> to be garbage collected, appears to change behaviour.
     if _g_log_items_active:
         _g_log_items.append(text)
     if _g_out_log:
@@ -3241,13 +3243,25 @@ class Document:
             if len(links) == 0:  # no links there
                 page_src = None
                 continue
-            ctm = ~page_src.transformation_matrix  # calc page transformation matrix
             page_dst = doc1[pno_dst[i]]  # load destination page
+            
+            # In our call above to page_src.get_links(), we end up in
+            # fz_load_links(). This extracts the raw rects (encoded as strings
+            # such as `/Rect[10 782 40 822]`) and multiplies them by page_ctm
+            # from pdf_page_transform().
+            #
+            # We want to recreate the original raw rects, so we need to
+            # multiply by inverse of page_ctm. This fixes #4958.
+            ctm = mupdf.FzMatrix()
+            page_src_pdf_document = _as_pdf_page(page_src)
+            mupdf.pdf_page_transform(page_src_pdf_document, mupdf.FzRect(0), ctm)
+            ictm = Matrix(mupdf.fz_invert_matrix(ctm))
+
             link_tab = []  # store all link definitions here
             for l in links:
                 if l["kind"] == LINK_GOTO and (l["page"] not in pno_src):
                     continue  # GOTO link target not in copied pages
-                annot_text = cre_annot(l, xref_dst, pno_src, ctm)
+                annot_text = cre_annot(l, xref_dst, pno_src, ictm)
                 if annot_text:
                     link_tab.append(annot_text)
             if link_tab != []:
