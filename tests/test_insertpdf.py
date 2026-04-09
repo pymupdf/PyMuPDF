@@ -332,4 +332,35 @@ def test_4571():
     else:
         # Incorrect.
         assert b'<</Type/Pages/Count 6/Kids[4 0 R 6 0 R 12 0 R 4 0 R 6 0 R 12 0 R]>>' in content
-    
+
+
+def test_4958():
+    print()
+    with pymupdf.Document() as document_orig, pymupdf.Document() as document_copy:
+        document_orig.new_page()
+        document_orig[0].set_rotation(90)
+        document_orig[0].insert_link(
+                {
+                    'kind': 2,
+                    'from': pymupdf.Rect(10, 20, 40, 60),
+                    'uri': 'https://example.org'
+                }
+                )
+
+        document_copy.insert_pdf(document_orig, links=True)
+        
+        path_orig = os.path.normpath(f'{__file__}/../../tests/test_4958_out_orig.pdf')
+        path_copy = os.path.normpath(f'{__file__}/../../tests/test_4958_out_copy.pdf')
+        
+        document_orig.save(path_orig)
+        document_copy.save(path_copy)
+        
+        print(f'Have created {path_orig=}')
+        print(f'Have created {path_copy=}')
+        
+        from_rects_orig = [l['from'] for l in document_orig[0].get_links()]
+        from_rects_copy = [l['from'] for l in document_copy[0].get_links()]
+        
+        print(f'test_4958(): orig: {from_rects_orig}')
+        print(f'test_4958(): copy: {from_rects_copy}')
+        assert from_rects_orig == from_rects_copy
