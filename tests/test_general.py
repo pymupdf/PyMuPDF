@@ -2213,13 +2213,12 @@ def test_4907():
             display_list = page.get_displaylist(annots=False)
             text_page = display_list.get_textpage()
 
+
 def test_4928():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4928.pdf')
     with pymupdf.open(path) as document:
-        try:
-            document.scrub()
-        except Exception as e:
-            print(f'Ignoring expected exception: {e}')
+        document.scrub()
+
     
 def test_4902():
     print()
