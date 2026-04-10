@@ -10670,8 +10670,10 @@ class Page:
             annot_xrefs = [a[0] for a in self.annot_xrefs() if a[1] in types and a[1] not in skip_types]
         for xref in annot_xrefs:
             annot = self.load_annot(xref)
-            annot._yielded=True
-            yield annot
+            # In #4928, annot can be None, which we need to ignore.
+            if annot:
+                annot._yielded=True
+                yield annot
 
     def apply_redactions(
             page: 'Page',
