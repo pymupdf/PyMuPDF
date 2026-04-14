@@ -19,9 +19,11 @@ def install_required_packages():
         # We can't run child processes, so rely on required test packages
         # already being installed, e.g. in our wheel's <requires_dist>.
         return
-    packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell'
+    packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell mypy'
     if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
         # No pillow wheel available, and doesn't build easily.
+        pass
+    elif platform.python_implementation() == 'GraalVM':
         pass
     else:
         packages += ' pillow'
@@ -35,6 +37,11 @@ def install_required_packages():
     subprocess.run(command, shell=1, check=1)
 
 install_required_packages()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def log_global_env_facts(record_testsuite_property):
+    record_testsuite_property('platform.python_version()', platform.python_version())
 
 # Need to import pymupdf only after we've installed pymupdf-fonts above,
 # because pymupdf imports pymupdf_fonts, and copes with import failure.

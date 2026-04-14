@@ -1,45 +1,34 @@
 .. include:: ../header.rst
 
 
+.. |PyMuPDFLayoutMode_Ignored| raw:: html
+
+    <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;"><a href="#pymupdf4llm-api-layout">use_layout()</a> must be <span style="font-family:monospace;">False</span></cite>
+
+.. |PyMuPDFLayoutMode_Valid| raw:: html
+
+    <span></span>
+
+.. |PyMuPDFLayoutMode_EmptyList| raw:: html
+
+    <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <a href="#pymupdf4llm-api-layout">use_layout()</a> is <span style="font-family:monospace;">False</span></cite>
+
+.. |PyMuPDFLayoutMode_Unavailable| raw:: html
+
+    <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <a href="#pymupdf4llm-api-layout">use_layout()</a> is <span style="font-family:monospace;">False</span></cite>
 
 .. _pymupdf4llm-api:
 
 
-API
-===========================================================================
 
-The |PyMuPDF4LLM| API
---------------------------
+
+The PyMuPDF4LLM API
+===========================================================================
 
 
 .. property:: version
 
     Prints the version of the library.
-
-
-.. method:: to_json(doc: pymupdf.Document | str, \
-    image_dpi: int = 150, \
-    image_format: str = "png", \
-    image_path: str = "", \
-    pages: list | range | None = None) -> str
-
-
-    Reads the pages of the file and outputs the text of its pages in |JSON| format.
-
-    :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
-
-    :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150.
-
-    :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`.
-
-    :arg str image_path: store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory.
-
-    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed.
-
-
-.. note::
-
-    Please note that page ``header`` / ``footer`` exclusion is not applicable to |JSON| output as it aims to always represent all data for the included pages.
 
 
 .. method:: to_markdown(doc: pymupdf.Document | str, *, \
@@ -50,6 +39,7 @@ The |PyMuPDF4LLM| API
     filename: str | None = None, \
     fontsize_limit: float = 3, \
     footer: bool = True, \
+    force_ocr: bool = False, \
     force_text: bool = True, \
     graphics_limit: int = None, \
     hdr_info: Any = None, \
@@ -61,7 +51,10 @@ The |PyMuPDF4LLM| API
     image_format: str = "png", \
     image_path: str = "", \
     image_size_limit: float = 0.05, \
-    margins: int = 0, \
+    margins: float | list = 0, \
+    ocr_dpi: int = 300, \
+    ocr_function: callable = None, \
+    ocr_language: str = "eng", \
     page_chunks: bool = False, \
     page_height: float = None, \
     page_separators: bool = False, \
@@ -70,53 +63,67 @@ The |PyMuPDF4LLM| API
     show_progress: bool = False, \
     table_strategy: str = "lines_strict", \
     use_glyphs: bool = False, \
+    use_ocr: bool = True, \
     write_images: bool = False) -> str | list[dict]
 
     Reads the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that **support for building page chunks** from the |Markdown| text is supported.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
-    :arg bool detect_bg_color: does a simple check for the general background color of the pages (default is ``True``). If any text or vector has this color it will be ignored. May increase detection accuracy.
+    :arg bool detect_bg_color: |PyMuPDFLayoutMode_Ignored| does a simple check for the general background color of the pages (default is ``True``). If any text or vector has this color it will be ignored. May increase detection accuracy.
 
-    :arg int dpi: specify the desired image resolution in dots per inch. Relevant only if `write_images=True`. Default value is 150.
+    :arg int dpi: specify the desired image resolution in dots per inch. Relevant only if `write_images=True` or `embed_images=True`. Default value is 150.
 
-    :arg bool embed_images: like `write_images`, but images will be included in the markdown text as base64-encoded strings. Ignores `write_images` and `image_path` if used. This may drastically increase the size of your markdown text.
+    :arg bool embed_images: like `write_images`, but images will be included in the markdown text as base64-encoded strings. Mutually exclusive with `write_images` and ignores `image_path`. This may drastically increase the size of your markdown text.
 
-    :arg bool extract_words: a value of `True` enforces `page_chunks=True` and adds key "words" to each page dictionary. Its value is a list of words as delivered by PyMuPDF's `Page` method `get_text("words")`. The sequence of the words in this list is the same as the extracted text.
+    :arg bool extract_words: |PyMuPDFLayoutMode_Ignored| a value of `True` enforces `page_chunks=True` and adds key "words" to each page dictionary. Its value is a list of words as delivered by PyMuPDF's `Page` method `get_text("words")`. The sequence of the words in this list is the same as the extracted text.
 
-    :arg str filename: (New in v.0.0.19) Overwrites or sets the desired image file name of written images. Useful when the document is provided as a memory object (which has no inherent file name).
+    :arg str filename: Overwrites or sets the desired image file name of written images. Useful when the document is provided as a memory object (which has no inherent file name).
 
-    :arg float fontsize_limit: limit the font size to consider for text extraction. If the font size is lower than what is set then the text won't be considered for extraction. Default is `3`, meaning only text with a font size `>= 3` will be considered for extraction.
+    :arg float fontsize_limit: |PyMuPDFLayoutMode_Ignored| limit the font size to consider for text extraction. If the font size is lower than what is set then the text won't be considered for extraction. Default is `3`, meaning only text with a font size `>= 3` will be considered for extraction.
 
-    :arg bool footer: boolean to switch on/off footer content. This parameter controls whether we want to include or omit the footer content from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
+    :arg bool footer: |PyMuPDFLayoutMode_Valid| boolean to switch on/off page footer content. This parameter controls whether to include or omit footer text from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
 
-    :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image. If `write_images=True` this parameter may be `False` to suppress repetition of text on images.
+    :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
+        
+        This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
 
-    :arg int graphics_limit: use this to limit dealing with excess amounts of vector graphics elements. Scientific documents, or pages simulating text via graphics commands may contain tens of thousands of these objects. As vector graphics are analyzed for multiple purposes, runtime may quickly become intolerable. With this parameter, all vector graphics will be ignored if their count exceeds the threshold. **Changed in v0.0.19:** The page will still be processed, and text, tables and images should be extracted.
+        .. warning:: 
+            Requires that either one of the default supported OCR engines is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
 
-    :arg hdr_info: use this if you want to provide your own header detection logic. This may be a callable or an object having a method named `get_header_id`. It must accept a text span (a span dictionary as contained in :meth:`~.extractDICT`) and a keyword parameter "page" (which is the owning :ref:`Page <page>` object). It must return a string "" or up to 6 "#" characters followed by 1 space. If omitted (`None`), a full document scan will be performed to find the most popular font sizes and derive header levels based on them. To completely avoid this behavior specify `hdr_info=lambda s, page=None: ""` or `hdr_info=False`.
+    :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image.
 
-    :arg bool header: boolean to switch on/off header content. This parameter controls whether we want to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be considered.
+    :arg int graphics_limit: |PyMuPDFLayoutMode_Ignored| use this to limit dealing with excess amounts of vector graphics elements. Scientific documents, or pages simulating text via graphics commands may contain tens of thousands of these objects. As vector graphics are analyzed for multiple purposes, runtime may quickly become intolerable. With this parameter, all vector graphics will be ignored if their count exceeds the threshold.
 
-    :arg bool ignore_alpha: if ``True`` includes text even when completely transparent. Default is ``False``: transparent text will be ignored which usually increases detection accuracy.
+    :arg hdr_info: |PyMuPDFLayoutMode_Ignored| use this if you want to provide your own header detection logic. This may be a callable or an object having a method named `get_header_id`. It must accept a text span (a span dictionary as contained in :meth:`~.extractDICT`) and a keyword parameter "page" (which is the owning :ref:`Page <page>` object). It must return a string "" or up to 6 "#" characters followed by 1 space. If omitted (`None`), a full document scan will be performed to find the most popular font sizes and derive header levels based on them. To completely avoid this behavior specify `hdr_info=lambda s, page=None: ""` or `hdr_info=False`.
 
-    :arg bool ignore_code: if `True` then mono-spaced text does not receive special formatting. Code blocks will no longer be generated. This value is set to `True` if `extract_words=True` is used.
+    :arg bool header: |PyMuPDFLayoutMode_Valid| boolean to switch on/off page header content. This parameter controls whether we want to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be considered.
 
-    :arg bool ignore_graphics: (New in v.0.0.20) Disregard vector graphics on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time. This automatically prevents table detection.
+    :arg bool ignore_alpha: |PyMuPDFLayoutMode_Ignored| if ``True`` includes text even when completely transparent. Default is ``False``: transparent text will be ignored which usually increases detection accuracy.
 
-    :arg bool ignore_images: (New in v.0.0.20) Disregard images on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time.
+    :arg bool ignore_code: if `True` then mono-spaced text lines do not receive special formatting. Code blocks will no longer be generated. This value is set to `True` if `extract_words=True` is used.
+
+    :arg bool ignore_graphics: |PyMuPDFLayoutMode_Ignored| (New in v.0.0.20) Disregard vector graphics on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time. This automatically prevents table detection.
+
+    :arg bool ignore_images: |PyMuPDFLayoutMode_Ignored| (New in v.0.0.20) Disregard images on the page. This may help detecting text correctly when pages are very crowded (often the case for documents representing presentation slides). Also speeds up processing time.
 
     :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`.
 
     :arg str image_path: store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory.
 
-    :arg float image_size_limit: this must be a ``0 <= value < 1``. Images are ignored if `width / page.rect.width <= image_size_limit` or `height / page.rect.height <= image_size_limit`. For instance, the default value 0.05 means that to be considered for inclusion, an image's width and height must be larger than 5% of the page's width and height, respectively.
+    :arg float image_size_limit: |PyMuPDFLayoutMode_Ignored| this must be a ``0 <= value < 1``. Images are ignored if `width / page.rect.width <= image_size_limit` or `height / page.rect.height <= image_size_limit`. For instance, the default value 0.05 means that to be considered for inclusion, an image's width and height must be larger than 5% of the page's width and height, respectively.
 
-    :arg float,list margins: a float or a sequence of 2 or 4 floats specifying page borders. Only objects inside the margins will be considered for output.
+    :arg float,list margins: |PyMuPDFLayoutMode_Ignored| a float or a sequence of 2 or 4 floats specifying page borders. Only objects inside the margins will be considered for output.
 
         * `margin=f` yields `(f, f, f, f)` for `(left, top, right, bottom)`.
         * `(top, bottom)` yields  `(0, top, 0, bottom)`.
         * To always read full pages **(default)**, use `margins=0`.
+
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 300. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact). 
+
+    :arg callable ocr_function: |PyMuPDFLayoutMode_Valid| if you want to provide your own :ref:`OCR function <pymupdf_layout_ocr_engines>`, specify it here. If omitted (`None`), one of the available built-in OCR engines will be used.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
 
     :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
 
@@ -124,62 +131,157 @@ The |PyMuPDF4LLM| API
 
         - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` as a 1-based page number.
 
-        - **"tables"** - a list of tables on this page. Each item is a dictionary with keys "bbox", "row_count" and "col_count". Key "bbox" is a `pymupdf.Rect` in tuple format of the table's position on the page.
+        - **"tables"** - |PyMuPDFLayoutMode_EmptyList| a list of tables on this page. Each item is a dictionary with keys "bbox", "row_count" and "col_count". Key "bbox" is a `pymupdf.Rect` in tuple format of the table's position on the page.
 
-        - **"images"** - a list of images on the page. This a copy of page method :meth:`Page.get_image_info`.
+        - **"images"** - |PyMuPDFLayoutMode_EmptyList| a list of images on the page. This a copy of page method :meth:`Page.get_image_info`.
 
-        - **"graphics"** - a list of vector graphics rectangles on the page. This is a list of boundary boxes of clustered vector graphics as delivered by method :meth:`Page.cluster_drawings`.
+        - **"graphics"** - |PyMuPDFLayoutMode_EmptyList| a list of vector graphics rectangles on the page. This is a list of boundary boxes of clustered vector graphics as delivered by method :meth:`Page.cluster_drawings`.
 
         - **"text"** - page content as |Markdown| text.
 
-        - **"words"** - if `extract_words=True` was used. This is a list of tuples `(x0, y0, x1, y1, "wordstring", bno, lno, wno)` as delivered by `page.get_text("words")`. The **sequence** of these tuples however is the same as produced in the markdown text string and thus honors multi-column text. This is also true for text in tables: words are extracted in the sequence of table row cells.
+        - **"words"** - |PyMuPDFLayoutMode_EmptyList| if `extract_words=True` was used. This is a list of tuples `(x0, y0, x1, y1, "wordstring", bno, lno, wno)` as delivered by `page.get_text("words")`. The **sequence** of these tuples however is the same as produced in the markdown text string and thus honors multi-column text. This is also true for text in tables: words are extracted in the sequence of table row cells.
+
+        - **"text"** - page content as |Markdown| text.
+
+        - **"page_boxes"** - |PyMuPDFLayoutMode_Valid| a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
+
+            {
+                "index": int,              # 0-based integer index of the box in reading sequence
+                "class": str,              # one of "text", "picture", "table", etc.
+                "bbox": [x0, y0, x1, y1],  # boundary box coordinates
+                "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
+            }
 
     :arg float page_height: specify a desired page height. For relevance see the `page_width` parameter. If using the default `None`, the document will appear as one large page with a width of `page_width`. Consequently in this case, no markdown page separators will occur (except the final one), respectively only one page chunk will be returned.
 
-    :arg bool page_separators: if ``True`` inserts a string ``--- end of page=n ---`` at the end of each page output. Intended for debugging purposes. The page number if 0-based. The separator string is wrapped with line breaks. Default is ``False``.
+    :arg bool page_separators: if ``True`` inserts a string ``--- end of page=n ---`` at the end of each page output. Intended for debugging purposes. The page number is 0-based. The separator string is wrapped with line breaks. Default is ``False``.
 
-    :arg float page_width: specify a desired page width. This is ignored for documents with a fixed page width like PDF, XPS etc. **Reflowable** documents however, like e-books, office [#f2]_ or text files have no fixed page dimensions and by default are assumed to have Letter format width (612) and an **"infinite"** page height. This means that the **full document is treated as one large page.**
+    :arg float page_width: specify a desired page width. This is ignored for documents with a fixed page width like PDF, XPS etc. **Reflowable** documents however, like e-books, office [#f2]_ or text files have no fixed page dimensions. They by default are assumed to have Letter format width (612) and an **unlimited** page height. This means that the **full document is treated as one large page.**
 
-    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed.
+    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Any Python sequence with integer items is accepted. The sequence is sorted and processed to only contain unique items.
 
-    :arg bool show_progress: Default is `False`. A value of `True` displays a text-based progress bar as pages are being converted to Markdown. It will look similar to the following::
+    :arg bool show_progress: Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used.
 
-        Processing input.pdf...
-        [====================                    ] (148/291)
+    :arg str table_strategy: |PyMuPDFLayoutMode_Ignored| see: :meth:`table detection strategy <Page.find_tables>`. Default is `"lines_strict"` which ignores background colors. In some occasions, other strategies may be more successful, for example `"lines"` which uses all vector graphics objects for detection.
 
-    :arg str table_strategy: see: :meth:`table detection strategy <Page.find_tables>`. Default is `"lines_strict"` which ignores background colors. In some occasions, other strategies may be more successful, for example `"lines"` which uses all vector graphics objects for detection.  **Changed in v0.0.19:** A value of `None` will not perform any table detection at all. This may be useful when you know that your document contains no tables. Execution time savings can be significant.
+    :arg bool use_glyphs: |PyMuPDFLayoutMode_Ignored| (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value.
 
-    :arg bool use_glyphs: (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value.
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page. This will OCR pages as determined by the default criteria.
 
     :arg bool write_images: when encountering images or vector graphics, images will be created from the respective page area and stored in the specified folder. |Markdown| references will be generated pointing to these images. Any text contained in these areas will not be included in the text output (but appear as part of the images). Therefore, if for instance your document has text written on full page images, make sure to set this parameter to `False`.
 
-    :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries.
+        If using :ref:`PyMuPDF Layout <pymupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference.
+
+    :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
 
 
-.. note::
+.. method:: to_text(doc: pymupdf.Document | str, *, **kwargs) -> str
 
-    Please see :ref:`PyMuPDF Layout and parameter caveats <pymupdf_layout_and_pymupdf4llm_api>`.
-
-.. method:: to_text(doc: pymupdf.Document | str, \
-    header: bool = True, \
-    footer: bool = True, \
-    ignore_code: bool = False, \
-    pages: list | range | None = None) -> str
-
-
-    Reads the pages of the file and outputs the text of its pages in |TXT| format.
+    Reads the pages of the file and outputs the text of its pages in plain text (|TXT|) format.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
-    :arg bool header: boolean to switch on/off header content. This parameter controls whether we want to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be considered.
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
 
-    :arg bool footer: boolean to switch on/off footer content. This parameter controls whether we want to include or omit the footer content from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
 
-    :arg bool ignore_code: if `True` then mono-spaced text does not receive special formatting. Code blocks will no longer be generated.
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
-    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed.
+    :arg bool header: boolean to switch on/off page header content. This parameter controls whether to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be written.
+
+    :arg bool footer: boolean to switch on/off page footer content. This parameter controls whether to include or omit the footer content from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be written.
+
+    :arg bool ignore_code: if `True` then mono-spaced text lines do not receive special formatting. No blocks will be written and text lines will be written continuously.
+
+    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Any Python sequence with integer items is accepted. The sequence is sorted and processed to only contain unique items.
+
+    :arg bool force_text: generate text output also when overlapping images / graphics. This text then appears after the respective image reference. Images (i.e. "picture" areas) however will not be written to the text output but appear as a text line in the output like `==> picture [width x height] <==`.
+
+    :arg bool show_progress: Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used.
+    
+    :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
+
+        - **"metadata"** - a dictionary consisting of the document's metadata :attr:`Document.metadata`, enriched with additional keys **"file_path"** (the file name), **"page_count"** (number of pages in document), and **"page_number"** (1-based page number).
+
+        - **"toc_items"** - a list of Table of Contents items pointing to this page. Each item of this list has the format `[lvl, title, pagenumber]`, where `lvl` is the hierarchy level, `title` a string and `pagenumber` as a 1-based page number.
+
+        - **"tables"** - empty list.
+        - **"images"** - empty list.
+        - **"graphics"** - empty list.
+        - **"words"** - empty list.
+
+        - **"text"** - page content as plain text.
+
+        - **"page_boxes"** - a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
+
+            {
+                "index": int,              # 0-based integer index of the box in reading sequence
+                "class": str,              # one of "text", "picture", "table", etc.
+                "bbox": [x0, y0, x1, y1],  # boundary box coordinates
+                "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
+            }
 
 
+.. method:: to_json(doc: pymupdf.Document | str, *, **kwargs) -> str
+
+    Parses the document and the specified pages and converts the result into a |JSON|-formatted string.
+
+    :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
+
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+
+    :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
+
+    :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
+
+    :arg str image_path: store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory. Page areas classified as "picture" will be written as image files to the specified location. The image file names will be of the format `{image_path}/{filename}-pagenumber-image_number.{image_format}`.
+
+    :arg bool force_text: generate text output for text that is written upon areas that are classified as "picture" by the layout module. This may be especially be useful when picture content is not stored.
+
+    :arg bool show_progress: display a progress bar during processing.
+
+    :arg bool embed_images: store image binaries for "picture" boundary boxes. Base64-encoded images are included in the JSON output. Ignores `image_path` if used. This may drastically increase the size of your JSON text.
+
+    :arg bool write_images: store image files "picture" boundary boxes.when encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
+
+    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
+
+
+.. _pymupdf4llm-api-layout:
+
+
+.. method:: use_layout(yes: bool = True)
+
+    Switch on/off the use of the :ref:`PyMuPDF Layout module <pymupdf4llm_and_layout>`. 
+    
+    If `yes=True` (default), the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
+
+
+.. method:: get_key_values(doc: pymupdf.Document | str) -> list[dict]
+
+    Parse the document if it is a **Form PDF** and extract key-value pairs from all form fields (widgets).
+    
+    Please note that this method is only relevant for PDF documents that contain widgets. Otherwise, an empty list will be returned.
+
+    The function is always available -- independently of whether you are using the PyMuPDF Layout module or not.
+
+    Each dictionary item has the following structure::
+
+        {
+            "field_name": str,      # the full name of the form field, components separated by dots
+            {
+                "value": str,       # the field value as string
+                "pages": list,      # list of 0-based page numbers where the field appears
+            }
+        }    
+
+.. note::
+
+    Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout>`.
 
 
 .. method:: LlamaMarkdownReader(*args, **kwargs)
@@ -195,6 +297,9 @@ The |PyMuPDF4LLM| API
 
 
 .. class:: IdentifyHeaders
+
+    .. note:: |PyMuPDFLayoutMode_Unavailable|
+
 
     .. method:: __init__(self, doc: pymupdf.Document | str, *, pages: list | range | None = None, body_limit: float = 11, max_levels: int = 6)
 
@@ -220,8 +325,7 @@ The |PyMuPDF4LLM| API
     
         Return appropriate markdown header prefix. This is either "" or a string of "#" characters followed by a space.
 
-        Given a text span from a "dict"" extraction, determine the
-        markdown header prefix string of 0 to n concatenated '#' characters.
+        Given a text span from a "dict" extraction, determine the markdown header prefix string of 0 to n concatenated '#' characters.
 
         :arg dict span: a dictionary containing the text span information. This is the same dictionary as returned by `page.get_text("dict")`.
 
@@ -322,12 +426,13 @@ This user function uses the document's Table of Contents -- under the assumption
 
 .. class:: TocHeaders
 
+    .. note:: |PyMuPDFLayoutMode_Unavailable|
+
     .. method:: __init__(self, doc: pymupdf.Document | str)
 
         Create an object which uses the document's Table of Contents (TOC) to determine header levels. Upon object creation, the table of contents is read via the `Document.get_toc()` method. The TOC data is then used to determine header levels in the `to_markdown()` method.
 
-        This is an alternative to :class:`IdentifyHeaders`. Instead of running through the full document to identify font sizes, it uses the document's Table Of
-        Contents (TOC) to identify headers on pages. Like :class:`IdentifyHeaders`, this also is no guarantee to find headers, but for well-built Table of Contents, there is a good chance for more correctly identifying header lines on document pages than the font-size-based approach.
+        This is an alternative to :class:`IdentifyHeaders`. Instead of running through the full document to identify font sizes, it uses the document's Table Of Contents (TOC) to identify headers on pages. Like :class:`IdentifyHeaders`, this also is no guarantee to find headers, but for well-built Table of Contents, there is a good chance for more correctly identifying header lines on document pages than the font-size-based approach.
 
         It also has the advantage of being much faster than the font-size-based approach, as it does not execute a full document scan or even access any of the document pages.
 
@@ -377,7 +482,7 @@ This is a version of previous **example 2** that uses :class:`TocHeaders` for he
 
 -----
 
-For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/RAG/blob/main/CHANGES.md>`_.
+For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/pymupdf4llm/blob/main/CHANGES.md>`_.
 
 .. rubric:: Footnotes
 
@@ -393,4 +498,35 @@ For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/R
 .. _LlamaIndex: https://pypi.org/project/llama-index/
 
 
+.. raw:: html
 
+    /* this script is used to adjust the search widget and to add line breaks after parameters in the signature blocks for better readability */
+    <script>
+        document.getElementById("headerSearchWidget").action = '../search.html';
+        const params = document.querySelectorAll('.sig-param')
+        
+        params.forEach((param, index) => {
+            const next = param.nextSibling;
+            if (next && next.nodeType === 3) { // 3 = text node
+                const span = document.createElement('span');
+                if (index === params.length - 1) {
+                    span.className = 'sig-comma-last';
+                } else {
+                    param.classList.add('has-comma');
+                    span.className = 'sig-comma';
+                }
+                span.textContent = next.textContent;
+                next.replaceWith(span);
+            }    
+        });
+    </script>
+
+    <style>
+        .sig-comma {
+            display: none;
+        }
+        dt .sig-param.has-comma::after {
+            content: ",\A";
+            white-space: pre;
+        }
+    </style>

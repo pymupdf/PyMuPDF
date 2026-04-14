@@ -18,6 +18,11 @@
 
 ----
 
+.. toctree::
+
+   recipes-ocr.rst
+
+----
 
 .. toctree::
 
@@ -61,11 +66,6 @@
 
 ----
 
-.. toctree::
-
-   recipes-ocr.rst
-
-----
 
 .. toctree::
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,38 +19,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 dfc70723dfaa484db5f621fc61d3ec61
+#: ../../header.rst:-1 62136ba5c5a74ecfa227336e448d62b5
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 b0cc1f27976c49c7af0245511e43b241
+#: ../../header.rst:-1 6fc9c3c622e84783910d3b11c3709f37
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 36341b6f96de494b8f0ce5847f8137be
+#: ../../header.rst:-1 d611277d72c64dd99b3b9f2f8ec96367
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../module.rst:7 e5bea3ee72c64515898c8d01ff1d6e90
+#: ../../module.rst:7 f33c4cbb9f05422084dddcddaf87949a
 msgid "Command line interface"
 msgstr ""
 
-#: ../../module.rst:9 3908cfc655284232afd64fb5450b3834
+#: ../../module.rst:9 9f557fd4350a42ed9a1df58860be9669
 msgid "New in version 1.16.8"
 msgstr "バージョン 1.16.8 で新たに追加されました"
 
-#: ../../module.rst:11 58d929a5bf2a48c29541dd80bb1f8eb3
+#: ../../module.rst:11 ecd7d23131464943807a4fb959173755
 msgid ""
 "PyMuPDF can also be used from the command line to perform utility "
 "functions. This feature should obsolete writing some of the most basic "
 "scripts."
 msgstr "PyMuPDFは、ユーティリティ機能を実行するためにモジュールとしてコマンドラインで使用することもできます。この機能により、最も基本的なスクリプトの記述が廃止される可能性があります。"
 
-#: ../../module.rst:13 e6ea3c8327d34594bbe782dc25f0eff5
+#: ../../module.rst:13 20b8d208b65e4c74bf7ad83bfb388393
 msgid ""
 "Admittedly, there is some functional overlap with the MuPDF CLI `mutool`."
 " On the other hand, PDF embedded files are no longer supported by MuPDF, "
@@ -59,37 +59,37 @@ msgstr ""
 "確かに、MuPDF CLI  `mutool`  "
 "といくつかの機能的な重複があります。一方で、PDFの埋め込みファイルはもはやMuPDFではサポートされていないため、PyMuPDFはここで独自の機能を提供しています。"
 
-#: ../../module.rst:16 272f549f0f5f4c6bbb78632a8cdb5c70
+#: ../../module.rst:16 61944c3cbe72440580bdadeeb1269b75
 msgid "Invocation"
 msgstr "呼び出し"
 
-#: ../../module.rst:18 c9201247b07a463abc4d936939474629
+#: ../../module.rst:18 295dfa35e12a40d48e27c0055204d5a7
 msgid "The command-line interface can be invoked in two ways."
 msgstr "コマンドラインインターフェースは2つの方法で呼び出すことができます。"
 
-#: ../../module.rst:20 2567496a57544136bbe0fad7c7253f05
+#: ../../module.rst:20 7177082a690146019882a6b232aa8853
 msgid "Use the installed `pymupdf` command::"
 msgstr "インストールされた `pymupdf` のコマンドを使用します。"
 
-#: ../../module.rst:24 9cb80171d54c40b4bba248563751d406
+#: ../../module.rst:24 87e819afc653442caceed77952e1ed58
 msgid "Or use Python's `-m` switch with PyMuPDF's `pymupdf` module::"
 msgstr ""
 
-#: ../../module.rst:31 45619289ca954ed7a361a9ee981b3f5c
+#: ../../module.rst:31 c1e7f23de6ef452a83faa31ed988d657
 msgid "General remarks:"
 msgstr "一般的な注意事項："
 
-#: ../../module.rst:33 721eb638b1ec42fca6a6bbdc7ae5bcbd
+#: ../../module.rst:33 fd3bac8dc3e9421eb2371c451ec1c3da
 msgid ""
 "Request help via `\"-h\"`, resp. command-specific help via `\"command "
 "-h\"`."
 msgstr "ヘルプを要求するには、`\"-h\"` 、またはコマンド固有のヘルプを要求するには `\"command -h\"` を使用します。"
 
-#: ../../module.rst:34 f5e98e734f074d048f1006b8adf1d172
+#: ../../module.rst:34 dbd5a72f66d84df5b18b6bec2f4fd2f5
 msgid "Parameters may be abbreviated where this does not introduce ambiguities."
 msgstr "曖昧さが生じない場所では、パラメータは省略形で指定できます。"
 
-#: ../../module.rst:35 1c8417bb973646218f662af487334d79
+#: ../../module.rst:35 73cd69c626714f7aa1e084d11447cea6
 msgid ""
 "Several commands support parameters `-pages` and `-xrefs`. They are "
 "intended for down-selection. Please note that:"
@@ -97,15 +97,15 @@ msgstr ""
 "いくつかのコマンドは、 `-pages` と  `-xrefs`  "
 "のパラメータをサポートしています。これらは選択範囲を絞るためのものです。以下に注意してください："
 
-#: ../../module.rst:37 672f2e99185b4bc6be816a31e3d2c0d4
+#: ../../module.rst:37 7ff6972a285a4695baa4e4276641b755
 msgid "**page numbers** for this utility must be given **1-based**."
 msgstr "このユーティリティでは、**ページ番号** は1から始まる必要があります。"
 
-#: ../../module.rst:38 68a1ba46f6334910accedc9683dcaa9f
+#: ../../module.rst:38 b9688dc1937342d0a9ba2a88937c6d0a
 msgid "valid :data:`xref` numbers start at 1."
 msgstr "有効な  :data:`xref`  番号は1から始まります。"
 
-#: ../../module.rst:39 d33d3e1e349343a496f05dca1d4a1744
+#: ../../module.rst:39 7c0c1890d37b41f6820770dd6bed4376
 msgid ""
 "Specify a comma-separated list of either *single* integers or integer "
 "*ranges*. A **range** is a pair of integers separated by one hyphen "
@@ -119,11 +119,11 @@ msgstr ""
 "で区切られた整数のペアです。整数は、最大ページまたは xref 番号を超えてはいけません。最大値を指定するには、記号変数 \"N\" "
 "を使用できます。整数または範囲は複数回、任意の順序で重複して出現する可能性があります。範囲内の最初の数値が2番目の数値よりも大きい場合、それらのアイテムは逆順で処理されます。"
 
-#: ../../module.rst:41 89de8f9bcd8c40fb89ea6f1caef719fc
+#: ../../module.rst:41 ee46edb0ea2b44e98364d207aaa2d1ef
 msgid "How to use the module inside your script::"
 msgstr "スクリプト内でモジュールを使用する方法::"
 
-#: ../../module.rst:50 8afb7c82d0884c95b010d5f44df6cc07
+#: ../../module.rst:50 123a2e5ad2564826b878adadaf638eeb
 msgid ""
 "Use the following 2-liner and compile it with `Nuitka "
 "<https://pypi.org/project/Nuitka/>`_ in standalone mode. This will give "
@@ -134,11 +134,11 @@ msgstr ""
 "以下の2行のコードを使用し、 `Nuitka <https://pypi.org/project/Nuitka/>`_ "
 "をスタンドアロンモードでコンパイルします。これにより、Python、PyMuPDF、またはMuPDFがインストールされていないすべての互換プラットフォームで使用できる、モジュールのすべての機能を備えたCLI実行可能ファイルが得られます。"
 
-#: ../../module.rst:59 fc63e122807f48caa2fb4686ab628c23
+#: ../../module.rst:59 621c5379e7d44e29a5ae735c58352834
 msgid "Cleaning and Copying"
 msgstr "クリーニングとコピー"
 
-#: ../../module.rst:63 2cf8ef7d22a6443bb761dcc73f99ddb9
+#: ../../module.rst:63 a41c329fb87940c482d0805086ecc3cf
 msgid ""
 "This command will optimize the PDF and store the result in a new file. "
 "You can use it also for encryption, decryption and creating sub "
@@ -148,25 +148,25 @@ msgstr ""
 "このコマンドは、PDFを最適化し、その結果を新しいファイルに保存します。また、暗号化、復号化、およびサブドキュメントの作成にも使用できます。これは、ほとんど"
 " MuPDF のコマンドラインユーティリティ \"mutool clean\" と似ています::"
 
-#: ../../module.rst:96 6f79e1e9b8a74e2b99fcb0aef05c68bb
+#: ../../module.rst:96 95c61ecff9474da7a32002be18ff00b3
 msgid ""
 "If you specify \"-pages\", be aware that only page-related objects are "
 "copied, **no document-level items** like e.g. embedded files."
 msgstr "「-pages」を指定する場合、ページ関連のオブジェクトのみがコピーされることに注意してください。埋め込みファイルのようなドキュメントレベルのアイテムはコピーされません。"
 
-#: ../../module.rst:98 d2ee7904c033483e9b988ec472f77821
+#: ../../module.rst:98 958ae9bd4e2244ae9cbb5d24a62a8c94
 msgid "Please consult :meth:`Document.save` for the parameter meanings."
 msgstr "パラメータの意味については、 :meth:`Document.save` をご参照ください。"
 
-#: ../../module.rst:102 636d626a5d2b41a1bb191041838460ac
+#: ../../module.rst:102 5b59f04532e94259bf5b3ecd530ca408
 msgid "Extracting Fonts and Images"
 msgstr "フォントと画像の抽出"
 
-#: ../../module.rst:103 27adb23c648540a69f463d58b2d83db2
+#: ../../module.rst:103 170896a4fb624362bfbd8172cf909da4
 msgid "Extract fonts or images from selected PDF pages to a desired directory::"
 msgstr "選択したPDFページからフォントや画像を指定したディレクトリに抽出します::"
 
-#: ../../module.rst:123 6ca52a328ede4b26a250f28cf8a17bda
+#: ../../module.rst:123 220fe33385e844f3928ec0625f051414
 msgid ""
 "**Image filenames** are built according to the naming scheme: **\"img-"
 "xref.ext\"**, where \"ext\" is the extension associated with the image "
@@ -175,7 +175,7 @@ msgstr ""
 "**画像のファイル名** は、命名規則に従って構築されます： **\"img-xref.ext\"** で、\"ext\" "
 "は画像に関連する拡張子であり、\"xref\" は画像PDFオブジェクトの :data:`xref` です。"
 
-#: ../../module.rst:125 c295828c27c44f53ae6e3f67e33114cc
+#: ../../module.rst:125 d56994d8f2a8433280e4ef35819f2e7a
 msgid ""
 "**Font filenames** consist of the fontname and the associated extension. "
 "Any spaces in the fontname are replaced with hyphens \"-\"."
@@ -183,11 +183,11 @@ msgstr ""
 "**フォントのファイル名** は、フォント名と関連する拡張子から構成されます。フォント名にスペースがある場合、ハイフン \"-\" "
 "で置き換えられます。"
 
-#: ../../module.rst:127 4a6a50bd636f4e71b0759d0d4ba1ee9e
+#: ../../module.rst:127 a8e1a30f5fde401d810825a6e3b01a09
 msgid "The output directory must already exist."
 msgstr "出力ディレクトリはすでに存在している必要があります。"
 
-#: ../../module.rst:129 cb225d0a4c184a0c9a8114e362ae7c99
+#: ../../module.rst:129 f2bc1eaf74014a2c9c0473449a9e7b11
 msgid ""
 "Except for output directory creation, this feature is **functionally "
 "equivalent** to and obsoletes `this script <https://github.com/pymupdf"
@@ -198,83 +198,83 @@ msgstr ""
 "Utilities/blob/master/examples/extract-images/extract-from-pages.py>`_ "
 "と機能的に同等であり、これを使うことで廃止できます。"
 
-#: ../../module.rst:133 db0389129c6f4603b099fcbac916bac4
+#: ../../module.rst:133 b52a0c02382d4e9abbd491e7b26f50d8
 msgid "Joining PDF Documents"
 msgstr "PDF文書の結合"
 
-#: ../../module.rst:134 e1e150c4ccb748d9a1b38e2dc5d53937
+#: ../../module.rst:134 b52dba2292bb478f86d8bd2a68e72d49
 msgid "To join several PDF files specify::"
 msgstr "複数のPDFファイルを結合するには、次のように指定します::"
 
-#: ../../module.rst:153 d821855113c84e1f827da087e866e131
+#: ../../module.rst:153 e75a700cceee42eda662850bcb411254
 msgid ""
 "Each input must be entered as **\"filename,password,pages\"**. Password "
 "and pages are optional."
 msgstr "各入力は「ファイル名、パスワード、ページ」の形式で入力してください。パスワードとページはオプションです。"
 
-#: ../../module.rst:154 864440e040904b3dbd8826a88ca62bb4
+#: ../../module.rst:154 5bbc4bbfbbe44ea29ce63dc28468ecde
 msgid ""
 "The password entry **is required** if the \"pages\" entry is used. If the"
 " PDF needs no password, specify two commas."
 msgstr "パスワードエントリは「ページ」エントリが使用される場合に必要です。PDFにパスワードが必要ない場合は、2つのコンマを指定してください。"
 
-#: ../../module.rst:155 41c937061d0a4fe084316ec44a8ee609
+#: ../../module.rst:155 24124b66f3f9496c9cba03a6c3987619
 msgid ""
 "The **\"pages\"** format is the same as explained at the top of this "
 "section."
 msgstr "「ページ」のフォーマットは、このセクションの先頭で説明したものと同じです。"
 
-#: ../../module.rst:156 cf411ea13a4f4d19b11ed8f5a76dfc0f
+#: ../../module.rst:156 6c8cd3be3fd844a18d6859e34270344c
 msgid ""
 "Each input file is immediately closed after use. Therefore you can use "
 "one of them as output filename, and thus overwrite it."
 msgstr "各入力ファイルは使用後すぐに閉じられます。したがって、出力ファイル名の1つとして使用し、上書きすることができます。"
 
-#: ../../module.rst:159 e4c131ae039b4418abdb28361a9582ea
+#: ../../module.rst:159 62faf24e6a7143aca5c2f6d4d0a3bd13
 msgid "Example: To join the following files"
 msgstr "例: 以下のファイルを結合する"
 
-#: ../../module.rst:161 158bba0e88494d6c8b2e21d84d98747a
+#: ../../module.rst:161 088838df3b2545f8801c172c3bc996f0
 msgid "**file1.pdf:** all pages, back to front, no password"
 msgstr "**file1.pdf:** すべてのページ、最前面から最後尾、パスワードなし"
 
-#: ../../module.rst:162 ebc6c0f2a85e4cd787edeff16bde6324
+#: ../../module.rst:162 72f4cc0b55a64f16a43ce016fb9d46a0
 msgid "**file2.pdf:** last page, first page, password: \"secret\""
 msgstr "**file2.pdf:** 最後のページ、最前面、パスワード: \"secret\""
 
-#: ../../module.rst:163 14bef7c6b3a24f30ad5d7927fda4d2df
+#: ../../module.rst:163 518dcf41451c4ab098ae80c98c705da7
 msgid "**file3.pdf:** pages 5 to last, no password"
 msgstr "**file3.pdf:** 5ページから最後尾、パスワードなし"
 
-#: ../../module.rst:165 34718d67ba6f4ceb835b3fcec6f7f449
+#: ../../module.rst:165 579e18430ffe47deaf32eb9b5bb856c7
 msgid "and store the result as **output.pdf** enter this command:"
 msgstr "そして結果を  **output.pdf**  として保存するには、次のコマンドを入力してください:"
 
-#: ../../module.rst:167 d854ddfa44d74e31bbab9e89051d7c16
+#: ../../module.rst:167 945d0c96b4b34fc782a86ae2fcf40aa5
 msgid ""
-"*pymupdf join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 "
-"file3.pdf,,5-N*"
+"``pymupdf join -o output.pdf file1.pdf,,N-1 file2.pdf,secret,N,1 "
+"file3.pdf,,5-N``"
 msgstr ""
 
-#: ../../module.rst:171 1be01ded6df946e0a1446dbc7a5d9b6b
+#: ../../module.rst:171 45664921245f42c09b294edb251048f5
 msgid "Low Level Information"
 msgstr "低レベル情報"
 
-#: ../../module.rst:173 ec9fccebd1f04046a8f4a1fe13b47f2f
+#: ../../module.rst:173 fdf3d7f12d914afe950de66d094693fa
 msgid ""
 "Display PDF internal information. Again, there are similarities to "
 "*\"mutool show\"*::"
 msgstr "PDFの内部情報を表示します。再度、 *「mutool show」* との類似点があります。"
 
-#: ../../module.rst:194 1d48764f8b534337a574a260b536215d
+#: ../../module.rst:194 ad5c07b578e24a87b4bdfa72f035288d
 msgid "Examples::"
 msgstr "例::"
 
-#: ../../module.rst:243 f0c4d5c50c5d4d609d5cb99d5eff95bb
+#: ../../module.rst:243 a932285ed88f489cb35fb9fd00084410
 msgid "Embedded Files Commands"
 msgstr "埋め込みファイルコマンド"
 
-#: ../../module.rst:245 08ac7756e144469b8a268a500e298a13
+#: ../../module.rst:245 22fe7451356d4b07a68f7b814a48f7db
 msgid ""
 "The following commands deal with embedded files -- which is a feature "
 "completely removed from MuPDF after v1.14, and hence from all its command"
@@ -283,57 +283,57 @@ msgstr ""
 "以下のコマンドは埋め込みファイルに関するもので、MuPDF "
 "v1.14以降から完全に削除され、そのためすべてのコマンドラインツールからも削除されています。"
 
-#: ../../module.rst:248 38384c90d3754e32b411967490a3aee9
+#: ../../module.rst:248 031889fce5ba40c8aa00dca7f543935f
 msgid "Information"
 msgstr "情報"
 
-#: ../../module.rst:250 0967bb1bc6a84f4da15cbfd97e2a652b
+#: ../../module.rst:250 923441e6e99c4679913ea9650bd321f3
 msgid "Show the embedded file names (long or short format)::"
 msgstr "埋め込みファイルの名前を表示します（長いフォーマットまたは短いフォーマット）::"
 
-#: ../../module.rst:266 58da34953aff4db9b3ecd9964e7303b5
+#: ../../module.rst:266 2938ace8fd974862bd2b852f6d01c1b5
 msgid "Example::"
 msgstr "例::"
 
-#: ../../module.rst:287 165603d52c0d41d19398ba5cfc6db9de
+#: ../../module.rst:287 4b906057dfa84c65ba2f7b3875e76f45
 msgid "Detailed output would look like this per entry::"
 msgstr "詳細な出力は、各エントリごとに以下のようになります::"
 
-#: ../../module.rst:297 ce60d876119142f5b2890126aab69f93
+#: ../../module.rst:297 fa6b969dc09f4e7aa8ddad1a74b85f27
 msgid "Extraction"
 msgstr "抽出"
 
-#: ../../module.rst:299 8b751a2f410b472c9abb5af1fc140c8e
+#: ../../module.rst:299 b95b620ad9f548139f65380c81a609eb
 msgid "Extract an embedded file like this::"
 msgstr "埋め込みファイルを以下のように抽出します::"
 
-#: ../../module.rst:316 fddf683ac2a14567908174cf3fc43284
+#: ../../module.rst:317 b425246653d244139ee6064fef0cce03
 msgid ""
 "For details consult :meth:`Document.embfile_get`. Example (refer to "
 "previous section)::"
 msgstr "詳細については、Document.embfile_get() を参照してください。例（前のセクションを参照）::"
 
-#: ../../module.rst:322 1185f1a9df3146a9bc268d1196f67add
+#: ../../module.rst:323 beb7e7b57a2d40d7b80215a90a015016
 msgid "Deletion"
 msgstr "削除"
 
-#: ../../module.rst:323 c505828edb234ccbba8146976192985a
+#: ../../module.rst:324 a66d4e86731745edabc9c4f4e5e0bb9f
 msgid "Delete an embedded file like this::"
 msgstr "以下のようにして埋め込みファイルを削除します::"
 
-#: ../../module.rst:339 3de3e80b402e493f9f1c1bd8dd6335c2
+#: ../../module.rst:340 c7c9134eddaa4ad2b9672122f1aa8fe9
 msgid "For details consult :meth:`Document.embfile_del`."
 msgstr "詳細については、 :meth:`Document.embfile_del`  を参照してください。"
 
-#: ../../module.rst:342 d1672507de264f41aa7190163aabad14
+#: ../../module.rst:343 8027d6ea455e4050ace1ead2c3a951fb
 msgid "Insertion"
 msgstr "挿入"
 
-#: ../../module.rst:343 a8086839b2cb43f3b9c6dbb070737442
+#: ../../module.rst:344 05c0ffa1d1fd4495a04887a13fa6a0ff
 msgid "Add a new embedded file using this command::"
 msgstr "このコマンドを使用して新しい埋め込みファイルを追加します::"
 
-#: ../../module.rst:363 32dbe086f564423fa12bebec433d3953
+#: ../../module.rst:364 a3ce7e14c5a6493190e34f36253a7b11
 msgid ""
 "*\"NAME\"* **must not** already exist in the PDF. For details consult "
 ":meth:`Document.embfile_add`."
@@ -341,15 +341,15 @@ msgstr ""
 "*\"NAME\"* は既にPDF内に存在していてはいけません。詳細については、 :meth:`Document.embfile_add`  "
 "を参照してください。"
 
-#: ../../module.rst:366 2e6d06b46c294e1c8264e4ea71cd898a
+#: ../../module.rst:367 8b7188f7140248f2ace12ff2559a5810
 msgid "Updates"
 msgstr "更新"
 
-#: ../../module.rst:367 e7a81b672cda44c3a9843c5f74d77e8e
+#: ../../module.rst:368 bf7de82ffcc6488492d7f1ed813a78d7
 msgid "Update an existing embedded file using this command::"
 msgstr "このコマンドを使用して既存の埋め込みファイルを更新します::"
 
-#: ../../module.rst:392 ae4810297f254019ab7b519fa66be7df
+#: ../../module.rst:393 dfb87b27e010457ea91a44ac1607508d
 msgid ""
 "Use this method to change meta-information of the file -- just omit the "
 "*\"PATH\"*. For details consult :meth:`Document.embfile_upd`."
@@ -357,23 +357,23 @@ msgstr ""
 "ファイルのメタ情報を変更するために、この方法を使用します - 単に「PATH」を省略してください。詳細については、 "
 ":meth:`Document.embfile_upd`  を参照してください。"
 
-#: ../../module.rst:396 102481707f57444bb1adca3feb2403f4
+#: ../../module.rst:397 9724107b71a3473586bf932f86556d37
 msgid "Copying"
 msgstr "コピー"
 
-#: ../../module.rst:397 c58bf8a5cd564738917c96c89b0948d4
+#: ../../module.rst:398 320c9dfca9614ce1aad38deec15e2f14
 msgid "Copy embedded files between PDFs::"
 msgstr "PDF間で埋め込みファイルをコピーします::"
 
-#: ../../module.rst:421 4c2a7e2a5cbc471eac1e4b6ca1e127ea
+#: ../../module.rst:422 4f474c3c92134dbf92a95d04287f6b7c
 msgid "Text Extraction"
 msgstr "テキスト抽出 "
 
-#: ../../module.rst:422 14d209f140b94907b55464548176d2af
+#: ../../module.rst:423 10013955206643cdabf54b9427cf9162
 msgid "New in v1.18.16"
 msgstr "v1.18.16で新登場"
 
-#: ../../module.rst:424 1712031a4ff548c6b84feb50f0674bf5
+#: ../../module.rst:425 6175e1799fe14be7857049aacbf4f76e
 msgid ""
 "Extract text from arbitrary :ref:`supported "
 "documents<Supported_File_Types>` to a textfile. Currently, there are "
@@ -383,7 +383,7 @@ msgstr ""
 "任意の :ref:`サポートされたドキュメント <Supported_File_Types>` "
 "からテキストをテキストファイルに抽出します。現在、3つの出力フォーマットモードが利用可能です：シンプル、ブロックソート、物理的なレイアウトの再現。"
 
-#: ../../module.rst:426 982ae84a7f67448283c284d17ab22d53
+#: ../../module.rst:427 104746a6d24348c085e4d1f05530f3c4
 msgid ""
 "**Simple** text extraction reproduces all text as it appears in the "
 "document pages -- no effort is made to rearrange in any particular "
@@ -392,7 +392,7 @@ msgstr ""
 "**シンプル** なテキスト抽出は、ドキュメントページに表示される通りのすべてのテキストを再現します - "
 "特定の読み取り順序に再配置する努力は行われません。"
 
-#: ../../module.rst:427 2b8226df4353428eac33d189ecdbc907
+#: ../../module.rst:428 46976f7ba91e4ed195d1d2970b450ce8
 msgid ""
 "**Block sorting** sorts text blocks (as identified by MuPDF) by ascending"
 " vertical, then horizontal coordinates. This should be sufficient to "
@@ -401,7 +401,7 @@ msgstr ""
 "**ブロックソート** "
 "は、テキストブロック（MuPDFによって識別される）を垂直座標、水平座標の昇順に並べ替えます。これは、基本的なテキストページの「自然な」読み取り順序を確立するために十分です。"
 
-#: ../../module.rst:428 248d0d12667c48f3a622e6ca10a94124
+#: ../../module.rst:429 736d584551084ce0ae8db3ab132de413
 msgid ""
 "**Layout** strives to reproduce the original appearance of the input "
 "pages. You can expect results like this (produced by the command `pymupdf"
@@ -410,7 +410,7 @@ msgstr ""
 "**レイアウト** は、入力ページの元の外観を再現しようとします。次のような結果が期待できます（コマンド  `pymupdf gettext "
 "-pages 1 demo1.pdf`  によって生成されたもの）："
 
-#: ../../module.rst:433 019fb45a3bb2420395d210f0c241bb84
+#: ../../module.rst:434 50eb59c01b5243e4a1beb240596e9fcf
 msgid ""
 "The \"gettext\" command offers a functionality similar to the CLI tool "
 "`pdftotext` by XPDF software, http://www.foolabs.com/xpdf/ -- this is "
@@ -421,7 +421,7 @@ msgstr ""
 "と似た機能を提供します。http://www.foolabs.com/xpdf/ - "
 "これは特に「レイアウト」モードに当てはまり、このモードはそのツールの `-layout` と `-table` オプションを組み合わせています。"
 
-#: ../../module.rst:437 ba127522f3494c259b7032abdb483fb4
+#: ../../module.rst:438 49563f540be445d984dba68ffffbfe02
 msgid ""
 "After each page of the output file, a formfeed character, `hex(12)` is "
 "written -- even if the input page has no text at all. This behavior can "
@@ -430,7 +430,7 @@ msgstr ""
 "出力ファイルの各ページの後に、フォームフィード文字 `hex(12)` が書き込まれます - "
 "入力ページにテキストがない場合でもです。この動作はオプションを介して制御できます。"
 
-#: ../../module.rst:439 30d0328e90b94fd8b23e68b0353a065b
+#: ../../module.rst:440 647dbf1080904cb5b86c438feafcb584
 msgid ""
 "For \"layout\" mode, **only horizontal, left-to-right, top-to bottom** "
 "text is supported, other text is ignored. In this mode, text is also "
@@ -439,33 +439,33 @@ msgstr ""
 "「レイアウト」モードでは、水平方向、左から右、上から下のテキストのみがサポートされ、他のテキストは無視されます。また、このモードでは、:data:`fontsize`"
 " が小さすぎる場合もテキストが無視されます。"
 
-#: ../../module.rst:441 cd72c16aed314ef3a7590885d9fae841
+#: ../../module.rst:442 baeab1e7bac9497995324b659ebebf03
 msgid ""
 "\"Simple\" and \"blocks\" mode in contrast output **all text** for any "
 "text size or orientation."
 msgstr "対照的に、「シンプル」モードと「ブロック」モードでは、テキストのサイズや向きに関係なくすべてのテキストが出力されます。"
 
-#: ../../module.rst:443 8ecb7409221c49938c9fb9d37493484c
+#: ../../module.rst:444 8617ac5a55024a57b4b1d70bdb264ced
 msgid "Command::"
 msgstr "コマンド::"
 
-#: ../../module.rst:471 5fad84347d2445a8856906e329288d56
+#: ../../module.rst:472 f1019c52949f4174acd4b9381a394601
 msgid ""
 "Command options may be abbreviated as long as no ambiguities are "
 "introduced. So the following do the same:"
 msgstr "コマンドのオプションは、曖昧さが生じない限り、省略形を使用することができます。したがって、以下のように同じ結果を得ることができます："
 
-#: ../../module.rst:473 592f0bfc5eb549db900005b6e9f32c97
+#: ../../module.rst:474 d70e9f44b99141809981474f2ff8b052
 msgid ""
 "`... -output text.txt -noligatures -noformfeed -convert-white -grid 3 "
 "-extra-spaces ...`"
 msgstr ""
 
-#: ../../module.rst:474 eddbf6fc4404413299a348a9c362474d
+#: ../../module.rst:475 07cb51f3b38747abbb4010f810490249
 msgid "`... -o text.txt -nol -nof -c -g 3 -e ...`"
 msgstr ""
 
-#: ../../module.rst:476 6831e519b57348daaeda28c983995f14
+#: ../../module.rst:477 f16b9ac2c6c14bd5bb7fcea64f1fcd80
 msgid ""
 "The output filename defaults to the input with its extension replaced by "
 "`.txt`. As with other commands, you can select page ranges **(caution: "
@@ -474,11 +474,11 @@ msgstr ""
 "出力ファイル名は、入力ファイル名の拡張子が  `.txt` に置換されたものがデフォルトです。他のコマンドと同様に、上記に示されているように、 "
 "`mutool` 形式でページ範囲（注意：1から始まる）を選択できます。"
 
-#: ../../module.rst:478 0b7bf6de37b24078b730bc7bf19be42a
+#: ../../module.rst:479 f23822348e0f44868acd1a434c638317
 msgid "**mode:** (str) select a formatting mode -- default is \"layout\"."
 msgstr "**mode:** (str) フォーマットモードを選択します - デフォルトは「レイアウト」です。"
 
-#: ../../module.rst:479 3bcd33bb5ce24428a07587f4712b9a18
+#: ../../module.rst:480 34f6f03b6b7c4d14b5b53d480ad19652
 msgid ""
 "**noligatures:** (bool) corresponds to **not** "
 ":data:`TEXT_PRESERVE_LIGATURES`. If specified, ligatures (present in "
@@ -489,7 +489,7 @@ msgstr ""
 "**noligatures:** (bool) :data:`TEXT_PRESERVE_LIGATURES` "
 "に相当します。指定された場合、リガチャ（複数の文字を結合するグリフ、例:「fi」のようなもの）はその構成要素（つまり「f」、「i」）に分割されます。デフォルトはそのまま通過させることです。"
 
-#: ../../module.rst:480 fde0e3bb3c2246b9a71dfdb9c1d66955
+#: ../../module.rst:481 7ad52df691114a03bf07a72f2434d4a9
 msgid ""
 "**convert-white:** corresponds to **not** "
 ":data:`TEXT_PRESERVE_WHITESPACE`. If specified, all white space "
@@ -499,7 +499,7 @@ msgstr ""
 "**convert-white:**  :data:`TEXT_PRESERVE_WHITESPACE`  "
 "に相当します。指定された場合、すべての空白文字（タブなど）は1つ以上のスペースに置き換えられます。デフォルトはそのまま通過させることです。"
 
-#: ../../module.rst:481 f37af1239c334a93824af0c9eb11ff0d
+#: ../../module.rst:482 b925a23489d24b3396cf53888050c32d
 msgid ""
 "**extra-spaces:**  (bool) corresponds to **not** "
 ":data:`TEXT_INHIBIT_SPACES`. If specified, large gaps between adjacent "
@@ -508,7 +508,7 @@ msgstr ""
 "**extra-spaces:**  (bool) :data:`TEXT_INHIBIT_SPACES`  "
 "に相当します。指定された場合、隣接する文字間の大きな間隔は1つ以上のスペースで埋められます。デフォルトはオフです。"
 
-#: ../../module.rst:482 ec10e29ae9104149922fda77e2386600
+#: ../../module.rst:483 9d95e72389b3445ba510fb682107c642
 #, fuzzy
 msgid ""
 "**noformfeed:**  (bool) instead of `hex(12)` (formfeed), write linebreaks"
@@ -517,11 +517,11 @@ msgstr ""
 "**noformfeed:** (bool)  `hex(12)` （フォームフィード）の代わりに、出力ページの末尾に  ``\\n`` "
 "個の改行を書き込みます。"
 
-#: ../../module.rst:483 b27625b2a5e8453a9b0064ea812c95c5
+#: ../../module.rst:484 703f5774d5234679a03f67da753bc40a
 msgid "**skip-empty:**  (bool) skip pages with no text."
 msgstr "**skip-empty:**  ((bool) テキストがないページをスキップします。"
 
-#: ../../module.rst:484 9d41da5687ef45a989cfeaf0a76592cf
+#: ../../module.rst:485 8f19a7610cc64fc88819c1b7fc295330
 msgid ""
 "**grid:** lines with a vertical coordinate difference of no more than "
 "this value (in points) will be merged into the same output line. Only "
@@ -537,7 +537,7 @@ msgstr ""
 "「レイアウト」モードにのみ関連します。注意して使用してください: "
 "ほとんどの場合、3またはデフォルトの2が適切です。大きすぎると、元のフォントで異なる行が結合され、文字化けや不完全な出力が発生する可能性があります。低すぎると、入力行の一部の範囲で個別の出力行が生成されることがありますが、これはわずかに異なる特性を持つ別のフォントでコーディングされているためです。"
 
-#: ../../module.rst:485 b9f7195d039a44ad9f6dcb30ae1f8552
+#: ../../module.rst:486 eac14db14ad14562a3b3b10a76827016
 msgid ""
 "**fontsize:** include text with :data:`fontsize` larger than this value "
 "only (default 3). Only relevant for \"layout\" option."
@@ -545,7 +545,7 @@ msgstr ""
 "**fontsize:** この値よりも大きな :data:`fontsize` を持つテキストのみを含めます（デフォルト3）。 "
 "「レイアウト」オプションにのみ関連します。"
 
-#: ../../footer.rst:60 4893a2a143c54c6ea8e7ffd30db93e7c
+#: ../../footer.rst:46 bf24bcacdf454aba8a6c79d83a00209b
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
@@ -570,5 +570,10 @@ msgstr "このドキュメントは |version| までのすべてのバージョ�
 #~ msgstr ""
 
 #~ msgid "Discord logo"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "*pymupdf join -o output.pdf file1.pdf,,N-1 "
+#~ "file2.pdf,secret,N,1 file3.pdf,,5-N*"
 #~ msgstr ""
 

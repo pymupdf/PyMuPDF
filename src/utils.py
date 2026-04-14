@@ -14,10 +14,6 @@ try:
     from . import pymupdf
 except Exception:
     import pymupdf
-try:
-    from . import mupdf
-except Exception:
-    import mupdf
 
 _format_g = pymupdf.format_g
 
@@ -322,80 +318,142 @@ def get_textpage_ocr(
     full: bool = False,
     tessdata: str = None,
 ) -> pymupdf.TextPage:
-    """Create a Textpage from combined results of normal and OCR text parsing.
+    """Create a Textpage from the OCR version of the page.
+
+    OCR can be executed for the full page image, or (the default) only
+    for areas that are not covered by readable digital text.
 
     Args:
         flags: (int) control content becoming part of the result.
         language: (str) specify expected language(s). Default is "eng" (English).
         dpi: (int) resolution in dpi, default 72.
-        full: (bool) whether to OCR the full page image, or only its images (default)
+        full: (bool) whether to OCR the full page, or to keep legible text
+        tessdata: (str) path to Tesseract language data files. If None, the
+                  built-in function is used to find the path.
     """
     pymupdf.CheckParent(page)
     tessdata = pymupdf.get_tessdata(tessdata)
 
+    # Ensure 0xFFFD is not suppressed
+    flags = (
+        flags
+        & ~pymupdf.TEXT_USE_CID_FOR_UNKNOWN_UNICODE  # pylint: disable=no-member
+        & ~pymupdf.TEXT_USE_GID_FOR_UNKNOWN_UNICODE  # pylint: disable=no-member
+    )
+
     def full_ocr(page, dpi, language, flags):
-        zoom = dpi / 72
-        mat = pymupdf.Matrix(zoom, zoom)
-        pix = page.get_pixmap(matrix=mat)
+        """Perform OCR for the full page image."""
+        pix = page.get_pixmap(dpi=dpi)
+        # create a 1-page PDF with an OCR text layer.
         ocr_pdf = pymupdf.Document(
-                "pdf",
-                pix.pdfocr_tobytes(
-                    compress=False,
-                    language=language,
-                    tessdata=tessdata,
-                    ),
-                )
+            stream=pix.pdfocr_tobytes(
+                compress=False,
+                language=language,
+                tessdata=tessdata,
+            ),
+        )
         ocr_page = ocr_pdf.load_page(0)
         unzoom = page.rect.width / ocr_page.rect.width
         ctm = pymupdf.Matrix(unzoom, unzoom) * page.derotation_matrix
         tpage = ocr_page.get_textpage(flags=flags, matrix=ctm)
-        ocr_pdf.close()
-        pix = None
+
+        # associate the textpage with the original page
         tpage.parent = weakref.proxy(page)
         return tpage
+
+    def partial_ocr(page, dpi, language, flags):
+        """Perform OCR for parts of the page without legible text.
+
+        We create a temporary PDF for which we can freely redact text.
+        """
+        doc = page.parent
+
+        # make temporary PDF with the passed-in page
+        temp_pdf = pymupdf.open()
+        temp_pdf.insert_pdf(doc, from_page=page.number, to_page=page.number)
+        temp_page = temp_pdf.load_page(0)
+        temp_page.remove_rotation()  # avoid OCR problems with rotated pages
+
+        # extract text bboxes from the page
+        tp = temp_page.get_textpage(flags=flags)
+        blocks = tp.extractDICT()["blocks"]
+
+        """
+        For partial OCR we need a TextPage that contains legible text only.
+        Illegible text must be passed to the OCR engine.
+        """
+        # Select spans with illegible text. If present, remove them first.
+        fffd_spans = [
+            s["bbox"]
+            for b in blocks
+            if b["type"] == 0
+            for l in b["lines"]
+            for s in l["spans"]
+            if chr(0xFFFD) in s["text"]
+        ]
+        if fffd_spans:
+            for bbox in fffd_spans:
+                temp_page.add_redact_annot(bbox)
+            temp_page.apply_redactions(
+                images=pymupdf.PDF_REDACT_IMAGE_NONE,  # pylint: disable=no-member
+                graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,  # pylint: disable=no-member
+                text=pymupdf.PDF_REDACT_TEXT_REMOVE,  # pylint: disable=no-member
+            )
+            # Extract text again, now without the unreadable spans.
+            tp = temp_page.get_textpage(flags=flags)
+            blocks = tp.extractDICT()["blocks"]
+            # We also need a fresh copy of the original page.
+            temp_pdf.insert_pdf(doc, from_page=page.number, to_page=page.number)
+            temp_page = temp_pdf.load_page(-1)
+            temp_page.remove_rotation()  # avoid OCR problems with rotated pages
+
+        span_bboxes = [
+            s["bbox"]
+            for b in blocks
+            if b["type"] == 0
+            for l in b["lines"]
+            for s in l["spans"]
+            if not chr(0xFFFD) in s["text"]
+        ]
+
+        # Remove digital text by redacting the span bboxes.
+        # Then OCR the remainder of the page.
+        for bbox in span_bboxes:
+            temp_page.add_redact_annot(bbox)
+
+        # only remove text, no images, no vectors
+        temp_page.apply_redactions(
+            images=pymupdf.PDF_REDACT_IMAGE_NONE,  # pylint: disable=no-member
+            graphics=pymupdf.PDF_REDACT_LINE_ART_NONE,  # pylint: disable=no-member
+            text=pymupdf.PDF_REDACT_TEXT_REMOVE,  # pylint: disable=no-member
+        )
+        pix = temp_page.get_pixmap(dpi=dpi)
+        # matrix = pymupdf.Rect(pix.irect).torect(page.rect)
+
+        # OCR the redacted page
+        ocr_pdf = pymupdf.open(
+            stream=pix.pdfocr_tobytes(
+                compress=False,
+                language=language,
+                tessdata=tessdata,
+            ),
+        )
+        ocr_page = ocr_pdf[0]
+
+        # Extend the original textpage with OCR-ed text.
+        ocr_page.extend_textpage(tp, flags=pymupdf.TEXT_ACCURATE_BBOXES)
+
+        # associate the textpage with the original page
+        tp.parent = weakref.proxy(page)
+        return tp
 
     # if OCR for the full page, OCR its pixmap @ desired dpi
     if full:
         return full_ocr(page, dpi, language, flags)
 
     # For partial OCR, make a normal textpage, then extend it with text that
-    # is OCRed from each image.
-    # Because of this, we need the images flag bit set ON.
-    tpage = page.get_textpage(flags=flags)
-    for block in page.get_text("dict", flags=pymupdf.TEXT_PRESERVE_IMAGES)["blocks"]:
-        if block["type"] != 1:  # only look at images
-            continue
-        bbox = pymupdf.Rect(block["bbox"])
-        if bbox.width <= 3 or bbox.height <= 3:  # ignore tiny stuff
-            continue
-        try:
-            pix = pymupdf.Pixmap(block["image"])  # get image pixmap
-            if pix.n - pix.alpha != 3:  # we need to convert this to RGB!
-                pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-            if pix.alpha:  # must remove alpha channel
-                pix = pymupdf.Pixmap(pix, 0)
-            imgdoc = pymupdf.Document(
-                    "pdf",
-                    pix.pdfocr_tobytes(language=language, tessdata=tessdata),
-                    )  # pdf with OCRed page
-            imgpage = imgdoc.load_page(0)  # read image as a page
-            pix = None
-            # compute matrix to transform coordinates back to that of 'page'
-            imgrect = imgpage.rect  # page size of image PDF
-            shrink = pymupdf.Matrix(1 / imgrect.width, 1 / imgrect.height)
-            mat = shrink * block["transform"]
-            imgpage.extend_textpage(tpage, flags=0, matrix=mat)
-            imgdoc.close()
-        except (RuntimeError, mupdf.FzErrorBase):
-            if 0 and g_exceptions_verbose:
-                # Don't show exception info here because it can happen in
-                # normal operation (see test_3842b).
-                pymupdf.exception_info()
-            tpage = None
-            pymupdf.message("Falling back to full page OCR")
-            return full_ocr(page, dpi, language, flags)
-
-    return tpage
+    # is OCRed from the rest of page.
+    return partial_ocr(page, dpi, language, flags)
 
 
 def get_text(
@@ -703,7 +761,7 @@ def getLinkText(page: pymupdf.Page, lnk: dict) -> str:
                 break
             i += 1
     # add /NM key to object definition
-    annot = annot.replace("/Link", "/Link/NM(%s)" % name)
+    annot = annot.replace(f"/Link", f"/Link/NM({name})")
     return annot
 
 

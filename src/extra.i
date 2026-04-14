@@ -1337,9 +1337,9 @@ static PyObject *lll_JM_get_annot_xref_list(pdf_obj *page_obj)
 //------------------------------------------------------------------------
 static PyObject* JM_get_annot_xref_list(const mupdf::PdfObj& page_obj)
 {
-    PyObject* names = PyList_New(0);
     if (!page_obj.m_internal)
     {
+        PyObject* names = PyList_New(0);
         return names;
     }
     return lll_JM_get_annot_xref_list( page_obj.m_internal);
@@ -1637,7 +1637,6 @@ struct jm_lineart_device
     fz_rect pathrect = {};
     int clips = {};
     int linecount = {};
-    float linewidth = {};
     int path_type = {};
     long depth = {};
     size_t seqno = {};
@@ -1747,7 +1746,8 @@ static void jm_trace_text_span(
         fz_colorspace* colorspace,
         const float* color,
         float alpha,
-        size_t seqno
+        size_t seqno,
+        const fz_stroke_state* stroke
         )
 {
     //printf("extra.jm_trace_text_span(): seqno=%zi\n", seqno);
@@ -1900,24 +1900,22 @@ static void jm_trace_text_span(
     {
         rgb[0] = rgb[1] = rgb[2] = 0;
     }
-    double linewidth;
-    if (dev->linewidth > 0)  // width of character border
+    if (0)
     {
-        linewidth = (double) dev->linewidth;
+        std::cout << " fsize=" << fsize;
+        if (stroke)
+        {
+            std::cout  << " linewidth=" << stroke->linewidth;
+        }
+        std::cout << "\n";
     }
-    else
-    {
-	linewidth = fsize * 0.05;  // default: 5% of font size
-    }
-    if (0) std::cout
-            << " dev->linewidth=" << dev->linewidth
-            << " fsize=" << fsize
-            << " linewidth=" << linewidth
-            << "\n";
     dict_setitem_drop(span_dict, dictkey_color, Py_BuildValue("fff", rgb[0], rgb[1], rgb[2]));
     dict_setitem_drop(span_dict, dictkey_size, PyFloat_FromDouble(fsize));
     dict_setitemstr_drop(span_dict, "opacity", PyFloat_FromDouble((double) alpha));
-    dict_setitemstr_drop(span_dict, "linewidth", PyFloat_FromDouble((double) linewidth));
+    if (stroke)
+        dict_setitemstr_drop(span_dict, "linewidth", PyFloat_FromDouble((double) stroke->linewidth));
+    else
+        dict_setitemstr_drop(span_dict, "linewidth", Py_None);
     dict_setitemstr_drop(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
     dict_setitem_drop(span_dict, dictkey_type, PyLong_FromLong((long) type));
     dict_setitem_drop(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
@@ -1987,7 +1985,7 @@ static void jm_fill_image_mask(
     jm_increase_seqno(ctx, dev);
 }
 
-static void jm_dev_linewidth(
+static void jm_stroke_path(
         fz_context* ctx,
         fz_device* dev_,
         const fz_path* path,
@@ -1999,11 +1997,6 @@ static void jm_dev_linewidth(
         fz_color_params color_params
         )
 {
-    jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    if (0) std::cout << "jm_dev_linewidth(): changing dev->linewidth from " << dev->linewidth
-            << " to stroke->linewidth=" << stroke->linewidth
-            << "\n";
-    dev->linewidth = stroke->linewidth;
     jm_increase_seqno(ctx, dev_);
 }
 
@@ -2015,13 +2008,14 @@ static void jm_trace_text(
         fz_colorspace* colorspace,
         const float* color,
         float alpha,
-        size_t seqno
+        size_t seqno,
+        const fz_stroke_state* stroke
         )
 {
     fz_text_span* span;
     for (span = text->head; span; span = span->next)
     {
-        jm_trace_text_span(dev, span, type, ctm, colorspace, color, alpha, seqno);
+        jm_trace_text_span(dev, span, type, ctm, colorspace, color, alpha, seqno, stroke);
     }
 }
 
@@ -2044,7 +2038,7 @@ jm_tracedraw_fill_text(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    jm_trace_text(dev, text, 0, ctm, colorspace, color, alpha, dev->seqno);
+    jm_trace_text(dev, text, 0, ctm, colorspace, color, alpha, dev->seqno, NULL);
     dev->seqno += 1;
 }
 
@@ -2062,7 +2056,7 @@ jm_tracedraw_stroke_text(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    jm_trace_text(dev, text, 1, ctm, colorspace, color, alpha, dev->seqno);
+    jm_trace_text(dev, text, 1, ctm, colorspace, color, alpha, dev->seqno, stroke);
     dev->seqno += 1;
 }
 
@@ -2076,7 +2070,7 @@ jm_tracedraw_ignore_text(
         )
 {
     jm_tracedraw_device* dev = (jm_tracedraw_device*) dev_;
-    jm_trace_text(dev, text, 3, ctm, nullptr, nullptr, 1, dev->seqno);
+    jm_trace_text(dev, text, 3, ctm, nullptr, nullptr, 1, dev->seqno, NULL);
     dev->seqno += 1;
 }
 
@@ -2105,7 +2099,7 @@ mupdf::FzDevice JM_new_texttrace_device(PyObject* out)
     dev->super.close_device = nullptr;    
     dev->super.drop_device = jm_lineart_drop_device;    
     dev->super.fill_path = jm_fill_path;
-    dev->super.stroke_path = jm_dev_linewidth;
+    dev->super.stroke_path = jm_stroke_path;
     dev->super.clip_path = nullptr;
     dev->super.clip_stroke_path = nullptr;
 
@@ -3081,7 +3075,6 @@ mupdf::FzRect JM_make_spanlist(
         float size = -1;
         unsigned flags = 0;
         
-        #if MUPDF_VERSION_GE(1, 25, 2)
         /* From mupdf:include/mupdf/fitz/structured-text.h:fz_stext_char::flags, which
         uses anonymous enum values:
         FZ_STEXT_STRIKEOUT = 1,
@@ -3092,7 +3085,6 @@ mupdf::FzRect JM_make_spanlist(
         FZ_STEXT_CLIPPED = 64
         */
         unsigned char_flags = 0;
-        #endif
         
         const char *font = "";
         unsigned argb = 0;
@@ -3121,25 +3113,17 @@ mupdf::FzRect JM_make_spanlist(
         fz_point origin = ch.m_internal->origin;
         style.size = ch.m_internal->size;
         style.flags = flags;
-        #if MUPDF_VERSION_GE(1, 25, 2)
         /* FZ_STEXT_SYNTHETIC is per-char, not per-span. */
         style.char_flags = ch.m_internal->flags & ~FZ_STEXT_SYNTHETIC;
-        #endif
         style.font = JM_font_name(ch.m_internal->font);
-        #if MUPDF_VERSION_GE(1, 25, 0)
-            style.argb = ch.m_internal->argb;
-        #else
-            style.argb = ch.m_internal->color;
-        #endif
+        style.argb = ch.m_internal->argb;
         style.asc = JM_font_ascender(ch.m_internal->font);
         style.desc = JM_font_descender(ch.m_internal->font);
 
         if (0
                 || style.size != old_style.size
                 || style.flags != old_style.flags
-                #if MUPDF_VERSION_GE(1, 25, 2)
                 || style.char_flags != old_style.char_flags
-                #endif
                 || style.argb != old_style.argb
                 || strcmp(style.font, old_style.font) != 0
                 || style.bidi != old_style.bidi
@@ -3179,14 +3163,10 @@ mupdf::FzRect JM_make_spanlist(
             DICT_SETITEM_DROP(span, dictkey_size, Py_BuildValue("f", style.size));
             DICT_SETITEM_DROP(span, dictkey_flags, Py_BuildValue("I", style.flags));
             DICT_SETITEM_DROP(span, dictkey_bidi, Py_BuildValue("I", style.bidi));
-            #if MUPDF_VERSION_GE(1, 25, 2)
             DICT_SETITEM_DROP(span, dictkey_char_flags, Py_BuildValue("I", style.char_flags));
-            #endif
             DICT_SETITEM_DROP(span, dictkey_font, JM_EscapeStrFromStr(style.font));
             DICT_SETITEM_DROP(span, dictkey_color, Py_BuildValue("I", style.argb & 0xffffff));
-            #if MUPDF_VERSION_GE(1, 25, 0)
             DICT_SETITEMSTR_DROP(span, "alpha", Py_BuildValue("I", style.argb >> 24));
-            #endif
             DICT_SETITEMSTR_DROP(span, "ascender", Py_BuildValue("f", asc));
             DICT_SETITEMSTR_DROP(span, "descender", Py_BuildValue("f", desc));
 
@@ -3438,6 +3418,7 @@ int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int bloc
     PyObject *text = NULL;
     fz_rect blockrect;
     mupdf::FzBuffer res;
+    int last_char;
     while (block)
     {
         switch (block->type)
@@ -3452,7 +3433,7 @@ int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int bloc
             case FZ_STEXT_BLOCK_TEXT:
                 blockrect = fz_empty_rect;
                 res = mupdf::fz_new_buffer(1024);
-                int last_char;
+                last_char = 10;
                 for (fz_stext_line* line = block->u.t.first_line; line; line = line->next)
                 {
                     fz_rect linerect = fz_empty_rect;

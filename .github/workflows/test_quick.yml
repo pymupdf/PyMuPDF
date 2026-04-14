@@ -43,4 +43,4 @@ jobs:
         env:
           PYMUPDF_test_args: ${{inputs.args}}
         run:
-          python scripts/test.py build test -m 'git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf.git' -a PYMUPDF_test_args
+          python scripts/test.py build test -m 'git:--branch 1.27.x https://github.com/ArtifexSoftware/mupdf.git' -a PYMUPDF_test_args

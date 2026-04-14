@@ -3,6 +3,7 @@
 Test PDF annotation insertions.
 """
 
+import copy
 import os
 import platform
 
@@ -308,16 +309,13 @@ def test_2270():
                 print(f'{text=}')
                 print(f'{getattr(textpage, "parent")=}')
 
-                if pymupdf.mupdf_version_tuple >= (1, 26):
-                    # Check Annotation.get_textpage()'s <clip> arg.
-                    clip = textBox.rect
-                    clip.x1 = clip.x0 + (clip.x1 - clip.x0) / 3
-                    textpage2 = textBox.get_textpage(clip=clip)
-                    text = textpage2.extractText()
-                    print(f'With {clip=}: {text=}')
-                    assert text == 'ab\n'
-                else:
-                    assert not hasattr(pymupdf.mupdf, 'FZ_STEXT_CLIP_RECT')
+                # Check Annotation.get_textpage()'s <clip> arg.
+                clip = textBox.rect
+                clip.x1 = clip.x0 + (clip.x1 - clip.x0) / 3
+                textpage2 = textBox.get_textpage(clip=clip)
+                text = textpage2.extractText()
+                print(f'With {clip=}: {text=}')
+                assert text == 'ab\n'
                     
 
 def test_2934_add_redact_annot():
@@ -492,11 +490,7 @@ def test_4047():
 
 def test_4079():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
-    if pymupdf.mupdf_version_tuple >= (1, 25, 5):
-        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
-    else:
-        # 2024-11-27 Expect incorrect behaviour.
-        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after_1.25.pdf')
+    path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
         
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
     with pymupdf.open(path_after) as document_after:
@@ -681,3 +675,46 @@ def test_4447():
     
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4447.pdf')
     document.save(path_out)
+
+
+def test_4755():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4755.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4755_out.pdf')
+    
+    with pymupdf.open(path) as document:
+        for page_i, page in enumerate(document):
+            print(f'{page_i=}')
+            caret = page.add_caret_annot((50,50))
+
+            colours = [
+                    (0, 0, 1),
+                    (0, 1, 0),
+                    (1, 0, 0),
+                    ]
+            for annot_i, annot in enumerate(page.annots()):
+                print(f'{annot_i=}')
+                #if annot_i != 2:
+                #    continue
+                before_rect = copy.deepcopy(annot.rect)
+
+                def draw_rectangle(rect, c, w):
+                    drect = page.add_freetext_annot(rect, str(annot_i), text_color=c)
+                    drect.set_border(width=w)
+                    drect.update()
+
+                colour = colours[annot_i]
+                print(f'{colour=}')
+                draw_rectangle(annot.rect, colour, .3)
+
+                print(f'before: {annot.rect}=')
+                annot.set_rect(annot.rect)
+                print(f' after: {annot.rect}=')
+
+                print(f'difference: {annot.rect-before_rect=}')
+
+                draw_rectangle(annot.rect, (0, 1, 0), .3)
+                print()
+        document.save(path_out)
+        print(f'    {path=}.')
+        print(f'{path_out=}.')

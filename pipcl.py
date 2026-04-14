@@ -96,6 +96,7 @@ class Package:
         ...                         name = 'foo',
         ...                         path_i = 'foo.i',
         ...                         outdir = 'build',
+        ...                         source_extra = 'wibble.c',
         ...                         )
         ...                 return [
         ...                         ('build/foo.py', 'foo/__init__.py'),
@@ -107,8 +108,10 @@ class Package:
         ...
         ...             def sdist():
         ...                 return [
+        ...                         'pyproject.toml',
         ...                         'foo.i',
         ...                         'bar.i',
+        ...                         'wibble.c',
         ...                         'setup.py',
         ...                         'pipcl.py',
         ...                         'wdev.py',
@@ -159,6 +162,12 @@ class Package:
 
         >>> with open('pipcl_test/bar.i', 'w') as f:
         ...     _ = f.write( '\\n')
+
+        >>> with open('pipcl_test/wibble.c', 'w') as f:
+        ...     _ = f.write( '\\n')
+
+        >>> with open('pipcl_test/pyproject.toml', 'w') as f:
+        ...     pass
 
         >>> with open('pipcl_test/README', 'w') as f:
         ...     _ = f.write(textwrap.dedent("""
@@ -253,6 +262,19 @@ class Package:
 
         >>> t0 = time.time()
         >>> os.utime('pipcl_test/build/foo.i.cpp')
+        >>> _ = subprocess.run(
+        ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
+        ...         shell=1, check=1)
+        >>> assert os.path.getmtime('pipcl_test/build/foo.py') <= t0
+        >>> so = glob.glob('pipcl_test/build/*.so')
+        >>> assert len(so) == 1
+        >>> so = so[0]
+        >>> assert os.path.getmtime(so) > t0
+
+    Check that touching wibble.c does not run swig, but does recompile/link.
+
+        >>> t0 = time.time()
+        >>> os.utime('pipcl_test/wibble.c')
         >>> _ = subprocess.run(
         ...         f'cd pipcl_test && {sys.executable} setup.py bdist_wheel',
         ...         shell=1, check=1)
@@ -892,10 +914,19 @@ class Package:
         '''
         ABI tag.
         '''
+        Py_GIL_DISABLED = sysconfig.get_config_var('Py_GIL_DISABLED')
         if self.tag_abi_:
             return self.tag_abi_
         elif self.py_limited_api:
+            assert Py_GIL_DISABLED != 1, \
+                    f'py_limited_api and Py_GIL_DISABLED are not supported together as of 2026-02-20, e.g. see PEP 803 and PEP 809.'
             return 'abi3'
+        elif Py_GIL_DISABLED == 1:
+            ret = ''
+            ret += 'cp'
+            ret += ''.join(platform.python_version().split('.')[:2])
+            ret += 't'
+            return ret
         else:
             return 'none'
 
@@ -1049,7 +1080,7 @@ class Package:
                 path = os.path.abspath(path)
                 assert path.startswith(self.root+os.sep), \
                         f'path={path!r} does not start with root={self.root+os.sep!r}'
-                log2(f'Removing: {path}')
+                log(f'Removing: {path}')
                 shutil.rmtree(path, ignore_errors=True)
 
 
@@ -1802,7 +1833,7 @@ def build_extension(
 
     for path_source in [path_cpp] + source_extra:
         path_o = f'{path_source}.obj' if windows() else f'{path_source}.o'
-        path_os.append(f' {path_o}')
+        path_os.append(path_o)
 
         prerequisites_path = f'{path_o}.d'
 
@@ -2416,6 +2447,8 @@ def openbsd():
 def show_system():
     '''
     Show useful information about the system plus argv and environ.
+    
+    Omits os.environ if $PIPCL_SHOW_ENV is '0'.
     '''
     def log(text):
         log0(text, caller=3)
@@ -2435,16 +2468,30 @@ def show_system():
     log(f'{sys.version_info=}')
     log(f'{list(sys.version_info)=}')
     
+    log(f'{sysconfig.get_config_var("Py_GIL_DISABLED")=}')
+    try:
+        log(f'{sys._is_gil_enabled()=}')
+    except AttributeError:
+        log(f'sys._is_gil_enabled() => AttributeError')
+    
     log(f'CPU bits: {cpu_bits()}')
     
     log(f'sys.argv ({len(sys.argv)}):')
     for i, arg in enumerate(sys.argv):
         log(f'    {i}: {arg!r}')
     
-    log(f'os.environ ({len(os.environ)}):')
-    for k in sorted( os.environ.keys()):
-        v = os.environ[ k]
-        log( f'    {k}: {v!r}')
+    PIPCL_SHOW_ENV = os.environ.get('PIPCL_SHOW_ENV')
+    if PIPCL_SHOW_ENV == '0':
+        log(f'[Not showing os.environ because {PIPCL_SHOW_ENV=}.]')
+    else:
+        log(f'os.environ ({len(os.environ)}):')
+        for k in sorted( os.environ.keys()):
+            v = os.environ[ k]
+            if 'BEGIN OPENSSH PRIVATE KEY' in v:
+                # Don't show private keys.
+                log(f'    {k} ****')
+            else:
+                log( f'    {k}: {v!r}')
 
 
 class PythonFlags:
@@ -3310,14 +3357,6 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
         if quick and os.path.isfile(swig_binary):
             log1(f'{quick=} and {swig_binary=} already exists, so not downloading/building.')
         else:
-            # Clone swig.
-            swig_env_extra = None
-            swig_local = git_get(
-                    swig_local,
-                    text=swig,
-                    remote='https://github.com/swig/swig.git',
-                    branch='master',
-                    )
             if darwin():
                 run(f'brew install automake')
                 run(f'brew install pcre2')
@@ -3335,6 +3374,57 @@ def swig_get(swig, quick, swig_local='pipcl-swig-git'):
                 macos_add_brew_path('bison', swig_env_extra)
                 run(f'which bison')
                 run(f'which bison', env_extra=swig_env_extra)
+            
+            # Building swig requires bison>=3.5.
+            bison_ok = 0
+            e, text = run(f'bison --version', capture=1, check=0, env_extra=swig_env_extra)
+            if not e:
+                log(textwrap.indent(text, '    '))
+                m = re.search('bison (GNU Bison) ([0-9]+)[.]([0-9]+)', text)
+                if m:
+                    assert m, f'Unexpected output from `bison --version`: {text!r}'
+                    version_tuple = int(m.group(1)), int(m.group2())
+                    if version_tuple >= (3, 5):
+                        bison_ok = 1
+            if not bison_ok:
+                if 0:
+                    # Use git checkout. Fails to find scan-code.c. Presumably
+                    # something wrong with ./bootstrap?
+                    log(f'Cloning/fetching/build/installing bison.')
+                    bison_git = git_get(
+                            'pipcl-bison-git',
+                            remote='https://git.savannah.gnu.org/git/bison.git',
+                            #branch='master',
+                            tag='v3.5.4',
+                            submodules=0, # recursive update fails.
+                            )
+                    run(f'cd {bison_git} && git submodule update --init', prefix='bison git submodule update --init: ')
+                    run(f'cd {bison_git} && ./bootstrap', prefix='bison bootstrap: ')
+                    run(f'cd {bison_git} && ./configure', prefix='bison configure: ')
+                    run(f'cd {bison_git} && make', prefix='bison make: ')
+                    run(f'cd {bison_git} && sudo make install', prefix='bison make install: ')
+                else:
+                    bison_version = 'bison-3.5.4'
+                    if not os.path.exists(f'{bison_version}.tar.gz'):
+                        run(
+                                f'wget -O {bison_version}.tar.gz-0 http://www.mirrorservice.org/sites/ftp.gnu.org/gnu/bison/{bison_version}.tar.gz',
+                                prefix='bison wget: ',
+                                )
+                        os.rename(f'{bison_version}.tar.gz-0', f'{bison_version}.tar.gz')
+                    if not os.path.exists(f'{bison_version}'):
+                        run(f'tar -xzf {bison_version}.tar.gz', prefix='bison extract: ')
+                    run(f'cd {bison_version} && ./configure', prefix='bison configure: ')
+                    run(f'cd {bison_version} && make', prefix='bison make: ')
+                    run(f'cd {bison_version} && sudo make install', prefix='bison make install: ')
+                
+            # Clone swig.
+            swig_env_extra = None
+            swig_local = git_get(
+                    swig_local,
+                    text=swig,
+                    remote='https://github.com/swig/swig.git',
+                    branch='master',
+                    )
             # Build swig.
             run(f'cd {swig_local} && ./autogen.sh', env_extra=swig_env_extra)
             run(f'cd {swig_local} && ./configure --prefix={swig_local}/install-dir', env_extra=swig_env_extra)

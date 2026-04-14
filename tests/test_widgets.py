@@ -430,3 +430,20 @@ def test_4055():
     # Round 5: final check: setting to "Yes" also does work
     for w in page.widgets(types=[2]):
         assert w.field_value == w.on_state()
+
+
+def test_4965():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4965.pdf')
+    with pymupdf.open(path) as document:
+        for page in document:
+            print(f'test_4965(): {page.number=}')
+            # Iterate over all form fields (widgets) on the page
+            for widget_i, field in enumerate(page.widgets()):
+                # Access field properties
+                name = field.field_name       # The internal name of the field
+                value = field.field_value     # The data currently in the field
+                f_type = field.field_type      # Integer representing the field type
+                print(f'     {widget_i=}')
+                print(f'        {name=}')
+                print(f'        {value=}')
+                print(f'        {f_type=}')

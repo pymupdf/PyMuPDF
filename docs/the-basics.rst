@@ -109,7 +109,7 @@ To extract all the images from a |PDF| file, do the following:
             if pix.n - pix.alpha > 3: # CMYK: convert to RGB first
                 pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
 
-            pix.save("page_%s-image_%s.png" % (page_index, image_index)) # save the image as png
+            pix.save(f"page_{page_index}-image_{image_index}.png") # save the image as png
             pix = None
 
 
@@ -444,8 +444,6 @@ To delete a page from a document, do the following:
 
 To delete a multiple pages from a document, do the following:
 
-.. raw:: html
-
 .. code-block:: python
 
     import pymupdf
@@ -670,7 +668,7 @@ To add a blank page, do the following:
 Inserting Pages with Text Content
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Using the :meth:`Document.insert_page` method also inserts a new page and accepts the same `width` and `height` parameters. But it lets you also insert arbitrary text into the new page and returns the number of inserted lines.
+Using the :meth:`Document.insert_page` method also inserts a new page and accepts the same ``width`` and ``height`` parameters. But it lets you also insert arbitrary text into the new page and returns the number of inserted lines.
 
 .. code-block:: python
 

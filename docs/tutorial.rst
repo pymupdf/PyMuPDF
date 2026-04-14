@@ -174,7 +174,7 @@ Saving the Page Image in a File
 -----------------------------------
 We can simply store the image in a PNG file::
 
-    pix.save("page-%i.png" % page.number)
+    pix.save(f"page-{page.number}.png")
 
 Displaying the Image in GUIs
 -------------------------------------------
@@ -366,7 +366,7 @@ Embedding Data
 
 PDFs can be used as containers for arbitrary data (executables, other PDFs, text or binary files, etc.) much like ZIP archives.
 
-PyMuPDF fully supports this feature via :ref:`Document` ``embfile_*`` methods and attributes. For some detail read :ref:`Appendix 3`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
+PyMuPDF fully supports this feature via :ref:`Document` ``embfile_*`` methods and attributes. For some detail read :ref:`Appendix2`, consult the Wiki on `dealing with embedding files`_, or the example scripts `embedded-copy.py`_, `embedded-export.py`_, `embedded-import.py`_, and `embedded-list.py`_.
 
 
 Saving
@@ -434,13 +434,13 @@ This document also contains a :ref:`FAQ`. This chapter has close connection to t
 .. _toc import (PDF only): https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/import-toc/import.py
 .. _toc export: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/export-toc/export.py
 .. _Vector Image Support page: https://github.com/pymupdf/PyMuPDF/wiki/Vector-Image-Support
-.. _examples: https://github.com/pymupdf/PyMuPDF/tree/master/examples
+.. _examples: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples
 .. _Pillow documentation: https://Pillow.readthedocs.io
 .. _here it is!: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/browse-document/browse.py
 .. _PySimpleGUI: https://pypi.org/project/PySimpleGUI/
 .. _demo.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo.py
 .. _demo-lowlevel.py: https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/demo/demo-lowlevel.py
-.. _"MuPDF Explored": https://mupdf.com/docs/mupdf-explored.html
+.. _"MuPDF Explored": https://mupdf.com/docs/mupdf_explored.pdf
 .. _Artifex: https://www.artifex.com
 .. _pdf-converter.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/convert-document/convert.py
 .. _PDFjoiner.py: https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/join-documents/join.py
