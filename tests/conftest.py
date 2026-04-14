@@ -20,6 +20,7 @@ def install_required_packages():
         # already being installed, e.g. in our wheel's <requires_dist>.
         return
     packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell mypy'
+    packages += ' pipcl'
     if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
         # No pillow wheel available, and doesn't build easily.
         pass
