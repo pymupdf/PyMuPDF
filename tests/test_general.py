@@ -2031,11 +2031,11 @@ def test_4392():
     
     assert e1 == 5
     if pymupdf.swig_version_tuple >= (4, 4):
-        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
             assert e2 == 4
         else:
             assert e2 == 5
-        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
             # GIL warning results in failure because of -Werror.
             assert e3 == 1
         else:
