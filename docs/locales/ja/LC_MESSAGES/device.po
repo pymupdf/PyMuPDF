@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 55167d0c5e4948eabf41a2e0ad7fff8a
+#: ../../header.rst:-1 db41752d7d77475b91dce6987192b03e
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 d1afc8b9b26740989ade65fddf4c784c
+#: ../../header.rst:-1 9d1395b42c0242c2937c063ec31289da
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 fc4a52fdadd6458e894b792b0f04f4d1
+#: ../../header.rst:-1 c674fa9ee73a4fcf888b701a69a14f4a
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../device.rst:7 e5be8af0be364d21a95eff2daec5e5d1
+#: ../../device.rst:7 d8f699f2197d4cccb1a32e36349536c8
 msgid "Device"
 msgstr "Device (デバイス)"
 
-#: ../../device.rst:9 c79f0e0250fc4ea296a521429e0863db
+#: ../../device.rst:9 c03889a987f445ea84d79f3d5abfb84d
 msgid ""
 "The different format handlers (pdf, xps, etc.) interpret pages to a "
 "\"device\". Devices are the basis for everything that can be done with a "
@@ -49,24 +49,24 @@ msgstr ""
 "異なるフォーマットハンドラ（pdf、xps "
 "など）はページを「デバイス」に解釈します。デバイスはページで行うすべてのことの基盤であり、レンダリング、テキスト抽出、検索などが行えます。デバイスのタイプは選択した構築方法によって決まります。"
 
-#: ../../device.rst:11 e1ec859236f84532835550a8d0d4f793
+#: ../../device.rst:11 5997f573701045499919ec1f18ab7518
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../device.rst:17 bdb2f8e55f6f4e9582764fb173e2584e
+#: ../../device.rst:17 4b9fd079e127474e94506fe9eadb79d7
 msgid "Constructor for either a pixel map or a display list device."
 msgstr "ピクセルマップまたは表示リストデバイスのコンストラクタ。"
 
-#: ../../device.rst 25de13f5cdbc4f6fac5f18832215e384
-#: 543e28e5ab6b4c8db6ae54916f8223e5
+#: ../../device.rst 3029384c54544ad783072064ea96675d
+#: ca7a504aacc440719aba0931b7724c60
 msgid "Parameters"
 msgstr ""
 
-#: ../../device.rst:19 df3b8b3f3fda4ed685d15456fcbbc98b
+#: ../../device.rst:19 9b095106055b4d568344ac7d142034f3
 msgid "either a ``Pixmap`` or  a ``DisplayList``."
 msgstr "``Pixmap`` または ``DisplayList`` のいずれか。"
 
-#: ../../device.rst:22 21adb78e90cf4d948936ecce99c0f28e
+#: ../../device.rst:22 30003de713004e58977091af11644238
 msgid ""
 "An optional `IRect` for ``Pixmap`` devices to restrict rendering to a "
 "certain area of the page. If the complete page is required, specify "
@@ -76,23 +76,24 @@ msgstr ""
 "で、ページの特定の領域にレンダリングを制限するためのものです。完全なページが必要な場合は、``None`` "
 "を指定してください。表示リストデバイスの場合、このパラメータは省略する必要があります。"
 
-#: ../../device.rst:27 455c165a85814a96b91272c070f1afcc
+#: ../../device.rst:27 5a3223623124424ba115721d21086469
 msgid "Constructor for a text page device."
 msgstr "テキストページデバイスのコンストラクタ。"
 
-#: ../../device.rst:29 5a36c4d50ef34335b590bbe855dda21d
+#: ../../device.rst:29 8f77a7687a804d458ddb9a4be4624d77
 msgid "``TextPage`` object"
 msgstr "TextPageオブジェクト"
 
-#: ../../device.rst:32 fb3e0d3553a54959b420fe3c83ce17a0
+#: ../../device.rst:32 53c8b35c8b0e4e488b05cfbe1c988a0d
+#, fuzzy
 msgid ""
 "control the way how text is parsed into the text page. Currently 3 "
 "options can be coded into this parameter, see :ref:`TextPreserve`. To set"
-" these options use something like ``flags=0 | TEXT_PRESERVE_LIGATURES | "
-"...``."
+" these options use something like `flags=0 | TEXT_PRESERVE_LIGATURES | "
+"...`."
 msgstr "テキストがテキストページに解析される方法を制御するフラグです"
 
-#: ../../footer.rst:60 ade0e54ff3ee44398c800affaa5a276f
+#: ../../footer.rst:46 233763b8ff7c42718f2a5b6285c3802f
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 

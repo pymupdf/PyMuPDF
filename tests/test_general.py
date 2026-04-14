@@ -4,19 +4,20 @@
 * Confirm proper release of file handles via Document.close()
 * Confirm properly raising exceptions in document creation
 """
-import io
-import os
-
 import fnmatch
+import io
 import json
-import pymupdf
+import os
 import pathlib
 import pickle
 import platform
+import pymupdf
 import re
+import shlex
 import shutil
 import subprocess
 import sys
+import sysconfig
 import textwrap
 import time
 import util
@@ -25,6 +26,15 @@ import gentle_compare
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "001003ED.pdf")
+
+Py_GIL_DISABLED = sysconfig.get_config_var('Py_GIL_DISABLED')
+try:
+    gil_enabled = sys._is_gil_enabled()
+except AttributeError:
+    gil_enabled = True
+regex_gil_stderr = None
+if Py_GIL_DISABLED and gil_enabled:
+    regex_gil_stderr = '.*The global interpreter lock.*'
 
 
 def test_haslinks():
@@ -62,11 +72,8 @@ def test_iswrapped():
     doc = pymupdf.open(filename)
     page = doc[0]
     assert page.is_wrapped
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26, 0):
-        assert wt == 'bogus font ascent/descent values (0 / 0)'
-    else:
-        assert not wt
+    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
+        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)'
 
 
 def test_wrapcontents():
@@ -79,13 +86,11 @@ def test_wrapcontents():
     page.set_contents(xref)
     assert len(page.get_contents()) == 1
     page.clean_contents()
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        if pymupdf.mupdf_version_tuple >= (1, 26, 0):
-            assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
-        else:
-            assert wt == 'PDF stream Length incorrect'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
+        assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
+    else:
+        assert wt == 'PDF stream Length incorrect'
 
 
 def test_page_clean_contents():
@@ -246,11 +251,8 @@ def test_get_text_dict():
     blocks=page.get_text("dict")["blocks"]
     # Check no opaque types in `blocks`.
     json.dumps( blocks, indent=4)
-    wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26, 0):
-        assert wt == 'bogus font ascent/descent values (0 / 0)'
-    else:
-        assert not wt
+    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
+        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)'
 
 def test_font():
     font = pymupdf.Font()
@@ -296,8 +298,8 @@ def test_2533():
     Search for a unique char on page and confirm that page.get_texttrace()
     returns the same bbox as the search method.
     """
-    if hasattr(pymupdf, 'mupdf') and not pymupdf.g_use_extra:
-        print('Not running test_2533() because rebased with use_extra=0 known to fail')
+    if not pymupdf.g_use_extra:
+        print('Not running test_2533() because use_extra=0 known to fail')
         return
     pymupdf.TOOLS.set_small_glyph_heights(True)
     try:
@@ -397,29 +399,20 @@ def test_2108():
         print(f'')
 
     print(f'{pymupdf.mupdf_version_tuple=}')
-    if pymupdf.mupdf_version_tuple >= (1, 21, 2):
-        print('Asserting text==text_expected')
-        assert text == text_expected
-    else:
-        print('Asserting text!=text_expected')
-        assert text != text_expected
+    print('Asserting text==text_expected')
+    assert text == text_expected
 
 
 def test_2238():
     filepath = f'{scriptdir}/resources/test2238.pdf'
     doc = pymupdf.open(filepath)
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        wt_expected = ''
-        if pymupdf.mupdf_version_tuple >= (1, 26):
-            wt_expected += 'garbage bytes before version marker\n'
-            wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
-        else:
-            wt_expected += 'format error: cannot recognize version marker\n'
-        wt_expected += 'trying to repair broken xref\n'
-        wt_expected += 'repairing PDF document'
-        assert wt == wt_expected, f'{wt=}'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    wt_expected = ''
+    wt_expected += 'garbage bytes before version marker\n'
+    wt_expected += 'syntax error: expected \'obj\' keyword (6 0 ?)\n'
+    wt_expected += 'trying to repair broken xref\n'
+    wt_expected += 'repairing PDF document'
+    assert wt == wt_expected, f'{wt=}'
     first_page = doc.load_page(0).get_text('text', clip=pymupdf.INFINITE_RECT())
     last_page = doc.load_page(-1).get_text('text', clip=pymupdf.INFINITE_RECT())
 
@@ -615,7 +608,6 @@ def test_2596():
     page = doc.reload_page(page)
     pix1 = page.get_pixmap()
     assert pix1.samples == pix0.samples
-    rebased = hasattr(pymupdf, 'mupdf')
     if pymupdf.mupdf_version_tuple < (1, 26, 6):
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt == 'too many indirections (possible indirection cycle involving 24 0 R)'
@@ -743,14 +735,12 @@ def test_2710():
     print(f'test_2710(): {pymupdf.mupdf_version_tuple=}')
     # 2023-11-05: Currently broken in mupdf master.
     print(f'test_2710(): Not Checking page.rect and rect.')
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                "syntax error: cannot find ExtGState resource 'GS7'\n"
-                "syntax error: cannot find ExtGState resource 'GS8'\n"
-                "encountered syntax errors; page may not be correct"
-                )
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == (
+            "syntax error: cannot find ExtGState resource 'GS7'\n"
+            "syntax error: cannot find ExtGState resource 'GS8'\n"
+            "encountered syntax errors; page may not be correct"
+            )
 
 
 def test_2736():
@@ -907,11 +897,17 @@ def test_bboxlog_2885():
     
     bbl = page.get_bboxlog()
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'invalid marked content and clip nesting'
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == ''
+    else:
+        assert wt == 'invalid marked content and clip nesting'
     
     bbl = page.get_bboxlog(layers=True)
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'invalid marked content and clip nesting'
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == ''
+    else:
+        assert wt == 'invalid marked content and clip nesting'
 
 def test_3081():
     '''
@@ -919,8 +915,6 @@ def test_3081():
     '''
     path1 = os.path.abspath(f'{__file__}/../../tests/resources/1.pdf')
     path2 = os.path.abspath(f'{__file__}/../../tests/test_3081-2.pdf')
-    
-    rebased = hasattr(pymupdf, 'mupdf')
     
     import shutil
     import sys
@@ -943,9 +937,8 @@ def test_3081():
     page = document[0]
     fd2 = next_fd()
     document.close()
-    if rebased:
-        assert document.this is None
-        assert page.this is None
+    assert document.this is None
+    assert page.this is None
     try:
         document.page_count()
     except Exception as e:
@@ -960,10 +953,7 @@ def test_3081():
     except Exception as e:
         print(f'Received expected exception: {e}')
         #traceback.print_exc(file=sys.stdout)
-        if rebased:
-            assert str(e) == 'page is None'
-        else:
-            assert str(e) == 'orphaned object: parent is None'
+        assert str(e) == 'page is None'
     else:
         assert 0, 'Did not receive expected exception.'
     page = None
@@ -986,17 +976,11 @@ def test_3112_set_xml_metadata():
     document.set_xml_metadata('hello world')
 
 def test_archive_3126():
-    if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running because known to fail with classic.')
-        return
     p = os.path.abspath(f'{__file__}/../../tests/resources')
     p = pathlib.Path(p)
     archive = pymupdf.Archive(p)
     
 def test_3140():
-    if not hasattr(pymupdf, 'mupdf'):
-        print(f'Not running test_3140 on classic, because Page.insert_htmlbox() not available.')
-        return
     css2 = ''
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     oldfile = os.path.abspath(f'{__file__}/../../tests/test_3140_old.pdf')
@@ -1033,9 +1017,6 @@ def test_cli():
         print('test_cli(): not running on Pyodide - cannot run child processes.')
         return
         
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_cli(): Not running on classic because of fitz_old.')
-        return
     import subprocess
     subprocess.run(f'pymupdf -h', shell=1, check=1)
 
@@ -1044,10 +1025,10 @@ def check_lines(expected_regexes, actual):
     '''
     Checks lines in <actual> match regexes in <expected_regexes>.
     '''
-    print(f'check_lines():', flush=1)
-    print(f'{expected_regexes=}', flush=1)
-    print(f'{actual=}', flush=1)
+    print(f'### check_lines():', flush=1)
     def str_to_list(s):
+        if s is None:
+            return list()
         if isinstance(s, str):
             return s.split('\n') if s else list()
         return s
@@ -1057,11 +1038,35 @@ def check_lines(expected_regexes, actual):
         expected_regexes.append('') # Always expect a trailing empty line.
     # Remove `None` regexes and make all regexes match entire lines.
     expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
-    print(f'{expected_regexes=}', flush=1)
-    for expected_regex_line, actual_line in zip(expected_regexes, actual):
-        print(f'    {expected_regex_line=}', flush=1)
-        print(f'            {actual_line=}', flush=1)
-        assert re.match(expected_regex_line, actual_line)
+    
+    print(f'expected_regexes ({len(expected_regexes)}):')
+    for i in expected_regexes:
+        print(f'    {i!r}')
+    
+    print(f'actual ({len(actual)}):')
+    for i in actual:
+        print(f'    {i!r}')
+    
+    i_expected = 0
+    i_actual = 0
+    while 1:
+        if i_expected == len(expected_regexes) and i_actual == len(actual):
+            break
+        print(f'expected {i_expected+1}/{len(expected_regexes)}')
+        print(f'actual {i_actual+1}/{len(actual)}')
+        assert i_expected < len(expected_regexes) and i_actual < len(actual)
+        expected_regex_line = expected_regexes[i_expected]
+        actual_line = actual[i_actual]
+        if expected_regex_line is None:
+            i_expected += 1
+            continue
+        print(f'    expected_regex: {expected_regex_line!r}', flush=1)
+        print(f'    actual:         {actual!r}', flush=1)
+        match = re.match(expected_regex_line, actual_line)
+        print(f'    {match=}')
+        assert match
+        i_expected += 1
+        i_actual += 1
     assert len(expected_regexes) == len(actual), \
             f'expected/actual lines mismatch: {len(expected_regexes)=} {len(actual)=}.'
 
@@ -1074,9 +1079,6 @@ def test_cli_out():
         print('test_cli_out(): not running on Pyodide - cannot run child processes.')
         return
         
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_cli(): Not running on classic because of fitz_old.')
-        return
     import platform
     import re
     import subprocess
@@ -1084,12 +1086,17 @@ def test_cli_out():
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
     
+    sys.path.append(os.path.normpath(f'{__file__}/../..'))
+    try:
+        import pipcl
+    finally:
+        del sys.path[0]
+    pipcl.show_system()
     def check(
             expect_out,
             expect_err,
             message=None,
             log=None,
-            verbose=0,
             ):
         '''
         Sets PYMUPDF_MESSAGE to `message` and PYMUPDF_LOG to `log`, runs
@@ -1101,39 +1108,44 @@ def test_cli_out():
             env['PYMUPDF_LOG'] = log
         if message:
             env['PYMUPDF_MESSAGE'] = message
+        command = 'pymupdf internal'
+        print(f'Running: {command}', flush=1)
+        if env:
+            print(f'with:')
+            for key in sorted(env.keys()):
+                print(f'    {key}={shlex.quote(env[key])}')
         env = os.environ | env
-        print(f'Running with {env=}: pymupdf internal', flush=1)
-        cp = subprocess.run(f'pymupdf internal', shell=1, check=1, capture_output=1, env=env, text=True)
+        cp = subprocess.run(command, shell=1, check=1, capture_output=1, env=env, text=True)
         
-        if verbose:
-            #print(f'{cp.stdout=}.', flush=1)
-            #print(f'{cp.stderr=}.', flush=1)
-            sys.stdout.write(f'stdout:\n{textwrap.indent(cp.stdout, "    ")}')
-            sys.stdout.write(f'stderr:\n{textwrap.indent(cp.stderr, "    ")}')
         check_lines(expect_out, cp.stdout)
         check_lines(expect_err, cp.stderr)
     
-    #
+    print(f'test_cli_out(): {Py_GIL_DISABLED=}')
+    print(f'test_cli_out(): {gil_enabled=}')
+    
     print(f'Checking default, all output to stdout.')
+    regex_gil_stderr = None
+    if Py_GIL_DISABLED and gil_enabled:
+        regex_gil_stderr = '.*The global interpreter lock.*'
     check(
             [
                 log_prefix,
                 'This is from PyMuPDF message[(][)][.]',
                 '.+This is from PyMuPDF log[(][)].',
             ],
-            '',
+            regex_gil_stderr,
             )
     
     #
     if platform.system() != 'Windows':
         print(f'Checking redirection of everything to /dev/null.')
-        check('', '', 'path:/dev/null', 'path:/dev/null')
+        check('', regex_gil_stderr, 'path:/dev/null', 'path:/dev/null')
     
     #
     print(f'Checking redirection to files.')
     path_out = os.path.abspath(f'{__file__}/../../tests/test_cli_out.out')
     path_err = os.path.abspath(f'{__file__}/../../tests/test_cli_out.err')
-    check('', '', f'path:{path_out}', f'path:{path_err}')
+    check('', regex_gil_stderr, f'path:{path_out}', f'path:{path_err}')
     def read(path):
         with open(path) as f:
             return f.read()
@@ -1149,6 +1161,7 @@ def test_cli_out():
                 'This is from PyMuPDF message[(][)][.]',
             ],
             [
+                regex_gil_stderr,
                 log_prefix,
                 '.+This is from PyMuPDF log[(][)].',
             ],
@@ -1217,6 +1230,7 @@ def test_use_python_logging():
                 '.+this is pymupdf.log[(][)]',
             ],
             [
+                regex_gil_stderr,
                 'this is pymupdf.message[(][)] 2',
                 '.+this is pymupdf.log[(][)] 2',
             ],
@@ -1239,6 +1253,7 @@ def test_use_python_logging():
                 log_prefix,
             ],
             [
+                regex_gil_stderr,
                 'WARNING:pymupdf:this is pymupdf.message[(][)]',
                 'WARNING:pymupdf:.+this is pymupdf.log[(][)]',
             ],
@@ -1253,6 +1268,7 @@ def test_use_python_logging():
             ''',
             '',
             [
+                regex_gil_stderr,
                 log_prefix,
                 'this is pymupdf.message[(][)]',
                 '.+this is pymupdf.log[(][)]',
@@ -1282,6 +1298,8 @@ def test_use_python_logging():
                 log_prefix,
             ],
             [
+                regex_gil_stderr,
+                log_prefix,
                 'WARNING:foo:this is pymupdf.message[(][)]',
                 'ERROR:foo:.+this is pymupdf.log[(][)]',
             ],
@@ -1306,6 +1324,8 @@ def test_use_python_logging():
                 log_prefix,
             ],
             [
+                regex_gil_stderr,
+                log_prefix,
                 'CRITICAL:pymupdf:this is pymupdf.message[(][)]',
                 'INFO:pymupdf:.+this is pymupdf.log[(][)]',
             ],
@@ -1322,7 +1342,9 @@ def test_use_python_logging():
             pymupdf.log('this is pymupdf.log()')
             ''',
             [],
-            [],
+            [
+                regex_gil_stderr,
+            ],
             )
     
 
@@ -1341,10 +1363,6 @@ def relpath(path, start=None):
 
 def test_open():
 
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_open(): not running on classic.')
-        return
-    
     import re
     import textwrap
     import traceback
@@ -1581,24 +1599,20 @@ def test_open2():
     with open(path_out, 'w') as f:
         json.dump(results, f, indent=4, sort_keys=1)
         
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
-            results_expected = json.load(f)
-        if results != results_expected:
-            print(f'results != results_expected:')
-            def show(r, name):
-                text = json.dumps(r, indent=4, sort_keys=1)
-                print(f'{name}:')
-                print(textwrap.indent(text, '    '))
-            show(results_expected, 'results_expected')
-            show(results, 'results')
-            assert 0
+    with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
+        results_expected = json.load(f)
+    if results != results_expected:
+        print(f'results != results_expected:')
+        def show(r, name):
+            text = json.dumps(r, indent=4, sort_keys=1)
+            print(f'{name}:')
+            print(textwrap.indent(text, '    '))
+        show(results_expected, 'results_expected')
+        show(results, 'results')
+        assert 0
     
 
 def test_533():
-    if not hasattr(pymupdf, 'mupdf'):
-        print('test_533(): Not running on classic.')
-        return
     path = os.path.abspath(f'{__file__}/../../tests/resources/2.pdf')
     doc = pymupdf.open(path)
     print()
@@ -1709,7 +1723,10 @@ def test_3569():
                 '</svg>\n'
                 )
     wt = pymupdf.TOOLS.mupdf_warnings()
-    assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content sequence / clip nesting'
+    else:
+        assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
 
 def test_3450():
     # This issue is a slow-down, so we just show time taken - it's not safe
@@ -1748,10 +1765,7 @@ def test_3905():
     else:
         assert 0
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26):
-        assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
-    else:
-        assert wt == 'format error: cannot recognize version marker\ntrying to repair broken xref\nrepairing PDF document'
+    assert wt == 'format error: cannot find version marker\ntrying to repair broken xref\nrepairing PDF document'
 
 def test_3624():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3624.pdf')
@@ -1797,10 +1811,7 @@ def test_4034():
         pixmap2 = document[0].get_pixmap()
     rms = gentle_compare.pixmaps_rms(pixmap1, pixmap2)
     print(f'test_4034(): Comparison of original/cleaned page 0 pixmaps: {rms=}.')
-    if pymupdf.mupdf_version_tuple < (1, 25, 2):
-        assert 30 < rms < 50
-    else:
-        assert rms == 0
+    assert rms == 0
 
 def test_4309():
     document = pymupdf.open()
@@ -1817,11 +1828,8 @@ def test_4263():
     command = f'pymupdf clean -linear {path} {path_out}'
     print(f'Running: {command}')
     cp = subprocess.run(command, shell=1, check=0)
-    if pymupdf.mupdf_version_tuple < (1, 26):
-        assert cp.returncode == 0
-    else:
-        # Support for linerarisation dropped in MuPDF-1.26.
-        assert cp.returncode
+    # Support for linerarisation dropped in MuPDF-1.26.
+    assert cp.returncode
 
 def test_4224():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4224.pdf')
@@ -1831,9 +1839,6 @@ def test_4224():
             path_pixmap = f'{path}.{page.number}.png'
             pixmap.save(path_pixmap)
             print(f'Have created: {path_pixmap}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'format error: negative code in 1d faxd\npadding truncated image'
 
 def test_4319():
     # Have not seen this test reproduce issue #4319, but keeping it anyway.
@@ -1989,7 +1994,9 @@ def test_gitinfo():
     print(f'{pymupdf.pymupdf_git_branch=}')
     print(f'{pymupdf.pymupdf_git_sha=}')
     print(f'{pymupdf.pymupdf_version=}')
-    print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
+    print(f'{pymupdf.pymupdf_git_diff=}')
+    if pymupdf.pymupdf_git_diff:
+        print(f'pymupdf.pymupdf_git_diff:\n{textwrap.indent(pymupdf.pymupdf_git_diff, "    ")}')
     
 
 def test_4392():
@@ -1997,7 +2004,7 @@ def test_4392():
         print('test_4392(): not running on Pyodide - cannot run child processes.')
         return
         
-    print()
+    print('', flush=1)
     path = os.path.normpath(f'{__file__}/../../tests/test_4392.py')
     with open(path, 'w') as f:
         f.write('import pymupdf\n')
@@ -2017,23 +2024,35 @@ def test_4392():
     e3 = subprocess.run(command, shell=1, check=0).returncode
     print(f'{e3=}')
     
-    print(f'{e1=} {e2=} {e3=}')
+    print(f'{e1=} {e2=} {e3=}', flush=1)
     
-    print(f'{pymupdf.swig_version=}')
-    print(f'{pymupdf.swig_version_tuple=}')
+    print(f'{pymupdf.swig_version=}', flush=1)
+    print(f'{pymupdf.swig_version_tuple=}', flush=1)
     
     assert e1 == 5
     if pymupdf.swig_version_tuple >= (4, 4):
-        assert e2 == 5
-        assert e3 == 0
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+            assert e2 == 4
+        else:
+            assert e2 == 5
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+            # GIL warning results in failure because of -Werror.
+            assert e3 == 1
+        else:
+            assert e3 == 0
     else:
         # We get SEGV's etc with older swig.
         if platform.system() == 'Windows':
             assert (e2, e3) == (0xc0000005, 0xc0000005)
-        else:
+        elif platform.system() == 'Linux':
             # On plain linux we get (139, 139). On manylinux we get (-11,
             # -11). On MacOS we get (-11, -11).
             assert (e2, e3) == (139, 139) or (e2, e3) == (-11, -11)
+        elif platform.system() == 'Darwin':
+            # python3.14t gives (4, -11)?
+            assert (e2, e3) == (-11, -11) or (e2, e3) == (4, -11)
+        else:
+            assert e2 and e3
 
 
 def test_4639():
@@ -2086,7 +2105,7 @@ def test_4590():
 
 def test_4702():
     if os.environ.get('PYODIDE_ROOT'):
-        # util.download() uses subrocess.
+        # util.download() uses subprocess.
         print('test_4702(): not running on Pyodide - cannot run child processes.')
         return
 
@@ -2115,3 +2134,117 @@ def test_4702():
             _ = document.xref_object(xref)
     wt = pymupdf.TOOLS.mupdf_warnings()
     assert wt == 'repairing PDF document'
+
+
+def test_4712():
+    '''
+    Crash with "corrupted double-linked list
+    '''
+    if pymupdf.mupdf_version_tuple < (1, 26, 11):
+        print(f'test_4712m(): Not running because known to fail on mupdf < 1.26.11: {pymupdf.mupdf_version=}.')
+        return
+    path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
+    path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
+    doc1 = pymupdf.open(path_a)
+    for i in range(6):
+        doc1.load_page(i).get_pixmap()
+    doc2 = pymupdf.open(path_b)
+    for i in range(6):
+        doc2.load_page(i).get_pixmap()
+
+
+def test_4712m():
+    if pymupdf.mupdf_version_tuple < (1, 26, 11):
+        print(f'test_4712m(): Not running because known to fail on mupdf < 1.26.11: {pymupdf.mupdf_version=}.')
+        return
+    
+    path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
+    path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
+    
+    mupdf = pymupdf.mupdf
+    def get_pixmap(page):
+        displaylist = mupdf.fz_new_display_list_from_page(page)
+        rect = mupdf.fz_bound_display_list(displaylist)
+        irect = mupdf.fz_round_rect(rect)
+        pixmap = mupdf.fz_new_pixmap_with_bbox(
+                mupdf.FzColorspace(mupdf.FzColorspace.Fixed_RGB),
+                irect,
+                mupdf.FzSeparations(),
+                0,  # alpha
+                )
+        mupdf.fz_clear_pixmap_with_value(pixmap, 0xFF)
+        matrix = mupdf.FzMatrix()
+        device = mupdf.fz_new_draw_device(matrix, pixmap)
+        mupdf.fz_run_display_list(
+                displaylist,
+                device,
+                mupdf.FzMatrix(),
+                mupdf.FzRect(mupdf.FzRect.Fixed_INFINITE),
+                mupdf.FzCookie(),
+                )
+        mupdf.fz_close_device(device)
+    
+    def process_document(document):
+        for i in range(6):
+            print(f'    {i=}', flush=1)
+            page = mupdf.fz_load_page(document, i)
+            get_pixmap(page)
+
+    print(f'Processing {path_a=}', flush=1)
+    document_a = mupdf.fz_open_document(path_a)
+    process_document(document_a)
+
+    print(f'Processing {path_b=}', flush=1)
+    document_b = mupdf.fz_open_document(path_b)
+    process_document(document_b)
+
+
+def test_4746():
+    archive = pymupdf.Archive('.')
+    archive.add(__file__, 'foo')
+
+
+def test_4907():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4907.pdf')
+    with pymupdf.open(path) as document:
+        for i, page in enumerate(document):
+            print(f'{i=}')
+            display_list = page.get_displaylist(annots=False)
+            text_page = display_list.get_textpage()
+
+def test_4928():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4928.pdf')
+    with pymupdf.open(path) as document:
+        try:
+            document.scrub()
+        except Exception as e:
+            print(f'Ignoring expected exception: {e}')
+    
+def test_4902():
+    print()
+    print(f'test_4902(): {pymupdf.mupdf_version_tuple=}')
+    with pymupdf.open() as doc:
+        page = doc.new_page()
+        text = 'Hello World'
+        bw = 0.4
+        fontsize = 20
+        page.insert_text(
+                (72, 72),
+                text,
+                fontsize=fontsize,
+                render_mode=2,
+                color=(1, 0, 0),
+                fill=(0, 1, 0),
+                border_width=bw,
+                )
+        data = doc.tobytes()
+    with pymupdf.open('pdf', data) as doc:
+        page = doc[0]
+        spans = page.get_texttrace()
+        for i, span in enumerate(spans):
+            cs = ''.join([chr(cc[0]) for cc in span['chars']])
+            print(f'test_4902(): {i=} {span["linewidth"]=} {cs=}')
+        assert len(spans) == 2
+        assert spans[0]['linewidth'] is None
+        assert spans[1]['linewidth'] == 8.0

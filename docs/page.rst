@@ -332,15 +332,15 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
 
 
-      .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED|2, text=PDF_REDACT_TEXT_REMOVE|0)
+   .. method:: apply_redactions(images=PDF_REDACT_IMAGE_PIXELS|2, graphics=PDF_REDACT_LINE_ART_REMOVE_IF_COVERED|1, text=PDF_REDACT_TEXT_REMOVE|0)
 
       **PDF only**: Remove all **content** contained in any redaction rectangle on the page.
 
       **This method applies and then deletes all redactions from the page.**
 
-      :arg int images: How to redact overlapping images. The default (2) blanks out overlapping pixels. `PDF_REDACT_IMAGE_NONE | 0` ignores, and `PDF_REDACT_IMAGE_REMOVE | 1` completely removes images overlapping any redaction annotation. Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE | 3` only removes images that are actually visible.
+      :arg int images: How to redact overlapping images. The default `PDF_REDACT_IMAGE_PIXELS | 2` blanks out overlapping pixels. `PDF_REDACT_IMAGE_NONE | 0` ignores, and `PDF_REDACT_IMAGE_REMOVE | 1` completely removes images overlapping any redaction annotation. Option `PDF_REDACT_IMAGE_REMOVE_UNLESS_INVISIBLE | 3` only removes images that are actually visible.
 
-      :arg int graphics: How to redact overlapping vector graphics (also called "line-art" or "drawings"). The default (2) removes any overlapping vector graphics. `PDF_REDACT_LINE_ART_NONE | 0` ignores, and `PDF_REDACT_LINE_ART_REMOVE_IF_COVERED | 1` removes graphics fully contained in a redaction annotation. When removing line-art, please be aware that **stroked** vector graphics (i.e. type "s" or "sf") have a **larger wrapping rectangle** than one might expect: first of all, at least 50% of the path's line width have to be added in each direction to truly include all of the drawing. If a so-called "miter limit" is provided (see page 121 of the PDF specification), the enlarging value is `miter * width / 2`. So, when letting everything default (width = 1, miter = 10), the redaction rectangle should be at least 5 points larger in every direction.
+      :arg int graphics: How to redact overlapping vector graphics (also called "line-art" or "drawings"). The default `PDF_REDACT_LINE_ART_REMOVE_IF_COVERED | 1` removes any overlapping vector graphics. `PDF_REDACT_LINE_ART_NONE | 0` ignores, and `PDF_REDACT_LINE_ART_REMOVE_IF_TOUCHED | 2` removes graphics fully contained in a redaction annotation. When removing line-art, please be aware that **stroked** vector graphics (i.e. type "s" or "sf") have a **larger wrapping rectangle** than one might expect: first of all, at least 50% of the path's line width have to be added in each direction to truly include all of the drawing. If a so-called "miter limit" is provided (see page 121 of the PDF specification), the enlarging value is `miter * width / 2`. So, when letting everything default (width = 1, miter = 10), the redaction rectangle should be at least 5 points larger in every direction.
 
       :arg int text: Whether to redact overlapping text. The default `PDF_REDACT_TEXT_REMOVE | 0` removes all characters whose boundary box overlaps any redaction rectangle. This complies with the original legal / data protection intentions of redaction annotations. Other use cases however may require to **keep text** while redacting vector graphics or images. This can be achieved by setting `text=True|PDF_REDACT_TEXT_NONE | 1`. This does **not comply** with the data protection intentions of redaction annotations. **Do so at your own risk.**
 
@@ -783,9 +783,34 @@ In a nutshell, this is what you can do with PyMuPDF:
       pair: fill_opacity; insert_textbox
       pair: oc; insert_textbox
 
-   .. method:: insert_textbox(rect, buffer, *, fontsize=11, fontname="helv", fontfile=None, idx=0, color=None, fill=None, render_mode=0, miter_limit=1, border_width=1, encoding=TEXT_ENCODING_LATIN, expandtabs=8, align=TEXT_ALIGN_LEFT, charwidths=None, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0, overlay=True)
+   .. method:: insert_textbox(rect, buffer, \
+                *, \
+                align=TEXT_ALIGN_LEFT, \
+                border_width=1, \
+                color=None, \
+                encoding=TEXT_ENCODING_LATIN, \
+                expandtabs=8, \
+                fill=None, \
+                fill_opacity=1, \
+                fontfile=None, \
+                fontname="helv", \
+                fontsize=11, \
+                lineheight=None, \
+                miter_limit=1, \
+                morph=None, \
+                oc=0, \
+                overlay=True, \
+                render_mode=0, \
+                rotate=0, \
+                set_simple=False, \
+                stroke_opacity=1, \
+                )
 
-      PDF only: Insert text into the specified :data:`rect_like` *rect*. See :meth:`Shape.insert_textbox`.
+      PDF only: Insert text into the specified :data:`rect_like` *rect*.
+      
+      :arg overlay: see :meth:`Shape.commit`.
+      
+      For other args, see `Shape.insert_textbox`.
 
       |history_begin|
 
@@ -1515,34 +1540,37 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: get_textpage_ocr(flags=3, language="eng", dpi=72, full=False, tessdata=None)
 
-      **Optical Character Recognition** (**OCR**) technology can be used to extract text data for documents where text is in a raster image format throughout the page. Use this method to **OCR** a page for text extraction.
+      **Optical Character Recognition** (**OCR**) technology can be used to extract text data for pages where text is in raster image or vector graphic format. Use this method to **OCR** a page for subsequent text extraction.
 
-      This method returns a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used. Otherwise this is a normal :ref:`TextPage` object.
+      This method returns a :ref:`TextPage` for the page that includes OCRed text. MuPDF will invoke Tesseract-OCR if this method is used.
 
       :arg int flags: indicator bits controlling the content available for subsequent test extractions and searches -- see the parameter of :meth:`Page.get_text`.
       :arg str language: the expected language(s). Use "+"-separated values if multiple languages are expected, "eng+spa" for English and Spanish.
       :arg int dpi: the desired resolution in dots per inch. Influences recognition quality (and execution time).
-      :arg bool full: whether to OCR the full page, or just the displayed images.
-      :arg str tessdata: The name of Tesseract's language support folder `tessdata`. If omitted, this information must be present as environment variable `TESSDATA_PREFIX`. Can be determined by function :meth:`get_tessdata`.
+      :arg bool full: whether to OCR the full page, or only page areas that contain no legible text.
+      :arg str tessdata: The name of Tesseract's language support folder `tessdata`. If omitted, the name is determined using function :meth:`get_tessdata`.
 
-      .. note:: This method does **not** support a clip parameter -- OCR will always happen for the complete page rectangle.
+      .. note:: This method does **not** support a clip parameter -- OCR (full or partial) will always happen for the complete page rectangle.
 
       :returns:
       
          a :ref:`TextPage`. Execution may be significantly longer than :meth:`Page.get_textpage`.
 
-         For a full page OCR, **all text** will have the font "GlyphlessFont" from Tesseract. In case of partial OCR, normal text will keep its properties, and only text coming from images will have the GlyphlessFont.
+      For ``full=True`` OCR, **all text** will have the font "GlyphLessFont" from Tesseract. In case of partial OCR (``full=False``), legible normal text will keep its properties, and only recognized text will have the GlyphLessFont.
 
-         .. note::
-         
-            **OCRed text is only available** to PyMuPDF's text extractions and searches if their `textpage` parameter specifies the output of this method.
+      Recognized / OCR text will follow (legible) normal text for partial OCR and will thus not be in reading order. Establishing reading order is -- as always -- your responsibility.
 
-            `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
+      .. note::
+      
+         Text extraction results, including any OCR, are stored in the returned :ref:`TextPage`. To access them, you must use the ``textpage`` parameter in all subsequent text extraction and search methods.
+
+         `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
 
       |history_begin|
 
       * New in v.1.19.0
       * Changed in v1.19.1: support full and partial OCRing a page.
+      * changed in v1.27.2: For partial OCR, **all** page areas outside legible text are now OCRed, not just those within images. This means that OCR will now also be performed for vector graphics, and for text containing illegible characters.
 
       |history_end|
 
@@ -2004,7 +2032,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `combine.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/combine-pages/combine.py>`_),
       * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/posterize-document/posterize.py>`_),
-      * include PDF-based vector images like company logos, watermarks, etc., see `svg-logo.py <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/svg-logo.py>`_, which puts an SVG-based logo on each page.
+      * include PDF-based vector images like company logos, watermarks, etc., see `svg.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/insert-logo/svg.py>`_, which puts an SVG-based logo on each page.
 
       :arg rect_like rect: where to place the image on current page. Must be finite and its intersection with the page must not be empty.
       :arg docsrc: source PDF document containing the page. Must be a different document object, but may be the same file.

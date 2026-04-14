@@ -113,3 +113,81 @@ def test_4462():
         document.save(path2)
     with pymupdf.open(path2) as document:
         assert len(document) == 2
+
+
+def test_4790():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4790.pdf')
+    path2 = os.path.normpath(f'{__file__}/../../tests/test_4790_out.pdf')
+    print()
+    page_to_delete = 1
+    
+    # Reproduce the problem.
+    with pymupdf.open(path) as document:
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert not wt, f'{wt=}'
+        assert len(document) == 2, f'{len(document)=}'
+        document.delete_pages(page_to_delete)
+        assert len(document) == 1, f'{len(document)=}'
+        document.save(path2)
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'repairing PDF document', f'{wt=}'
+    with pymupdf.open(path2) as document:
+        # Expect incorrect result.
+        assert len(document) == 2, f'{len(document)=}'
+
+    # Call mupdf.pdf_repair_xref() before delete_pages(); this works around the
+    # problem.
+    with pymupdf.open(path) as document:
+        document_pdf = pymupdf._as_pdf_document(document)
+        pymupdf.mupdf.pdf_repair_xref(document_pdf)
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'repairing PDF document', f'{wt=}'
+        document.delete_pages(page_to_delete)
+        document.save(path2)
+    with pymupdf.open(path2) as document:
+        # Expect correct result.
+        assert len(document) == 1
+
+    # Call mupdf.pdf_check_document() before delete_pages(); this works around
+    # the problem.
+    with pymupdf.open(path) as document:
+        document_pdf = pymupdf._as_pdf_document(document)
+        pymupdf.mupdf.pdf_check_document(document_pdf)
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'repairing PDF document', f'{wt=}'
+        document.delete_pages(page_to_delete)
+        document.save(path2)
+    with pymupdf.open(path2) as document:
+        # Expect correct result.
+        assert len(document) == 1
+
+    # Check that document is marked as repaired after save.
+    with pymupdf.open(path) as document:
+        assert not document.is_repaired, f'{document.is_repaired=}'
+        document.save(path2)
+        assert document.is_repaired, f'{document.is_repaired=}'
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'repairing PDF document', f'{wt=}'
+    
+    # Check that raise_on_repair=True works.
+    with pymupdf.open(path) as document:
+        try:
+            document.save(path2, raise_on_repair=True)
+        except Exception as e:
+            print(f'Received expected exception: {e}', flush=1)
+        else:
+            assert 0, 'Did not get expected exception.'
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'repairing PDF document'
+    
+    # Check that Document.repair() works.
+    with pymupdf.open(path) as document:
+        document.repair()
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt == 'repairing PDF document'
+        document.delete_pages(page_to_delete)
+        document.save(path2, raise_on_repair=True)
+    with pymupdf.open(path2) as document:
+        # Expect correct result.
+        assert len(document) == 1, f'{len(document)=}'
+    

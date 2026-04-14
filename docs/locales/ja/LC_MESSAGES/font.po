@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,214 +19,217 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 45a7d290afb143ae889044cf4a7e6d0a
+#: ../../header.rst:-1 e188dde9abe149bc8995bf7a6a0bc7d6
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 00c23289844444afbfd2c89d7559321f
+#: ../../header.rst:-1 3cb714fa525c44bbbbd491bc8f62336e
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 ab3ce3d73853429f893c65557831d844
+#: ../../header.rst:-1 c23c7d47fe3e429dbde810adabc353b6
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../font.rst:7 f02283a943e74b869bf944c3b38dab4b
+#: ../../font.rst:7 d2748ea1ae9940f6b22b259ae4533e13
 msgid "Font"
 msgstr "Font (フォント)"
 
-#: ../../font.rst:9 4b6a50a7ca01495fb1d18526d4a352a4
+#: ../../font.rst:9 3bf53a70d692484eaabd5afc3aab44c8
 msgid "New in v1.16.18"
 msgstr "新機能：v1.16.18"
 
-#: ../../font.rst:11 ddeb945b793d49fab4dad50fd160c376
+#: ../../font.rst:11 4c18f6c0f2b6494fbf226048ecce0907
 msgid ""
-"This class represents a font as defined in |MuPDF| (``fz_font_s`` structure)."
-" It is required for the new class :ref:`TextWriter` and the new "
-":meth:`Page.write_text`. Currently, it has no connection to how fonts are"
-" used in methods :meth:`Page.insert_text` or :meth:`Page.insert_textbox`,"
-" respectively."
+"This class represents a font as defined in |MuPDF| (``fz_font_s`` "
+"structure). It is required for the new class :ref:`TextWriter` and the "
+"new :meth:`Page.write_text`. Currently, it has no connection to how fonts"
+" are used in methods :meth:`Page.insert_text` or "
+":meth:`Page.insert_textbox`, respectively."
 msgstr ""
-"このクラスは、|MuPDF| で定義されたフォント（ ``fz_font_s`` 構造体）を表します。これは、新しいクラス :ref:`TextWriter` "
-"と新しい :meth:`Page.write_text` に必要であり、現在、:meth:`Page.insert_text` または "
-":meth:`Page.insert_textbox` メソッドでフォントがどのように使用されているかとは関係ありません。"
+"このクラスは、|MuPDF| で定義されたフォント（ ``fz_font_s`` 構造体）を表します。これは、新しいクラス "
+":ref:`TextWriter` と新しい :meth:`Page.write_text` "
+"に必要であり、現在、:meth:`Page.insert_text` または :meth:`Page.insert_textbox` "
+"メソッドでフォントがどのように使用されているかとは関係ありません。"
 
-#: ../../font.rst:13 9d4c0b8b63e84f38b96afda6417986ff
+#: ../../font.rst:13 2125868871f645fb9fa0d4390f116a1a
 msgid ""
-"A ``Font`` object also contains useful general information, like the font "
-"bbox, the number of defined glyphs, glyph names or the ``bbox`` of a single "
-"glyph."
-msgstr "``Font`` オブジェクトには、フォント ``bbox`` 、定義済みグリフの数、グリフ名、単一グリフの ``bbox`` など、有用な一般情報も含まれています。"
+"A ``Font`` object also contains useful general information, like the font"
+" bbox, the number of defined glyphs, glyph names or the ``bbox`` of a "
+"single glyph."
+msgstr ""
+"``Font`` オブジェクトには、フォント ``bbox`` 、定義済みグリフの数、グリフ名、単一グリフの ``bbox`` "
+"など、有用な一般情報も含まれています。"
 
-#: ../../font.rst:17 7c72f65d296840899683ec8537ef1f7e
+#: ../../font.rst:17 842b44a70bf34b07ac2692aa84a193da
 msgid "**Method / Attribute**"
 msgstr "**メソッド/属性** "
 
-#: ../../font.rst:17 2dc504c945074db49451ff6cfe92ff06
+#: ../../font.rst:17 f69a466cefe443c3855949e5cc5ffcd6
 msgid "**Short Description**"
 msgstr "**短い説明** "
 
-#: ../../font.rst:19 f59fd1b895564a42b724b588f4fc4535
+#: ../../font.rst:19 1bba986439da408a84c24de22da3768d
 msgid ":meth:`~Font.glyph_advance`"
 msgstr ""
 
-#: ../../font.rst:19 290af01ec4284c0a9459d29faf19c241
+#: ../../font.rst:19 627a6c4218dd4762ae098709cdb920ad
 msgid "Width of a character"
 msgstr "文字の幅"
 
-#: ../../font.rst:20 d36df8d2c1534221865b7ee8c26d9a16
+#: ../../font.rst:20 6ca041bd76a54c949510e2ed77ca58f0
 msgid ":meth:`~Font.glyph_bbox`"
 msgstr ""
 
-#: ../../font.rst:20 fde6283ce67f4c1ba76993b42ebb87e0
+#: ../../font.rst:20 d9fb542d691c44a19873b891f02b7812
 msgid "Glyph rectangle"
 msgstr "グリフの矩形"
 
-#: ../../font.rst:21 19c7f97bcc804101a1599f5d955a26c2
+#: ../../font.rst:21 e7791392edbd4e5d9094df1b320d2c5b
 msgid ":meth:`~Font.glyph_name_to_unicode`"
 msgstr ""
 
-#: ../../font.rst:21 dfd0653dbbe14fbbb28215a00cef7ff7
+#: ../../font.rst:21 13f06c680aba44698114079c036bcdba
 msgid "Get unicode from glyph name"
 msgstr "グリフ名からUnicodeを取得"
 
-#: ../../font.rst:22 57f5b88c0c8c456fb8b818b59e822404
+#: ../../font.rst:22 c04368ada6c341f093c2f4872cd5cd52
 msgid ":meth:`~Font.has_glyph`"
 msgstr ""
 
-#: ../../font.rst:22 8768dbc2180b49648d5b8e8a35fe20e2
+#: ../../font.rst:22 689634c88d144bef9223b78f39009eda
 msgid "Return glyph id of unicode"
 msgstr "UnicodeのグリフIDを返す"
 
-#: ../../font.rst:23 25ac0c185f98441a97f85b1852974e5e
+#: ../../font.rst:23 a369a0e87b4340168dce9cd130684d3c
 msgid ":meth:`~Font.text_length`"
 msgstr ""
 
-#: ../../font.rst:23 cafb4c8e9f7145ff999b1c2859f5b5f6
+#: ../../font.rst:23 f20e22d5c6534f99a10aad9ab98d9ae3
 msgid "Compute string length"
 msgstr "文字列の長さを計算"
 
-#: ../../font.rst:24 6426a083aaeb46909ac368aad5baa0be
+#: ../../font.rst:24 d46c723021014de19f30cce31dd6fa83
 msgid ":meth:`~Font.char_lengths`"
 msgstr ""
 
-#: ../../font.rst:24 ae55279d05ff45639ca0126f6f5094d5
+#: ../../font.rst:24 2c939c616c2a45d19cef1d2e9148c5f8
 msgid "Tuple of char widths of a string"
 msgstr "文字列の文字幅のタプル"
 
-#: ../../font.rst:25 ec26b63e7eef445e9a0c1bd624fdc888
+#: ../../font.rst:25 30fcbf0fac8c4137ac05697051b7a487
 msgid ":meth:`~Font.unicode_to_glyph_name`"
 msgstr ""
 
-#: ../../font.rst:25 7c7807d100b04dd5941a20428f67a254
+#: ../../font.rst:25 96a805868d65421593f69cabcbdff444
 msgid "Get glyph name of a unicode"
 msgstr "Unicodeのグリフ名を取得"
 
-#: ../../font.rst:26 d926f8b02f4546d398cc79a470067477
+#: ../../font.rst:26 556560ade52f45878ccd9247ed48b124
 msgid ":meth:`~Font.valid_codepoints`"
 msgstr ""
 
-#: ../../font.rst:26 6e2dfdf539a441da80c05f9704ab9444
+#: ../../font.rst:26 f98352016c9a420597ecdc2d4da47bcd
 msgid "Array of supported unicodes"
 msgstr "サポートされているUnicodeの配列"
 
-#: ../../font.rst:27 89d173d419b64155bd0aca6a425584e7
+#: ../../font.rst:27 8046f6ca0658408896ffec620e7c19d2
 msgid ":attr:`~Font.ascender`"
 msgstr ""
 
-#: ../../font.rst:27 9c4238ddaced4bc3959d5546e0286306
+#: ../../font.rst:27 bdef6c925fd24cd6a8bd423203561e10
 msgid "Font ascender"
 msgstr "フォントのアセンダ"
 
-#: ../../font.rst:28 78b7d9e180f9485db69b51a5463d3571
+#: ../../font.rst:28 b9972b7d50024c5f92aae461b95e9b9d
 msgid ":attr:`~Font.descender`"
 msgstr ""
 
-#: ../../font.rst:28 3d6f9666a2374daaa025f778a56be258
+#: ../../font.rst:28 333b36880ce240299a20b8d485071b31
 msgid "Font descender"
 msgstr "フォントのディセンダ"
 
-#: ../../font.rst:29 f42bed3ccae74e1085cc1506360d79c3
+#: ../../font.rst:29 1ca68d63143c41ae9afaf82231bb0b98
 msgid ":attr:`~Font.bbox`"
 msgstr ""
 
-#: ../../font.rst:29 2dd21372d0b949b49f4e17dfcb4f4496
+#: ../../font.rst:29 88947fe258eb49d5a4bcd7f9262d6f64
 msgid "Font rectangle"
 msgstr "フォントの矩形"
 
-#: ../../font.rst:30 71b14ffa01ac43bd8ddbdaadbb0f1cfd
+#: ../../font.rst:30 70204c08ad4f48bfb90c610ace5e2f16
 msgid ":attr:`~Font.buffer`"
 msgstr ""
 
-#: ../../font.rst:30 5bd92ce5ad94497587aec728309e49d4
+#: ../../font.rst:30 d8dc88a830a143b69cf9198d43a1d8be
 msgid "Copy of the font's binary image"
 msgstr "フォントのバイナリイメージのコピー"
 
-#: ../../font.rst:31 8f58bdb27c0c4035b913b270b3e02b02
+#: ../../font.rst:31 087ab4d9b8c245329f433d0e0bc1dae2
 msgid ":attr:`~Font.flags`"
 msgstr ""
 
-#: ../../font.rst:31 8987d36d302546c48fccabf333e8eb66
+#: ../../font.rst:31 b08397d234cf4d828c277f81b7e5797c
 msgid "Collection of font properties"
 msgstr "フォントのプロパティのコレクション"
 
-#: ../../font.rst:32 10176eb1e76c4953ade9fb0a7baba794
+#: ../../font.rst:32 1b9e053341ba4bf29f37614365fca44e
 msgid ":attr:`~Font.glyph_count`"
 msgstr ""
 
-#: ../../font.rst:32 f8d7e052eea8479c94a7cd51b5d4950c
+#: ../../font.rst:32 9266fb9484fe42618bd4b861302ec139
 msgid "Number of supported glyphs"
 msgstr "サポートされているグリフの数"
 
-#: ../../font.rst:33 ba08a8cfb6c54d82a80a4ad50de26d64
+#: ../../font.rst:33 a1a23dee533f4eb9a0253e7ed4dc2160
 msgid ":attr:`~Font.name`"
 msgstr ""
 
-#: ../../font.rst:33 32b7c1e41541468b94da653810f5aa7c
+#: ../../font.rst:33 f7c44ea05506418686745a0a8b4ccf1e
 msgid "Name of font"
 msgstr "フォントの名前"
 
-#: ../../font.rst:34 97ea28e957384acbb39bb0ee05bf7011
+#: ../../font.rst:34 4d8600344c934dca966561b9b23705a3
 msgid ":attr:`~Font.is_bold`"
 msgstr ""
 
-#: ../../font.rst:34 0da7a495eb3940be97b05d6ff9e51e70
+#: ../../font.rst:34 42bd831f9b604a58adec9428f2799d4a
 msgid "`True` if bold"
 msgstr ""
 
-#: ../../font.rst:35 e1aaedf145dd4413b79daae1269069a9
+#: ../../font.rst:35 4fd252e5611e4f25ad7279f120909cc1
 msgid ":attr:`~Font.is_monospaced`"
 msgstr ""
 
-#: ../../font.rst:35 9a7f20b9c7704e88b54fbdb6151fff49
+#: ../../font.rst:35 53567d475247479ebe27771a05253749
 msgid "`True` if mono-spaced"
 msgstr ""
 
-#: ../../font.rst:36 c4f4f6778d144109be97c6b7bd799e3b
+#: ../../font.rst:36 386c083d80e24cd8889a76d1ed0d655e
 msgid ":attr:`~Font.is_serif`"
 msgstr ""
 
-#: ../../font.rst:36 1110ef3babb845a5ab3659f7e61dc42f
+#: ../../font.rst:36 dc515a68d8984513880dd9652137056b
 msgid "`True` if serif, `False` if sans-serif"
 msgstr ""
 
-#: ../../font.rst:37 b68dcb7818c24ba9a89b733b3ada1fb3
+#: ../../font.rst:37 ef38964ab5634a4a8afc1a4043834bcb
 msgid ":attr:`~Font.is_italic`"
 msgstr ""
 
-#: ../../font.rst:37 dcde6d1781444230aefd0dd66f36e48d
+#: ../../font.rst:37 6ab8b6017630445e8a8d73bd87250888
 msgid "`True` if italic"
 msgstr ""
 
-#: ../../font.rst:41 055c88f482754327b0319159f5cd05c4
+#: ../../font.rst:41 ef6bc7e0d9cf42848d2ea5ec97cad0e8
 msgid "**Class API**"
 msgstr "**クラスAPI**"
 
-#: ../../font.rst:60 941c9b4f031a4bb7ac7ed85363ad6dfc
+#: ../../font.rst:60 07b4413b01ae4ae89132a4d69299fcff
 msgid ""
 "Font constructor. The large number of parameters are used to locate font,"
 " which most closely resembles the requirements. Not all parameters are "
@@ -236,15 +239,15 @@ msgstr ""
 "フォントコンストラクタ。多くのパラメータは、要件に最も近いフォントを特定するために使用されます。必ずしもすべてのパラメータが必要とされるわけではありません"
 " - パラメータが評価されるロジックを説明する以下の疑似コードを参照してください。"
 
-#: ../../font.rst 038b1350c78e4af38ce27b2161a878ba
-#: 11d859906804423d906939c95128b9f1 4dc8aea23a6f47f3a29859317d74fc91
-#: 65f80f24c66a48b78e43f93f741e3fda 8930cac6b6524339bbac6f8a39bb3547
-#: 8d8305aa574c4ab6b4e0f12053b08ee1 b7c7897014cf43d2bd2709757c71556b
-#: e243e193bd1c4d8cbecdcdefb29dcd48
+#: ../../font.rst 51829dd751b848658d1ba228b94ce1de
+#: 6865a3bfb8444b439d877a9d8a59cb0a 722fbb72278d4e3e8bb0df13f398859a
+#: 8cbc7148711c4ee9a078b6a806370c78 a100d7e7206946cda8a733ebb3f80137
+#: c931f89accb14562827a19ea990df0aa f0f58970e4794ad2b4f9ab161b976692
+#: f42510c818544c6180a85f87a852dd28
 msgid "Parameters"
 msgstr "パラメータ"
 
-#: ../../font.rst:62 ce1b93a1069e401a8fc8fb883957f814
+#: ../../font.rst:62 b7c66967af094eed88e4cd0bfa9c0b59
 msgid ""
 "one of the :ref:`Base-14-Fonts` or CJK fontnames. Also possible are a "
 "select few other names like (watch the correct spelling): \"Arial\", "
@@ -254,7 +257,7 @@ msgid ""
 ":attr:`fitz_fonts` and in the table further down."
 msgstr ""
 
-#: ../../font.rst:62 7dc0e95a2250423fa26f074438f4acc6
+#: ../../font.rst:62 4f54e9a21f4e4cdd94eb896e84a11207
 msgid ""
 "one of the :ref:`Base-14-Fonts` or CJK fontnames. Also possible are a "
 "select few other names like (watch the correct spelling): \"Arial\", "
@@ -263,11 +266,11 @@ msgstr ""
 ":ref:`Base-14-Fonts` またはCJKフォントの名前のいずれか。また、\"Arial\"、\"Times\"、\"Times "
 "Roman\"などの選択的な名前も可能です。"
 
-#: ../../font.rst:64 6bec0e09402e4bb6845ddf5125491bb3
+#: ../../font.rst:64 33128ec921644adcb669eed87f58d1ad
 msgid "*(Changed in v1.17.5)*"
 msgstr "(v1.17.5で変更)"
 
-#: ../../font.rst:66 a2688702fcc44a058dbe4572e93e9c67
+#: ../../font.rst:66 2580ac163f6d40a6a97df2667e044b70
 msgid ""
 "If you have installed `pymupdf-fonts <https://pypi.org/project/pymupdf-"
 "fonts/>`_, there are also new \"reserved\" fontnames available, which are"
@@ -276,15 +279,15 @@ msgstr ""
 "`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ "
 "をインストールしている場合、:attr:`fitz_fonts` と下の表でリストされている新しい「予約済み」フォント名も利用可能です。"
 
-#: ../../font.rst:68 64c4dea0a26f459f9ecfaeb1987f3820
+#: ../../font.rst:68 0115b8805a994350b1e9b88652d9c671
 msgid "the filename of a fontfile somewhere on your system [#f1]_."
 msgstr "システムのどこかにあるフォントファイルのファイル名 [#f1]_。"
 
-#: ../../font.rst:69 ec5352b957ba406f8ab58c0737979e0f
+#: ../../font.rst:69 855671c475ce4d4a95574d50da436fa8
 msgid "a fontfile loaded in memory [#f1]_."
 msgstr "メモリ内にロードされたフォントファイル [#f1]_。"
 
-#: ../../font.rst:70 71bc43be60c04dde9f99f96570fca0a8
+#: ../../font.rst:70 b4cd7e175eb14d658f5faa379b3ef701
 msgid ""
 "the number of a UCDN script. Currently supported in PyMuPDF are numbers "
 "24, and 32 through 35."
@@ -292,7 +295,7 @@ msgstr ""
 "UCDN（Unicode Character Database "
 "Number）のスクリプト番号です。現在、PyMuPDFでサポートされている番号は、24、および32から35です。"
 
-#: ../../font.rst:71 add40d2e69f447128313fbd4ead517a1
+#: ../../font.rst:71 d5a5fc15ea7c4e1b8d26964a61b402e8
 msgid ""
 "one of the values \"zh-Hant\" (traditional Chinese), \"zh-Hans\" "
 "(simplified Chinese), \"ja\" (Japanese) and \"ko\" (Korean). Otherwise, "
@@ -300,33 +303,33 @@ msgid ""
 "are currently documentary only."
 msgstr "UCDNスクリプトの番号。現在、PyMuPDFでサポートされているのは24、および32から35の数値です"
 
-#: ../../font.rst:72 5e4b791b58be400b99c3fccfaae671ba
+#: ../../font.rst:72 5b0e786be58c4a09a48eacc61882197e
 msgid "an alternative selector for one of the CJK fonts."
 msgstr "CJKフォントの選択のための代替セレクタ。"
 
-#: ../../font.rst:73 33707866dd584b6993b3c60292e5e392
+#: ../../font.rst:73 6af1f2fb252e4071bab746f2ad57c01d
 msgid "look for a bold font."
 msgstr "太字のフォントを探します。"
 
-#: ../../font.rst:74 e8c45f980fa04d4394e41fe116a45f3f
+#: ../../font.rst:74 6f2bffef2aa94c92b00fa9cf6d97a283
 msgid "look for an italic font."
 msgstr "イタリック体のフォントを探します。"
 
-#: ../../font.rst:75 27bccc7d1af94edead067542a7104885
+#: ../../font.rst:75 23ca0f2751ed4b2f834236f7e744dd36
 msgid "look for a serifed font."
 msgstr "セリフ付きのフォントを探します。"
 
-#: ../../font.rst 4a4bfff89a5f4d888dfc93b55c8fc5e3
-#: 6c3e1ce9b68e4804a745f0940b33e0bd 6d5f19eef6ac42d8a6f06d709743c29a
-#: 7af7d1f2dc8c4e89b9947286bc644cad 7dd50832351947f9986543d602236567
-#: 7e13176fe56b4278aa552ef5f2800e85 7e576e8f92594b329d5a3ebd0eae62b5
-#: a32ab6ce83104291bb24d7a7dce8d2e5 f08da17b5bd640e68aab31bf872ecb8b
+#: ../../font.rst 1d22b29a05e741f387368f96870d4c1b
+#: 1e8b6f0bc4da4c4db71fcd4ce33f7f4d 1ebfff0006a54633b2e48a4cf728c55b
+#: 3126e087ce6d47cbb326a10281420878 3aaf4a67eaa8475e97bebd3b14716268
+#: 3b8e58b5a2034fddbba0b9f34d785351 425ebf256d4842928912c98469178b2e
+#: 455992af6eea4168919f71ca6e0a63e9 7512b5e1267b491c80d9886fcb846c91
 msgid "Returns"
 msgstr "戻り値"
 
-#: ../../font.rst:77 af29f25c30c749a99cadf0048bdb2132
+#: ../../font.rst:77 d564d7e503224782b914ea4c4d4bd55b
 msgid ""
-"a MuPDF font if successful. This is the overall sequence of checks to "
+"a |MuPDF| font if successful. This is the overall sequence of checks to "
 "determine an appropriate font:  =========== "
 "============================================================ Argument    "
 "Action =========== "
@@ -339,49 +342,49 @@ msgid ""
 "============================================================"
 msgstr ""
 
-#: ../../font.rst:77 199ff48cd818477fa38adf2a6a1cba35
+#: ../../font.rst:77 cea38fccea5241229aadba228571f8be
 msgid ""
 "a |MuPDF| font if successful. This is the overall sequence of checks to "
 "determine an appropriate font:"
 msgstr "成功した場合は |MuPDF| フォント。適切なフォントを特定するための全体のチェックのシーケンスは次のとおりです。"
 
-#: ../../font.rst:80 3718868448404e609fd00b39ed9b41b9
+#: ../../font.rst:80 580ec24b97e749299e613764ef3403c6
 msgid "Argument"
 msgstr "引数"
 
-#: ../../font.rst:80 fa6a9cc31ca146e394069b04868d0946
+#: ../../font.rst:80 c41ca6b5584649b586f676f06f22549b
 msgid "Action"
 msgstr "アクション"
 
-#: ../../font.rst:82 8dd85a26111942b7844cf367fe830da3
+#: ../../font.rst:82 98333181f4584c9c8bca13c85c415262
 msgid "fontfile?"
 msgstr ""
 
-#: ../../font.rst:82 3670d7b40da644d2a20a88832c83529c
+#: ../../font.rst:82 73d6da924f634bc7b6e4fe044072fe6d
 msgid "Create font from file, exception if failure."
 msgstr "ファイルからフォントを作成し、失敗した場合は例外をスローします。"
 
-#: ../../font.rst:83 31eb3c630783441790a421702a4035ca
+#: ../../font.rst:83 130073b0bea44ffc890479cdb5f5340d
 msgid "fontbuffer?"
 msgstr ""
 
-#: ../../font.rst:83 e3bcdda824a34730bae2ca3a3b1787d0
+#: ../../font.rst:83 a74986c74e6843eea78fcc35d447c3a2
 msgid "Create font from buffer, exception if failure."
 msgstr "バッファからフォントを作成し、失敗した場合は例外をスローします。"
 
-#: ../../font.rst:84 3acc4602197a42aeac8ae72bab1ed28c
+#: ../../font.rst:84 29919d8588f5493dafda4cfe7f0555b1
 msgid "ordering>=0"
 msgstr ""
 
-#: ../../font.rst:84 df1bde02d3334adfb8e5268b0c5f3ae5
+#: ../../font.rst:84 3f0b6b784f1742238213e67a82078abf
 msgid "Create universal font, always succeeds."
 msgstr "ユニバーサルフォントを作成し、常に成功します。"
 
-#: ../../font.rst:85 c44248a623b7435ba06d5df0b1cba3a5
+#: ../../font.rst:85 fe70636ee76b429da54199e913507119
 msgid "fontname?"
 msgstr ""
 
-#: ../../font.rst:85 50cd0fd1f1a240c2ac6592e4a8356720
+#: ../../font.rst:85 a411aeb787b5416f854bb729f143e0b6
 msgid ""
 "Create a Base-14 font, universal font, or font provided by `pymupdf-fonts"
 " <https://pypi.org/project/pymupdf-fonts/>`_. See table below."
@@ -389,7 +392,7 @@ msgstr ""
 "ベース14フォント、ユニバーサルフォント、または `pymupdf-fonts <https://pypi.org/project"
 "/pymupdf-fonts/>`_ で提供されるフォントを作成します。下の表を参照してください。"
 
-#: ../../font.rst:92 2fa3ff4df5ae4bef8482f34c63767318
+#: ../../font.rst:92 d6d370d9961e418c8c6a25a191d46651
 msgid ""
 "With the usual reserved names \"helv\", \"tiro\", etc., you will create "
 "fonts with the expected names \"Helvetica\", \"Times-Roman\" and so on. "
@@ -398,17 +401,17 @@ msgstr ""
 "通常の予約済みの名前「helv」、「tiro」などを使用すると、期待どおりの名前「Helvetica」、「Times-"
 "Roman」などのフォントが作成されます。**ただし** 、:meth:`Page.insert_font` などとは異なり、"
 
-#: ../../font.rst:94 765b0615bb4b44bb9cdcca9bf1e3657d
+#: ../../font.rst:94 31fed8debc7c42ca9166ee0b1ef74c98
 msgid "a font file will **always** be embedded in your PDF,"
 msgstr "フォントファイルはPDFに **常に** 埋め込まれます。"
 
-#: ../../font.rst:95 8e3f9ad2f0754e10b50ef42e6882653d
+#: ../../font.rst:95 9b3d8892b4424474889b2416ef13836b
 msgid ""
 "Greek and Cyrillic characters are supported without needing the "
 "*encoding* parameter."
 msgstr "ギリシャ文字およびキリル文字は *エンコーディング* パラメータを必要とせずにサポートされます。"
 
-#: ../../font.rst:97 d3746cee61fc4490b1696ed40b1b739a
+#: ../../font.rst:97 c07988cc48644ac8846d43cf555ae595
 msgid ""
 "Using *ordering >= 0*, or fontnames \"cjk\", \"china-t\", \"china-s\", "
 "\"japan\" or \"korea\" will **always create the same \"universal\"** font"
@@ -421,7 +424,7 @@ msgstr ""
 " フォント **「Droid Sans Fallback "
 "Regular」が作成されます**。このフォントは、**中国語、日本語、韓国語、ラテン文字、ギリシャ文字、キリル文字を含むすべての文字をサポートしています**。これはサンセリフのフォントです。"
 
-#: ../../font.rst:99 fa0bc1c990854bbe800c94afd2368fec
+#: ../../font.rst:99 6db4519008e44ee682c2a27e4d316f4b
 msgid ""
 "Actually, you would rarely ever need another sans-serif font than "
 "**\"Droid Sans Fallback Regular\"**. **Except** that this font file is "
@@ -433,7 +436,7 @@ msgstr ""
 "Regular」以外のサンセリフのフォントはほとんど必要ありません。ただし、このフォントファイルは比較的大きく、PDFファイルサイズを約1.65 "
 "MB（圧縮）増加させます。CJKのサポートが必要でない場合は、「helv」、「tiro」などを指定し、約35 KB（圧縮）で済むでしょう。"
 
-#: ../../font.rst:101 12bbf85ce3a143c1baa646f805eef0ae
+#: ../../font.rst:101 79c699cd0e0a44828e95752e5f6f2ebe
 msgid ""
 "If you **know** you have a mixture of CJK and Latin text, consider just "
 "using `Font(\"cjk\")` because this supports everything and also "
@@ -444,7 +447,7 @@ msgstr ""
 "CJKとラテン文字の混合テキストがあることを **知っている** 場合は、単に `Font(\"cjk\")` "
 "を使用して、すべてをサポートし、実行を大幅に高速化します（最大3倍）。MuPDFは常にこの単一のフォントで任意の文字を見つけることができ、フォールバックをチェックする必要はありません。"
 
-#: ../../font.rst:103 2df673aa00fd4367849b86bc1d74524c
+#: ../../font.rst:103 71613c830de34e6f9ecdf39faec59a38
 msgid ""
 "But if you do use some other font, you will still automatically be able "
 "to also write CJK characters: MuPDF detects this situation and silently "
@@ -452,7 +455,7 @@ msgid ""
 "embedded in your PDF)."
 msgstr "ただし、他のフォントを使用する場合、CJK文字を書き込むことも自動的にできるようになります。MuPDFはこの状況を検出し、静かにユニバーサルフォントにフォールバックします（その場合、当然、PDFにも埋め込まれます）。"
 
-#: ../../font.rst:105 7b6e209cffc74b7fad6dc4636f926e62
+#: ../../font.rst:105 f904db70b3d246e1b10894809cb39326
 msgid ""
 "*(New in v1.17.5)* Optionally, some new \"reserved\" fontname codes "
 "become available if you install `pymupdf-fonts <https://pypi.org/project"
@@ -472,7 +475,7 @@ msgstr ""
 " FiraGOフォントのサイズは「Droid Sans Fallback」のサイズの1/4だけです（圧縮400 KB対1.65 MB） "
 "**そして** 、ユニバーサルフォントにはない太字、イタリック、太字イタリックのウェイトを提供しています。"
 
-#: ../../font.rst:107 c1be2c550ca24809865553529c177515
+#: ../../font.rst:107 51115005ef5b45048d055b7507f8bde1
 msgid ""
 "**\"Space Mono\"** is another nice and small mono-spaced font from Google"
 " Fonts, which supports Latin Extended characters and comes with all 4 "
@@ -481,223 +484,223 @@ msgstr ""
 "**\"Space Mono\"** "
 "はGoogleフォントからのもう1つの素敵で小さな等幅フォントで、ラテン拡張文字をサポートし、すべての4つの重要なウェイトが含まれています。"
 
-#: ../../font.rst:109 fc4e7c8d7b1345a5b448e81e805bd919
+#: ../../font.rst:109 96727739a91940c6a331ed087081f309
 msgid ""
 "The following table maps a fontname code to the corresponding font. For "
 "the current content of the package please see its documentation:"
 msgstr "次の表は、フォント名コードを対応するフォントにマッピングしています。パッケージの現在の内容については、そのドキュメンテーションを参照してください："
 
-#: ../../font.rst:112 b889ba03a97d448d986fc5f2720caed3
+#: ../../font.rst:112 1a8503b417cf4c8fada552e8610a6e75
 msgid "Code"
 msgstr "コード"
 
-#: ../../font.rst:112 35986fd845e84ccd9ebdea627b3a9ef0
+#: ../../font.rst:112 2d8f3f6732334560b3d503193be52bed
 msgid "Fontname"
 msgstr "フォント名"
 
-#: ../../font.rst:112 c5a86c33966344d99f7bc3aae0f70063
+#: ../../font.rst:112 c74b2b12e6aa454b8f2dbb4143ffd7bf
 msgid "New in"
 msgstr "バージョン"
 
-#: ../../font.rst:112 28486ebc0e8b4800a1515b75de64e9a0
+#: ../../font.rst:112 09250ac84f2f444481bee3de0bd29007
 msgid "Comment"
 msgstr "コメント"
 
-#: ../../font.rst:114 5975f7a315f94f9d9b7894669a7ee349
+#: ../../font.rst:114 3092d884950f4b6eb710a9de0dd03966
 msgid "figo"
 msgstr ""
 
-#: ../../font.rst:114 d65d13d55b874331bad6061fdbef6775
+#: ../../font.rst:114 660c171a6c564814aecb4286056ec31a
 msgid "FiraGO Regular"
 msgstr "FiraGO レギュラー"
 
 #: ../../font.rst:114 ../../font.rst:115 ../../font.rst:116 ../../font.rst:117
-#: ../../font.rst:118 ../../font.rst:119 26d9cc6aebfa45b2be5bd54f05c56b18
-#: 3040ba82d7ef462ab3a04477cab47ceb 4bf61b95a36144759a5e36fcd0f1a9e6
-#: 8706d012913c41be8e39a69cd17e39c3 a0a1d05da1e94e96a62e651b53345c88
-#: a5f443561f364257a287e8edb593735a
+#: ../../font.rst:118 ../../font.rst:119 3e80c8fdb0dd48d780069b2449ee507f
+#: 410d087d7e1243d1a54c1ae0aab172ac 6f27e46024f84abd97777e835ae6517f
+#: 794afaec71784e91b7e817f22ead4ffe baa94f214aea4d77a1a5fad071d449f1
+#: ed541c0c11684da3bebb342489caa3cb
 msgid "v1.0.0"
 msgstr ""
 
-#: ../../font.rst:114 9b165705f2d341558fec266780a6637b
+#: ../../font.rst:114 aababde120ff4dbcbe21832121ff155b
 msgid "narrower than Helvetica"
 msgstr "Helveticaよりも狭い"
 
-#: ../../font.rst:115 211b48b8f6f3408e93fb4f09c9449ed7
+#: ../../font.rst:115 01a9c98efef34d0aba6ba3fa0d37813b
 msgid "figbo"
 msgstr ""
 
-#: ../../font.rst:115 00a72ab5997c45d89df1965e844fb1f3
+#: ../../font.rst:115 b83719e8b5724cd69e516c29b9367ebb
 msgid "FiraGO Bold"
 msgstr "FiraGO ボールド"
 
-#: ../../font.rst:116 000695b068a44cbd9a61c736c1bcdb72
+#: ../../font.rst:116 4bbe563434c7425796dc77766d23c9c8
 msgid "figit"
 msgstr ""
 
-#: ../../font.rst:116 f6f05fa199b64571878af54d8245a1ee
+#: ../../font.rst:116 480523c94e564e26be18e84adb38e861
 msgid "FiraGO Italic"
 msgstr "FiraGO イタリック"
 
-#: ../../font.rst:117 b03c1dc714324e83bd9b5d2de9ad4982
+#: ../../font.rst:117 1e31c41d5df44c4fb09a83fdbd89e06d
 msgid "figbi"
 msgstr ""
 
-#: ../../font.rst:117 952652ef389945488cf95b796a3a1861
+#: ../../font.rst:117 0e71b818d3cd4256a6f49c7416f6b1ca
 msgid "FiraGO Bold Italic"
 msgstr "FiraGO ボールドイタリック"
 
-#: ../../font.rst:118 0116f71438124d9989d6ea49a5fd1566
+#: ../../font.rst:118 7137d532bea243b482a7189e3a3286f8
 msgid "fimo"
 msgstr ""
 
-#: ../../font.rst:118 76b7d29d7c46451ab59fa5244188ed6c
+#: ../../font.rst:118 d52c3785bf6c4c6c9fa414b6953b3c21
 msgid "Fira Mono Regular"
 msgstr "Fira Mono レギュラー"
 
-#: ../../font.rst:119 e11d14ed93f644bf982e55a17242dbc6
+#: ../../font.rst:119 a6bb6a057367406e8c6451c50221bd10
 msgid "fimbo"
 msgstr ""
 
-#: ../../font.rst:119 7dee55b4c8dd41a79e7dd83f4fa861c7
+#: ../../font.rst:119 a9be831c53d643c381182387817e7347
 msgid "Fira Mono Bold"
 msgstr "Fira Mono ボールド"
 
-#: ../../font.rst:120 b33ec499345447df987f1b62a7b3eaf8
+#: ../../font.rst:120 2ff90048652c45d8ad808bd8e873a930
 msgid "spacemo"
 msgstr ""
 
-#: ../../font.rst:120 412f72424f444a7cbadc466883b8753a
+#: ../../font.rst:120 10b17a9bdac441b2a4af57265d22e503
 msgid "Space Mono Regular"
 msgstr "Space Mono レギュラー"
 
 #: ../../font.rst:120 ../../font.rst:121 ../../font.rst:122 ../../font.rst:123
-#: 478011a3994744bbbc22cc3b08a52067 4906594870fd4487adb13efaec08eff8
-#: 521a2f9df8d7483c8aaa5e53b196946d 5665f7b625724faca1986fb76c559b60
+#: 71f76d3cde6b47a3b8a7a0a571913454 74e5c245413f43a1b0bcd54884d11f9b
+#: 811a2ce8ecf443c3b7c4a0009f550f69 ad9d314c839645d1b264c21f9d500a5d
 msgid "v1.0.1"
 msgstr ""
 
-#: ../../font.rst:121 527f17d70be440feae40cbe476ad4155
+#: ../../font.rst:121 cc6628c7c246454785eae18aa76df135
 msgid "spacembo"
 msgstr ""
 
-#: ../../font.rst:121 c49ee8d9e6b443d4b3be145ca5d6c539
+#: ../../font.rst:121 899d31ca415d4d60a771344775afb052
 msgid "Space Mono Bold"
 msgstr "Space Mono ボールド"
 
-#: ../../font.rst:122 4ee2f27f573144f59995c3586644e7b6
+#: ../../font.rst:122 0fa8a8df23aa46a18ebc85a45faef555
 msgid "spacemit"
 msgstr ""
 
-#: ../../font.rst:122 df22d2b346b74f86b67ecdc28f4ffac1
+#: ../../font.rst:122 121e740c51fa4e13b45b780076fdc770
 msgid "Space Mono Italic"
 msgstr "Space Mono イタリック"
 
-#: ../../font.rst:123 06a57a0bfbd74a8481fdfca90105a4b8
+#: ../../font.rst:123 8c761931925c4c9080802855c8de2158
 msgid "spacembi"
 msgstr ""
 
-#: ../../font.rst:123 3cd67ab978494a2bae0c0243ae39582a
+#: ../../font.rst:123 c294981796074117b39f66e1d0fc697f
 msgid "Space Mono Bold-Italic"
 msgstr "Space Mono ボールドイタリック"
 
-#: ../../font.rst:124 b0331ba0b3054a0397901aa4c96bf478
+#: ../../font.rst:124 fb3d22993d774962addb0d5e18962566
 msgid "math"
 msgstr ""
 
-#: ../../font.rst:124 dc1ddcfec5f84021867c259de1c6ea60
+#: ../../font.rst:124 d72ffadba17c47d98e45bad69d43f48a
 msgid "Noto Sans Math Regular"
 msgstr "Noto Sans Math レギュラー"
 
 #: ../../font.rst:124 ../../font.rst:125 ../../font.rst:126 ../../font.rst:127
-#: 020b572272924f2a81a3b2e824d2faeb 42238c699282447483321234ad9ce526
-#: cd035e835512415886066a9125f42355 ea8e4e408be748f8ab94007cab6e22d9
+#: 4a51871589de44a49f3d817a3e4641ca a1e187ea3001421b848c3e15b2da294f
+#: c7f9419b4b474f9990c0e7b2548b89bd f44b20960c864e1a812db6b82ccc7b01
 msgid "v1.0.2"
 msgstr ""
 
-#: ../../font.rst:124 5c61040268a244389881f4949cf314b1
+#: ../../font.rst:124 3527017ccae847e198b6aa3fd407bf86
 msgid "math symbols"
 msgstr "数学記号"
 
-#: ../../font.rst:125 f5a5ebfdcca541298f34b60ee28390b1
+#: ../../font.rst:125 f0c044192be8422bbb062dcfe3fa3867
 msgid "music"
 msgstr ""
 
-#: ../../font.rst:125 8745e4a55f3f424c9b574b67e05b2069
+#: ../../font.rst:125 5091921f86b8478b884595a229b30799
 msgid "Noto Music Regular"
 msgstr "Noto Music レギュラー"
 
-#: ../../font.rst:125 e3a94e4cd04644bfa48e0218fef0f3a4
+#: ../../font.rst:125 0cfb05fc68a6412895e997a6f27ab557
 msgid "musical symbols"
 msgstr "音楽記号"
 
-#: ../../font.rst:126 a2b333213a984f9292bef2472e1246a6
+#: ../../font.rst:126 198d0ac76851400696fd7bfe7e9c60b3
 msgid "symbol1"
 msgstr ""
 
-#: ../../font.rst:126 c65253d724fe4a6289b73915fb6f4bf1
+#: ../../font.rst:126 8bf74ea20b3d41c081691ba396ba7ec2
 msgid "Noto Sans Symbols Regular"
 msgstr "Noto Sans Symbols レギュラー"
 
-#: ../../font.rst:126 6415defd1a154e49a942c003bbe9d113
+#: ../../font.rst:126 96ef9a86cd4c4af9ad70de3493072981
 msgid "replacement for \"symb\""
 msgstr "\"symb\"の代替"
 
-#: ../../font.rst:127 8a7da80fb27f4d56bb84feefe8db6cab
+#: ../../font.rst:127 4eae35b6626f44edb67bbd03f28f00d6
 msgid "symbol2"
 msgstr ""
 
-#: ../../font.rst:127 abe3fb2655fc4c46b662a55dc3adc67f
+#: ../../font.rst:127 b1fdca63e3d74dd29efec985e0b244dc
 msgid "Noto Sans Symbols2 Regular"
 msgstr "Noto Sans Symbols2 レギュラー"
 
-#: ../../font.rst:127 67d6442a109d41f19c95dd48a9409c1b
+#: ../../font.rst:127 0bd6d32f20eb48dd988041621b3d5200
 msgid "extended symbol set"
 msgstr "拡張記号セット"
 
-#: ../../font.rst:128 956820c414f346bca4169f1cc46ccfbd
+#: ../../font.rst:128 aa751e08f13849d1a55e72c6aebf8f49
 msgid "notos"
 msgstr ""
 
-#: ../../font.rst:128 836c1fc44ce94633a2eaa2e39e1bec91
+#: ../../font.rst:128 89dea662c0eb4c7eb232a7fdba6ebc9a
 msgid "Noto Sans Regular"
 msgstr "Noto Sans レギュラー"
 
 #: ../../font.rst:128 ../../font.rst:129 ../../font.rst:130 ../../font.rst:131
-#: 19c2680e58814212977e43f045109461 5c57345720c8420096ef62549d2d4d9f
-#: acba3f025d354a9e9d4ca9c1eaeeac3f e88155edf09f4e00b96b40a8d0e70a0b
+#: 459d3d0e43ff4bf5aa61c68e8e685e29 67cb7c095cf74781840d29e84aa0034b
+#: 91a98cec9643445d9d588f6c148714f4 d8bd23d980b1436583464316e47308db
 msgid "v1.0.3"
 msgstr ""
 
-#: ../../font.rst:128 9add5c5b9d724ca6bd570d51dea7fe24
+#: ../../font.rst:128 6b98b595462b4d478057da307cdea30a
 msgid "alternative to Helvetica"
 msgstr "Helveticaの代替"
 
-#: ../../font.rst:129 e3edc7ce2dbb4817a489806822007126
+#: ../../font.rst:129 691a807af162494ab0b5af4186c9110c
 msgid "notosit"
 msgstr ""
 
-#: ../../font.rst:129 1dcc7a561c8a4df3b0fadbd361096b04
+#: ../../font.rst:129 24201a800ba0419c9bee4bf90edf8825
 msgid "Noto Sans Italic"
 msgstr "Noto Sans イタリック"
 
-#: ../../font.rst:130 9d99ba2971544e52a7a994df81f87493
+#: ../../font.rst:130 4dd91c5ba63544bba1ceb32e1fdefd55
 msgid "notosbo"
 msgstr ""
 
-#: ../../font.rst:130 2fc18b4937a04ddbaea8d219036c7be9
+#: ../../font.rst:130 ff244216f5904a4697fcab3f6d021a6a
 msgid "Noto Sans Bold"
 msgstr "Noto Sans ボールド"
 
-#: ../../font.rst:131 a2234fbc502a4a6f9075109141b92389
+#: ../../font.rst:131 aa8c2e1781f54593b3331c086c19b814
 msgid "notosbi"
 msgstr ""
 
-#: ../../font.rst:131 d6b460e091084e358994cb4b527827da
+#: ../../font.rst:131 6857edcacab24c27817264bb11d9bdad
 msgid "Noto Sans BoldItalic"
 msgstr "Noto Sans ボールドイタリック"
 
-#: ../../font.rst:141 3d4f99e68bba4b33a57aeac0f30d03b0
+#: ../../font.rst:141 2a37a1a4a1aa4945b8df8dbf7e64e154
 msgid ""
 "Check whether the unicode ``chr`` exists in the font or (option) some "
 "fallback font. May be used to check whether any \"TOFU\" symbols will "
@@ -706,43 +709,43 @@ msgstr ""
 "指定した Unicode 文字 ``chr`` "
 "がフォント内または（オプションで）フォールバックフォント内に存在するかどうかを確認します。これは、「TOFU（豆腐）」と呼ばれる記号が出力に表示されるかどうかを確認するために使用できます。"
 
-#: ../../font.rst:143 a3adecbceff049f2b37fa49823f174cf
+#: ../../font.rst:143 009b9aeb3f9944d596e9f49f9899c324
 msgid "the unicode of the character (i.e. ``ord()``)."
 msgstr "文字の Unicode 値（すなわち、``ord()`` 関数の結果）。"
 
-#: ../../font.rst:144 6b13453ecb9a402ea63c263c3974e3e6
+#: ../../font.rst:144 a8641b2b63ec4b07875c388e202271b9
 msgid "the language -- currently unused."
 msgstr "言語（現在は未使用）。"
 
-#: ../../font.rst:145 87bb13172100438ca088967f065ecaf4
+#: ../../font.rst:145 1bf9dc08f5954b5f965c6b5ea1570763
 msgid "the UCDN script number."
 msgstr "UCDN（Unicode Common Locale Data Repository）スクリプト番号。"
 
-#: ../../font.rst:146 df5aa548e49d42dd94504ade51ff9646
+#: ../../font.rst:146 c652199037ea41779589cd7c702796e7
 msgid ""
 "*(new in v1.17.5)* perform an extended search in fallback fonts or "
 "restrict to current font (default)."
 msgstr "*（v1.17.5 で新たに追加）* フォールバックフォントでの拡張検索を実行するか、現在のフォントに制限するかを指定します（デフォルト）。"
 
-#: ../../font.rst:147 18154b310acb430c8ef8d4afb245b735
+#: ../../font.rst:147 97e5feeeb43a4af0bb9163c00cad3e2b
 msgid "*(changed in 1.17.7)* the glyph number. Zero indicates no glyph found."
 msgstr "*（v1.17.7 で変更）* グリフ番号。ゼロはグリフが見つからないことを示します。"
 
-#: ../../font.rst:151 ebc279839deb4f7284104ac16ffb8233
+#: ../../font.rst:151 fed10a374e2445d1be29d1f78a496de5
 msgid "New in v1.17.5"
 msgstr "v1.17.5 で新たに追加"
 
-#: ../../font.rst:153 806672a68fe64a8299035f8a10070dd2
+#: ../../font.rst:153 290f44f3033a469e89d5444b5d3ec4f9
 msgid "Return an array of unicodes supported by this font."
 msgstr "このフォントがサポートする Unicode の配列を返します。"
 
-#: ../../font.rst:155 65c86097105948eabada290a3ba06897
+#: ../../font.rst:155 ab16e827b27d4022b45b4c90a328da02
 #, python-format
 msgid ""
-"an ``array.array`` [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. "
-"``chr()`` of every item in this array has a glyph in the font without using"
-" fallbacks. This is an example display of the supported glyphs:  >>> "
-"import pymupdf >>> font = pymupdf.Font(\"math\") >>> vuc = "
+"an ``array.array`` [#f2]_ of length at most :attr:`Font.glyph_count`. "
+"I.e. ``chr()`` of every item in this array has a glyph in the font "
+"without using fallbacks. This is an example display of the supported "
+"glyphs:  >>> import pymupdf >>> font = pymupdf.Font(\"math\") >>> vuc = "
 "font.valid_codepoints() >>> for i in vuc:       print(\"%04X %s (%s)\" % "
 "(i, chr(i), font.unicode_to_glyph_name(i))) 0000 000D   (CR) 0020   "
 "(space) 0021 ! (exclam) 0022 \" (quotedbl) 0023 # (numbersign) 0024 $ "
@@ -751,16 +754,17 @@ msgid ""
 "(arrowdbldown) 21D4 ⇔ (arrowdblboth) ... 221E ∞ (infinity) ..."
 msgstr ""
 
-#: ../../font.rst:155 ecaff954703b475f8857d239246738f0
+#: ../../font.rst:155 7031be6a1bcf4a65b62350eb968608e6
 msgid ""
-"an ``array.array`` [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. "
-"``chr()`` of every item in this array has a glyph in the font without using"
-" fallbacks. This is an example display of the supported glyphs:"
+"an ``array.array`` [#f2]_ of length at most :attr:`Font.glyph_count`. "
+"I.e. ``chr()`` of every item in this array has a glyph in the font "
+"without using fallbacks. This is an example display of the supported "
+"glyphs:"
 msgstr ""
-":attr:`Font.glyph_count` 以上の長さを持つ ``array.array`` [#f2]_。つまり、この配列内の各アイテムの "
-"``chr()`` は、フォールバックを使用せずにフォント内にグリフを持っていることを示します。以下はサポートされるグリフの例示です："
+":attr:`Font.glyph_count` 以上の長さを持つ ``array.array`` [#f2]_。つまり、この配列内の各アイテムの"
+" ``chr()`` は、フォールバックを使用せずにフォント内にグリフを持っていることを示します。以下はサポートされるグリフの例示です："
 
-#: ../../font.rst:183 0556ec3680644e8ea88f8c4958c55890
+#: ../../font.rst:183 c5ad65fa71a74dd9a63ab09809f0f9cf
 msgid ""
 "This method only returns meaningful data for fonts having a CMAP "
 "(character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array"
@@ -769,11 +773,11 @@ msgstr ""
 "このメソッドは、CMAP（文字マップ、charmap、`/ToUnicode` PDF "
 "キー）を持つフォントに対してのみ意味のあるデータを返します。それ以外の場合、この配列は長さ1で、ゼロのみを含みます。"
 
-#: ../../font.rst:192 977003f77d0945819e92c70f65fbd280
+#: ../../font.rst:192 af8b042889b54a38b2a5ddd689449328
 msgid "Calculate the \"width\" of the character's glyph (visual representation)."
 msgstr "文字のグリフ（視覚的な表現）の「幅」を計算します。"
 
-#: ../../font.rst:194 afe1cf924a86491792a061d549e652d4
+#: ../../font.rst:194 c1f6c6b34907404e97ad72617e0fc346
 msgid ""
 "the unicode number of the character. Use ``ord()``, not the character "
 "itself. Again, this should normally work even if a character is not "
@@ -783,29 +787,29 @@ msgstr ""
 "文字のUnicode番号。文字自体ではなく、``ord()`` "
 "を使用します。文字がそのフォントでサポートされていない場合でも、必要に応じてフォールバックフォントがチェックされるため、通常は機能するはずです。"
 
-#: ../../font.rst:195 334621872cd84ea6ac7b451fe8ea32aa
+#: ../../font.rst:195 e838a07682d84a869e2fa1cc89abf58a
 msgid "write mode, ``0`` = horizontal, ``1`` = vertical."
 msgstr "書き込みモード、 ``0`` = 横方向、 ``1`` = 縦方向。"
 
-#: ../../font.rst:197 928ef35ea33748988d53e0117ab7c79d
+#: ../../font.rst:197 2dc7e2ceacbb4ef690b919a430d04d1b
 msgid "The other parameters are not in use currently."
 msgstr "その他のパラメータは現在使用されていません。"
 
-#: ../../font.rst:199 5241fa12af7442538a664176d250293c
+#: ../../font.rst:199 e8423a5397284db1919f456052773ded
 msgid "a float representing the glyph's width relative to **fontsize 1**."
 msgstr "**フォントサイズ** 1に対するグリフの幅を表す浮動小数点数。"
 
-#: ../../font.rst:203 c2d509855a694eb4a75f07ca6581bd9b
+#: ../../font.rst:203 47dc9dab1b4c4cb8b9e6a069008d81b1
 msgid ""
 "Return the unicode value for a given glyph name. Use it in conjunction "
 "with `chr()` if you want to output e.g. a certain symbol."
 msgstr "指定されたグリフ名のUnicode値を返します。特定のシンボルを出力したい場合は、`chr()` と組み合わせて使用します。"
 
-#: ../../font.rst:205 3c10db60e1374fec881815e9d3754bf4
+#: ../../font.rst:205 749831c099134aa7bf7ffe282b0836b5
 msgid "The name of the glyph."
 msgstr "グリフの名前。"
 
-#: ../../font.rst:207 84cca9708fcf42f0b150dc6360ebc3e7
+#: ../../font.rst:207 377293d9901943dbb4c7c31c7985c7d9
 msgid ""
 "The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: "
 "`font.glyph_name_to_unicode(\"Sigma\") = 931`, "
@@ -816,7 +820,7 @@ msgid ""
 ">>> font.has_glyph(font.glyph_name_to_unicode(\"infinity\")) True"
 msgstr ""
 
-#: ../../font.rst:207 c780e4b197d94ca68b5f7ea4196a216d
+#: ../../font.rst:207 765a70f4e5934d66adf72deeaaad3599
 msgid ""
 "The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: "
 "`font.glyph_name_to_unicode(\"Sigma\") = 931`, "
@@ -830,29 +834,29 @@ msgstr ""
 "931`、`font.glyph_name_to_unicode(\"sigma\") = 963` 。Adobe Glyph "
 "Listの出版物を参照して、グリフ名とUnicode番号のリストを確認してください。例："
 
-#: ../../font.rst:219 4e8ef50287f840c39ab6193fe4d15cef
+#: ../../font.rst:219 ceed99f4b1f641ae9879e4ef9b43cfcf
 msgid "The glyph rectangle relative to :data:`fontsize` 1."
 msgstr ":data:`fontsize` 1に対するグリフの矩形領域。"
 
-#: ../../font.rst:221 2d75f0d683514f0ca0affa79216761d3
+#: ../../font.rst:221 9803fc558ea94924824b3c6f36f33ce5
 msgid "``ord()`` of the character."
 msgstr "文字の ``ord()`` 。"
 
-#: ../../font.rst:223 d5ebc63552854e929e574e66356875f3
+#: ../../font.rst:223 cae0a18260bf47dcb9d033363ab5176b
 msgid "a :ref:`Rect`."
 msgstr ":ref:`Rect`。"
 
-#: ../../font.rst:228 ecfa548b1cdb4cbf977bdd106fe6a53a
+#: ../../font.rst:228 c530486f148348589a870c1a6fad982d
 msgid "Show the name of the character's glyph."
 msgstr "文字のグリフの名前を表示します。"
 
-#: ../../font.rst:230 0a3a425d6dd84c9bb036c80f302940e1
+#: ../../font.rst:230 b33374c8c5234c618bbb03b5c25bd99b
 msgid ""
 "the unicode number of the character. Use ``ord()``, not the character "
 "itself."
 msgstr "文字のunicode番号。文字自体ではなく ``ord()`` を使用します。"
 
-#: ../../font.rst:232 e30f70a8afc247e1a71dff22dec0df83
+#: ../../font.rst:232 39265ca9c3774508a81f7b6c33627e8d
 msgid ""
 "a string representing the glyph's name. E.g. `font.glyph_name(ord(\"#\"))"
 " = \"numbersign\"`. For an invalid code \".notfound\" is returned.  .. "
@@ -863,7 +867,7 @@ msgid ""
 "`pymupdf.glyph_name_to_unicode()`."
 msgstr ""
 
-#: ../../font.rst:232 7ae0eaba9ee2443a8f60786834a14ecb
+#: ../../font.rst:232 7b64931c6f244cfca3c0761329de7f73
 msgid ""
 "a string representing the glyph's name. E.g. `font.glyph_name(ord(\"#\"))"
 " = \"numbersign\"`. For an invalid code \".notfound\" is returned."
@@ -871,7 +875,7 @@ msgstr ""
 "グリフの名前を表す文字列。例：`font.glyph_name(ord(\"#\")) = \"numbersign\"` "
 "。無効なコードの場合、\".notfound\" が返されます。"
 
-#: ../../font.rst:234 5b19c370607445debb9b31926c40bd34
+#: ../../font.rst:234 20712f7e063243888f6395b18c3acae8
 msgid ""
 "*(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode`"
 " no longer depend on a font and instead retrieve information from the "
@@ -883,36 +887,36 @@ msgstr ""
 "から情報を取得します。`pymupdf.unicode_to_glyph_name()` とresp. "
 "`pymupdf.glyph_name_to_unicode()` としても利用可能です。"
 
-#: ../../font.rst:241 c11d86d001524cb0b0035abf8228f4be
+#: ../../font.rst:241 38b6209e6a4344a8b3be848dc476755c
 msgid "Calculate the length in points of a unicode string."
 msgstr "Unicode文字列の長さをポイント単位で計算します。"
 
-#: ../../font.rst:243 e4ab64b446a74c32ae91c6a6adf19b19
+#: ../../font.rst:243 142ac4b87bb644ffa8514275b3e51007
 msgid ""
 "There is a functional overlap with :meth:`get_text_length` for Base-14 "
 "fonts only."
 msgstr "Base-14フォントに対しては、:meth:`get_text_length` と機能が重複しています。"
 
-#: ../../font.rst:245 ../../font.rst:269 035f68a9090c4e2f987c581f69acb324
-#: 14a8f02b38c644daa664491248d5815c
+#: ../../font.rst:245 ../../font.rst:269 7c8abec195d7425ab74856419d327b59
+#: f31ddd69af474ca98115ec49230627cf
 msgid "a text string, UTF-8 encoded."
 msgstr "テキスト文字列、UTF-8エンコード。"
 
-#: ../../font.rst:247 ../../font.rst:271 517bbee097774337989d00f3f53b0216
-#: ecc2c4f1004f417bb7b183dea2531bdf
+#: ../../font.rst:247 ../../font.rst:271 280e2e6390a84299b1eb50742751cc45
+#: 5880b72ffefe4073a534b44ef82aa00b
 msgid "the :data:`fontsize`."
 msgstr ":data:`fontsize`。"
 
-#: ../../font.rst 0f9f97b5b7274e28bb66f006ab7729ff
-#: 100725ef275b4763b1eb920723f8d42b 382dcd13dbdd4c6eb6dcb3f1fb1b0d98
-#: 5669062b0c794a1ea0c95524ee04fdc2 5aa22119ec9d467c80a0df11b13e21b2
-#: 67ed9c95928a4ccd955c23069b590461 6bc06432bdd44d2ba5bf2badedb1d12f
-#: 742b70e009af4f818c34be3c0a57a54b af206f92225d443abcefdeea9a1f2793
-#: bc302339066642a0bbb9a13e75b7e47e
+#: ../../font.rst 24af9fb41f6d40be800f9d6a56909af0
+#: 375fd3e160764b6f97a1b86fc740fe8a 465db7792c4b472f806017a0d364f367
+#: 53682f9b23a84002ab90b511020b49f6 5fa74d99fa99412f91d3a82aefa8e4bf
+#: 70db0a0a767e4ee8867951f816a54be0 9353b0e144af4fc7a2f47be5d63e325b
+#: b579c7fff96e4c608f8eb22666e2666d d2e13bff74024b768ddd4405202d6cab
+#: d3196a22363c47ecb37dd5972f00334e
 msgid "Return type"
 msgstr ""
 
-#: ../../font.rst:251 8987bb3eba2948ca85213ee532f6a807
+#: ../../font.rst:251 ec7a7979f9e7418fbdceaeee4f29b39d
 msgid ""
 "the length of the string in points when stored in the PDF. If a character"
 " is not contained in the font, it will automatically be looked up in a "
@@ -928,14 +932,14 @@ msgid ""
 "the second and subsequent ones."
 msgstr ""
 
-#: ../../font.rst:251 70750ea5a311499ea7fac5b6aed32cb1
+#: ../../font.rst:251 f41d04198f2341a990157155d7f740b1
 msgid ""
 "the length of the string in points when stored in the PDF. If a character"
 " is not contained in the font, it will automatically be looked up in a "
 "fallback font."
 msgstr "PDFに格納された文字列のポイント単位の長さ。文字がフォントに含まれていない場合、自動的にフォールバックフォントで検索されます。"
 
-#: ../../font.rst:253 4ae0b7bb62084e13a26b43b1b57ac9fc
+#: ../../font.rst:253 57ccdf4bd0474e3280e1cdda9d041027
 msgid ""
 "This method was originally implemented in Python, based on calling "
 ":meth:`Font.glyph_advance`. For performance reasons, it has been "
@@ -945,15 +949,15 @@ msgstr ""
 "このメソッドは元々Pythonで実装され、:meth:`Font.glyph_advance` "
 "を呼び出すことに基づいていました。性能の理由から、v1.18.14向けにCで書き直されました。単一の文字の幅を計算するには、以下のいずれかを使用でき、パフォーマンスに差異はありません："
 
-#: ../../font.rst:255 dba2bd273bcb496e8048e7c5e69cb5cb
+#: ../../font.rst:255 b485562f46994ef3a76ed0ba8f486f14
 msgid "`font.glyph_advance(ord(\"Ä\")) * fontsize`"
 msgstr ""
 
-#: ../../font.rst:256 d5e165b21ed445bc9a5c17a70d8d6558
+#: ../../font.rst:256 7b3106bb9bf0498198809c557ab60339
 msgid "`font.text_length(\"Ä\", fontsize=fontsize)`"
 msgstr ""
 
-#: ../../font.rst:258 eec51191fac44eb6ae1c858092678361
+#: ../../font.rst:258 3724b3d50f664946b0d42d8fab2f84f6
 msgid ""
 "For multi-character strings, the method offers a huge performance "
 "advantage compared to the previous implementation: instead of about 0.5 "
@@ -961,15 +965,15 @@ msgid ""
 "the second and subsequent ones."
 msgstr "複数文字の文字列に対して、このメソッドは以前の実装と比べて非常に高速で、各文字ごとに約0.5マイクロ秒かかる代わりに、2番目以降の文字には12.5ナノ秒しか必要ありません。"
 
-#: ../../font.rst:265 c34ff4dceaae4d6a81ed946778f0c4cf
+#: ../../font.rst:265 aafd060e84e541abbe7b30af94aa8ded
 msgid "*New in v1.18.14*"
 msgstr "*v1.18.14で新たに導入*"
 
-#: ../../font.rst:267 d3992820d7be4dc1a6b845a733c4b3e9
+#: ../../font.rst:267 7decb74d1d39477b9462d29370e42a35
 msgid "Sequence of character lengths in points of a unicode string."
 msgstr "Unicode文字列の文字の長さ（ポイント単位）のシーケンス。"
 
-#: ../../font.rst:275 b84312cc1c534354881dd97d76839e9e
+#: ../../font.rst:275 76401a090dc249fcab049f83b6f83cee
 msgid ""
 "the lengths in points of the characters of a string when stored in the "
 "PDF. It works like :meth:`Font.text_length` broken down to single "
@@ -986,7 +990,7 @@ msgid ""
 "F"
 msgstr ""
 
-#: ../../font.rst:275 18590ab69f6c4f9aa28811c3edcdb8dd
+#: ../../font.rst:275 1544e745681a4b6da063619a2e9620b7
 msgid ""
 "the lengths in points of the characters of a string when stored in the "
 "PDF. It works like :meth:`Font.text_length` broken down to single "
@@ -999,42 +1003,42 @@ msgstr ""
 "で使用されています。以下が成り立ちます（丸め誤差を許容する）：`font.text_length(text) == "
 "sum(font.char_lengths(text))`。"
 
-#: ../../font.rst:297 90184e5c052f413bb769157e755c3564
+#: ../../font.rst:297 d80b29e9dd8c454da9c51b26d9cad2fe
 msgid "New in v1.17.6"
 msgstr "新機能 v1.17.6"
 
-#: ../../font.rst:299 7789084e41e44fd8a5452982982c9d31
+#: ../../font.rst:299 30834747dcfd4dc48a79f57ad356cdd3
 msgid "Copy of the binary font file content."
 msgstr "バイナリフォントファイルのコンテンツのコピー。"
 
-#: ../../font.rst:305 bc5d1c2db4ea4b55a720b5cd1cb60971
+#: ../../font.rst:305 71cd13ec6bab4c46bb9c7dbb8108fb63
 msgid ""
 "A dictionary with various font properties, each represented as bools. "
 "Example for Helvetica::"
 msgstr "Helveticaの例など、さまざまなフォントプロパティを持つ辞書で、それぞれがブール値として表されています。"
 
-#: ../../font.rst:325 2c69c51beb634c2ea40a3542e9623343
+#: ../../font.rst:325 dbe85241cd3a4910a0da84236fc69d03
 msgid "Name of the font. May be \"\" or \"(null)\"."
 msgstr "フォントの名前。空文字列であることもあります。"
 
-#: ../../font.rst:329 d87516f6f7ee41e5bcea1870810c81c0
+#: ../../font.rst:329 190864bf642d4836b3e8ed0493dc4672
 msgid "The font bbox. This is the maximum of its glyph bboxes."
 msgstr "フォントのbbox。これは、そのグリフのbboxの最大値です。"
 
-#: ../../font.rst:331 5d6efec296e84501bce9006881c8e99e
+#: ../../font.rst:331 33b968a3b28241e9a604dd232bd3bf7c
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../font.rst:337 085122ed54784cd68460c9c243a86347
+#: ../../font.rst:337 38e95b49eec642f784ca39d58b0b40df
 msgid "The number of glyphs defined in the font."
 msgstr "グリフ数。"
 
-#: ../../font.rst:341 ../../font.rst:349 4e654e57562b44bfbaaa02fd7dc465ec
-#: d23b8faa3854454ca67f10a1f0d8260d
+#: ../../font.rst:341 ../../font.rst:349 aa9a0f03418b4adba2109af305a941e1
+#: b18be968a53743bdb4bdab316af4c374
 msgid "New in v1.18.0"
 msgstr "v1.18.0で新規追加"
 
-#: ../../font.rst:343 f327c380b2a84214962dc640edc3d113
+#: ../../font.rst:343 d3c64bfaff7540aa857c6dcc2fc2b0a0
 msgid ""
 "The ascender value of the font, see `ascender typography "
 "<https://en.wikipedia.org/wiki/Ascender_(typography)>`_ for details. "
@@ -1043,7 +1047,7 @@ msgid ""
 "difference between upper case \"A\" and and lower case \"a\"."
 msgstr "フォントのアセンダー値。詳細についてはこちらを参照してください。ただし、厳密な定義とは異なり、私たちの値にはベースラインを上回るすべてが含まれます。単に大文字の「A」と小文字の「a」の高さの違いだけでなく、ベースラインを上回るすべてが含まれます。"
 
-#: ../../font.rst:351 c2b2e6bdad8a4d50864215d20298070f
+#: ../../font.rst:351 7fba1bd77fd74cc1abdb335fe3269fbc
 msgid ""
 "The descender value of the font, see `descender typography "
 "<https://en.wikipedia.org/wiki/Descender>`_ for details. This value "
@@ -1057,17 +1061,17 @@ msgstr ""
 " - ディセンダー` "
 "の値は、フォントのすべてのグリフが収まる総高さです。これはほとんどのフォントに当てはまりますが、いくつかの例外があります。特にカリグラフィーフォントなどです。"
 
-#: ../../font.rst:363 183f4486ae154572b4f1eabf80f6d289
+#: ../../font.rst:363 4ffede0fc21c4b5fa0f667a903b92e93
 msgid ""
 "A number of attributes with obvious meanings. Reflect some values of the "
 ":attr:`Font.flags` dictionary."
 msgstr "明らかな意味を持つ属性がいくつかあります。これらは :attr:`Font.flags` 辞書の値の一部を反映しています。"
 
-#: ../../font.rst:368 f5b86a56151043388dd70a219b536ee0
+#: ../../font.rst:368 4bd92baafe77479faa63b31082e0c69a
 msgid "Footnotes"
 msgstr "脚注"
 
-#: ../../font.rst:369 fdd858aa443d477f829878a30b0ea1f0
+#: ../../font.rst:369 d66637c72e2b45aea7edd3cb116ec328
 msgid ""
 "MuPDF does not support all fontfiles with this feature and will raise "
 "exceptions like *\"mupdf: FT_New_Memory_Face((null)): unknown file "
@@ -1077,13 +1081,13 @@ msgstr ""
 "FT_New_Memory_Face((null)): unknown file format」* "
 "といった例外を発生させます。:ref:`TextWriter` のメソッドは :attr:`Font.is_writable` をチェックします。"
 
-#: ../../font.rst:371 209859bd49c24fa297bf99f6b0a27b59
+#: ../../font.rst:371 7213fcc59c214e508d3da6221ec0d21a
 msgid ""
 "The built-in Python module `array` has been chosen for its speed and low "
 "memory requirement."
 msgstr "組み込みの *array* モジュールは、その速度と値のコンパクトな表現のために選択されました。"
 
-#: ../../footer.rst:60 9ec9aab2e7474eea822f4d9e093fb613
+#: ../../footer.rst:46 3dc04747492b4b4bac6e2c6af8d83002
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
@@ -1097,5 +1101,25 @@ msgstr "このドキュメントは |version| までのすべてのバージョ�
 #~ msgstr "このフォントを :ref:`TextWriter` で使用できるかどうかを示します。"
 
 #~ msgid "Discord logo"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "a MuPDF font if successful. This "
+#~ "is the overall sequence of checks "
+#~ "to determine an appropriate font:  "
+#~ "=========== "
+#~ "============================================================ "
+#~ "Argument    Action =========== "
+#~ "============================================================ "
+#~ "fontfile?   Create font from file, "
+#~ "exception if failure. fontbuffer? Create "
+#~ "font from buffer, exception if failure."
+#~ " ordering>=0 Create universal font, always"
+#~ " succeeds. fontname?   Create a Base-14 "
+#~ "font, universal font, or font             "
+#~ "provided by `pymupdf-fonts "
+#~ "<https://pypi.org/project/pymupdf-fonts/>`_. See "
+#~ "table below. =========== "
+#~ "============================================================"
 #~ msgstr ""
 

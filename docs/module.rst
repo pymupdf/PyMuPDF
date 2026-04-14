@@ -299,7 +299,7 @@ Extraction
 Extract an embedded file like this::
 
     pymupdf embed-extract -h
-    usage: pymupdf embed-extract [-h] -name NAME [-password PASSWORD] [-output OUTPUT]
+    usage: pymupdf embed-extract [-h] -name NAME [-password PASSWORD] [-unsafe] [-output OUTPUT]
                             input
 
     ---------------------- extract embedded file to disk ----------------------
@@ -311,6 +311,7 @@ Extract an embedded file like this::
     -h, --help            show this help message and exit
     -name NAME            name of entry
     -password PASSWORD    password
+    -unsafe               allow write to stored name even if an existing file or outside current directory
     -output OUTPUT        output filename, default is stored name
 
 For details consult :meth:`Document.embfile_get`. Example (refer to previous section)::

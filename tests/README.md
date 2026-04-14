@@ -79,3 +79,11 @@ To skip tests before a particular test, set PYMUPDF_PYTEST_RESUME to the name
 of the function.
 
 For example PYMUPDF_PYTEST_RESUME=test_haslinks.
+
+
+## Checks on all tests
+
+All tests are wrapped by tests/conftest.py:wrap(), which does additional checking.
+
+* Checks that pymupdf.TOOLS.mupdf_warnings() is empty.
+* Checks tests do not modify globals such as small_glyph_heights.

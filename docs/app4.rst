@@ -374,7 +374,7 @@ These are the :title:`Python` commands for how each tool is used:
     doc=pymupdf.open(datei)
     for p in pymupdf.Pages(doc):
         pix = p.get_pixmap(dpi=150)
-        pix.save("t-%s.png" % p.number)
+        pix.save(f"t-{p.number}.png")
         pix = None
     doc.close()
     return

@@ -23,7 +23,7 @@ The following script loops through the :data:`xref` table and prints each object
     >>> xreflen = doc.xref_length()  # length of objects table
     >>> for xref in range(1, xreflen):  # skip item 0!
             print("")
-            print("object %i (stream: %s)" % (xref, doc.xref_is_stream(xref)))
+            print(f"object {xref} (stream: {doc.xref_is_stream(xref)})")
             print(doc.xref_object(xref, compressed=False))
 
 
@@ -324,7 +324,7 @@ There also exist granular, elegant ways to access and manipulate selected PDF :d
 * Here is a full listing of the above page keys::
 
     In [9]: for key in doc.xref_get_keys(page.xref):
-    ...:        print("%s = %s" % (key, doc.xref_get_key(page.xref, key)))
+    ...:        print(f"{key} = {doc.xref_get_key(page.xref, key)}")
     ...:
     Type = ('name', '/Page')
     Contents = ('xref', '1297 0 R')

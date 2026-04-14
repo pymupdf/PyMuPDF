@@ -26,3 +26,9 @@ def download(url, name, size=None):
         with open(path, 'wb') as f:
             f.write(r.content)
     return path
+
+def skip_slow_tests(test_name):
+    PYMUPDF_TEST_QUICK = os.environ.get('PYMUPDF_TEST_QUICK')
+    if PYMUPDF_TEST_QUICK == '1':
+        print(f'{test_name}(): skipping test because {PYMUPDF_TEST_QUICK=}.')
+        return True

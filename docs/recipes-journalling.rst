@@ -109,8 +109,8 @@ Description:
     >>> page=doc.new_page()
     >>> doc.journal_stop_op()
     >>> for i in range(5):
-            doc.journal_start_op("insert-%i" % i)
-            page.insert_text((100, 100 + 20*i), "text line %i" %i)
+            doc.journal_start_op(f"insert-{i}")
+            page.insert_text((100, 100 + 20*i), f"text line {i}")
             doc.journal_stop_op()
 
     >>> # combined status info:

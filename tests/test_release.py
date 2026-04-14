@@ -5,14 +5,16 @@ import re
 import sys
 
 
-g_root = os.path.normpath(f'{__file__}/../../')
-g_root = os.path.relpath(g_root)
+g_root_abs = os.path.normpath(f'{__file__}/../../')
 
-sys.path.insert(0, g_root)
+sys.path.insert(0, g_root_abs)
 try:
+    import pipcl
     import setup
 finally:
     del sys.path[0]
+
+g_root = pipcl.relpath(g_root_abs)
 
 
 def _file_line(path, text, re_match, offset=+2):
@@ -63,7 +65,8 @@ def test_release_changelog_version():
     p = f'{g_root}/changes.txt'
     with open(p) as f:
         text = f.read()
-    m = re.search(f'\n[*][*]Changes in version ([0-9.]+)[*][*]\n', text)
+    # We match `**Changes in version a.b.c**' optionally followed by ` (YYYY-MM-DD)`.
+    m = re.search(f'\n[*][*]Changes in version ([0-9.]+)[*][*]( [([0-9-]+[)])?\n', text)
     assert m, f'Cannot parse {p}.'
     assert m[1] == setup.version_p, \
             f'{_file_line(p, text, m)}: Cannot find {setup.version_p=} in first changelog item: {m[0].strip()!r}.'

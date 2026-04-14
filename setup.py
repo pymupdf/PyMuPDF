@@ -39,6 +39,9 @@ Environmental variables:
             Directory containing MuPDF libraries, (libmupdf.so,
             libmupdfcpp.so).
     
+    PIPCL_SHOW_ENV
+        If '0', we do not show environment variables on startup.
+    
     PYMUPDF_SETUP_DEVENV
         Location of devenv.com on Windows. If unset we search for it - see
         wdev.py. if that fails we use just 'devenv.com'.
@@ -156,11 +159,6 @@ Environmental variables:
     
     PYMUPDF_SETUP_PY_LIMITED_API
         If not '0', we build for current Python's stable ABI.
-        
-        However if unset and we are on Python-3.13 or later, we do
-        not build for the stable ABI because as of 2025-03-04 SWIG
-        generates incorrect stable ABI code with Python-3.13 - see:
-        https://github.com/swig/swig/issues/3059
     
     PYMUPDF_SETUP_URL_WHEEL
         If set, we use an existing wheel instead of building a new wheel.
@@ -233,11 +231,7 @@ python_version_tuple = tuple(int(x) for x in platform.python_version_tuple()[:2]
 PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
 assert PYMUPDF_SETUP_PY_LIMITED_API in (None, '', '0', '1'), \
         f'Should be "", "0", "1" or undefined: {PYMUPDF_SETUP_PY_LIMITED_API=}.'
-if PYMUPDF_SETUP_PY_LIMITED_API is None and python_version_tuple >= (3, 13):
-    log(f'Not defaulting to Python limited api because {platform.python_version_tuple()=}.')
-    g_py_limited_api = False
-else:
-    g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API != '0')
+g_py_limited_api = (PYMUPDF_SETUP_PY_LIMITED_API != '0')
 
 PYMUPDF_SETUP_URL_WHEEL =  os.environ.get('PYMUPDF_SETUP_URL_WHEEL')
 log(f'{PYMUPDF_SETUP_URL_WHEEL=}')
@@ -628,7 +622,7 @@ def build():
                     )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
-    # Build rebased `extra` module.
+    # Build `extra` module.
     #
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
         path_so_leaf = _build_extension(
@@ -662,6 +656,7 @@ def build():
     add('p', f'{g_root}/src/_wxcolors.py', to_dir)
     add('p', f'{g_root}/src/_apply_pages.py', to_dir)
     add('p', f'{g_root}/src/build/extra.py', to_dir)
+    add('p', b'', f'{to_dir}/py.typed')
     if path_so_leaf:
         add('p', f'{g_root}/src/build/{path_so_leaf}', to_dir)
 
@@ -683,9 +678,8 @@ def build():
             # Add Windows .lib files.
             mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
             add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
-            if mupdf_version_tuple >= (1, 26):
-                # MuPDF-1.25+ language bindings build also builds libmuthreads.
-                add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
+            # MuPDF-1.25+ language bindings build also builds libmuthreads.
+            add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
         elif darwin:
             add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
             add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
@@ -726,7 +720,7 @@ def build():
         log(f'Failed to get git information: {e}')
         sha, comment, diff, branch = (None, None, None, None)
     swig = PYMUPDF_SETUP_SWIG or 'swig'
-    swig_version_text = run(f'{swig} --version', capture=1)
+    swig_version_text = run(f'{swig} -version', capture=1)
     m = re.search('\nSWIG Version ([^\n]+)', swig_version_text)
     log(f'{swig_version_text=}')
     assert m, f'Unrecognised {swig_version_text=}'
@@ -748,6 +742,7 @@ def build():
     text += f'pymupdf_git_branch = {branch!r}\n'
     text += f'swig_version = {swig_version!r}\n'
     text += f'swig_version_tuple = {swig_version_tuple!r}\n'
+    log(f'_build.py is:\n{textwrap.indent(text, "    ")}')
     add('p', text.encode(), f'{to_dir}/_build.py')
     
     # Add single README file.
@@ -793,25 +788,35 @@ def build_mupdf_windows(
         ):
     
     assert mupdf_local
-
-    if overwrite_config:
-        mupdf_config_h = f'{mupdf_local}/include/mupdf/fitz/config.h'
-        prefix = '#define TOFU_CJK_EXT 1 /* PyMuPDF override. */\n'
-        with open(mupdf_config_h) as f:
-            text = f.read()
-        if text.startswith(prefix):
-            print(f'Not modifying {mupdf_config_h} because already has prefix {prefix!r}.')
-        else:
-            print(f'Prefixing {mupdf_config_h} with {prefix!r}.')
-            text = prefix + text
-            st = os.stat(mupdf_config_h)
-            with open(mupdf_config_h, 'w') as f:
-                f.write(text)
-            os.utime(mupdf_config_h, (st.st_atime, st.st_mtime))
-        
+    mupdf_version_tuple = get_mupdf_version(mupdf_local)
+    log(f'{overwrite_config=}')
+    log(f'{mupdf_version_tuple=}')
     wp = pipcl.wdev.WindowsPython()
     tesseract = '' if os.environ.get('PYMUPDF_SETUP_MUPDF_TESSERACT') == '0' else 'tesseract-'
     windows_build_tail = f'build\\shared-{tesseract}{build_type}'
+    
+    if overwrite_config:
+        if mupdf_version_tuple >= (1, 28):
+            # Tell mupdf build to use, for example, `/Build "ReleaseTofuCjkExt|x64"`.
+            # This avoids the need for us to modify mupdf's config.h.
+            windows_build_tail += '-TOFU_CJK_EXT'
+            log(f'Appending, {windows_build_tail=}')
+        else:
+            log(f'modifying mupdf:include/mupdf/fitz/config.h')
+            mupdf_config_h = f'{mupdf_local}/include/mupdf/fitz/config.h'
+            prefix = '#define TOFU_CJK_EXT 1 /* PyMuPDF override. */\n'
+            with open(mupdf_config_h) as f:
+                text = f.read()
+            if text.startswith(prefix):
+                log(f'Not modifying {mupdf_config_h} because already has prefix {prefix!r}.')
+            else:
+                log(f'Prefixing {mupdf_config_h} with {prefix!r}.')
+                text = prefix + text
+                st = os.stat(mupdf_config_h)
+                with open(mupdf_config_h, 'w') as f:
+                    f.write(text)
+                os.utime(mupdf_config_h, (st.st_atime, st.st_mtime))
+    
     if g_py_limited_api:
         windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
@@ -978,10 +983,8 @@ def build_mupdf_unix(
     # a system limit, not the actual limit of the current shell, and there
     # doesn't seem to be a way to find the current shell's limit.
     #
-    build_prefix = f'PyMuPDF-'
-    if mupdf_version_tuple >= (1, 26):
-        # Avoid link command length problems seen on musllinux.
-        build_prefix = ''
+    # Avoid link command length problems seen on musllinux.
+    build_prefix = ''
     if pyodide:
         build_prefix += 'pyodide-'
     else:
@@ -1022,7 +1025,12 @@ def build_mupdf_unix(
     if PYMUPDF_SETUP_SWIG:
         command += f' --swig {shlex.quote(PYMUPDF_SETUP_SWIG)}'
     command += f' -d build/{build_prefix}{build_type} -b'
-    #command += f' --m-target libs'
+    if sys.implementation.name == 'graalpy':
+        # Force rerun of swig.
+        pipcl.run(f'ls -l {mupdf_local}/platform/python/')
+        for p in glob.glob(f'{mupdf_local}/platform/python/mupdfcpp*.i.cpp'):
+            pipcl.log(f'Graal, deleting: {p!r}')
+            pipcl.fs_remove(p)
     if PYMUPDF_SETUP_MUPDF_REFCHECK_IF:
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
@@ -1084,8 +1092,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
                 f'{mupdf_local}/include',
                 )
     
-    # Build rebased extension module.
-    log('Building PyMuPDF rebased.')
+    log('Building PyMuPDF extension.')
     compile_extra_cpp = ''
     if darwin:
         # Avoids `error: cannot pass object of non-POD type
@@ -1205,6 +1212,30 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
 
 
+def clean(all_):
+    pipcl.log(f'{all_=}')
+    ret = list()
+    ret.append(f'{g_root}/src/build')
+    
+    path_mupdf, _ = get_mupdf()
+    
+    # We remove mupdf directories directly with shutil.rmtree() instead of
+    # returning them to pipcl, because pipcl will deliberately fail if asked to
+    # remove things that are outside our checkout.
+    shutil.rmtree(f'{path_mupdf}/platform/c++', ignore_errors=True)
+    shutil.rmtree(f'{path_mupdf}/platform/python', ignore_errors=True)
+    
+    if all_:
+        # Clean mupdf C library.
+        shutil.rmtree(f'{path_mupdf}/build', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32/Release', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32/x64', ignore_errors=True)
+    
+    pipcl.log(f'Returning: {ret=}')
+    return ret
+
+
 def sdist():
     ret = list()
     if PYMUPDF_SETUP_DUMMY == '1':
@@ -1267,9 +1298,9 @@ classifier = [
 #
 
 # PyMuPDF version.
-version_p = '1.26.5'
+version_p = '1.27.2.2'
 
-version_mupdf = '1.26.7'
+version_mupdf = '1.27.2'
 
 # PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
 # (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
@@ -1357,7 +1388,7 @@ else:
             author = 'Artifex',
             author_email = 'support@artifex.com',
             requires_dist = requires_dist,
-            requires_python = '>=3.9',
+            requires_python = '>=3.10',
             license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
             project_url = [
                 ('Documentation, https://pymupdf.readthedocs.io/'),
@@ -1369,6 +1400,7 @@ else:
             entry_points = entry_points,
         
             fn_build=build,
+            fn_clean=clean,
             fn_sdist=sdist,
         
             tag_python=tag_python,
@@ -1409,8 +1441,13 @@ else:
             print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
         elif openbsd:
             print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
+        elif PYMUPDF_SETUP_SWIG:
+            pass
+        elif darwin and python_version_tuple < (3, 13):
+            # Latest swig-4.4.1 gives director errors on macos with python<3.13.
+            ret.append('swig==4.3.1')
         else:
-            ret.append( 'swig')
+            ret.append('swig')
         return ret
 
 
