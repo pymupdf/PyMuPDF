@@ -491,7 +491,7 @@ def test_4336():
         venv = os.path.normpath(f'{__file__}/../../tests/resources/test_4336_venv')
         command = f'{sys.executable} -m venv {venv}'
         command += f' && . {venv}/bin/activate'
-        command += f' && uv pip install --force-reinstall pymupdf==1.23.8'
+        command += f' && pip install --force-reinstall pymupdf==1.23.8'
         command += f' && python {path_code}'
         print(f'Running: {command}', flush=1)
         subprocess.run(command, shell=1, check=1)
