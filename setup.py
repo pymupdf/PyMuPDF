@@ -1375,7 +1375,7 @@ else:
         assert 0, f'Unrecognised {PYMUPDF_SETUP_FLAVOUR=}.'
     
     if os.environ.get('PYODIDE_ROOT'):
-        # We can't uv pip install pytest on pyodide, so specify it here.
+        # We can't pip install pytest on pyodide, so specify it here.
         requires_dist.append('pytest')
 
     p = pipcl.Package(
@@ -1438,9 +1438,9 @@ else:
         else:
             ret.append('libclang')
         if msys2:
-            print(f'msys2: uv pip install of swig does not build; assuming `pacman -S swig`.')
+            print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
         elif openbsd:
-            print(f'OpenBSD: uv pip install of swig does not build; assuming `pkg_add swig`.')
+            print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
         elif PYMUPDF_SETUP_SWIG:
             pass
         elif darwin and python_version_tuple < (3, 13):
