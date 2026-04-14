@@ -223,6 +223,7 @@ def test_redact4():
     line_art = page.get_drawings()
     page.add_redact_annot(page.rect)
     page.apply_redactions(graphics=0)
+    doc.save(os.path.normpath(f'{__file__}/../../tests/test_redact4_out.pdf'))
     assert not page.get_text("words")
     assert line_art == page.get_drawings()
 
