@@ -111,6 +111,9 @@ Environmental variables:
             debug
             memento
             release (default)
+    
+    PYMUPDF_SETUP_FAKE_NOGIL
+        If '1' we (incorrectly) claim we are thread-safe.
 
     PYMUPDF_SETUP_MUPDF_CLEAN
         Unix only. If '1', we do a clean MuPDF build.
@@ -240,6 +243,7 @@ PYMUPDF_SETUP_DUMMY = os.environ.get('PYMUPDF_SETUP_DUMMY')
 log(f'{PYMUPDF_SETUP_DUMMY=}')
 
 PYMUPDF_SETUP_SWIG = os.environ.get('PYMUPDF_SETUP_SWIG')
+PYMUPDF_SETUP_FAKE_NOGIL = os.environ.get('PYMUPDF_SETUP_FAKE_NOGIL')
 
 def _fs_remove(path):
     '''
@@ -604,6 +608,7 @@ def build():
                 g_py_limited_api,
                 PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
                 PYMUPDF_SETUP_MUPDF_TRACE_IF,
+                PYMUPDF_SETUP_FAKE_NOGIL,
                 )
     else:
         if 'p' not in PYMUPDF_SETUP_FLAVOUR and 'b' not in PYMUPDF_SETUP_FLAVOUR:
@@ -619,6 +624,7 @@ def build():
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
                     PYMUPDF_SETUP_MUPDF_TRACE_IF,
                     PYMUPDF_SETUP_SWIG,
+                    PYMUPDF_SETUP_FAKE_NOGIL,
                     )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
@@ -742,6 +748,7 @@ def build():
     text += f'pymupdf_git_branch = {branch!r}\n'
     text += f'swig_version = {swig_version!r}\n'
     text += f'swig_version_tuple = {swig_version_tuple!r}\n'
+    text += f'fake_no_gil = {PYMUPDF_SETUP_FAKE_NOGIL=="1"!r}\n'
     log(f'_build.py is:\n{textwrap.indent(text, "    ")}')
     add('p', text.encode(), f'{to_dir}/_build.py')
     
@@ -785,6 +792,7 @@ def build_mupdf_windows(
         g_py_limited_api,
         PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
         PYMUPDF_SETUP_MUPDF_TRACE_IF,
+        PYMUPDF_SETUP_FAKE_NOGIL,
         ):
     
     assert mupdf_local
@@ -819,6 +827,8 @@ def build_mupdf_windows(
     
     if g_py_limited_api:
         windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
+    if PYMUPDF_SETUP_FAKE_NOGIL == '1':
+        windows_build_tail += '-nogil'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
@@ -900,6 +910,7 @@ def build_mupdf_unix(
         PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
         PYMUPDF_SETUP_MUPDF_TRACE_IF,
         PYMUPDF_SETUP_SWIG,
+        PYMUPDF_SETUP_FAKE_NOGIL,
         ):
     '''
     Builds MuPDF.
@@ -1010,6 +1021,8 @@ def build_mupdf_unix(
     log(f'{g_py_limited_api=}')
     if g_py_limited_api:
         build_prefix += f'Py_LIMITED_API_{pipcl.current_py_limited_api()}-'
+    if PYMUPDF_SETUP_FAKE_NOGIL == '1':
+        build_prefix += 'nogil-'
     unix_build_dir = f'{mupdf_local}/build/{build_prefix}{build_type}'
     PYMUPDF_SETUP_MUPDF_CLEAN = os.environ.get('PYMUPDF_SETUP_MUPDF_CLEAN')
     if PYMUPDF_SETUP_MUPDF_CLEAN == '1':
@@ -1129,6 +1142,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
             prerequisites_link = libraries,
             py_limited_api = g_py_limited_api,
             swig = PYMUPDF_SETUP_SWIG,
+            nogil = (PYMUPDF_SETUP_FAKE_NOGIL=='1')
             )
     
     return path_so_leaf
