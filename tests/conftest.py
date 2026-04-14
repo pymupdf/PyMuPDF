@@ -32,7 +32,7 @@ def install_required_packages():
         pass
     else:
         packages += ' psutil'
-    command = f'pip install --upgrade {packages}'
+    command = f'uv pip install --upgrade {packages}'
     print(f'{__file__}:install_required_packages)(): Running: {command}', flush=1)
     subprocess.run(command, shell=1, check=1)
 

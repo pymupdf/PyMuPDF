@@ -295,7 +295,7 @@ class Package:
 
         >>> print('Installing from wheel into venv using pip.', file=sys.stderr)
         >>> _ = subprocess.run(
-        ...         f'. pipcl_test/pylocal/bin/activate && pip install pipcl_test/dist/*.whl',
+        ...         f'. pipcl_test/pylocal/bin/activate && uv pip install pipcl_test/dist/*.whl',
         ...         shell=1, check=1)
 
         >>> print('Running foo_cli.', file=sys.stderr)
@@ -2675,9 +2675,9 @@ def _macos_fixup_platform_tag(tag):
     platform tags seem more restricted than platform tags from
     sysconfig.get_platform(). For example:
     
-        pip install ...-macosx_10_13_arm64.whl
+        uv pip install ...-macosx_10_13_arm64.whl
             ERROR: ...-macosx_10_13_arm64.whl is not a supported wheel on this platform.
-        pip install ...-macosx_10_13_universal2.whl
+        uv pip install ...-macosx_10_13_universal2.whl
             Ok.
     '''
     m = re.match( '^macosx_([0-9_]+)_([^0-9].+)$', tag)

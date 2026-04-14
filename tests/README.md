@@ -11,7 +11,7 @@ To run these tests:
 For example, as of 2023-12-11:
 
 ```
-> python -m pip install pytest fontTools psutil pymupdf-fonts pillow
+> python -m uv pip install pytest fontTools psutil pymupdf-fonts pillow
 > pytest PyMuPDF
 ============================= test session starts ==============================
 platform linux -- Python 3.11.2, pytest-7.4.3, pluggy-1.3.0

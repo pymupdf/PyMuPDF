@@ -3051,7 +3051,10 @@ class Document:
                 else:
                     self.page_count2 = extra.page_count_fz
 
-            if self.page_count > 1:
+            # if the doc is a PDF, check for images duplication across pages
+            # this may happen, e.g., when converting from MS Office formats with external tools
+            # if the PDF has 1 page only, there is no possibility of duplication across pages
+            if self.is_pdf and self.page_count > 1:
                 has_duplicate_images = True
                 first_page_n_images = len(self.get_page_images(0))
                 for page in self.pages(start=1):
@@ -3062,15 +3065,15 @@ class Document:
                         break
                 self.has_duplicate_images = has_duplicate_images
 
-            if self.has_duplicate_images:
-                self.images_xrefs_by_page = []
-                for page in self.pages():
-                    # store only images referenced by page
-                    page_xrefs = list(map(
-                        itemgetter("xref"),
-                        page.get_image_info(xrefs=True)
-                    ))
-                    self.images_xrefs_by_page = page_xrefs
+                if self.has_duplicate_images:
+                    self.images_xrefs_by_page = []
+                    for page in self.pages():
+                        # store only images referenced by page
+                        page_xrefs = list(map(
+                            itemgetter("xref"),
+                            page.get_image_info(xrefs=True)
+                        ))
+                        self.images_xrefs_by_page = page_xrefs
         finally:
             JM_mupdf_show_errors = JM_mupdf_show_errors_old
     
