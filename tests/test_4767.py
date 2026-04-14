@@ -72,7 +72,7 @@ def test_4767():
         Strips free-threading warning.
         '''
         stdout = cp.stdout
-        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1:
+        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
             line0, stdout = stdout.split('\n', 1)
             assert 'The global interpreter lock (GIL) has been enabled to load module \'pymupdf._extra\',' in line0
         return stdout
