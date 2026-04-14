@@ -3051,7 +3051,7 @@ class Document:
                 else:
                     self.page_count2 = extra.page_count_fz
 
-            if len(self.page_count) > 1:
+            if self.page_count > 1:
                 has_duplicate_images = True
                 first_page_n_images = len(self.get_page_images(0))
                 for page in self.pages(start=1):
