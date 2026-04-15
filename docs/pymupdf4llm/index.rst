@@ -344,8 +344,6 @@ Blogs
 .. include:: ../footer.rst
 
 
-PyMuPDF4LLM Document Loader
-
 .. _PyMuPDF4LLM Document Loader: https://docs.langchain.com/oss/python/integrations/providers/pymupdf4llm/
 
 .. _layout analysis module: https://pypi.org/project/pymupdf-layout/
