@@ -6,9 +6,16 @@ Change Log
 
 * Fixed issues:
 
+  * **Fixed** `4928 <https://github.com/pymupdf/PyMuPDF/issues/4928>`_: pymupdf.Document.scrub raises AttributeError for a document with annotations
+  * **Fixed** `4942 <https://github.com/pymupdf/PyMuPDF/issues/4942>`_: bug: IndexError for Page.get_links after Page.clip_to_rect
+  * **Fixed** `4954 <https://github.com/pymupdf/PyMuPDF/issues/4954>`_: get_drawings() returns incorrect lineJoin and width
+  * **Fixed** `4958 <https://github.com/pymupdf/PyMuPDF/issues/4958>`_: bug: inserting rotated pages to another document messes up link coordinates
+
 * Other:
 
   * Fixed incorrect generation of `lineJoin j` in PDF content, introduced in 1.27.2.2.
+  * Allow build to (incorrectly) claim to be thread-safe, for #4760. See setup.py for details.
+  * Use pypi.org's pipcl package instead of our own pipcl.py file.
 
 
 **Changes in version 1.27.2.2** (2026-03-20)
@@ -39,6 +46,9 @@ Change Log
     For partial OCR, **all** page areas outside legible text are now OCRed, not
     just those within images. This means that OCR will now also be performed
     for vector graphics, and for text containing illegible characters.
+
+  * Provide a Linux wheel for free-threading python,
+    specifically cp314-cp314t-manylinux_2_28_x86_64.
 
 
 **Changes in version 1.27.1** (2026-02-11)
