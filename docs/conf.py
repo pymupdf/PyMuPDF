@@ -52,23 +52,43 @@ copyright = "2015-" + str(thisday.year) + ", Artifex"
 #
 # The full version, including alpha/beta/rc tags.
 
-# PyMuPDF version is set in setup.py, so we import it here.
-sys.path.insert(0, os.path.abspath(f'{__file__}/../..'))
-try:
-    import setup
-finally:
-    del sys.path[0]
-version = setup.version_p
-del setup   # Necessary otherwise sphinx seems to do `setup()`.
+if 1:
+    # Importing setup.py requires pipcl etc so instead of importing, we grep
+    # for the version info in setup.py and scripts/test.py.
+    setup_py_path = os.path.normpath(f'{__file__}/../../setup.py')
+    with open(setup_py_path) as f:
+        setup_py_text = f.read()
+    regex = "\nversion_p = '([0-9.]+)'\n"
+    m = re.search(regex, setup_py_text)
+    assert m, f'Cannot find version number in {setup_py_path!r} with {regex=}.'
+    version = m.group(1)
+    
+    test_py_path = os.path.normpath(f'{__file__}/../../scripts/test.py')
+    with open(test_py_path) as f:
+        test_py_text = f.read()
+    regex = '\npython_versions_minor = (.+)\n'
+    m = re.search(regex, test_py_text)
+    assert m, f'Cannot find python_versions_minor in {test_py_path!r} with {regex=}.'
+    python_versions_minor = m.group(1)
+    python_versions_minor = eval(m.group(1))
+else:
+    # PyMuPDF version is set in setup.py, so we import it here.
+    sys.path.insert(0, os.path.abspath(f'{__file__}/../..'))
+    try:
+        import setup
+    finally:
+        del sys.path[0]
+    version = setup.version_p
+    del setup   # Necessary otherwise sphinx seems to do `setup()`.
 
-# Supported Python versions are set in scripts.test.py.
-sys.path.insert(0, os.path.abspath(f'{__file__}/../../scripts'))
-try:
-    import test
-finally:
-    del sys.path[0]
-python_versions_minor = test.python_versions_minor
-del test
+    # Supported Python versions are set in scripts.test.py.
+    sys.path.insert(0, os.path.abspath(f'{__file__}/../../scripts'))
+    try:
+        import test
+    finally:
+        del sys.path[0]
+    python_versions_minor = test.python_versions_minor
+    del test
 python_versions_list = [f'3.{i}' for i in python_versions_minor]
 python_versions = ', '.join(python_versions_list[:-1]) + f' and {python_versions_list[-1]}'
 # Make `|python_versions|` available in .rst files.
