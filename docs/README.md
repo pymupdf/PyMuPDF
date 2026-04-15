@@ -8,9 +8,17 @@ Welcome to the PyMuPDF documentation. This documentation relies on [Sphinx](http
 This README assumes you have [Sphinx v5.0.2 installed](https://www.sphinx-doc.org/en/master/usage/installation.html) on your system.
 
 
+## Dependencies
+
+pip install sphinxcontrib-googleanalytics
+pip install sphinx-notfound-page
+pip install sphinx-copybutton
+pip install sphinx-autobuild
+pip install furo
+
 ## Updating the documentation
 
-Within `docs` update the associated restructured text (`.rst`) files. These files represent the corresponding document pages. 
+Within `docs` update the associated restructured text (`.rst`) files. These files represent the corresponding document pages.
 
 ### Conventions
 
@@ -48,12 +56,45 @@ A better way of building the documentation if you are actively working on update
 
 This will serve the docs on a localhost and auto-update the pages live as you make edits.
 
-### Building the Japanese documentation
+
+
+## Internationalization
+
+PyMuPDF docs can be delivered in multiple languages - English, Japanese & Korean.
+
+To add a new language, e.g. Korean, use:
+
+`sphinx-build -b gettext . _build/gettext`
+`sphinx-intl update -p _build/gettext -l ko`
+
+
+### Building the Localiized documentation
 
 - From the "docs" location run:
 
+#### Japanese:
 `sphinx-build -a -b html -D language=ja . _build/html/ja`
 
+
+Once built HTML docs HTML pages are in `_build/html/ja`.
+
+#### Korean:
+`sphinx-build -a -b html -D language=ko . _build/html/ko`
+
+
+Once built HTML docs HTML pages are in `_build/html/ko`.
+
+Note: subsequent runs can omit the `-a` parameter to speed up builds (it will just build what has changed).
+
+
+Note: When build the corresponding `.mo` binary files will also be generated - these updated binaries should also be committed to Git.
+
+### Depoloying
+
+Docs will be automatically deployed to RTD once pushes are made to relevant branches.
+
+
+### Updating
 
 - Updating, after changes on the `main` branch and a sync with the main `en` .rst files, from the "docs" location, do:
 
@@ -62,8 +103,14 @@ This will serve the docs on a localhost and auto-update the pages live as you ma
 then:
 
 `sphinx-intl update -p _build/gettext -l ja`
+`sphinx-intl update -p _build/gettext -l ko`
 
 This will update the corresponding `po` files for further edits. Then check these files for "#, fuzzy" entries as the new stuff might exist there and requires editing.
+
+
+
+
+
 
 
 ## Building PDF documentation

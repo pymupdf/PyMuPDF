@@ -224,7 +224,7 @@ For details on **embedded files** refer to Appendix 3.
 
         >>> import pymupdf
         >>> with pymupdf.open(...) as doc:
-                for page in doc: print("page %i" % page.number)
+                for page in doc: print(f"page {page.number}")
         page 0
         page 1
         page 2
@@ -1246,6 +1246,14 @@ For details on **embedded files** refer to Appendix 3.
 
     Check whether the document can be saved incrementally. Use it to choose the right option without encountering exceptions.
 
+  .. method:: repair()
+  
+    Repair document.
+    
+    * Slow for large documents.
+    * Does nothing on non-PDF documents.
+    * New in v1.27.0
+  
   .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
     * New in v1.16.14
@@ -1267,7 +1275,7 @@ For details on **embedded files** refer to Appendix 3.
     :arg bool xml_metadata: Remove XML metadata.
 
 
-  .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0)
+  .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0, compression_effort=0, raise_on_repair=False)
 
     * Changed in v1.18.7
     * Changed in v1.19.0
@@ -1318,8 +1326,19 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg int use_objstms: *(new in v1.24.0)* compression option that converts eligible PDF object definitions to information that is stored in some other object's :data:`stream` data. Depending on the `deflate` parameter value, the converted object definitions will be compressed -- which can lead to very significant file size reductions.
 
-    .. warning:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
+     .. warning:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
 
+    :arg int compression_effort:
+    
+      * 0 for default
+      * 1 for minimum effort.
+      * 100 for maximum effort.
+    
+    :arg bool raise_on_repair: *(new in v1.27.0)* If true we raise an exception if the save caused a repair.
+      This is useful because repairs can cause changes to be lost.
+      
+      Also see `Document.repair()`.
+    
     .. note::
 
       **File size reduction**
@@ -2250,10 +2269,10 @@ Other Examples
          xref = img[0]                  # xref number
          pix = pymupdf.Pixmap(doc, xref)   # make pixmap from image
          if pix.n - pix.alpha < 4:      # can be saved as PNG
-             pix.save("p%s-%s.png" % (i, xref))
+             pix.save(f"p{i}-{xref}.png")
          else:                          # CMYK: must convert first
              pix0 = pymupdf.Pixmap(pymupdf.csRGB, pix)
-             pix0.save("p%s-%s.png" % (i, xref))
+             pix0.save(f"p{i}-{xref}.png")
              pix0 = None                # free Pixmap resources
          pix = None                     # free Pixmap resources
 

@@ -28,10 +28,6 @@
 
     <cite>PyMuPDF Pro</cite>
 
-.. |PDF| raw:: html
-
-    <cite>PDF</cite>
-
 .. |PyMuPDF4LLM| raw:: html
 
     <cite>PyMuPDF4LLM</cite>
@@ -39,6 +35,14 @@
 .. |PyMuPDF Layout| raw:: html
 
     <cite>PyMuPDF Layout</cite>
+
+.. |MuPDF| raw:: html
+
+    <cite>MuPDF</cite>
+
+.. |PDF| raw:: html
+
+    <cite>PDF</cite>
 
 .. |Markdown| raw:: html
 
@@ -52,14 +56,6 @@
 
     <cite>TXT</cite>
 
-.. |MuPDF| raw:: html
-
-    <cite>MuPDF</cite>
-
-.. |PDF| raw:: html
-
-    <cite>PDF</cite>
-
 .. |AGPL| raw:: html
 
     <cite>AGPL</cite>
@@ -72,9 +68,40 @@
 
     <style>
 
+        #searchAndLangugeHolder {
+            display:flex;
+            justify-content:space-between;
+            align-items: center;
+        }
+
+        #discordAndForumHolder {
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            margin-top:20px;
+        }
+
         #languageToggle {
-            width:25%;
+            display: flex;
+            width:35%;
             margin:8px 10px 0;
+        }
+
+        .forumLink {
+            display:flex;
+            align-items:baseline;
+            margin-top: -5px;
+            margin-left:10px;
+        }
+
+        #visit-pymupdf-io {
+            width:23%;
+            min-width:130px;
+            margin:8px 2% 0 0; 
+        }
+
+        .sidebar-search-container.top {
+            width: 40%;
         }
 
         #button-select-en {
@@ -89,12 +116,21 @@
             padding: 5px 10px;
             background-color: #fff;
             border: 1px solid #000;
+            border-radius: 0px;
+            border-left: 0;
+            font-size: 14px;
+        }
+
+        #button-select-ko {
+            padding: 5px 10px;
+            background-color: #fff;
+            border: 1px solid #000;
             border-radius: 0px 10px 10px 0;
             border-left: 0;
             font-size: 14px;
         }
 
-        #button-select-en , #button-select-ja, #button-select-en:hover , #button-select-ja:hover  {
+        #button-select-en, #button-select-ja, #button-select-ko, #button-select-en:hover, #button-select-ja:hover, #button-select-ko:hover   {
             color: #fff;
             text-decoration: none;
         }
@@ -104,34 +140,51 @@
             #languageToggle {
                 width:50%;
             }
+
+            .sidebar-search-container.top {
+                width: 50%;
+            }
         }
 
-        @media all and (max-width : 400px)  {
+        @media all and (max-width : 700px)  {
+
+            #searchAndLangugeHolder, #discordAndForumHolder {
+                flex-direction: column;
+            }
+
             #languageToggle {
-                width:70%;
+                width:100%;
             }
-        }
 
-        @media all and (max-width : 375px)  {
-            #button-select-en , #button-select-ja {
-                font-size: 11px;
+            .sidebar-search-container.top {
+                width: 100%;
             }
+
+            .forumLink {
+                flex-direction: column;
+                justify-content:space-between;
+                align-items:center;
+            }
+
         }
 
     </style>
 
-    <div style="display:flex;justify-content:space-between;align-items: center;">
-        <form class="sidebar-search-container top" method="get" action="search.html" role="search" style="width:75%">
+    <div id="searchAndLangugeHolder">
+        <button id="visit-pymupdf-io" class="cta orange" onclick="window.location='https://pymupdf.io?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">pymupdf.io</button>
+        <form id="headerSearchWidget" class="sidebar-search-container top" method="get" action="search.html" role="search">
           <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
           <input type="hidden" name="check_keywords" value="yes">
           <input type="hidden" name="area" value="default">
         </form>
-        <div id="languageToggle"><span><a id="button-select-en" href="javaScript:changeLanguage('en')">English</a></span><span><a id="button-select-ja" href="javaScript:changeLanguage('ja')">日本語</a></span></div>
+        <div id="languageToggle">
+            <span><a id="button-select-en" href="javaScript:changeLanguage('en')">English</a></span>
+            <span><a id="button-select-ja" href="javaScript:changeLanguage('ja')">日本語</a></span>
+            <span><a id="button-select-ko" href="javaScript:changeLanguage('ko')">한국어</a></span>
+        </div>
     </div>
 
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:20px;">
-
-
+    <div id="discordAndForumHolder">
         <div class="discordLink" style="display:flex;align-items:center;margin-top: 5px;">
             <a href="https://discord.gg/TSpYGBW4eq" id="findOnDiscord" target=_blank>Find <b>#pymupdf</b> on <b>Discord</b></a>
             <a href="https://discord.gg/TSpYGBW4eq" target=_blank>
@@ -147,7 +200,7 @@
                 </div>
             </a>
         </div>
-        <div class="forumLink" style="display:flex;align-items:baseline;margin-top: -5px;margin-left:10px;">
+        <div class="forumLink">
             <div id="forumCTAText"></div><a id="winking-cow-link" style="font-weight: bold;" href="https://forum.mupdf.com">Try our forum! <img alt="MuPDF Forum link logo" id="winking-cow-image" src="https://pymupdf.readthedocs.io/en/latest/_static/forum-logo.gif" width=38px height=auto /></a>
         </div>
     </div>
@@ -156,21 +209,30 @@
         // highlightSelectedLanguage
         var url_string = window.location.href;
 
-        if (document.getElementsByTagName('html')[0].getAttribute('lang')=="ja") {
-            document.getElementById("button-select-ja").style.backgroundColor = "#ff6600";
-            document.getElementById("button-select-en").style.color = "#000";
-        } else {
+        if (document.getElementsByTagName('html')[0].getAttribute('lang')=="en") {
             document.getElementById("button-select-en").style.backgroundColor = "#ff6600";
             document.getElementById("button-select-ja").style.color = "#000";
+            document.getElementById("button-select-ko").style.color = "#000";
+        } else if (document.getElementsByTagName('html')[0].getAttribute('lang')=="ja") {
+            document.getElementById("button-select-ja").style.backgroundColor = "#ff6600";
+            document.getElementById("button-select-en").style.color = "#000";
+            document.getElementById("button-select-ko").style.color = "#000";
+        } else if (document.getElementsByTagName('html')[0].getAttribute('lang')=="ko") {
+            document.getElementById("button-select-ko").style.backgroundColor = "#ff6600";
+            document.getElementById("button-select-en").style.color = "#000";
+            document.getElementById("button-select-ja").style.color = "#000";
         }
+
 
         function changeLanguage(lang) {
             var new_url;
 
             if (lang == "en") {
-                new_url = url_string.replace("/ja/", "/en/");
-            } else {
-                new_url = url_string.replace("/en/", "/ja/");
+                new_url = url_string.replace(/\/(ko|ja)\//, "/en/");
+            } else if (lang == "ja") {
+                new_url = url_string.replace(/\/(ko|en)\//, "/ja/");
+            } else if (lang == "ko") {
+                new_url = url_string.replace(/\/(ja|en)\//, "/ko/");
             }
 
             window.location.replace(new_url);

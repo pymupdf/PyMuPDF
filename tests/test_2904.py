@@ -27,12 +27,7 @@ def test_2904():
                 print(f'{pymupdf.mupdf_version_tuple=}: {page_id=} {i=} {e=} {img=}:')
             if page_id == 5 and i==3:
                 assert e
-                if hasattr(pymupdf, 'mupdf'):
-                    # rebased.
-                    assert str(e) == 'code=8: Failed to read JPX header'
-                else:
-                    # classic
-                    assert str(e) == 'Failed to read JPX header'
+                assert str(e) == 'code=8: Failed to read JPX header'
             else:
                 assert not e
     

@@ -241,9 +241,9 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
     32 -- Generate a new line for every span. Not used ("off") in PyMuPDF, but available for your use. Every line in "dict", "json", "rawdict", "rawjson" will contain exactly one span.
 
-.. py:data:: TEXT_MEDIABOX_CLIP
+.. py:data:: TEXT_CLIP, TEXT_MEDIABOX_CLIP
 
-    64 -- Characters entirely outside a page's **mediabox** or contained in other "clipped" areas will be ignored. This is default in PyMuPDF.
+    64 -- Characters entirely outside a page's **mediabox** or contained in other "clipped" areas will be ignored. This is default in PyMuPDF. (TEXT_MEDIABOX_CLIP is an old alias.)
 
 .. py:data:: TEXT_USE_CID_FOR_UNKNOWN_UNICODE
 
@@ -251,18 +251,17 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
 .. py:data:: TEXT_COLLECT_STRUCTURE
 
-    256 -- Not supported.
+    256 -- Extract or generate the :ref:`Document` structure. Detail documentation pending.
 
 .. py:data:: TEXT_ACCURATE_BBOXES
 
-    512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute its rectangle hull. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of height 0** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with getting meaningful boundary boxes even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
+    512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute their rectangle hull as the bbox. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of zero height** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with failures of getting meaningful boundary boxes, even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
     
-    Note that this has no effect by default - one must also disable the global
-    quad corrections setting with `pymupdf.TOOLS.unset_quad_corrections(True)`.
+    Note that this has no effect by default - one must also disable the global quad corrections setting with `pymupdf.TOOLS.unset_quad_corrections(True)`.
 
 .. py:data:: TEXT_COLLECT_VECTORS
 
-    1024 -- Not supported.
+    1024 -- Collect vector drawings into the :ref:`TextPage`. These are stored as blocks alongside text and image blocks, depending on other extraction flags. See :meth:`TextPage.extractBLOCKS` and :meth:`TextPage.extractDICT` for details. Beyond these two methods, vector graphics extraction is also available for :meth:`TextPage.extractJSON`, :meth:`TextPage.extractRAWDICT`, :meth:`TextPage.extractRAWJSON` and :meth:`TextPage.extractXML`.
 
 .. py:data:: TEXT_IGNORE_ACTUALTEXT
 
@@ -270,7 +269,19 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 
 .. py:data:: TEXT_SEGMENT
 
-    4096 -- Attempt to segment page into different regions.
+    4096 -- Attempt to segment page into different regions. Detail documentation pending.
+
+.. py:data:: TEXT_COLLECT_STYLES
+
+    32768 -- Request collecting text **decoration** properties. This includes text underlining and strikeout. In contrast to public awareness, these are not font properties, but are drawn separately as vector graphics or annotations on top of the text. In addition, the flag bit will also cause MuPDF to detect "fake bold" text. In many cases, Document creators **simulate bold** text by printing the same text multiple times with slight offsets. If this flag is set, such text will be marked as bold in the resulting text spans.
+
+.. py:data:: TEXT_LAZY_VECTORS
+
+    1048576 -- Delay vector blocks in the extraction slightly to avoid breaking what would otherwise be continuous lines of text.
+
+.. py:data:: TEXT_FUZZY_VECTORS
+
+    2097152 -- 	If this option is set, we 'fuzzily' collect rectangular vectors of the same colour together. This enables us to spot where 'pixels' or 'slices' of vectors are used to create the appearance of characters on the page without exploding the storage and processing time requirements.
 
 The following constants represent the default combinations of the above for text extraction and searching:
 

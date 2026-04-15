@@ -68,8 +68,7 @@ cursor_casts = database.cursor()  # cursor for selecting actors per film
 select_films = """SELECT title, director, year FROM films ORDER BY title"""
 
 # select stament for actors, a skeleton: sub-select by film title
-select_casts = """SELECT name FROM actors WHERE film = "%s" ORDER BY name"""
-
+select_casts = """SELECT name FROM actors WHERE film = ? ORDER BY name"""
 # -------------------------------------------------------------------
 # define the HTML Story and fill it with database data
 # -------------------------------------------------------------------
@@ -89,7 +88,7 @@ for title, director, year in films:  # iterate through the films
     film.find(None, "id", "filmyear").add_text(str(year))  # put year
 
     # the actors reside in their own table - find the ones for this film title
-    cursor_casts.execute(select_casts % title)  # execute cursor
+    cursor_casts.execute(select_casts, (title,))  # execute cursor
     casts = cursor_casts.fetchall()  # read actors for the film
     # each actor name appears in its own tuple, so extract it from there
     film.find(None, "id", "cast").add_text("\n".join([c[0] for c in casts]))

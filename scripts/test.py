@@ -13,8 +13,8 @@ Examples:
     ./PyMuPDF/scripts/test.py -m 'git:https://git.ghostscript.com/mupdf.git' build test
         Build and test with internal checkout of MuPDF master.
 
-    ./PyMuPDF/scripts/test.py -m ':1.26.x' build test
-        Build and test using internal checkout of mupdf 1.26.x branch from
+    ./PyMuPDF/scripts/test.py -m ':1.27.x' build test
+        Build and test using internal checkout of mupdf 1.27.x branch from
         Github.
 
     ./PyMuPDF/scripts/test.py install test -i 1.26.3 -k test_2596
@@ -217,8 +217,8 @@ Command line args:
             -m "git:--branch master https://github.com/ArtifexSoftware/mupdf.git"
             -m :master
             
-            -m "git:--branch 1.26.x https://github.com/ArtifexSoftware/mupdf.git"
-            -m :1.26.x
+            -m "git:--branch 1.27.x https://github.com/ArtifexSoftware/mupdf.git"
+            -m :1.27.x
             
     --mupdf-clean 0|1
         If 1 we do a clean MuPDF build.

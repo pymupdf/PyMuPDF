@@ -354,6 +354,28 @@
 
 
 
+            } else if (langB == "ko") {
+                if (str=="Copying") {
+                    return "복사";
+                } else if (str == "This refers to opening a document and then saving it to a new file. This test measures the speed of reading a <cite>PDF</cite> and re-writing as a new <cite>PDF</cite>. This process is also at the core of functions like merging / joining multiple documents. The numbers below therefore apply to <cite>PDF</cite> joining and merging.") {
+                    return "이것은 문서를 열고 새 파일로 저장하는 것을 의미합니다. 이 테스트는 <cite>PDF</cite> 를 읽고 새 <cite>PDF</cite> 로 다시 쓰는 속도를 측정합니다. 이 프로세스는 여러 문서를 병합 / 결합하는 기능의 핵심이기도 합니다. 따라서 아래 숫자는 <cite>PDF</cite> 결합 및 병합에도 적용됩니다.";
+                } else if (str == "The results for all 7,031 pages are:") {
+                    return "모든 7,031 페이지에 대한 결과:";
+                } else if (str == "seconds") {
+                    return "초";
+                } else if (str == "fastest") {
+                    return "가장 빠름";
+                } else if (str == "slowest") {
+                    return "가장 느림";
+                } else if (str == "Text Extraction") {
+                    return "텍스트 추출";
+                } else if (str == "This refers to extracting simple, plain text from every page of the document and storing it in a text file.") {
+                    return "이것은 문서의 모든 페이지에서 간단한 일반 텍스트를 추출하여 텍스트 파일에 저장하는 것을 의미합니다.";
+                } else if (str == "Rendering") {
+                    return "렌더링";
+                } else if (str == "This refers to making an image (like PNG) from every page of a document at a given DPI resolution. This feature is the basis for displaying a document in a GUI window.") {
+                    return "이것은 주어진 DPI 해상도로 문서의 모든 페이지에서 이미지 (예: PNG)를 만드는 것을 의미합니다. 이 기능은 GUI 창에서 문서를 표시하는 기반입니다.";
+                }
             }
 
             return str;

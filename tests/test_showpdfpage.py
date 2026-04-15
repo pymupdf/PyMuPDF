@@ -46,10 +46,8 @@ def test_2742():
     dest.save(os.path.abspath(f'{__file__}/../../tests/test_2742-out.pdf'))
     print("The end!")
     
-    rebased = hasattr(pymupdf, 'mupdf')
-    if rebased:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == (
-                'Circular dependencies! Consider page cleaning.\n'
-                '... repeated 3 times...'
-                ), f'{wt=}'
+    wt = pymupdf.TOOLS.mupdf_warnings()
+    assert wt == (
+            'Circular dependencies! Consider page cleaning.\n'
+            '... repeated 3 times...'
+            ), f'{wt=}'

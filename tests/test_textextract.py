@@ -111,7 +111,7 @@ def test_extract4():
         out = pymupdf.mupdf.FzOutput( buffer_)
         writer = pymupdf.mupdf.FzDocumentWriter(
                 out,
-                'text,space-guess={space_guess}',
+                f'text,space-guess={space_guess}',
                 pymupdf.mupdf.FzDocumentWriter.OutputType_DOCX,
                 )
         device = pymupdf.mupdf.fz_begin_page(writer, pymupdf.mupdf.fz_bound_page(page))
@@ -252,14 +252,29 @@ def test_3197():
             b'Related Tickers\nTTM\n12/31/2023\n12/31/2022\n12/31/2021\n12/31/2020\n14,918,000\n14,918,000\n6,853,000\n15,787,000\n24,269,000\n-17,628,000\n-17,628,000\n-4,347,000\n2,745,000\n-18,615,000\n2,584,000\n2,584,000\n2,511,000\n-23,498,000\n2,315,000\n25,110,000\n25,110,000\n25,340,000\n20,737,000\n25,935,000\n-8,236,000\n-8,236,000\n-6,866,000\n-6,227,000\n-5,742,000\n51,659,000\n51,659,000\n45,470,000\n27,901,000\n65,900,000\n-41,965,000\n-41,965,000\n-45,655,000\n-54,164,000\n-60,514,000\n-335,000\n-335,000\n-484,000\n--\n--\n6,682,000\n6,682,000\n-13,000\n9,560,000\n18,527,000\n \nYahoo Finance Plus Essential\naccess required.\nUnlock Access\nBreakdown\nOperating Cash\nFlow\nInvesting Cash\nFlow\nFinancing Cash\nFlow\nEnd Cash Position\nCapital Expenditure\nIssuance of Debt\nRepayment of Debt\nRepurchase of\nCapital Stock\nFree Cash Flow\n12/31/2020 - 6/1/1972\nGM\nGeneral Motors Compa\xe2\x80\xa6\n39.49 +1.23%\n\xc2\xa0\nRIVN\nRivian Automotive, Inc.\n15.39 -3.15%\n\xc2\xa0\nNIO\nNIO Inc.\n5.97 +0.17%\n\xc2\xa0\nSTLA\nStellantis N.V.\n25.63 +0.91%\n\xc2\xa0\nLCID\nLucid Group, Inc.\n3.7000 +0.54%\n\xc2\xa0\nTSLA\nTesla, Inc.\n194.77 +0.52%\n\xc2\xa0\nTM\nToyota Motor Corporati\xe2\x80\xa6\n227.09 +0.14%\n\xc2\xa0\nXPEV\nXPeng Inc.\n9.08 +0.89%\n\xc2\xa0\nFSR\nFisker Inc.\n0.5579 -11.46%\n\xc2\xa0\nCopyright \xc2\xa9 2024 Yahoo.\nAll rights reserved.\nPOPULAR QUOTES\nTesla\nDAX Index\nKOSPI\nDow Jones\nS&P BSE SENSEX\nSPDR S&P 500 ETF Trust\nEXPLORE MORE\nCredit Score Management\nHousing Market\nActive vs. Passive Investing\nShort Selling\nToday\xe2\x80\x99s Mortgage Rates\nHow Much Mortgage Can You Afford\nABOUT\nData Disclaimer\nHelp\nSuggestions\nSitemap\n',
             ]
     
+    num_errors = 0
     with pymupdf.open(path) as document:
         for i, page in enumerate(document):
             text = page.get_text()
-            #print(f'{i=}:')
+            
             text_utf8 = text.encode('utf8')
-            #print(f'                {text_utf8=}')
-            #print(f'    {text_utf8_expected[i]=}')
-            assert text_utf8 == text_utf8_expected[i]
+            
+            if text_utf8 != text_utf8_expected[i]:
+                num_errors += 1
+                print(f'Error, {i=}.')
+                import difflib
+                print(f'    {text_utf8_expected[i]=}')
+                print(f'                {text_utf8=}')
+                text_expected = text_utf8_expected[i].decode('utf8')
+                diff = difflib.unified_diff(
+                        text_expected.split('\n'),
+                        text.split('\n'),
+                        lineterm='',
+                        )
+                print(f'Diff expected => actual:')
+                print(textwrap.indent('\n'.join(diff), '    '))
+                        
+    assert not num_errors, f'{num_errors=}'
 
 
 def test_document_text():
@@ -387,7 +402,10 @@ def test_3705():
     assert texts1 == texts0
 
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 27):
+    if pymupdf.mupdf_version_tuple >= (1, 27, 1):
+        expected = ''
+        assert wt == expected
+    elif pymupdf.mupdf_version_tuple >= (1, 27):
         expected = 'format error: No common ancestor in structure tree\nstructure tree broken, assume tree is missing'
         expected = '\n'.join([expected] * 56)
         assert wt == expected
@@ -443,16 +461,12 @@ def test_4147():
                         #print(f'        line')
                         for span in line['spans']:
                             #print(f'            span')
-                            if pymupdf.mupdf_version_tuple >= (1, 25, 2):
-                                #print(f'            span: {span["flags"]=:#x} {span["char_flags"]=:#x}')
-                                if expect_visible:
-                                    assert span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED
-                                else:
-                                    assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED)
-                                    assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_STROKED)
+                            #print(f'            span: {span["flags"]=:#x} {span["char_flags"]=:#x}')
+                            if expect_visible:
+                                assert span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED
                             else:
-                                #print(f'            span: {span["flags"]=:#x}')
-                                assert 'char_flags' not in span
+                                assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_FILLED)
+                                assert not (span['char_flags'] & pymupdf.mupdf.FZ_STEXT_STROKED)
                             # Check commit `add 'bidi' to span dict, add 'synthetic' to char dict.`
                             assert span['bidi'] == 0
                             for ch in span['chars']:
@@ -504,11 +518,7 @@ def test_4245():
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4245_diff.png')
     pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 0.1 < rms < 0.2
-    else:
-        assert rms < 0.01
+    assert rms < 0.01
 
 
 def test_4180():
@@ -529,11 +539,7 @@ def test_4180():
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4180_diff.png')
     pixmap_diff.save(path_diff)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 0.2 < rms < 0.3
-    else:
-        assert rms < 0.01
+    assert rms < 0.01
 
 
 def test_4182():
@@ -563,11 +569,7 @@ def test_4182():
     pixmap_diff.save(path_diff)
     rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple < (1, 25, 5):
-        # Prior to fix for mupdf bug 708274.
-        assert 3 < rms < 3.5
-    else:
-        assert rms < 0.01
+    assert rms < 0.01
 
 
 def test_4179():
@@ -652,11 +654,7 @@ def test_4179():
         pixmap_diff.save(path_out_diff)
         print(f'Have saved to: {path_out_diff=}')
         print(f'{rms=}')
-        if pymupdf.mupdf_version_tuple < (1, 25, 5):
-            # Prior to fix for mupdf bug 708274, our rects are rendered slightly incorrectly.
-            assert 3.5 < rms < 4.5
-        else:
-            assert rms < 0.01
+        assert rms < 0.01
     
     finally:
         pymupdf.TOOLS.set_aa_level(aa)

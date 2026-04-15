@@ -303,12 +303,11 @@ See :doc:`pyodide`.
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
-If you do not intend to use this feature, skip this step. Otherwise, it is required for both installation paths: **from wheels and from sources.**
-
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract’s language support data <https://github.com/tesseract-ocr/tessdata>`_.
+PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract's language support data <https://github.com/tesseract-ocr/tessdata>`_.
 
 If not specified explicitly, PyMuPDF will attempt to find the installed
-Tesseract's tessdata, but this should probably not be relied upon.
+Tesseract's `tessdata`, but this should probably not be relied upon.
+
 
 Otherwise PyMuPDF requires that Tesseract's language support folder is
 specified explicitly either in PyMuPDF OCR functions' `tessdata` arguments or
@@ -329,5 +328,17 @@ So for a working OCR functionality, make sure to complete this checklist:
    
      * Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
      * Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
+
+
+.. note::
+
+    English language support is included by default in Tesseract installation.
+
+    :ref:`Tesseract Language Packs <tesseract-language-packs>` for other languages must be installed separately, and the `tessdata` folder must be specified to PyMuPDF as described above, for OCR to work with those languages.
+
+
+.. note::
+    
+  Find out more on the `official documentation for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
 
 .. include:: footer.rst

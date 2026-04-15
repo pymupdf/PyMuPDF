@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PyMuPDF 1.23.0rc1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-17 15:00+0100\n"
+"POT-Creation-Date: 2025-11-25 23:33+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Suzan Sanver <suzan.sanver@dijipiji.com>\n"
 "Language: ja\n"
@@ -19,517 +19,517 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.10.3\n"
 
-#: ../../header.rst:-1 f10a8020c28249fca44848d866853453
+#: ../../header.rst:-1 4362cd8e08a74daebc63e2250a1293cd
 msgid "Artifex"
 msgstr ""
 
-#: ../../header.rst:-1 8c253eade3be4573a8d216948f6a7359
+#: ../../header.rst:-1 8c3fd3acd0a54dacaaaea104c5ca20e2
 msgid ""
 "PyMuPDF is a high-performance Python library for data extraction, "
 "analysis, conversion & manipulation of PDF (and other) documents."
 msgstr "PyMuPDF は、PDF （およびその他の）ドキュメントのデータ抽出、分析、変換、操作のための高性能な Python ライブラリです。"
 
-#: ../../header.rst:-1 c1dc5c8f7ce44ac4906d7f2e9ae8dd3c
+#: ../../header.rst:-1 7d4f452edf45487b8855a2fdb4b7f37b
 msgid ""
 "PDF Text Extraction, PDF Image Extraction, PDF Conversion, PDF Tables, "
 "PDF Splitting, PDF Creation, Pyodide, PyScript"
 msgstr "PDFテキスト抽出、PDFイメージ抽出、PDF変換、PDFテーブル、PDF分割、PDF作成, Pyodide, PyScript"
 
-#: ../../functions.rst:5 f3404c3080304de29e895aac382d9965
+#: ../../functions.rst:5 764415be522b4af7bed822bf808d3c81
 msgid "Functions"
 msgstr "関数"
 
-#: ../../functions.rst:6 70323b9e30fb490db389a3d997a1cab9
+#: ../../functions.rst:6 7d85734965b44884afa1f60ccbb9fce3
 msgid ""
 "The following are miscellaneous functions and attributes on a fairly low-"
 "level technical detail."
 msgstr "以下は、PDFに関する低レベルな技術的詳細に関するさまざまな関数と属性です。"
 
-#: ../../functions.rst:8 a7a4a6b9e92945e49a02a07f50b221d4
+#: ../../functions.rst:8 87eea67bd6bd469c809cfb2f400fd0ac
 msgid ""
 "Some functions provide detail access to PDF structures. Others are "
 "stripped-down, high performance versions of other functions which provide"
 " more information."
 msgstr "一部の関数は、PDF構造への詳細なアクセスを提供します。他の関数の高性能バージョンで、より多くの情報を提供する関数から派生しています。"
 
-#: ../../functions.rst:10 80d711cfafea41b6b18edc4996098631
+#: ../../functions.rst:10 3e757537a03d4b07bdcba164caba05f3
 msgid "Yet others are handy, general-purpose utilities."
 msgstr "また、その他にも便利な汎用ユーティリティが含まれています。"
 
-#: ../../functions.rst:14 ce08da4d75f04c2d88814b9f4cb4b9fb
+#: ../../functions.rst:14 3a980a38ec2e42368864c2737353297a
 msgid "**Function**"
 msgstr "**関数**"
 
-#: ../../functions.rst:14 87267f8f2f9c4906abe394a3726d8ce3
+#: ../../functions.rst:14 53d11d16c6cb41359e0d1eb9434091a8
 msgid "**Short Description**"
 msgstr "**短い説明**"
 
-#: ../../functions.rst:16 8c7b262e30494eb2900a478249533401
+#: ../../functions.rst:16 add8a0f8af544090bd2b69bec2a08b06
 msgid ":attr:`Annot.apn_bbox`"
 msgstr ""
 
-#: ../../functions.rst:16 3ec7f54fc6214998ac1f32de3ae05905
+#: ../../functions.rst:16 5e6c725340da4680b4b2182ec97992ef
 msgid "PDF only: bbox of the appearance object"
 msgstr "PDFのみ：外観オブジェクトのバウンディングボックス"
 
-#: ../../functions.rst:17 62b2f314087e4c5d802938929352a251
+#: ../../functions.rst:17 0e00e13e8cd249aea5b27907a5924ac2
 msgid ":attr:`Annot.apn_matrix`"
 msgstr ""
 
-#: ../../functions.rst:17 5d4bf95e115f4a79b0ac44f6d45a0cd4
+#: ../../functions.rst:17 f099fa1353fa448486e549396e8c85c4
 msgid "PDF only: the matrix of the appearance object"
 msgstr "PDFのみ：外観オブジェクトの行列"
 
-#: ../../functions.rst:18 23379817033347e4a0ad91ffc4860e15
+#: ../../functions.rst:18 04cb195c672149e79a5dbf453e0dd2d2
 msgid ":attr:`Page.is_wrapped`"
 msgstr ""
 
-#: ../../functions.rst:18 49fe2cfdf483448abb46dfa426338186
+#: ../../functions.rst:18 733534121ca84a7dae39d79a0e4fdf8e
 msgid "check whether contents wrapping is present"
 msgstr "コンテンツの折り返しが存在するかどうかを確認します"
 
-#: ../../functions.rst:19 11b42e143aba4579bfd08436ce71b89f
+#: ../../functions.rst:19 6070d8798ae847c7b81482b126630c8a
 msgid ":meth:`adobe_glyph_names`"
 msgstr ""
 
-#: ../../functions.rst:19 f7532442f88b4d4481a985a21e1e9dca
+#: ../../functions.rst:19 3e1263f453fb48c78527c09031c8dfda
 msgid "list of glyph names defined in **Adobe Glyph List**"
 msgstr "**Adobe Glyph List** で定義されたグリフ名のリスト"
 
-#: ../../functions.rst:20 bbe71f57dd1544d6abbffb3f025ad0d0
+#: ../../functions.rst:20 8540cf95e6284b908e38968f6e2b84b1
 msgid ":meth:`adobe_glyph_unicodes`"
 msgstr ""
 
-#: ../../functions.rst:20 2e63b3cdb4614f68bd0f06bdf473415c
+#: ../../functions.rst:20 868c1c4b39334083b57fc6f75dc63c73
 msgid "list of unicodes defined in **Adobe Glyph List**"
 msgstr "**Adobe Glyph List** で定義されたUnicodeのリスト"
 
-#: ../../functions.rst:21 1dab9af8f225439a809a695624ad06ad
+#: ../../functions.rst:21 b9f2db6bdc1f4375b9d86730afc564cf
 msgid ":meth:`Annot.clean_contents`"
 msgstr ""
 
-#: ../../functions.rst:21 17d23fa135d74e28baebb9a590420a93
+#: ../../functions.rst:21 c89e0a09bfd5482e9a00164e53985cdb
 msgid "PDF only: clean the annot's :data:`contents` object"
 msgstr "PDFのみ：アノテーションの :data:`contents` オブジェクトをクリーンアップ"
 
-#: ../../functions.rst:22 2565b744b5074b0197b985feda6260d3
+#: ../../functions.rst:22 32cff1b105fc415ab1df92fb4a1367ee
 msgid ":meth:`Annot.set_apn_bbox`"
 msgstr ""
 
-#: ../../functions.rst:22 c603cce58b4e4f19ad03d7d5816decf7
+#: ../../functions.rst:22 490b8142dc73479a84f8532efe1a7dd0
 msgid "PDF only: set the bbox of the appearance object"
 msgstr "PDFのみ：外観オブジェクトのバウンディングボックスを設定"
 
-#: ../../functions.rst:23 dec230a165a848fab667491090a3b48c
+#: ../../functions.rst:23 825eafcadc4840a6b3da5b4eae9803b5
 msgid ":meth:`Annot.set_apn_matrix`"
 msgstr ""
 
-#: ../../functions.rst:23 1d4c8fcb695b41f794fe0181f55c4fed
+#: ../../functions.rst:23 bd593d88e1054999ba94daf514352282
 msgid "PDF only: set the matrix of the appearance object"
 msgstr "PDFのみ：外観オブジェクトの行列を設定"
 
-#: ../../functions.rst:24 919aa9c3fa0d4cea9f07bf595fd68689
+#: ../../functions.rst:24 c442dc2915174eb9bca27cc7aaec5a63
 msgid ":meth:`ConversionHeader`"
 msgstr ""
 
-#: ../../functions.rst:24 c5631d7a4fb54c26b307af4ec9a45d23
+#: ../../functions.rst:24 39f5b60624524140bcf3d19279f48605
 msgid "return header string for *get_text* methods"
 msgstr "*get_text* メソッド用のヘッダー文字列を返す"
 
-#: ../../functions.rst:25 02f472d4f87e4921a7850ccf52b83efe
+#: ../../functions.rst:25 2832c8a25ff645c1833824445cd50d2e
 msgid ":meth:`ConversionTrailer`"
 msgstr ""
 
-#: ../../functions.rst:25 67364fbb2a0641498bd046f77798342d
+#: ../../functions.rst:25 809aa5cd142a4d28927bdedc1f5d789a
 msgid "return trailer string for *get_text* methods"
 msgstr "*get_text* メソッド用のトレーラー文字列を返す"
 
-#: ../../functions.rst:26 ec526b8d6e4c4baa8432dc878bc3b9c2
+#: ../../functions.rst:26 793c18c2f91c4349a65f71f6504d9872
 msgid ":meth:`Document.del_xml_metadata`"
 msgstr ""
 
-#: ../../functions.rst:26 124e8e0efc184fe087303fef4d743203
+#: ../../functions.rst:26 2c210b89288b437482fee9c882c0c7a4
 msgid "PDF only: remove XML metadata"
 msgstr "PDFのみ：XMLメタデータを削除"
 
-#: ../../functions.rst:27 b6f93fdd44ad46129f8fa2758f2a4818
+#: ../../functions.rst:27 0bd03bc3092d4f75ab36f591dd57098a
 msgid ":meth:`Document.get_char_widths`"
 msgstr ""
 
-#: ../../functions.rst:27 09b83665efc54bec90b1491e267e0f10
+#: ../../functions.rst:27 cb86339da05542aaafc997cf781c9fb9
 msgid "PDF only: return a list of glyph widths of a font"
 msgstr "PDFのみ：フォントのグリフ幅のリストを返す"
 
-#: ../../functions.rst:28 62aedd1eef214e3b9fd7dfd8a09d1ff3
+#: ../../functions.rst:28 56fc88a38fce4ad58e50e488249dc90a
 msgid ":meth:`Document.get_new_xref`"
 msgstr ""
 
-#: ../../functions.rst:28 0b6342969ec0441393c79f793e633ddd
+#: ../../functions.rst:28 950c2315e268432ca322e1428ccede80
 msgid "PDF only: create and return a new :data:`xref` entry"
 msgstr "PDFのみ：新しい :data:`xref` エントリを作成して返す"
 
-#: ../../functions.rst:29 62f8b93e8bf8444bbafae94639086f66
+#: ../../functions.rst:29 496d02cad3d94be590dc49051170a1c4
 msgid ":meth:`Document.is_stream`"
 msgstr ""
 
-#: ../../functions.rst:29 3b16adc919ff4ccb921eba7b7ec2457c
+#: ../../functions.rst:29 586f78f3e3d24a80bc537b10b6756ccb
 msgid "PDF only: check whether an :data:`xref` is a stream object"
 msgstr "PDFのみ：:data:`xref` がストリームオブジェクトであるかどうかを確認"
 
-#: ../../functions.rst:30 7a3f46883b23434fb745bea51dd302df
+#: ../../functions.rst:30 578b7d1ff1d6471a84f62fa135e05681
 msgid ":meth:`Document.xml_metadata_xref`"
 msgstr ""
 
-#: ../../functions.rst:30 b0b51441d32e4c969fe3b90dc9843f34
+#: ../../functions.rst:30 253ad5dd537940c684f95c34413e9613
 msgid "PDF only: return XML metadata :data:`xref` number"
 msgstr "PDFのみ：XMLメタデータの :data:`xref` 番号を返す"
 
-#: ../../functions.rst:31 b4adeece49294f0a9217abd6f42e075d
+#: ../../functions.rst:31 4f8b6a367f104e19b3686d48c220b2e8
 msgid ":meth:`Document.xref_length`"
 msgstr ""
 
-#: ../../functions.rst:31 cfa061cc4de4418a9a6c699fd6c1dbbf
+#: ../../functions.rst:31 944580e1219b4d6da596e2f0ecac1e0c
 msgid "PDF only: return length of :data:`xref` table"
 msgstr "PDFのみ：:data:`xref` テーブルの長さを返す"
 
-#: ../../functions.rst:32 973a90abac464c3b8b375c56719a0bff
+#: ../../functions.rst:32 9e00d8d6db8640a48b68b28cce3d2d56
 msgid ":meth:`EMPTY_IRECT`"
 msgstr ""
 
 #: ../../functions.rst:32 ../../functions.rst:34
-#: 291e722b9502438bb05be547414824c7 55383aeb0dae482fa2d060d914f7b6b4
+#: 4f93c48b456e40edb3bf54e18372fbcd 8885468553b943e2804495b185674bdb
 msgid "return the (standard) empty / invalid rectangle"
 msgstr "標準の空の/無効な矩形を返す"
 
-#: ../../functions.rst:33 205726f3db7d409494a330988f4f46ba
+#: ../../functions.rst:33 116425823f97476ba4ef170d8f70b2a5
 msgid ":meth:`EMPTY_QUAD`"
 msgstr ""
 
-#: ../../functions.rst:33 101a675d89a348a39c26a4c078403def
+#: ../../functions.rst:33 1db98794aff94fc58a84179249ea06eb
 msgid "return the (standard) empty / invalid quad"
 msgstr "標準の空の/無効な四角形を返す"
 
-#: ../../functions.rst:34 4b352eaf25a946d683f7845067fd3fe2
+#: ../../functions.rst:34 9000c9e5d6c6449ea2fac2877457a80c
 msgid ":meth:`EMPTY_RECT`"
 msgstr ""
 
-#: ../../functions.rst:35 4c90b4ab2918473bbd455ac6e171a04b
+#: ../../functions.rst:35 a2378f40c3bd4ff68bf33e9d7f8d55a0
 msgid ":meth:`get_pdf_now`"
 msgstr ""
 
-#: ../../functions.rst:35 fa79da54010c460cb80834428c14658a
+#: ../../functions.rst:35 e3d896a505e3415f91020a611d1b60cb
 msgid "return the current timestamp in PDF format"
 msgstr "現在のタイムスタンプをPDF形式で返す"
 
-#: ../../functions.rst:36 5235531d94bf455ca878c91fa390f88a
+#: ../../functions.rst:36 44be0971a3e943d4b339543e89c7d3e5
 msgid ":meth:`get_pdf_str`"
 msgstr ""
 
-#: ../../functions.rst:36 cd5a4fcf322c478eb525e24c4c3e9ca7
+#: ../../functions.rst:36 d222dad1da46497a90683f26ca17b272
 msgid "return PDF-compatible string"
 msgstr "PDF互換の文字列を返す"
 
-#: ../../functions.rst:37 3cef9014049b46ef8fb2c04a8a96525d
+#: ../../functions.rst:37 97fc6fa0db4446d9884dd169f4279dba
 msgid ":meth:`get_text_length`"
 msgstr ""
 
-#: ../../functions.rst:37 7deedb3c51ef4df0b7c843146b9b6110
+#: ../../functions.rst:37 110ac58da1a44ce2999975602c6c0e1a
 msgid "return string length for a given font & :data:`fontsize`"
 msgstr "指定したフォントと :data:`fontsize` の文字列長を返す"
 
-#: ../../functions.rst:38 865c3294809b414a9f66ddd11a8975ba
+#: ../../functions.rst:38 c90ff4bd56b84326a2666157890bfd03
 msgid ":meth:`glyph_name_to_unicode`"
 msgstr ""
 
-#: ../../functions.rst:38 c5ef798d869d46a488886a86148f9432
+#: ../../functions.rst:38 401f5bf92bb74478b4d7029ec15dd089
 msgid "return unicode from a glyph name"
 msgstr "グリフ名からUnicodeを返す"
 
-#: ../../functions.rst:39 777efc2daaf34022b9921b15fb3406ed
+#: ../../functions.rst:39 99beef3b550a46ba98443a9d326de35b
 msgid ":meth:`image_profile`"
 msgstr ""
 
-#: ../../functions.rst:39 4ad04b9521d940ed8675cf7ccf967fc5
+#: ../../functions.rst:39 143bc56e8ef9413e96b151d77c64ae6f
 msgid "return a dictionary of basic image properties"
 msgstr "基本的な画像プロパティの辞書を返します。"
 
-#: ../../functions.rst:40 f9f1eaf655b84ca6aa0cca517c7f74e7
+#: ../../functions.rst:40 2290ac67413048f9a7e8bc3c1bed82da
 msgid ":meth:`INFINITE_IRECT`"
 msgstr ""
 
 #: ../../functions.rst:40 ../../functions.rst:42
-#: 2b0312cf18394f9bb48eea5c1e82f262 8cb320f4f817465fbba9644f0f247810
+#: 6c93c70e175b4feebad851e5e2d302e5 db34282539ff4d0cbcbb59a0746f4ad5
 msgid "return the (only existing) infinite rectangle"
 msgstr "（唯一存在する）無限の矩形を返します。"
 
-#: ../../functions.rst:41 a1ac10acd9264731961d1b01f0eec40b
+#: ../../functions.rst:41 15427ddf5f9d40ea95e44583d180da0e
 msgid ":meth:`INFINITE_QUAD`"
 msgstr ""
 
-#: ../../functions.rst:41 c4853233b2054963818cbc88b3f9d8cb
+#: ../../functions.rst:41 c51f25d2a9ab403aaf35fdc880ac80ea
 msgid "return the (only existing) infinite quad"
 msgstr "（唯一存在する）無限のクワッドを返します。"
 
-#: ../../functions.rst:42 b1324daf9ff745fb9d2168d7be4648c7
+#: ../../functions.rst:42 9c580aaf4136403aa2944098c657ef29
 msgid ":meth:`INFINITE_RECT`"
 msgstr ""
 
-#: ../../functions.rst:43 4e1fe0343be849e89ad51baa5921d04a
+#: ../../functions.rst:43 ffa25a10067248539ecece4ed9e0453d
 msgid ":meth:`make_table`"
 msgstr ""
 
-#: ../../functions.rst:43 fdf7383642024c03a67f955ae885907f
+#: ../../functions.rst:43 7533bf849012437cbd56f1d3ab66a42c
 msgid "split rectangle in sub-rectangles"
 msgstr "矩形をサブ矩形に分割します。"
 
-#: ../../functions.rst:44 4adb8d71f2044344a5b26234ccf68e06
+#: ../../functions.rst:44 312874e2effa4bc0bfd1300774e3a463
 msgid ":meth:`Page.clean_contents`"
 msgstr ""
 
-#: ../../functions.rst:44 f3cb03e57a5c41ae8143f7555a79c7fc
+#: ../../functions.rst:44 01e6fccf3e744a89a6858df35f24007a
 msgid "PDF only: clean the page's :data:`contents` objects"
 msgstr "PDF のみ：ページの :data:`contents` オブジェクトをクリーンアップします"
 
-#: ../../functions.rst:45 75ced595d7584e5f92e8eb2b62cd3ad4
+#: ../../functions.rst:45 3dd8b9b45ab44ebba9d1b686be8dc50b
 msgid ":meth:`Page.get_bboxlog`"
 msgstr ""
 
-#: ../../functions.rst:45 8c4f754edc4c4b319cc2b54860845f79
+#: ../../functions.rst:45 dfbe6b6c5f9f47fd88042b9ae17531f3
 msgid "list of rectangles that envelop text, drawing or image objects"
 msgstr "テキスト、描画、または画像オブジェクトを囲む矩形のリストです。"
 
-#: ../../functions.rst:46 d1e897d011a04f2c920b3cd8c3a2f4d6
+#: ../../functions.rst:46 c65e19fd4d02409cb4543812fa3b43d4
 msgid ":meth:`Page.get_contents`"
 msgstr ""
 
-#: ../../functions.rst:46 8087b4ddded34432a1081ed947f22cea
+#: ../../functions.rst:46 299985f0af5147d7aa248ec6d462f2d1
 msgid "PDF only: return a list of content :data:`xref` numbers"
 msgstr "PDF のみ：コンテンツ :data:`xref` 番号のリストを返します。"
 
-#: ../../functions.rst:47 4002cfc938c14ecaa48d6ee403f154d0
+#: ../../functions.rst:47 c2ceb3b6204947318ef0c33b8b87b0d3
 msgid ":meth:`Page.get_displaylist`"
 msgstr ""
 
-#: ../../functions.rst:47 561f38475f9641f0bff2da76977dfe5a
+#: ../../functions.rst:47 c37180301960473ba34f6e7663b61b99
 msgid "create the page's display list"
 msgstr "ページの表示リストを作成します。"
 
-#: ../../functions.rst:48 53c748a7a20f4af897e22b85db7febe7
+#: ../../functions.rst:48 5b0003105f4240f88525d89fa0c0908d
 msgid ":meth:`Page.get_text_blocks`"
 msgstr ""
 
-#: ../../functions.rst:48 6a53466a2b9c4ca3a36d2fd49d6b817d
+#: ../../functions.rst:48 dd0afb0850654e8695ffc98210144dc8
 msgid "extract text blocks as a Python list"
 msgstr "テキスト ブロックを Python リストとして抽出します。"
 
-#: ../../functions.rst:49 ccaaf6bb9f4345e6846f9b35f9f45357
+#: ../../functions.rst:49 76e04262af69408e9a63c3184fb7bad0
 msgid ":meth:`Page.get_text_words`"
 msgstr ""
 
-#: ../../functions.rst:49 e1831d592e724dc3ac18729b5f39eb5e
+#: ../../functions.rst:49 9f393e28ef804590afa7ec5de0048155
 msgid "extract text words as a Python list"
 msgstr "テキストワードを Python リストとして抽出します。"
 
-#: ../../functions.rst:50 b6be6a798be9474b861e51b28bd9c46c
+#: ../../functions.rst:50 1c8ae2f8f1f84b618bf7807fb1a10cc4
 msgid ":meth:`Page.get_texttrace`"
 msgstr ""
 
-#: ../../functions.rst:50 1918ba1582404d0da1cfa1bb90facd9a
+#: ../../functions.rst:50 e214fbbc63ae4d19a39fbd35f361f107
 msgid "low-level text information"
 msgstr "低レベルのテキスト情報です。"
 
-#: ../../functions.rst:51 97f7f70a1f024c5596beba2d6083c370
+#: ../../functions.rst:51 c12d9e81a4f14a1ead2ead8d7f981a7c
 msgid ":meth:`Page.read_contents`"
 msgstr ""
 
-#: ../../functions.rst:51 fbbe70d6b80548bf81db0ed638604ff3
+#: ../../functions.rst:51 4ea4aa95a0e74da39d80427e97d0c2f4
 msgid "PDF only: get complete, concatenated /Contents source"
 msgstr "PDF のみ：完全な連結 /Contents ソースを取得します。"
 
-#: ../../functions.rst:52 97fc05c38d804f0c829d6226fae6ff64
+#: ../../functions.rst:52 0a7b92c5ce184b8696922871f9786f30
 msgid ":meth:`Page.run`"
 msgstr ""
 
-#: ../../functions.rst:52 7d5ea217e7ce4dd2856d6dd788de51fa
+#: ../../functions.rst:52 e20ec70bf4894a6aa07e7a11aaf63d9e
 msgid "run a page through a device"
 msgstr "ページをデバイスを介して実行します。"
 
-#: ../../functions.rst:53 3f0fafaa94704a27945b473cc84d6b53
+#: ../../functions.rst:53 f318ac76d76d4865bd43843061a922e7
 msgid ":meth:`Page.set_contents`"
 msgstr ""
 
-#: ../../functions.rst:53 3a38b120e7094eef91491802cb5ede57
+#: ../../functions.rst:53 efe0c81605704542bfd7c295f5f6ccce
 msgid "PDF only: set page's :data:`contents` to some :data:`xref`"
 msgstr "PDF のみ：ページの :data:`contents` を特定の :data:`xref` に設定します。"
 
-#: ../../functions.rst:54 0feca3c718384d869711f8270fcfe9a9
+#: ../../functions.rst:54 4eb1f3fa01d74d89bd9e13660d80aace
 msgid ":meth:`Page.wrap_contents`"
 msgstr ""
 
-#: ../../functions.rst:54 ae1231ecd4ea49c7813df81e4da27c5e
+#: ../../functions.rst:54 1e1087f91ea540e786db6751528af559
 msgid "wrap contents with stacking commands"
 msgstr "スタッキング コマンドでコンテンツをラップします。"
 
-#: ../../functions.rst:55 b104404c744c474293113d1eef9ae246
+#: ../../functions.rst:55 09fa362cbcc546d5bf5d8ff7ab48a08e
 msgid ":meth:`css_for_pymupdf_font`"
 msgstr ""
 
-#: ../../functions.rst:55 79e6c0cb8367467aae4981ef407ebca5
+#: ../../functions.rst:55 e8300bd4f1b44f5db6278ec60b77cd26
 msgid "create CSS source for a font in package pymupdf_fonts"
 msgstr "パッケージ pymupdf_fonts のフォント用の CSS ソースを作成します。"
 
-#: ../../functions.rst:56 86e04922d0254df48749ddd782a42be2
+#: ../../functions.rst:56 f03759eda97c48b2a48fa4f9b0fedb9a
 msgid ":meth:`paper_rect`"
 msgstr ""
 
-#: ../../functions.rst:56 850682504daa47a3b49a984ce1189a63
+#: ../../functions.rst:56 b1fb4ea8173343e4b372c4196e07d4ea
 msgid "return rectangle for a known paper format"
 msgstr "既知の用紙形式の矩形を返します。"
 
-#: ../../functions.rst:57 c4d147c5a1d64c82a16e7e347fe90738
+#: ../../functions.rst:57 18bd1781e96740a0bd73013a3d7b664c
 msgid ":meth:`paper_size`"
 msgstr ""
 
-#: ../../functions.rst:57 1c6cfbbad22542ec987d6587745efa4e
+#: ../../functions.rst:57 4c71d20789bf4aafba9b403c91023308
 msgid "return width, height for a known paper format"
 msgstr "既知の用紙形式の幅と高さを返します。"
 
-#: ../../functions.rst:58 3e78ca8b672c4df394141beb3ca86a19
+#: ../../functions.rst:58 448bae55c0144a77bf34e084c2087748
 msgid ":meth:`paper_sizes`"
 msgstr ""
 
-#: ../../functions.rst:58 efdf46d6a1ee49d9a65b0785d1b8197d
+#: ../../functions.rst:58 a4b88a6f83704283b1d067b9b422950b
 msgid "dictionary of pre-defined paper formats"
 msgstr "事前定義の用紙形式の辞書です。"
 
-#: ../../functions.rst:59 2b76da1b09664c2281a67555e1aee79d
+#: ../../functions.rst:59 b534913dfb3a46caa10a1f68b16f99f5
 msgid ":meth:`planish_line`"
 msgstr ""
 
-#: ../../functions.rst:59 55e6af8933184b9799583466ae6b5260
+#: ../../functions.rst:59 dfa9809478844cd3a030cab4d9dfd1c2
 msgid "matrix to map a line to the x-axis"
 msgstr "直線を x 軸にマップする行列です。"
 
-#: ../../functions.rst:60 adf4a6912b74494e8b4a81e1ad1e023d
+#: ../../functions.rst:60 73b07e7023524c939f290cfec3c5147d
 msgid ":meth:`recover_char_quad`"
 msgstr ""
 
-#: ../../functions.rst:60 2593d09e30694c1f9bd6ce4bdb1520cb
+#: ../../functions.rst:60 5d790e90a6db4ee39f6b9c7eaeaabaee
 msgid "compute the quad of a char (\"rawdict\")"
 msgstr "文字のクワッドを計算します（\"rawdict\"）。"
 
-#: ../../functions.rst:61 8b29bf9a3a4f4c3eb96ef7c0bd912926
+#: ../../functions.rst:61 c7b763ff7e8242908671eb76801b55c5
 msgid ":meth:`recover_line_quad`"
 msgstr ""
 
-#: ../../functions.rst:61 7d233952bb8e4ce885f963dd77fb0e6f
+#: ../../functions.rst:61 907e455060ee4289a865a3187bb4704e
 msgid "compute the quad of a subset of line spans"
 msgstr "ラインスパンのサブセットのクワッドを計算します"
 
-#: ../../functions.rst:62 72275833d3a1438faa6a801185292b81
+#: ../../functions.rst:62 7f4adbdf1e7345cd91ccb084d979616b
 msgid ":meth:`recover_quad`"
 msgstr ""
 
-#: ../../functions.rst:62 5a8d087891f4445ea85ed013e701bc78
+#: ../../functions.rst:62 0077aa420f404be69c0b00c321022093
 msgid "compute the quad of a span (\"dict\", \"rawdict\")"
 msgstr "スパンのクワッドを計算する (\"dict\", \"rawdict\")"
 
-#: ../../functions.rst:63 9eef281b47d64378adb6f46472037ad9
+#: ../../functions.rst:63 02efaa1a3ddc4f1c8aa20484a700e7e4
 msgid ":meth:`recover_span_quad`"
 msgstr ""
 
-#: ../../functions.rst:63 1a7eefd270d942119569ac42043ae560
+#: ../../functions.rst:63 8ce412850eb445b78abe6ca665a2a77f
 msgid "compute the quad of a subset of span characters"
 msgstr "行スパンのサブセットのクワッドを計算します。"
 
-#: ../../functions.rst:64 d8411fe2450a4335b4720cfc8fd88ac1
+#: ../../functions.rst:64 c8a3bffef95e412ca257c252d6bff657
 msgid ":meth:`set_messages`"
 msgstr ""
 
-#: ../../functions.rst:64 49fec9a75fe34e408cf4e2b564d9393e
+#: ../../functions.rst:64 ae0c40a4b5ed4b718dfb8abc492ca10e
 msgid "set destination of |PyMuPDF| messages."
 msgstr ""
 
-#: ../../functions.rst:65 bacb887d9fe64e2586f478457311f52e
+#: ../../functions.rst:65 0d4e3f46893442b5b8eba64b982bf3f2
 msgid ":meth:`sRGB_to_pdf`"
 msgstr ""
 
-#: ../../functions.rst:65 7b07cd68b95740db96d883725a23dfc8
+#: ../../functions.rst:65 d696f1caa15445b6bb8d91e71984f0a4
 msgid "return PDF RGB color tuple from an sRGB integer"
 msgstr "sRGB 整数から PDF RGB カラー タプルを返します。"
 
-#: ../../functions.rst:66 d9fad77ca5bb4ea29e7e115ae41027d9
+#: ../../functions.rst:66 65f3ad24442c445fb34dae8002131da9
 msgid ":meth:`sRGB_to_rgb`"
 msgstr ""
 
-#: ../../functions.rst:66 3eb2e1a49c394d7190320f310ced9897
+#: ../../functions.rst:66 3d999340cd904162a8038d1a4126b947
 msgid "return (R, G, B) color tuple from an sRGB integer"
 msgstr "sRGB 整数から (R、G、B) カラー タプルを返します。"
 
-#: ../../functions.rst:67 dacbb5d08f684a739eea5e737a0f8475
+#: ../../functions.rst:67 766d7f863ca4428e842619c0ebca36ef
 msgid ":meth:`unicode_to_glyph_name`"
 msgstr ""
 
-#: ../../functions.rst:67 e27898f4a503438b9c84fbaea53d8e46
+#: ../../functions.rst:67 6d5f5fe4327b4bf9b8aae045c9bf2b99
 msgid "return glyph name from a unicode"
 msgstr "Unicode からグリフ名を返します。"
 
-#: ../../functions.rst:68 3761a359e2a440e6a6d94194ddd5ca47
+#: ../../functions.rst:68 b9b504a041b94a4f8519153749eb4825
 msgid ":meth:`get_tessdata`"
 msgstr ""
 
-#: ../../functions.rst:68 7916666e646e4f1b81e7eeb0f76726f4
+#: ../../functions.rst:68 a2891d94940c4cf8a54ab447f7b15370
 msgid "locates the language support of the Tesseract-OCR installation"
 msgstr "Tesseract-OCR インストールの言語サポートを特定します。"
 
-#: ../../functions.rst:69 88ba621d00d6454d87a956ca2ea10427
+#: ../../functions.rst:69 f1824ee678fd459f92586806ad603df7
 msgid ":meth:`colors_pdf_dict`"
 msgstr ""
 
-#: ../../functions.rst:69 8d156d20680342ef90bfb088e0b93fdf
+#: ../../functions.rst:69 0d099e9629fb4b689e08965adfc300e0
 msgid "return dict of color names."
 msgstr ""
 
-#: ../../functions.rst:70 d6674fd6f92b465f9640631eee500d7b
+#: ../../functions.rst:70 8dffcc2057e74973bf33f55a5145efa7
 msgid ":meth:`colors_wx_list`"
 msgstr ""
 
-#: ../../functions.rst:70 72620216e10a478985af2dc1ca95125f
+#: ../../functions.rst:70 df83f96c7f9049f9a2135f8c7c3e1f45
 msgid "return list of color names."
 msgstr ""
 
-#: ../../functions.rst:71 94e8002b7c134f61aae64d5f0ee42280
+#: ../../functions.rst:71 a7d1b2ff6e7b499991be2827f2ce182f
 msgid ":attr:`fitz_fontdescriptors`"
 msgstr ""
 
-#: ../../functions.rst:71 ccee6906defe4b3391fa9a827d7183b6
+#: ../../functions.rst:71 2bd5030a1ab34dfea799a7bac792e409
 msgid "dictionary of available supplement fonts"
 msgstr "利用可能な補足フォントの辞書です。"
 
-#: ../../functions.rst:72 d4da999f959b4d72813e7d4b11346f02
+#: ../../functions.rst:72 213d79bfa9874a63ac1a4cfeb7032132
 msgid ":attr:`PYMUPDF_MESSAGE`"
 msgstr ""
 
-#: ../../functions.rst:72 d20b7c4d1f2d40a295f7f3556bd510ff
+#: ../../functions.rst:72 01828b10e24e4ca7a6ec84f910c2955e
 msgid "destination of |PyMuPDF| messages."
 msgstr ""
 
-#: ../../functions.rst:73 b730944f16e5483a91a1d0e55c948756
+#: ../../functions.rst:73 fe68fe9641d94830aac3959ef70a3a46
 msgid ":attr:`pdfcolor`"
 msgstr ""
 
-#: ../../functions.rst:73 a7dbeae797964748bc2445c3524f2142
+#: ../../functions.rst:73 19755c9b06fb412fac21ab46d85760d4
 msgid "dictionary of almost 500 RGB colors in PDF format."
 msgstr "PDF 形式のほぼ 500 以上の RGB カラーの辞書です。"
 
-#: ../../functions.rst:78 002feca7554345c0b5cf4b41b774f168
+#: ../../functions.rst:78 688881b3cb454361936fad432734136c
 msgid ""
 "Convenience function to return width and height of a known paper format "
 "code. These values are given in pixels for the standard resolution 72 "
 "pixels = 1 inch."
 msgstr "既知の用紙フォーマットの幅と高さを返す便利な関数です。これらの値は、標準解像度 72 ピクセル = 1 インチのピクセル単位で指定されます。"
 
-#: ../../functions.rst:80 17ca7e059e904354a626f297dde8741d
+#: ../../functions.rst:80 df6f7db7c5e64bb99187e217a5e55d94
 msgid ""
 "Currently defined formats include **'A0'** through **'A10'**, **'B0'** "
 "through **'B10'**, **'C0'** through **'C10'**, **'Card-4x6'**, **'Card-"
@@ -542,7 +542,7 @@ msgstr ""
 "5x7’**、**‘Commercial’**、**‘Executive’**、**‘Invoice’**、**‘Ledger’**、**‘Legal’**、**‘Legal-13’**、**‘Letter’**、**‘Monarch"
 "’**、**‘Tabloid-Extra’** が含まれており、各フォーマットは縦向きまたは横向きで提供されています。"
 
-#: ../../functions.rst:82 33458151eb9e4b27adb3007ddcaf2e74
+#: ../../functions.rst:82 1227353c5f80413d8e4366aaa7e00301
 msgid ""
 "A format name must be supplied as a string (case **in** \\sensitive), "
 "optionally suffixed with \"-L\" (landscape) or \"-P\" (portrait). No "
@@ -551,22 +551,22 @@ msgstr ""
 "フォーマット名は、文字列として指定する必要があります（大文字小文字を区別しない）。オプションで \" -L\"（横向き）または \" "
 "-P\"（縦向き）でサフィックスを付けることができます。サフィックスが指定されていない場合、デフォルトは縦向きです。"
 
-#: ../../functions.rst 0086ae19d23245d2a3c425d537cff985
-#: 0107a4c1a39347c4af4004ad0d5e403f 252c1e16d25c490cb7cbcce3b9f1cfce
-#: 4d137e1791c745deb8c590d5bfbb5dc5 53d3e4977fb146ad8669a8e821bfefc2
-#: 64c8593781c046ddb8f521a6f1f0b725 73e64bfff41249dc85e4ec96e8391f45
-#: 906ceb613e864f36a87c345f3583fe16 9710f4ab97144634a38ae20942d1913c
-#: 9926c7d0fcee400e841aa1890bc67ea2 9a5f4a6a98dc4147bdf82210a75f126b
-#: 9d47d65487774d9c8607562d808e63bc a546b36584fc4023a7e68fa52d3bb110
-#: a9f64f731e974ea0aa63eb249d1d18db b3ce1309b9604e59aa7340f733b76c42
-#: c25ed4ddc44a4d8292fe7a949a15fe58 c4cdb78e6944459a8934a78aadb3eaa5
-#: c9c22817211c49a2ae16da519ef351b3 d7d622d64742404689c069e3aca882b3
-#: d9a5cf2ad2a74ac69251b17f01c01ef3 da9e9f534e6d4e9f8dbbb79b9ea31590
-#: f4fb4b17df8044c5967eb49d08ad2940 f56da1d9666f450fbdb7617571826508
+#: ../../functions.rst 0859ddc790de48e98a47485cde669401
+#: 09aae792d39a4719b5feaf0ab83fff20 19bfd0356987458d83477865a5d1a227
+#: 49070de6bbd648339c39152b16917361 5abb2b0067e04d25a6a480258935ec7b
+#: 64942c1bcabb4af8b61d6c1763fa9ec1 7e3314757aad4fc1a94940b29ca6827c
+#: 813511b4bfb04affbe03c50f1c74e9c8 82b50464d79647069ebf77eb5eaa2f72
+#: 89cb96a7503f42ea8e5af77eae2653a1 92ffa13c8ae94cb2b2fa323e85adf355
+#: 99b800f8ef394726a8cf31b1e64c2e16 9d31e1e684094f7b843f37fca583e403
+#: 9fd573cd7d544e0aa4901376821e273b a1c3d38ad8b348718a4c58ba8de0d1f6
+#: a36d22d544834da3858edb86ef6f1644 ac8c99d18c2b4b9bb781c6f88660d86b
+#: b6d2ba4ce7ea4aeda4dcafbeb54f8f0d b770518ae6a749dbb83e9e8e640a10ee
+#: cd5810abe8154ef1bb614e2940eece1a f11cee020a504c72a63ce27fbbd09651
+#: fa237829f2624242ba676a501a682730 fe1aebb4ec3b40bd940fea19abc2ba9f
 msgid "Parameters"
 msgstr ""
 
-#: ../../functions.rst:84 d1edba4a2b0749ff9e106b3732d82d71
+#: ../../functions.rst:84 58f6fc5980274479b8466f9943b239a0
 msgid ""
 "any format name from above in upper or lower case, like *\"A4\"* or "
 "*\"letter-l\"*."
@@ -574,39 +574,39 @@ msgstr ""
 "上記のいずれかのフォーマット名を大文字または小文字で指定します。たとえば、*\"A4\"* または *\"letter-l\"* "
 "のように指定します。"
 
-#: ../../functions.rst 0121f158b26c43a2b9c36019a068d476
-#: 0ce6605af5f4478d8061e1965c2e1d97 106ca0af52b042ab892bc071e9202602
-#: 1c86a8e962aa499e9e410d093e1a7f88 256a84d8523f4aee8718f26909ba604d
-#: 327dfa749eae497cb7f5387483a9a444 32ee4d8eb19b45f6bae13ef61ea1df84
-#: 374143252c4d4144b7fc79a07ecbcfe9 54c6c9a08eb645fba6be747045bde8c4
-#: 550b0c06550e4a1db6acda53a6f75aee 64d7b707a7bf4582b8102acb5337d806
-#: 6c7410225afa49df905d5ed0d17dc474 6d694012d38941158e6047cbd6765876
-#: 7262ad3fefd743ddaa764526ac356634 89ce342518cf4fafa64b40ff6b7b140c
-#: 97d9ffa38655495f8a0013a370df5289 a8487089b1734e4eb813ff485ba54710
-#: a8684a1cd202441c86731484fca25ce8 b10068ceba924c31976b9242b92fd17f
-#: cd5f983948d04e5ab2670e6390e0052f d4a5ef1e9ff945c3b9d4e2747459e5b5
-#: e05046ff91b84ecfb6c3e9f910e35c6b e5e153a681464042ac902226ca22a638
-#: fec4328be3b2480a916f5378f659f73a
+#: ../../functions.rst 03f1fe2e5c3943e183598885bc51d1dc
+#: 1857900ce17a4569876c842ed42c6268 20b469d28e6e4ef18b3176a5e74627d3
+#: 20f0ad032864401e8e11b10c90f9c24b 27537b59f5694129a544cd09ee1e4957
+#: 2e112e3af1b74659bdb9c43d7db12a74 3062eec0ad0247d28f2f532f9cd5cce4
+#: 51bd37f77a214f6a8d3c6918723b9eea 5a94a14aae9b4984be7e3591cb6101df
+#: 6b1952aa0aa84cbe8c865623124268ab 6cf6024e798045079d4c6551e3a7b175
+#: 8bbd1c084844464088dab98f7d9f4965 9caea92222fe4cdc8432df38e26f83c6
+#: acae4a31653a4d72b4a2e701c6c059b0 ad60dbf189334ee5a807f1faec163c26
+#: b13938ce54e342d49bb6ee61f3927459 bd9c2eff50e34f239e7589f9e6ad949c
+#: d3cd059ede494646bac809314f2a7aa3 dedeff11b7fe409fa341704aee20d714
+#: f446e807ba984edf862a261ccd18ee92 f661f3aea2174106b4f7c07557d2937d
+#: fcea4521481d45bb8138e2bc86f57dd6 fd35d8681ef34d8882c8131bfbb9325f
+#: ffae2284aadc4ea5b7ce903b300110e5
 msgid "Return type"
 msgstr ""
 
-#: ../../functions.rst 0b28aca76f944ff18b6098afd579680a
-#: 2b6133170db1444d825aff6739634e39 2b9736094e9f44c3a525fc5e7097a5e5
-#: 313496306a9743919ee5823a60c2d361 33ac39ac07414f85b3786ef4c9223ea3
-#: 454aad8620e64aa1a01848beb351cbec 5253deb9dac74a40b25e1b22197ba15d
-#: 53a771157e234176a0d7ae969d9b227a 58185911039140a28707f02ad521b3ab
-#: 5f35c2a270ac4eefa23fdc76dcee2484 624cf976820b41928dcd66343ff03da6
-#: 63b4df40d8c140b1be54bc04ef374174 6408e5ad41d2461a9f1df6fd1d10247a
-#: 770763d9916145aa866e83c019d3897f 87450388ea2e4b3ba78057e08bf8d59c
-#: 94045b20d2aa4b1db426dcb58eea1b10 94d79843696941f89e89964f275df7e5
-#: 9ff48f8556cd4c7799e4ae3e2becbe62 af5f6456a8f7493cae3a280402806308
-#: bd1a8c77553943e290203312960e2401 d3e45a9126484cd4a279e1ae5a54a761
-#: ddf4fe6c595f4133838d416f125ba6e5 debdc63467a94655af3b4c62c59d52cb
-#: e1773e4b9bbc4fc1b6025290b2dd5ef4 e7e7c4c4fd324c66870c6a5a75a9fe69
+#: ../../functions.rst 241f189d177b4abe8781c1323a0ec686
+#: 269469e84adb406bba0203eeb27db4ea 3002f251a3b34a938e7f3b2d8ff54f55
+#: 393bd2c99abb435c9096087b1340609a 4c3f97315cf04d0891ea76a1bc4cdec7
+#: 4ce3f7bf85464affb653fdc3cde40999 4d87d3c54e3f482fbeae0695ccae2f3d
+#: 54eed5b94cd8484089e327a49e09c976 6b22f8b9a6ca4d4cbc8cc4d236263067
+#: 7c586b43f1e2413b82c7aec73497ad09 7d42f6afd5844f1caca525f80b3c1328
+#: 8bc58d3f2fc9447e98d7349da31213de a168611b4d644084a80c9ebf51127c66
+#: a636bdbee8ca4bb993b51dab8564eb04 afce09bb4d3e4e5dad5ccfaa3e62395a
+#: b4b81ec6ce2548c6a66b0675d31bd1d6 b7e7fb7a4c2747b1adf7a8583f8654c4
+#: b8cab8292e6e4f3ea1b79e200dca449d be0506cde75249c5b7cf35d1ae34c87d
+#: c02e22251e0c496c99819e2bbfd566f2 e1d0fe254797467e8a7b7fe3ea0ae483
+#: e1de8b977cf8465eb45cad2ef5f5e0dd eb4281b814a647efb2ad231baf1ca7ae
+#: f468fa01ceb94ad8ac3451a68a33ae39 fda237d8691b4a959eeca8fe09b6bbae
 msgid "Returns"
 msgstr ""
 
-#: ../../functions.rst:87 1b138ce45cb24fb29f004a1d4309d345
+#: ../../functions.rst:87 b4296412402b46a4965f9ad12430f3a5
 msgid ""
 "*(width, height)* of the paper format. For an unknown format *(-1, -1)* "
 "is returned. Examples: *pymupdf.paper_size(\"A4\")* returns *(595, 842)* "
@@ -616,90 +616,90 @@ msgstr ""
 "が返されます。例：*pymupdf.paper_size(\"A4\")* は (595、842) "
 "を返し、*pymupdf.paper_size(\"letter-l\")* は *(792、612)* を返します。"
 
-#: ../../functions.rst:93 405aadeaf0834803b43a3691be34a350
+#: ../../functions.rst:93 5b13894197174f5b9b605cf39be91764
 msgid "Convenience function to return a :ref:`Rect` for a known paper format."
 msgstr "既知の紙のフォーマットに対応する :ref:`Rect` を返す便益関数です。"
 
-#: ../../functions.rst:95 4321cecbf19e44b5969aaaac7d91192f
+#: ../../functions.rst:95 2b01808a6f984885ad72685e42b6ba34
 msgid "any format name supported by :meth:`paper_size`."
 msgstr ":meth:`paper_size` でサポートされている任意のフォーマット名。"
 
-#: ../../functions.rst:97 6253b4e47f72404b86be542a1f5ba214
+#: ../../functions.rst:97 398230d02c1a4139a2c25e15afd00441
 msgid ":ref:`Rect`"
 msgstr ""
 
-#: ../../functions.rst:98 96cb4ba9703240cda5af5d9b5ebd4273
+#: ../../functions.rst:98 3bcbeafd12094f66b7da10fbb6e44d13
 msgid ""
 "*pymupdf.Rect(0, 0, width, height)* with *width, "
 "height=pymupdf.paper_size(s)*."
 msgstr ""
 
-#: ../../functions.rst:109 209aaeabd9fc46ac99b66ad31493b3d0
+#: ../../functions.rst:109 dfd4fa5a7ed645d687e1add0d26f8fd9
 msgid ""
 "Sets destination of |PyMuPDF| messages to a file descriptor, a file, an "
 "existing stream or `Python's logging system "
 "<https://docs.python.org/3/library/logging.html>`_."
 msgstr ""
 
-#: ../../functions.rst:113 494817e916d2455a86023b21c58f3a11
+#: ../../functions.rst:113 7ca7d103b38f48e6807607f1b5fb4e04
 msgid "Usually one would only set one arg, or one or more `pylogging*` args."
 msgstr ""
 
-#: ../../functions.rst:115 8e1da9c75a4d46cd98e9c4659b1a151c
+#: ../../functions.rst:115 d3110ebcfa014f9a9e9dffbfb07b8429
 msgid ""
 "A text specification of destination; for details see description of "
 "environmental variable `PYMUPDF_MESSAGE`."
 msgstr ""
 
-#: ../../functions.rst:118 34909df9199646a4b311eeccca4936a0
+#: ../../functions.rst:118 f2568fbdee6a469e86d30e697b54e228
 msgid "Write to file descriptor."
 msgstr ""
 
-#: ../../functions.rst:120 9b448bc58b824bb08b07efa6932546dd
+#: ../../functions.rst:120 3005a922a0bd4a02926e0a5b40014183
 msgid ""
 "Write to existing stream, which must have methods `.write(text)` and "
 "`.flush()`."
 msgstr ""
 
-#: ../../functions.rst:123 f053785536f6462bba2672cfee39462e
+#: ../../functions.rst:123 7bae0338bdf7484c9e843251d5c4268e
 msgid "Write to a file."
 msgstr ""
 
-#: ../../functions.rst:125 5a0b5cb436f2417c881f352a3f16f2d2
+#: ../../functions.rst:125 629d6fa80e1140f48a18cd82a8d2631d
 msgid "Append to a file."
 msgstr ""
 
-#: ../../functions.rst:127 ad3bbc6027e84e2bab9cb27d2b9ea314
+#: ../../functions.rst:127 af3dad1d6ce942b8bc8207879fb6e153
 msgid "Write to Python's `logging` system."
 msgstr ""
 
-#: ../../functions.rst:129 11b3c7e90be841f99339dbc2b36b3221
+#: ../../functions.rst:129 edef27de299d43b580f0142468f71ade
 msgid "Write to Python's `logging` system using specified Logger."
 msgstr ""
 
-#: ../../functions.rst:131 71019e8509cd432ab8818a7b104e22de
+#: ../../functions.rst:131 97f0f14a9c6543069de109bdaa320698
 msgid "Write to Python's `logging` system using specified level."
 msgstr ""
 
-#: ../../functions.rst:133 c04c80653e184bbab2777ad6e8ce5511
+#: ../../functions.rst:133 54a6240e34794f1d8f029e59eef09948
 msgid ""
 "Write to Python's `logging` system using specified logger name. Only used"
-" if `pylogging_logger` is None. Default is `pymupdf`."
+" if `pylogging_logger` is ``None``. Default is `pymupdf`."
 msgstr ""
 
-#: ../../functions.rst:137 10dcacf9980a48319c1ccddf8727743f
+#: ../../functions.rst:137 7fc3645c02074a4aa4ff724cf1ab0856
 msgid ""
-"If any `pylogging*` arg is not None, we write to `Python's logging system"
-" <https://docs.python.org/3/library/logging.html>`_."
+"If any `pylogging*` arg is not ``None``, we write to `Python's logging "
+"system <https://docs.python.org/3/library/logging.html>`_."
 msgstr ""
 
 #: ../../functions.rst:144 ../../functions.rst:156 ../../functions.rst:270
-#: 263672d47c2b4937aabab2ac1973bdd6 b0f3d381bde84d2e9d140f8eb6fc20c8
-#: fc756121bb534e6888ea52f5d5f7475b
+#: 70ea9f075bbc45bc9f22e2b8a925f0c2 d9fd6097dd8642d681771c59c34ec163
+#: e3bdeda869f54aae9ed48140bfa9aa51
 msgid "*New in v1.17.4*"
 msgstr "*バージョン1.17.4で新たに追加*"
 
-#: ../../functions.rst:146 28a2adf5d1a8459a866ce88539692849
+#: ../../functions.rst:146 0aa93594a530468e84df8471d05d150d
 msgid ""
 "Convenience function returning a PDF color triple (red, green, blue) for "
 "a given sRGB color integer as it occurs in :meth:`Page.get_text` "
@@ -709,13 +709,13 @@ msgstr ""
 "カラー整数に対して、PDF カラーのトリプル（赤、緑、青）を返す便益関数です。"
 
 #: ../../functions.rst:148 ../../functions.rst:160
-#: 8382544bac0e4c58959a7c6356a5ea1d 938ab4f232fd47ad925a7c3d3141b81b
+#: 864b3d47658d4c118df2f33b9208300f 8b645478645441eebd77be6157685571
 msgid ""
 "an integer of format RRGGBB, where each color component is an integer in "
 "range(255)."
 msgstr "各カラーコンポーネントが範囲[0, 255]の整数である RRGGBB 形式の整数。"
 
-#: ../../functions.rst:150 10f206e7d5e243329ebcb32246f8b902
+#: ../../functions.rst:150 87564fe0c411497099602ced50913c18
 msgid ""
 "a tuple (red, green, blue) with float items in interval *0 <= item <= 1* "
 "representing the same color. Example `sRGB_to_pdf(0xff0000) = (1, 0, 0)` "
@@ -725,13 +725,13 @@ msgstr ""
 "の間の浮動小数点数アイテムを持つタプル（赤、緑、青）で、同じカラーを表します。例：`sRGB_to_pdf(0xff0000) = (1, 0, "
 "0)` （赤）。"
 
-#: ../../functions.rst:158 3f1bd182a011433f95c261cb5072c83e
+#: ../../functions.rst:158 33afb580cfbe4b5fb5fed85569086eeb
 msgid ""
 "Convenience function returning a color (red, green, blue) for a given "
 "*sRGB* color integer."
 msgstr "与えられた *sRGB* カラー整数に対して、カラー（赤、緑、青）を返す便益関数です。"
 
-#: ../../functions.rst:162 56008f93f9c4445e9550ff701c9a5067
+#: ../../functions.rst:162 99b662fe46f9469682b0a7ec89eed460
 msgid ""
 "a tuple (red, green, blue) with integer items in `range(256)` "
 "representing the same color. Example `sRGB_to_pdf(0xff0000) = (255, 0, "
@@ -741,19 +741,19 @@ msgstr ""
 "(255, 0, 0)` （赤）"
 
 #: ../../functions.rst:168 ../../functions.rst:183 ../../functions.rst:198
-#: ../../functions.rst:211 6909db03961b42e384921d94b42d088b
-#: 7fa4e5d78b60492e8580ca2bd95fc9e2 df918e2414764ab88723bfeb276d87b3
-#: e0895f463b6a4252a8d81f9f899483c2
+#: ../../functions.rst:211 79490e25884e4b379b80f56b00625d5c
+#: 8802b9dd8e1644918618883055d9afaf 8d692f79ec3d47b5a19c94c7e7f90981
+#: cc00fcf3f3834541862d9a786318f32f
 msgid "*New in v1.18.0*"
 msgstr "*バージョン1.18.0で新たに追加*"
 
-#: ../../functions.rst:170 1c99f3f02cbe41beaaccdc4a304a0c18
+#: ../../functions.rst:170 5ba3d698e66646eeba96e992e95fc235
 msgid ""
 "Return the unicode number of a glyph name based on the **Adobe Glyph "
 "List**."
 msgstr "**Adobe Glyph List** に基づくグリフ名のUnicode番号を返す関数です。"
 
-#: ../../functions.rst:172 4d64118594024a50bb3b89613e2a782a
+#: ../../functions.rst:172 bdb4dabbf07a42e1b2aaa60fafc3f6a5
 msgid ""
 "the name of some glyph. The function is based on the `Adobe Glyph List "
 "<https://github.com/adobe-type-tools/agl-"
@@ -762,13 +762,14 @@ msgstr ""
 "グリフの名前。この関数は `Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
 "aglfn/blob/master/glyphlist.txt>`_ に基づいています。"
 
-#: ../../functions.rst:175 6f671fb8e68041e9babf072c102e5b6f
-msgid "the unicode. Invalid *name* entries return `0xfffd (65533)`."
+#: ../../functions.rst:175 7f83c8a40f1f4f5182386d25b2900e70
+#, fuzzy
+msgid "the unicode. Invalid ``name`` entries return `0xfffd (65533)`."
 msgstr "Unicode番号。無効な *name* のエントリは `0xfffd (65533)` を返します。"
 
 #: ../../functions.rst:177 ../../functions.rst:205 ../../functions.rst:218
-#: 1d529882b0fd460cb9ec78ab559a0ece 318abb6987cc4a819a5fcfa675571abb
-#: 3ff634aebfcc49c0a91be502177113cf
+#: 06e18a271eb844ff8ee1fc0870be4fb8 d7d9853398734fcbb59570519db66ef3
+#: e5f542bf904c4baf92ddadf03e7802e6
 msgid ""
 "A similar functionality is provided by package `fontTools "
 "<https://pypi.org/project/fonttools/>`_ in its *agl* sub-package."
@@ -776,14 +777,14 @@ msgstr ""
 "同様の機能は、`fontTools <https://pypi.org/project/fonttools/>`_ パッケージの *agl* "
 "サブパッケージで提供されています。"
 
-#: ../../functions.rst:185 609da01536814ffc8706b0bbea3ab5f8
+#: ../../functions.rst:185 9c9f41d26b6f44d5a0675c56c191b7b5
 msgid ""
 "Return the glyph name of a unicode number, based on the **Adobe Glyph "
 "List**."
 msgstr "以下は、**Adobe Glyph List** に基づいた、Unicode番号に基づいたグリフ名を返す関数です。"
 
-#: ../../functions.rst:187 6a2134788061488f80d967a33cc10f18
-#: b79e55b908d046998fb2c3e15ba9aa33
+#: ../../functions.rst:187 3efb1935917c44828cdb74dd8e802d39
+#: a7cc8fab866e446fb5d9bd91531a6e33
 msgid ""
 "the unicode given by e.g. `ord(\"ß\")`. The function is based on the "
 "`Adobe Glyph List <https://github.com/adobe-type-tools/agl-"
@@ -793,13 +794,13 @@ msgstr ""
 "<https://github.com/adobe-type-tools/agl-"
 "aglfn/blob/master/glyphlist.txt>`_ に基づいています。"
 
-#: ../../functions.rst:190 075e96968e27471791191d74ea61cb09
+#: ../../functions.rst:190 5176a1a461ef43a1bfbefacc552c8a8b
 msgid ""
 "the glyph name. E.g. `pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` returns "
 "`'Adieresis'`."
 msgstr "グリフ名、例：`pymupdf.unicode_to_glyph_name(ord(\"Ä\"))` は `'Adieresis'` を返します。"
 
-#: ../../functions.rst:192 2ebedf06c52f4f49a1b608ac0a185a68
+#: ../../functions.rst:192 2d968ce1f4004533b122972fdbbabdf7
 msgid ""
 "A similar functionality is provided by package `fontTools "
 "<https://pypi.org/project/fonttools/>`_: in its *agl* sub-package."
@@ -807,33 +808,33 @@ msgstr ""
 "類似の機能は、`fontTools <https://pypi.org/project/fonttools/>`_ パッケージの *agl* "
 "サブパッケージで提供されています。"
 
-#: ../../functions.rst:200 901a264999f74b27b1b6f0c75e3d26ce
+#: ../../functions.rst:200 cdc27cc2524340f49b6cc45e587c802c
 msgid "Return a list of glyph names defined in the **Adobe Glyph List**."
 msgstr "**Adobe Glyph List** で定義されたグリフ名のリストを返します。"
 
-#: ../../functions.rst:203 8a8082e41b3b4d36b08a96250bdea3ff
+#: ../../functions.rst:203 2fd087c0315e407ea96067edc1c4393c
 msgid "list of strings."
 msgstr "文字列のリスト。"
 
-#: ../../functions.rst:213 2f4ba69189114cc490cffb97e8a0ab9f
+#: ../../functions.rst:213 a02dfb86773a455382f6a6c0268d3499
 msgid ""
 "Return a list of unicodes for there exists a glyph name in the **Adobe "
 "Glyph List**."
 msgstr "**Adobe Glyph List** にグリフ名が存在するUnicodeのリストを返します。"
 
-#: ../../functions.rst:216 74dae50c6b504e448879f45b492bc8ca
+#: ../../functions.rst:216 b7378500b7af448d86db01202a45986c
 msgid "list of integers."
 msgstr "整数のリスト。"
 
-#: ../../functions.rst:224 6bcba2202f05412b80d121404158c83d
+#: ../../functions.rst:224 44322f42c7554831ac045bccb97dbc3c
 msgid "*New in v1.21.0*"
 msgstr "*新機能 v1.21.0*"
 
-#: ../../functions.rst:226 fb495a7e4a74418db018826854000539
+#: ../../functions.rst:226 24ae3761fb07422393846de0c9c3fa88
 msgid "**Utility function for use with \"Story\" applications.**"
 msgstr "**\"Story\" アプリケーションで使用するためのユーティリティ関数。**"
 
-#: ../../functions.rst:228 4809306f864c4a89ad70d5975115d193
+#: ../../functions.rst:228 fd42be5d92474036bd944ca8660478de
 msgid ""
 "Create CSS `@font-face` items for the given fontcode in pymupdf-fonts. "
 "Creates a CSS font-family for all fonts starting with string "
@@ -842,7 +843,7 @@ msgstr ""
 "指定された \"fontcode\" に対して CSS `@font-face` アイテムを作成します。文字列 \"fontcode\" "
 "で始まるすべてのフォント用に CSS font-family を作成します。"
 
-#: ../../functions.rst:230 e303e778dae54e6386372944b977834f
+#: ../../functions.rst:230 a814b536199949e891f96f03e13d68a2
 msgid ""
 "The font naming convention in package pymupdf-fonts is \"fontcode<sf>\", "
 "where the suffix \"sf\" is one of \"\" (empty), \"it\"/\"i\", "
@@ -853,27 +854,27 @@ msgstr ""
 "は（空白）、\"it\"、\"i\"、\"bo\"、\"b\"、\"bi\" "
 "のいずれかです。したがって、これらのサフィックスは、フォントの通常の、イタリックの、太字の、太字イタリックのバリアントを表します。"
 
-#: ../../functions.rst:232 49d93b48dea8445a957440edfb91fc78
+#: ../../functions.rst:232 ee523a99cc234e859fb1a6cabd4448c4
 msgid "For example, font code \"notos\" refers to fonts"
 msgstr "例えば、フォントコード \"notos\" は以下のフォントに対応します。"
 
-#: ../../functions.rst:234 d540049bb18b402b8e2fce94206a4c9d
+#: ../../functions.rst:234 1624cd3ce5cb41d68b00cfbdefbab550
 msgid "\"notos\" - \"Noto Sans Regular\""
 msgstr ""
 
-#: ../../functions.rst:235 bf50eb25ccaa4873a1e000b10f70f85d
+#: ../../functions.rst:235 b5bfb596ccb74dcf835b39d8f7d13881
 msgid "\"notosit\" - \"Noto Sans Italic\""
 msgstr ""
 
-#: ../../functions.rst:236 c64e89ce985b4b40b347a45ae5034e62
+#: ../../functions.rst:236 f4b764ed2d584d8893bf0b2de910b9cf
 msgid "\"notosbo\" - \"Noto Sans Bold\""
 msgstr ""
 
-#: ../../functions.rst:237 243f4afbd3cc424aace4fb3d1c4aeb29
+#: ../../functions.rst:237 a8b2daa11b7845f3bed1ce18440ef016
 msgid "\"notosbi\" - \"Noto Sans Bold Italic\""
 msgstr ""
 
-#: ../../functions.rst:239 a51da85020894121a2adaabef5348f53
+#: ../../functions.rst:239 cb8e8390629f4d188e7e1dbc5af60b03
 msgid ""
 "The function creates (up to) four CSS `@font-face` definitions and "
 "collectively assigns the `font-family` name \"notos\" to them (or the "
@@ -884,7 +885,7 @@ msgstr ""
 "\"notos\"（または指定された \"name\" "
 "の値）を割り当てます。関連するフォントバッファは提供されたアーカイブに配置されます/追加されます。"
 
-#: ../../functions.rst:241 3132df29e9a44c06b7d46173b110b76a
+#: ../../functions.rst:241 b1578620590c4d49a662b6873f7c33e7
 msgid ""
 "To use the font in the Python API for :ref:`Story`, execute "
 "`.set_font(fontcode)` (or \"name\" if given). The correct font weight or "
@@ -893,7 +894,7 @@ msgstr ""
 ":ref:`Story` の Python API でフォントを使用するには、`.set_font(fontcode)`（または指定した場合は "
 "\"name\"）を実行します。必要に応じて正しいフォントウェイトまたはスタイルが自動的に選択されます。"
 
-#: ../../functions.rst:243 21a24adeea0843709838dbd657e52cf5
+#: ../../functions.rst:243 5c4c7320f1f8400e924e56c72a17c2c3
 msgid ""
 "For example to replace the \"sans-serif\" HTML standard (i.e. Helvetica) "
 "with the above \"notos\", execute the following. Whenever \"sans-serif\" "
@@ -903,17 +904,17 @@ msgstr ""
 "たとえば、上記の \"notos\" で \"sans-serif\" HTML 標準（Helvetica）を置き換えるには、次のように実行します"
 "。\"sans-serif\" が使用される場合（明示的にまたは暗黙的に）、Noto Sans フォントが選択されます。"
 
-#: ../../functions.rst:245 6f8364fda1b84e83815345fa382938cb
+#: ../../functions.rst:245 3ab4384a20d149669910ef03ad792c3a
 msgid ""
 "`CSS = pymupdf.css_for_pymupdf_font(\"notos\", name=\"sans-serif\", "
 "archive=...)`"
 msgstr ""
 
-#: ../../functions.rst:247 261383cb1f684bcaa5dc2ca977a8e1a7
+#: ../../functions.rst:247 3206db2b9e4548d9873d135de0833c62
 msgid "Expects and returns the CSS source, with the new CSS definitions appended."
 msgstr "CSS ソースが期待されており、新しい CSS 定義が追加されています。"
 
-#: ../../functions.rst:249 5a7949de431b4714bf7738ba97e9843e
+#: ../../functions.rst:249 a2d622ad8ee347cdbf24cf65b46dd835
 msgid ""
 "one of the font codes present in package `pymupdf-fonts "
 "<https://pypi.org/project/pymupdf-fonts/>`_ (usually) representing the "
@@ -922,7 +923,7 @@ msgstr ""
 "`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ "
 "パッケージに存在するフォントファミリーの通常バージョンを表す、フォントコード。"
 
-#: ../../functions.rst:250 82d6c0696254483d8cb06494af221497
+#: ../../functions.rst:250 3e43aa6f3cb7415c856593e0c2009f4d
 msgid ""
 "any already existing CSS source, or `None`. The function will append its "
 "new definitions to this. This is the string that **must be used** as "
@@ -931,7 +932,7 @@ msgstr ""
 "既存の CSS ソース、または `None`。新しい定義はこれに追加されます。これは :ref:`Story` を作成する際に "
 "`user_css` として **使用する必要がある** 文字列です。"
 
-#: ../../functions.rst:251 2d57c3a9f53d4da38683c5c30aed39d0
+#: ../../functions.rst:251 96d99d7375ed4394a4e5ec1661857dde
 msgid ""
 ":ref:`Archive`, **mandatory**. All font binaries (i.e. up to four) found "
 "for \"fontcode\" will be added to the archive. This is the archive that "
@@ -941,13 +942,13 @@ msgstr ""
 "に対して見つかるすべてのフォントバイナリ（最大で4つ）がアーカイブに追加されます。これは :ref:`Story` を作成する際に "
 ":ref:`Archive` として**使用する必要があります** 。"
 
-#: ../../functions.rst:252 a831e1b443044f949bfac61510ccb880
+#: ../../functions.rst:252 efd7cc2ac7184a718e3bdc84648becc0
 msgid ""
 "the name under which the \"fontcode\" fonts should be found. If omitted, "
 "\"fontcode\" will be used."
 msgstr "\"fontcode\" フォントが見つかる名前。省略した場合、\"fontcode\" が使用されます。"
 
-#: ../../functions.rst:255 4ecf6d28131348f3a658cd320f01200f
+#: ../../functions.rst:255 d17bb0f3f24845159c50104934ef2fc9
 msgid ""
 "Modified CSS, with appended `@font-face` statements for each font variant"
 " of fontcode. Fontbuffers associated with \"fontcode\" will have been "
@@ -972,13 +973,13 @@ msgstr ""
 " 'ubuntubo', 'ubuntubi', 'ubuntuit', 'ubuntm', 'ubuntmbo', 'ubuntmbi', "
 "'ubuntmit'])` のようなものが表示されます。"
 
-#: ../../functions.rst:257 bd2b0caaa55b48a4a91a57acaef9b5db
+#: ../../functions.rst:257 9c918c7741a8450fadc38bb8e6d8248e
 msgid ""
 "Here is a complete snippet for using the \"Noto Sans\" font instead of "
 "\"Helvetica\"::"
 msgstr "以下は \"Helvetica\" の代わりに \"Noto Sans\" フォントを使用する完全なスニペットです::"
 
-#: ../../functions.rst:272 6c7eb3d6af61417aa66cef53d50ec562
+#: ../../functions.rst:272 b6bf01dfadf043f89d73dc2362986d56
 #, fuzzy
 msgid ""
 "Convenience function to split a rectangle into sub-rectangles of equal "
@@ -989,19 +990,19 @@ msgstr ""
 "矩形をサブ矩形に分割するための関数です。*行* のリストを含むリストを返し、各リストには指定された *列数* の :ref:`Rect` "
 "アイテムが含まれています。各サブ矩形はその行と列のインデックスでアクセスできます。"
 
-#: ../../functions.rst:274 55f942fd80da4d66bac2b35ee5a51276
+#: ../../functions.rst:274 2379b768d70b429e80b9ee76ff6affc6
 msgid "the rectangle to split."
 msgstr "分割する矩形。"
 
-#: ../../functions.rst:275 555136c14a224f6ea35dce0f1ec9c79d
+#: ../../functions.rst:275 bc2cff2237ae4cc2b772925cc341db0f
 msgid "the desired number of columns."
 msgstr "列の数。"
 
-#: ../../functions.rst:276 6569fd83357741b98b4916dc1ebc46ae
+#: ../../functions.rst:276 bb04dcac38e94e4ea02e6ce480164b8f
 msgid "the desired number of rows."
 msgstr "行の数。"
 
-#: ../../functions.rst:277 b5930e3aeb564e1c9a36af2644961112
+#: ../../functions.rst:277 afead5470e7e4b4ba96f6b47fa94c27f
 msgid ""
 "a list of :ref:`Rect` objects of equal size, whose union equals *rect*. "
 "Here is the layout of a 3x4 table created by `cell = "
@@ -1011,29 +1012,29 @@ msgstr ""
 "pymupdf.make_table(rect, cols=4, rows=3)` によって作成された 3x4 "
 "のテーブルのレイアウトは次のようになります："
 
-#: ../../functions.rst:287 aeb0295f33ed4f3680e7eaae3631829e
+#: ../../functions.rst:287 3cf17d4592c24625a3c0f8b4ccf257b9
 msgid "New in version 1.16.2)*"
 msgstr "*バージョン1.16.2で新たに導入されました。*"
 
-#: ../../functions.rst:289 dd962cf0f83d4e7bbe3373a541ff2cd6
+#: ../../functions.rst:289 3de02919aba44c58882ea49db6a70ca4
 msgid ""
 "Return a matrix which maps the line from p1 to p2 to the x-axis such that"
 " p1 will become (0,0) and p2 a point with the same distance to (0,0)."
 msgstr "p1からp2への直線をx軸にマッピングする行列を返します。その際、p1は(0,0)になり、p2は(0,0)から同じ距離に配置されるように変換されます。"
 
-#: ../../functions.rst:291 27847587bb6e480588c5a42b1044353e
+#: ../../functions.rst:291 d5051adab1c74eff8ca8bbcac46881e6
 msgid "starting point of the line."
 msgstr "直線の始点。"
 
-#: ../../functions.rst:292 f4a34c3eb1de46778eed630ba3f8a554
+#: ../../functions.rst:292 0739796326eb427b8251e930406ec398
 msgid "end point of the line."
 msgstr "直線の終点。"
 
-#: ../../functions.rst:294 0a643e5f3a5544c9a7f7eb96a29a5e50
+#: ../../functions.rst:294 b3f32ee30e7e408ea53d346c946793b4
 msgid ":ref:`Matrix`"
 msgstr ""
 
-#: ../../functions.rst:295 efc91beb38014b22a8c5dc17a55a5ad8
+#: ../../functions.rst:295 80f96c88c5c54adb87efd7e63247f4cf
 msgid ""
 "a matrix which combines a rotation and a translation::     >>> p1 = "
 "pymupdf.Point(1, 1)    >>> p2 = pymupdf.Point(4, 5)    >>> abs(p2 - p1)  "
@@ -1044,21 +1045,21 @@ msgid ""
 ":scale: 40"
 msgstr ""
 
-#: ../../functions.rst:295 99ce4ad1b2e44ef9952ab645c2e2a29f
+#: ../../functions.rst:295 85ea149f226e4e2ca4d42190a34693e5
 msgid "a matrix which combines a rotation and a translation::"
 msgstr "回転と平行移動を組み合わせた行列::"
 
-#: ../../functions.rst:319 cd6d3f128f3d404cb028905325357f80
+#: ../../functions.rst:319 d7085018534f47e2b428476e6d18257b
 msgid ""
 "A dictionary of pre-defines paper formats. Used as basis for "
 ":meth:`paper_size`."
 msgstr "あらかじめ定義された用紙フォーマットの辞書。:meth:`paper_size` の基盤として使用されます。"
 
-#: ../../functions.rst:325 779d1b9d87ec456386f8b682518e1b8d
+#: ../../functions.rst:325 1100f2cd223244e098a59cab294695cd
 msgid "New in v1.17.5"
 msgstr "バージョン1.17.5で新たに導入されました"
 
-#: ../../functions.rst:327 2a02368d2b68461c8413177ff0766a85
+#: ../../functions.rst:327 611b74fc7f2f49e7be426fe3db89be8f
 msgid ""
 "A dictionary of usable fonts from repository `pymupdf-fonts "
 "<https://pypi.org/project/pymupdf-fonts/>`_. Items are keyed by their "
@@ -1067,11 +1068,11 @@ msgstr ""
 "`pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ "
 "リポジトリから使用可能なフォントの辞書。アイテムは予約されたフォント名でキー付けされ、以下のような情報を提供します::"
 
-#: ../../functions.rst:343 cb398218853f42038512c72c146c78e8
+#: ../../functions.rst:343 43582b0da1f84beba44a5e36e2cdd048
 msgid "If `pymupdf-fonts` is not installed, the dictionary is empty."
 msgstr "`pymupdf-fonts` がインストールされていない場合、この辞書は空です。"
 
-#: ../../functions.rst:345 d3a4226063254a47a7110bef0f56256f
+#: ../../functions.rst:345 5c5c8927cd35468f8b40e91051754525
 msgid ""
 "The dictionary keys can be used to define a :ref:`Font` via e.g. `font = "
 "pymupdf.Font(\"fimo\")` -- just like you can do it with the builtin fonts"
@@ -1080,68 +1081,68 @@ msgstr ""
 "辞書のキーは、例えば `font = pymupdf.Font(\"fimo\")` "
 "のように使用してフォントを定義できます。これは、組み込みのフォント \"Helvetica\" やその他のフォントと同様に行うことができます。"
 
-#: ../../functions.rst:351 c7682a849a5048fe99f8c19c9aee7cb3
+#: ../../functions.rst:351 829280be90364ab59d34ab8bcb9ee3a5
 msgid ""
 "If in `os.environ` when |PyMuPDF| is imported, sets destination of "
 "|PyMuPDF| messages. Otherwise messages are sent to `sys.stdout`."
 msgstr ""
 
-#: ../../functions.rst:355 3218febc90704ce79797a636f25c89c1
+#: ../../functions.rst:355 2a7234b598ca4be78a6ed7fd2cd0e68b
 msgid ""
 "If the value starts with `fd:`, the remaining text should be an integer "
 "file descriptor to which messages are written."
 msgstr ""
 
-#: ../../functions.rst:358 638ff04c1b724dbbabe6d8cde2b252fb
+#: ../../functions.rst:358 52dfedc05920490596eb9bb364ca70ad
 msgid "For example `PYMUPDF_MESSAGE=fd:2` will send messages to stderr."
 msgstr ""
 
-#: ../../functions.rst:360 dcaaa640c313488f9ea010cb608902e7
+#: ../../functions.rst:360 c2c608b9dd754c2095660836dded1873
 msgid ""
 "If the value starts with `path:`, the remaining text is the path of a "
 "file to which messages are written. If the file already exists, it is "
 "truncated."
 msgstr ""
 
-#: ../../functions.rst:364 859891baca6846a2a7b06125bba642c4
+#: ../../functions.rst:364 f8a67537ff5540058906057a31801f10
 msgid ""
 "If the value starts with `path+:`, the remaining text is the path of file"
 " to which messages are written. If the file already exists, we append "
 "output."
 msgstr ""
 
-#: ../../functions.rst:369 917bb5b5660c4baaacb483f666337304
+#: ../../functions.rst:369 a97a4cc6ac8941099d31bee564b661d6
 msgid ""
 "If the value starts with `logging:`, messages are written to `Python's "
 "logging system <https://docs.python.org/3/library/logging.html>`_. The "
 "remaining text can contain comma-separated name=value items:"
 msgstr ""
 
-#: ../../functions.rst:373 5220ec2027f94decbb3d5b101d6ac481
+#: ../../functions.rst:373 85f8ee63e7c242de87aa78d6da95ec89
 msgid "`level=<int>` sets the logging level."
 msgstr ""
 
-#: ../../functions.rst:374 a4c4076564974edc9a9514098c5d95ed
+#: ../../functions.rst:374 ced54a7765f14a2c90cc9b941ac3cdaf
 msgid "`name=<str>` sets the logger name (default is `pymupdf`)."
 msgstr ""
 
-#: ../../functions.rst:376 2a32a55410504c23b6cb4f12682cafa2
+#: ../../functions.rst:376 79d9e976d47c48d2b2f5d924b71d2bdd
 msgid "Other items are ignored."
 msgstr ""
 
-#: ../../functions.rst:378 f0420cb19b0b4ec2bb48cadb322a64ba
+#: ../../functions.rst:378 e6049a9e63db495e951e0a96d3dbe162
 msgid "Other prefixes will cause an error."
 msgstr ""
 
-#: ../../functions.rst:380 c3898cead22f497ba9d9c391364c4c8a
+#: ../../functions.rst:380 cea43b4378c542439ade76acf38cef95
 msgid "Also see `set_messages()`."
 msgstr ""
 
-#: ../../functions.rst:387 f5c9e9f015d44ceda40361601fc41f38
+#: ../../functions.rst:387 d33f434c014340318a8b4f2408cf37ee
 msgid "New in v1.19.6"
 msgstr "バージョン1.19.6で新たに導入されました"
 
-#: ../../functions.rst:389 f020265eebef4b1fb070d23fc83beb86
+#: ../../functions.rst:389 2d49cc1b71804cc6add57d8ac8aeeb40
 msgid ""
 "Contains about 500 RGB colors in PDF format with the color name as key. "
 "To see what is there, you can obviously look at "
@@ -1150,27 +1151,27 @@ msgstr ""
 "PDF形式の約500個のRGB色が、色の名前をキーとして含まれています。中身を確認するには、`pymupdf.pdfcolor.keys()` "
 "を見ることができます。"
 
-#: ../../functions.rst:391 e139a8577f8340ffb015fab764a9655a
+#: ../../functions.rst:391 210b4f32e51c447c920aa1e17090177d
 msgid "Examples:"
 msgstr "例："
 
-#: ../../functions.rst:393 40f5af3779d84dc282680e022cece0c1
+#: ../../functions.rst:393 78b6aa54c3d8499c933344b9d67aa935
 msgid "`pymupdf.pdfcolor[\"red\"] = (1.0, 0.0, 0.0)`"
 msgstr ""
 
-#: ../../functions.rst:394 413ce7dd0e8543f5868732ac0dbf8ef5
+#: ../../functions.rst:394 25976b6b069c4a278c407ca0a6e0dd34
 msgid ""
 "`pymupdf.pdfcolor[\"skyblue\"] = (0.5294117647058824, 0.807843137254902, "
 "0.9215686274509803)`"
 msgstr ""
 
-#: ../../functions.rst:395 2842b0f25a2c490c94a9b5e64376f558
+#: ../../functions.rst:395 036d984bb9494bfb970022074689d37d
 msgid ""
 "`pymupdf.pdfcolor[\"wheat\"] = (0.9607843137254902, 0.8705882352941177, "
 "0.7019607843137254)`"
 msgstr ""
 
-#: ../../functions.rst:401 34272632112745f9a3d80b95aace8419
+#: ../../functions.rst:401 8e917a8067e94f15b90b52ee3016acc1
 msgid ""
 "Convenience function to return the current local timestamp in PDF "
 "compatible format, e.g. *D:20170501121525-04'00'* for local datetime May "
@@ -1180,27 +1181,28 @@ msgstr ""
 "ローカルの日付と時刻が2017年5月1日12時15分25秒で、UTC子午線の西4時間のタイムゾーンにある場合、*D:20170501121525-04’00’*"
 " となります。"
 
-#: ../../functions.rst:404 d3e70a97bb2d4d0cbd2aabba7e397c47
+#: ../../functions.rst:404 f9d2422e60aa4b95b2387399f8819412
 msgid "current local PDF timestamp."
 msgstr "現在のローカルPDFタイムスタンプ。"
 
-#: ../../functions.rst:410 99c490db0f4f4638842bcf149740cc60
+#: ../../functions.rst:410 7c48f1b5388547b9847fe88c7fbcd18a
 msgid "New in version 1.14.7"
 msgstr "バージョン1.14.7で新規追加"
 
-#: ../../functions.rst:412 6857c18d6df5448c947c917d8129b136
+#: ../../functions.rst:412 64c91a6941404cf293748277c1e40776
 msgid ""
 "Calculate the length of text on output with a given **builtin** font, "
 ":data:`fontsize` and encoding."
 msgstr "指定された *組み込み* フォント、:data:`fontsize` 、およびエンコーディングで出力されるテキストの長さを計算します。"
 
-#: ../../functions.rst:414 0c724a86099b4016a27ca94ce9ff53fb
+#: ../../functions.rst:414 1b351f62d3ce47ba820d95770c3b7ccf
 msgid "the text string."
 msgstr "テキスト文字列。"
 
-#: ../../functions.rst:415 b4f673b68cc549d3a3a4ed4d11159d4f
+#: ../../functions.rst:415 7a65fc2611854e61ae76f3d30079961a
+#, fuzzy
 msgid ""
-"the fontname. Must be one of either the :ref:`Base-14-Fonts` or the CJK "
+"the font name. Must be one of either the :ref:`Base-14-Fonts` or the CJK "
 "fonts, identified by their \"reserved\" fontnames (see table in "
 ":meth:`Page.insert_font`)."
 msgstr ""
@@ -1208,11 +1210,11 @@ msgstr ""
 "またはCJKフォントのいずれかでなければなりません。これらは「予約済み」フォント名で識別されます（:meth:`Page.insert_font`"
 " のテーブルを参照）。"
 
-#: ../../functions.rst:416 fd9ab85296864b159297cf2f40c07b63
+#: ../../functions.rst:416 932954ed0adf44ef9900d8f882a388e7
 msgid "the :data:`fontsize`."
 msgstr ":data:`fontsize`。"
 
-#: ../../functions.rst:417 659e6b24c6a54cd6be9215d2a7b7bec6
+#: ../../functions.rst:417 d499111356cf4e9081c8c3c2912a57bd
 msgid ""
 "the encoding to use. Besides 0 = Latin, 1 = Greek and 2 = Cyrillic "
 "(Russian) are available. Relevant for Base-14 fonts \"Helvetica\", "
@@ -1222,19 +1224,19 @@ msgstr ""
 "使用するエンコーディング。0 = ラテン、1 = ギリシャ、2 = "
 "キリル文字（ロシア語）が利用可能です。ベース14フォント「Helvetica」、「Courier」、「Times」とそのバリアントにのみ関連します。対応するテキスト挿入で使用する値と同じ値を使用してください。"
 
-#: ../../functions.rst:419 085fba5efa1b441c8a7a959307fadd09
+#: ../../functions.rst:419 9120edd3ebae44b4acc13d6f9de3fc03
 msgid ""
 "the length in points the string will have (e.g. when used in "
 ":meth:`Page.insert_text`)."
 msgstr "文字列が持つポイント単位の長さ（たとえば、:meth:`Page.insert_text` で使用する場合）。"
 
-#: ../../functions.rst:421 0071e0f0d968469dbcf4380c63ab4efe
+#: ../../functions.rst:421 79cef2d8477740418dbe285f8a7e7d06
 msgid ""
 "This function will only do the calculation -- it won't insert font nor "
 "text."
 msgstr "この関数は計算のみを行います - フォントまたはテキストを挿入しません。"
 
-#: ../../functions.rst:423 beca988a40a1457882759c4d1063a516
+#: ../../functions.rst:423 00b63292efa741d3a51b9a25802baf30
 msgid ""
 "The :ref:`Font` class offers a similar method, :meth:`Font.text_length`, "
 "which supports Base-14 fonts and any font with a character map (CMap, "
@@ -1243,7 +1245,7 @@ msgstr ""
 ":ref:`Font` クラスは、Base-14フォントおよび文字マップ（CMap、Type "
 "0フォントをサポートする任意のフォントに対応した似たようなメソッド :meth:`Font.text_length` を提供しています。"
 
-#: ../../functions.rst:425 2621d40424214d07bbd4fab562324e61
+#: ../../functions.rst:425 cfcfc76eb218486fa8b032c6c50ab81e
 msgid ""
 "If you use this function to determine the required rectangle width for "
 "the (:ref:`Page` or :ref:`Shape`) *insert_textbox* methods, be aware that"
@@ -1261,7 +1263,7 @@ msgstr ""
 "pymupdf.get_text_length(text)*。したがって、（1）同じことを行うか、（2）計算に "
 "*pymupdf.get_text_length(text + \"’\")* のようなものを使用してください。"
 
-#: ../../functions.rst:431 858e74323bb44d4aabd1ec6116e45b4e
+#: ../../functions.rst:431 763b708ba6ae4ddab04cf7af4a0c1d41
 msgid ""
 "Make a PDF-compatible string: if the text contains code points *ord(c) > "
 "255*, then it will be converted to UTF-16BE with BOM as a hexadecimal "
@@ -1275,37 +1277,37 @@ msgstr ""
 "ブラケットで囲まれます。それ以外の場合は、ASCII範囲外の文字を特別なコードで置き換えて、（丸い）カッコで囲まれた文字列が返されます。また、すべての"
 " \"(\", \")\", またはバックスラッシュはバックスラッシュでエスケープされます。"
 
-#: ../../functions.rst:433 70176ef4d97a409dbe6452c90d7b85c1
+#: ../../functions.rst:433 c2b249b32f5f45e889b055dec35c3b1c
 msgid "the object to convert"
 msgstr "変換するオブジェクト"
 
-#: ../../functions.rst:436 d145e56ff72f4b868a418777ae2da0a0
+#: ../../functions.rst:436 1acb62d7d240428ab032edcf601996ca
 msgid "PDF-compatible string enclosed in either *()* or *<>*."
 msgstr "*()* または *<>* で囲まれたPDF互換の文字列。"
 
-#: ../../functions.rst:442 7699f58d78164df49cc2d12fb7cd9b3c
+#: ../../functions.rst:442 702d8585021a43eba297b69d4836db1d
 msgid "New in v1.16.7"
 msgstr "バージョン1.16.7で新規追加"
 
-#: ../../functions.rst:443 957b32a916a54e10a69ac468ba8ebf2f
+#: ../../functions.rst:443 d731f027bad84dc4a0c0fa97dddbc2ba
 msgid ""
 "Changed in v1.19.5: also return natural image orientation extracted from "
 "EXIF data if present."
 msgstr "バージョン1.19.5で変更：EXIFデータから抽出した自然な画像の向きも返すように変更されました。"
 
-#: ../../functions.rst:444 af5e89f8d4524be697b2b949fe03e45a
+#: ../../functions.rst:444 27b180112c374ac4a920954d1634ef4d
 msgid ""
 "Changed in v1.22.5: always return `None` in error cases instead of an "
 "empty dictionary."
 msgstr "バージョン1.22.5で変更：エラーケースで空の辞書ではなく、常に `None` を返すように変更されました。"
 
-#: ../../functions.rst:446 2b1e37d83d2345f9bc9d910447b32df9
+#: ../../functions.rst:446 9803cc75c9f044399d2dda1e316afe12
 msgid ""
 "Show important properties of an image provided as a memory area. Its main"
 " purpose is to avoid using other Python packages just to determine them."
 msgstr "メモリ領域として提供される画像の重要なプロパティを表示します。主な目的は、これらのプロパティを決定するために他のPythonパッケージを使用しないようにすることです。"
 
-#: ../../functions.rst:448 bb83a10d199948a28baf855069679fff
+#: ../../functions.rst:448 fdf0ee2300ce40418b494c923b925202
 msgid ""
 "either an image in memory or an **opened** file. An image in memory may "
 "be any of the formats `bytes`, `bytearray` or `io.BytesIO`."
@@ -1313,7 +1315,7 @@ msgstr ""
 "メモリ内の画像または **開いた** ファイル。メモリ内の画像は、`bytes`、`bytearray`、または `io.BytesIO` "
 "形式のいずれかです。"
 
-#: ../../functions.rst:451 b80c362428224f70893f7dbb18fef550
+#: ../../functions.rst:451 fe8ea596a2524046aa4127a94283a123
 msgid ""
 "No exception is ever raised. In case of an error, `None` is returned. "
 "Otherwise, there are the following items::     In [2]: "
@@ -1343,13 +1345,13 @@ msgid ""
 "\"rawdict\" options are also supported."
 msgstr ""
 
-#: ../../functions.rst:452 e84943d4656c4a47972901421acab8c3
+#: ../../functions.rst:452 6c919d4bab45428dbd8afb4362c1639b
 msgid ""
 "No exception is ever raised. In case of an error, `None` is returned. "
 "Otherwise, there are the following items::"
 msgstr "例外は発生しません。エラーの場合、`None` が返されます。それ以外の場合、以下のアイテムがあります::"
 
-#: ../../functions.rst:467 e1c02eedf39547b084e5b48dafffc726
+#: ../../functions.rst:467 b9c14ed655074650822790e551f4ca7d
 msgid ""
 "There is the following relation to **Exif** information encoded in "
 "`orientation`, and correspondingly in the `transform` matrix-like (quoted"
@@ -1358,43 +1360,43 @@ msgstr ""
 "以下は、**Exif** 情報にエンコードされた`orientation` と、対応する `transform` "
 "マトリックスの関係です（MuPDFドキュメンテーションから引用、*ccw* = 反時計回り）："
 
-#: ../../functions.rst:469 df23c683fa524ccc9fccbcd2d69f503e
+#: ../../functions.rst:469 19e611ede392404ba77fd6f75497a37d
 msgid "Undefined"
 msgstr "未定義"
 
-#: ../../functions.rst:470 f8275cc11f6449f9b1b4178b941b44a7
+#: ../../functions.rst:470 32314d4117e54bddb20d74a136422abf
 msgid "0 degree ccw rotation. (Exif = 1)"
 msgstr "0度の反時計回りの回転（Exif = 1）"
 
-#: ../../functions.rst:471 a8b3b37b73d04b739d9a8a259e1dff82
+#: ../../functions.rst:471 781696a0f9f242fe89d413224e12432e
 msgid "90 degree ccw rotation. (Exif = 8)"
 msgstr "90度の反時計回りの回転（Exif = 8）"
 
-#: ../../functions.rst:472 062c3fd11ce642f1b8a0e042967c25d8
+#: ../../functions.rst:472 589888419f494f768f3287b5f5fa3e86
 msgid "180 degree ccw rotation. (Exif = 3)"
 msgstr "180度の反時計回りの回転（Exif = 3）"
 
-#: ../../functions.rst:473 21c985c2793d46ff943d7bb01b5fde98
+#: ../../functions.rst:473 f01ff82a9eed4b9f844b157ad3881ef5
 msgid "270 degree ccw rotation. (Exif = 6)"
 msgstr "270度の反時計回りの回転（Exif = 6）"
 
-#: ../../functions.rst:474 3ed66a5ba1bb42b892ec496c07ea5b91
+#: ../../functions.rst:474 0446ad252a924396aaeed11ed1109b46
 msgid "flip on X. (Exif = 2)"
 msgstr "X軸で反転（Exif = 2）"
 
-#: ../../functions.rst:475 54290bb6ec3b4339b21edb09c7be1a9a
+#: ../../functions.rst:475 26416c1428b9417cb36e3f04129eb26b
 msgid "flip on X, then rotate ccw by 90 degrees. (Exif = 5)"
 msgstr "X軸で反転し、さらに90度反時計回りに回転（Exif = 5）"
 
-#: ../../functions.rst:476 c893cd5f6eaa4095b8d48dcafbe803db
+#: ../../functions.rst:476 7bf8066761234bc9b89b24615ac9ff55
 msgid "flip on X, then rotate ccw by 180 degrees. (Exif = 4)"
 msgstr "X軸で反転し、さらに180度反時計回りに回転（Exif = 4）"
 
-#: ../../functions.rst:477 a4b2bb8a084748028583799fa437e2b0
+#: ../../functions.rst:477 e588846b59874666b6702e6ff455f044
 msgid "flip on X, then rotate ccw by 270 degrees. (Exif = 7)"
 msgstr "X軸で反転し、さらに270度反時計回りに回転（Exif = 7）"
 
-#: ../../functions.rst:482 9642e070a8d94067bd7aafb6a79a0acf
+#: ../../functions.rst:482 b2e5bec7f40640858d351ef7a4d13151
 msgid ""
 "For some \"exotic\" images (FAX encodings, RAW formats and the like), "
 "this method will not work. You can however still work with such images in"
@@ -1406,7 +1408,7 @@ msgstr ""
 " を使用したり、`Pixmap(doc, xref)` "
 "を介してピクマップを作成したりできます。これらのメソッドは、結果を返す前にエキゾチックな画像を自動的にPNG形式に変換します。"
 
-#: ../../functions.rst:483 0730816b36d9470fbfe5ffef4c9916a3
+#: ../../functions.rst:483 60dfbff3781a411aa5ac084ed06bc481
 msgid ""
 "You can also get the properties of images embedded in a PDF, via their "
 ":data:`xref`. In this case make sure to extract the raw stream: "
@@ -1415,34 +1417,34 @@ msgstr ""
 "また、PDFに埋め込まれた画像のプロパティをxrefを介して取得することもできます。この場合は生のストリームを抽出してください： "
 "`pymupdf.image_profile(doc.xref_stream_raw(xref))`。"
 
-#: ../../functions.rst:484 df9a9e1daad84638aab9b2dbf6914506
+#: ../../functions.rst:484 68c194bfed0d449c9f716b2f8c1e9a6d
 msgid ""
 "Images as returned by the image blocks of :meth:`Page.get_text` using "
 "\"dict\" or \"rawdict\" options are also supported."
 msgstr ":meth:`Page.get_text` の画像ブロックが「dict」または「rawdict」オプションを使用して返す画像もサポートされています。"
 
-#: ../../functions.rst:491 a1e2b993edc14a45a3b8fe89caaa8ef1
+#: ../../functions.rst:491 841e72c301064b7d8cd16a7659df3715
 msgid ""
 "Return the header string required to make a valid document out of page "
 "text outputs."
 msgstr "ページのテキスト出力を有効なドキュメントに変換するために必要なヘッダー文字列を返します。"
 
 #: ../../functions.rst:493 ../../functions.rst:505
-#: 6a1fbfdf58b5440b96cb4b908da4904a aed0ed261f5f497998e8def7b43eb6d2
+#: 98ab75da842e44f0aba2173690b17420 be09e3df54dd47cc9a0f9dad37daf7ba
 msgid "type of document. Use the same as the output parameter of *get_text()*."
 msgstr "ドキュメントの種類。*get_text()* メソッドのoutputパラメータと同じものを使用します。"
 
-#: ../../functions.rst:495 ca6c0195dc2f4fe28a7a155716d6fdc8
+#: ../../functions.rst:495 91d48bdf66814693aa7ac8c87d1d2704
 msgid "optional arbitrary name to use in output types \"json\" and \"xml\"."
 msgstr "出力タイプ \"json\" および \"xml\" で使用するオプションの任意の名前。"
 
-#: ../../functions.rst:503 4afb8f14f4734193aaa42c1517d46188
+#: ../../functions.rst:503 8f75e703912b484cad9c58f9ef286a30
 msgid ""
 "Return the trailer string required to make a valid document out of page "
 "text outputs. See :meth:`Page.get_text` for an example."
 msgstr ":meth:`Page.get_text` の例を参照して、ページテキストの出力から有効な文書を作成するために必要なトレーラー文字列を返します。"
 
-#: ../../functions.rst:513 8d482e8a42044ad3afc48e2b7fffb27c
+#: ../../functions.rst:513 7bf3dbf728174900a685386f86d7b613
 msgid ""
 "Delete an object containing XML-based metadata from the PDF. (Py-) MuPDF "
 "does not support XML-based metadata. Use this if you want to make sure "
@@ -1453,7 +1455,7 @@ msgid ""
 "deleted during next garbage collection of the file."
 msgstr "PDF内からXMLベースのメタデータを含むオブジェクトを削除します。PyMuPDFではXMLベースのメタデータはサポートされていません。従って、従来のメタデータ辞書が排他的に使用されることを確認したい場合に使用します。多くのサードパーティのPDFプログラムは、独自のXML形式でメタデータを挿入し、従来の辞書に保存されている内容を上書きする可能性があります。このメソッドはそのような参照を削除し、ファイルの次回のガベージコレクション時に対応するPDFオブジェクトが削除されます。"
 
-#: ../../functions.rst:519 a72aa87bc68e4f4bb9703be4f74f288a
+#: ../../functions.rst:519 62c4ccaa8b8c436c990340d78e6341c0
 msgid ""
 "Return the XML-based metadata :data:`xref` of the PDF if present -- also "
 "refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve "
@@ -1465,35 +1467,35 @@ msgstr ""
 "にも言及してください。これを使用して、:meth:`Document.xref_stream` "
 "を介してコンテンツを取得し、それをいくつかのXMLソフトウェアを使用して操作できます。"
 
-#: ../../functions.rst:522 67817bc5551a458ba2d78406a1906f21
+#: ../../functions.rst:522 28fca2e874754c1b8e1f76de939f070b
 msgid ":data:`xref` of PDF file level XML metadata -- or 0 if none exists."
 msgstr "PDFファイルレベルのXMLメタデータの :data:`xref`。存在しない場合は0。"
 
-#: ../../functions.rst:528 93cbd43b947f4be192e5cebeef12cb87
+#: ../../functions.rst:528 bb22cba4009542cf9cbe10b1bdf7d0a0
 msgid "Run a page through a device."
 msgstr "ページをデバイスを通じて実行します。"
 
-#: ../../functions.rst:530 b72d243c438742829f57b99405fd7d9d
+#: ../../functions.rst:530 b59467cb760a428cb9a1ad3ddc2372f5
 msgid "Device, obtained from one of the :ref:`Device` constructors."
 msgstr ":ref:`Device`。デバイスのコンストラクタから取得します。"
 
-#: ../../functions.rst:533 c8020e6ac06b490d910a4453c2720322
+#: ../../functions.rst:533 764e316039514bc2b1c84a2a3613584f
 msgid ""
 "Transformation to apply to the page. Set it to :ref:`Identity` if no "
 "transformation is desired."
 msgstr "ページに適用する変換。変換を行わない場合は :ref:`Identity` に設定します。"
 
-#: ../../functions.rst:540 9992ddbf8ffc4b54959b0e40bc882789
+#: ../../functions.rst:540 132d218ecda54d83a572eccb181b290d
 msgid "New in v1.19.0"
 msgstr "新機能 v1.19.0"
 
-#: ../../functions.rst:541 16801d5fbea9459f9c065e2e45ad6785
+#: ../../functions.rst:541 eb0d8183af6d46dcaa937647ed837885
 msgid ""
 "Changed in v1.22.0: optionally also return the OCG name applicable to the"
 " boundary box."
 msgstr "v1.22.0 で変更: 境界ボックスに適用される OCG 名もオプションで返すように変更されました。"
 
-#: ../../functions.rst:543 67438b98643c46ff80ff211265df90a4
+#: ../../functions.rst:543 2b307ac70a2c47239fe84735d4ea5dcc
 msgid ""
 "a list of rectangles that envelop text, image or drawing objects. Each "
 "item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple "
@@ -1514,7 +1516,7 @@ msgid ""
 "returned by :meth:`Page.get_drawings` and :meth:`Page.get_texttrace`."
 msgstr ""
 
-#: ../../functions.rst:543 4c16c87165ac4c3683c707f5278e54b2
+#: ../../functions.rst:543 1b114fa4f3f64d72bd937199e3a3d2f7
 msgid ""
 "a list of rectangles that envelop text, image or drawing objects. Each "
 "item is a tuple `(type, (x0, y0, x1, y1))` where the second tuple "
@@ -1526,37 +1528,37 @@ msgstr ""
 "で、第2のタプルは矩形の座標を表し、*type* は以下の値のいずれかです。`layers=True` の場合、OCG 名または `None` "
 "を含む第3のアイテムがあります: `(type, (x0, y0, x1, y1), None)`。"
 
-#: ../../functions.rst:545 1f3baaa90f60489491041912650d2b50
+#: ../../functions.rst:545 abf0c36f44e04ee8a5a2afa7b724f5a1
 msgid "`\"fill-text\"` -- normal text (painted without character borders)"
 msgstr "`\"fill-text\"` – 通常のテキスト（文字の境界線なしで描画）"
 
-#: ../../functions.rst:546 8d03bd3914d941edad4fa681105b6cde
+#: ../../functions.rst:546 37dd54d3f17044c6b337bff4655966a0
 msgid "`\"stroke-text\"` -- text showing character borders only"
 msgstr "`\"stroke-text\"` – 文字の境界線のみを表示するテキスト"
 
-#: ../../functions.rst:547 564648c64c1c4eb1acd881a4c41559a8
+#: ../../functions.rst:547 849119a86cd44565a26d3541b70c0516
 msgid ""
 "`\"ignore-text\"` -- text that should not be displayed (e.g. as used by "
 "OCR text layers)"
 msgstr "`\"ignore-text\"` – 表示されないべきテキスト（OCR テキストレイヤーなどで使用されます）"
 
-#: ../../functions.rst:548 2012f24724e24d2e8b3d682c6c0dd95f
+#: ../../functions.rst:548 aec96117beef420c82608445b9e8819a
 msgid "`\"fill-path\"` -- drawing with fill color (and no border)"
 msgstr "`\"fill-path\"` – 塗りつぶしカラーで描画（境界線なし）"
 
-#: ../../functions.rst:549 e50df5ab435b4f6b90c2a709b7c028ec
+#: ../../functions.rst:549 b1d6ad4002a641048ce03e94bd21d5bb
 msgid "`\"stroke-path\"` -- drawing with border (and no fill color)"
 msgstr "`\"stroke-path\"` – 境界線で描画（塗りつぶしカラーなし）"
 
-#: ../../functions.rst:550 dddccd8f9bf14c8392556865bb9ff046
+#: ../../functions.rst:550 b0e26ed279dc4820a41a7f8a4e615183
 msgid "`\"fill-image\"` -- displays an image"
 msgstr "`\"fill-image\"` – 画像を表示"
 
-#: ../../functions.rst:551 516bf44416f3416186b1467931874344
+#: ../../functions.rst:551 7ad6ff9b7faf470cbe306351c31df8ec
 msgid "`\"fill-shade\"` -- display a shading"
 msgstr "`\"fill-shade\"` – シェーディングを表示"
 
-#: ../../functions.rst:553 c6d414fcee334ceda5a5d4f95b414a9a
+#: ../../functions.rst:553 218f82ee4e624649b8e8a57969e46706
 msgid ""
 "The item sequence represents the **sequence in which these commands are "
 "executed** to build the page's appearance. Therefore, if an item's bbox "
@@ -1566,7 +1568,7 @@ msgstr ""
 "**アイテムのシーケンスは、ページの外観を構築するためにこれらのコマンドが実行される** 順序を表します。したがって、アイテムの bbox "
 "が前のアイテムの bbox と交差または包含されている場合、前のアイテムは（部分的に）カバー / 隠される可能性があります。"
 
-#: ../../functions.rst:556 6c70aeead4b54e3f8ffc2e256995b69c
+#: ../../functions.rst:556 5593f221ed344831866cbd474df50bc3
 msgid ""
 "So this list can be used to detect such situations. An item's index in "
 "this list equals the value of a `\"seqno\"` in dictionaries as returned "
@@ -1575,31 +1577,31 @@ msgstr ""
 "したがって、このリストを使用してそのような状況を検出できます。このリスト内のアイテムのインデックスは、:meth:`Page.get_drawings`"
 "  および :meth:`Page.get_texttrace` によって返される辞書の `\"seqno\"` の値と等しいです。"
 
-#: ../../functions.rst:563 30b8d1185b0f421f93d06d5a205a7f67
+#: ../../functions.rst:563 1b4ab5c71554402a9c63ee38f27e71cb
 msgid "New in v1.18.16"
 msgstr "v1.18.16 で新機能"
 
-#: ../../functions.rst:564 620e7dd916f64b479cfda147a4f22c8d
+#: ../../functions.rst:564 83fdfa37d163451e9ff96def5e0de5c0
 msgid "Changed in v1.19.0: added key \"seqno\"."
 msgstr "v1.19.0 で変更: キー \"seqno\" を追加。"
 
-#: ../../functions.rst:565 8063a63deea0416da32bcbd66284d856
+#: ../../functions.rst:565 916f4cdfdeda417abeea07844d42deca
 msgid ""
 "Changed in v1.19.1: stroke and fill colors now always are either RGB or "
 "GRAY"
 msgstr "v1.19.1 で変更: ストロークと塗りつぶしのカラーは常に RGB または GRAY です"
 
-#: ../../functions.rst:566 8a6ee644042c4f919504d2a366486ed5
+#: ../../functions.rst:566 8c99ffdc891844ad872fd6def677e08b
 msgid ""
 "Changed in v1.19.3: span and character bboxes are now also correct if "
 "`dir != (1, 0)`."
 msgstr "v1.19.3 で変更: `dir != (1, 0)` の場合、スパンと文字の bbox も正確になりました。"
 
-#: ../../functions.rst:567 97c4ae32b3a0440c8c1f1296fbe716b2
+#: ../../functions.rst:567 03678344ac2e4f0ba4e15f06b3b558d0
 msgid "Changed in v1.22.0: add new dictionary key \"layer\"."
 msgstr "v1.22.0 で変更: 新しい辞書キー \"layer\" を追加。"
 
-#: ../../functions.rst:570 45cc7e74a2654f74bcfcabb65d9e7803
+#: ../../functions.rst:570 6d08591e52224bc08f77d6dcb26d9a04
 msgid ""
 "Return low-level text information of the page. The method is available "
 "for **all** document types. The result is a list of Python dictionaries "
@@ -1608,17 +1610,17 @@ msgstr ""
 "ページの低レベルなテキスト情報を返します。このメソッドは **すべて** のドキュメントタイプで利用可能です。結果は、以下の内容を持つ "
 "Python 辞書のリストです。"
 
-#: ../../functions.rst:606 759d41b8e915425ba2f090d80b0065ab
+#: ../../functions.rst:606 cc0d6a11bdbc410cb9411001f8e05eee
 msgid "Details:"
 msgstr ""
 
-#: ../../functions.rst:608 c027ebb8dfaf4fb9b454d85a0898a0bd
+#: ../../functions.rst:608 11f8d880efa247139f7f83220839a83a
 msgid ""
 "Information above tagged with \"(1)\" has the same meaning and value as "
 "explained in :ref:`TextPage`."
 msgstr "「(1)」でタグ付けされた情報は、:ref:`TextPage` で説明された内容と同じ意味と値を持っています。"
 
-#: ../../functions.rst:610 71a2f731acc249aa8278de7e3edbb5a5
+#: ../../functions.rst:610 4d9d835859f449e0a40b7667d81451a8
 #, fuzzy
 msgid ""
 "Please note that the font ``flags`` value will never contain a "
@@ -1628,7 +1630,7 @@ msgstr ""
 "フォント `flags` の値には *superscript* フラグビットが含まれないことに注意してください。上付き文字の検出はMuPDF "
 ":ref:`TextPage` 内で行われます。これは任意のフォントのプロパティではありません。"
 
-#: ../../functions.rst:611 71e973788c8e4fd29354221499b566c1
+#: ../../functions.rst:611 d9f311aa264940be9b1fd7dc476446f3
 msgid ""
 "Also note, that the text *color* is encoded as the usual tuple of floats "
 "0 <= f <= 1 -- not in sRGB format. Depending on `span[\"type\"]`, "
@@ -1638,27 +1640,27 @@ msgstr ""
 "1）でエンコードされており、sRGB形式ではありません。`span[\"type\"]` "
 "に応じて、これを塗りつぶし色またはストローク色として解釈してください。"
 
-#: ../../functions.rst:613 93a130aa74244d8ea4f44649257f0b0f
+#: ../../functions.rst:613 c32efb528d114e888542af9a76a9477a
 msgid "There are 3 text span types:"
 msgstr "テキストスパンには3つのタイプがあります："
 
-#: ../../functions.rst:615 04bb9e4a8efd4f36b449a896e093e997
+#: ../../functions.rst:615 ea8c6854860c4abc84f35271f246cf6f
 msgid ""
 "0: Filled text -- equivalent to PDF text rendering mode 0 (`0 Tr`, the "
 "default in PDF), only each character's \"inside\" is shown."
 msgstr "0：塗りつぶしテキスト - PDFテキストレンダリングモード0（`0 Tr`、PDFのデフォルト）と同等で、各文字の「内部」のみが表示されます。"
 
-#: ../../functions.rst:616 66862797440b4cc89f0ab0b03386f731
+#: ../../functions.rst:616 8c5b60838d0043ad832b76f6964725ec
 msgid ""
 "1: Stroked text -- equivalent to `1 Tr`, only the character borders are "
 "shown."
 msgstr "1：ストロークテキスト - `1 Tr` に相当し、文字の境界のみが表示されます。"
 
-#: ../../functions.rst:617 2acf0e18c96e49f880293e3357fd16f6
+#: ../../functions.rst:617 aad83dab705242819a32cf3d87f3fcd2
 msgid "3: Ignored text -- equivalent to `3 Tr` (hidden text)."
 msgstr "3：無視されたテキスト - `3 Tr` に相当し（非表示テキスト）。"
 
-#: ../../functions.rst:619 9de9513b92b54ed1bbabbb458b2a9fa0
+#: ../../functions.rst:619 95d1e914c8254b37a6c64251be78ac76
 #, python-format
 msgid ""
 "Line width in this context is important only for processing "
@@ -1678,13 +1680,13 @@ msgstr ""
 "によって作成されます。この場合、このケースの等価なスパンタイプは存在しません。代わりに、対応するテキストは2つの連続したスパンによって表されます。これらのスパンはすべての側面が同一であり、タイプ以外は異なります（0、1）。このタイプの状況を処理する責任はあなたにあります。:meth:`Page.get_text`"
 " では、MuPDFがこれを代わりに行います。"
 
-#: ../../functions.rst:620 6487d82fbf414538ae086ba2cf0e5fab
+#: ../../functions.rst:620 606f56ad2fa34ddb82e2171ac68c7ae0
 msgid ""
 "For data compactness, the character's unicode is provided here. Use "
 "built-in function `chr()` for the character itself."
 msgstr "データのコンパクトさのために、文字のUnicodeがここで提供されます。文字自体には `chr()` という組み込み関数を使用します。"
 
-#: ../../functions.rst:621 a660bf6a775c44649783a559eaf01274
+#: ../../functions.rst:621 eafb5c8d2c0a47fe87b904f337b62657
 msgid ""
 "The alpha / opacity value of the span's text, `0 <= opacity <= 1`, 0 is "
 "invisible text, 1 (100%) is intransparent. Depending on `span[\"type\"]`,"
@@ -1694,7 +1696,7 @@ msgstr ""
 "1`、0は見えないテキスト、1（100％）は不透明です。`span[\"type\"]` に応じて、この値を *fill* の不透明度または "
 "*stroke* の不透明度として解釈してください。"
 
-#: ../../functions.rst:622 e6e4063809024f138da4aeb44e24eb92
+#: ../../functions.rst:622 eb23d9902fba49d087006466112feef8
 msgid ""
 "*(Changed in v1.19.0)* This value is equal or close to `char[\"bbox\"]` "
 "of \"rawdict\". In particular, the bbox **height** value is always "
@@ -1703,11 +1705,11 @@ msgstr ""
 "*（v1.19.0で変更）* この値は「rawdict」の `char[\"bbox\"]` と等しいか、近い値です。特に、bboxの "
 "**高さ** の値は常に **「小さなグリフの高さ」** が要求されたかのように計算されます。"
 
-#: ../../functions.rst:623 4e62b747b8f9441b9279357f81f7e81b
+#: ../../functions.rst:623 3ef916cf4c6d4625b153f657810bcaac
 msgid "*(New in v1.19.0)* This is the union of all character bboxes."
 msgstr "*（v1.19.0で新規）* これはすべての文字bboxの合併です。"
 
-#: ../../functions.rst:624 03fcc8f1fed344049ab836df258e5e2e
+#: ../../functions.rst:624 b64b0fd0a2f8435aada9591350d3276e
 msgid ""
 "*(New in v1.19.0)* Enumerates the commands that build up the page's "
 "appearance. Can be used to find out whether text is effectively hidden by"
@@ -1720,13 +1722,13 @@ msgstr ""
 "*（v1.19.0で新規）* "
 "ページの外観を構築するコマンドを列挙します。テキストが実際には後で「描画」されるオブジェクトによって隠れるか、またはいくつかのオブジェクトの上にかかっているかを判断するのに使用できます。したがって、bboxがこのテキストスパンのbboxと交差または含まれている場合、以前のアイテムが（部分的に）カバー/非表示にされる可能性があります。"
 
-#: ../../functions.rst:625 a332ef5bf29948dab52498a113c1055c
+#: ../../functions.rst:625 4e53fc30ab4b434a8dd462b37df55b15
 msgid ""
 "*(New in v1.22.0)* The name of the Optional Content Group (OCG) if "
 "applicable or `None`."
 msgstr "*（v1.22.0で新規）* 該当する場合、Optional Content Group（OCG）の名前、または `None`"
 
-#: ../../functions.rst:627 7d10accada8e4512a251cde3f4f3cb77
+#: ../../functions.rst:627 18fcebc358184f629a5dac8dd24f561d
 msgid ""
 "Here is a list of similarities and differences of `page.get_texttrace()` "
 "compared to `page.get_text(\"rawdict\")`:"
@@ -1734,19 +1736,19 @@ msgstr ""
 "以下は、`page.get_texttrace()` と `page.get_text(\"rawdict\")` "
 "を比較した類似点と相違点のリストです："
 
-#: ../../functions.rst:629 14d43abeade64ae6a7e7a66f55a6b4e8
+#: ../../functions.rst:629 10242bfca81e4c638b761ecd11ecc22b
 msgid ""
 "The method is up to **twice as fast,** compared to \"rawdict\" "
 "extraction. Depends on the amount of text."
 msgstr "メソッドは、テキストの量に依存しますが、\"rawdict\" の抽出と比較して最大 **2倍速い** です。"
 
-#: ../../functions.rst:630 ddaa111279c14f54bf12d70419804137
+#: ../../functions.rst:630 563d2bcc5e534c8aa65c037cb918a041
 msgid ""
 "The returned data is very **much smaller in size** -- although it "
 "provides more information."
 msgstr "返されるデータは **非常に小さく** 、より多くの情報を提供します。"
 
-#: ../../functions.rst:631 b5fcaaa904c848cb99d1cfd72df19bad
+#: ../../functions.rst:631 22d9ce68958844f9b04f8ce7c51e84a7
 msgid ""
 "Additional types of text **invisibility can be detected**: opacity = 0 or"
 " type > 1 or overlapping bbox of an object with a higher sequence number."
@@ -1754,7 +1756,7 @@ msgstr ""
 "追加のテキストの **不可視性のタイプを検出できます** ：不透明度 = 0またはタイプ > "
 "1またはシーケンス番号の高いオブジェクトとの境界ボックスが重なる。"
 
-#: ../../functions.rst:632 d3ffddc4c8c74b0c87f348dfe1c80ad4
+#: ../../functions.rst:632 b7e1c0e67b62467e9bdadba9d42d6c6b
 msgid ""
 "If MuPDF returns unicode 0xFFFD (65533) for unrecognized characters, you "
 "may still be able to deduct desired information from the glyph id."
@@ -1762,7 +1764,7 @@ msgstr ""
 "MuPDFが認識できない文字に対してUnicode "
 "0xFFFD（65533）を返す場合、グリフIDから必要な情報を導き出すことができるかもしれません。"
 
-#: ../../functions.rst:633 dd5d04de31034398aa834b1cdb6e56f6
+#: ../../functions.rst:633 b1f31df6bda84153ace8673ae63e9996
 msgid ""
 "The `span[\"chars\"]` **contains no spaces**, **except** the document "
 "creator has explicitly coded them. They **will never be generated** like "
@@ -1775,7 +1777,7 @@ msgstr ""
 ":meth:`Page.get_text` メソッドで発生するように "
 "**生成されません**。自分自身の計算を行うのを助けるために、スペース文字の幅が提供されます。この値はフォントから派生しています。それ以外の場合はフォールバックフォントの値が取られます。"
 
-#: ../../functions.rst:634 9652b19463904ee38c62ccc2b2239dff
+#: ../../functions.rst:634 c94dc74956874bfa8ac4c59d48c0cc87
 msgid ""
 "There is no effort to organize text like it happens for a :ref:`TextPage`"
 " (the hierarchy of blocks, lines, spans, and characters). Characters are "
@@ -1793,11 +1795,11 @@ msgstr ""
 "値を持つ文字を見つけることができます（これは異なる行に表示されることを意味します）。スパンの文字が特定の順序でソートされているとは仮定できません。情報を理解し、`span[\"dir\"]`、`span[\"wmode\"]`"
 " などを考慮に入れる必要があります。"
 
-#: ../../functions.rst:652 e762a117d84b42ecb7cf21d17049df5f
+#: ../../functions.rst:652 7acddc7741614360bf17d5596c8cc5ab
 msgid "Ligatures are represented like this:"
 msgstr "リガチャは次のように表されます："
 
-#: ../../functions.rst:636 329c84b204634c1294fb77b93a056ef4
+#: ../../functions.rst:636 e72abf836baf467c93105d9dde8d8035
 msgid ""
 "MuPDF handles the following ligatures: \"fi\", \"ff\", \"fl\", \"ft\", "
 "\"st\", \"ffi\", and \"ffl\" (only the first 3 are mostly ever used). If "
@@ -1808,48 +1810,48 @@ msgstr ""
 "\"ffl\"（ほとんどは最初の3つが使用されます）。したがって、ページに \"fi\" "
 "のようなリガチャが含まれている場合、次の2つの文字アイテムが連続して表示されます。"
 
-#: ../../functions.rst:641 da6322372fb64311b85eea0cc2f68ccd
+#: ../../functions.rst:641 d46f58a609804bea982da0876d2ba90f
 msgid ""
 "This means that the bbox of the first ligature character is the area "
 "containing the complete, compound glyph. Subsequent ligature components "
 "are recognizable by their glyph value -1 and a bbox of width zero."
 msgstr "これにより、最初の合字文字のbboxは、完全な合成グリフを含む領域です。後続の合字コンポーネントは、そのグリフ値が-1で幅がゼロであることで識別できます。"
 
-#: ../../functions.rst:642 2284a09cdf584b6aa6f22b5aae18d4fe
+#: ../../functions.rst:642 5f6b5b48f4684036ad328bffca38325a
 msgid ""
 "You may want to replace those 2 or 3 char tuples by one, that represents "
 "the ligature itself. Use the following mapping of ligatures to unicodes:"
 msgstr "これらの2つまたは3つの文字のタプルを、合字自体を表す1つに置き換えたい場合があるかもしれません。次のような合字をUnicodeにマッピングします。"
 
-#: ../../functions.rst:644 0a799c550746408c85fef2c7576bfede
+#: ../../functions.rst:644 889bc72258b64c39bbba09ab96188589
 msgid "`\"ff\" -> 0xFB00`"
 msgstr ""
 
-#: ../../functions.rst:645 9898a6f56cfe4eb4899294c8b6b06002
+#: ../../functions.rst:645 950a98981e9b4f3cad52eca1073f9df2
 msgid "`\"fi\" -> 0xFB01`"
 msgstr ""
 
-#: ../../functions.rst:646 5e3800258f5348718ebba22eb1059a6f
+#: ../../functions.rst:646 897debd680f84f00b2b72a621eb0ef78
 msgid "`\"fl\" -> 0xFB02`"
 msgstr ""
 
-#: ../../functions.rst:647 936b3a65e7c742f8bfe6b86441ea1a98
+#: ../../functions.rst:647 06805958e3a24f58ba7fe31f2c71b37c
 msgid "`\"ffi\" -> 0xFB03`"
 msgstr ""
 
-#: ../../functions.rst:648 a4aa6a1539d043e8abfc0b8638794818
+#: ../../functions.rst:648 108d095c0546443c9aed1a351b544e51
 msgid "`\"ffl\" -> 0xFB04`"
 msgstr ""
 
-#: ../../functions.rst:649 984fff2c59774ed1be88a1741f6a305f
+#: ../../functions.rst:649 685cc70784514cb8b5c01b88bff6ab68
 msgid "`\"ft\" -> 0xFB05`"
 msgstr ""
 
-#: ../../functions.rst:650 a20f60a691f6403e83506643220c07c0
+#: ../../functions.rst:650 0b2c082689e24ccca607cf35dac9ca2f
 msgid "`\"st\" -> 0xFB06`"
 msgstr ""
 
-#: ../../functions.rst:652 2ed2cd30247844df8bbc69833a24683a
+#: ../../functions.rst:652 3916ffdd9f474f4a8021e3466c4251ec
 msgid ""
 "So you may want to replace the two example tuples above by the following "
 "single one: `(0xFB01, glyph, (x, y), (x0, y0, x1, y1))` (there is usually"
@@ -1861,7 +1863,7 @@ msgstr ""
 "y1))`（通常、0xFB01の正しいグリフIDをフォント内で調べる必要はありませんが、`font.has_glyph(0xFB01)` "
 "を実行し、その戻り値を使用することができます）。"
 
-#: ../../functions.rst:654 ce7f0eaeb90046aab353b46f85433ed3
+#: ../../functions.rst:654 57e26aabbddd4a9f9a02d4b02c1ef955
 #, fuzzy
 msgid ""
 "**Changed in v1.19.3:** Similar to other text extraction methods, the "
@@ -1877,30 +1879,30 @@ msgstr ""
 ":meth:`recover_span_quad` の同じ方法を使用します。書き込み方向にはNoneまたはspan `span[\"dir\"]`"
 " を使用してください。"
 
-#: ../../functions.rst:656 de65772c37bd47cf876f0743e9332fe9
+#: ../../functions.rst:656 c735d25ff37c439293d1c84142159a58
 msgid ""
 "**Changed in v1.21.1:** If applicable, the name of the OCG is shown in "
 "`\"layer\"`."
 msgstr "**v1.21.1** で変更：該当する場合、OCGの名前が `\"layer\"` に表示されます。"
 
-#: ../../functions.rst:662 10427f25463d47fdb17d58e686fdfc9e
+#: ../../functions.rst:662 73cb0ecbc9904cfd9eedd2cf201a34ac
 msgid ""
 "Ensures that the page's so-called graphics state is balanced and new "
 "content can be inserted correctly."
 msgstr ""
 
-#: ../../functions.rst:664 8259e8d0721848219547bfd39f7867b9
+#: ../../functions.rst:664 2fce8c9f6cfc4f5580d8dbfbdac54581
 msgid ""
 "In versions 1.24.1+ of PyMuPDF the method was improved and is being "
 "executed automatically as required, so you should no longer need to "
 "concern yourself with it."
 msgstr ""
 
-#: ../../functions.rst:666 a829f7373a644aff8f6037428bea9712
+#: ../../functions.rst:666 6ca70959e73644b19510f3250902df9a
 msgid "We discourage using :meth:`Page.clean_contents` to achieve this."
 msgstr ""
 
-#: ../../functions.rst:672 db794a7ecc3a415baa480e8c9f7a6f1c
+#: ../../functions.rst:672 fbfdfc139dba4d859c7e23c259a08157
 msgid ""
 "Indicate whether the page's so-called graphic state is balanced. If "
 "`False`, :meth:`Page.wrap_contents` should be executed if new content is "
@@ -1909,7 +1911,7 @@ msgid ""
 "executed -- you therefore should not be concerned about this anymore."
 msgstr ""
 
-#: ../../functions.rst:680 d203c9e2bbe24468bd5568a1db6ea2a7
+#: ../../functions.rst:680 de1474a27a3c4f17a4b06482b9593875
 msgid ""
 "Deprecated wrapper for :meth:`TextPage.extractBLOCKS`.  Use "
 ":meth:`Page.get_text` with the \"blocks\" option instead."
@@ -1917,25 +1919,25 @@ msgstr ""
 ":meth:`TextPage.extractBLOCKS` の非推奨のラッパーです。代わりにオプション \"blocks\" を使用して "
 ":meth:`Page.get_text` を使用してください。"
 
-#: ../../functions.rst:688 99ad32943641482ab84b11366ccbbe4f
+#: ../../functions.rst:688 88b9617fbc71462e867dbd12dd918d79
 msgid ""
 "Deprecated wrapper for :meth:`TextPage.extractWORDS`. Use "
 ":meth:`Page.get_text` with the \"words\" option instead."
 msgstr ""
 
-#: ../../functions.rst:696 a2853d3cdede4d2db456cfb83b815124
+#: ../../functions.rst:696 e63d78e973014b5da39d398c04e37cd0
 msgid "Run a page through a list device and return its display list."
 msgstr "ページをリストデバイスを介して実行し、そのディスプレイリストを返します。"
 
-#: ../../functions.rst:698 21e4b6cf9da846258448b5e17cbf3282
+#: ../../functions.rst:698 18c7a9bcd3614b61abe4ffa70c25080c
 msgid ":ref:`DisplayList`"
 msgstr ""
 
-#: ../../functions.rst:699 ffb9b48f375440e290527ab49901acf1
+#: ../../functions.rst:699 95ce406969764ffea7a51bd7cb001954
 msgid "the display list of the page."
 msgstr "ページのディスプレイリスト。"
 
-#: ../../functions.rst:705 5c87e4c0d7cf4cee8bd5c73c0185175c
+#: ../../functions.rst:705 2f7950caaff2497e85a41efaf8b7ab40
 #, fuzzy
 msgid ""
 "PDF only: Retrieve a list of :data:`xref` of :data:`contents` objects of "
@@ -1952,7 +1954,7 @@ msgstr ""
 "で個別に読み取ることができます。一方、:meth:`Page.read_contents` メソッドは、このリストを走査し、対応するソースを1つの"
 " `bytes` オブジェクトに連結します。"
 
-#: ../../functions.rst:713 90e498eeac6e4beeafac3412b4c240b6
+#: ../../functions.rst:713 0e0e858c5fb34899bf5b31067d9f6cf0
 msgid ""
 "PDF only: Let the page's `/Contents` key point to this xref. Any "
 "previously used contents objects will be ignored and can be removed via "
@@ -1961,11 +1963,11 @@ msgstr ""
 "PDFのみ：ページの `/Contents` "
 "キーをこのxrefに設定します。以前に使用されていたコンテンツオブジェクトは無視され、ガベージコレクションを使用して削除できます。"
 
-#: ../../functions.rst:719 f9513e84e2ca4321bff8c46802105ac6
+#: ../../functions.rst:719 5d1261cb25b84350a7512c2587a9a33e
 msgid "Changed in v1.17.6"
 msgstr "v1.17.6で変更"
 
-#: ../../functions.rst:721 22bc66a703e54067b1e2f2c5f119ba1d
+#: ../../functions.rst:721 246c4ca104b04817bab2b24be75d9bcb
 msgid ""
 "PDF only: Clean and concatenate all :data:`contents` objects associated "
 "with this page. \"Cleaning\" includes syntactical corrections, "
@@ -1979,7 +1981,7 @@ msgstr ""
 "sanitizeがtrueの場合、:data:`contents` と :data:`resources` "
 "オブジェクト間の不一致も修正されます。詳細については、:meth:`Page.get_contents` を参照してください。"
 
-#: ../../functions.rst:723 a3f4d1a068824a428423ffa2da562127
+#: ../../functions.rst:723 301ef7e95bd144f8b88b541724fc0d58
 msgid ""
 "Changed in version 1.16.0 Annotations are no longer implicitly cleaned by"
 " this method. Use :meth:`Annot.clean_contents` separately."
@@ -1987,7 +1989,7 @@ msgstr ""
 "バージョン1.16.0以降、注釈はこのメソッドによって暗黙的にクリーンアップされなくなりました。 "
 ":meth:`Annot.clean_contents` を別途使用してください。"
 
-#: ../../functions.rst:725 15c1db8404ca46dbaf4c906166750f5b
+#: ../../functions.rst:725 fb9142fcb2a94012a3fdd682a262552a
 msgid ""
 "*(new in v1.17.6)* if true, synchronization between resources and their "
 "actual use in the contents object is snychronized. For example, if a font"
@@ -1998,7 +2000,7 @@ msgstr ""
 "trueの場合、リソースとコンテンツオブジェクト間の同期が行われます。たとえば、ページのテキストでフォントが実際に使用されていない場合、それは "
 "`/Resources/Font`  オブジェクトから削除されます。"
 
-#: ../../functions.rst:727 d98faf235eb84369adf87e543eaba7f2
+#: ../../functions.rst:727 fc916fcfc1a14c108f31a9985fbb06f9
 msgid ""
 "This is a complex function which may generate large amounts of new data "
 "and render old data unused. It is **not recommended** using it together "
@@ -2010,13 +2012,13 @@ msgstr ""
 "**お勧めできません** 。また、結果のシングルトンの新しい */Contents* オブジェクトは **非圧縮です**。したがって、オプション "
 "*\"deflate=True、garbage=3\"* を使用して **新しいファイル** に保存する必要があります。"
 
-#: ../../functions.rst:729 f02d605a87d143948e528d28b56a3a2d
+#: ../../functions.rst:729 ee091ea4bbad4137bdf94b65bf7e1505
 msgid ""
 "Do not any longer use this method to ensure correct insertions on PDF "
 "pages. Since PyMuPDF version 1.24.2 this is taken care of automatically."
 msgstr ""
 
-#: ../../functions.rst:735 2196c7e1b31b40ddab3b297b291177f8
+#: ../../functions.rst:735 da8e22bf756d4516a6435fef2ee406ef
 msgid ""
 "*New in version 1.17.0.* Return the concatenation of all :data:`contents`"
 " objects associated with the page -- without cleaning or otherwise "
@@ -2027,7 +2029,7 @@ msgstr ""
 "*v1.17.0で新たに追加。* ページに関連付けられたすべての :data:`contents` "
 "オブジェクトの連結を返します。クリーニングや変更などを行わずに、このソース全体を解析する必要がある場合にこのメソッドを使用します。"
 
-#: ../../functions.rst:744 9a37de9e2f3c4f5f8730e0926cb5527e
+#: ../../functions.rst:744 0ea4768fd42d4fcdb406a86bb35b0b3c
 msgid ""
 "Clean the :data:`contents` streams associated with the annotation. This "
 "is the same type of action which :meth:`Page.clean_contents` performs -- "
@@ -2037,7 +2039,7 @@ msgstr ""
 "ストリームをクリーンアップします。これは、:meth:`Page.clean_contents` "
 "が実行するのと同じ種類のアクションですが、この注釈に制限されています。"
 
-#: ../../functions.rst:751 c7c5b8d11bab42d1ab6490984348b460
+#: ../../functions.rst:751 c48de20f6397476e88558a5f14a2c96c
 msgid ""
 "Return a list of character glyphs and their widths for a font that is "
 "present in the document. A font must be specified by its PDF cross "
@@ -2049,7 +2051,7 @@ msgstr ""
 "で指定する必要があります。この関数は、:meth:`Page.insert_text` および "
 ":meth:`Page.insert_textbox` から自動的に呼び出されます。したがって、自分で行う必要があることはほとんどありません。"
 
-#: ../../functions.rst:753 0810b08678db4de2aa2a906546639b32
+#: ../../functions.rst:753 005b7266f7284e90bab8b77be14c642e
 msgid ""
 "cross reference number of a font embedded in the PDF. To find a font "
 ":data:`xref`, use e.g. *doc.get_page_fonts(pno)* of page number *pno* and"
@@ -2058,7 +2060,7 @@ msgstr ""
 "ドキュメントに埋め込まれたPDFのクロスリファレンス番号。フォントの :data:`xref` を見つけるには、例えば、ページ番号 *pno* の"
 " *doc.get_page_fonts(pno)* を使用し、返されたリストエントリの最初を取得します。"
 
-#: ../../functions.rst:755 630cf059f27845f38b21edb71c79835d
+#: ../../functions.rst:755 c40931be83a048c2b0e4d6547935db08
 msgid ""
 "limits the number of returned entries. The default of 256 is enforced for"
 " all fonts that only support 1-byte characters, so-called \"simple "
@@ -2068,7 +2070,7 @@ msgstr ""
 "返されるエントリの数を制限します。256のデフォルト値は、1バイトの文字のみをサポートする「シンプルフォント」と呼ばれるフォントに対して適用されます（このメソッドで確認されます）。すべてのPDF"
 " :ref:`Base-14-Fonts` はシンプルフォントです。"
 
-#: ../../functions.rst:758 c04bc439f7ef4026892771cb1184f704
+#: ../../functions.rst:758 c0afe718bd2442b18653b0b77f36b88c
 msgid ""
 "a list of *limit* tuples. Each character *c* has an entry  *(g, w)* in "
 "this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is "
@@ -2082,15 +2084,15 @@ msgstr ""
 ":data:`fontsize`* として計算できます。シンプルフォントの場合、gエントリは常に安全に無視できます。それ以外の場合、*g* は "
 "*c* を視覚的に表現するための基礎です。"
 
-#: ../../functions.rst:760 3ef4cadd1af84e83949d7678fe2c81e3
+#: ../../functions.rst:760 d14f388f645f450e95a675c15496f9d0
 msgid "This function calculates the pixel width of a string called *text*::"
 msgstr "この関数は、*text* と呼ばれる文字列のピクセル幅を計算します::"
 
-#: ../../functions.rst:772 ecbe28bd36cf4da9890cb253317137d4
+#: ../../functions.rst:772 8580164da36b4e0c9468ee8d665d36ac
 msgid "New in version 1.14.14"
 msgstr "バージョン1.14.14で新規追加"
 
-#: ../../functions.rst:774 89120d06d2c2469199a7dcb86576f510
+#: ../../functions.rst:774 e5ce7ef74ebc4d4f8905c40e607a49ce
 msgid ""
 "PDF only: Check whether the object represented by :data:`xref` is a "
 ":data:`stream` type. Return is ``False`` if not a PDF or if the number is"
@@ -2099,23 +2101,23 @@ msgstr ""
 "PDFのみ：:data:`xref` によって表されるオブジェクトが :data:`stream` "
 "タイプかどうかを確認します。PDFでない場合や、有効なxref範囲外の場合はFalseを返します。"
 
-#: ../../functions.rst:776 a09f8f5311c14f39ab22fb0476dc55e1
+#: ../../functions.rst:776 2cbd0ce6bddd4eb7894ddab3fda4d4c8
 msgid ":data:`xref` number."
 msgstr ":data:`xref` 番号。"
 
-#: ../../functions.rst:778 cefc628d4f1c49b8b44905792b59ddd8
+#: ../../functions.rst:778 9a6d0c88e56045e394739af6408a6b4e
 msgid ""
 "``True`` if the object definition is followed by data wrapped in keyword "
 "pair *stream*, *endstream*."
 msgstr "*stream*、*endstream* のキーワードペアで囲まれたデータに続いてオブジェクト定義がある場合は ``True``。"
 
-#: ../../functions.rst:784 2133898daacd4e1db066969afe31bb04
+#: ../../functions.rst:784 5b978581dd6b490e8af4afbf4586ca56
 msgid ""
 "Increase the :data:`xref` by one entry and return that number. This can "
 "then be used to insert a new object."
 msgstr ":data:`xref` を1つ増やしてその番号を返します。これは新しいオブジェクトを挿入するために使用できます。"
 
-#: ../../functions.rst:786 b937dc8deb524375b27622d6996b23e7
+#: ../../functions.rst:786 948cbb06043d486e90adbfb3b3275fa8
 msgid ""
 "int :returns: the number of the new :data:`xref` entry. Please note, that"
 " only a new entry in the PDF's cross reference table is created. At this "
@@ -2127,15 +2129,15 @@ msgstr ""
 "エントリの数。PDFのクロスリファレンステーブルに新しいエントリのみが作成されます。この段階では、それに関連付けられたPDFオブジェクトはまだ存在しません。この番号で（空の）オブジェクトを作成するには、`doc.update_xref(xref、\"<<>>\")`"
 " を使用します。"
 
-#: ../../functions.rst:793 232449497ffb4eedb8dae90f7b55fed0
+#: ../../functions.rst:793 e932ac5caa9f4c298a13a6d379dd7a51
 msgid "Return length of :data:`xref` table."
 msgstr ":data:`xref` テーブルの長さを返します。"
 
-#: ../../functions.rst:796 245e54c66fda43548f4bb15c292b7f52
+#: ../../functions.rst:796 f840df5df4b545b1bbf730bf184c5803
 msgid "the number of entries in the :data:`xref` table."
 msgstr ":data:`xref` テーブルのエントリ数。"
 
-#: ../../functions.rst:802 8dc72dca25f445da9457591672f80769
+#: ../../functions.rst:802 b5d9bd2f14554b25bbb8fb9470c51da6
 msgid ""
 "Compute the quadrilateral of a text span extracted via options \"dict\" "
 "or \"rawdict\" of :meth:`Page.get_text`."
@@ -2143,7 +2145,7 @@ msgstr ""
 ":meth:`Page.get_text` のオプション \"dict\" または \"rawdict\" "
 "で抽出されたテキストスパンの四辺形を計算します。"
 
-#: ../../functions.rst:804 79949b47b0e8434da2450695ab50368e
+#: ../../functions.rst:804 91a864a4261a4b1abf61f04339ba4ede
 msgid ""
 "`line[\"dir\"]` of the owning line.  Use `None` for a span from "
 ":meth:`Page.get_texttrace`."
@@ -2152,25 +2154,25 @@ msgstr ""
 "を使用します。"
 
 #: ../../functions.rst:805 ../../functions.rst:815 ../../functions.rst:826
-#: 0770a5ef3a8a47db94dbbe6aa5ce37d5 5c5d1cb049fa4b2db4557396cea5ef45
-#: 9218509c4f0844e3af20da0e09b821af
+#: 7033d11e092540f4ba156c04a297c691 74f50cf2036e4339af0cf16e7378d340
+#: 994444b97874454798b14763f2d63fca
 msgid "the span."
 msgstr "スパン。"
 
-#: ../../functions.rst:806 659d93593c5c4212808a3586ed130e9f
+#: ../../functions.rst:806 ddc5c01bb3e44f12bf7284bf4fe74e81
 msgid ""
 "the :ref:`Quad` of the span, usable for text marker annotations "
 "('Highlight', etc.)."
 msgstr "スパンの :ref:`Quad`、テキストマーカーアノテーション（'ハイライト' など）で使用できます。"
 
-#: ../../functions.rst:812 3cd5684ddb9d43ccb146f4a824abc81d
+#: ../../functions.rst:812 f9901afa0a67408ebc90c04e01c93f8a
 msgid ""
 "Compute the quadrilateral of a text character extracted via option "
 "\"rawdict\" of :meth:`Page.get_text`."
 msgstr ":meth:`Page.get_text` のオプション \"rawdict\" で抽出されたテキスト文字の四辺形を計算します。"
 
 #: ../../functions.rst:814 ../../functions.rst:825
-#: d61965cb158a476ab9824dc5c8554d04 f84cc11dbc814f73857fec69aa9acd5b
+#: 67860855da1c47c8828ebecc90f766d6 7da81809c8ba42679d5e884d49b6878f
 msgid ""
 "`line[\"dir\"]` of the owning line. Use `None` for a span from "
 ":meth:`Page.get_texttrace`."
@@ -2178,35 +2180,35 @@ msgstr ""
 "所有する行の `line[\"dir\"]`。:meth:`Page.get_texttrace` からのスパンの場合は `None` "
 "を使用します。"
 
-#: ../../functions.rst:816 67ed1cab15584b639de82d14613b4292
+#: ../../functions.rst:816 131dbbd284734ed089c4778deb4dd003
 msgid "the character."
 msgstr "文字。"
 
-#: ../../functions.rst:817 b0a52cdeaedc4130a8c46b7b8ec0809d
+#: ../../functions.rst:817 f88cafc7c32a4d6fad1b6135cd5cc40f
 msgid ""
 "the :ref:`Quad` of the character, usable for text marker annotations "
 "('Highlight', etc.)."
 msgstr "文字の :ref:`Quad`、テキストマーカーアノテーション（'ハイライト' など）で使用できます。"
 
-#: ../../functions.rst:823 ed8ff97737994061997361b365b77280
+#: ../../functions.rst:823 d59e0653bc4246c7a9357ca70c5860b0
 msgid ""
 "Compute the quadrilateral of a subset of characters of a span extracted "
 "via option \"rawdict\" of :meth:`Page.get_text`."
 msgstr ":meth:`Page.get_text` のオプション \"rawdict\" で抽出されたスパンの一部の文字の四辺形を計算します。"
 
-#: ../../functions.rst:827 e333f58502ed4eceb02ca72ec7d9a14b
+#: ../../functions.rst:827 dadf644469074a32aa88fc7fdcf7698b
 msgid ""
 "the characters to consider. If given, the selected extraction option must"
 " be \"rawdict\"."
 msgstr "考慮する文字。省略した場合、。指定する場合、選択した抽出オプションは \"rawdict\" である必要があります。"
 
-#: ../../functions.rst:828 5e23e60cd2b44deba9b5844d0be494e4
+#: ../../functions.rst:828 dfa12d94ceb3431eb63330adacb7bfe9
 msgid ""
 "the :ref:`Quad` of the selected characters, usable for text marker "
 "annotations ('Highlight', etc.)."
 msgstr "選択された文字の :ref:`Quad` 、テキストマーカーアノテーション（'ハイライト' など）で使用できます。"
 
-#: ../../functions.rst:834 d5b5fa6626ea4e5fbd3c5729c70131ca
+#: ../../functions.rst:834 6aa28bd6817943bfbb2746f7a6243580
 msgid ""
 "Compute the quadrilateral of a subset of spans of a text line extracted "
 "via options \"dict\" or \"rawdict\" of :meth:`Page.get_text`."
@@ -2214,52 +2216,52 @@ msgstr ""
 ":meth:`Page.get_text` のオプション \"dict\" または \"rawdict\" "
 "で抽出されたテキスト行の一部のスパンの四辺形を計算します。"
 
-#: ../../functions.rst:836 77bdfd3566c640d5abf49df4e0523400
+#: ../../functions.rst:836 78daeef8140c41a8a9c0b8b6c4532d1b
 msgid "the line."
 msgstr "行。"
 
-#: ../../functions.rst:837 4763d4513a72443a8cb2e1abde8e800b
+#: ../../functions.rst:837 e903ee7d5d594fc1811c896806a6bb8e
 msgid ""
 "a sub-list of `line[\"spans\"]`. If omitted, the full line quad will be "
 "returned."
 msgstr "`line[\"spans\"]` のサブリスト。省略した場合、選択した行の四辺形が返されます。"
 
-#: ../../functions.rst:838 4457ad14e4724e9ca4aa3a5e256a3db8
+#: ../../functions.rst:838 4d44abbf27ac4dd98103b18718b1b07a
 msgid ""
 "the :ref:`Quad` of the selected line spans, usable for text marker "
 "annotations ('Highlight', etc.)."
 msgstr "選択された行のスパンの :ref:`Quad`、テキストマーカーアノテーション（'ハイライト' など）で使用できます。"
 
-#: ../../functions.rst:844 fa6ac2d5352e447898bb5eb220bb90b4
+#: ../../functions.rst:844 4afcc06f3e38430bafe222f1079b22a0
 msgid "Detect Tesseract language support folder."
 msgstr ""
 
-#: ../../functions.rst:846 6f11797ccc5148c581def86e479e2474
+#: ../../functions.rst:846 cab287431498493d97889bd9dc044f9d
 msgid ""
 "This function is used to enable OCR via Tesseract even if the language "
 "support folder is not specified directly or in environment variable "
 "TESSDATA_PREFIX."
 msgstr ""
 
-#: ../../functions.rst:850 5be47dc2280f44249eb4b89a51c504a8
+#: ../../functions.rst:850 9ae2a9e271bd4bee918746c9384d309b
 msgid "If <tessdata> is set we return it directly."
 msgstr ""
 
-#: ../../functions.rst:852 610202bb1cc345d08689d17027881575
+#: ../../functions.rst:852 ff58521ec09244cf9af0e5556f7a846f
 msgid "Otherwise we return `os.environ['TESSDATA_PREFIX']` if set."
 msgstr ""
 
-#: ../../functions.rst:854 addd2c5751724dd19f1ad368ab40fab0
+#: ../../functions.rst:854 e6350e60bfa84e9e9bc83ba51e45b115
 msgid ""
 "Otherwise we search for a Tesseract installation and return its language "
 "support folder."
 msgstr ""
 
-#: ../../functions.rst:857 aaff4ea4400b47dcac737f3a953d4d18
+#: ../../functions.rst:857 0e05c86bfe6f46f1b4451934cd24174b
 msgid "Otherwise we raise an exception."
 msgstr ""
 
-#: ../../functions.rst:867 59f441bd5735450d9f431cb8ac5d4d06
+#: ../../functions.rst:867 ec04b5d7ae7c4b2698bdbf79b6fee421
 msgid ""
 "Return the (unique) infinite rectangle `Rect(-2147483648.0, "
 "-2147483648.0, 2147483520.0, 2147483520.0)`, resp. the :ref:`IRect` and "
@@ -2270,7 +2272,7 @@ msgstr ""
 "`Rect(-2147483648.0、-2147483648.0、2147483520.0、2147483520.0)`、または "
 ":ref:`IRect` と :ref:`Quad` の対応するものを返します。これは最大の可能な四角形で、すべての有効な四角形が含まれます。"
 
-#: ../../functions.rst:877 6edd4f317e5e4c1f929fee4707063b02
+#: ../../functions.rst:877 0089e42de5e24fdc9314358b9f612356
 msgid ""
 "Return the \"standard\" empty and invalid rectangle `Rect(2147483520.0, "
 "2147483520.0, -2147483648.0, -2147483648.0)` resp. quad. Its top-left and"
@@ -2284,20 +2286,20 @@ msgstr ""
 "または対応する四角形を返します。その左上と右下のポイント値は、無限の四角形と比較して反転しています。たとえば、`page.get_text(\"dict\")`"
 " 辞書内の空の bboxes を示すために使用されます。ただし、無限に多くの空のまたは無効な四角形が存在します。"
 
-#: ../../functions.rst:883 ecbb9be9ecab43fe9b984e688d525aca
+#: ../../functions.rst:883 fea470f568524b038bb0e30aed353ec9
 msgid ""
 "Returns a dict mapping lower-case color name to `(red, green, blue)` "
 "tuple, and `red`, `green`, `blue` are floats in range 0..1."
 msgstr ""
 
-#: ../../functions.rst:888 7909544a776b416ca01ff4363ae21452
+#: ../../functions.rst:888 c23cf90537d54067a5727d87647c89d2
 msgid ""
 "Returns a list of `(colorname, red, green, blue)` tuples, where "
 "`colorname` is upper case and `red`, `green`, `blue` are integers in "
 "range 0..255."
 msgstr ""
 
-#: ../../footer.rst:60 029e415e5bba4c8cbd9b3986f648e693
+#: ../../footer.rst:46 e369c07a6dfc4a3d9e7f48a78f52b9bf
 msgid "This documentation covers all versions up to |version|."
 msgstr "このドキュメントは |version| までのすべてのバージョンを対象としています。"
 
@@ -2453,5 +2455,18 @@ msgstr "このドキュメントは |version| までのすべてのバージョ�
 #~ "パラメータに使用できます。"
 
 #~ msgid "Discord logo"
+#~ msgstr ""
+
+#~ msgid ""
+#~ "Write to Python's `logging` system using"
+#~ " specified logger name. Only used if"
+#~ " `pylogging_logger` is None. Default is "
+#~ "`pymupdf`."
+#~ msgstr ""
+
+#~ msgid ""
+#~ "If any `pylogging*` arg is not "
+#~ "None, we write to `Python's logging "
+#~ "system <https://docs.python.org/3/library/logging.html>`_."
 #~ msgstr ""
 

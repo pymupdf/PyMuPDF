@@ -549,6 +549,80 @@
 
 
 
+            } else if (lang == "ko") {
+                if (str=="Feature") {
+                    return "기능";
+                } else if (str=="Supports Multiple Document Formats") {
+                    return "다중 문서 형식 지원";
+                } else if (str=="Image") {
+                    return "이미지";
+                } else if (str=="Implementation") {
+                    return "구현";
+                } else if (str=="and") {
+                    return "및";
+                } else if (str=="Render Document Pages") {
+                    return "문서 페이지 렌더링";
+                } else if (str=="All document types") {
+                    return "모든 문서 유형";
+                } else if (str=="No rendering") {
+                    return "렌더링 없음";
+                } else if (str=="Extract Text") {
+                    return "텍스트 추출";
+                } else if (str=="Write Text to PDF Page") {
+                    return "PDF 페이지에 텍스트 쓰기";
+                } else if (str=="only") {
+                    return "만";
+                } else if (str=="Extract Vector Graphics") {
+                    return "벡터 그래픽 추출";
+                } else if (str=="Draw Vector Graphics (PDF)") {
+                    return "벡터 그래픽 그리기 (PDF)";
+                } else if (str=="Based on Existing, Mature Library") {
+                    return "기존의 성숙한 라이브러리 기반";
+                } else if (str=="Automatic Repair of Damaged PDFs") {
+                    return "손상된 PDF 자동 복구";
+                } else if (str=="Encrypted PDFs") {
+                    return "암호화된 PDF";
+                } else if (str=="Limited") {
+                    return "제한적";
+                } else if (str=="Linerarized PDFs") {
+                    return "선형화된 PDF";
+                } else if (str=="Incremental Updates") {
+                    return "증분 업데이트";
+                } else if (str=="Integrates with Jupyter and IPython Notebooks") {
+                    return "Jupyter 및 IPython Notebooks 통합";
+                } else if (str=="Joining / Merging PDF with other Document Types") {
+                    return "다른 문서 유형과 PDF 결합 / 병합";
+                } else if (str=="OCR API for Seamless Integration with Tesseract") {
+                    return "Tesseract와의 원활한 통합을 위한 OCR API";
+                } else if (str=="Integrated Checkpoint / Restart Feature (PDF)") {
+                    return "통합 체크포인트 / 재시작 기능 (PDF)";
+                } else if (str=="PDF Optional Content") {
+                    return "PDF 선택적 콘텐츠";
+                } else if (str=="PDF Embedded Files") {
+                    return "PDF 임베디드 파일";
+                } else if (str=="PDF Redactions") {
+                    return "PDF 편집";
+                } else if (str=="PDF Annotations") {
+                    return "PDF 주석";
+                } else if (str=="Full") {
+                    return "전체";
+                } else if (str=="PDF Form Fields") {
+                    return "PDF 양식 필드";
+                } else if (str=="Create, read, update") {
+                    return "생성, 읽기, 업데이트";
+                } else if (str=="Limited, no creation") {
+                    return "제한적, 생성 불가";
+                } else if (str=="PDF Page Labels") {
+                    return "PDF 페이지 레이블";
+                } else if (str=="Support Font Sub-Setting") {
+                    return "폰트 서브셋 지원";
+                } else if (str=="Extract Tables") {
+                    return "테이블 추출";
+                } else if (str=="Supports CJK characters") {
+                    return "CJK 문자 지원";
+                } else if (str == "Extract Text as Markdown (.md)") {
+                    return "텍스트를 Markdown (.md) 으로 추출";
+                }
             }
 
             return str;
