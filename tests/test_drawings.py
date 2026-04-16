@@ -228,3 +228,39 @@ def test_3591():
     paths = page.get_drawings()
     for p in paths:
         assert p["width"] == 15
+
+
+def test_4954_1():
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4954_1.pdf')
+    with pymupdf.open() as document:
+        page = document.new_page(width=200, height=200)
+        shape = page.new_shape()
+        shape.draw_line((0, 0), (1, 1))
+        shape.finish(color=(0, 0, 0), width=0.1)
+        shape.commit()
+        content = b'q\n0.12 0 0 0.12 0 0 cm\n2 j\n6 w\n100 100 m\n800 100 l\nS\nQ\n'
+        document.update_stream(page.get_contents()[0], content, compress=0)
+        document.save(path_out)
+
+    with pymupdf.open(path_out) as document:
+        d = document[0].get_drawings()[-1]
+        print(f'{d["lineJoin"]=}')  # Expected: 2, Actual: 0.24
+        assert d['lineJoin'] == 2
+
+
+def test_4954_2():
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4954_2.pdf')
+    with pymupdf.open() as document:
+        page = document.new_page(width=200, height=200)
+        shape = page.new_shape()
+        shape.draw_line((0, 0), (1, 1))
+        shape.finish(color=(1, 0, 0), width=0.1)
+        shape.commit()
+        content = b'q\n2 0 0 3 0 0 cm\n1 w\n10 10 m\n90 10 l\nS\nQ\n'
+        document.update_stream(page.get_contents()[0], content, compress=0)
+        document.save(path_out)
+
+    with pymupdf.open(path_out) as document:
+        d = document[0].get_drawings()[-1]
+        print(f'{d["width"]=}')  # Expected: 2.0, Actual: 1.0
+        assert abs(d['width'] - 2.449) < 0.01
