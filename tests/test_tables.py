@@ -458,3 +458,15 @@ def test_md_styles():
     tabs = page.find_tables()[0]
     text = """|Column 1|Column 2|Column 3|\n|---|---|---|\n|Zelle (0,0)|**Bold (0,1)**|Zelle (0,2)|\n|~~Strikeout (1,0), Zeile 1~~<br>~~Hier kommt Zeile 2.~~|Zelle (1,1)|~~Strikeout (1,2)~~|\n|**`Bold-monospaced`**<br>**`(2,0)`**|_Italic (2,1)_|**_Bold-italic_**<br>**_(2,2)_**|\n|Zelle (3,0)|~~**Bold-strikeout**~~<br>~~**(3,1)**~~|Zelle (3,2)|\n\n"""
     assert tabs.to_markdown() == text
+
+
+def test_one_strat_text_the_other_strat_non_text():
+    filename = os.path.join(scriptdir, "resources", "text-lines-tables.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    tabs = page.find_tables(horizontal_strategy="text", vertical_strategy="lines_strict").tables
+    assert len(tabs) == 1
+    assert tabs[0].extract() == [["AAAA", "BBBB"], ["", ""], ["CCCC", "DDDD"]]
+    tabs = page.find_tables(vertical_strategy="text", horizontal_strategy="lines_strict")
+    assert len(tabs) == 1
+    assert tabs[0].extract() == [["1111", "2222"], ["3333", "4444"]]
