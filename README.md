@@ -32,7 +32,7 @@
 
 ## Why PyMuPDF?
 
-- **Fast** — powered by [MuPDF](https://mupdf.com/) , a best-in-class C rendering engine
+- **Fast** — powered by [MuPDF](https://mupdf.com/), a best-in-class C rendering engine
 - **Accurate** — pixel-perfect text extraction with font, color, and position metadata
 - **Versatile** — read, write, annotate, redact, merge, split, and convert documents
 - **LLM-ready** — native Markdown output via [PyMuPDF4LLM](https://pypi.org/project/pymupdf4llm/) for RAG and AI pipelines
@@ -513,13 +513,13 @@ for rect in locations:
 
 ### `get_images` shows no images but I can clearly see charts in the PDF. Why?
 
-Charts and diagrams created by tools like matplotlib, Excel, or R are typically rendered as vector graphics (PDF drawing commands), not raster images. `get_images ` only lists embedded raster image objects and will not detect vector graphics. To capture these, rasterise the entire page with `page.get_pixmap()`.
+Charts and diagrams created by tools like matplotlib, Excel, or R are typically rendered as vector graphics (PDF drawing commands), not raster images. `get_images` only lists embedded raster image objects and will not detect vector graphics. To capture these, rasterise the entire page with `page.get_pixmap()`.
 
 
 
 ### How does OCR work in PyMuPDF? Does it require a separate Tesseract installation?
 
-PyMuPDF uses Tesseract for OCR, but Tesseract's C++ code is compiled directly into MuPDF — it is not called as an external subprocess. The only external requirement is the **Tesseract language data files** (`tessdata`). Over 100 languages are supported. There is no Python-level pytesseract dependency.
+PyMuPDF uses MuPDF's built-in Tesseract-based OCR support, so there is no Python-level `pytesseract` dependency. However, PyMuPDF still needs access to the **Tesseract language data files** (`tessdata`), and automatic tessdata discovery may invoke the `tesseract` executable (for example, to list available languages) if you do not explicitly provide a tessdata path. In practice, the recommended setup is to either install Tesseract so discovery works automatically, or configure the tessdata location yourself via the `tessdata` parameter or the `TESSDATA_PREFIX` environment variable. Over 100 languages are supported.
 
 ```python
 import pymupdf
@@ -740,7 +740,7 @@ Full installation guide, API reference, cookbook, and tutorial at **[pymupdf.rea
 
 | Project | Description |
 |---|---|
-| [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) | TLLM/RAG-optimised Markdown and JSON extraction |
+| [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) | LLM/RAG-optimised Markdown and JSON extraction |
 | [PyMuPDF Pro](https://pymupdf.io/pro) | Adds Office and HWP document support |
 | [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) | Extended font collection for PyMuPDF text output |
 
