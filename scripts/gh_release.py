@@ -89,7 +89,7 @@ import test as test_py
 
 pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
-sys.path.insert(0, pymupdf_dir)
+sys.path.insert(0, f'{pymupdf_dir}/src')
 import pipcl
 del sys.path[0]
 

@@ -178,11 +178,7 @@ def test_4125():
     import psutil
     
     root = os.path.normpath(f'{__file__}/../..')
-    sys.path.insert(0, root)
-    try:
-        import pipcl
-    finally:
-        del sys.path[0]
+    import pipcl
     
     process = psutil.Process()
     
