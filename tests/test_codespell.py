@@ -44,11 +44,7 @@ def test_codespell():
                 --ignore-multiline-regex 'codespell:ignore-begin.*codespell:ignore-end'
             ''')
     
-    sys.path.append(root)
-    try:
-        import pipcl
-    finally:
-        del sys.path[0]
+    import pipcl
     
     git_files = pipcl.git_items(root)
     

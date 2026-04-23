@@ -379,7 +379,7 @@ import textwrap
 pymupdf_dir_abs = os.path.abspath( f'{__file__}/../..')
 
 try:
-    sys.path.insert(0, pymupdf_dir_abs)
+    sys.path.insert(0, f'{pymupdf_dir_abs}/src')
     import pipcl
 finally:
     del sys.path[0]
@@ -1140,13 +1140,9 @@ def cibw_do_test_project(
     with open(f'{testdir}/pyproject.toml', 'w') as f:
         f.write(textwrap.dedent('''
                 [build-system]
-                # We define required packages in setup.py:get_requires_for_build_wheel().
-                requires = []
-
-                # See pep-517.
-                #
-                build-backend = "setup"
-                backend-path = ["."]
+                    requires = ['pipcl']
+                    build-backend = 'setup'
+                    backend-path = ['.']
                 '''))
         
     shutil.copy2(f'{pymupdf_dir_abs}/pipcl.py', f'{testdir}/pipcl.py')
@@ -1513,16 +1509,17 @@ def test(
 
 def get_pyproject_required(ppt=None):
     '''
-    Returns space-separated names of required packages in pyproject.toml.  We
+    Returns list of names of required packages in pyproject.toml.  We
     do not do a proper parse and rely on the packages being in a single line.
     '''
     if ppt is None:
         ppt = os.path.abspath(f'{__file__}/../../pyproject.toml')
     with open(ppt) as f:
         for line in f:
-            m = re.match('^requires = \\[(.*)\\]$', line)
+            m = re.match('^ *requires = \\[(.*)\\]$', line)
             if m:
-                names = m.group(1).replace(',', ' ').replace('"', '')
+                names = m.group(1).replace(',', ' ').replace('"', '').replace("'", '')
+                names = names.split()
                 return names
         else:
             assert 0, f'Failed to find "requires" line in {ppt}'
@@ -1538,6 +1535,7 @@ def wrap_get_requires_for_build_wheel(dir_):
     ppt = os.path.join(dir_abs, 'pyproject.toml')
     if os.path.exists(ppt):
         ret += get_pyproject_required(ppt)
+    log(f'{ret=}')
     if os.path.exists(os.path.join(dir_abs, 'setup.py')):
         sys.path.insert(0, dir_abs)
         try:

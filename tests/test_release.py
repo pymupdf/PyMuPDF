@@ -8,11 +8,12 @@ import sys
 g_root_abs = os.path.normpath(f'{__file__}/../../')
 
 sys.path.insert(0, g_root_abs)
+sys.path.insert(0, f'{g_root_abs}/src')
 try:
     import pipcl
     import setup
 finally:
-    del sys.path[0]
+    del sys.path[0:2]
 
 g_root = pipcl.relpath(g_root_abs)
 

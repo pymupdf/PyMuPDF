@@ -102,9 +102,7 @@ def test_pylint():
     
     root = os.path.abspath(f'{__file__}/../..')
     
-    sys.path.insert(0, root)
     import pipcl
-    del sys.path[0]
     
     # We want to run pylist on all of our src/*.py files so we find them with
     # `pipcl.git_items()`. However this seems to fail on github windows with
@@ -124,9 +122,11 @@ def test_pylint():
             'fitz___init__.py',
             'fitz_table.py',
             'fitz_utils.py',
+            'pipcl.py',
             'pymupdf.py',
             'table.py',
             'utils.py',
+            'wdev.py',
             ]
     leafs.sort()
     try:
@@ -139,6 +139,9 @@ def test_pylint():
         leafs_git.sort()
         assert  leafs_git == leafs, f'leafs:\n    {leafs!r}\nleafs_git:\n    {leafs_git!r}'
     for leaf in leafs:
+        if leaf == 'pipcl.py':
+            # Has various warnings but it's old code that we will eventually stop using.
+            continue
         command += f' {directory}/{leaf}'
     print(f'Running: {command}')
     subprocess.run(command, shell=1, check=1)
