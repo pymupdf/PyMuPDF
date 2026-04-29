@@ -569,7 +569,10 @@ def test_4423():
         
         assert not ee, f'Received unexpected exception: {e}'
         wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'format error: cannot find object in xref (56 0 R)\nformat error: cannot find object in xref (68 0 R)'
+        if pymupdf.mupdf_version_tuple >= (1, 28, 0):
+            assert wt == ''
+        else:
+            assert wt == 'format error: cannot find object in xref (56 0 R)\nformat error: cannot find object in xref (68 0 R)'
 
 
 def test_4445():
