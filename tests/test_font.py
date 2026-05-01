@@ -68,7 +68,10 @@ def test_2608():
             f.write(text.encode('utf8'))
         path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_2608_expected')
         path_expected_1_26 = os.path.normpath(f'{__file__}/../../tests/resources/test_2608_expected_1.26')
-        if pymupdf.mupdf_version_tuple >= (1, 27):
+        path_expected_1_28 = os.path.normpath(f'{__file__}/../../tests/resources/test_2608_expected_1.28')
+        if pymupdf.mupdf_version_tuple >= (1, 28):
+            path_expected2 = path_expected_1_28
+        elif pymupdf.mupdf_version_tuple >= (1, 27):
             path_expected2 = path_expected
         else:
             path_expected2 = path_expected_1_26
