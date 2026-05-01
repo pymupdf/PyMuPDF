@@ -434,7 +434,12 @@ def test_4026():
         blocks = page.get_text('blocks')
         for i, block in enumerate(blocks):
             print(f'block {i}: {block}')
-        assert len(blocks) == 5
+        if pymupdf.mupdf_version_tuple >= (1, 28):
+            # 2026-05-01: Expect slightly better splitting of text into
+            # paragraphs.
+            assert len(blocks) == 8
+        else:
+            assert len(blocks) == 5
 
 def test_3725():
     # This currently just shows the extracted text. We don't check it is as expected.
