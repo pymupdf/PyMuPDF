@@ -1,0 +1,12 @@
+The XRT summed image is shown in Figure 5. At the edge
+of the field-of-view, we detect a source spatially coincident with
+the Wolf 1561 star. As we consider this source unrelated to the
+FRB, we use the online Swift-XRT data products generator (Evans
+et al. 2007) (Evans et al. 2009) to derive upper limits in the 0.3-
+10 keV range on the count rate of 0.001885 counts.s−1. Using
+WebPIMMS9 (v4.11a) and assuming a weighted average 𝑁H = 5.12×
+1020 cm−2 from the direction of the source estimated from the
+NASA’s HEASARC 10 online tools (HI4PI Collaboration et al.
+2016) and a power law model with a photon index = 2, this upper
+limit translates to an energy flux of 6.6 × 10−14 erg cm−2 s−1 (8.3 ×
+10−14 erg cm−2 s−1 unabsorbed).
