@@ -79,8 +79,11 @@ def test_3842():
         return
         
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3842.pdf')
-    path_text = os.path.normpath(f'{__file__}/../../tests/resources/test_3842_partial.txt')
-    text_expected = pathlib.Path(path_text).read_text()
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        path_text_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3842_expected_1.28.txt')
+    else:
+        path_text_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3842_partial.txt')
+    text_expected = pathlib.Path(path_text_expected).read_text()
     with pymupdf.open(path) as document:
         page = document[6]
         try:
@@ -95,6 +98,8 @@ def test_3842():
                 assert 0, f'Unexpected exception text: {str(e)=}'
         else:
             text = page.get_text(textpage=partial_tp)
+            with open(os.path.normpath(f'{__file__}/../../tests/resources/test_3842_out'), 'w') as f:
+                f.write(text)
             print()
             print(text)
             print(f'text:\n{text!r}')
