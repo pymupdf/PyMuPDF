@@ -356,8 +356,10 @@ def test_3594():
     wt = pymupdf.TOOLS.mupdf_warnings()
     if pymupdf.mupdf_version_tuple < (1, 26, 8):
         assert not wt
-    else:
+    elif pymupdf.mupdf_version_tuple < (1, 28):
         assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 2 times...'
+    else:
+        assert wt == 'ActualText with no position. Text may be lost or mispositioned.\n... repeated 2 times...'
 
 
 def test_3687():
@@ -905,7 +907,10 @@ def test_4546():
     wt = pymupdf.TOOLS.mupdf_warnings()
     if pymupdf.mupdf_version_tuple >= (1, 26, 8):
         assert text == expected_mupdf_1_27_0
-        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
+        if pymupdf.mupdf_version_tuple >= (1, 28):
+            assert wt == 'ActualText with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
+        else:
+            assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
     elif pymupdf.mupdf_version_tuple >= (1, 26, 1):
         assert text == expected_mupdf_1_26_1
         assert not wt
