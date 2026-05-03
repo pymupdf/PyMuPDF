@@ -49,6 +49,9 @@ def threadfn(queue_to_threads, queue_from_threads):
 def test_threads_stress():
 
     print()
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_threads_stress(): not running on Pyodide - cannot create threads.')
+        return
     paths = [
             os.path.normpath(f'{__file__}/../../tests/resources/test_3594.pdf'),
             os.path.normpath(f'{__file__}/../../tests/resources/test_3789.pdf'),
