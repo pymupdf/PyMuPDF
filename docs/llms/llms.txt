@@ -1,0 +1,77 @@
+# PyMuPDF
+
+> PyMuPDF is a high-performance Python library for data extraction, analysis, conversion and manipulation of PDF (and other) documents. It includes PyMuPDF4LLM, a companion package specifically designed for LLM and RAG pipelines that converts documents into structured Markdown, JSON, and plain text.
+
+PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It is built on top of MuPDF, a lightweight PDF and XPS viewer.
+
+## Docs
+
+- [Home](https://pymupdf.readthedocs.io/en/latest/): Welcome page and full table of contents
+- [Installation](https://pymupdf.readthedocs.io/en/latest/installation.html): How to install PyMuPDF via pip
+- [The Basics](https://pymupdf.readthedocs.io/en/latest/the-basics.html): Quick start examples for common tasks
+- [Tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html): Step-by-step introduction
+- [PyMuPDF, LLM & RAG](https://pymupdf.readthedocs.io/en/latest/rag.html): Using PyMuPDF for LLM and RAG pipelines
+- [Resources](https://pymupdf.readthedocs.io/en/latest/resources.html): Blog posts, examples and tutorials
+- [FAQ](https://pymupdf.readthedocs.io/en/latest/faq/index.html): Frequently asked questions
+- [Features Comparison](https://pymupdf.readthedocs.io/en/latest/about.html): Feature matrix vs other tools
+
+## PyMuPDF4LLM
+
+- [PyMuPDF4LLM Overview](https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/index.html): Introduction, features, installation and output format overview
+- [PyMuPDF4LLM API](https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/api.html): Full API reference for `to_markdown()`, `LlamaMarkdownReader`, and `use_layout()`
+
+## How-to Guides
+
+- [Opening Files](https://pymupdf.readthedocs.io/en/latest/how-to-open-a-file.html): Supported file types, opening local/remote/Django files
+- [Converting Files](https://pymupdf.readthedocs.io/en/latest/converting-files.html): Convert to/from PDF, SVG, Markdown, DOCX
+- [OCR](https://pymupdf.readthedocs.io/en/latest/recipes-ocr.html): Optical character recognition on images and pages
+- [Text](https://pymupdf.readthedocs.io/en/latest/recipes-text.html): Extract, search, insert and mark text
+- [Images](https://pymupdf.readthedocs.io/en/latest/recipes-images.html): Extract, insert and manipulate images
+- [Annotations](https://pymupdf.readthedocs.io/en/latest/recipes-annotations.html): Add and modify PDF annotations
+- [Drawing and Graphics](https://pymupdf.readthedocs.io/en/latest/recipes-drawing-and-graphics.html): Extract and draw vector graphics
+- [Stories](https://pymupdf.readthedocs.io/en/latest/recipes-stories.html): HTML/CSS-based PDF generation
+- [Journalling](https://pymupdf.readthedocs.io/en/latest/recipes-journalling.html): Undo/redo support for PDF edits
+- [Multiprocessing](https://pymupdf.readthedocs.io/en/latest/recipes-multiprocessing.html): Using PyMuPDF with Python multiprocessing
+- [Optional Content](https://pymupdf.readthedocs.io/en/latest/recipes-optional-content.html): PDF layers / optional content groups
+- [Low-Level Interfaces](https://pymupdf.readthedocs.io/en/latest/recipes-low-level-interfaces.html): xref table, object streams, XML metadata
+- [Common Issues](https://pymupdf.readthedocs.io/en/latest/recipes-common-issues-and-their-solutions.html): Corrupt PDFs, missing text, annotation quirks
+
+## API Reference
+
+- [Document](https://pymupdf.readthedocs.io/en/latest/document.html): Core class for opening and manipulating documents
+- [Page](https://pymupdf.readthedocs.io/en/latest/page.html): Represents a single document page
+- [Pixmap](https://pymupdf.readthedocs.io/en/latest/pixmap.html): Raster image representation
+- [Annot](https://pymupdf.readthedocs.io/en/latest/annot.html): PDF annotation class
+- [Rect / IRect](https://pymupdf.readthedocs.io/en/latest/rect.html): Rectangle geometry
+- [Point](https://pymupdf.readthedocs.io/en/latest/point.html): Point geometry
+- [Matrix](https://pymupdf.readthedocs.io/en/latest/matrix.html): Transformation matrix
+- [Font](https://pymupdf.readthedocs.io/en/latest/font.html): Font handling
+- [TextPage](https://pymupdf.readthedocs.io/en/latest/textpage.html): Low-level text extraction
+- [TextWriter](https://pymupdf.readthedocs.io/en/latest/textwriter.html): Write text to pages
+- [Shape](https://pymupdf.readthedocs.io/en/latest/shape.html): Draw shapes on pages
+- [Story](https://pymupdf.readthedocs.io/en/latest/story-class.html): HTML-based document generation
+- [Widget](https://pymupdf.readthedocs.io/en/latest/widget.html): PDF form fields
+- [Archive](https://pymupdf.readthedocs.io/en/latest/archive-class.html): Access to archive files (zip, tar, etc.)
+- [DisplayList](https://pymupdf.readthedocs.io/en/latest/displaylist.html): Cached page rendering
+- [DocumentWriter](https://pymupdf.readthedocs.io/en/latest/document-writer-class.html): Output document writer
+- [Colorspace](https://pymupdf.readthedocs.io/en/latest/colorspace.html): Color space definitions
+- [Outline](https://pymupdf.readthedocs.io/en/latest/outline.html): Table of contents / bookmarks
+- [Link / linkDest](https://pymupdf.readthedocs.io/en/latest/link.html): Hyperlinks and link destinations
+- [Quad](https://pymupdf.readthedocs.io/en/latest/quad.html): Quadrilateral geometry
+- [Tools](https://pymupdf.readthedocs.io/en/latest/tools.html): Global configuration and utility functions
+- [Xml](https://pymupdf.readthedocs.io/en/latest/xml-class.html): XML node for Story content
+- [Functions](https://pymupdf.readthedocs.io/en/latest/functions.html): Standalone utility functions
+- [Constants and Enumerations](https://pymupdf.readthedocs.io/en/latest/vars.html): All named constants
+- [Operator Algebra](https://pymupdf.readthedocs.io/en/latest/algebra.html): Geometry object operations
+- [Command Line Interface](https://pymupdf.readthedocs.io/en/latest/module.html): CLI usage via `python -m pymupdf`
+- [Glossary](https://pymupdf.readthedocs.io/en/latest/glossary.html): Key terms and definitions
+- [Color Database](https://pymupdf.readthedocs.io/en/latest/colors.html): Named color reference
+
+## Other
+
+- [Appendix 1: Text Extraction Details](https://pymupdf.readthedocs.io/en/latest/app1.html)
+- [Appendix 2: Embedded Files](https://pymupdf.readthedocs.io/en/latest/app2.html)
+- [Appendix 3: Technical Information](https://pymupdf.readthedocs.io/en/latest/app3.html)
+- [Appendix 4: Performance Methodology](https://pymupdf.readthedocs.io/en/latest/app4.html)
+- [Change Log](https://pymupdf.readthedocs.io/en/latest/changes.html)
+- [Deprecated Names](https://pymupdf.readthedocs.io/en/latest/znames.html)
