@@ -1,0 +1,699 @@
+# PyMuPDF
+
+> PyMuPDF is a high-performance Python library for data extraction, analysis, conversion and manipulation of PDF (and other) documents. It includes PyMuPDF4LLM, a companion package specifically designed for LLM and RAG pipelines.
+
+PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It wraps MuPDF, a lightweight PDF/XPS/eBook viewer and toolkit.
+
+---
+
+## Installation
+
+```
+pip install pymupdf
+pip install pymupdf4llm   # for LLM/RAG features
+```
+
+Import as:
+
+```python
+import pymupdf
+import pymupdf4llm
+```
+
+---
+
+## The Basics
+
+### Opening a File
+
+```python
+import pymupdf
+doc = pymupdf.open("a.pdf")  # open a document
+```
+
+`pymupdf.open(...)` is an alias for `pymupdf.Document(...)`.
+
+Supported file types include: PDF, XPS, EPUB, MOBI, FB2, CBZ, SVG, TXT, and image formats (PNG, JPEG, BMP, GIF, TIFF, etc.). PyMuPDF Pro adds support for Office formats (DOCX, XLSX, PPTX, HWP, etc.).
+
+### Extract Text from a PDF
+
+```python
+import pymupdf
+doc = pymupdf.open("a.pdf")
+out = open("output.txt", "wb")
+for page in doc:
+    text = page.get_text().encode("utf8")
+    out.write(text)
+    out.write(bytes((12,)))  # page delimiter (form feed)
+out.close()
+```
+
+For image-based text, use OCR:
+
+```python
+tp = page.get_textpage_ocr()
+text = page.get_text(textpage=tp)
+```
+
+### Extract Images from a PDF
+
+```python
+import pymupdf
+doc = pymupdf.open("test.pdf")
+for page_index in range(len(doc)):
+    page = doc[page_index]
+    image_list = page.get_images()
+    for image_index, img in enumerate(image_list, start=1):
+        xref = img[0]
+        pix = pymupdf.Pixmap(doc, xref)
+        if pix.n - pix.alpha > 3:  # CMYK: convert to RGB
+            pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
+        pix.save(f"page_{page_index}-image_{image_index}.png")
+```
+
+### Merge PDF Files
+
+```python
+import pymupdf
+doc_a = pymupdf.open("a.pdf")
+doc_b = pymupdf.open("b.pdf")
+doc_a.insert_pdf(doc_b)
+doc_a.save("a+b.pdf")
+```
+
+### Render a Page to an Image
+
+```python
+import pymupdf
+doc = pymupdf.open("a.pdf")
+page = doc[0]
+pix = page.get_pixmap(dpi=150)
+pix.save("page-0.png")
+```
+
+---
+
+## PyMuPDF4LLM
+
+PyMuPDF4LLM is a lightweight extension for PyMuPDF that converts documents into structured Markdown, JSON, and plain text optimised for RAG pipelines, vector embeddings, and LLM ingestion. It handles multi-column layouts, tables, images, headers, and scanned pages with automatic OCR — all powered by the MuPDF C engine.
+
+### Key Features
+
+- One import, three output formats — Markdown, JSON, and plain text out of the box
+- No GPU, no cloud — runs on any machine that can run Python
+- Layout-aware — multi-column pages, reading-order reconstruction, table detection
+- Smart OCR — automatically OCRs only regions that need it, skipping clean text
+- Framework integrations — drop-in support for LlamaIndex and LangChain
+- Page chunking — chunk output by page with full metadata per chunk, ready for vector stores
+- Office document support — works with PyMuPDF Pro for DOCX, XLSX, PPTX, etc.
+
+### Installation
+
+```
+pip install pymupdf4llm
+```
+
+Tesseract must be installed separately if OCR is needed.
+
+### Basic Usage
+
+```python
+import pymupdf4llm
+
+# Convert entire document to a single Markdown string
+md_text = pymupdf4llm.to_markdown("input.pdf")
+
+# Save to file
+import pathlib
+pathlib.Path("output.md").write_bytes(md_text.encode())
+```
+
+### Extracting Specific Pages
+
+```python
+import pymupdf4llm
+
+# Only extract pages 0, 1, and 5 (0-based)
+md = pymupdf4llm.to_markdown("document.pdf", pages=[0, 1, 5])
+```
+
+### Page Chunks (per-page output with metadata)
+
+When `page_chunks=True`, the output is a list of dictionaries — one per page — instead of a single string. Each dictionary contains:
+
+- `"text"` — page content as Markdown
+- `"metadata"` — document metadata enriched with `file_path`, `page_count`, and `page_number` (1-based)
+- `"toc_items"` — list of TOC entries pointing to that page, as `[level, title, page_number]`
+- `"tables"` — list of detected tables with bbox, row count, and column count
+- `"images"` — list of images on the page (from `Page.get_image_info()`)
+- `"graphics"` — list of vector graphics bounding boxes
+- `"words"` — list of words in reading order (if `extract_words=True`)
+- `"page_boxes"` — layout boundary boxes with class, bbox and text position
+
+```python
+import pymupdf4llm
+
+chunks = pymupdf4llm.to_markdown("input.pdf", page_chunks=True)
+
+for chunk in chunks:
+    print(chunk["metadata"]["page_number"])
+    print(chunk["text"])
+    print(chunk["toc_items"])
+    print(chunk["tables"])
+```
+
+### Extracting Images
+
+Images can be written to disk or embedded as base64 in the Markdown output:
+
+```python
+import pymupdf4llm
+
+# Write images to disk
+md = pymupdf4llm.to_markdown(
+    "document.pdf",
+    write_images=True,
+    image_path="./images",   # directory to save images
+    image_format="png",      # or "jpg", etc.
+    dpi=150,                 # image resolution
+)
+
+# Embed images as base64 directly in the Markdown
+md = pymupdf4llm.to_markdown(
+    "document.pdf",
+    embed_images=True,       # mutually exclusive with write_images
+)
+```
+
+### OCR Support
+
+PyMuPDF4LLM applies OCR selectively — only where it is genuinely needed. Before processing each page it analyses the content and decides whether OCR should be triggered. The four conditions that trigger OCR are:
+
+1. No text at all — the page is image-covered with no selectable content
+2. Garbled text — the page has a text layer but too many characters are unreadable
+3. Presence of images containing text
+4. Presence of a previous (possibly outdated) OCR text layer
+
+This hybrid approach typically reduces OCR processing time by around 50% compared to full-document OCR, and avoids degrading already-clean text.
+
+```python
+import pymupdf4llm
+
+# OCR triggered automatically wherever needed (default)
+md = pymupdf4llm.to_markdown("scanned-document.pdf")
+
+# Force OCR on every page regardless of content
+md = pymupdf4llm.to_markdown("document.pdf", force_ocr=True)
+
+# Specify OCR language (Tesseract language codes)
+md = pymupdf4llm.to_markdown("document.pdf", ocr_language="eng+deu")
+
+# Set OCR resolution (default 300 dpi)
+md = pymupdf4llm.to_markdown("document.pdf", ocr_dpi=200)
+
+# Provide a custom OCR function
+md = pymupdf4llm.to_markdown("document.pdf", ocr_function=my_ocr_fn)
+```
+
+### Header Detection
+
+By default, PyMuPDF4LLM scans the full document to identify the most popular font sizes and derives heading levels (`#`, `##`, etc.) from them. This can be customised:
+
+```python
+import pymupdf4llm
+
+# Disable header detection entirely
+md = pymupdf4llm.to_markdown("doc.pdf", hdr_info=False)
+
+# Custom header detection function
+def my_headers(span, page=None):
+    if span["size"] > 20:
+        return "# "
+    if span["size"] > 16:
+        return "## "
+    return ""
+
+md = pymupdf4llm.to_markdown("doc.pdf", hdr_info=my_headers)
+```
+
+### Controlling Content Inclusion
+
+```python
+import pymupdf4llm
+
+md = pymupdf4llm.to_markdown(
+    "document.pdf",
+    ignore_images=True,       # skip images (speeds up processing)
+    ignore_graphics=True,     # skip vector graphics (also disables table detection)
+    ignore_code=True,         # don't format monospaced text as code blocks
+    header=False,             # exclude page header regions
+    footer=False,             # exclude page footer regions
+    margins=72,               # ignore content within 72pt of page edges
+                              # or use [left, top, right, bottom]
+    fontsize_limit=5,         # ignore text smaller than 5pt
+    image_size_limit=0.1,     # ignore images smaller than 10% of page dimensions
+    graphics_limit=500,       # ignore vector graphics if count exceeds this
+    page_separators=True,     # insert "--- end of page=n ---" between pages
+)
+```
+
+### Word Extraction in Reading Order
+
+```python
+import pymupdf4llm
+
+chunks = pymupdf4llm.to_markdown(
+    "document.pdf",
+    page_chunks=True,
+    extract_words=True,  # adds "words" key to each chunk
+)
+
+# Each word: (x0, y0, x1, y1, "wordstring", block_no, line_no, word_no)
+for chunk in chunks:
+    for word in chunk["words"]:
+        print(word[4])  # the word string
+```
+
+### LlamaIndex Integration
+
+```python
+import pymupdf4llm
+
+# Option A — LlamaMarkdownReader (returns LlamaIndex Document objects)
+reader = pymupdf4llm.LlamaMarkdownReader()
+docs = reader.load_data("document.pdf")
+
+for doc in docs:
+    print(doc.text)       # Markdown text of the page
+    print(doc.metadata)   # page metadata
+
+# Option B — PyMuPDFReader from llama_index
+from llama_index.readers.file import PyMuPDFReader
+loader = PyMuPDFReader()
+documents = loader.load(file_path="example.pdf")
+```
+
+### LangChain Integration
+
+```python
+# Option A — PyMuPDFLoader (built into LangChain)
+from langchain_community.document_loaders import PyMuPDFLoader
+
+loader = PyMuPDFLoader("example.pdf")
+data = loader.load()
+
+# Option B — to_markdown + MarkdownTextSplitter
+import pymupdf4llm
+from langchain.text_splitter import MarkdownTextSplitter
+
+md_text = pymupdf4llm.to_markdown("input.pdf")
+splitter = MarkdownTextSplitter(chunk_size=500, chunk_overlap=50)
+chunks = splitter.create_documents([md_text])
+```
+
+### Office Document Support (PyMuPDF Pro)
+
+```python
+import pymupdf4llm
+import pymupdf.pro
+
+pymupdf.pro.unlock()
+
+# Now supports DOCX, XLSX, PPTX, DOC, HWP, etc.
+md = pymupdf4llm.to_markdown("report.docx")
+md = pymupdf4llm.to_markdown("spreadsheet.xlsx")
+```
+
+### to_markdown() Full Parameter Reference
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `doc` | `Document` or `str` | required | File path or PyMuPDF Document |
+| `pages` | `list` or `None` | `None` | 0-based page numbers to process; `None` = all |
+| `page_chunks` | `bool` | `False` | Return list of per-page dicts instead of one string |
+| `write_images` | `bool` | `False` | Save images to disk; referenced in Markdown |
+| `embed_images` | `bool` | `False` | Embed images as base64 in Markdown |
+| `image_path` | `str` | `""` | Directory for saved images |
+| `image_format` | `str` | `"png"` | Image output format |
+| `dpi` | `int` | `150` | Resolution for saved/embedded images |
+| `extract_words` | `bool` | `False` | Add words list in reading order to page chunks |
+| `page_separators` | `bool` | `False` | Insert separator string between pages |
+| `header` | `bool` | `True` | Include page header content |
+| `footer` | `bool` | `True` | Include page footer content |
+| `hdr_info` | callable or `False` | `None` | Custom header detection; `False` to disable |
+| `ignore_images` | `bool` | `False` | Skip images entirely |
+| `ignore_graphics` | `bool` | `False` | Skip vector graphics (also disables table detection) |
+| `ignore_code` | `bool` | `False` | Don't format monospaced text as code blocks |
+| `ignore_alpha` | `bool` | `False` | Include transparent text if `True` |
+| `margins` | `float` or `list` | `0` | Page border margins; content outside ignored |
+| `fontsize_limit` | `float` | `3` | Minimum font size to include |
+| `image_size_limit` | `float` | `0.05` | Minimum image size as fraction of page |
+| `graphics_limit` | `int` or `None` | `None` | Max vector graphics before skipping all |
+| `force_ocr` | `bool` | `False` | Force OCR on every page |
+| `use_ocr` | `bool` | `True` | Allow automatic OCR where needed |
+| `ocr_language` | `str` | `"eng"` | Tesseract language code(s), e.g. `"eng+deu"` |
+| `ocr_dpi` | `int` | `300` | Resolution for OCR intermediate images |
+| `ocr_function` | callable or `None` | `None` | Custom OCR function |
+| `force_text` | `bool` | `True` | Output text even when overlapping images |
+| `table_strategy` | `str` | `"lines_strict"` | Table detection strategy |
+| `show_progress` | `bool` | `False` | Print progress to stdout |
+| `page_width` | `float` | `612` | Assumed page width for reflowable docs |
+| `page_height` | `float` or `None` | `None` | Assumed page height; `None` = one long page |
+| `detect_bg_color` | `bool` | `True` | Ignore text/vectors matching background colour |
+| `use_glyphs` | `bool` | `False` | Use glyph-level extraction |
+| `filename` | `str` or `None` | `None` | Override filename for image naming |
+
+---
+
+## Document Class
+
+`pymupdf.Document` (alias `pymupdf.open`) is the main class for working with documents.
+
+### Key Methods
+
+| Method | Description |
+|--------|-------------|
+| `Document.load_page(n)` | Load page n (also via `doc[n]`) |
+| `Document.get_toc()` | Get table of contents as list |
+| `Document.set_toc(toc)` | Set table of contents |
+| `Document.get_page_text(n)` | Extract text from page n |
+| `Document.get_page_pixmap(n)` | Render page n to Pixmap |
+| `Document.get_page_images(n)` | List images on page n |
+| `Document.get_page_fonts(n)` | List fonts on page n |
+| `Document.insert_page(n)` | Insert a new blank page at position n |
+| `Document.insert_pdf(doc2)` | Insert pages from another PDF |
+| `Document.insert_file(file)` | Insert pages from any supported file |
+| `Document.delete_page(n)` | Delete page n |
+| `Document.delete_pages(from_page, to_page)` | Delete a range of pages |
+| `Document.copy_page(from, to)` | Copy a page reference |
+| `Document.fullcopy_page(from, to)` | Duplicate a page fully |
+| `Document.move_page(from, to)` | Move a page |
+| `Document.select(list)` | Keep only pages in the given list |
+| `Document.save(filename)` | Save the document |
+| `Document.save(filename, incremental=True)` | Incremental save (PDF only) |
+| `Document.close()` | Close the document |
+| `Document.convert_to_pdf()` | Convert to PDF bytes in memory |
+| `Document.authenticate(password)` | Unlock an encrypted document |
+| `Document.metadata` | Dict with title, author, etc. |
+| `Document.page_count` | Total number of pages |
+| `Document.is_pdf` | True if document is PDF |
+| `Document.needs_pass` | True if document is password-protected |
+| `Document.get_xml_metadata()` | Get XMP metadata string |
+| `Document.set_xml_metadata(xml)` | Set XMP metadata |
+| `Document.embfile_add(name, data)` | Add embedded file |
+| `Document.embfile_get(name)` | Extract embedded file |
+| `Document.embfile_names()` | List embedded file names |
+| `Document.get_ocgs()` | Get optional content groups (PDF layers) |
+| `Document.bake()` | Make annotations permanent |
+| `Document.journal_enable()` | Enable journalling (undo/redo) |
+
+### Key Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `doc.page_count` | Number of pages |
+| `doc.metadata` | Document metadata dictionary |
+| `doc.name` | Filename |
+| `doc.is_pdf` | Whether document is a PDF |
+| `doc.is_closed` | Whether document is closed |
+| `doc.chapter_count` | Number of chapters (EPUB) |
+| `doc.outline` | First item of the outline / TOC |
+| `doc.permissions` | Document permissions bitmask |
+
+---
+
+## Page Class
+
+`Page` objects are obtained via `doc.load_page(n)` or `doc[n]`. Pages cannot be constructed directly.
+
+### Key Methods
+
+| Method | Description |
+|--------|-------------|
+| `page.get_text(option)` | Extract text; options: "text", "blocks", "words", "html", "dict", "json", "rawdict", "xml", "xhtml" |
+| `page.get_images()` | List of images on the page |
+| `page.get_drawings()` | List of vector drawing paths |
+| `page.get_links()` | List of hyperlinks |
+| `page.get_annots()` | Iterator of annotations |
+| `page.get_pixmap()` | Render page to Pixmap |
+| `page.get_pixmap(dpi=150)` | Render at specific DPI |
+| `page.get_textpage()` | Get low-level TextPage object |
+| `page.get_textpage_ocr()` | Get TextPage using OCR |
+| `page.search_for(text)` | Find text; returns list of Rects |
+| `page.insert_text(point, text)` | Insert plain text |
+| `page.insert_textbox(rect, text)` | Insert text into a box |
+| `page.insert_htmlbox(rect, html)` | Insert HTML-formatted text |
+| `page.insert_image(rect, filename)` | Insert image |
+| `page.draw_rect(rect)` | Draw a rectangle |
+| `page.draw_circle(center, radius)` | Draw a circle |
+| `page.draw_line(p1, p2)` | Draw a line |
+| `page.add_highlight_annot(quads)` | Add highlight annotation |
+| `page.add_underline_annot(quads)` | Add underline annotation |
+| `page.add_strikeout_annot(quads)` | Add strikeout annotation |
+| `page.add_rect_annot(rect)` | Add rectangle annotation |
+| `page.add_text_annot(point, text)` | Add sticky-note annotation |
+| `page.add_freetext_annot(rect, text)` | Add free text annotation |
+| `page.set_rotation(angle)` | Rotate the page |
+| `page.set_cropbox(rect)` | Set the crop box |
+| `page.find_tables()` | Detect and extract tables |
+| `page.cluster_drawings()` | Cluster vector graphics into groups |
+| `page.get_image_info()` | Info about all images on page |
+
+### Key Attributes
+
+| Attribute | Description |
+|-----------|-------------|
+| `page.rect` | Page rectangle (reflects rotation) |
+| `page.mediabox` | Media box |
+| `page.cropbox` | Crop box |
+| `page.rotation` | Page rotation in degrees |
+| `page.number` | Page number (0-based) |
+| `page.parent` | Parent Document |
+| `page.rotation_matrix` | Matrix for rotating coordinates |
+| `page.derotation_matrix` | Inverse rotation matrix |
+
+---
+
+## Text Extraction Formats
+
+`page.get_text()` accepts various output formats:
+
+| Option | Returns |
+|--------|---------|
+| `"text"` | Plain text string (default) |
+| `"blocks"` | List of text blocks with bbox |
+| `"words"` | List of words with bbox |
+| `"dict"` | Detailed dict with spans, lines, blocks |
+| `"rawdict"` | Like dict but with raw character data |
+| `"html"` | HTML string |
+| `"xhtml"` | XHTML string |
+| `"xml"` | XML string |
+| `"json"` | JSON string |
+
+Extract text from a specific area:
+
+```python
+rect = pymupdf.Rect(0, 0, 300, 100)
+text = page.get_text("text", clip=rect)
+```
+
+Extract tables:
+
+```python
+tabs = page.find_tables()
+for tab in tabs:
+    print(tab.extract())  # list of lists
+```
+
+---
+
+## Geometry Classes
+
+### Rect
+
+```python
+r = pymupdf.Rect(50, 50, 300, 200)
+r.width, r.height
+r.tl        # top-left Point
+r.br        # bottom-right Point
+r & other   # intersection
+r | other   # union
+r + point   # translate
+r.contains(point_or_rect)
+r.is_empty
+r.normalize()
+```
+
+### Point
+
+```python
+p = pymupdf.Point(100, 200)
+p.x, p.y
+p + other_point
+p * matrix
+p.distance_to(other_point)
+```
+
+### Matrix
+
+```python
+m = pymupdf.Matrix(1, 0, 0, 1, 0, 0)   # identity
+m = pymupdf.Matrix(2, 2)                 # scale x2
+m = pymupdf.Matrix(90)                   # rotate 90 degrees
+rect * matrix                            # transform a rect
+point * matrix                           # transform a point
+```
+
+---
+
+## Pixmap Class
+
+```python
+pix = page.get_pixmap()
+pix = page.get_pixmap(dpi=300)
+pix = page.get_pixmap(matrix=pymupdf.Matrix(2, 2))
+pix.save("output.png")
+pix.tobytes("png")
+pix.width, pix.height, pix.n
+pix.colorspace
+
+# Convert CMYK to RGB
+pix2 = pymupdf.Pixmap(pymupdf.csRGB, pix)
+
+# Numpy interop
+import numpy as np
+arr = np.frombuffer(pix.samples, dtype=np.uint8).reshape(pix.height, pix.width, pix.n)
+```
+
+---
+
+## Annotations
+
+```python
+page = doc[0]
+rects = page.search_for("important")
+for rect in rects:
+    page.add_highlight_annot(rect)
+
+page.add_text_annot(pymupdf.Point(100, 100), "My note")
+page.add_rect_annot(pymupdf.Rect(50, 50, 200, 100))
+
+for annot in page.get_annots():
+    print(annot.type, annot.rect)
+
+doc.save("annotated.pdf")
+```
+
+---
+
+## Drawing / Graphics
+
+```python
+page = doc.new_page()
+shape = page.new_shape()
+
+shape.draw_rect(pymupdf.Rect(50, 50, 200, 150))
+shape.finish(color=(1, 0, 0), fill=(1, 1, 0), width=2)
+
+shape.draw_circle(pymupdf.Point(100, 100), 30)
+shape.finish(color=(0, 0, 1))
+
+shape.commit()
+```
+
+---
+
+## Stories (HTML-to-PDF)
+
+```python
+import pymupdf
+
+html = "<h1>Hello</h1><p>This is a <b>story</b>.</p>"
+story = pymupdf.Story(html)
+
+writer = pymupdf.DocumentWriter("story.pdf")
+mediabox = pymupdf.Rect(0, 0, 595, 842)  # A4
+
+more = True
+while more:
+    device, rect = writer.begin_page(mediabox)
+    more, _ = story.place(rect)
+    story.draw(device)
+    writer.end_page()
+
+writer.close()
+```
+
+---
+
+## Journalling (Undo/Redo)
+
+```python
+doc = pymupdf.open("a.pdf")
+doc.journal_enable()
+doc.journal_start_op("add page")
+doc.insert_page(-1)
+doc.journal_stop_op()
+
+doc.journal_undo()
+doc.journal_redo()
+```
+
+---
+
+## Optional Content (Layers)
+
+```python
+ocgs = doc.get_ocgs()
+xref = doc.add_ocg("My Layer", on=True)
+page.insert_text(point, "Layered text", oc=xref)
+```
+
+---
+
+## Command Line Interface
+
+```
+python -m pymupdf <command> [options]
+```
+
+| Command | Description |
+|---------|-------------|
+| `clean` | Clean / repair a PDF |
+| `convert` | Convert a document to another format |
+| `extract` | Extract text, images, fonts |
+| `info` | Show document metadata |
+| `join` | Merge PDFs |
+| `pages` | Extract page range |
+| `rotate` | Rotate pages |
+
+---
+
+## Performance Notes
+
+- PyMuPDF is one of the fastest Python PDF libraries available.
+- Text extraction is significantly faster than pdfminer, pdfplumber and pypdf.
+- Rendering (Pixmap) is faster than pdf2image / poppler for most use cases.
+- PyMuPDF4LLM's selective OCR reduces OCR processing time by approximately 50% compared to full-document OCR.
+- See the [performance comparison](https://pymupdf.readthedocs.io/en/latest/about.html#performance) for benchmarks.
+
+---
+
+## License
+
+PyMuPDF is available under the GNU AGPL license for open source use. Commercial licenses are available via [pymupdf.io](https://pymupdf.io). PyMuPDF Pro (for Office format support) requires a commercial license.
+
+---
+
+## Links
+
+- Documentation: https://pymupdf.readthedocs.io/en/latest/
+- PyMuPDF4LLM Docs: https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/
+- PyMuPDF4LLM API: https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/api.html
+- GitHub: https://github.com/pymupdf/PyMuPDF
+- PyMuPDF4LLM GitHub: https://github.com/pymupdf/pymupdf4llm
+- PyPI (PyMuPDF): https://pypi.org/project/PyMuPDF/
+- PyPI (PyMuPDF4LLM): https://pypi.org/project/pymupdf4llm/
+- Discord: https://pymupdf.io/discord/pdf4llm
+- Forum: https://forum.mupdf.com
+- Commercial: https://pymupdf.io
