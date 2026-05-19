@@ -3010,7 +3010,7 @@ class Document:
                 if filetype:
                     suffix = filetype
                 else:
-                    suffix = pathlib.Path(filename).suffix
+                    suffix = pathlib.Path(filename).suffix.strip(".")
                 try:
                     fz_stream = mupdf.fz_open_file(filename)
                     doc = mupdf.fz_open_document_with_stream_and_dir(suffix, fz_stream, archive_parm)
@@ -19105,7 +19105,7 @@ def JM_copy_rectangle(page, area):
     return s
 
 
-def JM_convert_to_pdf(doc, fp, tp, rotate):
+def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
     '''
     Convert any MuPDF document to a PDF
     Returns bytes object containing the PDF, created via 'write' function.
@@ -19120,7 +19120,8 @@ def JM_convert_to_pdf(doc, fp, tp, rotate):
         e = fp      # ... range
     rot = JM_norm_rotation(rotate)
     i = fp
-    while 1:    # interpret & write document pages as PDF pages
+    internal_links = []  # collect PDF-wide internal links here
+    while 1:  # interpret & write document pages as PDF pages
         if not _INRANGE(i, s, e):
             break
         page = mupdf.fz_load_page(doc, i)
@@ -19131,11 +19132,49 @@ def JM_convert_to_pdf(doc, fp, tp, rotate):
         dev = None
         page_obj = mupdf.pdf_add_page(pdfout, mediabox, rot, resources, contents)
         mupdf.pdf_insert_page(pdfout, -1, page_obj)
+
+        # also copy links to the output PDF page
+        # get the PDF page we've just created
+        pdf_page = mupdf.pdf_load_page(pdfout, i)
+
+        # loop through source page links
+        link = mupdf.fz_load_links(page)  # load first link
+        while link.m_internal:  # break loop when link is None
+            uri = link.uri()  # URI string
+            rect = mupdf.FzRect(link.rect())  # link "from" rectangle
+            is_external = mupdf.fz_is_external_link(uri)
+
+            if is_external:  # external links can be copied directly
+                mupdf.pdf_create_link(pdf_page, rect, uri)
+            else:  # internal links done when PDF is complete
+                # find target of internal link
+                ret, xp, yp = mupdf.fz_resolve_link(doc, uri)
+                ilink={"page": i, "ret": ret, "from": rect, "h": rect.y1-rect.y0, "w": rect.x1-rect.x0, "xp": xp, "yp": yp}
+                internal_links.append(ilink)
+            link = link.next()
+        
         i += incr
+
     # PDF created - now write it to Python bytearray
+    # insert any internal links collected before:
+    for ilink in internal_links:
+        pdf_page = mupdf.pdf_load_page(pdfout, ilink["page"])
+        ret = ilink["ret"]
+        dest = mupdf.fz_link_dest()
+        dest.type = 7  # XYZ destination format
+        dest.loc.chapter = ret.chapter
+        dest.loc.page = ret.page
+        dest.h = ilink["h"]
+        dest.w = ilink["w"]
+        dest.x = ilink["xp"]
+        dest.y = ilink["yp"]
+        dest.zoom = 0
+        rect=ilink["from"]
+        uri = mupdf.pdf_new_uri_from_explicit_dest(mupdf.FzLinkDest(dest))
+        mupdf.pdf_create_link(pdf_page, rect, uri)
     # prepare write options structure
     opts = mupdf.PdfWriteOptions()
-    opts.do_garbage         = 4
+    opts.do_garbage         = 3
     opts.do_compress        = 1
     opts.do_compress_images = 1
     opts.do_compress_fonts  = 1
