@@ -2947,13 +2947,10 @@ class Document:
                 archive = Archive(archive.name)
             elif isinstance(archive, str):
                 archive = Archive(archive)
-            if archive and not isinstance(archive, Archive):
-                raise TypeError(f"bad archive: {type(archive)=}.")
-            if archive:
-                archive_parm = archive.this  # pass this to open
-            else:
+            elif not archive:
                 archive = Archive()
-                archive_parm = archive.this
+            elif not isinstance(archive, Archive):
+                raise TypeError(f"bad archive: {type(archive)=}.")
             if stream is not None:
                 if filename is not None and filetype is None:
                     # 2025-05-06: Use <filename> as the filetype. This is
@@ -2981,7 +2978,7 @@ class Document:
                     
                 fz_stream = mupdf.fz_open_memory(mupdf.python_buffer_data(stream), len(stream))
                 try:
-                    doc = mupdf.fz_open_document_with_stream_and_dir(filetype if filetype else '', fz_stream, archive_parm)
+                    doc = mupdf.fz_open_document_with_stream_and_dir(filetype if filetype else '', fz_stream, archive.this)
                 except Exception as e:
                     if g_exceptions_verbose > 1:    exception_info()
                     raise FileDataError('Failed to open stream') from e
@@ -3013,7 +3010,7 @@ class Document:
                     suffix = pathlib.Path(filename).suffix.strip(".")
                 try:
                     fz_stream = mupdf.fz_open_file(filename)
-                    doc = mupdf.fz_open_document_with_stream_and_dir(suffix, fz_stream, archive_parm)
+                    doc = mupdf.fz_open_document_with_stream_and_dir(suffix, fz_stream, archive.this)
                 except Exception as e:
                     if g_exceptions_verbose > 1:    exception_info()
                     raise FileDataError(f'Failed to open file {filename!r} as type {suffix}.') from e
