@@ -1518,7 +1518,7 @@ def test_open2():
         results = dict()
         
         for path in paths:
-            print(path)
+            print(f'{path=}')
             for ext in extensions:
                 path2 = f'{root}/foo{ext}'
                 path3 = shutil.copy2(f'{root}/{path}', path2)
@@ -1548,7 +1548,7 @@ def test_open2():
                     e = ee
                 wt = pymupdf.TOOLS.mupdf_warnings()
                 text = get_result(e, document)
-                print(f'    fz_open_document_with_stream(magic={ext!r}) => {text}')
+                print(f'    fz_open_document_with_stream() {path=} magic={ext!r}) => {text}')
                 dict_set_path(results, path, ext, 'stream', text)
                 
     finally:
@@ -1591,16 +1591,31 @@ def test_open2():
     with open(path_out, 'w') as f:
         json.dump(results, f, indent=4, sort_keys=1)
         
-    with open(os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')) as f:
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_open2_expected.json')
+    with open(path_expected) as f:
         results_expected = json.load(f)
     if results != results_expected:
         print(f'results != results_expected:')
-        def show(r, name):
-            text = json.dumps(r, indent=4, sort_keys=1)
-            print(f'{name}:')
-            print(textwrap.indent(text, '    '))
-        show(results_expected, 'results_expected')
-        show(results, 'results')
+        print(f'Expected: {path_expected}')
+        print(f'Actual: {path_out}')
+        if 0:
+            # Show entire json data. Very verbose.
+            def show(r, name):
+                text = json.dumps(r, indent=4, sort_keys=1)
+                print(f'{name}:')
+                print(textwrap.indent(text, '    '))
+            show(results_expected, 'results_expected')
+            show(results, 'results')
+        json_expected = json.dumps(results_expected, indent=4, sort_keys=1)
+        json_actual = json.dumps(results, indent=4, sort_keys=1)
+        import difflib
+        diff = difflib.unified_diff(
+                json_expected.split('\n'),
+                json_actual.split('\n'),
+                lineterm='',
+                )
+        print(f'Diff expected => actual:')
+        print(textwrap.indent('\n'.join(diff), '    '))
         assert 0
     
 
