@@ -1444,8 +1444,8 @@ def test_open():
     etype = pymupdf.FileDataError
     etype2 = 'FzErrorBase' if platform.system() == 'OpenBSD' else 'FzErrorUnsupported'
     etext = (
-            re.escape(f'mupdf.{etype2}: code=6: cannot find document handler for file: {path}'),
-            re.escape(f'pymupdf.FileDataError: Failed to open file {path!r}.'),
+            re.escape(f'mupdf.{etype2}: code=6: cannot find document handler for file type: \'pickle\''),
+            re.escape(f'pymupdf.FileDataError: Failed to open file {path!r} as type pickle.'),
             )
     check(path, exception=(etype, etext))
     
