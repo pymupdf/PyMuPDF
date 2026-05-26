@@ -72,6 +72,7 @@ This is implemented as new class TableHeader with the properties:
 
 """
 
+import os
 import inspect
 import itertools
 import string
@@ -82,12 +83,36 @@ from operator import itemgetter
 import weakref
 import pymupdf
 from pymupdf import mupdf
+import pathlib
 
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
 # -------------------------------------------------------------------
 
 # pylint: disable=no-name-in-module
+
+# Optionally use the TGIF table grid finder.
+# This replace fz_find_table_within_bounds.
+USE_TGIF = os.getenv("USE_TGIF", "0")
+if USE_TGIF == "1":
+    print("Using TGIFVx for table grid extraction.")
+    import pymupdf.tgif
+elif USE_TGIF == "4":
+    print("Using TGEV4 for table grid extraction.")
+    import numpy as np
+    from pymupdf.TableGridExtractorV4 import TableGridExtractorV4
+
+    EXTRACTOR_V4 = TableGridExtractorV4(
+        grid_onnx_path=str(pathlib.Path(__file__).parent / "table_grid_model_v4.onnx"),
+        # conn_onnx_path=None,
+        # h_on_threshold=args.h_on_threshold,
+        # v_on_threshold=args.v_on_threshold,
+        # conn_threshold=args.conn_threshold,
+        # nms_min_dist=args.nms_min_dist,
+        # filter_empty_lines=not args.no_filter_empty,
+    )
+else:
+    print("Using legacy table grid extraction.")
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
@@ -161,9 +186,63 @@ def get_table_dict_from_rect(textpage, rect):
     return table_dict
 
 
-def make_table_from_bbox(textpage, word_rects, rect):
+def get_table_cells_from_rect_tgif1(page, word_rects, rect):
+    cells = []
+    bound = mupdf.FzRect(*rect)
+
+    try:
+        r, xpos, ypos = pymupdf.tgif.fz_visual_table_grid_finder(page, bound)
+        x_count = int(xpos.m_internal.len)
+        x_values = [xpos.list(i).pos for i in range(x_count)]
+        y_count = int(ypos.m_internal.len)
+        y_values = [ypos.list(i).pos for i in range(y_count)]
+        if xpos.m_internal.max_uncertainty > 0 or ypos.m_internal.max_uncertainty > 0:
+            print(f"{page.number=}: grid with uncertainty for {bound=}")
+    except:
+        return cells
+    for i in range(y_count - 1):
+        for j in range(x_count - 1):
+            cell = (x_values[j], y_values[i], x_values[j + 1], y_values[i + 1])
+            cells.append(cell)
+    return cells
+
+
+def get_table_cells_from_rect_tgif4(page, word_rects, rect):
+    """Use TableGridExtractorV4 to detect table structure."""
+    pix = page.get_pixmap(clip=rect)  # make Pixmap from passed-in rect
+
+    # make transformation matrix from pixmap to rect coordinates
+    pclip = pymupdf.IRect(pix.irect)
+    matrix = pclip.torect(rect)  # in case we want to change resolution
+
+    pred = EXTRACTOR_V4.predict_grid(pix)  # call GRID extractor
+
+    h_lines = [pclip.y0, pclip.y1]  # include top and bottom of the rect
+    # add predicted h lines
+    h_lines.extend(y + pclip.y0 for y in pred.h_lines)
+    h_lines = sorted(h_lines)
+
+    v_lines = [pclip.x0, pclip.x1]  # include left and right of the rect
+    # add predicted v lines
+    v_lines.extend(x + pclip.x0 for x in pred.v_lines)
+    v_lines = sorted(v_lines)
+
+    # we now have the horizontal and vertical lines and make the cells
+    cells = []
+    for i in range(len(h_lines) - 1):
+        for j in range(len(v_lines) - 1):
+            cell = pymupdf.Rect(v_lines[j], h_lines[i], v_lines[j + 1], h_lines[i + 1])
+            cells.append(cell * matrix)
+    return cells
+
+
+def make_table_from_bbox(page, textpage, word_rects, rect):
     """Detect table structure within a given rectangle."""
     cells = []  # table cells as (x0,y0,x1,y1) tuples
+    if USE_TGIF == "1":
+        return get_table_cells_from_rect_tgif1(page, word_rects, rect)
+    elif USE_TGIF == "4":
+        return get_table_cells_from_rect_tgif4(page, word_rects, rect)
 
     # calls fz_find_table_within_bounds
     block = get_table_dict_from_rect(textpage, rect)
@@ -2715,7 +2794,9 @@ def find_tables(
             word_rects = [pymupdf.Rect(w[:4]) for w in TEXTPAGE.extractWORDS()]
             tp2 = page.get_textpage(flags=TABLE_DETECTOR_FLAGS)
         for rect in my_boxes:
-            cells = make_table_from_bbox(tp2, word_rects, rect)  # pylint: disable=E0606
+            cells = make_table_from_bbox(
+                page, tp2, word_rects, rect
+            )  # pylint: disable=E0606
             tbf.tables.append(Table(page, cells))
     except Exception as e:
         pymupdf.message("find_tables: exception occurred: %s" % str(e))
