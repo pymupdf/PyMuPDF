@@ -5767,6 +5767,23 @@ class Document:
         self._reset_page_refs()
         self.init_doc()
 
+    def apply_css(self, css: str, append: bool = True):
+        """Apply CSS to a reflowable document.
+
+        If 'append' evaluates to True, the CSS will be appended to
+        the default CSS of this document type.
+        Otherwise the default CSS will be ignored.
+        """
+        if self.is_closed or self.is_encrypted:
+            raise ValueError("document closed or encrypted")
+        doc = self.this
+        if not mupdf.fz_is_document_reflowable(doc):
+            return
+        if not isinstance(css, str) or not css:
+            return
+        append = int(bool(append))  # ensure integer
+        mupdf.fz_style_document(doc, append, css)
+
     def load_page(self, page_id):
         """Load a page.
 
