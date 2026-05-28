@@ -152,6 +152,8 @@ The PyMuPDF4LLM API
                 "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
             }
 
+          See: :ref:`box classes <pymupdf4llm-api-boxclasses>`
+
     :arg float page_height: specify a desired page height. For relevance see the `page_width` parameter. If using the default `None`, the document will appear as one large page with a width of `page_width`. Consequently in this case, no markdown page separators will occur (except the final one), respectively only one page chunk will be returned.
 
     :arg bool page_separators: if ``True`` inserts a string ``--- end of page=n ---`` at the end of each page output. Intended for debugging purposes. The page number is 0-based. The separator string is wrapped with line breaks. Default is ``False``.
@@ -220,11 +222,13 @@ The PyMuPDF4LLM API
                 "bbox": [x0, y0, x1, y1],  # boundary box coordinates
                 "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
             }
+          
+          See: :ref:`box classes <pymupdf4llm-api-boxclasses>`
 
 
 .. method:: to_json(doc: pymupdf.Document | str, *, **kwargs) -> str
 
-    Parses the document and the specified pages and converts the result into a |JSON|-formatted string.
+    Parses the document and the specified pages and converts the result into a `JSON formatted string <https://docs.pdf4llm.com/python/reference/JSON-schema>`_.
 
     :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
 
@@ -246,9 +250,40 @@ The PyMuPDF4LLM API
 
     :arg bool embed_images: store image binaries for "picture" boundary boxes. Base64-encoded images are included in the JSON output. Ignores `image_path` if used. This may drastically increase the size of your JSON text.
 
-    :arg bool write_images: store image files "picture" boundary boxes.when encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
+    :arg bool write_images: store image files "picture" boundary boxes. When encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
 
     :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
+
+    :rtype: str
+
+    See `JSON Schema <https://docs.pdf4llm.com/python/reference/JSON-schema>`_ for the structure of the output JSON string.
+
+
+.. _pymupdf4llm-api-boxclasses:
+
+.. note::
+
+    **About box classes**
+
+    If `page_chunks = True` the return objects for `to_markdown` & `to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
+
+    The return object for `to_json` contains a similar key called ``boxclass``.
+
+    The possible string values are for this ``class`` / ``boxclass`` key are:
+
+    .. code-block:: bash
+
+        text
+        picture
+        table
+        caption
+        title
+        section-header
+        page-header
+        page-footer
+        list-item
+        footnote
+        formula
 
 
 .. _pymupdf4llm-api-layout:
