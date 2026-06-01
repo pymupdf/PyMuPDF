@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://github.com/pymupdf/PyMuPDF/">
-    <img loading="lazy" alt="PyMuPDF" src="https://pymupdf.pro/images/py-mupdf-github-icon.png" width="100px"/>
+  <a href="https://pymupdf.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=logo&utm_term=website">
+    <img loading="lazy" alt="PyMuPDF" src="https://pymupdf.pro/images/py-mupdf-github-icon.png" width="96px" alt="PyMuPDF logo"/>
   </a>
 </p>
 
@@ -10,17 +10,17 @@
  <a href="https://trendshift.io/repositories/11536" target="_blank"><img src="https://trendshift.io/api/badge/repositories/11536" alt="pymupdf%2FPyMuPDF | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </p>
 
-[![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://pymupdf.readthedocs.io)
+[![Docs](https://img.shields.io/badge/docs-live-brightgreen)](https://pymupdf.readthedocs.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=docs)
 [![PyPI Version](https://img.shields.io/pypi/v/pymupdf?color=blue&label=PyPI)](https://pypi.org/project/PyMuPDF/)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/pymupdf)](https://pypi.org/project/pymupdf/)
 [![License AGPL](https://img.shields.io/github/license/pymupdf/pymupdf)](https://github.com/pymupdf/PyMuPDF/blob/master/COPYING)
 [![PyPI Downloads](https://static.pepy.tech/badge/pymupdf/month)](https://pepy.tech/projects/pymupdf)
 [![Github Stars](https://img.shields.io/github/stars/pymupdf/PyMuPDF?style=social)](https://github.com/pymupdf/PyMuPDF/stargazers)
-[![Discord](https://img.shields.io/discord/770681584617652264?color=6A7EC2&logo=discord&logoColor=ffffff)](https://pymupdf.io/discord/artifex/)
-[![Forum](https://img.shields.io/badge/Forum-ff6600?logo=python&logoColor=ffffff)](https://forum.mupdf.com/c/general/4)
+[![Discord](https://img.shields.io/discord/770681584617652264?color=6A7EC2&logo=discord&logoColor=ffffff)](https://artifex.com/discord/artifex?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=discord)
+[![Forum](https://img.shields.io/badge/Forum-ff6600?logo=python&logoColor=ffffff)](https://forum.mupdf.com/c/general/4?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=forum)
 [![Twitter](https://img.shields.io/twitter/follow/pymupdf4llm)](https://x.com/pymupdf4llm)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97_Hugging_Face-007ec6)](https://huggingface.co/artifex-software)
-[![Demo](https://img.shields.io/badge/PyMuPDF4LLM-live?badge&label=DEMO&logo=python&logoColor=ffffff)](https://demo.pymupdf.io)
+[![Demo](https://img.shields.io/badge/PyMuPDF4LLM-live?badge&label=DEMO&logo=python&logoColor=ffffff)](https://demo.pymupdf.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=demo)
 
 **The PDF engine behind over 50 million monthly downloads, powering AI pipelines worldwide.**
 
@@ -32,10 +32,10 @@
 
 ## Why PyMuPDF?
 
-- **Fast** — powered by [MuPDF](https://mupdf.com/), a best-in-class C rendering engine
+- **Fast** — powered by [MuPDF](https://mupdf.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=mupdf), a best-in-class C rendering engine
 - **Accurate** — pixel-perfect text extraction with font, color, and position metadata
 - **Versatile** — read, write, annotate, redact, merge, split, and convert documents
-- **LLM-ready** — native Markdown output via [PyMuPDF4LLM](https://pypi.org/project/pymupdf4llm/) for RAG and AI pipelines
+- **LLM-ready** — native Markdown output via [PyMuPDF4LLM](https://pdf4llm.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf4llm) for RAG and AI pipelines
 - **No mandatory dependencies** — `pip install pymupdf` and you're done
 
 ---
@@ -273,7 +273,7 @@ print(md)
 Supports multi-column layouts, natural reading order and page chunking.
 
 
-[![Demo](https://img.shields.io/badge/Pymupdf4llm-live?style=for-the-badge&label=DEMO&logo=python&logoColor=ffffff)](https://demo.pymupdf.io)
+[![Demo](https://img.shields.io/badge/Pymupdf4llm-live?style=for-the-badge&label=DEMO&logo=python&logoColor=ffffff)](https://demo.pymupdf.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=demo)
 
 ---
 
@@ -392,7 +392,7 @@ for fmt in ["contract.docx", "data.xlsx", "deck.pptx", "report.hwpx"]:
         print(page.get_text())
 ```
 
-[Get a trial license key for PyMuPDF Pro](https://pymupdf.pro/try-pro) 
+[Get a trial license key for PyMuPDF Pro](https://pymupdf.pro/try-pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf_pro) 
 
 **What you can do with Office documents:**
 
@@ -723,15 +723,15 @@ doc.save("output.pdf")
 
 ## Documentation
 
-Full installation guide, API reference, cookbook, and tutorial at **[pymupdf.readthedocs.io](https://pymupdf.readthedocs.io)**.
+Full installation guide, API reference, cookbook, and tutorial at **[pymupdf.readthedocs.io](https://pymupdf.readthedocs.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=docs)**.
 
-- [Installation guide](https://pymupdf.readthedocs.io/en/latest/installation.html)
-- [API reference](https://pymupdf.readthedocs.io/en/latest/classes.html)
-- [Cookbook](https://pymupdf.readthedocs.io/en/latest/the-basics.html)
-- [Tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html)
-- [Changelog](https://pymupdf.readthedocs.io/en/latest/changes.html)
-- [PyMuPDF4LLM docs](https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/)
-- [PyMuPDF Pro docs](https://pymupdf.readthedocs.io/en/latest/pymupdf-pro/index.html)
+- [Installation guide](https://pymupdf.readthedocs.io/en/latest/installation.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=installation)
+- [API reference](https://pymupdf.readthedocs.io/en/latest/classes.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=classes)
+- [Cookbook](https://pymupdf.readthedocs.io/en/latest/the-basics.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=the_basics)
+- [Tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=tutorial)
+- [Changelog](https://pymupdf.readthedocs.io/en/latest/changes.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=changelog)
+- [PyMuPDF4LLM docs](https://docs.pdf4llm.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=docs)
+- [PyMuPDF Pro docs](https://pymupdf.readthedocs.io/en/latest/pymupdf-pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_pro)
 
 ---
 
@@ -741,17 +741,17 @@ Full installation guide, API reference, cookbook, and tutorial at **[pymupdf.rea
 | Project | Description |
 |---|---|
 | [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) | LLM/RAG-optimised Markdown and JSON extraction |
-| [PyMuPDF Pro](https://pymupdf.io/pro) | Adds Office and HWP document support |
+| [PyMuPDF Pro](https://pymupdf.io/pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=related_projects&utm_term=pymupdf_pro) | Adds Office and HWP document support |
 | [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) | Extended font collection for PyMuPDF text output |
 
 ---
 
 ## Licensing
 
-PyMuPDF and MuPDF are maintained by [Artifex Software, Inc.](https://artifex.com)
+PyMuPDF and MuPDF are maintained by [Artifex Software, Inc.](https://artifex.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=footer&utm_term=website)
 
 - **Open source** — [GNU AGPL v3](https://www.gnu.org/licenses/agpl-3.0.html). Free for open-source projects.
-- **Commercial** — separate commercial licences available from [Artifex](https://artifex.com/licensing) for proprietary applications.
+- **Commercial** — separate commercial licences available from [Artifex](https://artifex.com/licensing?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=footer&utm_term=licensing) for proprietary applications.
 
 ---
 
@@ -760,7 +760,7 @@ PyMuPDF and MuPDF are maintained by [Artifex Software, Inc.](https://artifex.com
 Contributions are welcome. Please open an issue before submitting large pull requests.
 
 - [Issue tracker](https://github.com/pymupdf/PyMuPDF/issues)
-- [Discord community](https://pymupdf.pro/discord/artifex/)
+- [Discord community](https://artifex.com/discord/artifex?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=footer&utm_term=discord)
 
 ## ⭐ Support this project
 
