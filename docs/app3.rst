@@ -421,6 +421,88 @@ Typical document page sizes are **ISO A4** and **Letter**. A **Letter** page has
 
 
 
+
+.. _CSS_Support:
+
+CSS Support
+--------------------------------------------
+
+For now, only a subset of CSS properties are supported.
+
+The underlying C library MuPDF supports a subset of HTML4 and CSS2. The primary goal of the HTML/CSS support is to serve as a popular and convenient way to style text — not to faithfully reproduce websites in PDF.
+
+What Works
+~~~~~~~~~~~~~
+
+The following list shows the supported properties, grouped by category.
+
+Box Model & Layout
+""""""""""""""""""
+
+``margin``, ``margin-top``, ``margin-right``, ``margin-bottom``, ``margin-left``, ``padding``, ``padding-top``, ``padding-right``, ``padding-bottom``, ``padding-left``, ``width``, ``height``, ``display``, ``position``, ``top``, ``right``, ``bottom``, ``left``, ``inset``, ``overflow-wrap``, ``columns``
+
+.. note:: 
+    
+    The properties ``position`` & ``display`` are supported in a very limited way. Only the values ``position: relative`` and ``display: block`` are supported.
+
+
+Border
+""""""""""""""""""
+
+``border``, ``border-top``, ``border-right``, ``border-bottom``, ``border-left``, ``border-color``, ``border-style``, ``border-width``, ``border-spacing``, ``border-collapse``, ``border-top-color``, ``border-right-color``, ``border-bottom-color``, ``border-left-color``, ``border-top-style``, ``border-right-style``, ``border-bottom-style``, ``border-left-style``, ``border-top-width``, ``border-right-width``, ``border-bottom-width``, ``border-left-width``
+
+Background
+""""""""""""""""""
+
+``background``, ``background-color``
+
+.. note::
+
+    Background images are not supported, but the ``background`` property can be used to set a background color for a text block, which is then rendered as a filled rectangle behind the text.
+
+Font
+""""""""""""""""""
+
+``font``, ``font-family``, ``font-size``, ``font-style``, ``font-variant``, ``font-weight``
+
+Text
+""""""""""""""""""
+
+``color``, ``letter-spacing``, ``line-height``, ``text-align``, ``text-decoration``, ``text-indent``, ``text-transform``, ``word-spacing``, ``white-space``, ``vertical-align``, ``direction``, ``hyphens``
+
+List
+""""""""""""""""""
+
+``list-style``, ``list-style-image``, ``list-style-position``, ``list-style-type``
+
+Page
+""""""""""""""""""
+
+``page-break-before``, ``page-break-after``, ``orphans``, ``widows``
+
+Visibility
+""""""""""""""""""""""""""""""""""""
+
+``visibility``
+
+MuPDF-specific / WebKit extensions
+""""""""""""""""""""""""""""""""""""
+
+``-mupdf-leading``, ``-webkit-text-fill-color``, ``-webkit-text-stroke-color``, ``-webkit-text-stroke-width``
+
+Other
+""""""""""""""""""
+
+``src`` (for @font-face), ``overflow-wrap``
+
+
+
+
+What Doesn't Work
+~~~~~~~~~~~~~~~~~~~~~~~~~~ 
+
+Modern CSS (CSS3+): no ``flexbox``, ``grid``, ``custom properties`` (--vars), ``calc()``, ``transitions``, ``animations``, ``position: absolute`` / ``fixed``, ``float``, ``clear`` and so on.
+
 .. rubric:: Footnotes
 
 .. [#f1] MuPDF supports "deep-copying" objects between PDF documents. To avoid duplicate data in the target, it uses so-called "graftmaps", like a form of scratchpad: for each object to be copied, its :data:`xref` number is looked up in the graftmap. If found, copying is skipped. Otherwise, the new :data:`xref` is recorded and the copy takes place. PyMuPDF makes use of this technique in two places so far: :meth:`Document.insert_pdf` and :meth:`Page.show_pdf_page`. This process is fast and very efficient, because it prevents multiple copies of typically large and frequently referenced data, like images and fonts. However, you may still want to consider using garbage collection (option 4) in any of the following cases:

@@ -60,6 +60,8 @@ The following table illustrates how |PyMuPDF| compares with other typical soluti
 
     Therefore input files are mostly in a form that's useful for text extraction.
 
+    If faithful reproduction of layout is important, then consider using :ref:`PyMuPDF Pro <pymupdf-pro>`.
+
 
 ----
 
@@ -97,7 +99,7 @@ The following table illustrates what features the products offer:
      - PyMuPDF Pro
      - PyMuPDF4LLM
    * - **Input Documents**
-     - `PDF`, `XPS`, `EPUB`, `CBZ`, `MOBI`, `FB2`, `SVG`, `TXT`, Images (*standard document types*)
+     - `PDF`, `XPS`, `EPUB`, `CBZ`, `MOBI`, `FB2`, `SVG`, `TXT`, `MD`, Images (*standard document types*)
      - *as PyMuPDF* and:
        `DOC`/`DOCX`, `XLS`/`XLSX`, `PPT`/`PPTX`, `HWP`/`HWPX`
      - *as PyMuPDF*
