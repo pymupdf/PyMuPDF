@@ -115,6 +115,7 @@ def test_pylint():
     directory = f'{root}/src'
     directory = directory.replace('/', os.sep)
     leafs = [
+            'TableGridExtractorV4.py',
             '__init__.py',
             '__main__.py',
             '_apply_pages.py',

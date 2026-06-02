@@ -15,6 +15,8 @@ def test_4767():
         print('test_4767(): not running on Pyodide - cannot run child processes.')
         return
     
+    os.environ['PYMUPDF_LEGACY_TABLE_DIAGNOSTIC'] = '0'
+    
     if (1
             and platform.system() == 'Windows'
             and os.environ.get('GITHUB_ACTIONS') == 'true'

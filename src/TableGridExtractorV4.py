@@ -19,17 +19,18 @@ Post-processing pipeline
 
 from __future__ import annotations
 
-import sys
 from pathlib import Path
 from typing import Optional
-import pymupdf
+from dataclasses import dataclass
+
 import numpy as np
 import onnxruntime as ort
+
+import pymupdf
 
 # ---------------------------------------------------------------------------
 # Inline GridPrediction / CellInfo (standalone mode)
 # ---------------------------------------------------------------------------
-from dataclasses import dataclass, field
 
 
 @dataclass
@@ -402,7 +403,7 @@ class TableGridExtractorV4:
 
         h_tuples = []
         h_cls_list = (
-            grid.h_cls.tolist() if grid.h_cls is not None else [1] * len(grid.h_lines)
+            grid.h_cls.tolist() if grid.h_cls is not None else [1] * len(grid.h_lines) # pylint: disable=no-member
         )
         for y, c in zip(grid.h_lines, h_cls_list):
             y_norm = y / orig_h
