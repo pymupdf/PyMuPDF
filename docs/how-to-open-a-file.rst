@@ -69,8 +69,14 @@ To open a file, do the following:
     doc = pymupdf.open("a.pdf")
 
 
-.. note:: The above creates a :ref:`Document`. The instruction `doc = pymupdf.Document("a.pdf")` does exactly the same. So, `open` is just a convenient alias and you can find its full API documented in that chapter.
+.. note:: The above creates a :ref:`Document`. The instruction `doc = pymupdf.Document("a.pdf")` does exactly the same. So, :meth:`open` is just a convenient alias.
 
+
+To open an empty document, just do:
+
+.. code-block:: python
+
+    doc = pymupdf.open()
 
 File Recognizer: Opening with :index:`a Wrong File Extension <pair: wrong; file extension>`
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -192,5 +198,20 @@ And so on!
 
 As you can imagine many text based file formats can be *very simply opened* and *interpreted* by |PyMuPDF|. This can make data analysis and extraction for a wide range of previously unavailable files possible.
 
+----------
+
+
+.. _Full_Options_for_Opening_a_File:
+
+Full Options for Opening a File
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The `pymupdf.open` function has a number of parameters to give you full control over how files are opened. For the full API, please see the :ref:`Document` chapter, as `open` is just an alias for the :meth:`Document` constructor.
+
+.. method:: open(filename=None, stream=None, filetype=None, archive=None, rect=None, width=0, height=0, fontsize=11) 
+
+   See the :meth:`Document` constructor for details.
+
+   :return: A document object.
 
 .. include:: footer.rst

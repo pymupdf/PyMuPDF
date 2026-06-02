@@ -128,7 +128,7 @@ Restrictions
 
     **Only the first 3 pages of any document will be available.**
 
-To unlock full functionality you should `obtain a trial key <https://pymupdf.pro/try-pro/>`_.
+    To unlock full functionality you should `obtain a trial key <https://pymupdf.pro/try-pro/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-pymupdf-pro-page>`_.
 
 
 .. _PyMuPDFPro_TrialKeys:
@@ -136,7 +136,7 @@ To unlock full functionality you should `obtain a trial key <https://pymupdf.pro
 Trial keys
 -----------------------
 
-To obtain a license key `please fill out the form on this page <https://pymupdf.pro/try-pro/>`_. You will then have the trial key emailled to the address you submitted.
+To obtain a license key `please fill out the form on this page <https://pymupdf.pro/try-pro/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-pymupdf-pro-page>`_. You will then have the trial key emailled to the address you submitted.
 
 
 Using a key
@@ -172,7 +172,7 @@ Function `pymupdf.pro.get_fontpath()` returns a tuple of all font directories us
 
 .. raw:: html
 
-   <button id="findOutAboutPyMuPDFPro" class="cta orange" onclick="window.location='https://pymupdf.pro/try-pro/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">Ready to try PyMuPDF Pro?</button>
+   <button id="findOutAboutPyMuPDFPro" class="cta orange" onclick="window.location='https://pymupdf.pro/try-pro/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-pymupdf-pro-page'">Ready to try PyMuPDF Pro?</button>
 
 
 
