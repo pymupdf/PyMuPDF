@@ -1079,6 +1079,8 @@ def test_cli_out():
         print('test_cli_out(): not running on Pyodide - cannot run child processes.')
         return
         
+    os.environ['PYMUPDF_LEGACY_TABLE_DIAGNOSTIC'] = '0'
+    
     import platform
     import re
     import subprocess
@@ -1174,6 +1176,7 @@ def test_use_python_logging():
         print('test_cli(): not running on Pyodide - cannot run child processes.')
         return
         
+    os.environ['PYMUPDF_LEGACY_TABLE_DIAGNOSTIC'] = '0'
     log_prefix = None
     if os.environ.get('PYMUPDF_USE_EXTRA') == '0':
         log_prefix = f'.+Using non-default setting from PYMUPDF_USE_EXTRA: \'0\''
