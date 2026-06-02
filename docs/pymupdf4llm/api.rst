@@ -314,34 +314,6 @@ The PyMuPDF4LLM API
             }
         }    
 
-.. method:: markdown_to_pdf(md_path: str | pathlib.Path, \
-    user_css: str | None = None, \
-    page_rect: rect-like | None = None, \
-    margins: rect-like | None) = None, \
-    archive: str | pathlib.Path | None = None, \
-    output_path: str | pathlib.Path | None = None) -> pymupdf.Document | None
-
-    Convert the markdown text content of the file specified by `md_path` into a PDF document.
-
-    The function is always available -- independently of whether you are using the PyMuPDF Layout module or not.
-
-    :arg str|Path md_path: the file path of the markdown file to be converted.
-
-    :arg str|None user_css: optional, a string of CSS code to be applied to the markdown content. This may be used to customize the appearance of the generated PDF document. If `None` (default), the built-in default CSS is used.
-
-    :arg rect-like|None page_rect: optional, the rectangle defining the page boundaries for the generated PDF document. If `None` (default), ISO A4 page dimensions are used. To use one of PyMuPDF's predefined page formats, use e.g. ``pymupdf.paper_rect("Letter")``.
-
-    :arg rect-like|None margins: optional, the margins (borders) for the generated pages. This must be a sequence of four floats ``[left, top, right, bottom]`` specifying the respective border width in points (1/72 inches). If `None` (default), the default ``[50, 50, 50, 50]`` margins are used.
-
-    :arg str|Archive|None archive: optional. This is be required if the markdown source references images that are **not** stored in the same folder as the markdown file. In this case, `archive` must be a `pymupdf.Archive` object which provides access to the respective image files. If `None` (default), it is assumed that all referenced images are stored in the same folder as the markdown file. The parameter **may** also be required if a custom ``user_css`` references external resources like font files.
-
-    :arg str|Path|None output_path: optional, the file path where the generated PDF document will be saved. If specified, the generated PDF will be saved to that location. If `None` (default), the document is returned as a `pymupdf.Document` object.
-
-.. note::
-
-    Please see `this site <https://github.com/pymupdf/pymupdf4llm/discussions/327>`_ for more background and the current status of further improvements regarding usage with :ref:`PyMuPDF Layout <pymupdf-layout>`.
-
-
 .. method:: LlamaMarkdownReader(*args, **kwargs)
 
     Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex`_ package. Please note that this package will **not automatically be installed** when installing **pymupdf4llm**.

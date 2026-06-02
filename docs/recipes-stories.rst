@@ -549,14 +549,7 @@ in a PDF-specific API.]
 
     .. note::
 
-        At the time of writing the HTML engine for Stories is fairly basic and supports a subset of CSS2 attributes.
-
-    Some important CSS support to consider:
-
-    - The only available layout is relative layout.
-    - `background` is unavailable, use `background-color` instead.
-    - `float` is unavailable.
-
+        At the time of writing the HTML engine for Stories is fairly basic and supports a subset of CSS2 attributes - see :ref:`CSS_Support` for details.
 
 .. include:: footer.rst
 

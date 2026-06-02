@@ -1085,14 +1085,7 @@ Another example could be redacting an area of a page, but not to redact any line
 Converting PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-See :doc:`converting-files` for more information.
-
-
-.. note::
-
-    **PDF -> DOCX**
-    
-    We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-docx** library to provide simple document conversion from |PDF| to **DOCX** format.
+See :doc:`converting-files` for how to convert |PDF| documents to other formats and vice versa.
 
 
 .. _The Basics_Checking_Black_and_White:
@@ -1100,7 +1093,7 @@ See :doc:`converting-files` for more information.
 Detecting if a page is black and white
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A simple check to determine if a page is black and white or has color can be done by checking for whether a page is monochrome. 
+A simple check to determine if a page is pure black and white ("monochrome"). Non-monochrome means that the page has multiple gray levels or colors.
 
 This can be done by using the :meth:`Page.get_pixmap` method to get a pixmap of the page and then checking the `is_monochrome` attribute of the pixmap. We need to ensure that there is no anti-aliasing applied to the pixmap, so we set the anti-aliasing level to 0 using :meth:`Tools.set_aa_level`.
 
@@ -1139,4 +1132,6 @@ The following example demonstrates how to do this for each page in a |PDF| docum
         analyze_pdf(pdf_path)
 
 
+
 .. include:: footer.rst
+ 
