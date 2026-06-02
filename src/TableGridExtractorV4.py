@@ -23,8 +23,8 @@ from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass
 
-import numpy as np
-import onnxruntime as ort
+import numpy as np  # pylint: disable=import-error
+import onnxruntime as ort   # pylint: disable=import-error
 
 import pymupdf
 
