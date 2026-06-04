@@ -447,3 +447,21 @@ def test_4965():
                 print(f'        {name=}')
                 print(f'        {value=}')
                 print(f'        {f_type=}')
+
+
+def test_4114():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4114.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4114_out.pdf')
+    expected_values = [' - Select One - ', '  ', 'Cincinnati, OH 45999', 'Memphis, TN 37501', 'Ogden, UT 84201', 'Philadelphia, PA 19255']
+    expected_values2 = [expected_values, expected_values]
+    values = list()
+    with pymupdf.open(path) as document:
+        for page_i, page in enumerate(document):
+            for widget in page.widgets():
+                if widget.field_type_string == 'ComboBox':
+                    print(f'test_4114(): {page_i=} {widget.choice_values=}')
+                    values.append(widget.choice_values)
+                widget.update()
+        document.save(path_out)
+    assert values == expected_values2

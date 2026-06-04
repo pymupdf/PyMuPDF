@@ -18933,7 +18933,7 @@ def JM_choice_options(annot):
     if n == 0:
         return  # wrong widget type
 
-    optarr = mupdf.pdf_dict_get( annot_obj, PDF_NAME('Opt'))
+    optarr = mupdf.pdf_dict_get_inheritable( annot_obj, PDF_NAME('Opt'))
     liste = []
 
     for i in range( n):
