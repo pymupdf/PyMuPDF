@@ -96,7 +96,10 @@ from pymupdf import mupdf
 # This replace fz_find_table_within_bounds.
 USE_TGIF = os.getenv("USE_TGIF", "0")
 EXTRACTOR_V4 = None # Keep pylint happy.
-if USE_TGIF == "1":
+if USE_TGIF == "0":
+    if os.environ.get('PYMUPDF_LEGACY_TABLE_DIAGNOSTIC') != '0':
+        print("Using legacy table grid extraction.")
+elif USE_TGIF == "1":
     print("Using TGIFVx for table grid extraction.")
     import pymupdf.tgif # pylint: disable=import-error
 elif USE_TGIF == "4":
@@ -113,8 +116,7 @@ elif USE_TGIF == "4":
         # filter_empty_lines=not args.no_filter_empty,
     )
 else:
-    if os.environ.get('PYMUPDF_LEGACY_TABLE_DIAGNOSTIC') != '0':
-        print("Using legacy table grid extraction.")
+    raise Exception(f"Unrecognised {USE_TGIF=}, should be unset, '0', '1' or '4'.")
 
 EDGES = []  # vector graphics from PyMuPDF
 CHARS = []  # text characters from PyMuPDF
