@@ -667,3 +667,26 @@ def test_4699():
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert 'syntax error: cannot find ExtGState resource' in wt
         assert rms > 20
+
+
+def test_5001():
+    '''
+    #5001 is fixed with mupdf>=1.28.
+    '''
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5001.pdf')
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_5001_expected.png')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_5001_out.png')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        zoom = 0.3
+        pixmap = page.get_pixmap(matrix=pymupdf.Matrix(zoom, zoom))
+    pixmap.save(path_out)
+    rms = gentle_compare.pixmaps_rms(path_expected, pixmap)
+    print()
+    print(f'test_5001(): {rms=}')
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert rms == 0
+    else:
+        assert rms != 0
+        wt = pymupdf.TOOLS.mupdf_warnings()
+        assert wt
