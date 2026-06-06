@@ -727,6 +727,8 @@ def test_4944():
     print()
     with pymupdf.open(path) as document:
         page = document[0]
+        print()
+        print(f'{page.rect=}')
         print(f'{page.rotation=}')
         print(f'{page.rotation_matrix=}')
         print(f'{page.transformation_matrix=}')
