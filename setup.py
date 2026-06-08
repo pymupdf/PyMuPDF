@@ -1426,6 +1426,21 @@ else:
             #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or pyodide) else zipfile.ZIP_LZMA,
             wheel_compresslevel = 9,
             )
+    
+    # Patch up macos platform tag - we require at least 10.15 because otherwise
+    # std::filesystem appears to be not available.
+    if pipcl.darwin():
+        pt = p.tag_platform()
+        #pipcl.log(f'{pt=}')
+        m = re.match('^(macosx_)(([0-9]+)_([0-9]+))(.*)', pt)
+        #pipcl.log(f'{m=}')
+        if m:
+            v = int(m.group(3)), int(m.group(4))
+            #pipcl.log(f'{v=}')
+            if v < (10, 15):
+                pt2 = f'{m.group(1)}10_15{m.group(5)}'
+                pipcl.log(f'Changing tag_platform from {pt!r} to {pt2!r}')
+                p.tag_platform_ = pt2
 
     def get_requires_for_build_wheel(config_settings=None):
         '''
