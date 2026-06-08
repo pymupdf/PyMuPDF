@@ -4,6 +4,10 @@ import os
 
 def test_archive_markdown():
     """Test Archive support."""
+    if pymupdf.mupdf_version_tuple < (1, 28, 0):
+        print("no testing on MuPDF < 1.28.0")
+        return
+
     path = os.path.abspath(f"{__file__}/../../tests/resources")
     md = b"![](nur-ruhig.jpg)\n\n**A referenced image.**"
     md_doc = pymupdf.open(stream=md, filetype="md", archive=path)
@@ -16,6 +20,10 @@ def test_archive_markdown():
 def test_archive_links():
     """Create an internal and an external link and confirm
     that they are correctly converted to PDF links."""
+    if pymupdf.mupdf_version_tuple < (1, 28, 0):
+        print("no testing on MuPDF < 1.28.0")
+        return
+
     md = """Some text containing an external [link](http://www.google.com) to Google.
     Now an internal link to a header in this document: [Some Header](#some-header). The header is here:
 
