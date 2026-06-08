@@ -690,3 +690,27 @@ def test_5001():
         assert rms != 0
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt
+
+def test_natural():
+    if pymupdf.mupdf_version_tuple < (1, 28):
+        print('test_natural(): Not running because segv fixed on mupdf master (1.28).')
+        return
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_natural.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        ctm = pymupdf.mupdf.fz_make_matrix(200 / 72, 0, 0, 200 / 72, 0, 0)
+        rect = pymupdf.mupdf.ll_fz_make_rect(*page.rect)
+        RGB = pymupdf.mupdf.fz_device_rgb()
+        GRAY = pymupdf.mupdf.fz_device_gray()
+        # displaylist = page.get_displaylist()
+        # print(f"{displaylist=}, {rect=}, {ctm=}, {GRAY=}")
+        # pm = mupdf.fz_new_pixmap_from_display_list_culling_text2(
+        pm = pymupdf.mupdf.fz_new_pixmap_from_page_culling_text2(
+            page,
+            ctm,
+            RGB,
+            0,
+            [rect],
+        )
+        pix=pymupdf.Pixmap(pm)
+        print(f"{pix=}")    
