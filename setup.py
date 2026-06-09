@@ -201,6 +201,7 @@ import shutil
 import stat
 import subprocess
 import sys
+import sysconfig
 import tarfile
 import traceback
 import urllib.request
@@ -830,6 +831,10 @@ def build_mupdf_windows(
     if PYMUPDF_SETUP_FAKE_NOGIL == '1':
         windows_build_tail += '-nogil'
     windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
+    pipcl.log(f'{sysconfig.get_config_var("Py_GIL_DISABLED")=}')
+    if sysconfig.get_config_var('Py_GIL_DISABLED')==1:
+        # We are building with free-threading python.
+        windows_build_tail += '-t'
     windows_build_dir = f'{mupdf_local}\\{windows_build_tail}'
     #log( f'Building mupdf.')
     devenv = os.environ.get('PYMUPDF_SETUP_DEVENV')
@@ -1180,6 +1185,9 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
         libraries = f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
         compiler_extra = ''
+        if sysconfig.get_config_var('Py_GIL_DISABLED')==1:
+            # Required to link with python3.14t etc.
+            compiler_extra += ' /D Py_GIL_DISABLED'
     else:
         libs = ['mupdf']
         compiler_extra += (
