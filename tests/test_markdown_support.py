@@ -40,3 +40,34 @@ def test_archive_links():
     assert links[0]["uri"] == "http://www.google.com"
     assert links[0]["kind"] == pymupdf.LINK_URI
     assert links[1]["kind"] == pymupdf.LINK_GOTO
+
+
+def test_markdown_style():
+    print()
+    if pymupdf.mupdf_version_tuple < (1, 28):
+        print('test_markdown_style(): not running because mupdf<1.28.')
+        return
+    
+    font = pymupdf.Font("tiro")
+    arch = pymupdf.Archive(font.buffer, "tiro")
+
+    css = """@font-face {font-family: sans-serif; src: url(tiro);}"""
+    md = "Overriding sans-serif with Times-Roman."
+    for use_css in 0, 1:
+        md_doc = pymupdf.open(stream=md.encode(), filetype="md", archive=arch)
+        if use_css:
+            md_doc.apply_css(css)  # apply the CSS to the document
+
+        md_pdf_stream = md_doc.convert_to_pdf()
+        with pymupdf.open(stream=md_pdf_stream) as pdf_doc:
+            page = pdf_doc[0]
+            spans = [
+                s for b in page.get_text("dict")["blocks"] for l in b["lines"] for s in l["spans"]
+            ]
+
+        assert len(spans) == 1
+        print(f'test_markdown_style(): {use_css=} {spans[0]["font"]=}.')
+        if use_css:
+            assert "Roman" in spans[0]["font"]
+        else:
+            assert "Roman" not in spans[0]["font"]
