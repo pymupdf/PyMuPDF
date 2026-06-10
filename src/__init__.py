@@ -11933,6 +11933,8 @@ class Page:
                 pass
         for widget in self.widgets():  # modify field rectangles
             r = widget.rect * rot
+            if r.is_empty or r.is_infinite:
+                continue
             widget.rect = r
             widget.update()
         return rot  # the inverse of the generated derotation matrix

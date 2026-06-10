@@ -465,3 +465,24 @@ def test_4114():
                 widget.update()
         document.save(path_out)
     assert values == expected_values2
+
+
+def test_4950():
+    with pymupdf.open() as document:
+        page = document.new_page()
+        page.set_rotation(90)
+
+        # Simulate an existing invisible signature field with a zero-dimension
+        # rectangle. Creating such a widget through add_widget() is rejected by
+        # validation, so create a valid widget first and then modify the PDF
+        # object directly.
+        widget = pymupdf.Widget()
+        widget.field_name = "Signature"
+        widget.field_type = pymupdf.PDF_WIDGET_TYPE_SIGNATURE
+        widget.rect = pymupdf.Rect(0, 0, 10, 10)
+        page.add_widget(widget)
+        document.xref_set_key(page.first_widget.xref, "Rect", "[0 0 0 0]")
+        page = document.reload_page(page)
+
+        page.remove_rotation()
+        assert page.rotation == 0
