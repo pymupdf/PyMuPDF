@@ -2897,7 +2897,7 @@ class Document:
             raise IndexError(f"page {i} not in document")
         return self.load_page(i)
 
-    def __init__(self, filename=None, stream=None, filetype=None, archive=None, rect=None, width=0, height=0, fontsize=11):
+    def __init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11, archive=None):
         """Creates a document. Use 'open' as a synonym.
 
         Notes:
