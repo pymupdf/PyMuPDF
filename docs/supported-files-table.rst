@@ -101,6 +101,11 @@
             background-size: 40px 40px;
         }
 
+        #feature-matrix .icon.md {
+            background: url("_images/icon-md.svg") 0 0 transparent no-repeat;
+            background-size: 40px 40px;
+        }
+
     </style>
 
 
@@ -122,6 +127,7 @@
                 <span class="icon cbz"><cite>CBZ</cite></span>
                 <span class="icon svg"><cite>SVG</cite></span>
                 <span class="icon txt"><cite>TXT</cite></span>
+                <span class="icon md"><cite>MD</cite></span>
             </td>
         </tr>
 

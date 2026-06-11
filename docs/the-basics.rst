@@ -1085,9 +1085,8 @@ Another example could be redacting an area of a page, but not to redact any line
 Converting PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-docx** library to provide simple document conversion from |PDF| to **DOCX** format.
-
-
+See :doc:`converting-files` for how to convert |PDF| documents to other formats and vice versa.
 
 
 .. include:: footer.rst
+ 

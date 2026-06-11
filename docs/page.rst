@@ -854,7 +854,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like rect: rectangle on page to receive the text.
       :arg str,Story text: the text to be written. Can contain a mixture of plain text and HTML tags with styling instructions. Alternatively, a :ref:`Story` object may be specified (in which case the internal Story generation step will be omitted). A Story must have been generated with all required styling and Archive information.
-      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if ``text`` is a Story.
+      :arg str css: optional string containing additional CSS instructions. This parameter is ignored if ``text`` is a Story. See :ref:`CSS_Support` for more.
       :arg float scale_low: if necessary, scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling permitted. A value of e.g. 0.2 means maximum down-scaling by 80%.
       :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If ``text`` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if ``text`` is a Story.
       :arg int rotate: one of the values 0, 90, 180, 270. Depending on this, text will be filled:

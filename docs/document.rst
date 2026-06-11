@@ -10,7 +10,7 @@ Document
 
 This class represents a document. It can be constructed from a file or from memory.
 
-There exists the alias *open* for this class, i.e. `pymupdf.Document(...)` and `pymupdf.open(...)` do exactly the same thing.
+There is an alias :meth:`open` for this class, i.e. `pymupdf.Document(...)` and `pymupdf.open(...)` do exactly the same thing.
 
 For details on **embedded files** refer to Appendix 3.
 
@@ -29,6 +29,7 @@ For details on **embedded files** refer to Appendix 3.
 ======================================= ==========================================================
 :meth:`Document.add_layer`              PDF only: make new optional content configuration
 :meth:`Document.add_ocg`                PDF only: add new optional content group
+:meth:`Document.apply_css`              Markdown only: apply CSS stylesheet to Markdown content
 :meth:`Document.authenticate`           gain access to an encrypted document
 :meth:`Document.bake`                   PDF only: make annotations / fields permanent content
 :meth:`Document.can_save_incrementally` check if incremental save is possible
@@ -169,7 +170,7 @@ For details on **embedded files** refer to Appendix 3.
     pair: rect; Document
     pair: fontsize; Document
 
-  .. method:: __init__(self, filename=None, stream=None, *, filetype=None, rect=None, width=0, height=0, fontsize=11)
+  .. method:: __init__(self, filename=None, stream=None, filetype=None, archive=None, rect=None, width=0, height=0, fontsize=11)
 
     Create a ``Document`` object.
 
@@ -183,11 +184,13 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg str filetype: A string specifying the type of document. This is only ever needed when file content inspection fails. Text types like "txt", "html", "xml" etc. cannot be disambiguated by their content. When such files are provided in memory or being provided with the wrong file extension, this parameter **must** be used.
 
-    :arg rect_like rect: a rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter :data:`fontsize`, each page will be accordingly laid out and hence also determine the number of pages.
+    :arg Archive archive: An optional :ref:`Archive` object to use as a source for resources like fonts and images.
 
-    :arg float width: may used together with ``height`` as an alternative to ``rect`` to specify layout information.
+    :arg rect_like rect: A rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books, MD or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter :data:`fontsize`, each page will be accordingly laid out and hence also determine the number of pages.
 
-    :arg float height: may used together with ``width`` as an alternative to ``rect`` to specify layout information.
+    :arg float width: May be used together with ``height`` as an alternative to ``rect`` to specify layout information.
+ 
+    :arg float height: May be used together with ``width`` as an alternative to ``rect`` to specify layout information.
 
     :arg float fontsize: the default :data:`fontsize` for reflowable document types. This parameter is ignored if none of the parameters ``rect`` or ``width`` and ``height`` are specified. Will be used to calculate the page layout.
 
@@ -201,24 +204,29 @@ For details on **embedded files** refer to Appendix 3.
 
       In case of problems you can see more detail in the internal messages store: `print(pymupdf.TOOLS.mupdf_warnings())` (which will be emptied by this call, but you can also prevent this -- consult :meth:`Tools.mupdf_warnings`).
 
-    Overview of possible forms, note: `open` is a synonym of `Document`::
 
-        >>> # from a file
-        >>> doc = pymupdf.open("some.xps")
-        >>> # handle wrong extension
-        >>> doc = pymupdf.open("some.file", filetype="xps")  # assert expected type
-        >>> doc = pymupdf.open("some.file", filetype="txt")  # treat as plain text
-        >>>
-        >>> # from memory
-        >>> doc = pymupdf.open(stream=mem_area)  # works for any supported type
-        >>> doc = pymupdf.open(stream=unknown-type, filetype="txt")  # treat as plain text
-        >>>
-        >>> # new empty PDF
-        >>> doc = pymupdf.open()
-        >>> doc = pymupdf.open(None)
-        >>> doc = pymupdf.open("")
+    Overview of possible forms, note: :meth:`open` is a synonym of :meth:`Document`::
 
-    .. note:: Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint.
+        # from a file
+        doc = pymupdf.open("some.xps")
+        # handle wrong extension
+        doc = pymupdf.open("some.file", filetype="xps")  # assert expected type
+        doc = pymupdf.open("some.file", filetype="txt")  # treat as plain text
+        
+        # from memory
+        doc = pymupdf.open(stream=mem_area)  # works for any supported type
+        doc = pymupdf.open(stream=unknown_type, filetype="txt")  # treat as plain text
+        
+        # new empty PDF
+        doc = pymupdf.open()
+        doc = pymupdf.open(None)
+        doc = pymupdf.open("")
+
+    .. note:: 
+        
+        Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint.
+
+        See :ref:`supported file types <Supported_File_Types>` for more information.
 
     The Document class can be also be used as a **context manager**. Exiting the content manager will close the document automatically.
 
@@ -2030,6 +2038,20 @@ For details on **embedded files** refer to Appendix 3.
     This is a normal PDF document with no usage restrictions whatsoever. If it is not being changed in any way, it can be used together with its journal to undo / redo operations or continue updating.
 
 
+  .. method:: apply_css(css, append=True)
+
+    * New in v1.28.0
+
+    Apply CSS styles to the document. This is a global operation, which means that the styles will be applied to all pages and all elements of the document. The CSS syntax is the same as for HTML documents, but only a subset of CSS properties is supported.
+
+    :arg str css: a string containing the CSS styles to be applied.
+    :arg bool append: whether to append the new styles to existing ones (if any) or to replace them.
+
+    .. note:: This method is primarily intended for use with :ref:`Markdown documents <Markdown_to_PDF>`.
+
+
+
+
   .. attribute:: outline
 
     Contains the first :ref:`Outline` entry of the document (or `None`). Can be used as a starting point to walk through all outline items. Accessing this property for encrypted, not authenticated documents will raise an *AttributeError*.
@@ -2064,7 +2086,7 @@ For details on **embedded files** refer to Appendix 3.
 
   .. attribute:: is_reflowable
 
-    ``True`` if document has a variable page layout (like e-books or HTML). In this case you can set the desired page dimensions during document creation (open) or via method :meth:`layout`.
+    ``True`` if document has a variable page layout (like e-books, HTML or Markdown). In this case you can set the desired page dimensions during document creation (open) or via method :meth:`layout`.
 
     :type: bool
 
