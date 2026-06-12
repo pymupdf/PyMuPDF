@@ -691,6 +691,57 @@ def test_5001():
         wt = pymupdf.TOOLS.mupdf_warnings()
         assert wt
 
+
+def test_5001b():
+    from PIL import ImageCms  # only to fabricate an ICC profile
+
+    icc = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
+    bitmap = b"\xff" * 8          # 8x8 @ 1bpc, every bit 1 -> palette index 1 = FFFFFF (white)
+    rgb = b"\x00\x80\xff" * 4     # 2x2 companion image using the colorspace directly
+    draw = b"q 10 0 0 10 0 0 cm /Im1 Do Q q 80 0 0 30 10 10 cm /Im0 Do Q"
+    objs = {
+        1: ("<< /Type /Catalog /Pages 2 0 R >>", None),
+        2: ("<< /Type /Pages /Kids [3 0 R] /Count 1 >>", None),
+        3: ("<< /Type /Page /Parent 2 0 R /MediaBox [0 0 100 50] "
+            "/Resources << /XObject << /Im0 5 0 R /Im1 8 0 R >> >> /Contents 4 0 R >>", None),
+        4: (f"<< /Length {len(draw)} >>", draw),
+        5: ("<< /Type /XObject /Subtype /Image /Width 8 /Height 8 /BitsPerComponent 1 "
+            f"/ColorSpace [/Indexed 6 0 R 1 <000000FFFFFF>] /Length {len(bitmap)} >>", bitmap),
+        6: ("[/ICCBased 7 0 R]", None),
+        7: (f"<< /N 3 /Length {len(icc)} >>", icc),
+        8: ("<< /Type /XObject /Subtype /Image /Width 2 /Height 2 /BitsPerComponent 8 "
+            f"/ColorSpace 6 0 R /Length {len(rgb)} >>", rgb),
+    }
+    out, offsets = bytearray(b"%PDF-1.4\n"), {}
+    for num in sorted(objs):
+        head, data = objs[num]
+        offsets[num] = len(out)
+        out += f"{num} 0 obj\n{head}\n".encode()
+        if data is not None:
+            out += b"stream\n" + data + b"\nendstream\n"
+        out += b"endobj\n"
+    xref_pos = len(out)
+    out += f"xref\n0 {len(objs)+1}\n0000000000 65535 f \n".encode()
+    for num in sorted(objs):
+        out += f"{offsets[num]:010d} 00000 n \n".encode()
+    out += f"trailer\n<< /Size {len(objs)+1} /Root 1 0 R >>\nstartxref\n{xref_pos}\n%%EOF".encode()
+
+    with pymupdf.open(stream=bytes(out), filetype="pdf") as doc:
+        pix = doc[0].get_pixmap(dpi=150)
+        p = pix.pixel(int(50 * 150 / 72), int(25 * 150 / 72))
+        print("center of the indexed image:", p)
+        path_out = os.path.normpath(f'{__file__}/../../tests/test_5001b_out.png')
+        pix.save(path_out)
+        if pymupdf.mupdf_version_tuple >= (1, 28):
+            assert p == (255, 255, 255)
+        else:
+            wt = pymupdf.TOOLS.mupdf_warnings()
+            assert wt
+        # With pymupdf-1.27.2.3 we get incorrect (0, 0, 0).
+        # With current pymupdf and mupdf-master (as of 2026-06-15) we get
+        # correct (255, 255, 255).
+
+
 def test_natural():
     if pymupdf.mupdf_version_tuple < (1, 28):
         print('test_natural(): Not running because segv fixed on mupdf master (1.28).')
