@@ -83,7 +83,7 @@ sudo apt install tesseract-ocr
 
 | Category | Formats |
 |---|---|
-| PDF & derivatives | PDF, XPS, EPUB, CBZ, MOBI, FB2, SVG, TXT |
+| PDF & derivatives | PDF, XPS, EPUB, CBZ, MOBI, FB2, SVG, TXT, MD |
 | Images | PNG, JPEG, BMP, TIFF, GIF, and more |
 | Microsoft Office *(Pro)* | DOC, DOCX, XLS, XLSX, PPT, PPTX |
 | Korean Office *(Pro)* | HWP, HWPX |
@@ -171,6 +171,17 @@ text = page.get_textpage_ocr(language="eng").extractText()
 print(text)
 ```
 
+### Convert Markdown to PDF
+
+```python
+import pymupdf
+
+md_doc = pymupdf.open("example.md")
+pdfdata = md_doc.convert_to_pdf()
+pdf_doc = pymupdf.open(stream=pdfdata)
+pdf_doc.save("example.pdf")
+```
+
 ### Convert to Markdown for LLMs
 
 ```python
@@ -254,6 +265,7 @@ print(md)
 | **Annotations** | Read and write highlights, underlines, squiggly lines, sticky notes, free text, ink, stamps |
 | **Redaction** | Add and permanently apply redaction annotations |
 | **Forms** | Read and fill PDF AcroForm fields |
+| **PDF creation** | Create PDFs directly with the API or quickly convert from Markdown files |
 | **PDF editing** | Insert, delete, and reorder pages; set metadata; merge and split documents |
 | **Drawing** | Draw lines, curves, rectangles, and circles; insert HTML boxes |
 | **Encryption** | Open password-protected PDFs; save with RC4 or AES encryption |
