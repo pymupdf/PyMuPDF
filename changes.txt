@@ -2,15 +2,18 @@ Change Log
 ==========
 
 
+**Changes in version 1.28.0**
+
 Fixed issues:
 
-* **Fixed** `4423 <https://github.com/pymupdf/PyMuPDF/issues/4423>`_: pymupdf.mupdf.FzErrorFormat: code=7: cannot find object in xref error encountered after version 1.25.3
 * **Fixed** `4114 <https://github.com/pymupdf/PyMuPDF/issues/4114>`_: ComboBox choice_values full of empty strings despite PDF having valid choices. 
-* **Fixed** `5001 <https://github.com/pymupdf/PyMuPDF/issues/5001>`_: Formulae incorrectly rendered as black boxes
+* **Fixed** `4423 <https://github.com/pymupdf/PyMuPDF/issues/4423>`_: pymupdf.mupdf.FzErrorFormat: code=7: cannot find object in xref error encountered after version 1.25.3
 * **Fixed** `4950 <https://github.com/pymupdf/PyMuPDF/issues/4950>`_: remove_rotation() raises ValueError on widgets with empty/infinite rects
+* **Fixed** `5001 <https://github.com/pymupdf/PyMuPDF/issues/5001>`_: Formulae incorrectly rendered as black boxes
 
 Other:
 
+* Use MuPDF-1.28.0-rc2.
 * pymupdf.Document.__init__(): new arg `archive` to support documents with archives.
 * pymupdf.Document.convert_to_pdf(): also generate links.
 * Fixed MacOS x64 platform tag - used to be macosx_10_9_x86_64, but we actually
