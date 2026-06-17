@@ -1085,9 +1085,58 @@ Another example could be redacting an area of a page, but not to redact any line
 Converting PDF Documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-docx** library to provide simple document conversion from |PDF| to **DOCX** format.
+See :doc:`converting-files` for more information.
 
 
+.. note::
+
+    **PDF -> DOCX**
+    
+    We recommend the pdf2docx_ library which uses |PyMuPDF| and the **python-docx** library to provide simple document conversion from |PDF| to **DOCX** format.
+
+
+.. _The Basics_Checking_Black_and_White:
+
+Detecting if a page is black and white
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+A simple check to determine if a page is black and white or has color can be done by checking for whether a page is monochrome. 
+
+This can be done by using the :meth:`Page.get_pixmap` method to get a pixmap of the page and then checking the `is_monochrome` attribute of the pixmap. We need to ensure that there is no anti-aliasing applied to the pixmap, so we set the anti-aliasing level to 0 using :meth:`Tools.set_aa_level`.
+
+
+The following example demonstrates how to do this for each page in a |PDF| document:
+
+.. code-block:: python
+
+    import pymupdf
+
+    pymupdf.TOOLS.set_aa_level(0) # prevent anti-aliasing
+
+    def analyze_pdf(path):
+
+        results = []
+
+        with pymupdf.open(path) as doc:
+            for i, page in enumerate(doc):
+                pix=page.get_pixmap(colorspace=pymupdf.csGRAY)
+                bw = pix.is_monochrome
+
+                results.append(bw)
+                label = "black & white" if bw==1 else "has color"
+                print(f"Page {i + 1}/{len(doc)}: {label}")
+
+        return results
+
+    if __name__ == "__main__":
+        import sys
+
+        if len(sys.argv) < 2:
+            print("Usage: python detect_bw_pages.py <file.pdf>")
+            sys.exit(1)
+
+        pdf_path = sys.argv[1]
+        analyze_pdf(pdf_path)
 
 
 .. include:: footer.rst
