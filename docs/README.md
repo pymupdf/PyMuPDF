@@ -89,7 +89,7 @@ Note: subsequent runs can omit the `-a` parameter to speed up builds (it will ju
 
 Note: When build the corresponding `.mo` binary files will also be generated - these updated binaries should also be committed to Git.
 
-### Depoloying
+### Deploying
 
 Docs will be automatically deployed to RTD once pushes are made to relevant branches.
 
