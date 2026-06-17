@@ -7,7 +7,7 @@ version: 2
 
 # Set the version of Python and other tools you might need
 build:
-  os: ubuntu-20.04
+  os: ubuntu-24.04
   tools:
     python: "3.13"
     # You can also specify other tool versions:
