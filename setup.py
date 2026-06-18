@@ -825,7 +825,7 @@ def build_mupdf_windows(
         windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
     if PYMUPDF_SETUP_FAKE_NOGIL == '1':
         windows_build_tail += '-nogil'
-    windows_build_tail += f'-x{wp.cpu.bits}-py{wp.version}'
+    windows_build_tail += f'-{wp.cpu.windows_name}-py{wp.version}'
     pipcl.log(f'{sysconfig.get_config_var("Py_GIL_DISABLED")=}')
     if sysconfig.get_config_var('Py_GIL_DISABLED')==1:
         # We are building with free-threading python.
@@ -884,9 +884,8 @@ def build_mupdf_windows(
 
 
 def _windows_lib_directory(mupdf_local, build_type):
-    ret = f'{mupdf_local}/platform/win32/'
-    if _cpu_bits() == 64:
-        ret += 'x64/'
+    wc = pipcl.wdev.WindowsCpu()
+    ret = f'{mupdf_local}/platform/win32/{wc.windows_subdir}'
     if build_type == 'release':
         ret += 'Release/'
     elif build_type == 'debug':
@@ -1248,6 +1247,7 @@ def clean(all_):
         shutil.rmtree(f'{path_mupdf}/platform/win32', ignore_errors=True)
         shutil.rmtree(f'{path_mupdf}/platform/win32/Release', ignore_errors=True)
         shutil.rmtree(f'{path_mupdf}/platform/win32/x64', ignore_errors=True)
+        shutil.rmtree(f'{path_mupdf}/platform/win32/arm64', ignore_errors=True)
     
     pipcl.log(f'Returning: {ret=}')
     return ret
