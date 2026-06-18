@@ -720,12 +720,9 @@ def build():
                         header_rel = header_abs[len(root)+1:]
                         add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
     
-    # Add a .py file containing location of MuPDF.
-    try:
-        sha, comment, diff, branch = git_info(g_root)
-    except Exception as e:
-        log(f'Failed to get git information: {e}')
-        sha, comment, diff, branch = (None, None, None, None)
+    # Add a .py file containing build-time information - location of MuPDF,
+    # pymupdf git info, swig version etc.
+    #
     swig = PYMUPDF_SETUP_SWIG or 'swig'
     swig_version_text = run(f'{swig} -version', capture=1)
     m = re.search('\nSWIG Version ([^\n]+)', swig_version_text)
@@ -741,12 +738,10 @@ def build():
     version_p_tuple = tuple(int_or_0(i) for i in version_p.split('.'))
     log(f'{swig_version=}')
     text = ''
+    text += pipcl.git_info_py(g_root, check=0, prefix = 'pymupdf_git_')
     text += f'mupdf_location = {mupdf_location!r}\n'
     text += f'pymupdf_version = {version_p!r}\n'
     text += f'pymupdf_version_tuple = {version_p_tuple!r}\n'
-    text += f'pymupdf_git_sha = {sha!r}\n'
-    text += f'pymupdf_git_diff = {diff!r}\n'
-    text += f'pymupdf_git_branch = {branch!r}\n'
     text += f'swig_version = {swig_version!r}\n'
     text += f'swig_version_tuple = {swig_version_tuple!r}\n'
     text += f'fake_no_gil = {PYMUPDF_SETUP_FAKE_NOGIL=="1"!r}\n'
