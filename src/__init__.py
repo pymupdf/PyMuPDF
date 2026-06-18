@@ -10831,19 +10831,10 @@ class Page:
         mupdf.pdf_clip_page(pdfpage, pclip)
         JM_refresh_links(pdfpage)
 
-    def get_layout(self):
+    def get_layout(self, **kwargs):
         """Try to access layout information."""
-
-        if self.layout_information is not None:
-            # layout information already present
-            return
-
-        if not _get_layout:
-            # no layout information available
-            return
-
-        layout_info = _get_layout(self)
-        self.layout_information = layout_info
+        if _get_layout:
+            self.layout_information = _get_layout(self, **kwargs)
 
     @property
     def artbox(self):
