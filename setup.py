@@ -1338,7 +1338,7 @@ if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
         return list()
     
     p = pipcl.Package(
-            'PyMuPDFb',
+            'pymupdfb',
             version_b,
             summary = 'Dummy PyMuPDFb wheel',
             description = '',
@@ -1366,11 +1366,11 @@ else:
     
     if 'p' in PYMUPDF_SETUP_FLAVOUR:
         version = version_p
-        name = 'PyMuPDF'
+        name = 'pymupdf'
         readme = readme_p
         summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
         if 'b' not in PYMUPDF_SETUP_FLAVOUR:
-            requires_dist.append(f'PyMuPDFb =={version_b}')
+            requires_dist.append(f'pymupdfb =={version_b}')
         # Create a `pymupdf` command.
         entry_points = textwrap.dedent('''
                 [console_scripts]
@@ -1378,15 +1378,15 @@ else:
                 ''')
     elif 'b' in PYMUPDF_SETUP_FLAVOUR:
         version = version_b
-        name = 'PyMuPDFb'
+        name = 'pymupdfb'
         readme = readme_b
-        summary = 'MuPDF shared libraries for PyMuPDF.'
+        summary = 'MuPDF shared libraries for pymupdf.'
         tag_python = 'py3'
     elif 'd' in PYMUPDF_SETUP_FLAVOUR:
         version = version_b
-        name = 'PyMuPDFd'
+        name = 'pymupdfd'
         readme = readme_d
-        summary = 'MuPDF build-time files for PyMuPDF.'
+        summary = 'MuPDF build-time files for pymupdf.'
         tag_python = 'py3'
     else:
         assert 0, f'Unrecognised {PYMUPDF_SETUP_FLAVOUR=}.'
