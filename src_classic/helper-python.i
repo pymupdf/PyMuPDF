@@ -901,7 +901,10 @@ class linkDest(object):
                     if ftab[1].startswith("page="):
                         self.kind = LINK_GOTOR
                         self.fileSpec = ftab[0]
-                        self.page = int(ftab[1][5:]) - 1
+                        page_part = ftab[1][5:]
+                        if "&" in page_part:
+                            page_part = page_part.split("&")[0]
+                        self.page = int(page_part) - 1
             else:
                 self.isUri = True
                 self.kind = LINK_LAUNCH
