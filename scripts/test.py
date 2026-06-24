@@ -375,14 +375,13 @@ import subprocess
 import sys
 import textwrap
 
+import autovenv
+autovenv.enter(packages='pipcl')
+
+import pipcl
 
 pymupdf_dir_abs = os.path.abspath( f'{__file__}/../..')
 
-try:
-    sys.path.insert(0, f'{pymupdf_dir_abs}/src')
-    import pipcl
-finally:
-    del sys.path[0]
 
 try:
     sys.path.insert(0, f'{pymupdf_dir_abs}/scripts')
