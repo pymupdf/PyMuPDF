@@ -1,5 +1,7 @@
 import pymupdf
 
+import pipcl
+
 import os
 import re
 import sys
@@ -8,12 +10,10 @@ import sys
 g_root_abs = os.path.normpath(f'{__file__}/../../')
 
 sys.path.insert(0, g_root_abs)
-sys.path.insert(0, f'{g_root_abs}/src')
 try:
-    import pipcl
     import setup
 finally:
-    del sys.path[0:2]
+    del sys.path[0]
 
 g_root = pipcl.relpath(g_root_abs)
 
@@ -42,10 +42,10 @@ def test_release_versions():
     '''
     PyMuPDF and default MuPDF must have same major.minor version.
     '''
-    version_p_tuple = [int(i) for i in setup.version_p.split('.')]
-    version_mupdf_tuple = [int(i) for i in setup.version_mupdf.split('.')]
-    assert version_p_tuple[:2] == version_mupdf_tuple[:2], \
-            f'PyMuPDF and MuPDF major.minor versions do not match. {setup.version_p=} {setup.version_mupdf=}.'
+    version_pymupdf_tuple = pipcl.version_to_tuple(setup.version_p)
+    version_mupdf_tuple = pipcl.version_to_tuple(setup.version_mupdf)
+    assert version_pymupdf_tuple[:2] == version_mupdf_tuple[:2], \
+            f'PyMuPDF and MuPDF major.minor versions do not match. {setup.version_pymupdf_tuple=} {setup.version_mupdf=}.'
 
 
 def test_release_bug_template():
@@ -80,7 +80,7 @@ def test_release_changelog_mupdf_version():
     p = f'{g_root}/changes.txt'
     with open(p) as f:
         text = f.read()
-    m = re.search(f'\n[*] Use MuPDF-([0-9.]+)[.]\n', text)
+    m = re.search(f'\n[*] Use MuPDF-([0-9.]+(-rc[0-9])?)[.]\n', text)
     assert m, f'Cannot parse {p}.'
     assert m[1] == setup.version_mupdf, \
             f'{_file_line(p, text, m)}: First mentioned MuPDF version does not match {setup.version_mupdf=}: {m[0].strip()!r}.'
