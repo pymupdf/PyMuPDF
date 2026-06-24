@@ -1835,7 +1835,7 @@ class Annot:
             if abs(apnmat - Matrix(1, 1)) < 1e-5:
                 return  # matrix already is a no-op
             quad = self.rect.morph(M, ~apnmat)  # derotate rect
-            self.setRect(quad.rect)
+            self.set_rect(quad.rect)
             self.set_apn_matrix(Matrix(1, 1))  # appearance matrix = no-op
             return
 
