@@ -122,11 +122,9 @@ def test_pylint():
             'fitz___init__.py',
             'fitz_table.py',
             'fitz_utils.py',
-            'pipcl.py',
             'pymupdf.py',
             'table.py',
             'utils.py',
-            'wdev.py',
             ]
     leafs.sort()
     try:
