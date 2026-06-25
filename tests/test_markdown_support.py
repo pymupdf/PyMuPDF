@@ -1,5 +1,6 @@
 import pymupdf
 import os
+import textwrap
 
 
 def test_archive_markdown():
@@ -71,3 +72,15 @@ def test_markdown_style():
             assert "Roman" in spans[0]["font"]
         else:
             assert "Roman" not in spans[0]["font"]
+
+def test_markdown_save():
+    md = textwrap.dedent('''
+            # title
+            
+            ## section
+            
+            text
+            ''')
+    with pymupdf.open(stream=md.encode(), filetype='md') as document_md:
+        out_pdf = os.path.normpath(f'{__file__}/../../tests/test_markdown_save.pdf')
+        document_md.save(out_pdf)
