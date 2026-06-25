@@ -742,3 +742,14 @@ def test_4944():
         
         text_json = page.get_text('rawjson')
         #print(text_json)
+
+
+def test_5033():
+    with pymupdf.open() as document:
+        document.insert_page(0)
+        page = document[0]
+        annot = page.add_line_annot((0, 0), (1, 1))
+        annot.set_rotation(90)
+        annot.update()
+        annot.set_rotation(0)
+        annot.update()
