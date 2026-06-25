@@ -6529,7 +6529,12 @@ class Document:
         if user_pw and len(user_pw) > 40 or owner_pw and len(owner_pw) > 40:
             raise ValueError("password length must not exceed 40")
         
-        pdf = _as_pdf_document(self)
+        pdf = _as_pdf_document(self, required=False)
+        if not pdf:
+            pdf_bytes = self.convert_to_pdf()
+            pdf_document = open(stream=pdf_bytes, filetype='pdf')
+            pdf = _as_pdf_document(pdf_document)
+        
         opts = mupdf.PdfWriteOptions()
         opts.do_incremental = incremental
         opts.do_ascii = ascii
