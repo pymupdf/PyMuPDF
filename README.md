@@ -177,9 +177,7 @@ print(text)
 import pymupdf
 
 md_doc = pymupdf.open("example.md")
-pdfdata = md_doc.convert_to_pdf()
-pdf_doc = pymupdf.open(stream=pdfdata)
-pdf_doc.save("example.pdf")
+md_doc.save("example.pdf")
 ```
 
 ### Convert to Markdown for LLMs
