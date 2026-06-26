@@ -1285,12 +1285,10 @@ For details on **embedded files** refer to Appendix 3.
 
   .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0, compression_effort=0, raise_on_repair=False)
 
-    * Changed in v1.18.7
-    * Changed in v1.19.0
-    * Changed in v1.24.1
-
-    PDF only: Saves the document in its **current state**.
-
+    PDF documents are saved in their **current state**.
+    
+    Non-PDF documents are saved in PDF format. *(new in v1.28.0)*
+    
     :arg str,Path,fp outfile: The file path, `pathlib.Path` or file object to save to. A file object must have been created before via `open(...)` or `io.BytesIO()`. Choosing `io.BytesIO()` is similar to :meth:`Document.tobytes` below, which equals the `getvalue()` output of an internally created `io.BytesIO()`.
 
     :arg int garbage: Do garbage collection. Positive values exclude "incremental".
@@ -1355,6 +1353,7 @@ For details on **embedded files** refer to Appendix 3.
       This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below. 
 
       2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
+
 
   .. method:: ez_save(*args, **kwargs)
 
