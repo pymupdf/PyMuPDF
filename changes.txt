@@ -19,6 +19,7 @@ Other:
 * Fixed MacOS x64 platform tag - used to be macosx_10_9_x86_64, but we actually
   require MacOS 10.15, so platform tag is now macosx_10_15_x86_64.
 * Support Windows builds with free thread python.
+* pymupdf.Document.save() now saves non-PDF documents in PDF format.
 
 
 **Changes in version 1.27.2.3** (2026-04-24)
