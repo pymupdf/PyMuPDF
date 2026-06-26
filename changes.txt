@@ -7,9 +7,9 @@ Change Log
 Fixed issues:
 
 * **Fixed** `4114 <https://github.com/pymupdf/PyMuPDF/issues/4114>`_: ComboBox choice_values full of empty strings despite PDF having valid choices. 
-* **Fixed** `4423 <https://github.com/pymupdf/PyMuPDF/issues/4423>`_: pymupdf.mupdf.FzErrorFormat: code=7: cannot find object in xref error encountered after version 1.25.3
 * **Fixed** `4950 <https://github.com/pymupdf/PyMuPDF/issues/4950>`_: remove_rotation() raises ValueError on widgets with empty/infinite rects
 * **Fixed** `5001 <https://github.com/pymupdf/PyMuPDF/issues/5001>`_: Formulae incorrectly rendered as black boxes
+* **Fixed** `5033 <https://github.com/pymupdf/PyMuPDF/issues/5033>`_: Annot.set_rotation(0) followed by Annot.update() throws AttributeError
 
 Other:
 
@@ -20,6 +20,7 @@ Other:
   require MacOS 10.15, so platform tag is now macosx_10_15_x86_64.
 * Support Windows builds with free thread python.
 * pymupdf.Document.save() now saves non-PDF documents in PDF format.
+* New method pymupdf.Document.apply_css().
 
 
 **Changes in version 1.27.2.3** (2026-04-24)
