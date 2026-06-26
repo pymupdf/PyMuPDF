@@ -13,7 +13,7 @@ Fixed issues:
 
 Other:
 
-* Use MuPDF-1.28.0-rc2.
+* Use MuPDF-1.28.0.
 * pymupdf.Document.__init__(): new arg `archive` to support documents with archives.
 * pymupdf.Document.convert_to_pdf(): also generate links.
 * Fixed MacOS x64 platform tag - used to be macosx_10_9_x86_64, but we actually
