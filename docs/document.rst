@@ -184,7 +184,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg str filetype: A string specifying the type of document. This is only ever needed when file content inspection fails. Text types like "txt", "html", "xml" etc. cannot be disambiguated by their content. When such files are provided in memory or being provided with the wrong file extension, this parameter **must** be used.
 
-    :arg Archive archive: An optional :ref:`Archive` object to use as a source for resources like fonts and images.
+    :arg Archive archive: An optional :ref:`Archive` object to use as a source for resources like fonts and images. *(new in v1.28.0)*
 
     :arg rect_like rect: A rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books, MD or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter :data:`fontsize`, each page will be accordingly laid out and hence also determine the number of pages.
 
