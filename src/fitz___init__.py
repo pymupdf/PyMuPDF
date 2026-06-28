@@ -11,3 +11,5 @@ from pymupdf import __version__
 from pymupdf import __doc__
 from pymupdf import _globals
 from pymupdf import _g_out_message
+
+message_warning('The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.')
