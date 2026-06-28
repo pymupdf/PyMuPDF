@@ -84,3 +84,80 @@ def test_markdown_save():
     with pymupdf.open(stream=md.encode(), filetype='md') as document_md:
         out_pdf = os.path.normpath(f'{__file__}/../../tests/test_markdown_save.pdf')
         document_md.save(out_pdf)
+
+
+def test_markdown_bad_unicode():
+    path_md = os.path.normpath(f'{__file__}/../../tests/resources/test_markdown_bad_unicode.md')
+    path_md_pdf = os.path.normpath(f'{__file__}/../../tests/test_markdown_bad_unicode.md.pdf')
+    with pymupdf.open(path_md) as md_doc:
+        md_doc.save(path_md_pdf)
+    
+    # To check that pymupdf has done the right thing, we extract text from our
+    # generated pdf and assert that it is as expected.
+    with pymupdf.open(path_md_pdf) as document:
+        text = document[0].get_text()
+    textb = text.encode('utf8')
+    print()
+    print(textwrap.indent(text, '    '))
+    print(f'textb:')
+    for line in textb.split(b'\n'):
+        print(f'    {line}')
+    print(f'{pymupdf.mupdf_version_tuple=}')
+    if pymupdf.mupdf_version_tuple > (1, 28, 0):
+        textb_expected = (
+                b'Title',
+                b'A Table',
+                b'Boiling Points \xc8\xb9C',
+                b'min',
+                b'max',
+                b'avg',
+                b'Noble gases',
+                b'-269',
+                b'-62',
+                b'-170.5',
+                b'Nonmetals',
+                b'-253',
+                b'4827',
+                b'414.1',
+                b'Metalloids',
+                b'335',
+                b'3900',
+                b'741.5',
+                b'Metals',
+                b'357',
+                b'>5000',
+                b'2755.9',
+                b'A List',
+                b'\xe2\x80\xa2  Comment 1',
+                b'\xe2\x80\xa2  Comment 2',
+                b'\xe2\x80\xa2  Comment 3 with a link to Find out more',
+                b'My TO-DOs',
+                b'\xe2\x80\xa2  \xe2\x98\x92 Done!',
+                b'\xe2\x80\xa2  \xe2\x98\x92 Also done!',
+                b'\xe2\x80\xa2  \xe2\x98\x90 Still open',
+                b'',
+                )
+    else:
+        # Table is not recognised because it contains illegal utf8 sequence.
+        textb_expected = (
+                b'Title',
+                b'A Table',
+                b'|Boiling Points \xc8\xb9C|min|max|avg| |---|---|---|---| |Noble',
+                b'gases|-269|-62|-170.5| |Nonmetals|-253|4827|414.1| |Metalloids|',
+                b'335|3900|741.5| |Metals|357|>5000|2755.9|',
+                b'A List',
+                b'\xe2\x80\xa2  Comment 1',
+                b'\xe2\x80\xa2  Comment 2',
+                b'\xe2\x80\xa2  Comment 3 with a link to Find out more',
+                b'My TO-DOs',
+                b'\xe2\x80\xa2  \xe2\x98\x92 Done!',
+                b'\xe2\x80\xa2  \xe2\x98\x92 Also done!',
+                b'\xe2\x80\xa2  \xe2\x98\x90 Still open',
+                b'',
+                )
+    textb_expected = b'\n'.join(textb_expected)
+    if textb != textb_expected:
+        print(f'textb_expected:')
+        for line in textb_expected.split(b'\n'):
+            print(f'    {line}')
+    assert textb == textb_expected
