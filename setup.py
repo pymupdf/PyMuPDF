@@ -825,7 +825,7 @@ def build_mupdf_windows(
         windows_build_tail += f'-Py_LIMITED_API_{pipcl.current_py_limited_api()}'
     if PYMUPDF_SETUP_FAKE_NOGIL == '1':
         windows_build_tail += '-nogil'
-    windows_build_tail += f'-{wp.cpu.windows_name}-py{wp.version}'
+    windows_build_tail += f'-{wp.cpu.name}-py{wp.version}'
     pipcl.log(f'{sysconfig.get_config_var("Py_GIL_DISABLED")=}')
     if sysconfig.get_config_var('Py_GIL_DISABLED')==1:
         # We are building with free-threading python.
@@ -1394,6 +1394,7 @@ else:
     if os.environ.get('PYODIDE_ROOT'):
         # We can't pip install pytest on pyodide, so specify it here.
         requires_dist.append('pytest')
+        requires_dist.append('pipcl')
 
     p = pipcl.Package(
             name,
