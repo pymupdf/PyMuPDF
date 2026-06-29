@@ -323,14 +323,7 @@ def test_4457():
         
         assert text_before == text
         assert rms_before == 0
-        
-        if pymupdf.mupdf_version_tuple >= (1, 26, 6):
-            assert rms_after == 0
-        else:
-            # As of 2025-05-20 there are some differences in some characters,
-            # e.g. the non-ascii characters in `Philipp Krahenbuhl`.  See
-            # <path_pixmap> and <path_pixmap_after>.
-            assert abs(rms_after - rms_old_after_max) < 2
+        assert rms_after == 0
     
     # Avoid test failure caused by mupdf warnings.
     wt = pymupdf.TOOLS.mupdf_warnings()

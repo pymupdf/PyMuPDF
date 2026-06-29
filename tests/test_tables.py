@@ -305,25 +305,14 @@ def test_markdown():
     doc = pymupdf.open(filename)
     page = doc[0]
     tab = page.find_tables(strategy="lines_strict")[0]
-    if pymupdf.mupdf_version_tuple < (1, 26, 3):
-        md_expected = textwrap.dedent('''
-                |Header1|Header2|Header3|
-                |---|---|---|
-                |Col11<br>Col12|~~Col21~~<br>~~Col22~~|Col31<br>Col32<br>Col33|
-                |Col13|~~Col23~~|Col34<br>Col35|
-                |Col14|~~Col24~~|Col36|
-                |Col15|~~Col25~~<br>~~Col26~~||
-                
-                ''').lstrip()
-    else:
-        md_expected = (
-            "|Header1|Header2|Header3|\n"
-            "|---|---|---|\n"
-            "|Col11<br>Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
-            "|Col13|Col23|Col34<br>Col35|\n"
-            "|Col14|Col24|Col36|\n"
-            "|Col15|Col25<br>Col26||\n\n"
-        )
+    md_expected = (
+        "|Header1|Header2|Header3|\n"
+        "|---|---|---|\n"
+        "|Col11<br>Col12|Col21<br>Col22|Col31<br>Col32<br>Col33|\n"
+        "|Col13|Col23|Col34<br>Col35|\n"
+        "|Col14|Col24|Col36|\n"
+        "|Col15|Col25<br>Col26||\n\n"
+    )
 
 
     md = tab.to_markdown()
