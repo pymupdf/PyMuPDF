@@ -679,6 +679,13 @@ def test_5001():
 
 
 def test_5001b():
+    if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
+        # module `PIL` not available - see
+        # conftest.py:install_required_packages for details.
+        return
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_2791(): not running on Pyodide - No module named \'PIL\'.')
+        return
     from PIL import ImageCms  # only to fabricate an ICC profile
 
     icc = ImageCms.ImageCmsProfile(ImageCms.createProfile("sRGB")).tobytes()
