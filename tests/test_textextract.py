@@ -354,9 +354,7 @@ def test_3594():
                 print(f'    {line!r}')
             print('='*40)
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple < (1, 26, 8):
-        assert not wt
-    elif pymupdf.mupdf_version_tuple < (1, 28):
+    if pymupdf.mupdf_version_tuple < (1, 28):
         assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 2 times...'
     else:
         assert wt == 'ActualText with no position. Text may be lost or mispositioned.\n... repeated 2 times...'
@@ -407,14 +405,10 @@ def test_3705():
     if pymupdf.mupdf_version_tuple >= (1, 27, 1):
         expected = ''
         assert wt == expected
-    elif pymupdf.mupdf_version_tuple >= (1, 27):
+    else:
         expected = 'format error: No common ancestor in structure tree\nstructure tree broken, assume tree is missing'
         expected = '\n'.join([expected] * 56)
         assert wt == expected
-    elif pymupdf.mupdf_version_tuple >= (1, 26, 8):
-        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 7684 times...'
-    else:
-        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 434 times...'
 
 def test_3650():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3650.pdf')
@@ -910,18 +904,11 @@ def test_4546():
     print(f'{text.encode()=}')
     
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 26, 8):
-        assert text == expected_mupdf_1_27_0
-        if pymupdf.mupdf_version_tuple >= (1, 28):
-            assert wt == 'ActualText with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
-        else:
-            assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
-    elif pymupdf.mupdf_version_tuple >= (1, 26, 1):
-        assert text == expected_mupdf_1_26_1
-        assert not wt
+    assert text == expected_mupdf_1_27_0
+    if pymupdf.mupdf_version_tuple >= (1, 28):
+        assert wt == 'ActualText with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
     else:
-        print(f'No expected output for {pymupdf.mupdf_version_tuple=}')
-        assert not wt
+        assert wt == 'Actualtext with no position. Text may be lost or mispositioned.\n... repeated 120 times...'
 
 
 def test_4503():
@@ -959,21 +946,5 @@ def test_4503():
     strikeout = span_0['char_flags'] & pymupdf.mupdf.FZ_STEXT_STRIKEOUT
     print(f'{strikeout=}')
     
-    if pymupdf.mupdf_version_tuple >= (1, 26, 3):
-        assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
-        assert text_0 == 'the right to request the state to review and, if appropriate,'
-    elif pymupdf.mupdf_version_tuple >= (1, 26, 2):
-        # 2025-06-09: This is still incorrect - the span should include the
-        # following text 'and, if appropriate,'. It looks like following spans
-        # are:
-        #   strikeout=0: 'and, '
-        #   strikeout=1: 'if '
-        #   strikeout=0: 'appropri' 
-        #   strikeout=1: 'ate,'
-        #
-        assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
-        assert text_0 == 'the right to request the state to review '
-    else:
-        # Expecting the bug.
-        assert not strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be unset in {span_0["char_flags"]=:#x}.'
-        assert text_0 == 'notice the right to request the state to review and, if appropriate,'
+    assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
+    assert text_0 == 'the right to request the state to review and, if appropriate,'

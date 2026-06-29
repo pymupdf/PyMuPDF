@@ -199,10 +199,7 @@ def test_3050():
         print(f'{rms=}')
         assert rms == 0
         wt = pymupdf.TOOLS.mupdf_warnings()
-        if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
-            assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
-        else:
-            assert wt == 'PDF stream Length incorrect'
+        assert wt == 'PDF stream Length incorrect'
 
 def test_3058():
     doc = pymupdf.Document(os.path.abspath(f'{__file__}/../../tests/resources/test_3058.pdf'))
@@ -616,10 +613,7 @@ def test_3806():
         pixmap.save(path_png)
         rms = gentle_compare.pixmaps_rms(path_png_expected, pixmap)
         print(f'{rms=}')
-        if pymupdf.mupdf_version_tuple >= (1, 26, 6):
-            assert rms < 0.1
-        else:
-            assert rms > 50
+        assert rms < 0.1
 
 
 def test_4388():
@@ -644,10 +638,7 @@ def test_4388():
 
     rms = gentle_compare.pixmaps_rms(pixmap_correct, pixmap_test)
     print(f'{rms=}')
-    if pymupdf.mupdf_version_tuple >= (1, 26, 6):
-        assert rms == 0
-    else:
-        assert rms >= 10
+    assert rms == 0
 
 
 def test_4699():
@@ -661,12 +652,7 @@ def test_4699():
     print(f'Have saved to {path_png_actual=}.')
     rms = gentle_compare.pixmaps_rms(path_png_expected, pixmap)
     print(f'test_4699(): {rms=}')
-    if pymupdf.mupdf_version_tuple >= (1, 26, 11):
-        assert rms == 0
-    else:
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert 'syntax error: cannot find ExtGState resource' in wt
-        assert rms > 20
+    assert rms == 0
 
 
 def test_5001():

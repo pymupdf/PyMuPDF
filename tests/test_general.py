@@ -72,8 +72,6 @@ def test_iswrapped():
     doc = pymupdf.open(filename)
     page = doc[0]
     assert page.is_wrapped
-    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
-        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)'
 
 
 def test_wrapcontents():
@@ -87,10 +85,7 @@ def test_wrapcontents():
     assert len(page.get_contents()) == 1
     page.clean_contents()
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
-        assert wt == 'bogus font ascent/descent values (0 / 0)\nPDF stream Length incorrect'
-    else:
-        assert wt == 'PDF stream Length incorrect'
+    assert wt == 'PDF stream Length incorrect'
 
 
 def test_page_clean_contents():
@@ -251,8 +246,6 @@ def test_get_text_dict():
     blocks=page.get_text("dict")["blocks"]
     # Check no opaque types in `blocks`.
     json.dumps( blocks, indent=4)
-    if (1, 26, 0) <= pymupdf.mupdf_version_tuple < (1, 27):
-        assert pymupdf.TOOLS.mupdf_warnings() == 'bogus font ascent/descent values (0 / 0)'
 
 def test_font():
     font = pymupdf.Font()
@@ -608,9 +601,6 @@ def test_2596():
     page = doc.reload_page(page)
     pix1 = page.get_pixmap()
     assert pix1.samples == pix0.samples
-    if pymupdf.mupdf_version_tuple < (1, 26, 6):
-        wt = pymupdf.TOOLS.mupdf_warnings()
-        assert wt == 'too many indirections (possible indirection cycle involving 24 0 R)'
 
 
 def test_2730():
@@ -1966,10 +1956,7 @@ def test_4533():
     cp = subprocess.run(command, shell=1, check=0)
     e = cp.returncode
     print(f'{e=}')
-    if pymupdf.mupdf_version_tuple >= (1, 26, 6):
-        assert e == 0
-    else:
-        assert e != 0
+    assert e == 0
 
 
 def test_4564():
@@ -2147,9 +2134,6 @@ def test_4712():
     '''
     Crash with "corrupted double-linked list
     '''
-    if pymupdf.mupdf_version_tuple < (1, 26, 11):
-        print(f'test_4712m(): Not running because known to fail on mupdf < 1.26.11: {pymupdf.mupdf_version=}.')
-        return
     path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
     path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
     doc1 = pymupdf.open(path_a)
@@ -2161,10 +2145,6 @@ def test_4712():
 
 
 def test_4712m():
-    if pymupdf.mupdf_version_tuple < (1, 26, 11):
-        print(f'test_4712m(): Not running because known to fail on mupdf < 1.26.11: {pymupdf.mupdf_version=}.')
-        return
-    
     path_a = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_a.pdf')
     path_b = os.path.normpath(f'{__file__}/../../tests/resources/test_4712_b.pdf')
     
