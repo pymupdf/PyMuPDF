@@ -49,39 +49,6 @@ Environmental variables:
     PYMUPDF_SETUP_DUMMY
         If 1, we build dummy sdist and wheel with no files.
     
-    PYMUPDF_SETUP_FLAVOUR
-        Control building of separate wheels for PyMuPDF.
-        
-        Must be unset or a combination of 'p', 'b' and 'd'.
-        
-        Default is 'pbd'.
-        
-        'p':
-            Generated wheel contains PyMuPDF code.
-        'b':
-            Generated wheel contains MuPDF libraries; these are independent of
-            the Python version.
-        'd':
-            Generated wheel contains includes and libraries for MuPDF.
-        
-        If 'p' is included, the generated wheel is called PyMuPDF.
-        Otherwise if 'b' is included the generated wheel is called PyMuPDFb.
-        Otherwise if 'd' is included the generated wheel is called PyMuPDFd.
-        
-        For example:
-        
-            'pb': a `PyMuPDF` wheel with PyMuPDF runtime files and MuPDF
-            runtime shared libraries.
-            
-            'b': a `PyMuPDFb` wheel containing MuPDF runtime shared libraries.
-            
-            'pbd' a `PyMuPDF` wheel with PyMuPDF runtime files and MuPDF
-            runtime shared libraries, plus MuPDF build-time files (includes,
-            *.lib files on Windows).
-            
-            'd': a `PyMuPDFd` wheel containing MuPDF build-time files
-            (includes, *.lib files on Windows).
-    
     PYMUPDF_SETUP_LIBCLANG
         For internal testing.
         
@@ -226,9 +193,6 @@ for i in PYMUPDF_SETUP_FLAVOUR:
     assert i in 'pbd', f'Unrecognised flag "{i} in {PYMUPDF_SETUP_FLAVOUR=}. Should be one of "p", "b", "d"'
 
 g_root = os.path.abspath( f'{__file__}/..')
-
-# Name of file that identifies that we are in a PyMuPDF sdist.
-g_pymupdfb_sdist_marker = 'pymupdfb_sdist'
 
 python_version_tuple = tuple(int(x) for x in platform.python_version_tuple()[:2])
 
@@ -612,113 +576,96 @@ def build():
                 PYMUPDF_SETUP_FAKE_NOGIL,
                 )
     else:
-        if 'p' not in PYMUPDF_SETUP_FLAVOUR and 'b' not in PYMUPDF_SETUP_FLAVOUR:
-            # We only need MuPDF headers, so no point building MuPDF.
-            log(f'Not building MuPDF because not Windows and {PYMUPDF_SETUP_FLAVOUR=}.')
-            mupdf_build_dir = None
-        else:
-            mupdf_build_dir = build_mupdf_unix(
-                    mupdf_local,
-                    build_type,
-                    overwrite_config,
-                    g_py_limited_api,
-                    PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
-                    PYMUPDF_SETUP_MUPDF_TRACE_IF,
-                    PYMUPDF_SETUP_SWIG,
-                    PYMUPDF_SETUP_FAKE_NOGIL,
-                    )
+        mupdf_build_dir = build_mupdf_unix(
+                mupdf_local,
+                build_type,
+                overwrite_config,
+                g_py_limited_api,
+                PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
+                PYMUPDF_SETUP_MUPDF_TRACE_IF,
+                PYMUPDF_SETUP_SWIG,
+                PYMUPDF_SETUP_FAKE_NOGIL,
+                )
     log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
     
     # Build `extra` module.
     #
-    if 'p' in PYMUPDF_SETUP_FLAVOUR:
-        path_so_leaf = _build_extension(
-                mupdf_local,
-                mupdf_build_dir,
-                build_type,
-                g_py_limited_api,
-                )
-    else:
-        log(f'Not building extension.')
-        path_so_leaf = None
+    path_so_leaf = _build_extension(
+            mupdf_local,
+            mupdf_build_dir,
+            build_type,
+            g_py_limited_api,
+            )
     
-    # Generate list of (from, to) items to return to pipcl. What we add depends
-    # on PYMUPDF_SETUP_FLAVOUR.
-    #
+    # Generate list of (from, to) items to return to pipcl.
     ret = list()    
-    def add(flavour, from_, to_):
-        assert flavour in 'pbd'
-        if flavour in PYMUPDF_SETUP_FLAVOUR:
-            ret.append((from_, to_))
     
     to_dir = 'pymupdf/'
     to_dir_d = f'{to_dir}/mupdf-devel'
     
     # Add implementation files.
-    add('p', f'{g_root}/src/__init__.py', to_dir)
-    add('p', f'{g_root}/src/__main__.py', to_dir)
-    add('p', f'{g_root}/src/pymupdf.py', to_dir)
-    add('p', f'{g_root}/src/table.py', to_dir)
-    add('p', f'{g_root}/src/utils.py', to_dir)
-    add('p', f'{g_root}/src/_wxcolors.py', to_dir)
-    add('p', f'{g_root}/src/_apply_pages.py', to_dir)
-    add('p', f'{g_root}/src/build/extra.py', to_dir)
-    add('p', b'', f'{to_dir}/py.typed')
-    if path_so_leaf:
-        add('p', f'{g_root}/src/build/{path_so_leaf}', to_dir)
+    ret.append( (f'{g_root}/src/__init__.py', to_dir) )
+    ret.append( (f'{g_root}/src/__main__.py', to_dir) )
+    ret.append( (f'{g_root}/src/pymupdf.py', to_dir) )
+    ret.append( (f'{g_root}/src/table.py', to_dir) )
+    ret.append( (f'{g_root}/src/utils.py', to_dir) )
+    ret.append( (f'{g_root}/src/_wxcolors.py', to_dir) )
+    ret.append( (f'{g_root}/src/_apply_pages.py', to_dir) )
+    ret.append( (f'{g_root}/src/build/extra.py', to_dir) )
+    ret.append( (b'', f'{to_dir}/py.typed') )
+    ret.append( (f'{g_root}/src/build/{path_so_leaf}', to_dir) )
 
     # Add support for `fitz` backwards compatibility.
-    add('p', f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py')
-    add('p', f'{g_root}/src/fitz_table.py', 'fitz/table.py')
-    add('p', f'{g_root}/src/fitz_utils.py', 'fitz/utils.py')
+    ret.append( (f'{g_root}/src/fitz___init__.py', 'fitz/__init__.py') )
+    ret.append( (f'{g_root}/src/fitz_table.py', 'fitz/table.py') )
+    ret.append( (f'{g_root}/src/fitz_utils.py', 'fitz/utils.py') )
 
     if mupdf_local:
         # Add MuPDF Python API.
-        add('p', f'{mupdf_build_dir}/mupdf.py', to_dir)
+        ret.append( (f'{mupdf_build_dir}/mupdf.py', to_dir) )
 
         # Add MuPDF shared libraries.
         if windows:
             wp = pipcl.wdev.WindowsPython()
-            add('p', f'{mupdf_build_dir}/_mupdf.pyd', to_dir)
-            add('b', f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir)
+            ret.append( (f'{mupdf_build_dir}/_mupdf.pyd', to_dir) )
+            ret.append( (f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir) )
 
             # Add Windows .lib files.
             mupdf_build_dir2 = _windows_lib_directory(mupdf_local, build_type)
-            add('d', f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/')
+            ret.append( (f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/') )
             # MuPDF-1.25+ language bindings build also builds libmuthreads.
-            add('d', f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/')
+            ret.append( (f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/') )
         elif darwin:
-            add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdf.dylib', to_dir)
-            add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
+            ret.append( (f'{mupdf_build_dir}/_mupdf.so', to_dir) )
+            ret.append( (f'{mupdf_build_dir}/libmupdfcpp.so', to_dir) )
+            ret.append( (f'{mupdf_build_dir}/libmupdf.dylib', to_dir) )
+            ret.append( (f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/') )
         elif pyodide:
-            add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdfcpp.so', to_dir)
-            add('b', f'{mupdf_build_dir}/libmupdf.so', to_dir)
+            ret.append( (f'{mupdf_build_dir}/_mupdf.so', to_dir) )
+            ret.append( (f'{mupdf_build_dir}/libmupdfcpp.so', to_dir) )
+            ret.append( (f'{mupdf_build_dir}/libmupdf.so', to_dir) )
         else:
-            add('p', f'{mupdf_build_dir}/_mupdf.so', to_dir)
-            add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir)
-            add('b', pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir)
-            add('d', f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/')
+            ret.append( (f'{mupdf_build_dir}/_mupdf.so', to_dir) )
+            ret.append( (pipcl.get_soname(f'{mupdf_build_dir}/libmupdfcpp.so'), to_dir) )
+            ret.append( (pipcl.get_soname(f'{mupdf_build_dir}/libmupdf.so'), to_dir) )
+            ret.append( (f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/') )
 
-        if 'd' in PYMUPDF_SETUP_FLAVOUR:
-            # Add MuPDF C and C++ headers to `ret_d`. Would prefer to use
-            # pipcl.git_items() but hard-coded mupdf tree is not a git
-            # checkout.
-            #
-            for root in (
-                    f'{mupdf_local}/include',
-                    f'{mupdf_local}/platform/c++/include',
-                    ):
-                for dirpath, dirnames, filenames in os.walk(root):
-                    for filename in filenames:
-                        if not filename.endswith('.h'):
-                            continue
-                        header_abs = os.path.join(dirpath, filename)
-                        assert header_abs.startswith(root)
-                        header_rel = header_abs[len(root)+1:]
-                        add('d', f'{header_abs}', f'{to_dir_d}/include/{header_rel}')
+        # Add MuPDF C and C++ headers to `mupdf-devel/`. Would prefer to use
+        # pipcl.git_items() but hard-coded mupdf tree is not a git
+        # checkout.
+        #
+        for root in (
+                f'{mupdf_local}/include',
+                f'{mupdf_local}/platform/c++/include',
+                ):
+            for dirpath, dirnames, filenames in os.walk(root):
+                for filename in filenames:
+                    if not filename.endswith('.h'):
+                        continue
+                    header_abs = os.path.join(dirpath, filename)
+                    assert header_abs.startswith(root)
+                    header_rel = header_abs[len(root)+1:]
+                    ret.append( (f'{header_abs}', f'{to_dir_d}/include/{header_rel}') )
     
     # Add a .py file containing build-time information - location of MuPDF,
     # pymupdf git info, swig version etc.
@@ -746,15 +693,10 @@ def build():
     text += f'swig_version_tuple = {swig_version_tuple!r}\n'
     text += f'fake_no_gil = {PYMUPDF_SETUP_FAKE_NOGIL=="1"!r}\n'
     log(f'_build.py is:\n{textwrap.indent(text, "    ")}')
-    add('p', text.encode(), f'{to_dir}/_build.py')
+    ret.append( (text.encode(), f'{to_dir}/_build.py') )
     
     # Add single README file.
-    if 'p' in PYMUPDF_SETUP_FLAVOUR:
-        add('p', f'{g_root}/README.md', '$dist-info/README.md')
-    elif 'b' in PYMUPDF_SETUP_FLAVOUR:
-        add('b', f'{g_root}/READMEb.md', '$dist-info/README.md')
-    elif 'd' in PYMUPDF_SETUP_FLAVOUR:
-        add('d', f'{g_root}/READMEd.md', '$dist-info/README.md')
+    ret.append( (f'{g_root}/README.md', '$dist-info/README.md') )
     
     return ret
 
@@ -1258,23 +1200,6 @@ def sdist():
     if PYMUPDF_SETUP_DUMMY == '1':
         return ret
     
-    if PYMUPDF_SETUP_FLAVOUR == 'b':
-        # Create a minimal sdist that will build/install a dummy PyMuPDFb.
-        for p in (
-                'setup.py',
-                'pipcl.py',
-                'wdev.py',
-                'pyproject.toml',
-                ):
-            ret.append(p)
-        ret.append(
-                (
-                    b'This file indicates that we are a PyMuPDFb sdist and should build/install a dummy PyMuPDFb package.\n',
-                    g_pymupdfb_sdist_marker,
-                    )
-                )
-        return ret
-        
     for p in pipcl.git_items( g_root):
         if p.startswith(
                 (
@@ -1295,114 +1220,42 @@ def sdist():
     return ret
 
 
-classifier = [
-        'Development Status :: 5 - Production/Stable',
-        'Intended Audience :: Developers',
-        'Intended Audience :: Information Technology',
-        'Operating System :: MacOS',
-        'Operating System :: Microsoft :: Windows',
-        'Operating System :: POSIX :: Linux',
-        'Programming Language :: C',
-        'Programming Language :: C++',
-        'Programming Language :: Python :: 3 :: Only',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Topic :: Utilities',
-        'Topic :: Multimedia :: Graphics',
-        'Topic :: Software Development :: Libraries',
-        ]
-
-# We generate different wheels depending on PYMUPDF_SETUP_FLAVOUR.
-#
-
 # PyMuPDF version.
 version_p = '1.28.0'
 
 version_mupdf = '1.28.0'
 
-# PyMuPDFb version. This is the PyMuPDF version whose PyMuPDFb wheels we will
-# (re)use if generating separate PyMuPDFb wheels. Though as of PyMuPDF-1.24.11
-# (2024-10-03) we no longer use PyMuPDFb wheels so this is actually unused.
-#
-version_b = '1.26.3'
-
-if os.path.exists(f'{g_root}/{g_pymupdfb_sdist_marker}'):
-    
-    # We are in a PyMuPDFb sdist. We specify a dummy package so that pip builds
-    # from sdists work - pip's build using PyMuPDF's sdist will already create
-    # the required binaries, but pip will still see `requires_dist` set to
-    # 'PyMuPDFb', so will also download and build PyMuPDFb's sdist.
-    #
-    log(f'Specifying dummy PyMuPDFb wheel.')
-    
-    def get_requires_for_build_wheel(config_settings=None):
-        return list()
-    
-    p = pipcl.Package(
-            'pymupdfb',
-            version_b,
-            summary = 'Dummy PyMuPDFb wheel',
-            description = '',
-            author = 'Artifex',
-            author_email = 'support@artifex.com',
-            license = 'GNU AFFERO GPL 3.0',
-            tag_python = 'py3',
-            )
-
-else:
+if 1:
     # A normal PyMuPDF package.
     
-    with open( f'{g_root}/README.md', encoding='utf-8') as f:
-        readme_p = f.read()
-
-    with open( f'{g_root}/READMEb.md', encoding='utf-8') as f:
-        readme_b = f.read()
-
-    with open( f'{g_root}/READMEd.md', encoding='utf-8') as f:
-        readme_d = f.read()
-
-    tag_python = None
     requires_dist = list()
-    entry_points = None
-    
-    if 'p' in PYMUPDF_SETUP_FLAVOUR:
-        version = version_p
-        name = 'pymupdf'
-        readme = readme_p
-        summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.'
-        if 'b' not in PYMUPDF_SETUP_FLAVOUR:
-            requires_dist.append(f'pymupdfb =={version_b}')
-        # Create a `pymupdf` command.
-        entry_points = textwrap.dedent('''
-                [console_scripts]
-                pymupdf = pymupdf.__main__:main
-                ''')
-    elif 'b' in PYMUPDF_SETUP_FLAVOUR:
-        version = version_b
-        name = 'pymupdfb'
-        readme = readme_b
-        summary = 'MuPDF shared libraries for pymupdf.'
-        tag_python = 'py3'
-    elif 'd' in PYMUPDF_SETUP_FLAVOUR:
-        version = version_b
-        name = 'pymupdfd'
-        readme = readme_d
-        summary = 'MuPDF build-time files for pymupdf.'
-        tag_python = 'py3'
-    else:
-        assert 0, f'Unrecognised {PYMUPDF_SETUP_FLAVOUR=}.'
-    
     if os.environ.get('PYODIDE_ROOT'):
         # We can't pip install pytest on pyodide, so specify it here.
         requires_dist.append('pytest')
         requires_dist.append('pipcl')
 
     p = pipcl.Package(
-            name,
-            version,
-            summary = summary,
-            description = readme,
+            'pymupdf',
+            version_p,
+            summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.',
+            description = 'README.md',
             description_content_type = 'text/markdown',
-            classifier = classifier,
+            classifier = [
+                'Development Status :: 5 - Production/Stable',
+                'Intended Audience :: Developers',
+                'Intended Audience :: Information Technology',
+                'Operating System :: MacOS',
+                'Operating System :: Microsoft :: Windows',
+                'Operating System :: POSIX :: Linux',
+                'Programming Language :: C',
+                'Programming Language :: C++',
+                'Programming Language :: Python :: 3 :: Only',
+                'Programming Language :: Python :: Implementation :: CPython',
+                'Topic :: Utilities',
+                'Topic :: Multimedia :: Graphics',
+                'Topic :: Software Development :: Libraries',
+                ],
+
             author = 'Artifex',
             author_email = 'support@artifex.com',
             requires_dist = requires_dist,
@@ -1414,16 +1267,19 @@ else:
                 ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
                 ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
                 ],
-        
-            entry_points = entry_points,
-        
+            
+            # We create a `pymupdf` command.
+            entry_points = textwrap.dedent('''
+                [console_scripts]
+                pymupdf = pymupdf.__main__:main
+                '''),
+            
             fn_build=build,
             fn_clean=clean,
             fn_sdist=sdist,
-        
-            tag_python=tag_python,
+            
             py_limited_api=g_py_limited_api,
-
+            
             # 30MB: 9 ZIP_DEFLATED
             # 28MB: 9 ZIP_BZIP2
             # 23MB: 9 ZIP_LZMA
