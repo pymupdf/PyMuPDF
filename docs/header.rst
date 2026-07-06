@@ -171,7 +171,7 @@
     </style>
 
     <div id="searchAndLangugeHolder">
-        <button id="visit-pymupdf-io" class="cta orange" onclick="window.location='https://pymupdf.io?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button'">pymupdf.io</button>
+        <button id="visit-pymupdf-io" class="cta orange" onclick="window.location='https://pymupdf.io?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-header'">pymupdf.io</button>
         <form id="headerSearchWidget" class="sidebar-search-container top" method="get" action="search.html" role="search">
           <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
           <input type="hidden" name="check_keywords" value="yes">
@@ -201,7 +201,7 @@
             </a>
         </div>
         <div class="forumLink">
-            <div id="forumCTAText"></div><a id="winking-cow-link" style="font-weight: bold;" href="https://forum.mupdf.com">Try our forum! <img alt="MuPDF Forum link logo" id="winking-cow-image" src="https://pymupdf.readthedocs.io/en/latest/_static/forum-logo.gif" width=38px height=auto /></a>
+            <div id="forumCTAText"></div><a id="winking-cow-link" style="font-weight: bold;" href="https://forum.mupdf.com?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-header">Try our forum! <img alt="MuPDF Forum link logo" id="winking-cow-image" src="https://pymupdf.readthedocs.io/en/latest/_static/forum-logo.gif" width=38px height=auto /></a>
         </div>
     </div>
 

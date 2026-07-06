@@ -11,9 +11,9 @@ Converting Files
 Files to PDF
 ~~~~~~~~~~~~~~~~~~
 
-:ref:`Document types supported by PyMuPDF <HowToOpenAFile>` can easily be converted to |PDF| by using the :meth:`Document.convert_to_pdf` method. This method returns a buffer of data which can then be utilized by |PyMuPDF| to create a new |PDF|.
+:ref:`Document types supported by PyMuPDF <HowToOpenAFile>` can easily be converted to |PDF| by using the :meth:`Document.save` or :meth:`Document.ez_save` method after they have been opened.
 
-
+If you require a byte representation of the PDF, you can use :meth:`Document.convert_to_pdf`. This method returns a buffer of data which can then be utilized by |PyMuPDF| to create a new |PDF|.
 
 **Example**
 
@@ -23,25 +23,20 @@ Files to PDF
     
     # Convert Markdown to PDF
     md_doc = pymupdf.open("example.md")
-    pdfdata = md_doc.convert_to_pdf()
-    pdf_doc = pymupdf.open(stream=pdfdata)
-    pdf_doc.save("example.pdf")
+    md_doc.ez_save("example.pdf")
+
+    # Convert to PDF and get byte representation
+    pdf_bytes = md_doc.convert_to_pdf()
 
     # Convert XPS to PDF
-    xps = pymupdf.open("input.xps")
-    pdfdata = xps.convert_to_pdf()
-    pdf = pymupdf.open(stream=pdfdata)
-    pdf.save("output.pdf")
+    xps_doc = pymupdf.open("input.xps")
+    xps_doc.ez_save("output.pdf")
+
 
 .. _Markdown_to_PDF:
 
 Markdown to PDF
 ~~~~~~~~~~~~~~~~~
-
-As Markdown files are supported input files they can be easily converted to PDF using the :meth:`Document.convert_to_pdf` method.
-
-In the simplest case you can just open the Markdown file and call the method to get a PDF representation of the content. 
-
 
 Defining paper size
 """""""""""""""""""
@@ -70,8 +65,7 @@ For example, to make all ``h1`` headers red (The single ``#`` symbol in Markdown
     css = "h1 {color:red;}"
     md_doc.apply_css(css)
 
-    pdf_doc = pymupdf.open(stream=md_doc.convert_to_pdf())
-    pdf_doc.ez_save("red-colored-header.pdf")
+    md_doc.ez_save("red-colored-header.pdf")
 
 .. note::
 
@@ -156,6 +150,7 @@ For example, assuming you have access to the source files for the "Comic Sans" f
 
     md_doc.apply_css(css) 
 
+    md_doc.ez_save("sample.pdf")
 
 
 
