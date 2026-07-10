@@ -259,6 +259,11 @@ def main():
     command += f' HAVE_LEPTONICA=yes'
     command += f' HAVE_TESSERACT=yes'
     command += f' USE_SYSTEM_LIBS=yes'
+    log(f'{sys.base_prefix=}')
+    log(f'{sys.prefix=}')
+    log(f'{sysconfig.get_path("platlib")=}')
+    #command += f' pydir={sys.base_prefix}'
+    command += f' pydir={prefix}/lib/python3.13/site-packages'
     # We need latest zxingcpp so system version not ok.
     command += f' USE_SYSTEM_ZXINGCPP=no'
     command += f' barcode=yes'
@@ -418,6 +423,8 @@ def main():
         command += f' -p {shlex.quote(pytest_args)}'
     if pytest_do:
         command += ' test'
+    log(f'{os.environ.get("LD_LIBRARY_PATH")=}')
+    log(f'{os.environ.get("PYTHONPATH")=}')
     run(command, env_extra=dict(PYMUPDF_SYSINSTALL_TEST='1'))
 
 

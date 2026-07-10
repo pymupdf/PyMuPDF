@@ -378,6 +378,7 @@ import textwrap
 import autovenv
 autovenv.enter(packages='pipcl')
 
+subprocess.run(f'pip install pipcl', shell=1, check=1)
 import pipcl
 
 pymupdf_dir_abs = os.path.abspath( f'{__file__}/../..')
