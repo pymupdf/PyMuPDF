@@ -210,6 +210,21 @@ log(f'{PYMUPDF_SETUP_DUMMY=}')
 PYMUPDF_SETUP_SWIG = os.environ.get('PYMUPDF_SETUP_SWIG')
 PYMUPDF_SETUP_FAKE_NOGIL = os.environ.get('PYMUPDF_SETUP_FAKE_NOGIL')
 
+PYMUPDF_SETUP_MUPDF_VS_UPGRADE = os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE')
+
+
+def mupdf_win32_infix():
+    '''
+    Returns subdirectory in mupdf:platform/ that contains windows
+    libraries. Usually 'win32', but if we have told mupdf to upgrade the VS
+    project files it will be 'win32-vs-upgrade'.
+    '''
+    if PYMUPDF_SETUP_MUPDF_VS_UPGRADE == '1':
+        return 'win32-vs-upgrade'
+    else:
+        return 'win32'
+
+
 def _fs_remove(path):
     '''
     Removes file or directory, without raising exception if it doesn't exist.
@@ -792,7 +807,7 @@ def build_mupdf_windows(
         devenv = 'devenv.com'
         log( f'Cannot find devenv.com in default locations, using: {devenv!r}')
     command = f'cd "{mupdf_local}" && "{sys.executable}" ./scripts/mupdfwrap.py'
-    if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
+    if PYMUPDF_SETUP_MUPDF_VS_UPGRADE == '1':
         command += ' --vs-upgrade 1'
         
     # Would like to simply do f'... --devenv {shutil.quote(devenv)}', but
@@ -827,7 +842,7 @@ def build_mupdf_windows(
 
 def _windows_lib_directory(mupdf_local, build_type):
     wc = pipcl.wdev.WindowsCpu()
-    ret = f'{mupdf_local}/platform/win32/{wc.windows_subdir}'
+    ret = f'{mupdf_local}/platform/{mupdf_win32_infix()}/{wc.windows_subdir}'
     if build_type == 'release':
         ret += 'Release/'
     elif build_type == 'debug':
@@ -1108,18 +1123,13 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     if windows:
         defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
-        if os.environ.get('PYMUPDF_SETUP_MUPDF_VS_UPGRADE') == '1':
-            # MuPDF C++ build uses a parallel build tree with updated VS files.
-            infix = 'win32-vs-upgrade'
-        else:
-            infix = 'win32'
         build_type_infix = 'Debug' if debug else 'Release'
         libpaths = (
-                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}',
-                f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}Tesseract',
+                f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}',
+                f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}Tesseract',
                 )
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
-        libraries = f'{mupdf_local}\\platform\\{infix}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
+        libraries = f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
         compiler_extra = ''
         if sysconfig.get_config_var('Py_GIL_DISABLED')==1:
             # Required to link with python3.14t etc.
