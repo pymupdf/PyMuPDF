@@ -1915,7 +1915,10 @@ static void jm_trace_text_span(
     if (stroke)
         dict_setitemstr_drop(span_dict, "linewidth", PyFloat_FromDouble((double) stroke->linewidth));
     else
+    {
+        Py_INCREF(Py_None);
         dict_setitemstr_drop(span_dict, "linewidth", Py_None);
+    }
     dict_setitemstr_drop(span_dict, "spacewidth", PyFloat_FromDouble(space_adv));
     dict_setitem_drop(span_dict, dictkey_type, PyLong_FromLong((long) type));
     dict_setitem_drop(span_dict, dictkey_bbox, JM_py_from_rect(span_bbox));
@@ -2136,8 +2139,12 @@ mupdf::FzDevice JM_new_texttrace_device(PyObject* out)
     dev->super.render_flags = nullptr;
     dev->super.set_default_colorspaces = nullptr;
 
-    Py_XINCREF(out);
+    if (PyList_Check(out)) {
+        Py_INCREF(out);
+    }
+    Py_INCREF(Py_None);
     dev->out = out;
+    dev->method = Py_None;
     dev->seqno = 0;
     return device;
 }
