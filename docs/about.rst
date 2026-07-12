@@ -42,7 +42,7 @@ The following table illustrates how |PyMuPDF| compares with other typical soluti
     .. image:: images/icons/icon-pptx.svg
             :width: 40
             :height: 40
-            :alt: PPTX icon 
+            :alt: PPTX icon
 
     .. image:: images/icons/icon-hangul.svg
             :width: 40
@@ -70,12 +70,12 @@ The following table illustrates how |PyMuPDF| compares with other typical soluti
 PyMuPDF Product Suite
 -----------------------------------------------
 
-|PyMuPDF| is the standard version of the library, however there are a family of additional products each with different features and functionality. 
+|PyMuPDF| is the standard version of the library, however there are a family of additional products each with different features and functionality.
 
 **Additional products** in the |PyMuPDF| product suite are:
-   
+
 - |PyMuPDF Pro| adds support for Office document formats.
-- |PyMuPDF4LLM| is optimized for large language model (LLM) applications, providing enhanced text extraction and processing capabilities. 
+- |PyMuPDF4LLM| is optimized for large language model (LLM) applications, providing enhanced text extraction and processing capabilities.
  It focuses on layout analysis and semantic understanding, ideal for document conversion and formatting tasks with enhanced results.
 
 .. note::
@@ -91,10 +91,10 @@ PyMuPDF Products Comparison
 The following table illustrates what features the products offer:
 
 .. list-table:: PyMuPDF Products Comparison
-   :widths: 10 30 30 30 
+   :widths: 10 30 30 30
    :header-rows: 1
 
-   * - 
+   * -
      - PyMuPDF
      - PyMuPDF Pro
      - PyMuPDF4LLM
@@ -106,7 +106,7 @@ The following table illustrates what features the products offer:
    * - **Output Documents**
      - Can convert any input document to `PDF`, `SVG` or Image
      - *as PyMuPDF*
-     - *as PyMuPDF* and: 
+     - *as PyMuPDF* and:
        Markdown (`MD`), `JSON` or `TXT`
    * - **Page Analysis**
      - Basic page analysis to return document structure
@@ -127,8 +127,8 @@ The following table illustrates what features the products offer:
    * - **Vector extraction**
      - Vector extraction and clustering
      - *as PyMuPDF*
-     - Superior detection of "picture" areas 
-   * - **Popular RAG Integrations** 
+     - Superior detection of "picture" areas
+   * - **Popular RAG Integrations**
      - Langchain, LlamaIndex
      - *as PyMuPDF*
      - *as PyMuPDF* and with some additional help methods for RAG workflows

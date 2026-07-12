@@ -6,7 +6,7 @@ Change Log
 
 Fixed issues:
 
-* **Fixed** `4114 <https://github.com/pymupdf/PyMuPDF/issues/4114>`_: ComboBox choice_values full of empty strings despite PDF having valid choices. 
+* **Fixed** `4114 <https://github.com/pymupdf/PyMuPDF/issues/4114>`_: ComboBox choice_values full of empty strings despite PDF having valid choices.
 * **Fixed** `4950 <https://github.com/pymupdf/PyMuPDF/issues/4950>`_: remove_rotation() raises ValueError on widgets with empty/infinite rects
 * **Fixed** `5001 <https://github.com/pymupdf/PyMuPDF/issues/5001>`_: Formulae incorrectly rendered as black boxes
 * **Fixed** `5033 <https://github.com/pymupdf/PyMuPDF/issues/5033>`_: Annot.set_rotation(0) followed by Annot.update() throws AttributeError
@@ -58,12 +58,12 @@ Other:
 * Fixed issues:
 
   * **Fixed** `4903 <https://github.com/pymupdf/PyMuPDF/issues/4903>`_: Typing broken because of `*_forward_decl`
-  
+
 * Other:
 
   * Retrospectively marked #4907 as fixed in pymupdf-1.27.1.
   * Improved `get_textpage_ocr()`.
-  
+
     For partial OCR, **all** page areas outside legible text are now OCRed, not
     just those within images. This means that OCR will now also be performed
     for vector graphics, and for text containing illegible characters.
@@ -167,7 +167,7 @@ Other:
   * **Fixed** `4639 <https://github.com/pymupdf/PyMuPDF/issues/4639>`_: pymupdf.mupdf.FzErrorGeneric: code=1: Director error: <class 'AttributeError'>: 'JM_new_bbox_device_Device' object has no attribute 'layer_name'
 
 * Other:
-  
+
   * Check that #4392 `Segfault when running with pytest and -Werror` is fixed if PyMuPDF is built with swig>=4.4.
   * Add `Page.clip_to_rect()`.
   * Improved search for Tesseract data.
@@ -465,7 +465,7 @@ Other:
     so will raise an exception. (#3603)
   * Fixed handling of non-existing /Contents object.
 
- 
+
 **Changes in version 1.24.9 (2024-07-24)**
 
 * Use MuPDF-1.24.8.
@@ -519,11 +519,11 @@ Other:
 * Other:
 
   * Fixed concurrent use of PyMuPDF caused by use of constant temporary filenames.
-  
+
   * Add musllinux x86_64 wheels to release.
 
   * Added clearer version information:
-    
+
     * `pymupdf.pymupdf_version`.
     * `pymupdf.mupdf_version`.
     * `pymupdf.pymupdf_date`.
@@ -603,14 +603,14 @@ Other:
 * Other:
 
   * New/modified methods:
-  
+
     * `Document.bake()`: new, make annotations / fields permanent content.
     * `Page.cluster_drawings()`: new, identifies drawing items
       (i.e. vector graphics or line-art)
       that belong together based on their geometrical vicinity.
     * `Page.apply_redactions()`: added new parameter `text`.
     * `Document.subset_fonts()`: use MuPDF's `pdf_subset_fonts()` instead of PyMuPDF code.
-    
+
   * The `Document` class now supports page numbers specified as slices.
   * Avoid causing MuPDF warnings.
 
@@ -654,11 +654,11 @@ Other:
   * Use MuPDF-1.24.0.
   * Add support for redacting vector graphics.
   * Several fixes for table module
-    
+
     * Add new method for outputting the table as a markdown string.
-    
+
     * Address errors in computing the table header object:
-    
+
       We now allow None as the cell value, because this will be resolved where
       needed (e.g. in the pandas DataFrame).
 
@@ -673,7 +673,7 @@ Other:
 
   * Improved exception text if we fail to open document.
   * Fixed build with new libclang 18.
-  
+
 
 **Changes in version 1.23.26 (2024-02-29)**
 
@@ -685,7 +685,7 @@ Other:
 * Other:
 
   * Improvements to table detection:
-  
+
     * Improved check for empty tables, fixes bugs when determining table headers.
     * Improved computation of enveloping vector graphic rectangles.
     * Ignore more meaningless "pseudo" tables
@@ -794,7 +794,7 @@ Other:
 * Other:
 
   * When finding tables:
-  
+
     * Allow addition of user-defined "virtual" vector graphics when finding tables.
     * Confirm that the enveloping bboxes of vector graphics are inside the clip rectangle.
     * Avoid slow finding of rectangle intersections.
@@ -949,13 +949,13 @@ Other:
   * **Fixed** `2886 <https://github.com/pymupdf/PyMuPDF/issues/2886>`_: Error in Skeleton for Named Link Destinations
 
 * Bug fixes (rebased and classic implementations):
-  
+
   * **Fixed** `2885 <https://github.com/pymupdf/PyMuPDF/issues/2885>`_: pymupdf find tables too slow
 
 * Other:
 
   * Rebased implementation:
-  
+
     * `Page.insert_htmlbox()`: new, much more powerful alternative to `Page.insert_textbox()` or `TextWriter.fill_textbox()`, using `Story`.
     * `Story.fit*()`: new methods for fitting a Story into an expanded rect.
     * `Story.write_with_links()`: add support for external links.
@@ -995,17 +995,17 @@ Other:
 * Other:
 
   * Rebased implementation:
-  
+
     * Added flake8 code checking to test suite, and made various fixes.
     * Disable diagnostics during Document constructor to match classic implementation.
-  
+
   * Additional fix to `2553 <https://github.com/pymupdf/PyMuPDF/issues/2553>`_: Invalid characters in versions >= 1.22
   * Fixed `MuPDF Bug 707324 <https://bugs.ghostscript.com/show_bug.cgi?id=707324>`_: Story: HTML table row background color repeated incorrectly
   * Added `scripts/test.py`, for simple build+test of PyMuPDF git checkout.
   * Added `fitz.pymupdf_version_tuple`, e.g. `(1, 23, 6)`.
   * Restored mistakenly-reverted fix for `2345 <https://github.com/pymupdf/PyMuPDF/issues/2345>`_: Turn off print statements in utils.py
   * Include any trailing `... repeated <N> times...` text in warnings returned by `mupdf_warnings()` (rebased only).
-  
+
 
 
 **Changes in version 1.23.6 (2023-11-06)**
@@ -1127,13 +1127,13 @@ Other:
   * Dropped support for Python-3.7.
 
   * Fix for wrong page / annot `/Contents` cleaning.
-    
+
     We need to set `pdf_filter_options::no_update` to zero.
 
   * Added new function get_tessdata().
 
   * Cope with problem `/Annot` arrays.
-  
+
     When copying page annotations in method Document.insert_pdf we
     previously did not check the validity of members of the `/Annots`
     array.  For faulty members (like null or non-dictionary items) this
@@ -1147,12 +1147,12 @@ Other:
     accordance with MuPDF.
 
   * Increase fault tolerance.
-    
+
     Avoid exceptions in method `insert_pdf()` when source pages contains
     invalid items in the `/Annots` array.
 
   * Return empty border dict for applicable annots.
-    
+
     We previously were returning a non-empty border dictionary even for
     non-applicable annotation types.  We now return the empty dictionary
     `{}` in these cases. This requires some corresponding changes in the
@@ -1165,13 +1165,13 @@ Other:
     annotations and return `False` in these cases.
 
   * Wrong fontsize computation in `page.get_texttrace()`.
-    
+
     When computing the font size we were using the final text
     transformation matrix, where we should have taken `span->trm`
     instead.  This is corrected here.
 
   * Updates to cope with changes to latest MuPDF.
-  
+
     `pdf_lookup_anchor()` has been removed.
 
   * Update fill_textbox to better respect rect.width
@@ -1201,7 +1201,7 @@ Other:
   * **Fixed** `#2430 <https://github.com/pymupdf/PyMuPDF/issues/2430>`_: Incorrectly reducing ref count of Py_None.
   * **Fixed** `#2450 <https://github.com/pymupdf/PyMuPDF/issues/2450>`_: Empty fill color and fill opacity for paths with fill and stroke operations with 1.22.*
   * **Fixed** `#2462 <https://github.com/pymupdf/PyMuPDF/issues/2462>`_: Error at "get_drawing(extended=True )"
-  * **Fixed** `#2468 <https://github.com/pymupdf/PyMuPDF/issues/2468>`_: Decode error when trying to get drawings  
+  * **Fixed** `#2468 <https://github.com/pymupdf/PyMuPDF/issues/2468>`_: Decode error when trying to get drawings
   * **Fixed** `#2710 <https://github.com/pymupdf/PyMuPDF/issues/2710>`_: page.rect and text location wrong / differing from older version
   * **Fixed** `#2723 <https://github.com/pymupdf/PyMuPDF/issues/2723>`_: When will a Python 3.12 wheel be available?
 
@@ -1432,7 +1432,7 @@ Other:
   * Fixed various broken links and typos in docs.
   * Mention install of `swig-python` on MacOS for #875.
   * Added (untested) wheels for macos-arm64.
-  
+
 
 
 

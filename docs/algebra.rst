@@ -103,7 +103,7 @@ For the usual arithmetic operations, numbers are always allowed as second operan
   pymupdf.Rect(6.0, 7.0, 8.0, 9.0)
   >>> 3 in pymupdf.Rect(1, 2, 3, 4)
   True
-  >>> 
+  >>>
 
 The following will create the upper left quarter of a document page rectangle::
 
@@ -111,7 +111,7 @@ The following will create the upper left quarter of a document page rectangle::
   Rect(0.0, 0.0, 595.0, 842.0)
   >>> page.rect / 2
   Rect(0.0, 0.0, 297.5, 421.0)
-  >>> 
+  >>>
 
 The following will deliver the **middle point of a line** that connects two points **p1** and **p2**::
 
@@ -120,7 +120,7 @@ The following will deliver the **middle point of a line** that connects two poin
   >>> mp = (p1 + p2) / 2
   >>> mp
   Point(2356.0, 1571.5)
-  >>> 
+  >>>
 
 Compute the **vector dot product** of two points. You can compute the **cosine of angles** and check orthogonality.
 
@@ -141,7 +141,7 @@ Compute the **vector dot product** of two points. You can compute the **cosine o
   >>> # check orhogonality
   >>> p3 = pymupdf.Point(0, 1)
   >>> # p1 and p3 are orthogonal so, as expected:
-  >>> p1 * p3  
+  >>> p1 * p3
   0.0
 
 
@@ -157,7 +157,7 @@ The second operand of a binary operation can always be "like" the left operand. 
   >>> p1 += (4711, 3141)
   >>> p1
   Point(4712.0, 3143.0)
-  >>> 
+  >>>
 
 To shift a rectangle for 5 pixels to the right, do this::
 
