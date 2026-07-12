@@ -88,7 +88,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :rtype: :ref:`Pixmap`
 
       .. note::
-         
+
          * If the annotation has just been created or modified, you should :meth:`Document.reload_page` the page first via `page = doc.reload_page(page)`.
 
          * The pixmap will have *"premultiplied"* pixels if `alpha=True`. To learn about some background, e.g. look for "Premultiplied alpha" `in this online glossary <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
@@ -245,7 +245,7 @@ There is a parent-child relationship between an annotation and its page. If the 
    .. method:: set_blendmode(blendmode)
 
       * New in v1.16.14
-      
+
       Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
       :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use `PDF_BM_Normal` to **remove** a blend mode.
@@ -254,7 +254,7 @@ There is a parent-child relationship between an annotation and its page. If the 
    .. method:: set_name(name)
 
       * New in version 1.16.0
-      
+
       Change the name field of any annotation type. For 'FileAttachment' and 'Text' annotations, this is the icon name, for 'Stamp' annotations the text in the stamp. The visual result (if any) depends on your PDF viewer. See also :ref:`mupdficons`.
 
       :arg str name: the new name.
@@ -295,7 +295,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg float width: A non-negative value will change the border line width.
       :arg str style: A value other than `None` will change this border property.
-      :arg sequence dashes: All items of the sequence must be integers, otherwise the parameter is ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty sequence, "style" will automatically be set to "D" (dashed). 
+      :arg sequence dashes: All items of the sequence must be integers, otherwise the parameter is ignored. To remove dashing use: `dashes=[]`. If dashes is a non-empty sequence, "style" will automatically be set to "D" (dashed).
       :arg int clouds: A value >= 0 will change this property. Use `clouds=0` to remove the cloudy appearance completely. Only annotation types 'Square', 'Circle', and 'Polygon' are supported with this property.
 
    .. method:: set_flags(flags)
@@ -318,7 +318,7 @@ There is a parent-child relationship between an annotation and its page. If the 
    .. method:: delete_responses()
 
       * New in version 1.16.12
-      
+
       Delete annotations referring to this one. This includes any 'Popup' annotations and all annotations responding to it.
 
 
@@ -333,7 +333,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
 
-      Synchronize the appearance of an annotation with its properties after relevant changes. 
+      Synchronize the appearance of an annotation with its properties after relevant changes.
 
       You can safely **omit** this method **only** for the following changes:
 

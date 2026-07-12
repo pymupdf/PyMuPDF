@@ -402,7 +402,7 @@ for fmt in ["contract.docx", "data.xlsx", "deck.pptx", "report.hwpx"]:
         print(page.get_text())
 ```
 
-[Get a trial license key for PyMuPDF Pro](https://pymupdf.pro/try-pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf_pro) 
+[Get a trial license key for PyMuPDF Pro](https://pymupdf.pro/try-pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf_pro)
 
 **What you can do with Office documents:**
 
