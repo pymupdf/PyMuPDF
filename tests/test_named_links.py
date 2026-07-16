@@ -118,8 +118,8 @@ def test_resolve_names_fit_variants():
         "/NullPageDest [null /XYZ 10 20 0] "
         f"/FitDest [{page_xref} 0 R /Fit] "
         f"/FitBDest [{page_xref} 0 R /FitB] "
-        f"/FitHDest [{page_xref} 0 R /FitH 20] "
-        f"/FitHNull [{page_xref} 0 R /FitH null] "
+        f"/FitHDest [{page_xref} 0 R /FitH 20] "    # codespell:ignore
+        f"/FitHNull [{page_xref} 0 R /FitH null] "  # codespell:ignore
         f"/FitVDest [{page_xref} 0 R /FitV 15] "
         f"/FitBHDest [{page_xref} 0 R /FitBH 25] "
         f"/FitBVDest [{page_xref} 0 R /FitBV 30] "
@@ -151,7 +151,7 @@ def test_linkdest_view_fith_uri():
     class Dummy:
         is_external = False
         page = -1
-        uri = "#page=1&view=FitH,-4.299011"
+        uri = "#page=1&view=FitH,-4.299011" # codespell:ignore
 
     d = pymupdf.linkDest(Dummy(), None, None)
     assert d.kind == pymupdf.LINK_GOTO

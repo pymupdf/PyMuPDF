@@ -6475,7 +6475,7 @@ class Document:
                 templ_dict["to"] = (0.0, 0.0)
                 templ_dict["zoom"] = 0.0
 
-            elif mode in ("/FitH", "/FitBH"):
+            elif mode in ("/FitH", "/FitBH"):   # codespell:ignore
                 del templ_dict["dest"]
                 top = as_float(args[0]) if len(args) > 0 else None
                 y = to_fitz_y(top)
@@ -9082,7 +9082,7 @@ class linkDest:
                 self.lt = Point(0, 0)
                 return True
 
-            if mode in ("/FitH", "/FitBH"):
+            if mode in ("/FitH", "/FitBH"): # codespell:ignore
                 top = as_float(args[0]) if len(args) >= 1 else None
                 if top is not None:
                     self.lt = Point(0, top)
