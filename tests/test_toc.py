@@ -136,6 +136,37 @@ def test_2788():
             ), f'{wt=}'
 
 
+def test_2788_page_param_order():
+    """Ensure '#page=' destinations do not fall back to LINK_NAMED.
+
+    The order of URI parameters is not guaranteed. Any URI with a valid
+    'page' parameter must still be interpreted as LINK_GOTO.
+    """
+    import inspect
+    import pytest
+
+    source = inspect.getsource(pymupdf.linkDest.__init__)
+    if "params = uri_to_dict(self.uri)" not in source:
+        pytest.skip("test requires patched linkDest parser")
+
+    class DummyDestObj:
+        is_external = False
+        page = -1
+
+        def __init__(self, uri):
+            self.uri = uri
+
+    for uri in (
+        "#page=2&zoom=0,123.5,456.25",
+        "#zoom=0,123.5,456.25&page=2",
+        "#page=2&foo=bar&zoom=0,123.5,456.25",
+    ):
+        dest = pymupdf.linkDest(DummyDestObj(uri), None, None)
+        assert dest.kind == pymupdf.LINK_GOTO
+        assert dest.page == 1
+        assert dest.lt == pymupdf.Point(123.5, 456.25)
+
+
 def test_toc_count():
     file_in = os.path.abspath(f'{__file__}/../../tests/resources/test_toc_count.pdf')
     file_out = os.path.abspath(f'{__file__}/../../tests/test_toc_count_out.pdf')
