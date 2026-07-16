@@ -198,6 +198,23 @@ To get an SVG representation of a page use the :meth:`Page.get_svg_image` method
 
     doc.close()
 
+
+PDF to Images
+~~~~~~~~~~~~~~~~~~
+
+In order to convert a document to images, you should iterate the document pages, convert to :doc:`pixmap` and save, e.g.:
+
+.. code-block:: python
+
+    doc = pymupdf.open("input.pdf")
+
+    for i, page in enumerate(doc):
+        pix = page.get_pixmap(dpi=200)
+        pix.save(f"page-{i+1}.png")
+
+    doc.close()
+
+
 PDF to DOCX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
