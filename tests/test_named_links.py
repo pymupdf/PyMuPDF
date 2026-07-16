@@ -103,3 +103,58 @@ def test_3301():
         # Extract the link text. Must be 'file' or 'uri'.
         t = link["uri"] if (_ := link.get("file")) is None else _
         assert text[t] == link["kind"]
+
+
+def test_resolve_names_fit_variants():
+    """Ensure named destinations parse all common /Fit* variants and /XYZ."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=200, height=300)
+    page_xref = doc.page_xref(0)
+    catalog_xref = doc.pdf_catalog()
+
+    dests = (
+        "<< "
+        f"/XYZDest [{page_xref} 0 R /XYZ 10 250 1.5] "
+        "/NullPageDest [null /XYZ 10 20 0] "
+        f"/FitDest [{page_xref} 0 R /Fit] "
+        f"/FitBDest [{page_xref} 0 R /FitB] "
+        f"/FitHDest [{page_xref} 0 R /FitH 20] "
+        f"/FitHNull [{page_xref} 0 R /FitH null] "
+        f"/FitVDest [{page_xref} 0 R /FitV 15] "
+        f"/FitBHDest [{page_xref} 0 R /FitBH 25] "
+        f"/FitBVDest [{page_xref} 0 R /FitBV 30] "
+        f"/FitRDest [{page_xref} 0 R /FitR 5 10 100 200] "
+        ">>"
+    )
+    doc.xref_set_key(catalog_xref, "Dests", dests)
+
+    names = doc.resolve_names()
+    assert names["XYZDest"]["page"] == 0
+    assert names["XYZDest"]["to"] == (10.0, 250.0)
+    assert names["XYZDest"]["zoom"] == 1.5
+
+    assert names["NullPageDest"]["page"] == -1
+    assert names["NullPageDest"]["dest"].startswith("/XYZ")
+
+    assert names["FitDest"]["to"] == (0.0, 0.0)
+    assert names["FitBDest"]["to"] == (0.0, 0.0)
+
+    assert names["FitHDest"]["to"] == (0.0, 20.0)
+    assert names["FitHNull"]["to"] == (0.0, 0.0)
+    assert names["FitVDest"]["to"] == (15.0, 0.0)
+    assert names["FitBHDest"]["to"] == (0.0, 25.0)
+    assert names["FitBVDest"]["to"] == (30.0, 0.0)
+    assert names["FitRDest"]["to"] == (5.0, 200.0)
+
+
+def test_linkdest_view_fith_uri():
+    class Dummy:
+        is_external = False
+        page = -1
+        uri = "#page=1&view=FitH,-4.299011"
+
+    d = pymupdf.linkDest(Dummy(), None, None)
+    assert d.kind == pymupdf.LINK_GOTO
+    assert d.page == 0
+    assert d.lt.x == 0.0
+    assert d.lt.y == -4.299011

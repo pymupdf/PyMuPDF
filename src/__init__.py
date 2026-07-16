@@ -6395,8 +6395,8 @@ class Document:
             else:  # if all fails return the empty template
                 return templ_dict
 
-            # replace PDF "null" by zero, omit the square brackets
-            array = array.replace("null", "0")[1:-1]
+            # Omit the square brackets around a destination array.
+            array = array[1:-1]
 
             # find stuff before first "/"
             idx = array.find("/")
@@ -6407,28 +6407,100 @@ class Document:
             subval = array[:idx].strip()  # stuff before "/"
             array = array[idx:]  # stuff from "/" onwards
             templ_dict["dest"] = array
-            # if we start with /XYZ: extract x, y, zoom
-            # 1, 2 or 3 of these values may actually be supplied
-            if array.startswith("/XYZ"):
-                del templ_dict["dest"]  # don't return orig string in this case
-
-                # make a list of the 3 tokens following "/XYZ"
-                array_list = array.split()[1:4]  # omit "/XYZ"
-
-                # fill up missing tokens with "0" strings
-                while len(array_list) < 3:  # fill up if too short
-                    array_list.append("0")  # add missing values
-
-                # make list of 3 floats: x, y and zoom
-                t = list(map(float, array_list))  # the resulting x, y, z values
-                templ_dict["to"] = (t[0], t[1])
-                templ_dict["zoom"] = t[2]
 
             # extract page number
             if subval.endswith("0 R"):  # page xref given?
-                templ_dict["page"] = page_xrefs.get(int(subval.split()[0]),-1)
+                try:
+                    templ_dict["page"] = page_xrefs.get(int(subval.split()[0]), -1)
+                except Exception:
+                    templ_dict["page"] = -1
             else:  # naked page number given
-                templ_dict["page"] = int(subval)
+                try:
+                    templ_dict["page"] = int(subval)
+                except Exception:
+                    templ_dict["page"] = -1
+
+            # destination details are only meaningful with a valid page
+            pno = templ_dict["page"]
+            if pno < 0:
+                return templ_dict
+
+            try:
+                page_rect = self[pno].rect
+            except Exception:
+                return templ_dict
+
+            def as_float(token):
+                if token is None:
+                    return None
+                token = token.strip('[]')
+                if token.lower() == "null":
+                    return None
+                return float(token)
+
+            def to_fitz_x(pdf_x):
+                if pdf_x is None:
+                    return None
+                return pdf_x - page_rect.x0
+
+            def to_fitz_y(pdf_y):
+                if pdf_y is None:
+                    return None
+                return pdf_y - page_rect.y0
+
+            parts = [p.strip('[]') for p in array.split()]
+            if not parts:
+                return templ_dict
+
+            mode = parts[0]
+            mode = ''.join(ch for ch in mode if ch.isalpha() or ch == '/')
+            args = parts[1:]
+
+            if mode == "/XYZ":
+                del templ_dict["dest"]
+                left = as_float(args[0]) if len(args) > 0 else None
+                top = as_float(args[1]) if len(args) > 1 else None
+                zoom = as_float(args[2]) if len(args) > 2 else None
+
+                x = to_fitz_x(left)
+                y = to_fitz_y(top)
+                templ_dict["to"] = (
+                    x if x is not None else 0.0,
+                    y if y is not None else 0.0,
+                )
+                templ_dict["zoom"] = zoom if zoom is not None else 0.0
+
+            elif mode in ("/Fit", "/FitB"):
+                del templ_dict["dest"]
+                templ_dict["to"] = (0.0, 0.0)
+                templ_dict["zoom"] = 0.0
+
+            elif mode in ("/FitH", "/FitBH"):
+                del templ_dict["dest"]
+                top = as_float(args[0]) if len(args) > 0 else None
+                y = to_fitz_y(top)
+                templ_dict["to"] = (0.0, y if y is not None else 0.0)
+                templ_dict["zoom"] = 0.0
+
+            elif mode in ("/FitV", "/FitBV"):
+                del templ_dict["dest"]
+                left = as_float(args[0]) if len(args) > 0 else None
+                x = to_fitz_x(left)
+                templ_dict["to"] = (x if x is not None else 0.0, 0.0)
+                templ_dict["zoom"] = 0.0
+
+            elif mode == "/FitR" and len(args) >= 4:
+                del templ_dict["dest"]
+                left = as_float(args[0])
+                top = as_float(args[3])
+                x = to_fitz_x(left)
+                y = to_fitz_y(top)
+                templ_dict["to"] = (
+                    x if x is not None else 0.0,
+                    y if y is not None else 0.0,
+                )
+                templ_dict["zoom"] = 0.0
+
             return templ_dict
 
         def fill_dict(dest_dict, pdf_dict):
@@ -8955,7 +9027,9 @@ class linkDest:
         self.uri = obj.uri
         
         def uri_to_dict(uri):
-            items = self.uri[1:].split('&')
+            if uri.startswith('#'):
+                uri = uri[1:]
+            items = uri.split('&')
             ret = dict()
             for item in items:
                 eq = item.find('=')
@@ -8975,7 +9049,76 @@ class linkDest:
                 newname += chr(int(piece, base=16))
                 newname += item[2:]
             return newname
-        
+
+        def as_float(text):
+            if text is None:
+                return None
+            text = text.strip()
+            if not text:
+                return None
+            if text.lower() in ("null", "nan"):
+                return None
+            try:
+                return float(text)
+            except Exception:
+                if g_exceptions_verbose:
+                    exception_info()
+                return None
+
+        def apply_view(view):
+            if not view:
+                return False
+            items = [i.strip() for i in view.split(",")]
+            if not items:
+                return False
+            mode = items[0]
+            if not mode:
+                return False
+            if mode[0] != "/":
+                mode = f"/{mode}"
+            args = items[1:]
+
+            if mode in ("/Fit", "/FitB"):
+                self.lt = Point(0, 0)
+                return True
+
+            if mode in ("/FitH", "/FitBH"):
+                top = as_float(args[0]) if len(args) >= 1 else None
+                if top is not None:
+                    self.lt = Point(0, top)
+                    self.flags = self.flags | LINK_FLAG_T_VALID
+                return True
+
+            if mode in ("/FitV", "/FitBV"):
+                left = as_float(args[0]) if len(args) >= 1 else None
+                if left is not None:
+                    self.lt = Point(left, 0)
+                    self.flags = self.flags | LINK_FLAG_L_VALID
+                return True
+
+            if mode == "/FitR":
+                if len(args) >= 4:
+                    left = as_float(args[0])
+                    top = as_float(args[3])
+                    if left is not None and top is not None:
+                        self.lt = Point(left, top)
+                        self.flags = self.flags | LINK_FLAG_L_VALID | LINK_FLAG_T_VALID
+                        return True
+                return False
+
+            if mode == "/XYZ":
+                left = as_float(args[0]) if len(args) >= 1 else None
+                top = as_float(args[1]) if len(args) >= 2 else None
+                if left is not None:
+                    self.lt.x = left
+                    self.flags = self.flags | LINK_FLAG_L_VALID
+                if top is not None:
+                    self.lt.y = top
+                    self.flags = self.flags | LINK_FLAG_T_VALID
+                return True
+
+            return False
+
         if rlink and not self.uri.startswith("#"):
             self.uri = f"#page={rlink[0] + 1}&zoom=0,{_format_g(rlink[1])},{_format_g(rlink[2])}"
         if obj.is_external:
@@ -8988,29 +9131,38 @@ class linkDest:
             self.uri = self.uri.replace("&zoom=nan", "&zoom=0")
             if self.uri.startswith("#"):
                 self.kind = LINK_GOTO
-                m = re.match('^#page=([0-9]+)&zoom=([0-9.]+),(-?[0-9.]+),(-?[0-9.]+)$', self.uri)
-                if m:
-                    self.page = int(m.group(1)) - 1
-                    self.lt = Point(float((m.group(3))), float(m.group(4)))
-                    self.flags = self.flags | LINK_FLAG_L_VALID | LINK_FLAG_T_VALID
+                params = uri_to_dict(self.uri)
+                page_arg = params.get('page')
+                if page_arg is not None and page_arg.isdigit():
+                    self.page = int(page_arg) - 1
+                    have_location = False
+                    zoom = params.get('zoom')
+                    if zoom:
+                        zoom_items = zoom.split(',')
+                        if len(zoom_items) >= 3:
+                            try:
+                                self.lt = Point(float(zoom_items[1]), float(zoom_items[2]))
+                                self.flags = self.flags | LINK_FLAG_L_VALID | LINK_FLAG_T_VALID
+                                have_location = True
+                            except Exception:
+                                if g_exceptions_verbose:
+                                    exception_info()
+                    if not have_location:
+                        apply_view(params.get('view'))
                 else:
-                    m = re.match('^#page=([0-9]+)$', self.uri)
-                    if m:
-                        self.page = int(m.group(1)) - 1
+                    self.kind = LINK_NAMED
+                    m = re.match('^#nameddest=(.*)', self.uri)
+                    assert document
+                    if document and m:
+                        named = unescape(m.group(1))
+                        self.named = document.resolve_names().get(named)
+                        if self.named is None:
+                            # document.resolve_names() does not contain an
+                            # entry for `named` so use an empty dict.
+                            self.named = dict()
+                        self.named['nameddest'] = named
                     else:
-                        self.kind = LINK_NAMED
-                        m = re.match('^#nameddest=(.*)', self.uri)
-                        assert document
-                        if document and m:
-                            named = unescape(m.group(1))
-                            self.named = document.resolve_names().get(named)
-                            if self.named is None:
-                                # document.resolve_names() does not contain an
-                                # entry for `named` so use an empty dict.
-                                self.named = dict()
-                            self.named['nameddest'] = named
-                        else:
-                            self.named = uri_to_dict(self.uri[1:])
+                        self.named = uri_to_dict(self.uri)
             else:
                 self.kind = LINK_NAMED
                 self.named = uri_to_dict(self.uri)
