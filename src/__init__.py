@@ -6673,70 +6673,71 @@ class Document:
     # Acrobat 'sanitize' function
     # ------------------------------------------------------------------------------
     def scrub(
-            doc: 'Document',
-            attached_files: bool = True,
-            clean_pages: bool = True,
-            embedded_files: bool = True,
-            hidden_text: bool = True,
-            javascript: bool = True,
-            metadata: bool = True,
-            redactions: bool = True,
-            redact_images: int = 0,
-            remove_links: bool = True,
-            reset_fields: bool = True,
-            reset_responses: bool = True,
-            thumbnails: bool = True,
-            xml_metadata: bool = True,
-            ) -> None:
-        
-        def remove_hidden(cont_lines):
-            """Remove hidden text from a PDF page.
+        doc: "Document",
+        attached_files: bool = True,
+        clean_pages: bool = True,
+        embedded_files: bool = True,
+        hidden_text: bool = True,
+        javascript: bool = True,
+        metadata: bool = True,
+        redactions: bool = True,
+        redact_images: int = 0,
+        remove_links: bool = True,
+        reset_fields: bool = True,
+        reset_responses: bool = True,
+        thumbnails: bool = True,
+        xml_metadata: bool = True,
+    ) -> None:
 
-            Args:
-                cont_lines: list of lines with /Contents content. Should have status
-                    from after page.cleanContents().
+        def add_hidden_text_redactions(page):
+            """Add redaction annots for hidden text spans and return their count."""
+            filled_flag = getattr(mupdf, "FZ_STEXT_FILLED", None)
+            stroked_flag = getattr(mupdf, "FZ_STEXT_STROKED", None)
 
-            Returns:
-                List of /Contents lines from which hidden text has been removed.
+            def is_hidden_span(span):
+                font = span.get(dictkey_font) or span.get("font")
+                if isinstance(font, str):
+                    # Account for subset prefixes like "ABCDEE+GlyphLessFont".
+                    if font.split("+")[-1] == "GlyphLessFont":
+                        return True
 
-            Notes:
-                The input must have been created after the page's /Contents object(s)
-                have been cleaned with page.cleanContents(). This ensures a standard
-                formatting: one command per line, single spaces between operators.
-                This allows for drastic simplification of this code.
-            """
-            out_lines = []  # will return this
-            in_text = False  # indicate if within BT/ET object
-            suppress = False  # indicate text suppression active
-            make_return = False
-            for line in cont_lines:
-                if line == b"BT":  # start of text object
-                    in_text = True  # switch on
-                    out_lines.append(line)  # output it
+                alpha = span.get("alpha")
+                if alpha == 0:
+                    return True
+
+                char_flags = span.get(dictkey_char_flags)
+                if (
+                    isinstance(char_flags, int)
+                    and isinstance(filled_flag, int)
+                    and isinstance(stroked_flag, int)
+                ):
+                    filled = bool(char_flags & filled_flag)
+                    stroked = bool(char_flags & stroked_flag)
+                    if not filled and not stroked:
+                        return True
+
+                return False
+
+            count = 0
+            textpage = page.get_text(
+                "dict", flags=TEXT_PRESERVE_SPANS | TEXT_COLLECT_STYLES
+            )
+            for block in textpage.get("blocks", ()):
+                if block.get("type") != 0:
                     continue
-                if line == b"ET":  # end of text object
-                    in_text = False  # switch off
-                    out_lines.append(line)  # output it
-                    continue
-                if line == b"3 Tr":  # text suppression operator
-                    suppress = True  # switch on
-                    make_return = True
-                    continue
-                if line[-2:] == b"Tr" and line[0] != b"3":
-                    suppress = False  # text rendering changed
-                    out_lines.append(line)
-                    continue
-                if line == b"Q":  # unstack command also switches off
-                    suppress = False
-                    out_lines.append(line)
-                    continue
-                if suppress and in_text:  # suppress hidden lines
-                    continue
-                out_lines.append(line)
-            if make_return:
-                return out_lines
-            else:
-                return None
+                for line in block.get("lines", ()):
+                    for span in line.get(dictkey_spans, ()):
+                        if not is_hidden_span(span):
+                            continue
+                        bbox = span.get(dictkey_bbox) or span.get("bbox")
+                        if not bbox:
+                            continue
+                        rect = Rect(bbox)
+                        if rect.is_empty or rect.is_infinite:
+                            continue
+                        page.add_redact_annot(rect, cross_out=False)
+                        count += 1
+            return count
 
         if not doc.is_pdf:  # only works for PDF
             raise ValueError("is no PDF")
@@ -6744,7 +6745,6 @@ class Document:
             raise ValueError("closed or encrypted doc")
 
         if not clean_pages:
-            hidden_text = False
             redactions = False
 
         if metadata:
@@ -6761,7 +6761,11 @@ class Document:
                 for link in links:  # remove all links
                     page.delete_link(link)
 
-            found_redacts = False
+            hidden_redacts = 0
+            if hidden_text:
+                hidden_redacts = add_hidden_text_redactions(page)
+
+            found_redacts = bool(hidden_redacts)
             for annot in page.annots():
                 if annot.type[0] == mupdf.PDF_ANNOT_FILE_ATTACHMENT and attached_files:
                     annot.update_file(buffer_=b" ")  # set file content to empty
@@ -6770,24 +6774,11 @@ class Document:
                 if annot.type[0] == mupdf.PDF_ANNOT_REDACT:  # pylint: disable=no-member
                     found_redacts = True
 
-            if redactions and found_redacts:
+            if hidden_redacts or (redactions and found_redacts):
                 page.apply_redactions(images=redact_images)
 
-            if not (clean_pages or hidden_text):
-                continue  # done with the page
-
-            page.clean_contents()
-            if not page.get_contents():
-                continue
-            if hidden_text:
-                xrefs = page.get_contents()
-                assert len(xrefs) == 1  # only one because of cleaning.
-                xref = xrefs[0]
-                cont = doc.xref_stream(xref)
-                cont_lines = remove_hidden(cont.splitlines())  # remove hidden text
-                if cont_lines:  # something was actually removed
-                    cont = b"\n".join(cont_lines)
-                    doc.update_stream(xref, cont)  # rewrite the page /Contents
+            if clean_pages:
+                page.clean_contents()
 
             if thumbnails:  # remove page thumbnails?
                 if doc.xref_get_key(page.xref, "Thumb")[0] != "null":
@@ -6826,7 +6817,7 @@ class Document:
 
             if doc.xref_get_key(xref, "Metadata")[0] != "null":
                 doc.xref_set_key(xref, "Metadata", "null")
-    
+
     def search_page_for(
             doc: 'Document',
             pno: int,
