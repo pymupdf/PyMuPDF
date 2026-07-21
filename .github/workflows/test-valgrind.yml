@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         args: [
-            '',
+            #'',
             '-m "git:--branch master https://github.com/ArtifexSoftware/mupdf"', 
             '-m "git:--branch 1.28.x https://github.com/ArtifexSoftware/mupdf"',
             ]

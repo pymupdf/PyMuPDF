@@ -1,6 +1,7 @@
 """
 Tests for the Font class.
 """
+import math
 import os
 import platform
 import pymupdf
@@ -330,3 +331,67 @@ def test_4457():
     print(f'{wt=}')
     if pymupdf.mupdf_version_tuple < (1, 27):
         assert wt == 'bogus font ascent/descent values (0 / 0)\n... repeated 5 times...'
+
+
+def test_5049():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5049.pdf')
+    
+    def create_pdf() -> pymupdf.Document:
+        source_pdf = pymupdf.open(path)
+        N = len(source_pdf)
+        exam = pymupdf.open()
+
+        # copy the pages one at a time from the source
+        for pg in range(N):
+            exam.insert_pdf(source_pdf, from_page=pg, to_page=pg, start_at=-1)
+
+        source_pdf.close()
+        # note exam is still open
+        return exam
+
+
+    # I don't think the details matter too much here, just that we write the non-ascii
+    # name on the page somewhere
+    def add_name(page: pymupdf.Page, name: str) -> None:
+        x = 50
+        y = 42
+        page_width = page.bound().width
+        page_height = page.bound().height
+        box_width = 410
+        box1_height = 108
+        box2_height = 90
+
+        name_id_rect = pymupdf.Rect(
+            page_width * (x / 100.0) - box_width / 2,
+            (page_height - box1_height - box2_height) * (y / 100.0),
+            page_width * (x / 100.0) + box_width / 2,
+            (page_height - box1_height - box2_height) * (y / 100.0) + box1_height,
+        )
+        page.draw_rect(name_id_rect, color=(0, 0, 0), fill=(1, 1, 1), width=3)
+
+        fontsize = 37
+        w = math.inf
+        font = pymupdf.Font("helv")
+        while w > name_id_rect.width:
+            if fontsize < 6:
+                raise RuntimeError(
+                    f'Overly long name? fontsize={fontsize} for name="{name}"'
+                )
+            fontsize -= 1
+            w = font.text_length(name, fontsize=fontsize)
+        tw = pymupdf.TextWriter(page.rect)
+        tw.append(
+            pymupdf.Point(page_width * (x / 100.0) - w / 2, name_id_rect.y0 + 38),
+            name,
+            fontsize=fontsize,
+        )
+        tw.write_text(page)
+
+    exam = create_pdf()
+
+    add_name(exam[0], "싸이")  # CJK so we want subsetting
+
+    exam.subset_fonts()
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_5049_out.pdf')
+    exam.save(path, garbage=4, deflate=True, clean=True)
+    exam.close()
