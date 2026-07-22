@@ -163,7 +163,6 @@ class _TableStateList:
 
 EDGES = _TableStateList(_EDGES_VAR)  # vector graphics from PyMuPDF
 CHARS = _TableStateList(_CHARS_VAR)  # text characters from PyMuPDF
-TEXTPAGE = None  # textpage for cell text extraction
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
 FLAGS = (
@@ -1540,7 +1539,28 @@ def cells_to_tables(page, cells) -> list:
         tables.append(list(current_cells))
 
     # PyMuPDF modification:
-    # Remove tables without text or having only 1 column
+    # Remove tables without text or having only 1 column.
+    # The text probe scans the current call's CHARS: the module-global
+    # TEXTPAGE it used to pass to page.get_textbox() was never assigned, so
+    # every probe built and walked a fresh full-page TextPage per candidate.
+    # The overlap test mirrors JM_rects_overlap() (strict), and a candidate
+    # counts as texty iff it overlaps a non-whitespace character.
+    text_bboxes = None
+
+    def has_text(r):
+        nonlocal text_bboxes
+        if text_bboxes is None:  # built once, only if a candidate survives
+            text_bboxes = [
+                (c["x0"], c["top"], c["x1"], c["bottom"])
+                for c in CHARS
+                if c["text"] not in white_spaces
+            ]
+        rx0, rtop, rx1, rbottom = r
+        for x0, top, x1, bottom in text_bboxes:
+            if x0 < rx1 and x1 > rx0 and top < rbottom and bottom > rtop:
+                return True
+        return False
+
     for i in range(len(tables) - 1, -1, -1):
         r = pymupdf.EMPTY_RECT()
         x1_vals = set()
@@ -1552,12 +1572,7 @@ def cells_to_tables(page, cells) -> list:
         if (
             len(x1_vals) < 2
             or len(x0_vals) < 2
-            or white_spaces.issuperset(
-                page.get_textbox(
-                    r,
-                    textpage=TEXTPAGE,
-                )
-            )
+            or not has_text(r)
         ):
             del tables[i]
 
