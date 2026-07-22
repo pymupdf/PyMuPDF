@@ -77,11 +77,41 @@ import itertools
 import string
 import html
 from collections.abc import Sequence
+from contextvars import ContextVar
 from dataclasses import dataclass
 from operator import itemgetter
 import weakref
 import pymupdf
 from pymupdf import mupdf
+
+# The opt-in refine, cell-span and layout-union stages live in sibling modules,
+# re-imported here to keep the public pymupdf.table.* surface unchanged.
+# _table_union imports find_tables back from this module, so it is imported
+# lazily inside find_tables() instead, to avoid an import cycle.
+from pymupdf._table_refine import (
+    refine_grid_structure,
+    refine_grid_rows,
+    _refine_cells_to_grid,
+    _refine_grid_to_cells,
+    _refine_page_words,
+)
+from pymupdf._table_spans import (
+    resolve_spans,
+    SpanCell,
+    _span_select_words_in_rect,
+    _span_word_line_tuple,
+    _span_words_to_line_text,
+)
+# Header semantics and HTML serialization live in the _table_headers sibling.
+from pymupdf._table_headers import (
+    find_header_region,
+    collapse_cell_ws,
+    render_table_html,
+)
+
+# refine_grid is unused in this module; re-exported for the public
+# pymupdf.table.* surface.
+from pymupdf._table_refine import refine_grid  # noqa: F401  # pylint: disable=unused-import
 
 # -------------------------------------------------------------------
 # Start of PyMuPDF interface code
@@ -89,8 +119,50 @@ from pymupdf import mupdf
 
 # pylint: disable=no-name-in-module
 
-EDGES = []  # vector graphics from PyMuPDF
-CHARS = []  # text characters from PyMuPDF
+_EDGES_VAR = ContextVar("pymupdf_table_edges", default=None)
+_CHARS_VAR = ContextVar("pymupdf_table_chars", default=None)
+
+
+class _TableStateList:
+    """List-like proxy for per-call table extraction state."""
+
+    def __init__(self, var):
+        self._var = var
+
+    def _list(self):
+        value = self._var.get()
+        if value is None:
+            value = []
+            self._var.set(value)
+        return value
+
+    def append(self, item):
+        return self._list().append(item)
+
+    def clear(self):
+        return self._list().clear()
+
+    def extend(self, items):
+        return self._list().extend(items)
+
+    def __bool__(self):
+        return bool(self._list())
+
+    def __getitem__(self, item):
+        return self._list()[item]
+
+    def __iter__(self):
+        return iter(self._list())
+
+    def __len__(self):
+        return len(self._list())
+
+    def __setitem__(self, key, value):
+        self._list()[key] = value
+
+
+EDGES = _TableStateList(_EDGES_VAR)  # vector graphics from PyMuPDF
+CHARS = _TableStateList(_CHARS_VAR)  # text characters from PyMuPDF
 TEXTPAGE = None  # textpage for cell text extraction
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
@@ -1521,14 +1593,27 @@ class TableHeader:
 
 
 class Table:
-    def __init__(self, page, cells):
+    def __init__(self, page, cells, bbox=None):
         self.page = page
         self.textpage = None
+        self._chars = None
         self.cells = cells
+        # Explicit reported-bbox override; None means bbox is computed from
+        # cells. Set only for a union grid-ref table, whose reported region
+        # (its layout box) is decoupled from its replacement cell grid.
+        self._bbox = bbox
         self.header = self._get_header()  # PyMuPDF extension
+        # Filled by find_tables(refine=True): placements is a row-major grid of
+        # tagged SpanCell colspan/rowspan placements (None otherwise); header_rows
+        # is the leading header-row count, section_rows the section-label rows.
+        self.placements = None
+        self.header_rows = 0
+        self.section_rows = ()
 
     @property
     def bbox(self):
+        if self._bbox is not None:
+            return tuple(self._bbox)
         c = self.cells
         return (
             min(map(itemgetter(0), c)),
@@ -1557,7 +1642,7 @@ class Table:
         return max([len(r.cells) for r in self.rows])
 
     def extract(self, **kwargs) -> list:
-        chars = CHARS
+        chars = self._chars if self._chars is not None else CHARS
         table_arr = []
 
         def char_in_bbox(char, bbox) -> bool:
@@ -1663,6 +1748,26 @@ class Table:
             line += "\n"
             output += line
         return output + "\n"
+
+    def to_html(self):
+        """Output the table as an HTML ``<table>`` string.
+
+        With span placements (from ``find_tables(refine=True)``) each
+        placement's colspan/rowspan and th/td tag are honoured and a
+        section-label row collapses to one spanning ``<th>``. Otherwise a flat
+        td-only table is built from :meth:`extract`.
+        """
+        if self.placements is not None:
+            return render_table_html(self.placements, self.section_rows)
+        # No placements: flat td-only grid from extract().
+        rows = [
+            [
+                SpanCell(bbox=None, text=(cell or ""), colspan=1, rowspan=1)
+                for cell in row
+            ]
+            for row in self.extract()
+        ]
+        return render_table_html(rows)
 
     def to_pandas(self, **kwargs):
         """Return a pandas DataFrame version of the table."""
@@ -2180,6 +2285,7 @@ page information themselves.
 # -----------------------------------------------------------------------------
 def make_chars(page, clip=None):
     """Extract text as "rawdict" to fill CHARS."""
+    chars = CHARS._list()  # bind once: avoid per-append proxy overhead below
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
@@ -2234,7 +2340,7 @@ def make_chars(page, clip=None):
                         "y0": bbox_ctm.y0,
                         "y1": bbox_ctm.y1,
                     }
-                    CHARS.append(char_dict)
+                    chars.append(char_dict)
     return TEXTPAGE
 
 
@@ -2244,6 +2350,7 @@ def make_chars(page, clip=None):
 # else to lines.
 # ------------------------------------------------------------------------
 def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes=None):
+    edges = EDGES._list()  # bind once: avoid per-append proxy overhead below
     snap_x = tset.snap_x_tolerance
     snap_y = tset.snap_y_tolerance
     min_length = tset.edge_min_length
@@ -2419,7 +2526,7 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                 p1, p2 = i[1:]
                 line_dict = make_line(p, p1, p2, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
             elif i[0] == "re":
                 # A rectangle: decompose into 4 lines, but filter out
@@ -2434,7 +2541,7 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                     p2 = pymupdf.Point(x, rect.y1)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict:
-                        EDGES.append(line_to_edge(line_dict))
+                        edges.append(line_to_edge(line_dict))
                     continue
 
                 if (
@@ -2445,24 +2552,24 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                     p2 = pymupdf.Point(rect.x1, y)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict:
-                        EDGES.append(line_to_edge(line_dict))
+                        edges.append(line_to_edge(line_dict))
                     continue
 
                 line_dict = make_line(p, rect.tl, rect.bl, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
                 line_dict = make_line(p, rect.bl, rect.br, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
                 line_dict = make_line(p, rect.br, rect.tr, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
                 line_dict = make_line(p, rect.tr, rect.tl, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
             else:  # must be a quad
                 # we convert it into (up to) 4 lines
@@ -2470,37 +2577,37 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
 
                 line_dict = make_line(p, ul, ll, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
                 line_dict = make_line(p, ll, lr, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
                 line_dict = make_line(p, lr, ur, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
                 line_dict = make_line(p, ur, ul, clip)
                 if line_dict:
-                    EDGES.append(line_to_edge(line_dict))
+                    edges.append(line_to_edge(line_dict))
 
     path = {"color": (0, 0, 0), "fill": None, "width": 1}
     for bbox in bboxes:  # add the border lines for all enveloping bboxes
         line_dict = make_line(path, bbox.tl, bbox.tr, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
 
         line_dict = make_line(path, bbox.bl, bbox.br, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
 
         line_dict = make_line(path, bbox.tl, bbox.bl, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
 
         line_dict = make_line(path, bbox.tr, bbox.br, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
 
     if add_lines is not None:  # add user-specified lines
         assert isinstance(add_lines, (tuple, list))
@@ -2511,7 +2618,7 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
         p2 = pymupdf.Point(p2)
         line_dict = make_line(path, p1, p2, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
 
     if add_boxes is not None:  # add user-specified rectangles
         assert isinstance(add_boxes, (tuple, list))
@@ -2521,16 +2628,16 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
         r = pymupdf.Rect(box)
         line_dict = make_line(path, r.tl, r.bl, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
         line_dict = make_line(path, r.bl, r.br, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
         line_dict = make_line(path, r.br, r.tr, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
         line_dict = make_line(path, r.tr, r.tl, clip)
         if line_dict:
-            EDGES.append(line_to_edge(line_dict))
+            edges.append(line_to_edge(line_dict))
 
 
 def page_rotation_set0(page):
@@ -2590,6 +2697,114 @@ def page_rotation_reset(page, xref, rot, mediabox):
     return page
 
 
+# ---------------------------------------------------------------------------
+# find_tables(refine=True) reconstruction glue.
+#
+# Resolve a merged-cell placement grid (falling back to a flat 1x1 grid when
+# span resolution changes the column count), determine the header/body split,
+# and tag each placement td/th. Built on resolve_spans, find_header_region and
+# the refine_* stages; only reached when refine=True.
+# ---------------------------------------------------------------------------
+def _refine_placement_grid_width(placements):
+    """Column extent of a placement grid after resolving colspan/rowspan."""
+    occupied = set()
+    max_col = 0
+    for row_idx, row in enumerate(placements):
+        col_idx = 0
+        for placement in row:
+            while (row_idx, col_idx) in occupied:
+                col_idx += 1
+            for dr in range(placement.rowspan):
+                for dc in range(placement.colspan):
+                    occupied.add((row_idx + dr, col_idx + dc))
+            col_idx += placement.colspan
+            max_col = max(max_col, col_idx)
+    return max_col
+
+
+def _refine_flat_placement_grid(page, cells, col_count):
+    """Flat fallback grid: one 1x1 SpanCell per slot, padded to ``col_count``.
+
+    Selects words per cell by center-point and synthesizes each cell's line text
+    ("" for a gap), using the same word source and line builder as resolve_spans.
+    Used when span resolution changes the column count."""
+    page_words = _refine_page_words(page)
+    grid = []
+    for row in cells:
+        out = []
+        for cell in row:
+            if cell is None:
+                out.append(SpanCell(bbox=None, text="", colspan=1, rowspan=1))
+            else:
+                rect = pymupdf.Rect(cell)
+                line_words = [
+                    _span_word_line_tuple(word)
+                    for _, word in _span_select_words_in_rect(page_words, rect)
+                ]
+                out.append(
+                    SpanCell(
+                        bbox=tuple(rect),
+                        text=_span_words_to_line_text(line_words),
+                        colspan=1,
+                        rowspan=1,
+                    )
+                )
+        while len(out) < col_count:
+            out.append(SpanCell(bbox=None, text="", colspan=1, rowspan=1))
+        grid.append(out)
+    return grid
+
+
+def _refine_placement_or_flat_grid(page, cells, *, strict_colspan=False, header_row_count=None):
+    """The reconstructed cell grid: resolved SpanCell placements, or the flat 1x1
+    fallback when span resolution changes the column count (grid width != col
+    count). ``strict_colspan``/``header_row_count`` pass straight to resolve_spans."""
+    col_count = max((len(row) for row in cells), default=0)
+    placements = resolve_spans(
+        page, cells, header_row_count=header_row_count, strict_colspan=strict_colspan
+    )
+    if _refine_placement_grid_width(placements) == col_count:
+        return placements
+    return _refine_flat_placement_grid(page, cells, col_count)
+
+
+def _refine_placements_text_grid(grid):
+    """Row-major whitespace-collapsed cell text -- the ``[[text]]`` header rules read."""
+    return [[collapse_cell_ws(cell.text) for cell in row] for row in grid]
+
+
+def _refine_tag_grid(grid, top_header_rows):
+    """Set each placement's HTML tag in place: cells in the top header rows
+    become ``th``; every other cell becomes ``td``."""
+    for row_idx, row in enumerate(grid):
+        for cell in row:
+            cell.tag = "th" if row_idx < top_header_rows else "td"
+    return grid
+
+
+def _refine_body_start_row(page, cells):
+    """Header/body boundary: resolve the merge-preserved placement grid once and
+    ask the header finder how many leading rows are header, clamped to [1, rows]."""
+    try:
+        model_grid = _refine_placement_or_flat_grid(page, cells)
+        region = find_header_region(_refine_placements_text_grid(model_grid))
+    except Exception:
+        return 1
+    raw = region.top_header_rows
+    return max(1, min(int(raw), len(cells))) if cells else 0
+
+
+def _refine_build_placements(page, working, body_start):
+    """Resolve the final placement grid (strict colspan, header boundary known),
+    run header rules on its own text grid, tag cells -> (tagged grid, region)."""
+    grid = _refine_placement_or_flat_grid(
+        page, working, strict_colspan=True, header_row_count=body_start
+    )
+    region = find_header_region(_refine_placements_text_grid(grid))
+    tagged = _refine_tag_grid(grid, region.top_header_rows)
+    return tagged, region
+
+
 def find_tables(
     page,
     clip=None,
@@ -2616,11 +2831,39 @@ def find_tables(
     add_lines=None,  # user-specified lines
     add_boxes=None,  # user-specified rectangles
     paths=None,  # accept vector graphics as parameter
+    use_layout: bool = True,  # gate line-based tables by layout table boxes
+    union: bool = False,  # opt-in: fuse layout grids with line-based candidates
+    refine: bool = False,  # opt-in: refine each detected table's cell grid
 ):
+    """Detect and extract tables on a page.
+
+    use_layout: if True (default), use page.get_layout() to find layout-
+    identified table regions and use them to restrict/complete line-based
+    detection; if layout ran and found no tables, return an empty result
+    immediately. Set False to always run full detection.
+
+    union: if True (requires the layout analyzer), detect tables by fusing the
+    layout analyzer's table grids with the line-based finder's candidates -- a
+    candidate matching a layout table 1:1 can replace its grid, candidates
+    contained in one layout table can split it, and unowned candidates are
+    appended -- returning the fused tables in layout order then appended order.
+    Off by default. Needs the raw layout form: when page.layout_information is
+    None it is computed with page.get_layout(return_raw=True); when already
+    populated it is reused as-is.
+
+    refine: if True, refine each detected table's cell grid before building the
+    Table -- splitting rows/columns the line grid merged (using page text and
+    background shading) -- then reconstruct its merged-cell structure and header
+    semantics. The tagged grid is attached as Table.placements (a row-major grid
+    of SpanCell colspan/rowspan placements, each carrying its td/th tag; None on
+    the default path), the header meta as Table.header_rows/section_rows, and
+    Table.to_html() serializes it. Off by default. A grid whose column count the
+    span resolution cannot preserve falls back to a flat one-cell-per-slot
+    placement grid.
+    """
     pymupdf._warn_layout_once()
-    CHARS.clear()
-    EDGES.clear()
-    TEXTPAGE = None
+    _CHARS_VAR.set([])
+    _EDGES_VAR.set([])
     old_small = bool(pymupdf.TOOLS.set_small_glyph_heights())  # save old value
     pymupdf.TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
     if page.rotation != 0:
@@ -2668,55 +2911,93 @@ def find_tables(
 
     old_quad_corrections = pymupdf.TOOLS.unset_quad_corrections()
     try:
-        page.get_layout()
-        if page.layout_information:
-            pymupdf.TOOLS.unset_quad_corrections(True)
-            boxes = [
-                pymupdf.Rect(b[:4]) for b in page.layout_information if b[-1] == "table"
-            ]
+        if union:
+            # Union path: fuse layout grids with line-based candidates instead
+            # of the ordinary use_layout gating. It builds its own tables (and,
+            # via a nested find_tables, its own char list), so the make_chars/
+            # make_edges/TableFinder setup below is skipped; TEXTPAGE comes from
+            # the nested finder. Imported here, not at module top, to avoid an
+            # import cycle: _table_union imports find_tables back from this module.
+            from pymupdf._table_union import _find_tables_union
+            tbf = _find_tables_union(page)
+            TEXTPAGE = tbf.textpage
         else:
             boxes = []
+            if use_layout:
+                page.get_layout()
+                if page.layout_information:
+                    pymupdf.TOOLS.unset_quad_corrections(True)
+                    boxes = [
+                        pymupdf.Rect(b[:4]) for b in page.layout_information if b[-1] == "table"
+                    ]
 
-        if boxes:  # layout did find some tables
-            pass
-        elif page.layout_information is not None:
-            # layout was executed but found no tables
-            # make sure we exit quickly with an empty TableFinder
-            tbf = TableFinder(page)
-            return tbf
+                if not boxes and page.layout_information is not None:
+                    # layout was executed but found no tables
+                    # make sure we exit quickly with an empty TableFinder
+                    tbf = TableFinder(page)
+                    return tbf
 
-        tset = TableSettings.resolve(settings=settings)
-        page.table_settings = tset
+            tset = TableSettings.resolve(settings=settings)
+            page.table_settings = tset
 
-        TEXTPAGE = make_chars(page, clip=clip)  # create character list of page
-        make_edges(
-            page,
-            clip=clip,
-            tset=tset,
-            paths=paths,
-            add_lines=add_lines,
-            add_boxes=add_boxes,
-        )  # create lines and curves
+            TEXTPAGE = make_chars(page, clip=clip)  # create character list of page
+            make_edges(
+                page,
+                clip=clip,
+                tset=tset,
+                paths=paths,
+                add_lines=add_lines,
+                add_boxes=add_boxes,
+            )  # create lines and curves
 
-        tbf = TableFinder(page, settings=tset)
-        tbf.textpage = TEXTPAGE  # store textpage for later use
-        if boxes:
-            # only keep Finder tables that match a layout box
-            tbf.tables = [
-                tab
-                for tab in tbf.tables
-                if any(_iou(tab.bbox, r) >= 0.6 for r in boxes)
+            tbf = TableFinder(page, settings=tset)
+            tbf.textpage = TEXTPAGE  # store textpage for later use
+            if boxes:
+                # only keep Finder tables that match a layout box
+                tbf.tables = [
+                    tab
+                    for tab in tbf.tables
+                    if any(_iou(tab.bbox, r) >= 0.6 for r in boxes)
+                ]
+            # build the complementary list of layout table boxes
+            my_boxes = [
+                r for r in boxes if all(_iou(r, tab.bbox) < 0.6 for tab in tbf.tables)
             ]
-        # build the complementary list of layout table boxes
-        my_boxes = [
-            r for r in boxes if all(_iou(r, tab.bbox) < 0.6 for tab in tbf.tables)
-        ]
-        if my_boxes:
-            word_rects = [pymupdf.Rect(w[:4]) for w in TEXTPAGE.extractWORDS()]
-            tp2 = page.get_textpage(flags=TABLE_DETECTOR_FLAGS)
-        for rect in my_boxes:
-            cells = make_table_from_bbox(tp2, word_rects, rect)  # pylint: disable=E0606
-            tbf.tables.append(Table(page, cells))
+            if my_boxes:
+                word_rects = [pymupdf.Rect(w[:4]) for w in TEXTPAGE.extractWORDS()]
+                tp2 = page.get_textpage(flags=TABLE_DETECTOR_FLAGS)
+            for rect in my_boxes:
+                cells = make_table_from_bbox(tp2, word_rects, rect)  # pylint: disable=E0606
+                tbf.tables.append(Table(page, cells))
+        if refine:
+            # Grid refinement + reconstruction. Runs while the page is still
+            # derotated (before the finally block resets rotation) so word and
+            # vector coordinates match the detected cells. Order: structural
+            # split (shaded rows + under-segmented columns), resolve the header/
+            # body boundary, split over-merged body rows, resolve the final
+            # merged-cell placement grid (strict colspan) and tag each placement
+            # td/th. The tagged grid is attached as .placements, the header meta
+            # as .header_rows/.section_rows.
+            refined_tables = []
+            for tab in tbf.tables:
+                grid = _refine_cells_to_grid(tab.cells)
+                # The reported bbox (a union grid-ref table's layout box, else
+                # the cells' union) bounds the shaded-rectangle search.
+                working = refine_grid_structure(page, grid, table_bbox=tab.bbox)
+                body_start = _refine_body_start_row(page, working)
+                working = refine_grid_rows(page, working, header_row_count=body_start)
+                flat = _refine_grid_to_cells(working)
+                # Preserve an explicit reported-bbox override (union grid-ref
+                # tables): the refined grid must not change the reported region.
+                new_tab = Table(page, flat, bbox=tab._bbox) if flat else tab
+                # Build the tagged model on `working` directly, not on the
+                # re-gridded new_tab.cells, so placements match the refined grid.
+                placements, region = _refine_build_placements(page, working, body_start)
+                new_tab.placements = placements
+                new_tab.header_rows = region.top_header_rows
+                new_tab.section_rows = region.section_header_rows
+                refined_tables.append(new_tab)
+            tbf.tables = refined_tables
     except Exception as e:
         pymupdf.message("find_tables: exception occurred: %s" % str(e))
         return None
@@ -2725,6 +3006,12 @@ def find_tables(
         if old_xref is not None:
             page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
         pymupdf.TOOLS.unset_quad_corrections(old_quad_corrections)
+
+    # Snapshot the page's characters onto each table so a later find_tables()
+    # call's CHARS reset cannot leak into this table's extract(). One shallow
+    # copy shared per call.
+    chars = list(CHARS)
     for table in tbf.tables:
         table.textpage = TEXTPAGE
+        table._chars = chars
     return tbf
