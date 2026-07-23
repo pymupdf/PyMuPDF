@@ -773,3 +773,20 @@ def test_4943():
         else:
             print(f'No exception.')
             assert not expect_fail, f'{pymupdf.mupdf_version_tuple=} {pymupdf.pymupdf_version_tuple=}'
+
+
+def test_4936():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4936.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        rect = pymupdf.Rect(
+                pymupdf.FZ_MIN_INF_RECT,
+                pymupdf.FZ_MIN_INF_RECT,
+                pymupdf.FZ_MAX_INF_RECT,
+                pymupdf.FZ_MAX_INF_RECT,
+                )
+        page.add_redact_annot(rect, fill=False)
+        page.apply_redactions(graphics=2)
+        drawings = page.get_drawings()
+    print(f'{len(drawings)=}')
+    assert len(drawings) == 0
