@@ -302,6 +302,9 @@ def test_find_tables_state_is_call_local_for_threads():
     if platform.python_implementation() == "GraalVM":
         print("test_find_tables_state_is_call_local_for_threads(): not running because slow on GraalVM.")
         return
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_find_tables_state_is_call_local_for_threads(): not running on Pyodide - threads unsupported.')
+        return
 
     pdf_bytes = _make_find_tables_state_doc()
     expected = _find_tables_use_layout_false_signature(pdf_bytes)
