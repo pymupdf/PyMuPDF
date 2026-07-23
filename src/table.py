@@ -2983,7 +2983,8 @@ def find_tables(
                 tp2 = page.get_textpage(flags=TABLE_DETECTOR_FLAGS)
             for rect in my_boxes:
                 cells = make_table_from_bbox(tp2, word_rects, rect)  # pylint: disable=E0606
-                tbf.tables.append(Table(page, cells))
+                if cells:
+                    tbf.tables.append(Table(page, cells))
         if refine:
             # Grid refinement + reconstruction. Runs while the page is still
             # derotated (before the finally block resets rotation) so word and
