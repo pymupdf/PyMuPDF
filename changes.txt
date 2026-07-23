@@ -2,6 +2,26 @@ Change Log
 ==========
 
 
+Fixed issues:
+
+* **Fixed** `4670 <https://github.com/pymupdf/PyMuPDF/issues/4670>`_: scrub fails to remove hidden text after clean_contents stopped including line breaks (\u2265 1.24.0)
+* **Fixed** `4943 <https://github.com/pymupdf/PyMuPDF/issues/4943>`_: enh: applying redactions with image cropping for currently unsupported colorspaces
+* **Fixed** `5030 <https://github.com/pymupdf/PyMuPDF/issues/5030>`_: find_tables() with layout enabled can return a zero-cell Table, and Table.bbox then raises "ValueError: min() iterable argument is empty"
+* **Fixed** `5044 <https://github.com/pymupdf/PyMuPDF/issues/5044>`_: Outline (TOC) parsing bug
+* **Fixed** `5049 <https://github.com/pymupdf/PyMuPDF/issues/5049>`_: font subsetting segfaults in 1.28.0, regression from 1.27.2.2 #5049
+* **Fixed** `5042 <https://github.com/pymupdf/PyMuPDF/issues/5042>`_: Page.get_texttrace() leaks None references \u2014 Fatal Python error (none_dealloc) in long-running processes (1.27.2.3 & 1.28.0)
+
+
+Other:
+
+* Output warning when legacy `fitz` module is imported.
+* Cope better with markdown containing illegal utf8 sequences.
+* Fixed building with PYMUPDF_SETUP_MUPDF_VS_UPGRADE.
+* pymupdf.Page.find_tables():
+  * new args `use_layout: bool = True` `union: bool = False` `refine: bool = False`.
+  * Improved speed.
+
+
 **Changes in version 1.28.0** (2026-06-29)
 
 Fixed issues:
@@ -21,6 +41,7 @@ Other:
 * Support Windows builds with free thread python.
 * pymupdf.Document.save() now saves non-PDF documents in PDF format.
 * New method pymupdf.Document.apply_css().
+* Pyodide wheel is available on pypi.org.
 
 
 **Changes in version 1.27.2.3** (2026-04-24)
