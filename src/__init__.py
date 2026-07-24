@@ -12072,9 +12072,23 @@ class Page:
         self.set_rotation(0)
         rot = ~mat  # inverse of the derotation matrix
 
+        support_annot_types = {
+            mupdf.PDF_ANNOT_CARET,
+            mupdf.PDF_ANNOT_CIRCLE,
+            mupdf.PDF_ANNOT_FREE_TEXT,
+            mupdf.PDF_ANNOT_FILE_ATTACHMENT,
+            mupdf.PDF_ANNOT_MOVIE,
+            mupdf.PDF_ANNOT_REDACT,
+            mupdf.PDF_ANNOT_SQUARE,
+            mupdf.PDF_ANNOT_SOUND,
+            mupdf.PDF_ANNOT_STAMP,
+            mupdf.PDF_ANNOT_TEXT,
+        }
         for annot in self.annots():  # modify rectangles of annotations
             r = annot.rect * rot
-            # TODO: only try to set rectangle for applicable annot types
+            # only try to set rectangle for applicable annot types
+            if annot.type[0] not in support_annot_types:
+                continue
             annot.set_rect(r)
         for link in self.get_links():  # modify 'from' rectangles of links
             r = link["from"] * rot
