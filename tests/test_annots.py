@@ -770,6 +770,9 @@ def test_4943():
         except pymupdf.mupdf.FzErrorArgument as e:
             print(f'Exception: {e}')
             assert expect_fail, f'{pymupdf.mupdf_version_tuple=} {pymupdf.pymupdf_version_tuple=}'
+            wt = pymupdf.TOOLS.mupdf_warnings()
+            print(f'{wt=}')
+            assert wt
         else:
             print(f'No exception.')
             assert not expect_fail, f'{pymupdf.mupdf_version_tuple=} {pymupdf.pymupdf_version_tuple=}'
