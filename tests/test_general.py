@@ -2256,3 +2256,19 @@ def test_5056():
     assert text_normal in data_normal
     assert text_normal not in data_repro
     assert text_repro in data_repro
+
+
+def test_5054():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5054.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        text1 = page.get_text()
+        page.clean_contents(sanitize=True)
+        text2 = page.get_text()
+        print(f'{text1=}')
+        print(f'{text2=}')
+        if 1:
+            # Currently fails for all mupdf versions.
+            assert text2 != text1
+        else:
+            assert text2 == text1
