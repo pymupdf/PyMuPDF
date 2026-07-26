@@ -12038,17 +12038,59 @@ class Page:
 
     def remove_rotation(self):
         """Set page rotation to 0 while maintaining visual appearance."""
-        rot = self.rotation  # normalized rotation value
-        if rot == 0:
-            return  Identity # nothing to do
+        rotation = self.rotation  # normalized rotation value
+        if rotation == 0:
+            return Identity # nothing to do
+
+        quad_annots = {
+            mupdf.PDF_ANNOT_HIGHLIGHT,
+            mupdf.PDF_ANNOT_UNDERLINE,
+            mupdf.PDF_ANNOT_SQUIGGLY,
+            mupdf.PDF_ANNOT_STRIKE_OUT,
+        }
+        line_annots = {
+            mupdf.PDF_ANNOT_LINE,
+            mupdf.PDF_ANNOT_POLY_LINE,
+            mupdf.PDF_ANNOT_POLYGON,
+        }
+
+        doc = self.parent
+        annot_states = []
+        for annot in self.annots():
+            annot_type = annot.type[0]
+            annot_rotation = annot.rotation
+            state = {
+                "annot": annot,
+                "type": annot_type,
+                "rect": Rect(annot.rect),
+                "apn_matrix": Matrix(annot.apn_matrix),
+            }
+            if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
+                if annot_rotation != -1:
+                    state["new_annot_rotation"] = (annot_rotation - rotation) % 360
+                else:
+                    state["new_annot_rotation"] = -1
+            if annot_type in quad_annots or annot_type in line_annots:
+                state["vertices"] = [Point(p) for p in annot.vertices]
+            elif annot_type == mupdf.PDF_ANNOT_INK:
+                state["ink"] = [[Point(p) for p in subpoints] for subpoints in annot.vertices]
+            elif annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
+                key_type, _ = doc.xref_get_key(annot.xref, "CL")
+                if key_type == "array":
+                    state["cl"] = [Point(p) for p in annot.vertices]
+            annot_states.append(state)
+
+        links = [(link, Rect(link["from"])) for link in self.get_links()]
+        widgets = [(widget, Rect(widget.rect)) for widget in self.widgets()]
+        coord_transform = +self.rotation_matrix
 
         # need to derotate the page's content
         mb = self.mediabox  # current mediabox
 
-        if rot == 90:
+        if rotation == 90:
             # before derotation, shift content horizontally
             mat0 = Matrix(1, 0, 0, 1, mb.y1 - mb.x1 - mb.x0 - mb.y0, 0)
-        elif rot == 270:
+        elif rotation == 270:
             # before derotation, shift content vertically
             mat0 = Matrix(1, 0, 0, 1, 0, mb.x1 - mb.y1 - mb.y0 - mb.x0)
         else:  # rot = 180
@@ -12061,7 +12103,7 @@ class Page:
         _ = TOOLS._insert_contents(self, cmd, False)  # prepend to page contents
 
         # swap x- and y-coordinates
-        if rot in (90, 270):
+        if rotation in (90, 270):
             x0, y0, x1, y1 = mb
             mb.x0 = y0
             mb.y0 = x0
@@ -12069,28 +12111,95 @@ class Page:
             mb.y1 = x1
             self.set_mediabox(mb)
 
+        transform = coord_transform
         self.set_rotation(0)
-        rot = ~mat  # inverse of the derotation matrix
 
-        for annot in self.annots():  # modify rectangles of annotations
-            r = annot.rect * rot
-            # TODO: only try to set rectangle for applicable annot types
-            annot.set_rect(r)
-        for link in self.get_links():  # modify 'from' rectangles of links
-            r = link["from"] * rot
+        pdf_mb = Rect(self.mediabox)
+
+        def to_pdf_point(point):
+            point = Point(point)
+            return Point(point.x + pdf_mb.x0, pdf_mb.y1 - point.y)
+
+        def points_string(points):
+            return "[" + " ".join(_format_g(tuple(to_pdf_point(p))) for p in points) + "]"
+
+        def nested_points_string(points):
+            return "[" + " ".join(points_string(subpoints) for subpoints in points) + "]"
+
+        for state in annot_states:
+            annot = state["annot"]
+            annot_type = state["type"]
+            r = state["rect"] * transform
+            p0 = to_pdf_point(Point(r.x0, r.y1))
+            p1 = to_pdf_point(Point(r.x1, r.y0))
+            doc.xref_set_key(annot.xref, "Rect", f"[{_format_g((p0.x, p0.y, p1.x, p1.y))}]")
+
+            if annot_type in quad_annots or annot_type in line_annots:
+                points = [p * transform for p in state["vertices"]]
+                key = "QuadPoints" if annot_type in quad_annots else ("L" if annot_type == mupdf.PDF_ANNOT_LINE else "Vertices")
+                doc.xref_set_key(annot.xref, key, points_string(points))
+
+            if annot_type == mupdf.PDF_ANNOT_INK:
+                points = [[p * transform for p in subpoints] for subpoints in state["ink"]]
+                doc.xref_set_key(annot.xref, "InkList", nested_points_string(points))
+
+            if "cl" in state:
+                cl_points = [p * transform for p in state["cl"]]
+                doc.xref_set_key(annot.xref, "CL", points_string(cl_points))
+
+            if "new_annot_rotation" in state and state["new_annot_rotation"] != -1:
+                doc.xref_set_key(annot.xref, "Rotate", str(int(state["new_annot_rotation"])))
+
+            try:
+                if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:
+                    if rotation == 180:
+                        annot.set_apn_matrix(state["apn_matrix"] * transform)
+                    else:
+                        cx = (r.x0 + r.x1) / 2
+                        cy = (r.y0 + r.y1) / 2
+                        flip180 = Matrix(-1, 0, 0, -1, 2 * cx, 2 * cy)
+                        annot.set_apn_matrix(state["apn_matrix"] * transform * flip180)
+                elif annot_type in (
+                    mupdf.PDF_ANNOT_HIGHLIGHT,
+                    mupdf.PDF_ANNOT_UNDERLINE,
+                    mupdf.PDF_ANNOT_SQUIGGLY,
+                    mupdf.PDF_ANNOT_STRIKE_OUT,
+                    mupdf.PDF_ANNOT_LINE,
+                    mupdf.PDF_ANNOT_POLY_LINE,
+                    mupdf.PDF_ANNOT_POLYGON,
+                    mupdf.PDF_ANNOT_TEXT,
+                    mupdf.PDF_ANNOT_INK,
+                ):
+                    annot._update_appearance(rotate=0 if annot_type in (mupdf.PDF_ANNOT_STAMP, mupdf.PDF_ANNOT_TEXT) else -1)
+                elif annot_type == mupdf.PDF_ANNOT_STAMP:
+                    if rotation == 180:
+                        annot.set_apn_matrix(state["apn_matrix"] * transform)
+                    else:
+                        # For quarter turns, invert page rotation for AP so
+                        # stamp orientation and scale stay unchanged.
+                        annot.set_apn_matrix(state["apn_matrix"] * ~transform)
+                else:
+                    ap_map = state["rect"].torect(r)
+                    annot.set_apn_matrix(state["apn_matrix"] * ap_map)
+            except Exception:
+                # Annotation has no AP/N matrix to adjust.
+                pass
+
+        for link, r in links:  # modify 'from' rectangles of links
+            r = r * transform
             self.delete_link(link)
             link["from"] = r
             try:  # invalid links remain deleted
                 self.insert_link(link)
             except Exception:
                 pass
-        for widget in self.widgets():  # modify field rectangles
-            r = widget.rect * rot
+        for widget, r in widgets:  # modify field rectangles
+            r = r * transform
             if r.is_empty or r.is_infinite:
                 continue
             widget.rect = r
             widget.update()
-        return rot  # the inverse of the generated derotation matrix
+        return ~mat  # the inverse of the generated derotation matrix
 
     def cluster_drawings(
         self, clip=None, drawings=None, x_tolerance: float = 3, y_tolerance: float = 3,
