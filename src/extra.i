@@ -3728,7 +3728,11 @@ void make_table_dict(fz_stext_page *tp, PyObject *table_dict, PyObject *bbox)
 
     try
     {
-        block = mupdf::ll_fz_find_table_within_bounds(tp, bounds);
+#if MUPDF_VERSION_GE(1, 28, 1)
+      block = mupdf::ll_fz_find_table_within_bounds(tp, bounds, NULL);
+#else
+      block = mupdf::ll_fz_find_table_within_bounds(tp, bounds);
+#endif
     }
     catch (std::exception&)
     {
