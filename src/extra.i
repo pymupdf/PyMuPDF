@@ -3740,10 +3740,23 @@ void make_table_dict(fz_stext_page *tp, PyObject *table_dict, PyObject *bbox)
         return;
     }
 
+    if (!block)
+    {
+        /* No table structure found. */
+        return;
+    }
     // Check if a table structure was found
-    if (block && block->type == FZ_STEXT_BLOCK_GRID)
+    if (block->type == FZ_STEXT_BLOCK_GRID)
     {
         JM_make_grid_block(block, table_dict);
+        return;
+    }
+    if (block->type == FZ_STEXT_BLOCK_STRUCT &&
+        block->u.s.down &&
+        block->u.s.down->first_block &&
+        block->u.s.down->first_block->type == FZ_STEXT_BLOCK_GRID)
+    {
+        JM_make_grid_block(block->u.s.down->first_block, table_dict);
     }
 
 }
