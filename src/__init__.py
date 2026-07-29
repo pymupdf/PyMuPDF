@@ -10970,7 +10970,8 @@ class Page:
         clip = Rect(rect)
         if clip.is_infinite or (clip & self.rect).is_empty:
             raise ValueError("rect must not be infinite or empty")
-        clip *= self.transformation_matrix
+        if mupdf_version_tuple < (1, 28, 1):
+            clip *= self.transformation_matrix
         pdfpage = _as_pdf_page(self)
         pclip = JM_rect_from_py(clip)
         mupdf.pdf_clip_page(pdfpage, pclip)
