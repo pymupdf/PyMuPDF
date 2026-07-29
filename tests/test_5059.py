@@ -1,5 +1,4 @@
 import sys
-from pathlib import Path
 from gentle_compare import rms
 import pymupdf
 
@@ -105,9 +104,4 @@ def test_5059():
         page.remove_rotation()
         pix_rot0 = page.get_pixmap(colorspace=pymupdf.csGRAY)
         rms_val = rms(pix_orig.samples, pix_rot0.samples, verbose=False)
-        print(f"RMS diff for rotation {rot}: {rms_val}")
         assert rms_val < 2, f"RMS diff for rotation {rot}: {rms_val}"
-
-
-if __name__ == "__main__":
-    test_5059()
