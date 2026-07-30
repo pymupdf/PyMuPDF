@@ -6805,7 +6805,7 @@ def get_oc_items(self) -> list:
             fz_try(gctx) {
                 pdf_page *page = pdf_page_from_fz_page(gctx, (fz_page *) $self);
                 if (!page) goto finished;  // have no PDF
-                int xref = (int) PyInt_AsLong(PyDict_GetItem(linkdict, dictkey_xref));
+                int xref = (int) PyLong_AsLong(PyDict_GetItem(linkdict, dictkey_xref));
                 if (xref < 1) goto finished;  // invalid xref
                 pdf_obj *annots = pdf_dict_get(gctx, page->obj, PDF_NAME(Annots));
                 if (!annots) goto finished;  // have no annotations

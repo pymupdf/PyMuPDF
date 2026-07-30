@@ -323,7 +323,7 @@ PyObject *JM_listbox_value(fz_context *ctx, pdf_annot *annot)
     pdf_obj *annot_obj = pdf_annot_obj(ctx, annot);
     pdf_obj *optarr = pdf_dict_get(ctx, annot_obj, PDF_NAME(V));
     if (pdf_is_string(ctx, optarr))         // a single string
-        return PyString_FromString(pdf_to_text_string(ctx, optarr));
+        return PyUnicode_FromString(pdf_to_text_string(ctx, optarr));
 
     // value is an array (may have len 0)
     n = pdf_array_len(ctx, optarr);
@@ -609,7 +609,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     Py_ssize_t i, n = 0;
     int d;
     PyObject *value = GETATTR("field_type");
-    int field_type = (int) PyInt_AsLong(value);
+    int field_type = (int) PyLong_AsLong(value);
     Py_DECREF(value);
 
     // rectangle --------------------------------------------------------------
@@ -642,7 +642,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
         dashes = pdf_new_array(ctx, pdf, n);
         for (i = 0; i < n; i++) {
             pdf_array_push_int(ctx, dashes,
-                               (int64_t) PyInt_AsLong(PySequence_ITEM(value, i)));
+                               (int64_t) PyLong_AsLong(PySequence_ITEM(value, i)));
         }
         pdf_dict_putl_drop(ctx, annot_obj, dashes,
                                 PDF_NAME(BS),
@@ -670,7 +670,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // entry ignored - may be used later
     /*
-    int text_format = (int) PyInt_AsLong(GETATTR("text_format"));
+    int text_format = (int) PyLong_AsLong(GETATTR("text_format"));
     */
 
     // field label -----------------------------------------------------------
@@ -701,14 +701,14 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
     if (field_type == PDF_WIDGET_TYPE_TEXT)
     {
         value = GETATTR("text_maxlen");
-        int text_maxlen = (int) PyInt_AsLong(value);
+        int text_maxlen = (int) PyLong_AsLong(value);
         if (text_maxlen) {
             pdf_dict_put_int(ctx, annot_obj, PDF_NAME(MaxLen), text_maxlen);
         }
         Py_XDECREF(value);
     }
     value = GETATTR("field_display");
-    d = (int) PyInt_AsLong(value);
+    d = (int) PyLong_AsLong(value);
     Py_XDECREF(value);
     pdf_field_set_display(ctx, annot_obj, d);
 
@@ -748,7 +748,7 @@ void JM_set_widget_properties(fz_context *ctx, pdf_annot *annot, PyObject *Widge
 
     // field flags ------------------------------------------------------------
     value = GETATTR("field_flags");
-    int field_flags = (int) PyInt_AsLong(value);
+    int field_flags = (int) PyLong_AsLong(value);
     Py_XDECREF(value);
     if (!PyErr_Occurred()) {
         if (field_type == PDF_WIDGET_TYPE_COMBOBOX) {
