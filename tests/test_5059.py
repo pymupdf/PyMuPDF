@@ -1,4 +1,3 @@
-import sys
 from gentle_compare import rms
 import pymupdf
 
