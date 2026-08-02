@@ -3498,7 +3498,7 @@ int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int bloc
             PyTuple_SET_ITEM(litem, 1, Py_BuildValue("f", blockrect.y0));
             PyTuple_SET_ITEM(litem, 2, Py_BuildValue("f", blockrect.x1));
             PyTuple_SET_ITEM(litem, 3, Py_BuildValue("f", blockrect.y1));
-            PyTuple_SET_ITEM(litem, 4, Py_BuildValue("O", text));
+            PyTuple_SET_ITEM(litem, 4, text);
             PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
             PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
             LIST_APPEND(lines, litem);
