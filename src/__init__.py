@@ -4670,6 +4670,7 @@ class Document:
             use_objstms=1,
             compression_effort=0,
             raise_on_repair=False,
+            reproducible=False,
             ):
         '''
         Save PDF using some different defaults
@@ -4695,6 +4696,7 @@ class Document:
                 use_objstms=use_objstms,
                 compression_effort=compression_effort,
                 raise_on_repair=raise_on_repair,
+                reproducible=reproducible,
                 )
 
     def find_bookmark(self, bm):
@@ -6571,6 +6573,7 @@ class Document:
             use_objstms=0,
             compression_effort=0,
             raise_on_repair=False,
+            reproducible=False,
             ):
         # From %pythonprepend save
         #
@@ -6620,6 +6623,7 @@ class Document:
         opts.do_appearance = appearance
         opts.do_encrypt = encryption
         opts.permissions = permissions
+        opts.reproducible = reproducible
         if owner_pw is not None:
             opts.opwd_utf8_set_value(owner_pw)
         elif user_pw is not None:
@@ -7941,6 +7945,7 @@ class Document:
             use_objstms=0,
             compression_effort=0,
             raise_on_repair=False,
+            reproducible=False,
     ):
         from io import BytesIO
         bio = BytesIO()
@@ -7966,6 +7971,7 @@ class Document:
                 use_objstms=use_objstms,
                 compression_effort=compression_effort,
                 raise_on_repair=raise_on_repair,
+                reproducible=reproducible,
         )
         return bio.getvalue()
     
