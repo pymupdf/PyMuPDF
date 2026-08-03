@@ -25669,6 +25669,10 @@ def _atexit():
     #log( '_atexit() returning')
 atexit.register( _atexit)
 
+def register_font(path : str, name : str|None = None, serif : bool = False, bold : bool = False, italic : bool = False, script : int = -1, language : int = 0, ordering : int = -1, exact_metrics : bool = True):
+    extra.register_font(path, name, serif, bold, italic, script, language, ordering, exact_metrics)
+
+extra.JM_register_font_callbacks()
 
 # List of (name, red, green, blue) where:
 #   name: upper-case name.

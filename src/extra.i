@@ -4386,6 +4386,242 @@ PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip)
     return rc;
 }
 
+extern "C" {
+
+typedef struct registered_font
+{
+    struct registered_font *next;
+    char *path;
+    char *name;
+    int serif;
+    int bold;
+    int italic;
+    int script;
+    int language;
+    int ordering;
+    int exact_metrics;
+    fz_font *instance;
+} registered_font;
+
+static registered_font *registered_fonts;
+static registered_font *registered_fonts_tail;
+
+static int
+register_font(const char *path, const char *name, int serif, int bold, int italic, int script, int language, int ordering, int exact_metrics)
+{
+    registered_font *f = (registered_font *)calloc(1, sizeof(*f));
+
+    if (f == NULL)
+        goto fail;
+
+    if (path != NULL)
+    {
+      f->path = (char *)malloc(strlen(path)+1);
+        if (f->path == NULL)
+            goto fail;
+        strcpy(f->path, path);
+    }
+
+    if (name != NULL)
+    {
+      f->name = (char *)malloc(strlen(name)+1);
+        if (f->name == NULL)
+            goto fail;
+        strcpy(f->name, name);
+    }
+
+    f->serif = serif;
+    f->bold = bold;
+    f->italic = italic;
+    f->script = script;
+    f->language = language;
+    f->ordering = ordering;
+    f->exact_metrics = exact_metrics;
+
+    if (registered_fonts_tail)
+        registered_fonts_tail->next = f;
+    else
+        registered_fonts = f;
+    registered_fonts_tail = f;
+
+    return 0;
+
+ fail:
+    if (f)
+    {
+        free(f->name);
+        free(f->path);
+        free(f);
+    }
+
+    return 1;
+}
+
+static fz_font *
+load_system_font(fz_context *ctx,
+                 const char *name,
+                 int bold,
+                 int italic,
+                 int exact);
+static fz_font *
+load_system_cjk_font(fz_context *ctx,
+                     const char *name,
+                     int ordering,
+                     int serif);
+static fz_font *
+load_system_fallback_font(fz_context *ctx,
+                          int script,
+                          int language,
+                          int serif,
+                          int bold,
+                          int italic);
+}
+
+typedef struct
+{
+  const char *name;
+  int serif;
+  int bold;
+  int italic;
+  int exact;
+  int script;
+  int language;
+  int ordering;
+} font_scan_data;
+
+static fz_font *
+scan_for_font(fz_context *ctx, font_scan_data *fsd)
+{
+    registered_font *f = registered_fonts;
+    fz_font *font;
+
+retry:
+    for (f = registered_fonts; f != NULL; f = f->next)
+    {
+        /* If we're given a name, it must be an exact match */
+        if (fsd->name != NULL)
+        {
+            if (f->name == NULL)
+                continue; // No name, so it can't match.
+            if (strcmp(f->name, fsd->name))
+                continue; // Name doesn't match
+        }
+        if (fsd->serif != -1 && fsd->serif != f->serif)
+            continue;
+        if (fsd->bold != -1 && fsd->bold != f->bold)
+            continue;
+        if (fsd->italic != -1 && fsd->italic != f->italic)
+            continue;
+	/* If we are being asked for exact metrics, then we must match. Otherwise, we don't care. */
+        if (fsd->exact == 1 && fsd->exact != f->exact_metrics)
+            continue;
+        if (fsd->script != -1 && fsd->script != f->script)
+            continue;
+        if (fsd->language != -1 && fsd->language != f->language)
+            continue;
+        if (fsd->ordering != -1 && fsd->ordering != f->ordering)
+            continue;
+
+        if (!f->instance)
+        {
+            f->instance = mupdf::ll_fz_new_font_from_file(f->name, f->path, 0, 1);
+            if (f->serif)
+                f->instance->flags.is_serif = 1;
+        }
+
+        return fz_keep_font(ctx, f->instance);
+    }
+
+    if (fsd->serif >= 0)
+    {
+        fsd->serif = -1;
+        goto retry;
+    }
+    if (fsd->bold >= 0)
+    {
+        fsd->bold = -1;
+        goto retry;
+    }
+    if (fsd->italic >= 0)
+    {
+        fsd->italic = -1;
+        goto retry;
+    }
+
+    return NULL;
+}
+
+static fz_font *
+load_system_font(fz_context *ctx,
+                 const char *name,
+                 int bold,
+                 int italic,
+                 int exact)
+{
+    font_scan_data fsd = { 0 };
+
+    fsd.name = name;
+    fsd.serif = -1;
+    fsd.bold = bold;
+    fsd.italic = italic;
+    fsd.exact = exact;
+    fsd.script = -1;
+    fsd.language = -1;
+    fsd.ordering = -1;
+
+    return scan_for_font(ctx, &fsd);
+}
+
+static fz_font *
+load_system_cjk_font(fz_context *ctx,
+                      const char *name,
+                      int ordering,
+                      int serif)
+{
+    font_scan_data fsd = { 0 };
+
+    fsd.name = name;
+    fsd.serif = serif;
+    fsd.bold = -1;
+    fsd.italic = -1;
+    fsd.exact = -1;
+    fsd.script = -1;
+    fsd.language = -1;
+    fsd.ordering = ordering;
+
+    return scan_for_font(ctx, &fsd);
+}
+
+static fz_font *
+load_system_fallback_font(fz_context *ctx,
+                          int script,
+                          int language,
+                          int serif,
+                          int bold,
+                          int italic)
+{
+    font_scan_data fsd = { 0 };
+
+    fsd.name = NULL;
+    fsd.serif = serif;
+    fsd.bold = bold;
+    fsd.italic = italic;
+    fsd.exact = -1;
+    fsd.script = script;
+    fsd.language = language;
+    fsd.ordering = -1;
+
+    return scan_for_font(ctx, &fsd);
+}
+
+void
+JM_register_font_callbacks()
+{
+    mupdf::ll_fz_install_load_system_font_funcs(load_system_font,
+                                                load_system_cjk_font,
+                                                load_system_fallback_font);
+}
+
 %}
 
 /* Declarations for functions defined above. */
@@ -4518,3 +4754,7 @@ alpha, and we copy the non-alpha bytes. If +1 <src> must not have alpha and
 void pixmap_copy(fz_pixmap* pm, const fz_pixmap* src, int n);
 
 PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip);
+
+int register_font(const char *path, const char *name, int serif, int bold, int italic, int script, int language, int ordering, int exact_metrics);
+
+void JM_register_font_callbacks();
