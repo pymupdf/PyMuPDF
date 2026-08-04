@@ -393,5 +393,5 @@ def test_5049():
 
     exam.subset_fonts()
     path_out = os.path.normpath(f'{__file__}/../../tests/test_5049_out.pdf')
-    exam.save(path, garbage=4, deflate=True, clean=True)
+    exam.save(path_out, garbage=4, deflate=True, clean=True)
     exam.close()
