@@ -181,20 +181,10 @@ log = pipcl.log0
 
 run = pipcl.run
 
-
-if 1:
-    # For debugging.
-    log(f'### Starting.')
-    pipcl.show_system()
-
-
-PYMUPDF_SETUP_FLAVOUR = os.environ.get( 'PYMUPDF_SETUP_FLAVOUR', 'pbd')
-for i in PYMUPDF_SETUP_FLAVOUR:
-    assert i in 'pbd', f'Unrecognised flag "{i} in {PYMUPDF_SETUP_FLAVOUR=}. Should be one of "p", "b", "d"'
+log(f'### Starting.')
+pipcl.show_system()
 
 g_root = os.path.abspath( f'{__file__}/..')
-
-python_version_tuple = tuple(int(x) for x in platform.python_version_tuple()[:2])
 
 PYMUPDF_SETUP_PY_LIMITED_API = os.environ.get('PYMUPDF_SETUP_PY_LIMITED_API')
 assert PYMUPDF_SETUP_PY_LIMITED_API in (None, '', '0', '1'), \
@@ -223,50 +213,6 @@ def mupdf_win32_infix():
         return 'win32-vs-upgrade'
     else:
         return 'win32'
-
-
-def _fs_remove(path):
-    '''
-    Removes file or directory, without raising exception if it doesn't exist.
-
-    We assert-fail if the path still exists when we return, in case of
-    permission problems etc.
-    '''
-    # First try deleting `path` as a file.
-    try:
-        os.remove( path)
-    except Exception as e:
-        pass
-    
-    if os.path.exists(path):
-        # Try deleting `path` as a directory. Need to use
-        # shutil.rmtree() callback to handle permission problems; see:
-        # https://docs.python.org/3/library/shutil.html#rmtree-example
-        #
-        def error_fn(fn, path, excinfo):
-            # Clear the readonly bit and reattempt the removal.
-            os.chmod(path, stat.S_IWRITE)
-            fn(path)
-        shutil.rmtree( path, onerror=error_fn)
-    
-    assert not os.path.exists( path)
-
-
-def _git_get_branch( directory):
-    command = f'cd {directory} && git branch --show-current'
-    log( f'Running: {command}')
-    p = subprocess.run(
-            command,
-            shell=True,
-            check=False,
-            text=True,
-            stdout=subprocess.PIPE,
-            )
-    ret = None
-    if p.returncode == 0:
-        ret = p.stdout.strip()
-        log( f'Have found MuPDF git branch: ret={ret!r}')
-    return ret
 
 
 def tar_check(path, mode='r:gz', prefix=None, remove=False):
@@ -340,68 +286,6 @@ def tar_extract(path, mode='r:gz', prefix=None, exists='raise'):
     return prefix_actual
 
 
-def git_info( directory):
-    '''
-    Returns `(sha, comment, diff, branch)`, all items are str or None if not
-    available.
-
-    directory:
-        Root of git checkout.
-    '''
-    sha, comment, diff, branch = '', '', '', ''
-    cp = subprocess.run(
-            f'cd {directory} && (PAGER= git show --pretty=oneline|head -n 1 && git diff)',
-            capture_output=1,
-            shell=1,
-            text=1,
-            )
-    if cp.returncode == 0:
-        sha, _ = cp.stdout.split(' ', 1)
-        comment, diff = _.split('\n', 1)
-    cp = subprocess.run(
-            f'cd {directory} && git rev-parse --abbrev-ref HEAD',
-            capture_output=1,
-            shell=1,
-            text=1,
-            )
-    if cp.returncode == 0:
-        branch = cp.stdout.strip()
-    log(f'git_info(): directory={directory!r} returning branch={branch!r} sha={sha!r} comment={comment!r}')
-    return sha, comment, diff, branch
-
-
-def git_patch(directory, patch, hard=False):
-    '''
-    Applies string <patch> with `git patch` in <directory>.
-    
-    If <hard> is true we clean the tree with `git checkout .` and then apply
-    the patch.
-
-    Otherwise we apply patch only if it is not already applied; this might fail
-    if there are conflicting changes in the tree.
-    '''
-    log(f'Applying patch in {directory}:\n{textwrap.indent(patch, "    ")}')
-    if not patch:
-        return
-    # Carriage returns break `git apply` so we use `newline='\n'` in open().
-    path = os.path.abspath(f'{directory}/pymupdf_patch.txt')
-    with open(path, 'w', newline='\n') as f:
-        f.write(patch)
-    log(f'Using patch file: {path}')
-    if hard:
-        run(f'cd {directory} && git checkout .')
-        run(f'cd {directory} && git apply {path}')
-        log(f'Have applied patch in {directory}.')
-    else:
-        e = run( f'cd {directory} && git apply --check --reverse {path}', check=0)
-        if e == 0:
-            log(f'Not patching {directory} because already patched.')
-        else:
-            run(f'cd {directory} && git apply {path}')
-            log(f'Have applied patch in {directory}.')
-    run(f'cd {directory} && git diff')
-
-
 mupdf_tgz = os.path.abspath( f'{__file__}/../mupdf.tgz')
 
 def get_mupdf_internal(out, location=None, local_tgz=None):
@@ -463,7 +347,7 @@ def get_mupdf_internal(out, location=None, local_tgz=None):
                 tar_check(local_tgz, 'r:gz', prefix=f'{name}/')
             except Exception as e:
                 log(f'Not using existing file {local_tgz} because invalid tar data: {e}')
-                _fs_remove( local_tgz)
+                pipcl.fs_remove( local_tgz)
         if os.path.exists(local_tgz):
             log(f'Not downloading from {location} because already present: {local_tgz!r}')
         else:
@@ -491,7 +375,7 @@ def get_mupdf_internal(out, location=None, local_tgz=None):
             top = os.path.basename(local_dir)
             local_tgz = f'{local_dir}.tgz'
             log( f'Creating .tgz from git files. {top=} {local_dir=} {local_tgz=}')
-            _fs_remove( local_tgz)
+            pipcl.fs_remove( local_tgz)
             with tarfile.open( local_tgz, 'w:gz') as f:
                 for name in pipcl.git_items( local_dir, submodules=True):
                     path = os.path.join( local_dir, name)
@@ -538,19 +422,17 @@ def get_mupdf(path=None, sha=None):
     return get_mupdf_internal('dir', m)
 
 
-linux = sys.platform.startswith( 'linux') or 'gnu' in sys.platform
-openbsd = sys.platform.startswith( 'openbsd')
-freebsd = sys.platform.startswith( 'freebsd')
-darwin = sys.platform.startswith( 'darwin')
-windows = platform.system() == 'Windows' or platform.system().startswith('CYGWIN')
-msys2 = platform.system().startswith('MSYS_NT-')
+def msys2():
+    return platform.system().startswith('MSYS_NT-')
 
 if os.environ.get('PYODIDE') == '1':
     if os.environ.get('OS') != 'pyodide':
         log('PYODIDE=1, setting OS=pyodide.')
         os.environ['OS'] = 'pyodide'
 
-pyodide = os.environ.get('OS') == 'pyodide'
+def pyodide():
+    return os.environ.get('OS') == 'pyodide'
+
 
 def build():
     '''
@@ -580,7 +462,7 @@ def build():
     
     # Build MuPDF shared libraries.
     #
-    if windows:
+    if pipcl.windows():
         mupdf_build_dir = build_mupdf_windows(
                 mupdf_local,
                 build_type,
@@ -644,7 +526,7 @@ def build():
         ret.append( (f'{mupdf_build_dir}/mupdf.py', to_dir) )
 
         # Add MuPDF shared libraries.
-        if windows:
+        if pipcl.windows():
             wp = pipcl.wdev.WindowsPython()
             ret.append( (f'{mupdf_build_dir}/_mupdf.pyd', to_dir) )
             ret.append( (f'{mupdf_build_dir}/mupdfcpp{wp.cpu.windows_suffix}.dll', to_dir) )
@@ -654,12 +536,12 @@ def build():
             ret.append( (f'{mupdf_build_dir2}/mupdfcpp{wp.cpu.windows_suffix}.lib', f'{to_dir_d}/lib/') )
             # MuPDF-1.25+ language bindings build also builds libmuthreads.
             ret.append( (f'{mupdf_build_dir2}/libmuthreads.lib', f'{to_dir_d}/lib/') )
-        elif darwin:
+        elif pipcl.darwin():
             ret.append( (f'{mupdf_build_dir}/_mupdf.so', to_dir) )
             ret.append( (f'{mupdf_build_dir}/libmupdfcpp.so', to_dir) )
             ret.append( (f'{mupdf_build_dir}/libmupdf.dylib', to_dir) )
             ret.append( (f'{mupdf_build_dir}/libmupdf-threads.a', f'{to_dir_d}/lib/') )
-        elif pyodide:
+        elif pyodide():
             ret.append( (f'{mupdf_build_dir}/_mupdf.so', to_dir) )
             ret.append( (f'{mupdf_build_dir}/libmupdfcpp.so', to_dir) )
             ret.append( (f'{mupdf_build_dir}/libmupdf.so', to_dir) )
@@ -856,12 +738,6 @@ def _windows_lib_directory(mupdf_local, build_type):
     return ret
 
 
-def _cpu_bits():
-    if sys.maxsize == 2**31 - 1:
-        return 32
-    return 64
-
-
 def build_mupdf_unix(
         mupdf_local,
         build_type,
@@ -895,10 +771,10 @@ def build_mupdf_unix(
         env_add(env, 'XCFLAGS', '-DTOFU_CJK_EXT')
         env_add(env, 'XCXXFLAGS', '-DTOFU_CJK_EXT')
 
-    if openbsd or freebsd:
+    if pipcl.openbsd() or platform.system() == 'FreeBSD':
         env_add(env, 'CXX', 'c++', ' ')
     
-    if darwin and os.environ.get('GITHUB_ACTIONS') == 'true':
+    if pipcl.darwin() and os.environ.get('GITHUB_ACTIONS') == 'true':
         if os.environ.get('ImageOS') == 'macos13':
             # On Github macos13 we need to use Clang/LLVM (Homebrew) 15.0.7,
             # otherwise mupdf:thirdparty/tesseract/src/api/baseapi.cpp fails to
@@ -956,7 +832,7 @@ def build_mupdf_unix(
     #
     # Avoid link command length problems seen on musllinux.
     build_prefix = ''
-    if pyodide:
+    if pyodide():
         build_prefix += 'pyodide-'
     else:
         build_prefix += f'{platform.machine()}-'
@@ -964,7 +840,7 @@ def build_mupdf_unix(
     if build_prefix_extra:
         build_prefix += f'{build_prefix_extra}-'
     build_prefix += 'shared-'
-    if msys2:
+    if msys2():
         # Error in mupdf/scripts/tesseract/endianness.h:
         # #error "I don't know what architecture this is!"
         log(f'msys2: building MuPDF without tesseract.')
@@ -973,7 +849,7 @@ def build_mupdf_unix(
     else:
         build_prefix += 'tesseract-'
     if (
-            linux
+            pipcl.linux()
             and os.environ.get('PYMUPDF_SETUP_MUPDF_BSYMBOLIC', '1') == '1'
             ):
         log(f'Appending `bsymbolic-` to MuPDF build path.')
@@ -1008,10 +884,7 @@ def build_mupdf_unix(
         command += f' --refcheck-if "{PYMUPDF_SETUP_MUPDF_REFCHECK_IF}"'
     if PYMUPDF_SETUP_MUPDF_TRACE_IF:
         command += f' --trace-if "{PYMUPDF_SETUP_MUPDF_TRACE_IF}"'
-    if 'p' in PYMUPDF_SETUP_FLAVOUR:
-        command += ' all'
-    else:
-        command += ' m01'    # No need for C++/Python bindings.
+    command += ' all'
     command += f' && echo {unix_build_dir}:'
     command += f' && ls -l {unix_build_dir}'
 
@@ -1038,17 +911,6 @@ def get_mupdf_version(mupdf_dir):
     v2 = int(v2.group(1))
     return v0, v1, v2
 
-def _fs_update(text, path):
-    try:
-        with open( path) as f:
-            text0 = f.read()
-    except OSError:
-        text0 = None
-    print(f'path={path!r} text==text0={text==text0!r}')
-    if text != text0:
-        with open( path, 'w') as f:
-            f.write( text)
-    
 
 def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api):
     '''
@@ -1067,7 +929,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
     
     log('Building PyMuPDF extension.')
     compile_extra_cpp = ''
-    if darwin:
+    if pipcl.darwin():
         # Avoids `error: cannot pass object of non-POD type
         # 'std::nullptr_t' through variadic function; call will abort at
         # runtime` when compiling `mupdf::pdf_dict_getl(..., nullptr)`.
@@ -1075,7 +937,7 @@ def _build_extension( mupdf_local, mupdf_build_dir, build_type, g_py_limited_api
         # Avoid errors caused by mupdf's C++ bindings' exception classes
         # not having `nothrow` to match the base exception class.
         compile_extra_cpp += ' -std=c++14'
-    if windows:
+    if pipcl.windows():
         wp = pipcl.wdev.WindowsPython()
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
     else:
@@ -1124,7 +986,7 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
     debug = 'debug' in mupdf_build_dir_flags
     r_extra = ''
     defines = list()
-    if windows:
+    if pipcl.windows():
         defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
         build_type_infix = 'Debug' if debug else 'Release'
@@ -1148,7 +1010,7 @@ def _extension_flags( mupdf_local, mupdf_build_dir, build_type):
         if mupdf_local:
             libpaths = (mupdf_build_dir,)
             libraries = f'{mupdf_build_dir}/{libs[0]}'
-            if openbsd:
+            if pipcl.openbsd():
                 compiler_extra += ' -Wno-deprecated-declarations'
         else:
             libpaths = os.environ.get('PYMUPDF_MUPDF_LIB')
@@ -1215,6 +1077,7 @@ def sdist():
         return ret
     
     for p in pipcl.git_items( g_root):
+        pipcl.log(f'{p=}')
         if p.startswith(
                 (
                     'docs/',
@@ -1223,6 +1086,7 @@ def sdist():
                 )
                 ):
             pass
+            pipcl.log(f'Omiting {p=}')
         else:
             ret.append(p)
     if 0:
@@ -1239,119 +1103,118 @@ version_p = '1.28.0'
 
 version_mupdf = '1.28.0'
 
-if 1:
-    # A normal PyMuPDF package.
-    
-    requires_dist = list()
-    if os.environ.get('PYODIDE_ROOT'):
-        # We can't pip install pytest on pyodide, so specify it here.
-        requires_dist.append('pytest')
-        requires_dist.append('pipcl')
+# A normal PyMuPDF package.
 
-    p = pipcl.Package(
-            'pymupdf',
-            version_p,
-            summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.',
-            description = 'README.md',
-            description_content_type = 'text/markdown',
-            classifier = [
-                'Development Status :: 5 - Production/Stable',
-                'Intended Audience :: Developers',
-                'Intended Audience :: Information Technology',
-                'Operating System :: MacOS',
-                'Operating System :: Microsoft :: Windows',
-                'Operating System :: POSIX :: Linux',
-                'Programming Language :: C',
-                'Programming Language :: C++',
-                'Programming Language :: Python :: 3 :: Only',
-                'Programming Language :: Python :: Implementation :: CPython',
-                'Topic :: Utilities',
-                'Topic :: Multimedia :: Graphics',
-                'Topic :: Software Development :: Libraries',
-                ],
+requires_dist = list()
+if os.environ.get('PYODIDE_ROOT'):
+    # We can't pip install pytest on pyodide, so specify it here.
+    requires_dist.append('pytest')
+    requires_dist.append('pipcl')
 
-            author = 'Artifex',
-            author_email = 'support@artifex.com',
-            requires_dist = requires_dist,
-            requires_python = '>=3.10',
-            license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
-            project_url = [
-                ('Documentation, https://pymupdf.readthedocs.io/'),
-                ('Source, https://github.com/pymupdf/pymupdf'),
-                ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
-                ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
-                ],
-            
-            # We create a `pymupdf` command.
-            entry_points = textwrap.dedent('''
-                [console_scripts]
-                pymupdf = pymupdf.__main__:main
-                '''),
-            
-            fn_build=build,
-            fn_clean=clean,
-            fn_sdist=sdist,
-            
-            py_limited_api=g_py_limited_api,
-            
-            # 30MB: 9 ZIP_DEFLATED
-            # 28MB: 9 ZIP_BZIP2
-            # 23MB: 9 ZIP_LZMA
-            #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or pyodide) else zipfile.ZIP_LZMA,
-            wheel_compresslevel = 9,
-            )
-    
-    # Patch up macos platform tag - we require at least 10.15 because otherwise
-    # std::filesystem appears to be not available.
-    if pipcl.darwin():
-        pt = p.tag_platform()
-        #pipcl.log(f'{pt=}')
-        m = re.match('^(macosx_)(([0-9]+)_([0-9]+))(.*)', pt)
-        #pipcl.log(f'{m=}')
-        if m:
-            v = int(m.group(3)), int(m.group(4))
-            #pipcl.log(f'{v=}')
-            if v < (10, 15):
-                pt2 = f'{m.group(1)}10_15{m.group(5)}'
-                pipcl.log(f'Changing tag_platform from {pt!r} to {pt2!r}')
-                p.tag_platform_ = pt2
+p = pipcl.Package(
+        'pymupdf',
+        version_p,
+        summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.',
+        description = 'README.md',
+        description_content_type = 'text/markdown',
+        classifier = [
+            'Development Status :: 5 - Production/Stable',
+            'Intended Audience :: Developers',
+            'Intended Audience :: Information Technology',
+            'Operating System :: MacOS',
+            'Operating System :: Microsoft :: Windows',
+            'Operating System :: POSIX :: Linux',
+            'Programming Language :: C',
+            'Programming Language :: C++',
+            'Programming Language :: Python :: 3 :: Only',
+            'Programming Language :: Python :: Implementation :: CPython',
+            'Topic :: Utilities',
+            'Topic :: Multimedia :: Graphics',
+            'Topic :: Software Development :: Libraries',
+            ],
 
-    def get_requires_for_build_wheel(config_settings=None):
-        '''
-        Adds to pyproject.toml:[build-system]:requires, allowing programmatic
-        control over what packages we require.
-        '''
-        def platform_release_tuple():
-            r = platform.release()
-            r = r.split('.')
-            r = tuple(int(i) for i in r)
-            log(f'platform_release_tuple() returning {r=}.')
-            return r
-            
-        ret = list()
-        libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
-        if libclang:
-            print(f'Overriding to use {libclang=}.')
-            ret.append(libclang)
-        elif openbsd:
-            print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
-        elif darwin and platform_release_tuple() < (18,):
-            # There are still of problems when building on old macos.
-            ret.append('libclang==14.0.6')
-        else:
-            ret.append('libclang')
-        if msys2:
-            print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
-        elif openbsd:
-            print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
-        elif PYMUPDF_SETUP_SWIG:
-            pass
-        elif darwin and python_version_tuple < (3, 13):
-            # Latest swig-4.4.1 gives director errors on macos with python<3.13.
-            ret.append('swig==4.3.1')
-        else:
-            ret.append('swig')
-        return ret
+        author = 'Artifex',
+        author_email = 'support@artifex.com',
+        requires_dist = requires_dist,
+        requires_python = '>=3.10',
+        license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
+        project_url = [
+            ('Documentation, https://pymupdf.readthedocs.io/'),
+            ('Source, https://github.com/pymupdf/pymupdf'),
+            ('Tracker, https://github.com/pymupdf/PyMuPDF/issues'),
+            ('Changelog, https://pymupdf.readthedocs.io/en/latest/changes.html'),
+            ],
+
+        # We create a `pymupdf` command.
+        entry_points = textwrap.dedent('''
+            [console_scripts]
+            pymupdf = pymupdf.__main__:main
+            '''),
+
+        fn_build=build,
+        fn_clean=clean,
+        fn_sdist=sdist,
+
+        py_limited_api=g_py_limited_api,
+
+        # 30MB: 9 ZIP_DEFLATED
+        # 28MB: 9 ZIP_BZIP2
+        # 23MB: 9 ZIP_LZMA
+        #wheel_compression = zipfile.ZIP_DEFLATED if (darwin or pyodide) else zipfile.ZIP_LZMA,
+        wheel_compresslevel = 9,
+        )
+
+# Patch up macos platform tag - we require at least 10.15 because otherwise
+# std::filesystem appears to be not available.
+if pipcl.darwin():
+    pt = p.tag_platform()
+    #pipcl.log(f'{pt=}')
+    m = re.match('^(macosx_)(([0-9]+)_([0-9]+))(.*)', pt)
+    #pipcl.log(f'{m=}')
+    if m:
+        v = int(m.group(3)), int(m.group(4))
+        #pipcl.log(f'{v=}')
+        if v < (10, 15):
+            pt2 = f'{m.group(1)}10_15{m.group(5)}'
+            pipcl.log(f'Changing tag_platform from {pt!r} to {pt2!r}')
+            p.tag_platform_ = pt2
+
+def get_requires_for_build_wheel(config_settings=None):
+    '''
+    Adds to pyproject.toml:[build-system]:requires, allowing programmatic
+    control over what packages we require.
+    '''
+    def platform_release_tuple():
+        r = platform.release()
+        r = r.split('.')
+        r = tuple(int(i) for i in r)
+        log(f'platform_release_tuple() returning {r=}.')
+        return r
+
+    ret = list()
+    libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
+    if libclang:
+        print(f'Overriding to use {libclang=}.')
+        ret.append(libclang)
+    elif pipcl.openbsd():
+        print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
+    elif pipcl.darwin() and platform_release_tuple() < (18,):
+        # There are still of problems when building on old macos.
+        ret.append('libclang==14.0.6')
+    else:
+        ret.append('libclang')
+    if msys2():
+        print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
+    elif pipcl.openbsd():
+        print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
+    elif PYMUPDF_SETUP_SWIG:
+        pass
+    elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
+        # Latest swig-4.4.1 gives director errors on macos with python<3.13.
+        ret.append('swig==4.3.1')
+    else:
+        ret.append('swig')
+    return ret
 
 
 if PYMUPDF_SETUP_URL_WHEEL:
