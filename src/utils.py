@@ -491,8 +491,7 @@ def get_text(
         "blocks": pymupdf.TEXTFLAGS_BLOCKS,
     }
     option = option.lower()
-    if option not in formats:
-        option = "text"
+    assert option in formats
     if flags is None:
         flags = formats[option]
 
