@@ -2234,3 +2234,25 @@ def test_4902():
         assert len(spans) == 2
         assert spans[0]['linewidth'] is None
         assert spans[1]['linewidth'] == 8.0
+
+
+def test_5056():
+    """Confirm absence of MuPDF version number if reproducible."""
+    # make some PDF
+    if pymupdf.mupdf_version_tuple < (1, 28, 1):
+        print("Not executing test_5056 for old mupdf versions")
+        return
+    doc = pymupdf.open()
+    page = doc.new_page()
+
+    # save in two different ways
+    data_repro = doc.tobytes(reproducible=True).decode()
+    data_normal = doc.tobytes(reproducible=False).decode()
+    mupdf_vsn = pymupdf.mupdf_version
+
+    text_normal = f"% Written by MuPDF {mupdf_vsn}"
+    text_repro = f"% Written by MuPDF"
+
+    assert text_normal in data_normal
+    assert text_normal not in data_repro
+    assert text_repro in data_repro
