@@ -1,6 +1,6 @@
 import sys, pymupdf
 
-def test_none_refcount():
+def test_5042():
     doc = pymupdf.open()
     page = doc.new_page()
     for i in range(10):
