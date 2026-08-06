@@ -19981,7 +19981,10 @@ def JM_get_font(
     
     # Check for NOTO font
     #have_noto:;
-    data, size, index = mupdf.fz_lookup_noto_font( script, lang)
+    if mupdf_version_tuple >= (1, 29):
+        data, size, index, attr, noto_index = mupdf.fz_lookup_noto_font(script, lang)
+    else:
+        data, size, index = mupdf.fz_lookup_noto_font(script, lang)
     font = None
     if data:
         font = mupdf.fz_new_font_from_memory( None, data, size, index, 0)
