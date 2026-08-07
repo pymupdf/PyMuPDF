@@ -70,7 +70,6 @@ This documentation covers all versions up to |version|.
    :caption: API Reference
    :maxdepth: 2
 
-   module.rst
    classes.rst
    pymupdf4llm/api.rst
    algebra.rst
