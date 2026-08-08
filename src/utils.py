@@ -24,13 +24,8 @@ rect_like = "rect_like"
 matrix_like = "matrix_like"
 quad_like = "quad_like"
 
-# ByteString is gone from typing in 3.14.
-# collections.abc.Buffer available from 3.12 only
-try:
-    ByteString = typing.ByteString
-except AttributeError:
-    # pylint: disable=unsupported-binary-operation
-    ByteString = bytes | bytearray | memoryview
+# pylint: disable=unsupported-binary-operation
+ByteString = bytes | bytearray | memoryview
 
 AnyType = typing.Any
 OptInt = typing.Union[int, None]
