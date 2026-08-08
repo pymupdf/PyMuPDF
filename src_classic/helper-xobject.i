@@ -137,7 +137,7 @@ static void show(const char* prefix, PyObject* obj)
     }
     PyObject* obj_repr = PyObject_Repr( obj);
     PyObject* obj_repr_u = PyUnicode_AsEncodedString( obj_repr, "utf-8", "~E~");
-    const char* obj_repr_s = PyString_AsString( obj_repr_u);
+    const char* obj_repr_s = PyBytes_AsString( obj_repr_u);
     printf( "%s%s\n", prefix, obj_repr_s);
     fflush(stdout);
 }

@@ -225,7 +225,7 @@ static void messagev(const char* format, va_list va)
     static PyObject* message_fn = PyObject_GetAttrString(pymupdf_module, "message");
     char* text;
     vasprintf(&text, format, va);
-    PyObject* text_py = PyString_FromString(text);
+    PyObject* text_py = PyUnicode_FromString(text);
     PyObject* args = PyTuple_Pack(1, text_py);
     PyObject* ret = PyObject_CallObject(message_fn, args);
     Py_XDECREF(ret);

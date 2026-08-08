@@ -21954,7 +21954,7 @@ def JM_set_widget_properties(annot, Widget):
 
     # entry ignored - may be used later
     #
-    #int text_format = (int) PyInt_AsLong(GETATTR("text_format"));
+    #int text_format = (int) PyLong_AsLong(GETATTR("text_format"));
     #
 
     # field label -----------------------------------------------------------
