@@ -939,3 +939,99 @@ def test_find_tables_union_no_layout_degrades_to_line_candidates():
     finally:
         pymupdf._get_layout = original_get_layout_fn
         doc.close()
+
+
+def _count_make_chars_calls(monkeypatch_target=None):
+    """Wrap pymupdf.table.make_chars with a call counter; returns (calls, restore)."""
+    calls = []
+    original = pymupdf.table.make_chars
+
+    def counting_make_chars(page, clip=None):
+        calls.append(1)
+        return original(page, clip=clip)
+
+    pymupdf.table.make_chars = counting_make_chars
+
+    def restore():
+        pymupdf.table.make_chars = original
+
+    return calls, restore
+
+
+def test_find_tables_no_graphics_fast_path():
+    """A page with text but no vector graphics cannot contain a line-strategy
+    table (there is nothing to build edges from), so find_tables() must return
+    an empty result WITHOUT running make_chars -- the per-glyph text scan that
+    dominates its cost on table-free text pages.
+    """
+    doc = pymupdf.open()
+    page = doc.new_page()
+    for i in range(40):
+        page.insert_text((72, 60 + i * 15), f"Body text line {i} with several words.")
+    original_get_layout_fn = pymupdf._get_layout
+    pymupdf._get_layout = None  # results must not depend on the layout wheel
+    calls, restore = _count_make_chars_calls()
+    try:
+        tabs = page.find_tables()
+        assert tabs is not None
+        assert tabs.tables == []
+        assert calls == [], "make_chars ran although no edge source exists"
+
+        # lines_strict takes the same fast path
+        tabs = page.find_tables(strategy="lines_strict")
+        assert tabs.tables == []
+        assert calls == []
+    finally:
+        restore()
+        pymupdf._get_layout = original_get_layout_fn
+        doc.close()
+
+
+def test_find_tables_no_graphics_add_boxes_still_detected():
+    """Caller-supplied boxes are an edge source, so a graphics-free page must
+    NOT take the fast path when add_boxes is given: the boxed region with text
+    must still be detected as a table.
+    """
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((110, 130), "left")
+    page.insert_text((210, 130), "right")
+    calls, restore = _count_make_chars_calls()
+    try:
+        tabs = page.find_tables(
+            add_boxes=[
+                pymupdf.Rect(100, 100, 200, 150),
+                pymupdf.Rect(200, 100, 300, 150),
+            ]
+        )
+        assert len(tabs.tables) == 1
+        assert tabs.tables[0].col_count == 2
+        flat = [cell for row in tabs.tables[0].extract() for cell in row]
+        assert "left" in flat and "right" in flat
+        assert calls, "make_chars must run when an edge source exists"
+    finally:
+        restore()
+        doc.close()
+
+
+def test_find_tables_no_graphics_explicit_lines_still_detected():
+    """Explicit vertical/horizontal line lists are an edge source regardless
+    of strategy, so they must also bypass the fast path on a graphics-free page.
+    """
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((110, 130), "a1")
+    page.insert_text((210, 130), "b1")
+    page.insert_text((110, 180), "a2")
+    page.insert_text((210, 180), "b2")
+    try:
+        tabs = page.find_tables(
+            vertical_lines=[100, 200, 300],
+            horizontal_lines=[100, 150, 200],
+        )
+        assert len(tabs.tables) == 1
+        assert tabs.tables[0].col_count == 2
+        assert tabs.tables[0].row_count == 2
+        assert tabs.tables[0].extract() == [["a1", "b1"], ["a2", "b2"]]
+    finally:
+        doc.close()
