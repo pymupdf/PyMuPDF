@@ -20,6 +20,12 @@
 
 .. toctree::
 
+   compressing-files.rst
+
+----
+
+.. toctree::
+
    recipes-ocr.rst
 
 ----

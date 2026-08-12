@@ -1301,7 +1301,8 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg bool clean: Clean and sanitize content streams [#f1]_. Corresponds to "mutool clean -sc".
 
-    :arg bool deflate: Deflate (compress) uncompressed streams.
+    :arg int deflate: Deflate (compress) uncompressed streams. See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
+
     :arg bool deflate_images: *(new in v1.18.3)* Deflate (compress) uncompressed image streams [#f4]_.
     :arg bool deflate_fonts: *(new in v1.18.3)* Deflate (compress) uncompressed fontfile streams [#f4]_.
 
@@ -1332,19 +1333,26 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg int use_objstms: *(new in v1.24.0)* compression option that converts eligible PDF object definitions to information that is stored in some other object's :data:`stream` data. Depending on the `deflate` parameter value, the converted object definitions will be compressed -- which can lead to very significant file size reductions.
 
-     .. warning:: The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
-
+        See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
+    
     :arg int compression_effort:
     
       * 0 for default
       * 1 for minimum effort.
       * 100 for maximum effort.
+
+      See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
     
     :arg bool raise_on_repair: *(new in v1.27.0)* If true we raise an exception if the save caused a repair.
       This is useful because repairs can cause changes to be lost.
       
       Also see `Document.repair()`.
     
+    .. warning:: 
+        
+        The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
+
+
     .. note::
 
       **File size reduction**
@@ -1354,12 +1362,15 @@ For details on **embedded files** refer to Appendix 3.
 
       2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
 
+      See: :ref:`Compressing Files <CompressingFiles>` for more.
+
+    
 
   .. method:: ez_save(*args, **kwargs)
 
     * New in v1.18.11
 
-    PDF only: The same as :meth:`Document.save` but with changed defaults `deflate=True, garbage=3, use_objstms=1`.
+    PDF only: The same as :meth:`Document.save` but with changed defaults `deflate=1, garbage=3, use_objstms=True`.
 
   .. method:: saveIncr()
 
