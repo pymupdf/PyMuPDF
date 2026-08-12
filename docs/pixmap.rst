@@ -29,6 +29,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 :meth:`Pixmap.color_count`       determine used colors
 :meth:`Pixmap.color_topusage`    determine share of most used color
 :meth:`Pixmap.copy`              copy parts of another pixmap
+:meth:`Pixmap.flip_rotate`       rotate or flip the pixmap
 :meth:`Pixmap.gamma_with`        apply a gamma factor to the pixmap
 :meth:`Pixmap.invert_irect`      invert the pixels of a given area
 :meth:`Pixmap.pdfocr_save`       save the pixmap as an OCRed 1-page PDF
@@ -214,6 +215,20 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg float gamma: *gamma = 1.0* does nothing, *gamma < 1.0* lightens, *gamma > 1.0* darkens the image.
 
+   .. method:: flip_rotate(mode)
+
+      Rotate the pixmap by a multiple of 90 degrees or flip it horizontally or vertically.
+
+      :arg int mode: ``mode`` is an integer to specify the desired action.
+
+         * 1: Pixmap.ROTATE_90 - rotate 90 degrees clockwise
+         * 2: Pixmap.ROTATE_270 - rotate 270 degrees clockwise
+         * 3: Pixmap.ROTATE_180 - rotate 180 degrees clockwise
+         * 4: Pixmap.FLIP_LEFT_RIGHT - flip horizontally
+         * 5: Pixmap.FLIP_TOP_BOTTOM - flip vertically
+
+      :returns: A new pixmap with the requested rotation or flip applied. The original pixmap is not changed. If an unsupported mode value is provided, a warning is issued and the original pixmap is returned.
+
    .. method:: shrink(n)
 
       Shrink the pixmap by dividing both, its width and height by 2\ :sup:``n``.
@@ -258,7 +273,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
    .. method:: set_origin(x, y)
 
       * New in v1.17.7
-      
+
       Set the x and y values of the pixmap's top-left point.
 
       :arg int x: x coordinate
@@ -374,9 +389,9 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Perform text recognition using Tesseract and convert the image to a 1-page PDF with an OCR text layer. Internally invokes :meth:`Pixmap.pdfocr_save`.
 
       :returns: A 1-page PDF file in memory. Could be opened like `doc=pymupdf.open("pdf", pix.pdfocr_tobytes())`, and text extractions could be performed on its `page=doc[0]`.
-      
+
          .. note::
-         
+
             Another possible use is insertion into some pdf. The following snippet reads the images of a folder and stores them as pages in a new PDF that contain an OCR text layer::
 
                doc = pymupdf.open()
@@ -405,7 +420,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       * If you do not provide dpi information, the values *xres*, *yres* stored with the pixmap are automatically used.
 
       A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`.
-      
+
       :arg bool unmultiply: If the pixmap's colorspace is RGB with transparency, the alpha values may or may not already be multiplied into the color components ref/green/blue (called "premultiplied"). To enforce undoing premultiplication, set this parameter to `True`. To learn about some background, e.g. look for `"Premultiplied alpha" on this page <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
 
 
@@ -420,7 +435,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       * New in v1.17.3
 
       Return an image as a bytes object in the specified format using Pillow. For example `stream = pix.pil_tobytes(format="WEBP", optimize=True, dpi=(150, 150))`. Also see above. For details on other parameters see the Pillow documentation.
-      
+
       :raises ImportError: if Pillow is not installed.
 
       :rtype: bytes
@@ -454,7 +469,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg rect_like clip: a rectangle inside :attr:`Pixmap.irect`. If provided, only those pixels are considered. This allows inspecting sub-rectangles of a given pixmap directly -- instead of building sub-pixmaps.
       :rtype: dict or int
       :returns: either the number of colors, or a dictionary with the items `pixel: count`. The pixel key is a `bytes` object of length :attr:`Pixmap.n`.
-      
+
          .. note:: To recover the **tuple** of a pixel, use `tuple(colors.keys()[i])` for the i-th item.
 
             * The response time depends on the pixmap's samples size and may be more than a second for very large pixmaps.
@@ -543,16 +558,16 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       Like :attr:`Pixmap.samples`, but in Python `memoryview` format. It is built pointing to the memory in the pixmap -- not from a copy of it. So its creation speed is independent from the pixmap size, and any changes to pixels will be available immediately.
 
       Copies like `bytearray(pix.samples_mv)`, or `bytes(pixmap.samples_mv)` are equivalent to and can be used in place of `pix.samples`.
-      
+
       We also have `len(pix.samples) == len(pix.samples_mv)`.
-      
+
       Look at this example from a 2 MB JPEG: the memoryview is **ten thousand times faster**::
 
          In [3]: %timeit len(pix.samples_mv)
          367 ns ± 1.75 ns per loop (mean ± std. dev. of 7 runs, 1000000 loops each)
          In [4]: %timeit len(pix.samples)
          3.52 ms ± 57.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-      
+
       After the Pixmap has been destroyed, any attempt to use the memoryview
       will fail with ValueError.
 
@@ -568,7 +583,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
          img = QtGui.QImage(pix.samples_ptr, pix.width, pix.height, format) # (2)
 
       Both of the above lead to the same Qt image, but (2) can be **many hundred times faster**, because it avoids an additional copy of the pixel area.
-      
+
       Warning: after the Pixmap has been destroyed, the Python pointer will be
       invalid and attempting to use it may crash the Python interpreter.
 
@@ -653,7 +668,7 @@ A number of image **output** formats are supported. You have the option to eithe
 ========== =============== ========= ============== =================================
 **Format** **Colorspaces** **alpha** **Extensions** **Description**
 ========== =============== ========= ============== =================================
-jpg, jpeg  gray, rgb, cmyk no        .jpg, .jpeg    Joint Photographic Experts Group 
+jpg, jpeg  gray, rgb, cmyk no        .jpg, .jpeg    Joint Photographic Experts Group
 pam        gray, rgb, cmyk yes       .pam           Portable Arbitrary Map
 pbm        gray, rgb       no        .pbm           Portable Bitmap
 pgm        gray, rgb       no        .pgm           Portable Graymap

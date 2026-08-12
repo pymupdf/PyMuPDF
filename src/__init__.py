@@ -13704,6 +13704,12 @@ class Pixmap:
                 text += f'    {type(arg)}: {arg}\n'
             raise Exception( text)
 
+    ROTATE_90 = 1
+    ROTATE_270 = 2
+    ROTATE_180 = 3
+    FLIP_LEFT_RIGHT = 4
+    FLIP_TOP_BOTTOM = 5
+
     def __len__(self):
         return self.size
 
@@ -13760,6 +13766,100 @@ class Pixmap:
             mupdf.fz_clear_pixmap_with_value(self.this, value)
         else:
             JM_clear_pixmap_rect_with_value(self.this, value, JM_irect_from_py(bbox))
+
+    def flip_rotate(self, mode: int) -> Pixmap:
+        """
+        Rotate or flip a Pixmap. Supported are
+        angle: 90, 180, 270
+        flip: "left-right" or "top-bottom"
+        """
+        if mode < 1 or mode > 5:
+            message_warning(f"Invalid flip/rotate mode: {mode}.")
+            return self
+
+        w, h, n, alpha = self.width, self.height, self.n, self.alpha
+        stride = w * n
+        src_mv = memoryview(self.samples)
+
+        # FLIP LEFT-RIGHT  (horizontal mirror)
+        if mode == self.FLIP_LEFT_RIGHT:
+            buf = bytearray(src_mv)
+            for y in range(h):
+                row_start = y * stride
+                for x in range(w // 2):
+                    left = row_start + x * n
+                    right = row_start + (w - 1 - x) * n
+                    buf[left : left + n], buf[right : right + n] = (
+                        buf[right : right + n],
+                        buf[left : left + n],
+                    )
+            return Pixmap(self.colorspace, w, h, bytes(buf), alpha)
+
+        # FLIP TOP-BOTTOM  (vertical mirror)
+        if mode == self.FLIP_TOP_BOTTOM:
+            buf = bytearray(src_mv)
+            for y in range(h // 2):
+                top = y * stride
+                bottom = (h - 1 - y) * stride
+                buf[top : top + stride], buf[bottom : bottom + stride] = (
+                    buf[bottom : bottom + stride],
+                    buf[top : top + stride],
+                )
+            return Pixmap(self.colorspace, w, h, bytes(buf), alpha)
+
+        # ROTATION
+        # 180° ROTATION
+        if mode == self.ROTATE_180:
+            buf = bytearray(src_mv)
+
+            # vertical flip
+            for y in range(h // 2):
+                top = y * stride
+                bottom = (h - 1 - y) * stride
+                buf[top : top + stride], buf[bottom : bottom + stride] = (
+                    buf[bottom : bottom + stride],
+                    buf[top : top + stride],
+                )
+
+            # horizontal flip (pixelwise)
+            for y in range(h):
+                row_start = y * stride
+                for x in range(w // 2):
+                    left = row_start + x * n
+                    right = row_start + (w - 1 - x) * n
+                    buf[left : left + n], buf[right : right + n] = (
+                        buf[right : right + n],
+                        buf[left : left + n],
+                    )
+
+            return Pixmap(self.colorspace, w, h, bytes(buf), alpha)
+
+        # 90° / 270° ROTATION
+        new_w, new_h = h, w
+        dst = bytearray(new_w * new_h * n)
+        dst_mv = memoryview(dst)
+
+        if mode == self.ROTATE_90:
+            for y in range(h):
+                row = src_mv[y * stride : y * stride + stride]
+                for x in range(w):
+                    dst_x = h - 1 - y
+                    dst_y = x
+                    dst_pos = (dst_y * new_w + dst_x) * n
+                    src_pos = x * n
+                    dst_mv[dst_pos : dst_pos + n] = row[src_pos : src_pos + n]
+
+        else:  # self.ROTATE_270
+            for y in range(h):
+                row = src_mv[y * stride : y * stride + stride]
+                for x in range(w):
+                    dst_x = y
+                    dst_y = w - 1 - x
+                    dst_pos = (dst_y * new_w + dst_x) * n
+                    src_pos = x * n
+                    dst_mv[dst_pos : dst_pos + n] = row[src_pos : src_pos + n]
+
+        return Pixmap(self.colorspace, new_w, new_h, dst, alpha)
 
     def color_count(self, colors=0, clip=None):
         '''

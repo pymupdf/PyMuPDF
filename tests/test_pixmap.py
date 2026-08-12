@@ -758,3 +758,22 @@ def test_natural():
         )
         pix=pymupdf.Pixmap(pm)
         print(f"{pix=}")    
+
+def text_pixmap_transpositions():
+    """Test that flip_rotate() is consistent with repeated applications."""
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_natural.pdf')
+    doc=pymupdf.open(path)
+    pix = doc[0].get_pixmap()
+    samples0 = pix.samples
+    modes = {
+        pymupdf.Pixmap.ROTATE_90: 3,
+        pymupdf.Pixmap.ROTATE_180: 1,
+        pymupdf.Pixmap.ROTATE_270: 3,
+        pymupdf.Pixmap.FLIP_LEFT_RIGHT: 1,
+        pymupdf.Pixmap.FLIP_TOP_BOTTOM: 1,
+    }
+    for mode, repeat in modes.items():
+        new = pix.flip_rotate(mode)
+        for _ in range(repeat):
+            new = new.flip_rotate(mode)
+        assert new.samples == samples0, "Failed for mode %s" % mode
