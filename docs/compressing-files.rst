@@ -46,7 +46,7 @@ The result is a file size of 1.5 MB. However, we can achieve a better result by 
 
 By setting this option we can compress uncompressed streams.
 
-Availabe options are:
+Available options are:
 
 .. list-table::
    :header-rows: 1
@@ -86,7 +86,7 @@ The result is a file size of 903 KB.
 
 .. note::
 
-    :meth:`Document.ez_save()` automatically applies these paramters for you, so the same result can be achieved with:
+    :meth:`Document.ez_save()` automatically applies these parameters for you, so the same result can be achieved with:
 
     .. code-block:: python
 
