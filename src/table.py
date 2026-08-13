@@ -2956,13 +2956,10 @@ def find_tables(
             page.table_settings = tset
 
             # Fast path: with purely line-based strategies, edges can only
-            # come from the page's vector graphics (its drawings, plus the
-            # envelopes of text-bearing graphics clusters) or from
-            # caller-supplied lines / boxes / explicit lines. When none of
-            # these exist, no edge can be built, hence no cell and no table:
-            # return the empty result without extracting the page's text.
-            # make_chars is O(page glyphs) and dominates find_tables' cost on
-            # table-free text pages, where it is pure waste.
+            # come from the page's vector graphics or from caller-supplied
+            # lines / boxes / explicit lines. When none of these exist,
+            # there is no table: return the empty result without extracting
+            # the page's text.
             if (
                 not boxes
                 and tset.vertical_strategy in ("lines", "lines_strict")
