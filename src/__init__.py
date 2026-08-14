@@ -1625,7 +1625,6 @@ class Annot:
             is_rich_text = mupdf.pdf_dict_get(annot_obj, PDF_NAME("RC"))
             if not is_rich_text:
                 raise ValueError("cannot set border_color if rich_text is False")
-        Annot.update_timing_test()
         CheckParent(self)
         def color_string(cs, code):
             """Return valid PDF color operator for a given color sequence.
@@ -1887,13 +1886,6 @@ class Annot:
             mupdf.pdf_dict_put_text_string(stream, PDF_NAME('Desc'), desc)
             mupdf.pdf_dict_put_text_string(fs, PDF_NAME('Desc'), desc)
 
-    @staticmethod
-    def update_timing_test():
-        total = 0
-        for i in range( 30*1000):
-            total += i
-        return total
-    
     @property
     def vertices(self):
         """annotation vertex points"""
