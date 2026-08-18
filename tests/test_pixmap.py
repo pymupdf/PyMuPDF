@@ -759,6 +759,7 @@ def test_natural():
         pix=pymupdf.Pixmap(pm)
         print(f"{pix=}")    
 
+
 def text_pixmap_transpositions():
     """Test that flip_rotate() is consistent with repeated applications."""
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_natural.pdf')
@@ -777,3 +778,34 @@ def text_pixmap_transpositions():
         for _ in range(repeat):
             new = new.flip_rotate(mode)
         assert new.samples == samples0, "Failed for mode %s" % mode
+
+
+def test_5082():
+    print()
+    path = util.download(
+            'https://www.city.toyota.aichi.jp/_res/projects/default_project/_page_/001/057/466/01.pdf',
+            'test_5082.pdf',
+            headers={'user-agent': 'pymupdf-test'}, # Avoids html 403 failure.
+            )
+    print(f'test_5082(): {pymupdf.mupdf_version=}.')
+    print(f'test_5082(): calling page.get_pixmap() in child process.')
+    timeout = False
+    try:
+        cp = subprocess.run(
+                [
+                    sys.executable,
+                    '-c',
+                    f'import pymupdf; document=pymupdf.open({path!r}); page = document[0]; page.get_pixmap()',
+                    ],
+                check=1,
+                timeout=10,
+                )
+    except subprocess.TimeoutExpired:
+        timeout = True
+    print(f'test_5082(): {timeout=}')
+    # As of 2026-08-18 we expect timeout with 1.28.x (currently 1.28.3) and
+    # earlier.
+    if pymupdf.mupdf_version_tuple <= (1, 28, 3):
+        assert timeout, f'Expected timeout from {pymupdf.mupdf_version=}.'
+    else:
+        assert not timeout, f'Unexpected timeout from {pymupdf.mupdf_version=}.'

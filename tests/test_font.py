@@ -247,7 +247,7 @@ def test_4457():
             ('https://github.com/user-attachments/files/20862922/test_4457_b.pdf', 'test_4457_b.pdf', None, 9),
             )
     for url, name, size, rms_old_after_max in files:
-        path = util.download(url, name, size)
+        path = util.download(url, name, size=size)
         
         with pymupdf.open(path) as document:
             page = document[0]
