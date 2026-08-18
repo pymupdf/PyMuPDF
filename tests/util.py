@@ -2,7 +2,7 @@ import os
 import subprocess
 
 
-def download(url, name, size=None):
+def download(url, name, *, timeout=10, size=None, headers=None):
     '''
     Downloads from <url> to a local file and returns its path. 
     
@@ -18,7 +18,7 @@ def download(url, name, size=None):
         print(f'Downloading from {url=}.')
         subprocess.run(f'pip install -U requests', check=1, shell=1)
         import requests
-        r = requests.get(url, path, timeout=10)
+        r = requests.get(url, path, timeout=10, headers=headers)
         r.raise_for_status()
         if size is not None:
             assert len(r.content) == size
