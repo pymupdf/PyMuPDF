@@ -356,8 +356,8 @@ def embedded_get(args):
     if not args.unsafe and not args.output:
         if os.path.exists(filename):
             sys.exit(f'refusing to overwrite existing file with stored name: {filename}')
-        filename_abs = os.path.abspath(filename)
-        if not filename_abs.startswith(os.getcwd() + os.sep):
+        filename_real = os.path.realpath(filename)
+        if not filename_real.startswith(os.path.realpath(os.getcwd()) + os.sep):
             sys.exit(f'refusing to write stored name outside current directory: {filename}')
     with open(filename, "wb") as output:
         output.write(stream)
