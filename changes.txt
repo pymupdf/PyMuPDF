@@ -12,6 +12,7 @@ Fixed issues:
 * **Fixed** `5042 <https://github.com/pymupdf/PyMuPDF/issues/5042>`_: Page.get_texttrace() leaks None references \u2014 Fatal Python error (none_dealloc) in long-running processes (1.27.2.3 & 1.28.0)
 * **Fixed** `5044 <https://github.com/pymupdf/PyMuPDF/issues/5044>`_: Outline (TOC) parsing bug
 * **Fixed** `5049 <https://github.com/pymupdf/PyMuPDF/issues/5049>`_: font subsetting segfaults in 1.28.0, regression from 1.27.2.2 #5049
+* **Fixed** `5056 <https://github.com/pymupdf/PyMuPDF/issues/5056>`_: Option for reproducible/deterministic save output (omit MuPDF version banner + Producer)
 
 
 Other:
@@ -24,6 +25,7 @@ Other:
   * new args `use_layout: bool = True` `union: bool = False` `refine: bool = False`.
   * Improved speed.
 * Retrospectively added fix for #4936 in release 1.28.0 below.
+* Added windows-arm64 wheel.
 
 
 **Changes in version 1.28.0** (2026-06-29)
@@ -84,6 +86,7 @@ Other:
 * Fixed issues:
 
   * **Fixed** `4903 <https://github.com/pymupdf/PyMuPDF/issues/4903>`_: Typing broken because of `*_forward_decl`
+  * **Fixed** `3842 <https://github.com/pymupdf/PyMuPDF/issues/3842>`_: Partial OCR using "get_textpage_ocr" ignores image masks while extracting text
   
 * Other:
 
