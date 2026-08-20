@@ -13307,40 +13307,6 @@ class Page:
         Returns:
             xref of inserted object (for reuse)
         """
-        def calc_matrix(sr, tr, keep=True, rotate=0):
-            """Calculate transformation matrix from source to target rect.
-
-            Notes:
-                The product of four matrices in this sequence: (1) translate correct
-                source corner to origin, (2) rotate, (3) scale, (4) translate to
-                target's top-left corner.
-            Args:
-                sr: source rect in PDF (!) coordinate system
-                tr: target rect in PDF coordinate system
-                keep: whether to keep source ratio of width to height
-                rotate: rotation angle in degrees
-            Returns:
-                Transformation matrix.
-            """
-            # calc center point of source rect
-            smp = (sr.tl + sr.br) / 2.0
-            # calc center point of target rect
-            tmp = (tr.tl + tr.br) / 2.0
-
-            # m moves to (0, 0), then rotates
-            m = Matrix(1, 0, 0, 1, -smp.x, -smp.y) * Matrix(rotate)
-
-            sr1 = sr * m  # resulting source rect to calculate scale factors
-
-            fw = tr.width / sr1.width  # scale the width
-            fh = tr.height / sr1.height  # scale the height
-            if keep:
-                fw = fh = min(fw, fh)  # take min if keeping aspect ratio
-
-            m *= Matrix(fw, fh)  # concat scale matrix
-            m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
-            return JM_TUPLE(m)
-
         CheckParent(page)
         doc = page.parent
 
@@ -22640,58 +22606,57 @@ def args_match(args, *types):
     return True
 
 
+def calc_matrix(sr, tr, keep=True, rotate=0):
+    """Calculate transformation matrix from source to target rect.
+
+    Notes:
+        The product of four matrices in this sequence: (1) translate correct
+        source corner to origin, (2) rotate, (3) scale, (4) translate to
+        target's top-left corner.
+    Args:
+        sr: source rect in PDF (!) coordinate system
+        tr: target rect in PDF coordinate system
+        keep: whether to keep source ratio of width to height
+        rotate: rotation angle in degrees
+    Returns:
+        Transformation matrix.
+    """
+    # calc center point of source rect
+    smp = (sr.tl + sr.br) / 2.0
+    # calc center point of target rect
+    tmp = (tr.tl + tr.br) / 2.0
+
+    # m moves to (0, 0), then rotates
+    m = Matrix(1, 0, 0, 1, -smp.x, -smp.y) * Matrix(rotate)
+    
+    sr1 = sr * m  # resulting source rect to calculate scale factors
+
+    fw = tr.width / sr1.width  # scale the width
+    fh = tr.height / sr1.height  # scale the height
+    if keep:
+        fw = fh = min(fw, fh)  # take min if keeping aspect ratio
+
+    m *= Matrix(fw, fh)  # concat scale matrix
+    m *= Matrix(1, 0, 0, 1, tmp.x, tmp.y)  # concat move to target center
+    return JM_TUPLE(m)
+
+
 def calc_image_matrix(width, height, tr, rotate, keep):
     '''
-    # compute image insertion matrix
+    Like calc_matrix() but returned matrix scales a 1x1 input image.
     '''
-    trect = JM_rect_from_py(tr)
-    rot = mupdf.fz_rotate(rotate)
-    trw = trect.x1 - trect.x0
-    trh = trect.y1 - trect.y0
-    w = trw
-    h = trh
-    if keep:
-        large = max(width, height)
-        fw = width / large
-        fh = height / large
-    else:
-        fw = fh = 1
-    small = min(fw, fh)
-    if rotate != 0 and rotate != 180:
-        f = fw
-        fw = fh
-        fh = f
-    if keep:
-        side = min(trw, trh)
-        w = side
-        h = side
-    elif fw < 1:
-        if trw / fw > trh / fh:
-            w = trh * small
-            h = trh
-        else:
-            w = trw
-            h = trw / small
-    elif fw != fh:
-        if trw / fw > trh / fh:
-            w = trh / small
-            h = trh
-        else:
-            w = trw
-            h = trw * small
-    else:
-        w = trw
-        h = trh
-    tmp = mupdf.fz_make_point(
-            (trect.x0 + trect.x1) / 2,
-            (trect.y0 + trect.y1) / 2,
+    ret = calc_matrix(
+            Rect(0, 0, width, height),
+            tr,
+            keep,
+            rotate,
             )
-    mat = mupdf.fz_make_matrix(1, 0, 0, 1, -0.5, -0.5)
-    mat = mupdf.fz_concat(mat, rot)
-    mat = mupdf.fz_concat(mat, mupdf.fz_scale(w, h))
-    mat = mupdf.fz_concat(mat, mupdf.fz_translate(tmp.x, tmp.y))
-    return mat
-
+    # Pre-concat scaling from 1x1 to widthxheight, to match what PDF image
+    # operations expect.
+    prescale = Matrix(width, height)
+    ret = prescale * ret
+    return ret
+    
 
 def detect_super_script(line, ch):
     if line.m_internal.wmode == 0 and line.m_internal.dir.x == 1 and line.m_internal.dir.y == 0:
