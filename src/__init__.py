@@ -22661,7 +22661,11 @@ def calc_image_matrix(width, height, tr, rotate, keep):
         f = fw
         fw = fh
         fh = f
-    if fw < 1:
+    if keep:
+        side = min(trw, trh)
+        w = side
+        h = side
+    elif fw < 1:
         if trw / fw > trh / fh:
             w = trh * small
             h = trh

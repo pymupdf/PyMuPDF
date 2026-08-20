@@ -64,3 +64,18 @@ def test_3087():
     mask = doc.extract_image(6)["image"]
     page = doc.new_page()
     page.insert_image(page.rect, stream=base, mask=mask)
+
+def test_square_aspect_ratio():
+    """Confirm keeping aspect ratio for square images."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=400, height=300)
+
+    # Square red pixmap
+    pix = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 100, 100), 0)
+    pix.set_rect(pix.irect, (255, 0, 0))
+
+    page.insert_image(page.rect, pixmap=pix)
+    blocks = page.get_text("blocks", flags=pymupdf.TEXT_PRESERVE_IMAGES)
+    block = blocks[0]
+    bbox = pymupdf.Rect(block[:4])
+    assert bbox.width == bbox.height
