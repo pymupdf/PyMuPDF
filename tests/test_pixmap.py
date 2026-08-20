@@ -781,6 +781,9 @@ def text_pixmap_transpositions():
 
 
 def test_5082():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_5082(): not running on Pyodide - `requests` module not available.')
+        return
     print()
     path = util.download(
             'https://www.city.toyota.aichi.jp/_res/projects/default_project/_page_/001/057/466/01.pdf',
