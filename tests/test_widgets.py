@@ -4,6 +4,7 @@ Test PDF field (widget) insertion.
 """
 import pymupdf
 import os
+from pymupdf import mupdf
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "widgettest.pdf")
@@ -486,3 +487,54 @@ def test_4950():
 
         page.remove_rotation()
         assert page.rotation == 0
+
+
+def test_hierarchy():
+    # Create a new PDF document
+    doc = pymupdf.open()
+    pdfdoc = pymupdf._as_pdf_document(doc)
+
+    def chain_upwards(w):
+        """Check the names climbing up the hierarchy."""
+        xref = w.xref
+        parts = w.field_name.split(".")
+        obj = mupdf.pdf_load_object(pdfdoc, xref)  # the widget object
+        assert obj.pdf_dict_get(pymupdf.PDF_NAME("T")).pdf_is_null()
+        items = list()
+        while 1:
+            obj = obj.pdf_dict_get(pymupdf.PDF_NAME("Parent"))
+            if not obj or obj.pdf_is_null():
+                break
+            pdf_name = obj.pdf_dict_get(pymupdf.PDF_NAME("T")).pdf_to_string()
+            items.insert(0, pdf_name[0])
+        assert items == parts, f'\n{items=}\n{parts=}'
+                
+    # Add a page to the document
+    page = doc.new_page()
+    r = pymupdf.Rect(100, 100, 200, 120)
+    w = pymupdf.Widget()
+    w.field_name = "Person.Name.First"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.rect = r
+    w.field_value = "John"
+    w.border_width = 1
+    page.add_widget(w)
+    r += (0, 30, 0, 30)
+
+    w = pymupdf.Widget()
+    w.field_name = "Person.Name.Last"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.rect = r
+    w.field_value = "Doe"
+    w.border_width = 1
+    page.add_widget(w)
+
+    field_names = ["Person.Name.First", "Person.Name.Last"]
+    root = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdfdoc), pymupdf.PDF_NAME("Root"))
+    acro = root.pdf_dict_get(pymupdf.PDF_NAME("AcroForm"))
+    fields = acro.pdf_dict_get(pymupdf.PDF_NAME("Fields"))
+    assert fields.pdf_array_len() == 1, "must have exactly 1 root field"
+    for i, w in enumerate(page.widgets()):
+        field_name = w.field_name  # the field name is a concatenation
+        assert field_name == field_names[i]
+        chain_upwards(w)  # confirm the hierarchy is correct

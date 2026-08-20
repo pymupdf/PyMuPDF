@@ -10064,6 +10064,193 @@ class Page:
         JM_add_annot_id(annot, "W")
         return Annot(annot)
 
+    def _ensure_field_hierarchy(self, field_name):
+        """Ensures that the complete Form field hierarchy exists.
+
+        If the field_name shows a hierarchy like "A.B.C" establish a chain of
+        bidirectional links between the fields A, B, and C. The last field
+        ("C") in the hierarchy will point to the actual Widget on the page
+        (via /Kids). "A" is a root field and thus lives in the AcroForm/Fields
+        array. All fields in the chain will be created when missing.
+
+        Args:
+            field_name: (raw) field name of the Widget() object.
+
+        Returns:
+            The xref of the last field_name segment ("C"). To be used for the
+            /Parent value of the widget.
+            None if field_name has no segments, and hence is a root field.
+        """
+        parts = field_name.split(".")
+        if any(x == "" for x in parts):
+            raise ValueError(f"Invalid field name '{field_name}'.")
+
+        # Helper: Find name in /Kids of parent_xref
+        def name_in_array(array, name):
+            """Check if a name exists in an array of XREFs.
+
+            Returns the xref of the item if found, else False.
+            """
+            for i in range(array.pdf_array_len()):
+                item = array.pdf_array_get(i)
+                T = item.pdf_dict_get(PDF_NAME("T"))
+                T_name = T.pdf_to_string()
+                if T_name == (name, len(name)):
+                    return item.pdf_to_num(), item
+            return False, None
+
+        doc = self.parent
+
+        # Access or create /AcroForm/Fields array
+        pdfdoc = _as_pdf_document(doc)
+        root = mupdf.pdf_dict_get(mupdf.pdf_trailer(pdfdoc), PDF_NAME("Root"))
+        acro = root.pdf_dict_get(PDF_NAME("AcroForm"))
+        if not acro.pdf_is_dict():
+            acro = root.pdf_dict_put_dict(PDF_NAME("AcroForm"), 5)
+        root_array = acro.pdf_dict_get(PDF_NAME("Fields"))
+        if not root_array.pdf_is_array():
+            root_array = acro.pdf_dict_put_array(PDF_NAME("Fields"), 1)
+
+        # ------------------------------------------------------------
+        # 3) Create missing fields in hierarchy
+        # ------------------------------------------------------------
+        parent_xref = None
+
+        for i, part in enumerate(parts):
+            if i == 0:
+                kids_array = acro.pdf_dict_get(PDF_NAME("Fields"))
+                parent = None
+            else:
+                parent = mupdf.pdf_load_object(pdfdoc, parent_xref)
+                kids_array = parent.pdf_dict_get(PDF_NAME("Kids"))
+                if kids_array.pdf_array_len() == 0:
+                    kids_array = parent.pdf_dict_put_array(PDF_NAME("Kids"), 1)
+
+            item_xref, item_obj = name_in_array(kids_array, part)
+            if parent is None and item_obj and not item_obj.pdf_dict_get(PDF_NAME("Kids")).pdf_is_array():
+                new_xref = doc.get_new_xref()
+                doc.update_object(new_xref, f"<</T ({part})>>")
+                new_obj = mupdf.pdf_new_indirect(pdfdoc, new_xref, 0)
+                kids_array.pdf_array_push(new_obj)
+                item_xref = new_xref
+            if item_xref:
+                parent_xref = item_xref
+                continue  # Field in parent Kids, move to next 'part'
+
+            # need to create a new field for this part
+            part_xref = doc.get_new_xref()
+            if parent_xref is not None:
+                doc.update_object(part_xref, f"<</Parent {parent_xref} 0 R /T ({part})>>")
+            else:
+                doc.update_object(part_xref, f"<</T ({part})>>")
+
+            part_obj = mupdf.pdf_new_indirect(pdfdoc, part_xref, 0)
+            kids_array.pdf_array_push(part_obj)
+            parent_xref = part_xref
+
+        return parent_xref
+
+    def _adjust_widget(self, widget):
+        """Adjust a widget whose field_name exhibits a field hierarchy."""
+        doc = self.parent
+        parent_xref = self._ensure_field_hierarchy(widget.field_name)
+        annot = widget._annot
+        if parent_xref is None:  # just a safeguard
+            return annot
+
+        annot_xref = annot.xref
+        pdfdoc = _as_pdf_document(doc)
+
+        # remove the widget from the root Fields array
+        fields = (
+            mupdf.pdf_dict_get(mupdf.pdf_trailer(pdfdoc), PDF_NAME("Root"))
+            .pdf_dict_get(PDF_NAME("AcroForm"))
+            .pdf_dict_get(PDF_NAME("Fields"))
+        )
+        found = False
+        for i in range(fields.pdf_array_len()):
+            if fields.pdf_array_get(i).pdf_to_num() == annot_xref:
+                fields.pdf_array_delete(i)
+                found = True
+                break
+
+        if not found:
+            raise ValueError(
+                f"Unexpected: Widget {annot_xref} not found in root Fields array."
+            )
+
+        # ----------------------------------------------------------------
+        # Our widget will now get a /Parent. This requires moving
+        # multiple values of its object over to the parent object.
+        # Note: the name '/T' is in the parent already.
+        # ----------------------------------------------------------------
+        parent_obj = mupdf.pdf_new_indirect(pdfdoc, parent_xref, 0)
+        annot_obj = mupdf.pdf_load_object(pdfdoc, annot_xref)
+
+        kids_array = parent_obj.pdf_dict_get(PDF_NAME("Kids"))
+        if not kids_array.pdf_is_array():
+            kids_array = mupdf.pdf_dict_put_array(parent_obj, PDF_NAME("Kids"), 1)
+        kids_array.pdf_array_push(mupdf.pdf_new_indirect(pdfdoc, annot.xref, 0))
+
+        # store parent in /Parent key
+        annot_obj.pdf_dict_put(PDF_NAME("Parent"), parent_obj)
+        # store page reference
+        annot_obj.pdf_dict_put(PDF_NAME("P"), mupdf.pdf_new_indirect(pdfdoc, self.xref, 0))
+
+        annot_obj.pdf_dict_del(PDF_NAME("T"))  # widget has no own name!
+        field_value = widget.field_value
+        if widget.field_type == PDF_WIDGET_TYPE_CHECKBOX:  # noqa: F821
+            if field_value is True:
+                field_value = "Yes"
+            else:
+                field_value = "Off"
+        elif field_value is None:
+            field_value = ""
+        # move field value to parent
+        parent_obj.pdf_dict_put_string(PDF_NAME("V"), field_value, len(field_value))
+        annot_obj.pdf_dict_del(PDF_NAME("V"))
+
+        # move field type to parent
+        old = annot_obj.pdf_dict_get(PDF_NAME("FT"))
+        if not old.pdf_is_null():
+            parent_obj.pdf_dict_put(PDF_NAME("FT"), old)
+            annot_obj.pdf_dict_del(PDF_NAME("FT"))
+
+        # move field flags to parent
+        old = annot_obj.pdf_dict_get(PDF_NAME("Ff"))
+        if not old.pdf_is_null():
+            parent_obj.pdf_dict_put(PDF_NAME("Ff"), old)
+            annot_obj.pdf_dict_del(PDF_NAME("Ff"))
+
+        # move default appearance to parent
+        old = annot_obj.pdf_dict_get(PDF_NAME("DA"))
+        if not old.pdf_is_null():
+            parent_obj.pdf_dict_put(PDF_NAME("DA"), old)
+            annot_obj.pdf_dict_del(PDF_NAME("DA"))
+
+        # move choices list to parent
+        old = annot_obj.pdf_dict_get(PDF_NAME("Opt"))
+        if not old.pdf_is_null():
+            parent_obj.pdf_dict_put(PDF_NAME("Opt"), old)
+            annot_obj.pdf_dict_del(PDF_NAME("Opt"))
+
+        # move choices list index to parent
+        old = annot_obj.pdf_dict_get(PDF_NAME("I"))
+        if not old.pdf_is_null():
+            parent_obj.pdf_dict_put(PDF_NAME("I"), old)
+            annot_obj.pdf_dict_del(PDF_NAME("I"))
+
+        # Specials for RadioButtons
+        if widget.field_type == PDF_WIDGET_TYPE_RADIOBUTTON:  # noqa: F821
+            doc.xref_set_key(annot_xref,"AS", f"/{field_value}")
+            apn=doc.xref_get_key(annot_xref,"AP/N")[1]
+            if apn and "/Yes" in apn:
+                apn = apn.replace("/Yes", f"/{field_value}")
+                doc.xref_set_key(annot_xref, "AP/N", apn)
+
+        self.parent.need_appearances(False)
+        return annot
+
     def _apply_redactions(self, text, images, graphics):
         page = self._pdf_page()
         opts = mupdf.PdfRedactOptions()
@@ -10799,8 +10986,11 @@ class Page:
         self._annot_refs[id(annot)] = annot
         widget.parent = annot.parent
         widget._annot = annot
+        widget.xref = annot.xref
         widget.update()
-        return annot
+        # if "." not in widget.field_name:  # done if no field hierarchy
+        #     return annot
+        return self._adjust_widget(widget)
 
     def annot_names(self):
         '''
@@ -24874,7 +25064,7 @@ def pdfobj_string(o, prefix=''):
         ret += f'jpx_image:\n'
     elif mupdf.pdf_is_name(o):
         ret += f'name: {mupdf.pdf_to_name(o)}\n'
-    elif o.pdf_is_null:
+    elif o.pdf_is_null():
         ret += f'null\n'
     #elif o.pdf_is_number:
     #    ret += f'number\n'
