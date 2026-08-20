@@ -42,7 +42,7 @@ def rms(a, b, verbose=None, out_prefix=''):
     return rms
 
 
-def pixmaps_rms(a, b, out_prefix=''):
+def pixmaps_rms(a, b, out_prefix='', verbose=True):
     '''
     Returns RMS diff of raw bytes of two pixmaps.
 
@@ -51,17 +51,20 @@ def pixmaps_rms(a, b, out_prefix=''):
     <a> and <b> can each be a pymupdf.Pixmap or path of a bitmap file.
     '''
     if isinstance(a, str):
-        print(f'{out_prefix}pixmaps_rms(): reading pixmap from {a=}.')
+        if verbose:
+            print(f'{out_prefix}pixmaps_rms(): reading pixmap from {a=}.')
         a = pymupdf.Pixmap(a)
     if isinstance(b, str):
-        print(f'{out_prefix}pixmaps_rms(): reading pixmap from {b=}.')
+        if verbose:
+            print(f'{out_prefix}pixmaps_rms(): reading pixmap from {b=}.')
         b = pymupdf.Pixmap(b)
     assert a.irect == b.irect, f'Differing rects: {a.irect=} {b.irect=}.'
     a_mv = a.samples_mv
     b_mv = b.samples_mv
     assert len(a_mv) == len(b_mv)
     ret = rms(a_mv, b_mv, out_prefix=out_prefix)
-    print(f'{out_prefix}pixmaps_rms(): {ret=}.')
+    if verbose:
+        print(f'{out_prefix}pixmaps_rms(): {ret=}.')
     return ret
 
 
