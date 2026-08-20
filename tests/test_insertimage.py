@@ -8,6 +8,9 @@ import os
 
 import pymupdf
 
+import gentle_compare
+
+
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 imgfile = os.path.join(scriptdir, "resources", "nur-ruhig.jpg")
 
@@ -65,17 +68,30 @@ def test_3087():
     page = doc.new_page()
     page.insert_image(page.rect, stream=base, mask=mask)
 
-def test_square_aspect_ratio():
-    """Confirm keeping aspect ratio for square images."""
-    doc = pymupdf.open()
-    page = doc.new_page(width=400, height=300)
-
-    # Square red pixmap
-    pix = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, 100, 100), 0)
-    pix.set_rect(pix.irect, (255, 0, 0))
-
-    page.insert_image(page.rect, pixmap=pix)
-    blocks = page.get_text("blocks", flags=pymupdf.TEXT_PRESERVE_IMAGES)
-    block = blocks[0]
-    bbox = pymupdf.Rect(block[:4])
-    assert bbox.width == bbox.height
+def test_insert_image_stretch():
+    '''
+    Check for regressions in Page.insert_image()'s handling of keep, width and
+    height args.
+    '''
+    print()
+    num_fails = 0
+    for keep in 0, 1:
+        for width in (100, 400, 500):
+            for height in (width, 150, 300, 450):
+                with pymupdf.open() as document:
+                    page = document.new_page(width=400, height=300)
+                    pixmap = pymupdf.Pixmap(pymupdf.csRGB, (0, 0, width, height), 0)
+                    pixmap.set_rect(pixmap.irect, (255, 0, 0))
+                    page.insert_image(page.rect, pixmap=pixmap)
+                    path = os.path.normpath(f'{__file__}/../../tests/test_insert_image_stretch_{keep}_{width}_{height}.pdf')
+                    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_insert_image_stretch_{keep}_{width}_{height}.png')
+                    page_pixmap = page.get_pixmap()
+                    document.save(path)
+                    if 0:
+                        # Update expected output.
+                        page_pixmap.save(path_expected)
+                    rms = gentle_compare.pixmaps_rms(page_pixmap, path_expected, verbose=False)
+                    if rms != 0:
+                        num_fails += 1
+                    print(f'test_square_aspect_ratio():. Have created {path}. {rms=}.', flush=1)
+    assert not num_fails, f'{num_fails=}'
