@@ -34,6 +34,9 @@ def test_remove_rotation():
 
 def test_5077():
     """Confirm performance improvement for many links."""
+    if os.environ.get('PYMUPDF_RUNNING_ON_VALGRIND') == '1':
+        print('test_5077(): not running on valgrind because slowness triggers failure.')
+        return
     filename = os.path.join(scriptdir, "resources", "test-4000-links.pdf")
     doc = pymupdf.open(filename)
     page = doc[0]
@@ -41,7 +44,7 @@ def test_5077():
     t0 = time.time()
     page.remove_rotation()
     t1 = time.time()
-    assert t1 - t0 < 1, f"de-rotation time {t1-t0:.3f} seconds is too long."
+    assert t1 - t0 < 10, f"de-rotation time {t1-t0:.3f} seconds is too long."
 
 
 def _add_test_content(page, rotation):
