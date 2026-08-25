@@ -219,7 +219,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       Rotate the pixmap by a multiple of 90 degrees or flip it horizontally or vertically.
 
-      :arg int mode: ``mode`` is an integer to specify the desired action.
+      :arg int mode: ``mode`` is an integer to specify the desired action. Also see :ref:`PixmapTransformations`. The following values are supported:
 
          * 1: Pixmap.ROTATE_90 - rotate 90 degrees clockwise
          * 2: Pixmap.ROTATE_270 - rotate 270 degrees clockwise

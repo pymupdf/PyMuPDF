@@ -60,7 +60,7 @@ Constants
 .. py:data:: mupdf_version_tuple
 
     MuPDF version as a tuple of integers, `(major, minor, patch)`.
-    
+
     :type: tuple
 
 .. py:data:: pymupdf_version
@@ -72,13 +72,13 @@ Constants
 .. py:data:: pymupdf_version_tuple
 
     PyMuPDF version as a tuple of integers, `(major, minor, patch)`.
-    
+
     :type: tuple
 
 .. py:data:: pymupdf_date
 
     Disabled (set to None) in 1.26.1.
-    
+
 .. py:data:: version
 
     (pymupdf_version, mupdf_version, timestamp) -- combined version information where `timestamp` is the generation point in time formatted as "YYYYMMDDhhmmss".
@@ -256,7 +256,7 @@ For the PyMuPDF programmer, some combination (using Python's `|` operator, or si
 .. py:data:: TEXT_ACCURATE_BBOXES
 
     512 -- Ignore metric values of all fonts when computing character boundary boxes -- most prominently the `ascender <https://en.wikipedia.org/wiki/Ascender_(typography)>`_ and `descender <https://en.wikipedia.org/wiki/Descender>`_ values. Instead, follow the drawing commands of each character's glyph and compute their rectangle hull as the bbox. This is the smallest rectangle wrapping all points used for drawing the visual appearance - see the :ref:`Shape` class for understanding the background. This will especially result in individual character heights. For instance a (white) space will have a **bbox of zero height** (because nothing is drawn) -- in contrast to the non-zero boundary box generated when using font metrics. This option may be useful to cope with failures of getting meaningful boundary boxes, even for fonts containing errors. Its use will slow down text extraction somewhat because of the incurred computational effort.
-    
+
     Note that this has no effect by default - one must also disable the global quad corrections setting with `pymupdf.TOOLS.unset_quad_corrections(True)`.
 
 .. py:data:: TEXT_COLLECT_VECTORS
@@ -343,7 +343,7 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
 .. py:data:: LINK_URI
 
     2 -- Points to a URI -- typically a resource specified with internet syntax.
-    
+
     * PyMuPDF treats any external link that contains a colon and does not start
       with `file:`, as `LINK_URI`.
 
@@ -352,7 +352,7 @@ Possible values of :attr:`linkDest.kind` (link destination kind).
 .. py:data:: LINK_LAUNCH
 
     3 -- Launch (open) another file (of any "executable" type).
-    
+
     * |PyMuPDF| treats any external link that starts with `file:` or doesn't
       contain a colon, as `LINK_LAUNCH`.
 
@@ -606,5 +606,18 @@ MuPDF has defined the following icons for **rubber stamp** annotations::
     STAMP_Sold 11
     STAMP_TopSecret 12
     STAMP_Draft 13
+
+.. _PixmapTransformations:
+
+Pixmap Transformations
+----------------------------
+The following constants are defined inside the ``Pixmap`` class. They are used to select one of the following transformations.
+::
+
+    Pixmap.ROTATE_90 1
+    Pixmap.ROTATE_270 2
+    Pixmap.ROTATE_180 3
+    Pixmap.FLIP_LEFT_RIGHT 4
+    Pixmap.FLIP_TOP_BOTTOM 5
 
 .. include:: footer.rst

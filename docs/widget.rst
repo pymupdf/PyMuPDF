@@ -8,13 +8,13 @@ Widget
 
 |pdf_only_class|
 
-This class represents a PDF Form field, also called a "widget". Throughout this documentation, we are using these terms synonymously. Fields technically are a special case of PDF annotations, which allow users with limited permissions to enter information in a PDF. This is primarily used for filling out forms.
+This class represents a PDF Form field "widget". Widgets technically are a special case of PDF annotations, which allow users with limited permissions to enter information in a PDF. This is primarily used for filling out forms.
 
 Like annotations, widgets live on PDF pages. Similar to annotations, the first widget on a page is accessible via :attr:`Page.first_widget` and subsequent widgets can be accessed via the :attr:`Widget.next` property.
 
 Like annotations, widgets also lose connection to their page when the page becomes unavailable, please see `here <https://pymupdf.readthedocs.io/en/latest/app3.html#ensuring-consistency-of-important-objects-in-pymupdf>`_ for details. This is relevant especially when updating the widget: this will fail if the original page object is no longer available.
 
-*(Changed in version 1.16.0)* MuPDF no longer treats widgets as a subset of general annotations. Consequently, :attr:`Page.first_annot` and :meth:`Annot.next` will deliver **non-widget annotations exclusively**, and be ``None`` if only form fields exist on a page. Vice versa, :attr:`Page.first_widget` and :meth:`Widget.next` will only show widgets. This design decision is purely internal to MuPDF; technically, links, annotations and fields have a lot in common and also continue to share the better part of their code within (Py-) MuPDF.
+
 
 
 **Class API**
@@ -49,7 +49,7 @@ Like annotations, widgets also lose connection to their page when the page becom
          Male
 
         So for check boxes and radio buttons, the recommended method to set them to "selected", or to check the state is the following:
-        
+
          >>> field.field_value = field.on_state()
          >>> field.field_value == field.on_state()
          True
@@ -91,7 +91,11 @@ Like annotations, widgets also lose connection to their page when the page becom
 
     .. attribute:: field_name
 
-       A mandatory string defining the field's name. No checking for duplicates takes place.
+       A mandatory string defining the field's name. If the name contains one or more colons "." the field is considered to be a child of a parent field. If the parent field does not exist, it will be created automatically. If the (full) name already exists anywhere in the PDF, the widget will become a new child of the existing field.
+
+       All widgets with the same name -- whether or not a colon is part of it and independent of their position in the document -- will share the same field value and field flags.
+
+       See also :ref:`the relationship between form fields and widgets <Widget>`.
 
     .. attribute:: field_label
 
@@ -156,43 +160,43 @@ Like annotations, widgets also lose connection to their page when the page becom
     .. attribute:: script
 
        * New in version 1.16.12
-       
+
        JavaScript text (unicode) for an action associated with the widget, or ``None``. This is the only script action supported for **button type** widgets.
 
     .. attribute:: script_stroke
 
        * New in version 1.16.12
-       
+
        JavaScript text (unicode) to be performed when the user types a key-stroke into a text field or combo box or modifies the selection in a scrollable list box. This action can check the keystroke for validity and reject or modify it. ``None`` if not present.
 
     .. attribute:: script_format
 
        * New in version 1.16.12
-       
-       JavaScript text (unicode) to be performed before the field is formatted to display its current value. This action can modify the field’s value before formatting. ``None`` if not present.
+
+       JavaScript text (unicode) to be performed before the field is formatted to display its current value. This action can modify the field's value before formatting. ``None`` if not present.
 
     .. attribute:: script_change
 
        * New in version 1.16.12
-       
-       JavaScript text (unicode) to be performed when the field’s value is changed. This action can check the new value for validity. ``None`` if not present.
+
+       JavaScript text (unicode) to be performed when the field's value is changed. This action can check the new value for validity. ``None`` if not present.
 
     .. attribute:: script_calc
 
        * New in version 1.16.12
-       
+
        JavaScript text (unicode) to be performed to recalculate the value of this field when that of another field changes. ``None`` if not present.
 
     .. attribute:: script_blur
 
        * New in version 1.22.6
-       
+
        JavaScript text (unicode) to be performed on losing the focus of this field. ``None`` if not present.
 
     .. attribute:: script_focus
 
        * New in version 1.22.6
-       
+
        JavaScript text (unicode) to be performed on focusing this field. ``None`` if not present.
 
     .. note::
@@ -244,15 +248,46 @@ You are generally free to use any font for every widget. However, we recommend u
 
 Supported Widget Types
 -----------------------
-PyMuPDF supports the creation and update of many, but not all widget types.
+PyMuPDF supports the creation and update of most widget types.
 
 * text (`PDF_WIDGET_TYPE_TEXT`)
 * push button (`PDF_WIDGET_TYPE_BUTTON`)
 * check box (`PDF_WIDGET_TYPE_CHECKBOX`)
 * combo box (`PDF_WIDGET_TYPE_COMBOBOX`)
 * list box (`PDF_WIDGET_TYPE_LISTBOX`)
-* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF does not currently support the **creation** of groups of (interconnected) radio buttons, where setting one button automatically unsets the other buttons in the group. The widget object also does not reflect the presence of a button group. However: consistently selecting (or unselecting) a radio button is supported. This includes correctly setting the value maintained in the owning button group. Selecting a radio button may be done by either assigning `True` or `field.on_state()` to the field value. **De-selecting** the button should be done assigning `False`.
-* signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or creation of signatures.
+* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF now supports the creation and update of Radio Button Groups (RBGs). Adding a new radio button widget with the same (full) name as an existing one anywhere in the PDF will automatically create or extend an RBG.
+* signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or creation of signatures and no signing support.
+
+The Relationship between Form Fields and Widgets
+--------------------------------------------------
+A form field is a logical object in the document's form field tree. It may have one or more widgets, which are the visual appearances of that field on one or more pages. A widget is therefore the page-bound representation of a form field.
+
+The connection between a widget and its form field is established through the widget's ``/Parent`` entry, which references the form field. Conversely, the form field's ``/Kids`` array contains references to all widgets that visually represent that field.
+
+Form fields themselves are not tied to any page; they exist solely in the document's AcroForm hierarchy. Widgets, however, are page annotations and are always associated with a specific page.
+
+A single form field may be represented by multiple widgets. For example, a field may have one widget on page 1 and another on page 2 (or even multiple widgets on the same page). In this case, both widgets share the same form field as their parent. Changing the value of one widget automatically updates the value shown by all other widgets of that field.
+
+Form Field Hierarchy
+--------------------------------------------------
+Form fields support hierarchical naming. A form field may have child fields, forming a logical structure. The hierarchy is defined by the ``/Parent`` entry of a child field, which references its parent field. The parent field's ``/Kids`` array contains references to all its child fields.
+
+This hierarchy is reflected in the field's name. For example, a field named "Parent.Child" has a parent field "Parent" and a child field "Child". The parent may have additional children such as "Parent.Child2" or "Parent.Child3".
+
+Automatic Hierarchy Creation via Dotted Names
+--------------------------------------------------
+Using dots (".") in a widget's :attr:`field_name` automatically creates or updates the corresponding form field hierarchy. For example:
+
+* Creating a widget named "Person.Name" creates or updates the form field "Person" and adds the widget as a child of "Person".
+
+* Creating a widget named "Person.Address" adds another child field under "Person".
+
+* Creating a widget named "Person.MaritalStatus" adds yet another child field.
+
+In all cases, the widget becomes the visual representation of the terminal field in the hierarchy.
+
+This mechanism allows complex information structures to be expressed naturally within a PDF form.
+
 
 .. rubric:: Footnotes
 
