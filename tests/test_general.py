@@ -2023,6 +2023,16 @@ def test_4392():
     print(f'{pymupdf.swig_version=}', flush=1)
     print(f'{pymupdf.swig_version_tuple=}', flush=1)
     
+    # pytest exit codes
+    # (https://docs.pytest.org/en/latest/reference/exit-codes.html):
+    #
+    # Exit code 0: All tests were collected and passed successfully
+    # Exit code 1: Tests were collected and run but some of the tests failed
+    # Exit code 2: Test execution was interrupted by the user
+    # Exit code 3: Internal error happened while executing tests
+    # Exit code 4: pytest command line usage error
+    # Exit code 5: No tests were collected
+    
     assert e1 == 5
     if pymupdf.swig_version_tuple >= (4, 4):
         if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
