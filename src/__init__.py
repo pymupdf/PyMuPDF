@@ -464,12 +464,7 @@ def _format_g(value, *, fmt='%g'):
         
 format_g = _format_g
 
-# ByteString is gone from typing in 3.14.
-# collections.abc.Buffer available from 3.12 only
-try:
-    ByteString = typing.ByteString
-except AttributeError:
-    ByteString = bytes | bytearray | memoryview
+ByteString = bytes | bytearray | memoryview
 
 # Names required by class method typing annotations.
 OptBytes = typing.Optional[ByteString]
