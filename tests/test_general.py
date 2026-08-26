@@ -2281,3 +2281,37 @@ def test_5054():
             assert text2 != text1
         else:
             assert text2 == text1
+
+def test_5100():
+    print()
+    
+    def run(code):
+        code = textwrap.dedent(code)
+        print(f'code is:\n{textwrap.indent(code, "    ")}')
+        path = os.path.normpath(f'{__file__}/../../tests/_test_5100.py')
+        with open(path, 'w') as f:
+            f.write(code)
+        cp = subprocess.run(f'{sys.executable} {path}', shell=1, check=1, capture_output=1)
+        print(f'{cp.stdout=}')
+        print(f'{cp.stderr=}')
+        return cp
+    
+    cp = run('''
+            import pymupdf
+            ''')
+    assert cp.stdout == b''
+    assert cp.stderr == b''
+    
+    cp = run('''
+            import fitz
+            ''')
+    assert cp.stdout == b''
+    assert b'FutureWarning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead' in cp.stderr
+    
+    cp = run('''
+            import warnings
+            warnings.filterwarnings('ignore', category=FutureWarning, module='fitz')
+            import fitz
+            ''')
+    assert cp.stdout == b''
+    assert cp.stderr == b''
