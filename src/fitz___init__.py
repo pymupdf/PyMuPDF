@@ -1,3 +1,5 @@
+import warnings
+
 # pylint: disable=wildcard-import,unused-import,unused-wildcard-import,no-name-in-module
 from pymupdf import *
 from pymupdf import _as_fz_document
@@ -12,4 +14,7 @@ from pymupdf import __doc__
 from pymupdf import _globals
 from pymupdf import _g_out_message
 
-message_warning('The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.')
+warnings.warn(
+        'The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.',
+        FutureWarning,
+        )
