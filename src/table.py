@@ -196,12 +196,15 @@ def rect_in_rect(inner, outer):
 
 def chars_in_rect(CHARS, rect):
     """Check whether any of the chars in CHAR are inside rectangle 'rect'."""
+    # NB: 'rect' (e.g. from page.get_drawings()) and c["x0"]/c["x1"] are in
+    # top-down page space; c["top"]/c["bottom"] are the top-down counterparts
+    # of c["y0"]/c["y1"], which are in PDF-native (bottom-up) space instead.
     return any(
         1
         and rect[0] <= c["x0"]
         and c["x1"] <= rect[2]
-        and rect[1] <= c["y0"]
-        and rect[3] >= c["y1"]
+        and rect[1] <= c["top"]
+        and rect[3] >= c["bottom"]
         for c in CHARS
     )
 
