@@ -808,7 +808,7 @@ def test_5082():
     print(f'test_5082(): {timeout=}')
     # As of 2026-08-18 we expect timeout with 1.28.x (currently 1.28.3) and
     # earlier.
-    if pymupdf.mupdf_version_tuple <= (1, 28, 3):
+    if pymupdf.mupdf_version_tuple <= (1, 28, 4):
         assert timeout, f'Expected timeout from {pymupdf.mupdf_version=}.'
     else:
         assert not timeout, f'Unexpected timeout from {pymupdf.mupdf_version=}.'
