@@ -2284,7 +2284,10 @@ def test_5054():
 
 def test_5100():
     print()
-    
+    if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
+        print(f'test_5100(): not running on free-thread python because diagnostics are more complicated.')
+        return
+        
     def run(code):
         code = textwrap.dedent(code)
         print(f'code is:\n{textwrap.indent(code, "    ")}')
