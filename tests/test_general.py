@@ -2284,6 +2284,9 @@ def test_5054():
 
 def test_5100():
     print()
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_5100(): not running on Pyodide - cannot run child processes.')
+        return
     if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
         print(f'test_5100(): not running on free-thread python because diagnostics are more complicated.')
         return
