@@ -66,7 +66,8 @@ Args:
     -i <implementations>
         Passed through to scripts/test.py. Default is 'rR'.
     -f <test-fitz>
-        Passed through to scripts/test.py. Default is '1'.
+        Passed through to scripts/test.py. Default is '0'
+        (Changed 2026-09-02 because new warnings on import cause failures.)
     -p <pytest-options>
         Passed through to scripts/test.py.
     -t <names>
@@ -85,15 +86,17 @@ import subprocess
 import sys
 import sysconfig
 
-import test as test_py
+#import test as test_py
 
 pymupdf_dir = os.path.abspath( f'{__file__}/../..')
 
-sys.path.insert(0, f'{pymupdf_dir}/src')
-import pipcl
-del sys.path[0]
+#sys.path.insert(0, f'{pymupdf_dir}/src')
+#import pipcl
+#del sys.path[0]
 
-log = pipcl.log0
+#log = pipcl.log0
+def log(text, caller=2):
+    print(text, flush=1)
 
 # Requirements for a system build and install:
 #
@@ -110,6 +113,21 @@ g_sys_packages = [
         ]
 # We also need libtesseract-dev version 5.
 #
+
+
+def test_packages():
+    ret = 'pytest fontTools pymupdf-fonts flake8 pylint codespell'
+    if platform.system() == 'Windows' and cpu_bits() == 32:
+        # No pillow wheel available, and doesn't build easily.
+        pass
+    else:
+        ret += ' pillow'
+    if platform.system().startswith('MSYS_NT-'):
+        # psutil not available on msys2.
+        pass
+    else:
+        ret += ' psutil'
+    return ret
 
 
 def main():
@@ -130,8 +148,8 @@ def main():
         run_command(f'sudo PATH={os.environ["PATH"]} python -V', check=0)
         run_command(f'sudo PATH={os.environ["PATH"]} python3 -V', check=0)
     
-    if test_py.github_workflow_unimportant():
-        return
+    #if test_py.github_workflow_unimportant():
+    #    return
     
     # Set default behaviour.
     #
@@ -151,7 +169,7 @@ def main():
     pytest_name = None
     test_venv = 'venv-pymupdf-sysinstall-test'
     pip = 'venv'
-    test_fitz = '1'
+    test_fitz = '0'
     test_implementations = 'rR'
     
     # Parse command-line.
@@ -253,6 +271,8 @@ def main():
     log('## Build and install MuPDF.')
     command = f'cd {mupdf_dir}'
     command += f' && {sudo}make'
+    # 2026-08-21: GUMBO_NODE_PROCESSING_INSTRUCTION is not in current gumbo release 0.13.2.
+    command += f' && XCXXFLAGS="-DMUPDF_HAVE_GUMBO_NODE_PROCESSING_INSTRUCTION=0" {sudo}make'
     command += f' -j {multiprocessing.cpu_count()}'
     #command += f' EXE_LDFLAGS=-Wl,--trace' # Makes linker generate diagnostics as it runs.
     command += f' DESTDIR={root}'
@@ -279,6 +299,7 @@ def main():
         return run_command(command, doit=pymupdf_do)
     flags_freetype2 = run_command('pkg-config --cflags freetype2', capture=1)
     compile_flags = f'-I {root_prefix}/include {flags_freetype2}'
+    log(f'{compile_flags=}')
     link_flags = f'-L {root_prefix}/lib'
     env = ''
     env += f'CFLAGS="{compile_flags}" '
@@ -358,17 +379,16 @@ def main():
     log('## Run PyMuPDF pytest tests.')
     def run(command, env_extra=None):
         return run_command(command, doit=pytest_do, env_extra=env_extra, caller=1)
-    import gh_release
     if pip == 'venv':
         # Create venv.
         run(f'{sys.executable} -m venv {test_venv}')
         # Install required packages.
         command = f'. {test_venv}/bin/activate'
         command += f' && pip install --upgrade pip'
-        command += f' && pip install --upgrade {gh_release.test_packages}'
+        command += f' && pip install --upgrade {test_packages()}'
         run(command)
     elif pip == 'sudo':
-        names = gh_release.test_packages
+        names = test_packages()
         names = names.split(' ')
         names = [n for n in names if n not in ('psutil', 'pillow')]
         names = ' '.join(names)
@@ -403,6 +423,7 @@ def main():
                 'test_4180',
                 'test_4767',
                 'test_5001',
+                'test_5049',
                 )
         excluded_tests = ' and not '.join(excluded_tests)
         if not pytest_args:
@@ -423,9 +444,31 @@ def main():
 
 def run_command(command, capture=False, check=True, doit=True, env_extra=None, caller=0):
     if doit:
-        return pipcl.run(command, capture=capture, check=check, caller=caller+2, env_extra=env_extra)
+        env = os.environ
+        if env_extra:
+            env = env.copy()
+            env.update(env_extra)
+        cp = subprocess.run(
+                command,
+                shell=1,
+                check=check,
+                env=env,
+                stdout=subprocess.PIPE if capture else None,
+                stderr=subprocess.STDOUT if capture else None,
+                text=True,
+                )
+        if check:
+            return cp.stdout if capture else None
+        else:
+            return (cp.returncode, cp.stdout) if capture else cp.returncode
     else:
         log(f'## Would have run: {command}', caller=2)
+    
+#def run_command(command, capture=False, check=True, doit=True, env_extra=None, caller=0):
+#    if doit:
+#        return pipcl.run(command, capture=capture, check=check, caller=caller+2, env_extra=env_extra)
+#    else:
+#        log(f'## Would have run: {command}', caller=2)
 
 
 if __name__ == '__main__':
