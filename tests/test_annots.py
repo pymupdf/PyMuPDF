@@ -737,6 +737,7 @@ def test_4944():
         
         page.add_redact_annot(page.rect)
         page.apply_redactions(text=pymupdf.PDF_REDACT_TEXT_REMOVE)
+        page.draw_rect(page.rect, color=(1, 0, 0))
         document.save(path_out)
         print(repr(page.get_text()))
         
