@@ -1999,7 +1999,7 @@ def test_4392():
         return
         
     print('', flush=1)
-    path = os.path.normpath(f'{__file__}/../../tests/test_4392.py')
+    path = os.path.normpath(f'{__file__}/../../tests/internal_4392.py')
     with open(path, 'w') as f:
         f.write('import pymupdf\n')
     
