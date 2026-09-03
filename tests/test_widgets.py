@@ -538,3 +538,35 @@ def test_hierarchy():
         field_name = w.field_name  # the field name is a concatenation
         assert field_name == field_names[i]
         chain_upwards(w)  # confirm the hierarchy is correct
+
+
+def test_5101():
+    print()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5101.pdf')
+    with pymupdf.open(path) as document:
+        print(f'{len(document)=}')
+        if pymupdf.mupdf_version_tuple >= (1, 29):
+            page = document[0]
+            wt = pymupdf.TOOLS.mupdf_warnings()
+            print(f'{wt=}')
+            assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
+            document2 = pymupdf.open()
+            document2.insert_pdf(document, annots=False, widgets=False, links=True)
+        else:
+            try:
+                page = document[0]
+            except pymupdf.mupdf.FzErrorFormat as e:
+                print(f'Received expected exception: {e}')
+                assert 'cycle in resources' in str(e)
+            else:
+                assert 0, 'test_5101(): Expected exception from document[0].'
+            
+            document2 = pymupdf.open()
+            try:
+                document2.insert_pdf(document, annots=False, widgets=False, links=True)
+            except pymupdf.mupdf.FzErrorFormat as e:
+                print(f'Received expected exception: {e}')
+                assert 'cycle in resources' in str(e)
+            else:
+                assert 0, 'test_5101(): Expected exception from document2.insert_pdf.'
+            
