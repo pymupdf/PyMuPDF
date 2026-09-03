@@ -50,6 +50,7 @@ To extract all the text from a |PDF| file, do the following:
         out.write(text) # write text of page
         out.write(bytes((12,))) # write page delimiter (form feed 0x0C)
     out.close()
+    doc.close()
 
 Of course it is not just |PDF| which can have text extracted - all the :ref:`supported document file formats <About_Feature_Matrix>` such as :title:`MOBI`, :title:`EPUB`, :title:`TXT` can have their text extracted.
 
