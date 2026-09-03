@@ -2,6 +2,15 @@ Change Log
 ==========
 
 
+**Changes in version 
+
+Fixed issues:
+
+Other:
+
+* Retrospectively marked #4896 fixed in 1.28.0.
+
+
 **Changes in version 1.28.2** (2026-08-06)
 
 Fixed issues:
@@ -37,6 +46,7 @@ Fixed issues:
 * **Fixed** `5001 <https://github.com/pymupdf/PyMuPDF/issues/5001>`_: Formulae incorrectly rendered as black boxes
 * **Fixed** `5033 <https://github.com/pymupdf/PyMuPDF/issues/5033>`_: Annot.set_rotation(0) followed by Annot.update() throws AttributeError
 * **Fixed** `4936 <https://github.com/pymupdf/PyMuPDF/issues/4936>`_: bug: incomplete redaction of vector graphics (line art)
+* **Fixed** `4896 <https://github.com/pymupdf/PyMuPDF/issues/4896>`_: write_images() and saving with garbage>1 spoils fonts (xrefs)
 
 Other:
 
@@ -79,7 +89,7 @@ Other:
   * Added `Annot.__bool__()`.
 
 
-**Changes in version 1.27.2.** (2026-03-10)
+**Changes in version 1.27.2** (2026-03-10)
 
 * Use MuPDF-1.27.2.
 
