@@ -2334,4 +2334,28 @@ def test_4846():
         with open(path_out, 'w', encoding="utf8") as f:
             f.write(svg_content)
 
+
+def test_4896():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4896.pdf')
+    out = os.path.normpath(f'{__file__}/../../tests/test_4896_out')
+    print()
+    
+    with pymupdf.open(path) as document:
+        path = f'{out}_2.pdf'
+        document.ez_save(path, garbage=2)
+        print(f'Have saved to: {path}')
+        pixmap0 = document[0].get_pixmap()
+    
+    with pymupdf.open(path) as document:
+        document.rewrite_images(dpi_threshold=160, dpi_target=150)
+        for g in 1, 2, 3, 4:
+            path = f'{out}_rewrite_{g}.pdf'
+            document.ez_save(path, garbage=g)
+            print(f'Have saved to: {path}')
+            
+            with pymupdf.open(path) as document2:
+                pixmap = document2[0].get_pixmap()
+                diff = gentle_compare.pixmaps_rms(pixmap0, pixmap)
+                print(f'{diff=} for {path=}.')
+                assert diff == 0
     
