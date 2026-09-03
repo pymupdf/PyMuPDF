@@ -9,6 +9,7 @@ Fixed issues:
 Other:
 
 * Retrospectively marked #4896 fixed in 1.28.0.
+* Retrospectively marked #4918 fixed in 1.28.0.
 
 
 **Changes in version 1.28.2** (2026-08-06)
