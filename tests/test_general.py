@@ -2321,3 +2321,17 @@ def test_5100():
             ''')
     assert cp.stdout == b''
     assert cp.stderr == b''
+
+
+def test_4846():
+    # Currently doesn't test the generated file, just leaves to to be looked at
+    # manually.
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4846.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_out.svg')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        svg_content = page.get_svg_image()
+        with open(path_out, 'w', encoding="utf8") as f:
+            f.write(svg_content)
+
+    
