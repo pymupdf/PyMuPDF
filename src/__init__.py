@@ -866,6 +866,14 @@ class Annot:
         ao = mupdf.pdf_annot_obj(self.this)
         ret = JM_annot_border(ao)
         return ret
+    
+    @property
+    def bound():    
+        '''
+        Returns pdf_bound_annot().
+        '''
+        ret = mupdf.pdf_bound_annot(self.this)
+        return ret
 
     def clean_contents(self, sanitize=1):
         """Clean appearance contents stream."""
