@@ -200,8 +200,8 @@ def chars_in_rect(CHARS, rect):
         1
         and rect[0] <= c["x0"]
         and c["x1"] <= rect[2]
-        and rect[1] <= c["y0"]
-        and rect[3] >= c["y1"]
+        and rect[1] <= c["top"]
+        and rect[3] >= c["bottom"]
         for c in CHARS
     )
 
