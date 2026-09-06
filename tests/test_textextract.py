@@ -948,3 +948,26 @@ def test_4503():
     
     assert strikeout, f'Expected bit 0 (FZ_STEXT_STRIKEOUT) to be set in {span_0["char_flags"]=:#x}.'
     assert text_0 == 'the right to request the state to review and, if appropriate,'
+
+
+def test_4994():
+    print()
+    print(f'{pymupdf.pymupdf_version=}.')
+    print(f'{pymupdf.pymupdf_version_tuple=}.')
+    sys.stdout.flush()
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4994.pdf')
+    with pymupdf.open(path) as document:
+        for page in document:
+            text = page.get_text()
+            print(f'test_4994(): {page.get_text()=}')
+            print(f'test_4994(): {page.get_text(flags=pymupdf.TEXTFLAGS_TEXT | pymupdf.TEXT_DEHYPHENATE)=}')
+            print(f'test_4994(): {page.get_text(flags=pymupdf.TEXT_DEHYPHENATE)=}')
+            sys.stdout.flush()
+            search_results = page.search_for('climate')
+            print(f'test_4994(): {search_results=}')
+            print(f'test_4994(): {len(search_results)=}')
+            print(f'test_4994(): {search_results=}')
+            sys.stdout.flush()
+            assert len(search_results) == 2
+            #assert text == 'planet-warming gas driving climate change.'
+    sys.stdout.flush()
