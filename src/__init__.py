@@ -21544,13 +21544,18 @@ def JM_new_buffer_from_stext_page(page):
     for block in page:
         if block.m_internal.type == mupdf.FZ_STEXT_BLOCK_TEXT:
             for line in block:
+                break_line = True
                 for ch in line:
                     if (not JM_rects_overlap(rect, JM_char_bbox(line, ch))
                             and not mupdf.fz_is_infinite_rect(rect)
                             ):
                         continue
-                    mupdf.fz_append_rune(buf, ch.m_internal.c)
-                mupdf.fz_append_byte(buf, ord('\n'))
+                    if not ch.m_internal.next and (line.m_internal.flags & mupdf.FZ_STEXT_LINE_FLAGS_JOINED):
+                        break_line = 0
+                    else:
+                        mupdf.fz_append_rune(buf, ch.m_internal.c)
+                if break_line:
+                    mupdf.fz_append_byte(buf, ord('\n'))
             mupdf.fz_append_byte(buf, ord('\n'))
     return buf
 
@@ -22031,9 +22036,8 @@ def JM_search_stext_page(page, needle):
                     break
                 haystack += 1
                 #next_char:;
-            assert haystack_string[haystack] == '\n', \
-                    f'{haystack=} {haystack_string[haystack]=}'
-            haystack += 1
+            if haystack_string[haystack] == '\n':
+                haystack += 1
         assert haystack_string[haystack] == '\n', \
                 f'{haystack=} {haystack_string[haystack]=}'
         haystack += 1

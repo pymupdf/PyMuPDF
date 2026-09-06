@@ -2301,16 +2301,23 @@ void _as_text(fz_stext_block *block, mupdf::FzBuffer& res, mupdf::FzStextPage& p
                 last_char = 0;
                 for (line = block->u.t.first_line; line; line = line->next)
                 {
+                    int break_line = 1;
                     for (ch = line->first_char; ch; ch = ch->next)
                     {
                         fz_rect chbbox = JM_char_bbox( line, ch);
-                        if (mupdf::ll_fz_is_infinite_rect(rect) || JM_rects_overlap(rect, chbbox))
+                        if (!ch->next && (line->flags & FZ_STEXT_LINE_FLAGS_JOINED)) {
+                            break_line = 0;
+                        }
+                        else if (mupdf::ll_fz_is_infinite_rect(rect) || JM_rects_overlap(rect, chbbox))
                         {
                             last_char = ch->c;
                             JM_append_rune(res.m_internal, last_char);
                         }
                     }
-                    if (last_char != 10 && last_char > 0)
+                    if (!break_line)
+                    {
+                    }
+                    else if (last_char != 10 && last_char > 0)
                     {
                         mupdf::ll_fz_append_string(res.m_internal, "\n");
                         last_char = 10;
@@ -4013,14 +4020,22 @@ JM_new_buffer_from_stext_page(fz_stext_page *page)
         for (block = page->first_block; block; block = block->next) {
             if (block->type == FZ_STEXT_BLOCK_TEXT) {
                 for (line = block->u.t.first_line; line; line = line->next) {
+                    int break_line = 1;
                     for (ch = line->first_char; ch; ch = ch->next) {
                         if (!JM_rects_overlap(rect, JM_char_bbox(line, ch)) &&
                             !fz_is_infinite_rect(rect)) {
                             continue;
                         }
-                        fz_append_rune(ctx, buf, ch->c);
+                        if (!ch->next && (line->flags & FZ_STEXT_LINE_FLAGS_JOINED)) {
+                            break_line = 0;
+                        }
+                        else {
+                            fz_append_rune(ctx, buf, ch->c);
+                        }
                     }
-                    fz_append_byte(ctx, buf, '\n');
+                    if (break_line) {
+                        fz_append_byte(ctx, buf, '\n');
+                    }
                 }
                 fz_append_byte(ctx, buf, '\n');
             }
@@ -4261,8 +4276,9 @@ try_new_match:
                     haystack += fz_chartorune(&c, haystack);
 next_char:;
                 }
-                assert(*haystack == '\n');
-                ++haystack;
+                if (*haystack == '\n') {
+                    ++haystack;
+                }
             }
             assert(*haystack == '\n');
             ++haystack;
