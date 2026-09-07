@@ -788,6 +788,10 @@ static void JM_set_annot_callout_line(mupdf::PdfAnnot& annot, PyObject *callout,
 {
     fz_point points[3];
     mupdf::FzPoint p;
+    if (count > sizeof(points)/sizeof(points[0]))
+    {
+        throw std::runtime_error(MSG_BAD_ARG_POINTS);
+    }
     for (int i = 0; i < count; i++)
     {
         p = JM_point_from_py(PyTuple_GetItem(callout, (Py_ssize_t) i));
@@ -3980,11 +3984,11 @@ PyObject *set_pixel(fz_pixmap* pm, int x, int y, PyObject *color)
         throw std::range_error( MSG_PIXEL_OUTSIDE);
     }
     int n = pm->n;
-    if (!PySequence_Check(color) || PySequence_Size(color) != n) {
-        throw std::range_error(MSG_BAD_COLOR_SEQ);
-    }
     int i, j;
     unsigned char c[5];
+    if (!PySequence_Check(color) || PySequence_Size(color) != n || n > sizeof(c)) {
+        throw std::range_error(MSG_BAD_COLOR_SEQ);
+    }
     for (j = 0; j < n; j++) {
         if (JM_INT_ITEM(color, j, &i) == 1) {
             throw std::range_error(MSG_BAD_COLOR_SEQ);
@@ -4363,7 +4367,10 @@ PyObject* ll_JM_color_count(fz_pixmap *pm, PyObject *clip)
     unsigned char* s = pm->samples + stride * (irect.y0 - pm->y) + n * (irect.x0 - pm->x);
     // Cache previous pixel.
     char oldpix[10];
-    assert(n <= sizeof(oldpix));
+    if (n > sizeof(oldpix))
+    {
+        throw std::range_error(MSG_PIXEL_OUTSIDE);
+    }
     memcpy(oldpix, s, n);
     long cnt = 0;
     for (size_t i = 0; i < height; i++)

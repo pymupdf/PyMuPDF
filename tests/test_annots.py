@@ -794,3 +794,21 @@ def test_4936():
         drawings = page.get_drawings()
     print(f'{len(drawings)=}')
     assert len(drawings) == 0
+
+
+def test_5112():
+    print()
+    with pymupdf.open() as document:
+        page = document.new_page()
+        rect = pymupdf.Rect(50, 50, 200, 150)
+        callout = [(10, 10)] * 100
+        try:
+            print(f'test_5112(): calling page.add_freetext_annot().', flush=1)
+            e = page.add_freetext_annot(rect, "test", callout=callout)
+        except Exception as e:
+            print(f'Received exception: {e}')
+            assert isinstance(e, RuntimeError)
+            assert str(e) == 'bad seq of points'
+        else:
+            assert 0, f'Expected exception from page.add_freetext_annot().'
+
