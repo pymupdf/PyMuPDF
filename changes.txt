@@ -6,10 +6,25 @@ Change Log
 
 Fixed issues:
 
+* **Fixed** `4994 <https://github.com/pymupdf/PyMuPDF/issues/4994>`_: Dehyphenate does no longer work since 1.27.1
+* **Fixed** `5059 <https://github.com/pymupdf/PyMuPDF/issues/5059>`_: Annotations disappear or move when using Page.remove_rotation() for 90 or 270 rotated pages
+* **Fixed** `5067 <https://github.com/pymupdf/PyMuPDF/issues/5067>`_: Memory leak in extractBLOCKS (_as_blocks): text object reference never released
+* **Fixed** `5077 <https://github.com/pymupdf/PyMuPDF/issues/5077>`_: Page.remove_rotation() takes minutes on pages with thousands of links
+* **Fixed** `5100 <https://github.com/pymupdf/PyMuPDF/issues/5100>`_: Import of fitz prints to console instead of generating a DeprecationWarning
+* **Fixed** `5112 <https://github.com/pymupdf/PyMuPDF/issues/5112>`_: Stack-based buffer overflow in JM_set_annot_callout_line
+
 Other:
 
+* Added support for form field hierarchies.
+* Added support for radio button groups.
+* Added support for widget aliases.
+* Fixed builds with swig-4.5.
+* Fixed ignoring aspect ratio for square images.
+* Fixed use with python-3.15.
+* Remove the debug timing loop from `Annot.update()`.
 * Retrospectively marked #4896 fixed in 1.28.0.
 * Retrospectively marked #4918 fixed in 1.28.0.
+* Warning for use of deprecated `fitz` API now uses `warnings.warn()` with `FutureWarning`.
 
 
 **Changes in version 1.28.2** (2026-08-06)
