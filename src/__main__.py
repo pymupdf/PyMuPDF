@@ -517,8 +517,12 @@ def extract_objects(args):
                     fontname, ext, _, buffer = doc.extract_font(xref)
                     if ext == "n/a" or not buffer:
                         continue
+                    name = fontname
+                    name = name.replace('/', '-')
+                    name = name.replace('\\', '-')
+                    name = name.replace(' ', '-')
                     outname = os.path.join(
-                        out_dir, f"{fontname.replace(' ', '-')}-{xref}.{ext}"
+                        out_dir, f"{name}-{xref}.{ext}"
                     )
                     with open(outname, "wb") as outfile:
                         outfile.write(buffer)
