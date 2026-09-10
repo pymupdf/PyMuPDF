@@ -2,6 +2,7 @@
 """
 Test PDF field (widget) insertion.
 """
+import gc
 import pymupdf
 import os
 from pymupdf import mupdf
@@ -570,3 +571,90 @@ def test_5101():
             else:
                 assert 0, 'test_5101(): Expected exception from document2.insert_pdf.'
             
+def test_3478():
+    print()
+    print(f'test_3478(): {pymupdf.version=}')
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_3478.pdf')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_3478_out.pdf')
+    path_out2 = os.path.normpath(f'{__file__}/../../tests/test_3478_out2.pdf')
+    
+    def get_acro_names(document):
+        ret = list()
+        obj = mupdf.pdf_dict_getl(
+                mupdf.pdf_trailer(pymupdf._as_pdf_document(document)),
+                pymupdf.PDF_NAME('Root'),
+                pymupdf.PDF_NAME('AcroForm'),
+                pymupdf.PDF_NAME('Fields'),
+                )
+        assert pymupdf.mupdf.pdf_is_array(obj)
+        l = pymupdf.mupdf.pdf_array_len(obj)
+        for i in range(l):
+            field = pymupdf.mupdf.pdf_array_get(obj, i)
+            assert pymupdf.mupdf.pdf_is_dict(field)
+            T = mupdf.pdf_dict_getp(field, 'T').pdf_to_text_string()
+            ret.append(T)
+        return ret
+    
+    with pymupdf.open(path) as document:
+        
+        print(f'test_3478(): Root/AcroForm/Fields/[]/T:')
+        acro_names = get_acro_names(document)
+        for acro_name in acro_names:
+            if acro_name.startswith('sig') or acro_name.startswith('init'):
+                print(f'test_3478():     {acro_name}')
+        
+        print(f'test_3478(): Page widgets:')
+        for page in document:
+            # iterate the fields on this page.
+            widget = page.first_widget
+            while widget:
+                name = widget.field_name
+                # If it's a signature, remove it.
+                if name.startswith('sig') or name.startswith('init'):
+                    xref = widget.xref
+                    print(f'test_3478():     Calling page.delete_widget() for {name=}.')
+                    widget = page.delete_widget(widget)
+                else:
+                    widget = widget.next
+        
+        document.save(path_out2)
+        document.ez_save(path_out)
+    
+    # 2026-09-10: page.delete_widget() introduces a cyclic dependency which
+    # results in us leaving a fd open and a warning from conftest.py, so do a
+    # collection here to keep output clean.
+    gc.collect()
+    
+    
+    # In the ez_save()'d document:
+    #
+    # * Check that deleted widget fields are not in page widgets.
+    #   (This has always been ok.)
+    # * Check that deleted widget fields are not in Root/AcroForm/Fields[]/T.
+    #   (This appears to have been fixed in pymupdf-1.25.3.)
+    #
+    print(f'test_3478(): looking at ez_save document.')
+    num_still_present = 0
+    num_still_present_acro = 0
+    
+    with pymupdf.open(path_out) as document:
+        
+        print(f'test_3478(): Page widgets:')
+        for page_i, page in enumerate(document):
+            for (widget_i, widget) in enumerate(page.widgets()):
+                name = widget.field_name
+                if name.startswith('sig') or name.startswith('init'):
+                    print(f'test_3478():     {page_i=} {widget_i=}: {name}')
+                    num_still_present += 1
+        print(f'test_3478(): {num_still_present=}')
+        
+        acro_names = get_acro_names(document)
+        for acro_name in acro_names:
+            if acro_name.startswith('sig') or acro_name.startswith('init'):
+                print(f'test_3478():     {i}: {acro_name}')
+                num_still_present_acro += 1
+        print(f'test_3478(): {num_still_present_acro=}')
+    
+    assert num_still_present == 0, f'{num_still_present=}'
+    assert num_still_present_acro == 0, f'{num_still_present_acro=}'
+    
