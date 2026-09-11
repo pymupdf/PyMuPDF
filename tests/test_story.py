@@ -293,3 +293,32 @@ def test_3813():
     print(f'text_expected:\n    {textwrap.indent(text_expected, "   ")}')
     
     assert text == text_expected
+
+
+def test_5110():
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_5110_out.pdf')
+    mediabox = pymupdf.paper_rect("letter")
+    frame = mediabox + (54, 54, -54, -54)
+    html = textwrap.dedent(f'''
+            <html><body>
+            <div style="background-color:#1f3a5f;color:#ffffff;padding:12pt">BANNER</div>
+            <p>{'filler words ' * 400}</p>
+            </body></html>
+            ''')
+    
+    # Create pdf.
+    story = pymupdf.Story(html=html)
+    writer = pymupdf.DocumentWriter(path_out)
+    story.write(writer, lambda rect_num, filled: (mediabox, frame, None))
+    writer.close()
+
+    # Look for drawings that overlap frame in second page.
+    with pymupdf.open(path_out) as document:
+        page = document[1]
+        for drawing in page.get_drawings():
+            rect = drawing["rect"]
+            print(f'Drawing with {rect=}: {drawing=}')
+        num_drawings = len(page.get_drawings())
+        print(f'{num_drawings=}')
+        # 2026-09-11: Expect error.
+        assert num_drawings == 1
