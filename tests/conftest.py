@@ -149,7 +149,7 @@ def wrap(request):
     
     _globals_post = get_members(pymupdf._globals)
     if _globals_post != _globals_pre:
-        print(f'Test has changed pymupdf._globals from {_globals_pre=} to {_globals_post=}')
+        print(f'Test has changed pymupdf._globals from\n    {_globals_pre=}\nto\n    {_globals_post=}')
         assert 0
     
     log_items = pymupdf._log_items()
