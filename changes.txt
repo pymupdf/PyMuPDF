@@ -21,6 +21,7 @@ Other:
 * Added support for form field hierarchies.
 * Added support for radio button groups.
 * Added support for widget aliases.
+* Fixed CVE-2026-82035.
 * Fixed builds with swig-4.5.
 * Fixed ignoring aspect ratio for square images.
 * Fixed use with python-3.15.
