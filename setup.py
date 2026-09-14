@@ -1106,6 +1106,7 @@ version_mupdf = '1.28.2'
 # A normal PyMuPDF package.
 
 requires_dist = list()
+requires_dist.append('pymupdf4llm')
 if os.environ.get('PYODIDE_ROOT'):
     # We can't pip install pytest on pyodide, so specify it here.
     requires_dist.append('pytest')
