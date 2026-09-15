@@ -1720,7 +1720,9 @@ def test_3569():
                 '</svg>\n'
                 )
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 28):
+    if pymupdf.mupdf_version_tuple >= (1, 29):
+        assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via Adobe-Identity-UCS)\ninvalid marked content sequence / clip nesting'
+    elif pymupdf.mupdf_version_tuple >= (1, 28):
         assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content sequence / clip nesting'
     else:
         assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content and clip nesting'
