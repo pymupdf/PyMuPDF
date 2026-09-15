@@ -546,11 +546,14 @@ def test_5101():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_5101.pdf')
     with pymupdf.open(path) as document:
         print(f'{len(document)=}')
-        if pymupdf.mupdf_version_tuple >= (1, 29):
+        if pymupdf.mupdf_version_tuple >= (1, 28, 6):
             page = document[0]
             wt = pymupdf.TOOLS.mupdf_warnings()
             print(f'{wt=}')
-            assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
+            if pymupdf.mupdf_version_tuple >= (1, 29):
+                assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
+            else:
+                assert wt == 'fixed bad Parent in AcroForm tree\n... repeated 2 times...'
             document2 = pymupdf.open()
             document2.insert_pdf(document, annots=False, widgets=False, links=True)
         else:
@@ -657,4 +660,3 @@ def test_3478():
     
     assert num_still_present == 0, f'{num_still_present=}'
     assert num_still_present_acro == 0, f'{num_still_present_acro=}'
-    

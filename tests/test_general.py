@@ -2279,7 +2279,7 @@ def test_5054():
         text2 = page.get_text()
         print(f'{text1=}')
         print(f'{text2=}')
-        if pymupdf.mupdf_version_tuple < (1, 29):
+        if pymupdf.mupdf_version_tuple < (1, 28, 6):
             assert text2 != text1
         else:
             assert text2 == text1
