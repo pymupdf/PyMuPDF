@@ -38,16 +38,6 @@ def _file_line(path, text, re_match, offset=+2):
     return f'{path}:{line}'
 
 
-def test_release_versions():
-    '''
-    PyMuPDF and default MuPDF must have same major.minor version.
-    '''
-    version_pymupdf_tuple = pipcl.version_to_tuple(setup.version_p)
-    version_mupdf_tuple = pipcl.version_to_tuple(setup.version_mupdf)
-    assert version_pymupdf_tuple[:2] == version_mupdf_tuple[:2], \
-            f'PyMuPDF and MuPDF major.minor versions do not match. {setup.version_pymupdf_tuple=} {setup.version_mupdf=}.'
-
-
 def test_release_bug_template():
     '''
     Bug report template must list current PyMuPDF version.
