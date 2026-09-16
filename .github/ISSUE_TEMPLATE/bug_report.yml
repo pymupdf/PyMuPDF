@@ -46,14 +46,10 @@ body:
     attributes:
       label: PyMuPDF version
       options:
+        - 2.0
         - 1.28.2
         - 1.28.0
-        - 1.27.2.3
-        - 1.27.2.2
-        - 1.27.2
-        - 1.27.1
-        - 1.27.0
-        - 1.26.x or earlier
+        - 1.27.x or earlier
         - Built from source
       description: |
         * For example from `pymupdf.pymupdf_version`.
