@@ -938,6 +938,7 @@ class Annot:
 
         fs = mupdf.pdf_dict_get(annot_obj, PDF_NAME('FS'))
 
+        filename = None
         o = mupdf.pdf_dict_get(fs, PDF_NAME('UF'))
         if o.m_internal:
             filename = mupdf.pdf_to_text_string(o)
@@ -2040,7 +2041,7 @@ class Archive:
                 raise ValueError(f'Not a file or directory: {content!r}')
 
         elif is_binary_data(content):
-            assert isinstance(path, str) and path != '' \
+            assert isinstance(path, str) and path != '', \
                     f'Need name for binary content, but {path=}.'
             self._add_treeitem(content, path)
             return make_subarch([path], None, 'tree')
@@ -9469,6 +9470,8 @@ class Widget:
         if bstate is None:
             bstate = dict()
         for k in bstate.keys():
+            if bstate[k] is None:
+                continue
             for v in bstate[k]:
                 if v != "Off":
                     return v
@@ -13436,7 +13439,7 @@ class Page:
             lang = mupdf.fz_text_language_from_string(language)
             assert hasattr(mupdf, 'fz_string_from_text_language2')
             mupdf.pdf_dict_put_text_string(
-                    pdfpage.obj,
+                    pdfpage.obj(),
                     PDF_NAME('Lang'),
                     mupdf.fz_string_from_text_language2(lang)
                     )
@@ -14541,7 +14544,7 @@ class Pixmap:
         if idx is None:
             raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
         if self.alpha and idx in (2, 6, 7):
-            raise ValueError("'{output}' cannot have alpha")
+            raise ValueError(f"'{output}' cannot have alpha")
         if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
             raise ValueError(f"unsupported colorspace for '{output}'")
         if idx == 7:
@@ -21361,7 +21364,7 @@ def JM_matrix_from_py(m):
     for i in range(6):
         a[i] = JM_FLOAT_ITEM(m, i)
         if a[i] is None:
-            return mupdf.FzRect()
+            return mupdf.FzMatrix()
     return mupdf.FzMatrix(a[0], a[1], a[2], a[3], a[4], a[5])
 
 
