@@ -186,8 +186,8 @@
 
     <div id="discordAndForumHolder">
         <div class="discordLink" style="display:flex;align-items:center;margin-top: 5px;">
-            <a href="https://discord.gg/TSpYGBW4eq" id="findOnDiscord" target=_blank>Find <b>#pymupdf</b> on <b>Discord</b></a>
-            <a href="https://discord.gg/TSpYGBW4eq" target=_blank>
+            <a href="https://artifex.com/discord/artifex" id="findOnDiscord" target=_blank>Find <b>#pymupdf</b> on <b>Discord</b></a>
+            <a href="https://artifex.com/discord/artifex" target=_blank>
                 <div style="width:30px;height:30px;margin-left:5px;">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36">
                         <defs>
