@@ -806,7 +806,7 @@ def test_5082():
     except subprocess.TimeoutExpired:
         timeout = True
     print(f'test_5082(): {timeout=}')
-    if pymupdf.mupdf_version_tuple < (1, 28, 6):
+    if pymupdf.mupdf_version_tuple < (1, 28, 5):
         assert timeout, f'Expected timeout from {pymupdf.mupdf_version=}.'
     else:
         assert not timeout, f'Unexpected timeout from {pymupdf.mupdf_version=}.'
