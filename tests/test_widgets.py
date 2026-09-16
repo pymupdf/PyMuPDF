@@ -546,7 +546,7 @@ def test_5101():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_5101.pdf')
     with pymupdf.open(path) as document:
         print(f'{len(document)=}')
-        if pymupdf.mupdf_version_tuple >= (1, 28, 6):
+        if pymupdf.mupdf_version_tuple >= (1, 28, 5):
             page = document[0]
             wt = pymupdf.TOOLS.mupdf_warnings()
             print(f'{wt=}')
