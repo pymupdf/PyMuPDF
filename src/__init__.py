@@ -7291,14 +7291,14 @@ class Document:
             title = get_pdf_str(o[1])  # title
             pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
             page_xref = doc.page_xref(pno)
-            page_height = doc.page_cropbox(pno).height
-            top = Point(72, page_height - 36)
+            cropbox = doc.page_cropbox(pno)
+            top = Point(72, cropbox.y1 - 36)
             dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
             if o[2] < 0:
                 dest_dict["kind"] = LINK_NONE
             if len(o) > 3:  # some target is specified
                 if type(o[3]) in (int, float):  # convert a number to a point
-                    dest_dict["to"] = Point(72, page_height - o[3])
+                    dest_dict["to"] = Point(72, cropbox.y1 - o[3])
                 else:  # if something else, make sure we have a dict
                     # We make a copy of o[3] to avoid modifying our caller's data.
                     dest_dict = o[3].copy() if type(o[3]) is dict else dest_dict
@@ -7307,7 +7307,7 @@ class Document:
                     else:  # transform target to PDF coordinates
                         page = doc[pno]
                         point = Point(dest_dict["to"])
-                        point.y = page.cropbox.height - point.y
+                        point.y = page.cropbox.y1 - point.y
                         point = point * page.rotation_matrix
                         dest_dict["to"] = (point.x, point.y)
             d = {}
@@ -7460,9 +7460,9 @@ class Document:
             if dest_dict["kind"] == LINK_GOTO:
                 pno = dest_dict["page"]
                 page_xref = doc.page_xref(pno)
-                page_height = doc.page_cropbox(pno).height
+                cropbox = doc.page_cropbox(pno)
                 to = dest_dict.get('to', Point(72, 36))
-                to.y = page_height - to.y
+                to.y = cropbox.y1 - to.y
                 dest_dict["to"] = to
             action = utils.getDestStr(page_xref, dest_dict)
             if not action.startswith("/A"):
@@ -7496,12 +7496,12 @@ class Document:
             if pno is None or pno not in range(1, doc.page_count + 1):
                 raise ValueError("bad page number")
             page_xref = doc.page_xref(pno - 1)
-            page_height = doc.page_cropbox(pno - 1).height
+            cropbox = doc.page_cropbox(pno - 1)
             if to is None:
-                to = Point(72, page_height - 36)
+                to = Point(72, cropbox.y1 - 36)
             else:
                 to = Point(to)
-                to.y = page_height - to.y
+                to.y = cropbox.y1 - to.y
 
         ddict = {
             "kind": kind,
