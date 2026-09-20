@@ -1151,7 +1151,7 @@ if os.environ.get('PYODIDE_ROOT'):
     requires_dist.append('pipcl')
 
 p = pipcl.Package(
-        'pymupdf',
+        'pymupdf-core',
         version_p,
         summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.',
         description = 'README.md',
