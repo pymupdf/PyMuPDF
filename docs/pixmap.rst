@@ -411,7 +411,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :raises ImportError: if Pillow is not installed.
       :returns: a ``PIL.Image`` object
 
-   ..  method:: pil_save(*args, unmultiply=False, **kwargs)
+   ..  method:: pil_save(*args, **kwargs)
 
       Write the pixmap as an image file using Pillow. Use this method for output unsupported by MuPDF. Examples are
 
@@ -421,16 +421,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       A simple example: `pix.pil_save("some.webp", optimize=True, dpi=(150, 150))`.
 
-      :arg bool unmultiply: If the pixmap's colorspace is RGB with transparency, the alpha values may or may not already be multiplied into the color components ref/green/blue (called "premultiplied"). To enforce undoing premultiplication, set this parameter to `True`. To learn about some background, e.g. look for `"Premultiplied alpha" on this page <https://en.wikipedia.org/wiki/Glossary_of_computer_graphics#P>`_.
-
-
       For details on other parameters see the Pillow documentation.
 
       Since v1.22.0, PyMuPDF supports JPEG output directly. We recommended to no longer use this method for JPEG output -- for performance reasons and for avoiding unnecessary external dependencies.
 
       :raises ImportError: if Pillow is not installed.
 
-   ..  method:: pil_tobytes(*args, unmultiply=False, **kwargs)
+   ..  method:: pil_tobytes(*args, **kwargs)
 
       * New in v1.17.3
 
