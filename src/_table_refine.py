@@ -33,6 +33,8 @@ find_tables() path.
 
 import itertools
 import re
+from bisect import bisect_left, bisect_right
+from math import isfinite
 import pymupdf
 
 
@@ -49,6 +51,70 @@ import pymupdf
 # pymupdf.table, so refinement needs no CHARS state.
 
 _REFINE_LINE_GAP = 3.0  # center-y gap (points) that groups body words into lines
+
+
+# --- word center index: reduce the per-cell word scan to a sorted band -------
+class _WordCenterIndex:
+    """Two sorted word-center axes over a read-only page word list.
+
+    ``candidates(rect)`` returns a superset of the words whose center lies in
+    ``rect``, so every consumer still applies its own membership, blank-text and
+    claiming rules. The original word indices are preserved, including order and
+    duplicates, because they are what identifies a word to its owning cell.
+    """
+
+    def __init__(self, words):
+        xs, ys = [], []
+        for i, (x0, y0, x1, y1, _text) in enumerate(words):
+            x, y = (x0 + x1) * 0.5, (y0 + y1) * 0.5
+            if not (isfinite(x) and isfinite(y)):
+                raise ValueError("nonfinite word center")
+            xs.append((x, i))
+            ys.append((y, i))
+        self.xs, self.ys = sorted(xs), sorted(ys)
+
+    def candidates(self, rect):
+        x0, y0, x1, y1 = float(rect.x0), float(rect.y0), float(rect.x1), float(rect.y1)
+        n = len(self.xs)
+        if not all(map(isfinite, (x0, y0, x1, y1))):
+            return range(n)  # preserve the consumers' predicates for NaN / Inf
+        if x0 > x1 or y0 > y1:
+            return []
+        xl, xr = bisect_left(self.xs, (x0, -1)), bisect_right(self.xs, (x1, n))
+        yl, yr = bisect_left(self.ys, (y0, -1)), bisect_right(self.ys, (y1, n))
+        # Scan the narrower band: fewer candidates for the same result.
+        entries = self.xs[xl:xr] if xr - xl <= yr - yl else self.ys[yl:yr]
+        return sorted(i for _center, i in entries)
+
+
+def _refine_word_index(page, words):
+    """The page word list's center index, cached on the page object.
+
+    Keyed on the word list's identity: _refine_page_words returns one stable list
+    per page and a fresh extraction produces a new list, so a changed text state
+    builds a new index. In-place edits of a cached word list are not supported.
+    Returns None for word lists the index cannot represent (see candidates()).
+    """
+    cached = getattr(page, "_table_word_index_cache", None)
+    if cached is not None and cached[0] is words:
+        return cached[1]
+    try:
+        index = _WordCenterIndex(words)
+    except (TypeError, ValueError, OverflowError):
+        index = None  # nonstandard inputs keep the original full scan
+    try:
+        setattr(page, "_table_word_index_cache", (words, index))
+    except Exception:
+        pass
+    return index
+
+
+def _refine_word_candidates(page, words, rect):
+    """(index, word) pairs that may lie in rect -- a superset of the members."""
+    index = _refine_word_index(page, words) if page is not None else None
+    if index is None:
+        return enumerate(words)
+    return ((i, words[i]) for i in index.candidates(rect))
 
 
 # --- word selection: center-point membership + rotated-span substitution -----
@@ -155,7 +221,9 @@ def _refine_words_in_rect(page, rect):
     x0, y0, x1, y1 = float(rect.x0), float(rect.y0), float(rect.x1), float(rect.y1)
     return [
         (wx0, wy0, wx1, wy1, text)
-        for wx0, wy0, wx1, wy1, text in _refine_page_words(page)
+        for _, (wx0, wy0, wx1, wy1, text) in _refine_word_candidates(
+            page, _refine_page_words(page), rect
+        )
         if _refine_word_in_rect(wx0, wy0, wx1, wy1, x0, y0, x1, y1)
     ]
 
@@ -202,9 +270,11 @@ def _refine_table_rect(cells, table_bbox):
 
 
 def _refine_raw_shaded_rects(page, table_rect, *, min_dim):
+    from pymupdf.table import _get_table_drawings
+
     out = []
     page_width = float(page.rect.width)
-    for drawing in page.get_drawings():
+    for drawing in _get_table_drawings(page):
         if _refine_is_white(drawing.get("fill")):
             continue
         for item in drawing.get("items", []):
@@ -253,9 +323,11 @@ def _refine_cluster(values, *, tolerance):
 
 
 def _refine_border_lines(page, table_rect):
+    from pymupdf.table import _get_table_drawings
+
     xs = set()
     ys = set()
-    for drawing in page.get_drawings():
+    for drawing in _get_table_drawings(page):
         stroked = drawing.get("type") in ("s", "fs")
         for item in drawing.get("items", []):
             kind = item[0]

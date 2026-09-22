@@ -123,6 +123,44 @@ _EDGES_VAR = ContextVar("pymupdf_table_edges", default=None)
 _CHARS_VAR = ContextVar("pymupdf_table_chars", default=None)
 
 
+def _get_table_drawings(page, *, native=False):
+    """The page's vector drawings, shared within one find_tables() call.
+
+    One call reads them up to ``1 + 2T`` times -- once to build edges, and once
+    per refined table for shaded rows and for border lines -- and each read walks
+    the whole content stream. find_tables() therefore puts an empty cache on the
+    page for the duration of the call and removes it again, so nothing outlives
+    the call: a page whose content stream is rewritten between calls cannot be
+    served a stale extraction. Calling the public refine helpers directly, with
+    no find_tables() around them, extracts afresh exactly as before.
+
+    ``native=True`` returns per-path copies of the mutated members: make_edges
+    extends path rects, normalizes rectangle items and appends a closing line, so
+    the other consumers must not see its edits. Point and Quad values stay shared
+    because make_edges only reads them.
+    """
+    cache = getattr(page, "_table_drawings_cache", None)
+    if cache is None:
+        paths = page.get_drawings()
+    else:
+        if not cache:
+            cache.append(page.get_drawings())
+        paths = cache[0]
+    if not native:
+        return paths
+    return [
+        dict(
+            path,
+            rect=pymupdf.Rect(path["rect"]),
+            items=[
+                (item[0], pymupdf.Rect(item[1]), *item[2:]) if item[0] == "re" else item
+                for item in path["items"]
+            ],
+        )
+        for path in paths
+    ]
+
+
 class _TableStateList:
     """List-like proxy for per-call table extraction state."""
 
@@ -1607,6 +1645,25 @@ class TableHeader:
         self.external = above
 
 
+def _cells_to_rows(cells):
+    """Canonical row order and None gap slots for a flat cell list.
+
+    Each row holds one slot per distinct cell x0 on the table, so a gap and a
+    span both appear as None. Shared by Table.rows and the union stage, which
+    needs the same grid before a Table exists."""
+    _sorted = sorted(cells, key=itemgetter(1, 0))
+    xs = list(sorted(set(map(itemgetter(0), cells))))
+    rows = []
+    for y, row_cells in itertools.groupby(_sorted, itemgetter(1)):
+        xdict = {cell[0]: cell for cell in row_cells}
+        row = TableRow([xdict.get(x) for x in xs])
+        rows.append(row)
+    return rows
+
+
+_NO_HEADER_YET = object()  # Table.header has not been computed yet
+
+
 class Table:
     def __init__(self, page, cells, bbox=None):
         self.page = page
@@ -1617,7 +1674,14 @@ class Table:
         # cells. Set only for a union grid-ref table, whose reported region
         # (its layout box) is decoupled from its replacement cell grid.
         self._bbox = bbox
-        self.header = self._get_header()  # PyMuPDF extension
+        self._header = _NO_HEADER_YET
+        # The header rules read the page through the two global text-extraction
+        # toggles that were in force when this table was detected, so a header
+        # computed on first access has to put them back. Both are plain getters.
+        self._header_flags = (
+            bool(pymupdf.TOOLS.set_small_glyph_heights()),
+            bool(pymupdf.TOOLS.unset_quad_corrections()),
+        )
         # Filled by find_tables(refine=True): placements is a row-major grid of
         # tagged SpanCell colspan/rowspan placements (None otherwise); header_rows
         # is the leading header-row count, section_rows the section-label rows.
@@ -1638,15 +1702,35 @@ class Table:
         )
 
     @property
+    def header(self):  # PyMuPDF extension
+        """The identified table header, computed on first access.
+
+        Identifying it renders the top row twice, so tables whose header is never
+        read -- every table serialized through placements, and every candidate a
+        later stage discards -- must not pay for it at construction time. The
+        header rules re-read the page, so the two global text-extraction toggles
+        of the detecting call are restored for the duration (see __init__): the
+        result is then the one an eager computation would have produced."""
+        if self._header is _NO_HEADER_YET:
+            small, quads = self._header_flags
+            old_small = bool(pymupdf.TOOLS.set_small_glyph_heights())
+            old_quads = bool(pymupdf.TOOLS.unset_quad_corrections())
+            pymupdf.TOOLS.set_small_glyph_heights(small)
+            pymupdf.TOOLS.unset_quad_corrections(quads)
+            try:
+                self._header = self._get_header()
+            finally:
+                pymupdf.TOOLS.set_small_glyph_heights(old_small)
+                pymupdf.TOOLS.unset_quad_corrections(old_quads)
+        return self._header
+
+    @header.setter
+    def header(self, value):
+        self._header = value
+
+    @property
     def rows(self) -> list:
-        _sorted = sorted(self.cells, key=itemgetter(1, 0))
-        xs = list(sorted(set(map(itemgetter(0), self.cells))))
-        rows = []
-        for y, row_cells in itertools.groupby(_sorted, itemgetter(1)):
-            xdict = {cell[0]: cell for cell in row_cells}
-            row = TableRow([xdict.get(x) for x in xs])
-            rows.append(row)
-        return rows
+        return _cells_to_rows(self.cells)
 
     @property
     def row_count(self) -> int:  # PyMuPDF extension
@@ -1869,9 +1953,12 @@ class Table:
 
             Returns True if any spans are bold else False.
             """
+            # This table's own character snapshot, so a lazily computed header
+            # reads the same characters an eager one would have.
+            chars = self._chars if self._chars is not None else CHARS
             return any(
                 c["bold"]
-                for c in CHARS
+                for c in chars
                 if rect_in_rect((c["x0"], c["y0"], c["x1"], c["y1"]), bbox)
             )
 
@@ -2153,7 +2240,7 @@ class TableFinder:
     https://github.com/tabulapdf/tabula-extractor/issues/16
     """
 
-    def __init__(self, page, settings=None):
+    def __init__(self, page, settings=None, *, cell_group_filter=None):
         self.page = weakref.proxy(page)
         self.textpage = None
         self.settings = TableSettings.resolve(settings)
@@ -2164,10 +2251,12 @@ class TableFinder:
             self.settings.intersection_y_tolerance,
         )
         self.cells = intersections_to_cells(self.intersections)
-        self.tables = [
-            Table(self.page, cell_group)
-            for cell_group in cells_to_tables(self.page, self.cells)
-        ]
+        groups = cells_to_tables(self.page, self.cells)
+        if cell_group_filter is not None:
+            # Internal hook: the union stage decides admission on the cell groups,
+            # so a rejected candidate never becomes a Table at all.
+            groups = cell_group_filter(self.page, groups)
+        self.tables = [Table(self.page, group) for group in groups]
 
     def get_edges(self) -> list:
         settings = self.settings
@@ -2364,6 +2453,26 @@ def make_chars(page, clip=None):
 # We are ignoring Bézier curves completely and are converting everything
 # else to lines.
 # ------------------------------------------------------------------------
+def _is_line_like(rect, min_length):
+    """Whether a rectangle is thin enough to be a simulated line."""
+    return (rect.width <= min_length and rect.width < rect.height) or (
+        rect.height <= min_length and rect.height < rect.width
+    )
+
+
+def _is_batched_rule(rect, min_length):
+    """Whether a rectangle inside a large fill path is a simulated line.
+
+    A path's aggregate bbox is no evidence about its individual items, so a thin
+    rectangle batched into a large fill can still be a grid rule. A thin *and
+    short* one cannot: dot screens and vector-drawn glyph fragments consist of
+    rectangles that are small in both directions, and a few hundred of them snap
+    and join into one long spurious edge. A rule reaches at least the minimum
+    edge length along its length, which is the same bound filter_edges() applies
+    to the finished edges."""
+    return _is_line_like(rect, min_length) and max(rect.width, rect.height) > min_length
+
+
 def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes=None):
     edges = EDGES._list()  # bind once: avoid per-append proxy overhead below
     snap_x = tset.snap_x_tolerance
@@ -2420,24 +2529,42 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
     def clean_graphics(npaths=None):
         """Detect and join rectangles of "connected" vector graphics."""
         if npaths is None:
-            allpaths = page.get_drawings()
+            allpaths = _get_table_drawings(page, native=True)
         else:  # accept passed-in vector graphics
             allpaths = npaths[:]  # paths relevant for table detection
         paths = []
+        bbox_paths = []  # paths that may contribute an enveloping bbox
         for p in allpaths:
-            # If only looking at lines, we ignore fill-only paths,
-            # except simulated lines (i.e. small width or height).
+            # If only looking at lines, we ignore fill-only paths, except
+            # simulated lines (i.e. small width or height) -- including the ones
+            # batched inside a large path. Some producers put hundreds of thin
+            # grid rules into a single fill path, whose aggregate bbox is large
+            # although every relevant item in it is a simulated line. A path's
+            # bbox is not evidence about its individual items, so drop the path
+            # and keep those items (see _is_batched_rule). They contribute no
+            # enveloping bbox: bbox_paths holds only the paths whose own rect is
+            # real graphics.
             if (
                 lines_strict
                 and p["type"] == "f"
                 and p["rect"].width > snap_x
                 and p["rect"].height > snap_y
             ):
+                line_items = [
+                    item
+                    for item in p["items"]
+                    if item[0] == "re" and _is_batched_rule(item[1].normalize(), min_length)
+                ]
+                if line_items:
+                    line_path = p.copy()
+                    line_path["items"] = line_items
+                    paths.append(line_path)
                 continue
             paths.append(p)
+            bbox_paths.append(p)
 
         # start with all vector graphics rectangles
-        prects = sorted(set([p["rect"] for p in paths]), key=lambda r: (r.y1, r.x0))
+        prects = sorted(set([p["rect"] for p in bbox_paths]), key=lambda r: (r.y1, r.x0))
         new_rects = []  # the final list of joined rectangles
         # ----------------------------------------------------------------
         # Strategy: Join rectangles that "almost touch" each other.
@@ -2548,23 +2675,15 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
                 # the ones that simulate a line
                 rect = i[1].normalize()  # normalize the rectangle
 
-                if (
-                    rect.width <= min_length and rect.width < rect.height
-                ):  # simulates a vertical line
-                    x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
-                    p1 = pymupdf.Point(x, rect.y0)
-                    p2 = pymupdf.Point(x, rect.y1)
-                    line_dict = make_line(p, p1, p2, clip)
-                    if line_dict:
-                        edges.append(line_to_edge(line_dict))
-                    continue
-
-                if (
-                    rect.height <= min_length and rect.height < rect.width
-                ):  # simulates a horizontal line
-                    y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
-                    p1 = pymupdf.Point(rect.x0, y)
-                    p2 = pymupdf.Point(rect.x1, y)
+                if _is_line_like(rect, min_length):  # simulates a single line
+                    if rect.width < rect.height:  # a vertical one
+                        x = abs(rect.x1 + rect.x0) / 2  # take middle value for x
+                        p1 = pymupdf.Point(x, rect.y0)
+                        p2 = pymupdf.Point(x, rect.y1)
+                    else:  # a horizontal one
+                        y = abs(rect.y1 + rect.y0) / 2  # take middle value for y
+                        p1 = pymupdf.Point(rect.x0, y)
+                        p2 = pymupdf.Point(rect.x1, y)
                     line_dict = make_line(p, p1, p2, clip)
                     if line_dict:
                         edges.append(line_to_edge(line_dict))
@@ -2754,7 +2873,7 @@ def _refine_flat_placement_grid(page, cells, col_count):
                 rect = pymupdf.Rect(cell)
                 line_words = [
                     _span_word_line_tuple(word)
-                    for _, word in _span_select_words_in_rect(page_words, rect)
+                    for _, word in _span_select_words_in_rect(page_words, rect, page=page)
                 ]
                 out.append(
                     SpanCell(
@@ -2797,16 +2916,91 @@ def _refine_tag_grid(grid, top_header_rows):
     return grid
 
 
+def _refine_model_grid(page, cells):
+    """The merge-preserved model grid plus the header counts derived from it.
+
+    Returns ``(grid, header_rows, body_start)``. ``grid`` is None when span
+    resolution or the header rules fail. ``header_rows`` is the header finder's
+    own count, where 0 means it found no header row at all; ``body_start`` is
+    that count clamped to [1, rows], which is what the row splitter needs. One
+    resolve_spans pass serves both the header/body boundary and the repeated-
+    header split check, so the split costs no extra pass.
+    """
+    try:
+        grid = _refine_placement_or_flat_grid(page, cells)
+        region = find_header_region(_refine_placements_text_grid(grid))
+    except Exception:
+        return None, 0, 1
+    header_rows = int(region.top_header_rows)
+    return grid, header_rows, (max(1, min(header_rows, len(cells))) if cells else 0)
+
+
 def _refine_body_start_row(page, cells):
     """Header/body boundary: resolve the merge-preserved placement grid once and
     ask the header finder how many leading rows are header, clamped to [1, rows]."""
-    try:
-        model_grid = _refine_placement_or_flat_grid(page, cells)
-        region = find_header_region(_refine_placements_text_grid(model_grid))
-    except Exception:
-        return 1
-    raw = region.top_header_rows
-    return max(1, min(int(raw), len(cells))) if cells else 0
+    grid, _header_rows, body_start = _refine_model_grid(page, cells)
+    return 1 if grid is None else body_start
+
+
+def _refine_repeated_leading_header_cuts(rows, header_rows):
+    """Rows at which an exactly repeated leading header splits a stacked table.
+
+    Several tables printed one under another with no gap are detected as one
+    grid, and the giveaway is that their shared header row recurs verbatim. The
+    signature is the first row that carries at least two non-empty cells in a
+    grid at least two columns wide and is not purely numeric or punctuation; it
+    must also be a leading row -- inside the header region the header rules found,
+    or within the first three rows, because that finder is conservative and a
+    title row and a units row often precede the real header. A repeat further down
+    is data, not a header. Repeats are matched on case- and whitespace-normalized
+    text only: no fuzzy matching.
+
+    A header signature also carries the grid's column structure, so it must hold
+    at least half as many placements as the widest row: a row of a few spanning
+    cells is a group header -- a sub-header such as "From- / To-" under an
+    eight-column header, which recurs inside one table -- and not the header.
+
+    A repeat is accepted as a cut only if the result really looks like a stack of
+    tables rather than a table that happens to repeat a row: every segment must
+    hold at least one row below its own signature row. That single structural
+    invariant rejects both adjacent duplicate header rows (one header, not a cut)
+    and a trailing repeat with no records under it, and it needs no row-count
+    constant. Each cut row opens its segment by construction; the first segment
+    may carry a title row above the signature. Returns the cut row indices, or ()
+    for no split.
+    """
+    normalized = [
+        tuple(collapse_cell_ws(text).casefold() for text in row) for row in rows
+    ]
+    if not normalized:
+        return ()
+    width = max(len(row) for row in normalized)
+    if width < 2:
+        return ()
+    # Every candidate signature is a leading row, so the scan is bounded; the
+    # first such row that actually recurs is the one that splits.
+    for index in range(min(max(int(header_rows), 3), len(normalized))):
+        signature = normalized[index]
+        if len(signature) * 2 < width:
+            continue  # a few spanning cells: a group header, not the header
+        nonempty = [text for text in signature if text]
+        if len(nonempty) < 2:
+            continue
+        if not any(char.isalpha() for text in nonempty for char in text):
+            continue  # a repeated all-numeric row is data, not a header
+        repeats = [
+            row_index
+            for row_index in range(index + 1, len(normalized))
+            if normalized[row_index] == signature
+        ]
+        if not repeats:
+            continue
+        signature_rows = [index, *repeats]
+        segment_ends = [*repeats, len(normalized)]
+        if all(end - start >= 2 for start, end in zip(signature_rows, segment_ends)):
+            return tuple(repeats)
+        return ()
+    return ()
 
 
 def _refine_build_placements(page, working, body_start):
@@ -2818,6 +3012,58 @@ def _refine_build_placements(page, working, body_start):
     region = find_header_region(_refine_placements_text_grid(grid))
     tagged = _refine_tag_grid(grid, region.top_header_rows)
     return tagged, region
+
+
+def _refine_grid_tables(page, tab):
+    """Refine one detected table's grid and yield the resulting tagged tables.
+
+    Order: structural split (shaded rows + under-segmented columns), the model
+    grid that carries both the header/body boundary and the repeated-header split
+    decision, then per segment the body-row split, the final merged-cell
+    placement grid and the td/th tagging. A grid whose leading header row recurs
+    verbatim is several tables printed under one another and yields one table per
+    segment; that is the ordinary case of one segment, which yields exactly the
+    table the unsplit path produced.
+    """
+    grid = _refine_cells_to_grid(tab.cells)
+    # The reported bbox (a union grid-ref table's layout box, else the cells'
+    # union) bounds the shaded-rectangle search.
+    working = refine_grid_structure(page, grid, table_bbox=tab.bbox)
+    model_grid, header_rows, body_start = _refine_model_grid(page, working)
+    if model_grid is None:
+        body_start = 1
+        cuts = ()
+    else:
+        # The model grid has one row per row of `working`, so its cut indices
+        # index `working` directly.
+        cuts = _refine_repeated_leading_header_cuts(
+            _refine_placements_text_grid(model_grid), header_rows
+        )
+    if cuts:
+        boundaries = (0, *cuts, len(working))
+        segments = [working[start:end] for start, end in zip(boundaries, boundaries[1:])]
+    else:
+        segments = [working]
+    was_split = len(segments) > 1
+    for segment in segments:
+        # A split segment has its own header region; without a split this is the
+        # boundary the model grid already produced.
+        start = _refine_body_start_row(page, segment) if was_split else body_start
+        segment = refine_grid_rows(page, segment, header_row_count=start)
+        flat = _refine_grid_to_cells(segment)
+        if not flat and was_split:
+            continue  # an all-gap segment produces no table of its own
+        # Preserve an explicit reported-bbox override (union grid-ref tables): the
+        # refined grid must not change the reported region. A split does change
+        # it, so each segment reports its own cells.
+        new_tab = Table(page, flat, bbox=None if was_split else tab._bbox) if flat else tab
+        # Build the tagged model on `segment` directly, not on the re-gridded
+        # new_tab.cells, so placements match the refined grid.
+        placements, region = _refine_build_placements(page, segment, start)
+        new_tab.placements = placements
+        new_tab.header_rows = region.top_header_rows
+        new_tab.section_rows = region.section_header_rows
+        yield new_tab
 
 
 def find_tables(
@@ -2849,6 +3095,7 @@ def find_tables(
     use_layout: bool = True,  # gate line-based tables by layout table boxes
     union: bool = False,  # opt-in: fuse layout grids with line-based candidates
     refine: bool = False,  # opt-in: refine each detected table's cell grid
+    _cell_group_filter=None,  # internal: union admission, before Table construction
 ):
     """Detect and extract tables on a page.
 
@@ -2874,7 +3121,9 @@ def find_tables(
     the default path), the header meta as Table.header_rows/section_rows, and
     Table.to_html() serializes it. Off by default. A grid whose column count the
     span resolution cannot preserve falls back to a flat one-cell-per-slot
-    placement grid.
+    placement grid. A refined grid whose leading header row recurs verbatim is
+    split into one table per recurrence: that is several tables printed under one
+    another which the line grid detected as one.
     """
     pymupdf._warn_layout_once()
     _CHARS_VAR.set([])
@@ -2885,6 +3134,16 @@ def find_tables(
         page, old_xref, old_rot, old_mediabox = page_rotation_set0(page)
     else:
         old_xref, old_rot, old_mediabox = None, None, None
+
+    # Share one drawings extraction for the duration of this call (see
+    # _get_table_drawings). A nested call -- the union path runs one -- finds the
+    # cache already there and must neither replace nor remove it.
+    owns_drawings = getattr(page, "_table_drawings_cache", None) is None
+    if owns_drawings:
+        try:
+            page._table_drawings_cache = []
+        except Exception:
+            owns_drawings = False
 
     if snap_x_tolerance is None:
         snap_x_tolerance = UNSET
@@ -2934,7 +3193,7 @@ def find_tables(
             # the nested finder. Imported here, not at module top, to avoid an
             # import cycle: _table_union imports find_tables back from this module.
             from pymupdf._table_union import _find_tables_union
-            tbf = _find_tables_union(page)
+            tbf = _find_tables_union(page, add_lines=add_lines, add_boxes=add_boxes)
             TEXTPAGE = tbf.textpage
         else:
             boxes = []
@@ -2965,7 +3224,7 @@ def find_tables(
                 add_boxes=add_boxes,
             )  # create lines and curves
 
-            tbf = TableFinder(page, settings=tset)
+            tbf = TableFinder(page, settings=tset, cell_group_filter=_cell_group_filter)
             tbf.textpage = TEXTPAGE  # store textpage for later use
             if boxes:
                 # only keep Finder tables that match a layout box
@@ -2996,28 +3255,25 @@ def find_tables(
             # as .header_rows/.section_rows.
             refined_tables = []
             for tab in tbf.tables:
-                grid = _refine_cells_to_grid(tab.cells)
-                # The reported bbox (a union grid-ref table's layout box, else
-                # the cells' union) bounds the shaded-rectangle search.
-                working = refine_grid_structure(page, grid, table_bbox=tab.bbox)
-                body_start = _refine_body_start_row(page, working)
-                working = refine_grid_rows(page, working, header_row_count=body_start)
-                flat = _refine_grid_to_cells(working)
-                # Preserve an explicit reported-bbox override (union grid-ref
-                # tables): the refined grid must not change the reported region.
-                new_tab = Table(page, flat, bbox=tab._bbox) if flat else tab
-                # Build the tagged model on `working` directly, not on the
-                # re-gridded new_tab.cells, so placements match the refined grid.
-                placements, region = _refine_build_placements(page, working, body_start)
-                new_tab.placements = placements
-                new_tab.header_rows = region.top_header_rows
-                new_tab.section_rows = region.section_header_rows
-                refined_tables.append(new_tab)
+                refined_tables.extend(_refine_grid_tables(page, tab))
             tbf.tables = refined_tables
+        if old_xref is not None:
+            # The header rules read the page itself -- a pixmap of the top row
+            # and the text above the table -- in the detected cells' coordinate
+            # system. On a derotated page that system disappears when the finally
+            # block restores the rotation, so resolve the header now. Pages that
+            # were not rotated keep the lazy header.
+            for table in tbf.tables:
+                table._header = table._get_header()
     except Exception as e:
         pymupdf.message("find_tables: exception occurred: %s" % str(e))
         return None
     finally:
+        if owns_drawings:  # before the rotation reset rebinds `page`
+            try:
+                del page._table_drawings_cache
+            except Exception:
+                pass
         pymupdf.TOOLS.set_small_glyph_heights(old_small)
         if old_xref is not None:
             page = page_rotation_reset(page, old_xref, old_rot, old_mediabox)
