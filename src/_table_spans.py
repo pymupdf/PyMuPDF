@@ -36,6 +36,7 @@ import pymupdf
 from pymupdf._table_refine import (
     _refine_is_vertical_or_rotated,
     _refine_page_words,
+    _refine_word_candidates,
 )
 
 
@@ -292,13 +293,15 @@ def _span_word_line_tuple(word):
     return (float(y0), float(x0), float(y1), str(text))
 
 
-def _span_select_words_in_rect(page_words, rect):
+def _span_select_words_in_rect(page_words, rect, *, page=None):
     """(index, word) pairs whose center lies in rect, index into ``page_words``.
 
     The index is what lets resolve_spans claim each page word for exactly one
-    placement (an earlier cell's word is not re-claimed by a later one)."""
+    placement (an earlier cell's word is not re-claimed by a later one). ``page``
+    only supplies the cached word-center index, which narrows the scan without
+    changing the result."""
     selected = []
-    for index, word in enumerate(page_words):
+    for index, word in _refine_word_candidates(page, page_words, rect):
         wx0, wy0, wx1, wy1, text = word
         if not str(text).strip():
             continue
@@ -321,7 +324,7 @@ def _span_claim_text_in_rect(page, rect, page_words, claimed_words):
     """Text of rect's words, skipping words already claimed and claiming the rest."""
     selected = [
         (index, word)
-        for index, word in _span_select_words_in_rect(page_words, rect)
+        for index, word in _span_select_words_in_rect(page_words, rect, page=page)
         if index not in claimed_words
     ]
     for index, _ in selected:
@@ -486,7 +489,7 @@ def _span_reject_colspan_mismatch_merge(*, row_idx, cols, base, body_start):
 def _span_cell_texts_for_entries(page, entries, start, end, page_words):
     texts = []
     for entry in entries[start : end + 1]:
-        words = _span_select_words_in_rect(page_words, entry)
+        words = _span_select_words_in_rect(page_words, entry, page=page)
         texts.append(_span_words_text_for_rect(page, entry, words))
     return texts
 
