@@ -26214,6 +26214,57 @@ def _mupdf_devel(make_links=True):
     return mupdf_include, mupdf_lib
 
 
+_feature_list = ["PyMuPDF packages",
+                 ('pymupdf_core', mupdf_version, "Core MuPDF functionality", "This package is compulsory. Without this, PyMuPDF cannot function."),
+                 ('pymupdf4llm', mupdf_version, "4LLM extensions", "Included by default, this package enables the to_markdown functionality."),
+                 ('pymupdf_layout', mupdf_version, "ML based layout extensions", "Included by default (on platforms that support it), this package utilitises an advanced range of techniques including ML models to help improve document extraction features."),
+                 ('pymupdf_fonts', '1.0.4', "Additional fonts", "An optional package that makes more fonts available to PyMuPDF programmers."),
+                 "Third-party packages that PyMuPDF can use",
+                 ('tesseract', '0', "Tesseract OCR engine", "A popular, free, OCR engine that PyMuPDF can use during document extraction."),
+                 ('rapidocr', '0', "Rapid OCR engine", "A popular, free, OCR engine that PyMuPDF can use during document extraction."),
+                 ];
+
+def _check_installed_package_version(pack, vsn):
+  try:
+    X = __import__(pack)
+    try:
+      version = X.__version__
+      print(version)
+      versiont = version.split(".")
+      vt = vsn.split(".")
+      if version >= vt:
+        return 0
+      else:
+        return version
+    except:
+      return 1
+  except ImportError:
+    return 2
+
+def features():
+    '''
+    Lists the install status of all the different packages that
+    contribute to MuPDF features (both default and optional ones).
+    '''
+
+    for f in _feature_list:
+        if isinstance(f, str):
+            title = f
+            print(f'\n{title}')
+        else:
+            (pack, vsn, short, desc) = f
+            state = _check_installed_package_version(pack, vsn)
+            if isinstance(state, str):
+                print(f'  {pack}\t{state} < {vsn}\tout of date')
+                print(f'    {desc}')
+            elif state == 0:
+                print(f'  {pack}\t{vsn}\tinstalled')
+                print(f'    {short}')
+            else:
+                print(f'  {pack}\t{vsn}\tmissing')
+                print(f'    {desc}')
+
+
 # We cannot import utils earlier because it imports this .py file itself and
 # uses some pymupdf.* types in function typing.
 #
