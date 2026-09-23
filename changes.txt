@@ -30,6 +30,7 @@ Other:
 * Retrospectively marked #3478 fixed in 1.25.3.
 * Retrospectively marked #4896 fixed in 1.28.0.
 * Retrospectively marked #4918 fixed in 1.28.0.
+* Retrospectively marked #4158 fixed in 1.27.2.2
 * Warning for use of deprecated `fitz` API now uses `warnings.warn()` with `FutureWarning`.
 
 
@@ -105,6 +106,7 @@ Other:
 
   * **Fixed** `4902 <https://github.com/pymupdf/PyMuPDF/issues/4902>`_: Incorrect linewidth in elements returned by Page.get_texttrace()
   * **Fixed** `4932 <https://github.com/pymupdf/PyMuPDF/issues/4932>`_: "Page" has no attribute "find_tables" in PyMuPDF 1.27
+  * **Fixed** `4158 <https://github.com/pymupdf/PyMuPDF/issues/4158>`_: PyMuPDF Pro 1.25.0: Some graphical elements of a .docx file not visible with get_pixmap()
 
 * Other:
 
