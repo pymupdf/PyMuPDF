@@ -104,6 +104,8 @@ from pymupdf._table_spans import (
 )
 # Header semantics and HTML serialization live in the _table_headers sibling.
 from pymupdf._table_headers import (
+    HeaderRegion,
+    extend_header_leaf_labels,
     find_header_region,
     collapse_cell_ws,
     render_table_html,
@@ -3005,11 +3007,16 @@ def _refine_repeated_leading_header_cuts(rows, header_rows):
 
 def _refine_build_placements(page, working, body_start):
     """Resolve the final placement grid (strict colspan, header boundary known),
-    run header rules on its own text grid, tag cells -> (tagged grid, region)."""
+    run header rules on its own text grid, complete the header under spanning
+    header cells from the grid's spans, tag cells -> (tagged grid, region)."""
     grid = _refine_placement_or_flat_grid(
         page, working, strict_colspan=True, header_row_count=body_start
     )
     region = find_header_region(_refine_placements_text_grid(grid))
+    # The text-grid rules cannot see spans. A row added here holds at least two
+    # labels, so it is never a section row and the section rows stand.
+    depth = extend_header_leaf_labels(grid, region.top_header_rows)
+    region = HeaderRegion(depth, region.section_header_rows)
     tagged = _refine_tag_grid(grid, region.top_header_rows)
     return tagged, region
 

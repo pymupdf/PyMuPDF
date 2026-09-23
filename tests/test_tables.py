@@ -1078,6 +1078,138 @@ def test_render_table_html_section_row_collapse():
     )
 
 
+def _span_grid(rows):
+    """A placement grid from rows of cell text or ``(text, colspan, rowspan)``."""
+    from pymupdf.table import SpanCell
+
+    return [
+        [SpanCell(None, *((cell, 1, 1) if isinstance(cell, str) else cell)) for cell in row]
+        for row in rows
+    ]
+
+
+def test_find_tables_refine_tags_leaf_labels_under_a_spanning_header():
+    """The row naming the columns of a header cell that spans some of them joins
+    the header: find_tables(refine=True) tags it th. The default result is
+    unchanged.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    texts = [
+        ["Product", "Availability", None],
+        ["", "Online", "In store"],
+        ["Laptop", "Yes", "No"],
+        ["Phone", "No", "Yes"],
+        ["Tablet", "Yes", "Yes"],
+    ]
+    doc = pymupdf.open()
+    page = doc.new_page(width=400, height=300)
+    x_values = (60, 160, 240, 320)
+    y0, row_height = 60, 20
+    y1 = y0 + len(texts) * row_height
+    for row in range(len(texts) + 1):
+        y = y0 + row * row_height
+        page.draw_line((x_values[0], y), (x_values[-1], y))
+    for x in (60, 160, 320):
+        page.draw_line((x, y0), (x, y1))
+    page.draw_line((240, y0 + row_height), (240, y1))  # no divider in the header row
+    for row, values in enumerate(texts):
+        for column, value in enumerate(values):
+            if value:
+                page.insert_text((x_values[column] + 4, y0 + row * row_height + 14), value)
+    try:
+        default = page.find_tables(use_layout=False).tables[0]
+        assert (default.placements, default.header_rows) == (None, 0)
+        assert default.extract() == texts
+
+        t = page.find_tables(use_layout=False, refine=True).tables[0]
+        assert t.header_rows == 2
+        assert t.to_html() == (
+            "<table>"
+            '<tr><th>Product</th><th colspan="2">Availability</th></tr>'
+            "<tr><th></th><th>Online</th><th>In store</th></tr>"
+            "<tr><td>Laptop</td><td>Yes</td><td>No</td></tr>"
+            "<tr><td>Phone</td><td>No</td><td>Yes</td></tr>"
+            "<tr><td>Tablet</td><td>Yes</td><td>Yes</td></tr>"
+            "</table>"
+        )
+    finally:
+        doc.close()
+
+    # A stub label spanning both header rows; an already named span is left alone.
+    grid = _span_grid([
+        [("Product", 1, 2), ("Units sold", 2, 1)],
+        ["Online", "In store"],
+        ["Laptop", "120", "45"],
+        ["Phone", "300", "80"],
+    ])
+    assert extend_header_leaf_labels(grid, 1) == 2
+    assert extend_header_leaf_labels(grid, 2) == 2
+
+
+def test_header_leaf_labels_keep_a_numeric_body_row():
+    """A record under a spanning header cell stays in the body: its blank/number/
+    text shape repeats in the next row, or it puts a number under a column that
+    already has a label.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    repeated_shape = _span_grid([
+        ["Region", ("Revenue", 2, 1)],
+        ["East", "10", "12"],
+        ["West", "11", "13"],
+    ])
+    assert extend_header_leaf_labels(repeated_shape, 1) == 1
+    number_under_label = _span_grid([
+        ["Year", ("Sales", 2, 1)],
+        ["2023", "North", "South"],
+        ["2024", "10", "12"],
+    ])
+    assert extend_header_leaf_labels(number_under_label, 1) == 1
+
+
+def test_header_leaf_labels_need_a_spanning_header_cell():
+    """Without a header cell spanning more than one column but not all of them,
+    the header is left alone even when the next row reads like labels.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    single_cells = _span_grid([
+        ["Product", "Online", "In store"],
+        ["", "units", "units"],
+        ["Laptop", "120", "45"],
+    ])
+    assert extend_header_leaf_labels(single_cells, 1) == 1
+    # A cell spanning every column is a title, not a group of columns.
+    full_width_title = _span_grid([
+        [("Units sold", 3, 1)],
+        ["Product", "Online", "In store"],
+        ["Laptop", "120", "45"],
+    ])
+    assert extend_header_leaf_labels(full_width_title, 1) == 1
+
+
+def test_header_leaf_labels_never_take_the_last_row():
+    """A header never takes the whole table: the single record row under a
+    spanning header cell stays in the body.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    single_record = _span_grid([
+        ["Product", ("Units sold", 2, 1)],
+        ["Laptop", "120", "45"],
+    ])
+    assert extend_header_leaf_labels(single_record, 1) == 1
+
+
 def _make_bordered_table(page, x0, y0, texts):
     """Draw a bordered 2x2 table (cells 100 wide, 20 tall) at (x0, y0), with the
     2x2 ``texts`` grid inserted into its cells; returns nothing (mutates page)."""
