@@ -177,11 +177,11 @@ msgstr "PyMuPDF Pro との使用"
 
 #: ../../pymupdf-layout/index.rst:109 1a6a4c0ada2842d588768a849fe3c7f3
 msgid ""
-"We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Pro| and "
+"We are able to extend |PyMuPDF Layout| to work with |PyMuPDF Office| and "
 "thus increase our capability by allowing Office documents to be provided "
 "as input files. In this case all we have to do is to add the import for "
-"|PyMuPDF Pro| and unlock it::"
-msgstr "|PyMuPDF Layout| を |PyMuPDF Pro| と連携させることで機能を拡張し、Office ドキュメントを入力ファイルとして提供できるようにすることで能力を向上させることができます。この場合、|PyMuPDF Pro| のインポートを追加してロックを解除するだけです::"
+"|PyMuPDF Office| and unlock it::"
+msgstr "|PyMuPDF Layout| を |PyMuPDF Office| と連携させることで機能を拡張し、Office ドキュメントを入力ファイルとして提供できるようにすることで能力を向上させることができます。この場合、|PyMuPDF Office| のインポートを追加してロックを解除するだけです::"
 
 #: ../../pymupdf-layout/index.rst:116 695ebd9778304b3da362108ea2e9695e
 msgid "Now we can happily load Office files and convert them as follows::"

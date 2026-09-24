@@ -157,11 +157,11 @@ With **LangChain**
 
 .. _using_pymupdf4llm_with_pymupdfpro:
 
-Using with |PyMuPDF Pro|
+Using with |PyMuPDF Office|
 ---------------------------
 
 
-For **Office** document support, |PyMuPDF4LLM| works seamlessly with |PyMuPDF Pro|. Assuming you have :doc:`../pymupdf-pro/index` installed you will be able to work with **Office** documents as expected:
+For **Office** document support, |PyMuPDF4LLM| works seamlessly with |PyMuPDF Office|. Assuming you have :doc:`../pymupdf-pro/index` installed you will be able to work with **Office** documents as expected:
 
 
 .. code-block:: python

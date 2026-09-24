@@ -24,9 +24,9 @@
 
     <cite>PyMuPDF</cite>
 
-.. |PyMuPDF Pro| raw:: html
+.. |PyMuPDF Office| raw:: html
 
-    <cite>PyMuPDF Pro</cite>
+    <cite>PyMuPDF Office</cite>
 
 .. |PyMuPDF4LLM| raw:: html
 

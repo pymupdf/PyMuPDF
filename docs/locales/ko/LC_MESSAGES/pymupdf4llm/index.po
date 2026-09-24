@@ -185,21 +185,21 @@ msgid ""
 msgstr "|PyMuPDF4LLM| 는 **LlamaIndex** 문서로 직접 변환을 지원합니다. 문서는 먼저 **Markdown** 형식으로 변환된 다음 다음과 같이 **LlamaIndex** 문서가 반환됩니다:"
 
 #: ../../pymupdf4llm/index.rst:107 e653025ecf1948759d96b33b7902c524
-msgid "Using with |PyMuPDF Pro|"
-msgstr "|PyMuPDF Pro| 와 함께 사용"
+msgid "Using with |PyMuPDF Office|"
+msgstr "|PyMuPDF Office| 와 함께 사용"
 
 #: ../../pymupdf4llm/index.rst:110 9e877b4bd26d43cbaf81821091d51a1b
 msgid ""
 "For **Office** document support, |PyMuPDF4LLM| works seamlessly with "
-"|PyMuPDF Pro|. Assuming you have :doc:`../pymupdf-pro` installed you will"
+"|PyMuPDF Office|. Assuming you have :doc:`../pymupdf-pro` installed you will"
 " be able to work with **Office** documents as expected:"
-msgstr "**Office** 문서 지원을 위해 |PyMuPDF4LLM| 는 |PyMuPDF Pro| 와 원활하게 작동합니다. :doc:`../pymupdf-pro` 가 설치되어 있다고 가정하면 예상대로 **Office** 문서로 작업할 수 있습니다:"
+msgstr "**Office** 문서 지원을 위해 |PyMuPDF4LLM| 는 |PyMuPDF Office| 와 원활하게 작동합니다. :doc:`../pymupdf-pro` 가 설치되어 있다고 가정하면 예상대로 **Office** 문서로 작업할 수 있습니다:"
 
 #: ../../pymupdf4llm/index.rst:121 ff1a10504dbe4b5381a2f6232a21b346
 msgid ""
-"As you can see |PyMuPDF Pro| functionality will be available within the "
+"As you can see |PyMuPDF Office| functionality will be available within the "
 "|PyMuPDF4LLM| context!"
-msgstr "보시다시피 |PyMuPDF Pro| 기능이 |PyMuPDF4LLM| 컨텍스트 내에서 사용 가능합니다!"
+msgstr "보시다시피 |PyMuPDF Office| 기능이 |PyMuPDF4LLM| 컨텍스트 내에서 사용 가능합니다!"
 
 #: ../../pymupdf4llm/index.rst:126 32a7f061e08e4a6ca0f4f3fddb070669
 msgid "API"
