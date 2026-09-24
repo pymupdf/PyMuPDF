@@ -55,7 +55,7 @@ A set of eight files is used for the performance testing. With each file we have
      - **KB/page**
      - **Textsize/page**
      - **Notes**
-   * - `adobe.pdf`
+   * - `adobe.pdf`_
      - 32,472,771
      - 1,310
      - 794
@@ -63,7 +63,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 24
      - 1,942
      - linearized, many links / bookmarks
-   * - `artifex-website.pdf`
+   * - `artifex-website.pdf`_
      - 31,570,732
      - 47
      - 46
@@ -71,7 +71,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 656
      - 3,538
      - graphics oriented
-   * - `db-systems.pdf`
+   * - `db-systems.pdf`_
      - 29,326,355
      - 1,241
      - 0
@@ -79,7 +79,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 23
      - 2,142
      -
-   * - `fontforge.pdf`
+   * - `fontforge.pdf`_
      - 8,222,384
      - 214
      - 31
@@ -87,7 +87,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 38
      - 1,058
      - mix of text & graphics
-   * - `pandas.pdf`
+   * - `pandas.pdf`_
      - 10,585,962
      - 3,071
      - 536
@@ -95,7 +95,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 3
      - 1,539
      - many pages
-   * - `pymupdf.pdf`
+   * - `pymupdf.pdf`_
      - 6,805,176
      - 478
      - 276
@@ -103,7 +103,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 14
      - 1,937
      - text oriented
-   * - `pythonbook.pdf`
+   * - `pythonbook.pdf`_
      - 9,983,856
      - 669
      - 198
@@ -111,7 +111,7 @@ A set of eight files is used for the performance testing. With each file we have
      - 15
      - 1,929
      -
-   * - `sample-50-MB-pdf-file.pdf`
+   * - `sample-50-MB-pdf-file.pdf`_
      - 52,521,850
      - 1
      - 0
@@ -125,6 +125,8 @@ A set of eight files is used for the performance testing. With each file we have
 .. note::
 
      **adobe.pdf** and **pymupdf.pdf** are clearly text oriented, **artifex-website.pdf** and **sample-50-MB-pdf-file.pdf** are graphics oriented. Other files are a mix of both.
+
+     The original artifex.com sample downloads are no longer available, so the file links point to archived copies at web.archive.org.
 
 
 Tools used
@@ -467,11 +469,11 @@ These are our run time findings in **seconds** along with a base rate summary co
 .. _PikePDF : https://pypi.org/search/?q=pikepdf
 .. _PDF2JPG : https://pypi.org/project/pdf2jpg/
 
-.. _adobe.pdf : https://artifex.com/samples/pdf/adobe.pdf
-.. _artifex-website.pdf : https://artifex.com/samples/pdf/artifex-website.pdf
-.. _db-systems.pdf : https://artifex.com/samples/pdf/db-systems.pdf
-.. _fontforge.pdf : https://artifex.com/samples/pdf/fontforge.pdf
-.. _pandas.pdf : https://artifex.com/samples/pdf/pandas.pdf
-.. _pymupdf.pdf : https://artifex.com/samples/pdf/pymupdf.pdf
-.. _pythonbook.pdf : https://artifex.com/samples/pdf/pythonbook.pdf
-.. _sample-50-MB-pdf-file.pdf : https://artifex.com/samples/pdf/sample-50-MB-pdf-file.pdf
+.. _adobe.pdf : https://web.archive.org/web/20230327230046id_/https://artifex.com/samples/pdf/adobe.pdf
+.. _artifex-website.pdf : https://web.archive.org/web/20230517230115id_/https://artifex.com/samples/pdf/artifex-website.pdf
+.. _db-systems.pdf : https://web.archive.org/web/20240421152039id_/https://artifex.com/samples/pdf/db-systems.pdf
+.. _fontforge.pdf : https://web.archive.org/web/20230517230115id_/https://artifex.com/samples/pdf/fontforge.pdf
+.. _pandas.pdf : https://web.archive.org/web/20240423040027id_/https://artifex.com/samples/pdf/pandas.pdf
+.. _pymupdf.pdf : https://web.archive.org/web/20240421152031id_/https://artifex.com/samples/pdf/pymupdf.pdf
+.. _pythonbook.pdf : https://web.archive.org/web/20230517230115id_/https://artifex.com/samples/pdf/pythonbook.pdf
+.. _sample-50-MB-pdf-file.pdf : https://web.archive.org/web/20240421183811id_/https://artifex.com/samples/pdf/sample-50-MB-pdf-file.pdf
