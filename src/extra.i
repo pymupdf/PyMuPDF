@@ -221,6 +221,13 @@ int asprintf(char** str, const char* fmt, ...)
 
 static void messagev(const char* format, va_list va)
 {
+    // Put aside any pending exception before the static variables below are
+    // initialised: with one set, PyImport_ImportModule() returns NULL.
+    PyObject* exc_type;
+    PyObject* exc_value;
+    PyObject* exc_traceback;
+    PyErr_Fetch(&exc_type, &exc_value, &exc_traceback);
+
     static PyObject* pymupdf_module = PyImport_ImportModule("pymupdf");
     static PyObject* message_fn = PyObject_GetAttrString(pymupdf_module, "message");
     char* text;
@@ -232,6 +239,13 @@ static void messagev(const char* format, va_list va)
     Py_XDECREF(args);
     Py_XDECREF(text_py);
     free(text);
+
+    if (exc_type)
+    {
+        // The caller's exception takes precedence; PyErr_Restore() discards
+        // any error from outputting the message.
+        PyErr_Restore(exc_type, exc_value, exc_traceback);
+    }
 }
 
 static void messagef(const char* format, ...)
