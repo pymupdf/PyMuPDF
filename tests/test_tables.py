@@ -939,3 +939,23 @@ def test_find_tables_union_no_layout_degrades_to_line_candidates():
     finally:
         pymupdf._get_layout = original_get_layout_fn
         doc.close()
+
+
+def test_5092():
+    """chars_in_rect must pair a top-down rect with top/bottom, not CTM y0/y1.
+
+    A character whose top/bottom sit inside rect, but whose y0/y1 do not,
+    must still be detected. This matches the has_text() pairing.
+    """
+    from pymupdf.table import chars_in_rect
+
+    char = {
+        "x0": 10.0,
+        "x1": 20.0,
+        "top": 100.0,
+        "bottom": 110.0,
+        "y0": 690.0,
+        "y1": 700.0,
+    }
+    rect = (0.0, 90.0, 30.0, 120.0)  # top-down: top=90, bottom=120
+    assert chars_in_rect([char], rect)
