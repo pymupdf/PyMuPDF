@@ -221,17 +221,42 @@ int asprintf(char** str, const char* fmt, ...)
 
 static void messagev(const char* format, va_list va)
 {
-    static PyObject* pymupdf_module = PyImport_ImportModule("pymupdf");
-    static PyObject* message_fn = PyObject_GetAttrString(pymupdf_module, "message");
-    char* text;
-    vasprintf(&text, format, va);
-    PyObject* text_py = PyUnicode_FromString(text);
-    PyObject* args = PyTuple_Pack(1, text_py);
-    PyObject* ret = PyObject_CallObject(message_fn, args);
-    Py_XDECREF(ret);
-    Py_XDECREF(args);
-    Py_XDECREF(text_py);
-    free(text);
+    // We can be called with a Python exception set, for example by
+    // jm_append_merge() when a get_cdrawings() callback has raised. The Python
+    // C API must not be called with an exception set (PyImport_ImportModule()
+    // then returns NULL and pymupdf.message() fails part way), so we put the
+    // exception aside while we output the message and restore it afterwards.
+    PyObject* exc_type;
+    PyObject* exc_value;
+    PyObject* exc_traceback;
+    PyErr_Fetch(&exc_type, &exc_value, &exc_traceback);
+    static PyObject* message_fn = nullptr;
+    if (!message_fn)
+    {
+        PyObject* pymupdf_module = PyImport_ImportModule("pymupdf");
+        if (pymupdf_module)
+        {
+            message_fn = PyObject_GetAttrString(pymupdf_module, "message");
+            Py_DECREF(pymupdf_module);
+        }
+    }
+    char* text = nullptr;
+    if (message_fn && vasprintf(&text, format, va) >= 0)
+    {
+        PyObject* text_py = PyUnicode_FromString(text);
+        PyObject* args = text_py ? PyTuple_Pack(1, text_py) : nullptr;
+        PyObject* ret = args ? PyObject_CallObject(message_fn, args) : nullptr;
+        Py_XDECREF(ret);
+        Py_XDECREF(args);
+        Py_XDECREF(text_py);
+        free(text);
+    }
+    if (exc_type)
+    {
+        // The caller's exception takes precedence; PyErr_Restore() discards
+        // any error from outputting the message.
+        PyErr_Restore(exc_type, exc_value, exc_traceback);
+    }
 }
 
 static void messagef(const char* format, ...)
