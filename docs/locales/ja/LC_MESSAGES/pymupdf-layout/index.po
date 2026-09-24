@@ -172,8 +172,8 @@ msgid "Extending Capability"
 msgstr "機能の拡張"
 
 #: ../../pymupdf-layout/index.rst:107 f3bec49e1ee042caad2ba1f1f8d07230
-msgid "Using with Pro"
-msgstr "PyMuPDF Pro との使用"
+msgid "Using with Office"
+msgstr "PyMuPDF Office との使用"
 
 #: ../../pymupdf-layout/index.rst:109 1a6a4c0ada2842d588768a849fe3c7f3
 msgid ""

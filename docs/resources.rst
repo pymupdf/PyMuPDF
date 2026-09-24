@@ -5,11 +5,11 @@
 Resources
 =============
 
-**PyMuPDF Pro**
+**PyMuPDF Office**
 --------------------
 
 
-For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`.
+For **Office** file support `try PyMuPDF Office <pymupdf-office>`.
 
 
 |
