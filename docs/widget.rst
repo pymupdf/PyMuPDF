@@ -48,10 +48,10 @@ Like annotations, widgets also lose connection to their page when the page becom
          >>> print(field.on_state())
          Male
 
-        So for check boxes and radio buttons, the recommended method to set them to "selected", or to check the state is the following:
+        So, for check boxes and radio buttons, the recommended method to set them to "selected", or to check the state is the following:
 
-         >>> field.field_value = field.on_state()
-         >>> field.field_value == field.on_state()
+         >>> field.field_value = field.on_state()  # set the field to "selected"
+         >>> field.field_value == field.on_state()  # confirm
          True
 
 
@@ -255,7 +255,7 @@ PyMuPDF supports the creation and update of most widget types.
 * check box (`PDF_WIDGET_TYPE_CHECKBOX`)
 * combo box (`PDF_WIDGET_TYPE_COMBOBOX`)
 * list box (`PDF_WIDGET_TYPE_LISTBOX`)
-* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF now supports the creation and update of Radio Button Groups (RBGs). Adding a new radio button widget with the same (full) name as an existing one anywhere in the PDF will automatically create or extend an RBG.
+* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF now supports the creation and update of Radio Button Groups (RBGs). Adding a new radio button widget with the same (full) name as an existing one anywhere in the PDF will automatically create or extend an RBG. There currently still exist some limitations [#f3]_.
 * signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or creation of signatures and no signing support.
 
 The Relationship between Form Fields and Widgets
@@ -294,5 +294,14 @@ This mechanism allows complex information structures to be expressed naturally w
 .. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do `page = doc.reload_page(page)`.
 
 .. [#f2] Among other purposes, ``Parent`` objects are also used to facilitate multiple occurrences of a field (on the same or on different pages). The ``Kids`` array in this ``Parent`` object contains the cross references of all widgets that are "copies" of the same field. Whenever the field value of any "kid" widget is changed, all the other kids are immediately updated too. This is a very efficient way to handle multiple copies of the same field, e.g. for filling out forms. This simultaneous update only happens for :attr:`Widget.field value`. The new parameter ``sync_flags`` extends this to :attr:`Widget.field_flags`. This cannot be automated in the same way as for the field value to allow for more flexibility.
+
+.. [#f3] Radio Button Groups (RBGs) come in (at least) three technical variants. Please note that the actual PDF Form Field is the RBG - not the individual widgets. Each RB widget represents one of the possible "values" of the Form Field parent. Widgets in general do not need to exist all on the same page.
+
+   1. **RBG fields with a ``/Kids`` array:** The RB widgets appear as children and have a backward pointer (`/Parent`) to the owning field. This is the recommended, standard way, which we fully support.
+
+   2. **"Flat" RBGs:** Multiple RB widgets which all have one identical name (but no ``/Parent`` pointer), and exactly one of them appears in the global field array ``/AcroForm/Fields``. No structural interrelationship or parent-child relationship exists among them -- and no "physical" Form Field. This situation can only be detected by an inspection of all widgets on all pages of the PDF -- which is planned for the next update.
+
+   3. **JavaScript RBGs:** Mutiple RB widgets without any apparent relationship form a group which is exclusively defined by JavaScript code within the widgets. Similar to Flat RBGs, this type can only be detected by a full PDF inspection which must also parse the actual JS code to find references to connected RB widgets. Detection and *some* support is planned for the next update.
+
 
 .. include:: footer.rst
