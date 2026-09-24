@@ -61,8 +61,8 @@ msgid "PyMuPDF Pro"
 msgstr "PyMuPDF Pro"
 
 #: ../../how-to-open-a-file.rst:36 c4725d269a0e41b0867c5b6b16b8960b
-msgid "|PyMuPDF Pro| can open Office files."
-msgstr "|PyMuPDF Pro| 는 Office 파일을 열 수 있습니다."
+msgid "|PyMuPDF Office| can open Office files."
+msgstr "|PyMuPDF Office| 는 Office 파일을 열 수 있습니다."
 
 #: ../../how-to-open-a-file.rst:43 d91d49bc138843188ab0077259cd82ae
 msgid "**DOC/DOCX**"
