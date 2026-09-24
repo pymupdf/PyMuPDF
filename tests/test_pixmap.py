@@ -823,7 +823,7 @@ def test_5125():
     except subprocess.TimeoutExpired as ee:
         e = ee
     print(f'{e=}', flush=1)
-    if pymupdf.mupdf_version_tuple >= (1, 29):
+    if pymupdf.mupdf_version_tuple >= (1, 28, 5):
         assert not e
     else:
         assert e
