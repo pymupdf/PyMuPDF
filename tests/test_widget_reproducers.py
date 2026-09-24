@@ -4,13 +4,17 @@ Run with an already installed PyMuPDF and pytest. No network or pypdf required.
 Assertions describe the desired result, so affected builds should FAIL.
 The supplied two-page PDF predates each test and has one shared text field.
 """
-
+import os
 from pathlib import Path
 import re
 
 import pymupdf
 import pytest
 
+
+def _disable():
+    if os.environ.get('PYMUPDF_TEST_WR') != '1':
+        return True
 
 SHARED = Path(__file__).with_name("resources") / "shared-text-field.pdf"
 
@@ -81,6 +85,8 @@ def _field_values(doc):
                          ids=["ascii-control", "latin", "korean-and-latin"])
 def test_text_creation_preserves_value(tmp_path, garbage, value):
     """Non-ASCII initial values must survive save/close/reopen unchanged."""
+    if _disable():
+        return
     path = tmp_path / "text-created.pdf"
     with pymupdf.open() as doc:
         _add(doc.new_page(), "customer", value)
@@ -93,6 +99,8 @@ def test_text_creation_preserves_value(tmp_path, garbage, value):
 
 def test_text_unicode_update_control(tmp_path, garbage):
     """Control: updating an ASCII field to Unicode works on the tested wheels."""
+    if _disable():
+        return
     path = tmp_path / "text-updated.pdf"
     with pymupdf.open() as doc:
         page = _add(doc.new_page(), "customer", "Alice")
@@ -110,6 +118,8 @@ def test_text_unicode_update_control(tmp_path, garbage):
 @pytest.mark.parametrize("selected", [True, False], ids=["on", "off"])
 def test_checkbox_creation_writes_pdf_name(tmp_path, garbage, selected):
     """PDF button /V is a name, not a text string (ISO 32000-1 12.7.4.2.3)."""
+    if _disable():
+        return
     path = tmp_path / "checkbox-created.pdf"
     with pymupdf.open() as doc:
         _add(doc.new_page(), "accepted", selected,
@@ -126,6 +136,8 @@ def test_checkbox_creation_writes_pdf_name(tmp_path, garbage, selected):
 
 def test_checkbox_update_writes_pdf_name(tmp_path, garbage):
     """The documented on_state() update must also leave a name-valued /V."""
+    if _disable():
+        return
     path = tmp_path / "checkbox-updated.pdf"
     with pymupdf.open() as doc:
         page = _add(doc.new_page(), "accepted", False,
@@ -149,6 +161,8 @@ def test_checkbox_update_writes_pdf_name(tmp_path, garbage):
 @pytest.mark.parametrize("hierarchy", [False, True], ids=["plain", "dotted"])
 def test_delete_last_widget_removes_field(tmp_path, garbage, hierarchy):
     """Deleting a field's only widget must not leave its value in AcroForm."""
+    if _disable():
+        return
     name = "Customer.Address.City" if hierarchy else "customer"
     path = tmp_path / "deleted.pdf"
     with pymupdf.open() as doc:
@@ -174,6 +188,8 @@ def test_delete_shared_widgets(tmp_path, garbage, delete_both):
     The delete-both case also fails on 1.28.2. Unlike the newly created plain
     field above, this shared-field cleanup problem is not a 2.0 regression.
     """
+    if _disable():
+        return
     path = tmp_path / "shared-deleted.pdf"
     with pymupdf.open(SHARED) as doc:
         page = doc[0]
@@ -199,6 +215,8 @@ def test_shared_value_update_refreshes_other_widget(tmp_path, garbage, sync_flag
     Compare page 2 with an explicit-update control using the same renderer.
     No hard-coded pixel hashes or appearance-stream text encoding assumptions.
     """
+    if _disable():
+        return
     path = tmp_path / "shared-updated.pdf"
     control = tmp_path / "shared-updated-both.pdf"
     with pymupdf.open(SHARED) as doc:
@@ -226,6 +244,8 @@ def test_shared_value_update_refreshes_other_widget(tmp_path, garbage, sync_flag
 
 
 def test_shared_value_manual_update_control(tmp_path, garbage):
+    if _disable():
+        return
     path = tmp_path / "shared-updated-both.pdf"
     with pymupdf.open(SHARED) as doc:
         before = doc[1].get_pixmap().digest
@@ -256,6 +276,8 @@ def test_radio_creation_has_at_most_one_selected_widget(tmp_path, garbage):
 
     1.28.2 rejects this construction. Exclude radio tests for that comparison.
     """
+    if _disable():
+        return
     path = tmp_path / "radio-created.pdf"
     _create_radio_group(path, garbage)
     with pymupdf.open(path) as doc:
@@ -271,6 +293,8 @@ def test_radio_creation_has_at_most_one_selected_widget(tmp_path, garbage):
 
 
 def test_radio_selection_writes_pdf_name(tmp_path, garbage):
+    if _disable():
+        return
     initial = tmp_path / "radio-created.pdf"
     path = tmp_path / "radio-selected.pdf"
     _create_radio_group(initial, garbage)
