@@ -6,6 +6,7 @@ import io
 import os
 import sys
 import pprint
+import subprocess
 
 import pymupdf
 
@@ -264,3 +265,36 @@ def test_4954_2():
         d = document[0].get_drawings()[-1]
         print(f'{d["width"]=}')  # Expected: 2.0, Actual: 1.0
         assert abs(d['width'] - 2.449) < 0.01
+
+
+def test_cdrawings_callback_exception():
+    """An exception raised by a get_cdrawings() callback must not crash Python.
+
+    It used to: jm_append_merge() reports the failed callback via messagef()
+    while the exception is still set, so messagev()'s import of pymupdf
+    returned NULL, which was then dereferenced.
+    """
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_cdrawings_callback_exception(): not running on Pyodide - cannot run child processes.')
+        return
+    # This bug is a segv, and only shows if there has been no earlier
+    # messagef() call in the process, so we run the test in a child process.
+    code = (
+            'import pymupdf\n'
+            'document = pymupdf.open()\n'
+            'page = document.new_page()\n'
+            'page.draw_line((10, 10), (100, 100))\n'
+            'def callback(path):\n'
+            '    raise ValueError("callback failed")\n'
+            'page.get_cdrawings(callback=callback)\n'
+            'print("returned")\n'
+            )
+    env = os.environ.copy()
+    env.pop('PYMUPDF_MESSAGE', None)
+    cp = subprocess.run([sys.executable, '-c', code], capture_output=True, text=True, check=0, env=env)
+    print(f'{cp.returncode=}')
+    print(f'{cp.stdout=}')
+    print(f'{cp.stderr=}')
+    assert cp.returncode == 0
+    assert 'calling cdrawings callback function/method failed!\n' in cp.stdout
+    assert 'returned' in cp.stdout
