@@ -60,7 +60,7 @@ The following table illustrates how |PyMuPDF| compares with other typical soluti
 
     Therefore input files are mostly in a form that's useful for text extraction.
 
-    If faithful reproduction of layout is important, then consider using :ref:`PyMuPDF Pro <pymupdf-pro>`.
+    If faithful reproduction of layout is important, then consider using :ref:`PyMuPDF Office <pymupdf-office>`.
 
 
 ----
