@@ -9496,13 +9496,6 @@ class Widget:
             fmt = "{:g} {:g} {:g} {:g} k /{f:s} {s:g} Tf" + self._text_da
         self._text_da = fmt.format(*self.text_color, f=self.text_font,
                                     s=self.text_fontsize)
-        # finally update the widget
-
-        # if widget has a '/AA/C' script, make sure it is in the '/CO'
-        # array of the '/AcroForm' dictionary.
-        if self.script_calc:  # there is a "calculation" script:
-            # make sure we are in the /CO array
-            util_ensure_widget_calc(self._annot)
 
         # finally update the widget
         TOOLS._save_widget(self._annot, self)
@@ -10106,9 +10099,7 @@ class Page:
         if not root_array.pdf_is_array():
             root_array = acro.pdf_dict_put_array(PDF_NAME("Fields"), 1)
 
-        # ------------------------------------------------------------
-        # 3) Create missing fields in hierarchy
-        # ------------------------------------------------------------
+        # Create missing fields in hierarchy
         parent_xref = None
 
         for i, part in enumerate(parts):
@@ -10122,7 +10113,11 @@ class Page:
                     kids_array = parent.pdf_dict_put_array(PDF_NAME("Kids"), 1)
 
             item_xref, item_obj = name_in_array(kids_array, part)
-            if parent is None and item_obj and not item_obj.pdf_dict_get(PDF_NAME("Kids")).pdf_is_array():
+            if (
+                parent is None
+                and item_obj
+                and not item_obj.pdf_dict_get(PDF_NAME("Kids")).pdf_is_array()
+            ):
                 new_xref = doc.get_new_xref()
                 doc.update_object(new_xref, f"<</T ({part})>>")
                 new_obj = mupdf.pdf_new_indirect(pdfdoc, new_xref, 0)
@@ -10135,7 +10130,9 @@ class Page:
             # need to create a new field for this part
             part_xref = doc.get_new_xref()
             if parent_xref is not None:
-                doc.update_object(part_xref, f"<</Parent {parent_xref} 0 R /T ({part})>>")
+                doc.update_object(
+                    part_xref, f"<</Parent {parent_xref} 0 R /T ({part})>>"
+                )
             else:
                 doc.update_object(part_xref, f"<</T ({part})>>")
 
@@ -10155,13 +10152,11 @@ class Page:
 
         annot_xref = annot.xref
         pdfdoc = _as_pdf_document(doc)
-
-        # remove the widget from the root Fields array
-        fields = (
-            mupdf.pdf_dict_get(mupdf.pdf_trailer(pdfdoc), PDF_NAME("Root"))
-            .pdf_dict_get(PDF_NAME("AcroForm"))
-            .pdf_dict_get(PDF_NAME("Fields"))
+        acroform = mupdf.pdf_dict_getl(
+            mupdf.pdf_trailer(pdfdoc), PDF_NAME("Root"), PDF_NAME("AcroForm")
         )
+        fields = acroform.pdf_dict_get(PDF_NAME("Fields"))
+        # remove the widget from the root Fields array
         found = False
         for i in range(fields.pdf_array_len()):
             if fields.pdf_array_get(i).pdf_to_num() == annot_xref:
@@ -10175,9 +10170,9 @@ class Page:
             )
 
         # ----------------------------------------------------------------
-        # Our widget will now get a /Parent. This requires moving
+        # Our widget will now be given a /Parent. This requires moving
         # multiple values of its object over to the parent object.
-        # Note: the name '/T' is in the parent already.
+        # Note: the field name '/T' is in the parent already.
         # ----------------------------------------------------------------
         parent_obj = mupdf.pdf_new_indirect(pdfdoc, parent_xref, 0)
         annot_obj = mupdf.pdf_load_object(pdfdoc, annot_xref)
@@ -10190,9 +10185,11 @@ class Page:
         # store parent in /Parent key
         annot_obj.pdf_dict_put(PDF_NAME("Parent"), parent_obj)
         # store page reference
-        annot_obj.pdf_dict_put(PDF_NAME("P"), mupdf.pdf_new_indirect(pdfdoc, self.xref, 0))
+        annot_obj.pdf_dict_put(
+            PDF_NAME("P"), mupdf.pdf_new_indirect(pdfdoc, self.xref, 0)
+        )
 
-        annot_obj.pdf_dict_del(PDF_NAME("T"))  # widget has no own name!
+        annot_obj.pdf_dict_del(PDF_NAME("T"))  # widget has no own field name!
         field_value = widget.field_value
         if widget.field_type == PDF_WIDGET_TYPE_CHECKBOX:  # noqa: F821
             if field_value is True:
@@ -10205,40 +10202,50 @@ class Page:
         parent_obj.pdf_dict_put_string(PDF_NAME("V"), field_value, len(field_value))
         annot_obj.pdf_dict_del(PDF_NAME("V"))
 
-        # move field type to parent
-        old = annot_obj.pdf_dict_get(PDF_NAME("FT"))
-        if not old.pdf_is_null():
-            parent_obj.pdf_dict_put(PDF_NAME("FT"), old)
-            annot_obj.pdf_dict_del(PDF_NAME("FT"))
+        # move non-widget keys to the parent field
+        MOVE_KEYS = (
+            PDF_NAME("AA"),
+            PDF_NAME("FT"),
+            PDF_NAME("Ff"),
+            PDF_NAME("DA"),
+            PDF_NAME("Opt"),
+            PDF_NAME("TU"),
+            PDF_NAME("I"),
+            mupdf.pdf_new_name("TM"),  # missing in MuPDF
+            PDF_NAME("DV"),
+            PDF_NAME("MaxLen"),
+            PDF_NAME("Q"),
+            PDF_NAME("DS"),
+            PDF_NAME("DR"),
+            PDF_NAME("TI"),
+            PDF_NAME("RV"),
+        )
+        for key_name in MOVE_KEYS:
+            widget_itm = annot_obj.pdf_dict_get(key_name)
+            parent_itm = parent_obj.pdf_dict_get(key_name)
+            # if present in widget but not in parent, move to parent
+            if not widget_itm.pdf_is_null() and parent_itm.pdf_is_null():
+                parent_obj.pdf_dict_put(key_name, widget_itm)
+            annot_obj.pdf_dict_del(key_name)
 
-        # move field flags to parent
-        old = annot_obj.pdf_dict_get(PDF_NAME("Ff"))
-        if not old.pdf_is_null():
-            parent_obj.pdf_dict_put(PDF_NAME("Ff"), old)
-            annot_obj.pdf_dict_del(PDF_NAME("Ff"))
-
-        # move default appearance to parent
-        old = annot_obj.pdf_dict_get(PDF_NAME("DA"))
-        if not old.pdf_is_null():
-            parent_obj.pdf_dict_put(PDF_NAME("DA"), old)
-            annot_obj.pdf_dict_del(PDF_NAME("DA"))
-
-        # move choices list to parent
-        old = annot_obj.pdf_dict_get(PDF_NAME("Opt"))
-        if not old.pdf_is_null():
-            parent_obj.pdf_dict_put(PDF_NAME("Opt"), old)
-            annot_obj.pdf_dict_del(PDF_NAME("Opt"))
-
-        # move choices list index to parent
-        old = annot_obj.pdf_dict_get(PDF_NAME("I"))
-        if not old.pdf_is_null():
-            parent_obj.pdf_dict_put(PDF_NAME("I"), old)
-            annot_obj.pdf_dict_del(PDF_NAME("I"))
+        # If a cross calculation script exists, put field in the
+        # the AcroForm/CO array.
+        if widget.script_calc:  # calculation JavaScript exists
+            found = False
+            CO = acroform.pdf_dict_getl(PDF_NAME("CO"))
+            if not CO.pdf_is_array():
+                CO = acroform.pdf_dict_put_array(PDF_NAME("CO"), 1)
+            for i in range(CO.pdf_array_len()):
+                if CO.pdf_array_get(i).pdf_to_num() == parent_xref:
+                    found = True
+                    break
+            if not found:
+                CO.pdf_array_push(parent_obj)
 
         # Specials for RadioButtons
         if widget.field_type == PDF_WIDGET_TYPE_RADIOBUTTON:  # noqa: F821
-            doc.xref_set_key(annot_xref,"AS", f"/{field_value}")
-            apn=doc.xref_get_key(annot_xref,"AP/N")[1]
+            doc.xref_set_key(annot_xref, "AS", f"/{field_value}")
+            apn = doc.xref_get_key(annot_xref, "AP/N")[1]
             if apn and "/Yes" in apn:
                 apn = apn.replace("/Yes", f"/{field_value}")
                 doc.xref_set_key(annot_xref, "AP/N", apn)
@@ -11307,18 +11314,96 @@ class Page:
 
         return finished()
 
-    def delete_widget(page: 'Page', widget: Widget) -> Widget:
-        """Delete widget from page and return the next one."""
+    def delete_widget(self, widget: Widget) -> Widget:
+        """Delete widget from page and return the next one.
+
+        Completely delete a widget annotation:
+        - remove it from the page's /Annots array
+        - remove it from its parent field's /Kids
+        - remove empty parent fields up to /AcroForm/Fields
+        """
+        def remove_object_from_array(array, xref):
+            """Remove all occurrences of xref from the given PDF array.
+
+            E.g. /AcroFor4m/Fields, a field's /Kids or a page's /Annots array.
+            """
+            count = array.pdf_array_len()
+            for i in reversed(range(count)):
+                item = array.pdf_array_get(i)
+                if item.pdf_to_num() == xref:
+                    array.pdf_array_delete(i)
+
+        page = self
         CheckParent(page)
+        doc = page.parent
+        pdf = _as_pdf_document(doc)
+        ppage = _as_pdf_page(page)
+        page_obj = ppage.obj()
+        wxref = widget.xref
         annot = getattr(widget, "_annot", None)
         if annot is None:
             raise ValueError("bad type: widget")
         nextwidget = widget.next
-        page.delete_annot(annot)
+
+        # --- 1) Remove widget from page /Annots array ---
+        annots = page_obj.pdf_dict_get(PDF_NAME("Annots"))
+        remove_object_from_array(annots, wxref)
+
+        # --- 2) Load widget object and its Parent (if any) ---
+        widget_obj = mupdf.pdf_load_object(pdf, wxref)
+        parent = widget_obj.pdf_dict_get(PDF_NAME("Parent"))
+
+        fields = mupdf.pdf_dict_getl(
+            mupdf.pdf_trailer(pdf),
+            PDF_NAME("Root"),
+            PDF_NAME("AcroForm"),
+            PDF_NAME("Fields")
+        )
+
+        # --- CASE A: combined field-widget (no Parent) ---
+        if parent.pdf_is_null():  # remove from /Fields array
+            remove_object_from_array(fields, wxref)
+            mupdf.pdf_sync_annots(ppage)
+            return nextwidget
+
+        # --- CASE B: normal widget with Parent ---
+        current = parent
+        child_xref = wxref
+
+        while not current.pdf_is_null():
+            current_xref = current.pdf_to_num()
+            kids = current.pdf_dict_get(PDF_NAME("Kids"))
+            remove_object_from_array(kids, child_xref)
+
+            # If Kids still has entries → stop propagation
+            if kids.pdf_array_len() > 0:
+                break
+
+            # Kids is empty → remove this field from its parent or from /Fields
+            grand_parent = current.pdf_dict_get(PDF_NAME("Parent"))
+
+            if grand_parent.pdf_is_null():
+                # top-level field → remove from /Fields
+                remove_object_from_array(fields, current_xref)
+                break
+
+            else:
+                # remove current from grand_parent's Kids
+                gp_kids = grand_parent.pdf_dict_get(PDF_NAME("Kids"))
+                remove_object_from_array(gp_kids, current_xref)
+
+                if gp_kids.pdf_array_len() > 0:
+                    break
+
+                # continue upwards
+                child_xref = current_xref
+                current = grand_parent
+
         widget._annot.parent = None
         keylist = list(widget.__dict__.keys())
         for key in keylist:
             del widget.__dict__[key]
+        mupdf.pdf_sync_annots(ppage)
         return nextwidget
 
     @property
@@ -24529,34 +24614,6 @@ def make_table(rect: rect_like =(0, 0, 1, 1), cols: int =1, rows: int =1) -> lis
         rects.append(nrow)  # append new row to result
 
     return rects
-
-
-def util_ensure_widget_calc(annot):
-    '''
-    Ensure that widgets with /AA/C JavaScript are in array AcroForm/CO
-    '''
-    annot_obj = mupdf.pdf_annot_obj(annot.this)
-    pdf = mupdf.pdf_get_bound_document(annot_obj)
-    PDFNAME_CO = mupdf.pdf_new_name("CO")    # = PDF_NAME(CO)
-    acro = mupdf.pdf_dict_getl(  # get AcroForm dict
-            mupdf.pdf_trailer(pdf),
-            PDF_NAME('Root'),
-            PDF_NAME('AcroForm'),
-            )
-
-    CO = mupdf.pdf_dict_get(acro, PDFNAME_CO)  # = AcroForm/CO
-    if not mupdf.pdf_is_array(CO):
-        CO = mupdf.pdf_dict_put_array(acro, PDFNAME_CO, 2)
-    n = mupdf.pdf_array_len(CO)
-    found = 0
-    xref = mupdf.pdf_to_num(annot_obj)
-    for i in range(n):
-        nxref = mupdf.pdf_to_num(mupdf.pdf_array_get(CO, i))
-        if xref == nxref:
-            found = 1
-            break
-    if not found:
-        mupdf.pdf_array_push(CO, mupdf.pdf_new_indirect(pdf, xref, 0))
 
 
 def util_make_rect( *args, p0=None, p1=None, x0=None, y0=None, x1=None, y1=None):
