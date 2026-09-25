@@ -75,8 +75,6 @@ PyMuPDF Product Suite
 **Additional products** in the |PyMuPDF| product suite are:
    
 - |PyMuPDF Office| adds support for Office document formats.
-- |PyMuPDF4LLM| is optimized for large language model (LLM) applications, providing enhanced text extraction and processing capabilities. 
- It focuses on layout analysis and semantic understanding, ideal for document conversion and formatting tasks with enhanced results.
 
 .. note::
     All of the products above depend on the same core product - |PyMuPDF| and therefore have full access to all of its features.

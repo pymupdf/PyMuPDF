@@ -44,7 +44,6 @@ This documentation covers all versions up to |version|.
    pymupdf-office/index.rst
 
 
-
 .. toctree::
    :caption: User Guide
    :maxdepth: 1
@@ -53,6 +52,7 @@ This documentation covers all versions up to |version|.
    the-basics.rst
    tutorial.rst
    rag.rst
+   ocr/index.rst
    resources.rst
    faq/index.rst
 
