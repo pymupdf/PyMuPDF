@@ -340,7 +340,7 @@ _globals = _Globals()
 _get_layout: typing.Optional[typing.Callable] = None
 
 try:
-    import pymupdf.layout
+    import pymupdf.layout   # noqa: F401
 except ImportError:
     pass
 
