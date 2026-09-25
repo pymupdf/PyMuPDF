@@ -26,12 +26,6 @@
 
 .. toctree::
 
-   recipes-ocr.rst
-
-----
-
-.. toctree::
-
    recipes-text.rst
 
 ----

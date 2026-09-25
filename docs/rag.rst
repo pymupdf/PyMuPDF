@@ -8,23 +8,56 @@ PyMuPDF, LLM & RAG
 
 Integrating |PyMuPDF| into your :title:`Large Language Model (LLM)` framework and overall :title:`RAG (Retrieval-Augmented Generation`) solution provides the fastest and most reliable way to deliver document data.
 
-There are a few well known :title:`LLM` solutions which have their own interfaces with |PyMuPDF| - it is a fast growing area, so please let us know if you discover any more!
+If you need to export to :title:`Markdown`, structured |JSON| or |TXT| formats, |PyMuPDF| provides the necessary tools to achieve this efficiently in the :class:`Document` object.
 
-If you need to export to :title:`Markdown` or obtain a :title:`LlamaIndex` Document from a file:
 
-.. raw:: html
+Converting to |Markdown|
+-------------------------------------
+ 
 
-   <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='pymupdf4llm/'">Try PyMuPDF4LLM</button>
-   <p></p>
+.. code-block:: python
 
-   <script>
-      let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+    doc = pymupdf.open("input.pdf")
+    md = doc.to_markdown()
 
-      if (lang=="ja") {
-         document.getElementById("pymupdf4llmButton").innerHTML = "PyMuPDF4LLM を試してみる";
-      }
+See the API at :meth:`Document.to_markdown`.
 
-   </script>
+
+Converting to |JSON|
+-------------------------------------
+
+
+.. code-block:: python
+
+    doc = pymupdf.open("input.pdf")
+    json = doc.to_json()
+
+See the API at :meth:`Document.to_json`.
+
+Converting to |TXT|
+-------------------------------------
+
+.. code-block:: python
+
+    doc = pymupdf.open("input.pdf")
+    txt = doc.to_text()
+
+See the API at :meth:`Document.to_text`.
+
+..
+    .. raw:: html
+
+    <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='pymupdf4llm/'">Try PyMuPDF4LLM</button>
+    <p></p>
+
+    <script>
+        let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+        if (lang=="ja") {
+            document.getElementById("pymupdf4llmButton").innerHTML = "PyMuPDF4LLM を試してみる";
+        }
+
+    </script>
 
 
 Integration with :title:`LangChain`
