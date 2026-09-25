@@ -8,27 +8,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pymupdf
 
-def _use_layout():
-    '''
-    Returns true if we expect pymupdf to be using layout by default.
-
-    We do not look at pymupdf._layout for this because this would not detect
-    a situation where pymupdf's import of layout failed unexpectedly. Instead
-    we default to returning true (the new default with 2.0) and treat
-    PYMUPDF_TEST_USE_LAYOUT=0 as meaning that layout should not have been
-    imported.
-    '''
-    if os.environ.get('PYMUPDF_TEST_USE_LAYOUT') == '0':
-        return False
-    else:
-        return True
-
-
-def _use_4llm():
-    if os.environ.get('PYMUPDF_TEST_USE_4LLM') == '0':
-        return False
-    else:
-        return True
+import util
 
 
 def _str_tables(tables):
@@ -119,7 +99,7 @@ pickle_file = os.path.normpath(f'{__file__}/../../tests/resources/chinese-tables
 
 
 def test_table1():
-    if _use_layout():
+    if util._use_layout():
         with pymupdf.open(filename) as document:
             page = document[0]
             tables = page.find_tables()
@@ -273,7 +253,7 @@ def test_table2():
     doc = pymupdf.open(filename)
     page = doc[0]
     # both tables contain their header data
-    if _use_layout():
+    if util._use_layout():
         tables = page.find_tables()
         tables2 = [table.extract() for table in tables]
         expected =     [
@@ -506,7 +486,7 @@ def test_add_lines():
     # these 3 additional vertical lines should additional 3 columns
     tab2 = page.find_tables(add_lines=more_lines)[0]
     
-    if _use_layout():
+    if util._use_layout():
         expected = [
                     [
                         [b'Boiling Points \xc2\xb0C'.decode(), 'min', 'max', 'avg'],
@@ -627,7 +607,7 @@ def test_3148():
             page.insert_textbox(cells[j][i] + delta, text[k], rotate=degrees[k])
     #doc.save(os.path.normpath(f'{__file__}/../../tests/test_3148.pdf'))
     tabs = page.find_tables()
-    if _use_layout() and _use_4llm():
+    if util._use_layout() and util._use_4llm():
         assert len(tabs.tables) == 0
     else:
         tab = tabs[0]
@@ -685,7 +665,7 @@ def test_paths_param():
     doc = pymupdf.open(filename)
     page = doc[0]
     tabs = page.find_tables(paths=[])  # will cause all tables are missed
-    if _use_layout():
+    if util._use_layout():
         # Looks like layout does not behave like non-layout here.
         expected = [
                     [
@@ -727,7 +707,7 @@ def test_boxes_param():
         boxes.append(r)
 
     tabs = page.find_tables(paths=[], add_boxes=boxes)
-    if _use_layout():
+    if util._use_layout():
         expected = [
                     [
                         [b'Boiling Points \xc2\xb0C'.decode(), 'min', 'max', 'avg'],
@@ -755,7 +735,7 @@ def test_dotted_grid():
     doc = pymupdf.open(filename)
     page = doc[0]
     tabs = page.find_tables()
-    if _use_layout():
+    if util._use_layout():
         expected = [
                     [
                         ['REGIONE', "PROVINCIA/\nCITTA'\nMETROPOLITANA", 'COMUNE', 'NUMERO\nCOMUNI', 'COMUNI\nCAPOLUOGO\n(CAP)', 'COMUNI\nSUPERIORI\n15000\n.\nabitanti\n(SUP)', 'COMUNI\nPARIO\nINFERIORI\n15000\n.\nabitanti\n(INF)', 'COMUNIAL\nRINNOVOPER\nMOTIVIDIVERSI\nDASCADENZA\nNATURALE(*)', 'COMUNI\nSCIOLTIAL\nRINNOVOPER\nSCADENZA\nNATURALE(#)', 'POPOLAZIONE\nal31/12/2021\nDPR20/01/2023\n...', 'SEZIONI\nRilevazioneal\n31/12/2023', 'ELETTORI\nRilevazioneal\n31/12/2023'],
@@ -831,9 +811,9 @@ def test_4017():
 
         # 2024-11-29: expect current incorrect output for last two tables.
 
-        if _use_layout():
+        if util._use_layout():
         
-            if 1:   # 4llm
+            if util._use_4llm():
                 tables2_expected = [
                             [
                                 ['ClassA/BOvercollateralization', '13144%\n.', '>=', '12260%\n.', '', 'PASS', ],
@@ -1012,7 +992,7 @@ def test_md_styles():
     doc = pymupdf.open(filename)
     page = doc[0]
     tabs = page.find_tables()[0]
-    if _use_layout():
+    if util._use_layout():
         text = textwrap.dedent('''
                 |Column1|Column2|Column3|
                 |---|---|---|
@@ -1075,7 +1055,7 @@ def test_table_extract_stable_after_second_find_tables():
     finally:
         doc1.close()
         doc2.close()
-    if _use_layout():
+    if util._use_layout():
         assert e
     else:
         assert not e
