@@ -178,7 +178,7 @@ In order to convert an **Office** document to images, you should iterate the doc
 **Office** document to |Markdown|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use the :meth:`to_markdown()` method to convert an **Office** document to |Markdown|, e.g.:
+Use the :ref:`to_markdown() <pymupdf_office_api_to_markdown>` method to convert an **Office** document to |Markdown|, e.g.:
 
 .. code-block:: python
 
@@ -187,12 +187,12 @@ Use the :meth:`to_markdown()` method to convert an **Office** document to |Markd
 
     pymupdf.office.to_markdown("input.docx", "output.md")
 
-If you require a string representation of the Markdown data, you can use the :meth:`to_markdown()` method without specifying an output file.
+If you require a string representation of the Markdown data, you can use the :ref:`to_markdown() <pymupdf_office_api_to_markdown>` method without specifying an output file.
 
 **Office** document to |JSON|
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Use the :meth:`to_json()` method to convert an **Office** document to |JSON|, e.g.:
+Use the :ref:`to_json() <pymupdf_office_api_to_json>` method to convert an **Office** document to |JSON|, e.g.:
 
 .. code-block:: python
 
@@ -201,7 +201,7 @@ Use the :meth:`to_json()` method to convert an **Office** document to |JSON|, e.
 
     pymupdf.office.to_json("input.docx", "output.json")
 
-If you require a string representation of the JSON data, you can use the :meth:`to_json()` method without specifying an output file.
+If you require a string representation of the JSON data, you can use the :ref:`to_json() <pymupdf_office_api_to_json>` method without specifying an output file.
 
 
 Fonts
@@ -223,6 +223,17 @@ Function `pymupdf.office.get_fontpath()` returns a tuple of all font directories
 API
 -----------------------
 
+.. _pymupdf_office_api_to_pdf:
+
+.. method:: unlock(my_key: str = None, *, fontpath: str | list | tuple = None, fontpath_auto: bool = None)
+
+    Unlocks the PyMuPDF Office functionality with the provided key.
+
+    :arg str my_key: the license key for PyMuPDF Office.
+    :arg str | list | tuple fontpath: specific font directories, either as a list/tuple or `os.sep`-separated string.
+    :arg bool fontpath_auto: Whether to append system font directories.
+
+    Grants access to the full functionality of PyMuPDF Office. For a free trial key please visit: `https://pymupdf.io/office/try/ <https://pymupdf.io/office/try/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-pymupdf-office-page&utm_campaign=docs>`_.
 
 .. method:: to_pdf(input_path: str, output_path:str = None) -> bytes | None
 
@@ -235,6 +246,8 @@ API
     :returns: Either bytes of the PDF content, `None` if `output_path` is specified.
 
 
+.. _pymupdf_office_api_to_markdown:
+
 .. method:: to_markdown(input_path: str, output_path:str = None) -> str | None
 
     Reads the input file and outputs the text of its pages in |Markdown| format.
@@ -245,6 +258,9 @@ API
 
     :returns: Either a string of the Markdown representation, `None` if `output_path` is specified.
 
+
+
+.. _pymupdf_office_api_to_json:
 
 .. method:: to_json(input_path: str, output_path:str = None) -> str | None
 
