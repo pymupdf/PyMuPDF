@@ -42,7 +42,7 @@ This documentation covers all versions up to |version|.
 
    about.rst
    pymupdf-office/index.rst
-
+   rag.rst
 
 .. toctree::
    :caption: User Guide
@@ -51,7 +51,6 @@ This documentation covers all versions up to |version|.
    installation.rst
    the-basics.rst
    tutorial.rst
-   rag.rst
    ocr/index.rst
    resources.rst
    faq/index.rst
@@ -70,7 +69,6 @@ This documentation covers all versions up to |version|.
    :maxdepth: 2
 
    classes.rst
-   pymupdf4llm/api.rst
    algebra.rst
    lowlevel.rst
    glossary.rst
