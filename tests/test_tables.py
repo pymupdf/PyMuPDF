@@ -13,7 +13,7 @@ import util
 
 def _str_tables(tables):
     '''
-    Returns a readble string description of tables that is also valid python
+    Returns a readable string description of tables that is also valid python
     that can be pasted directly into this python file for use as expected
     results.
     '''
