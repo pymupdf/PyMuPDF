@@ -26,10 +26,22 @@ Overview
 
 ----
 
+Hybrid OCR strategy
+------------------------------------
+
+|PyMuPDF| applies OCR only when it is genuinely required to obtain the complete text of a PDF page. If a page already contains sufficient extractable text, OCR is skipped entirely — avoiding unnecessary work and eliminating the risk of degrading high-quality digital text.
+
+When OCR is needed, |PyMuPDF| automatically selects the most suitable OCR plugin available in the runtime environment, balancing detection accuracy with processing speed.
+
+Its built-in OCR plugins implement a Hybrid OCR strategy: only those regions lacking extractable, legible text are passed to the OCR engine. This selective approach typically reduces OCR processing time by around 50% while improving recognition accuracy, since the engine focuses exclusively on the problematic regions. The recognized text is then merged back into the original page, enriching it without disturbing existing digital content.
+
+
+
+
 Auto-OCR Behaviour
 ------------------
 
-PyMuPDF inspects each page before extracting text. If a page contains **no selectable text** — meaning all content is rasterised into images — OCR is triggered automatically for that page.
+|PyMuPDF| inspects each page before extracting text. If a page contains **no selectable text** — meaning all content is rasterised into images — OCR is triggered automatically for that page.
 
 Pages that contain native text are never sent through OCR, even if they also contain embedded images. This keeps processing fast and avoids degrading already-clean text.
 
