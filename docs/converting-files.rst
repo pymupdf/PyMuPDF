@@ -158,19 +158,20 @@ For example, assuming you have access to the source files for the "Comic Sans" f
 PDF to Markdown
 ~~~~~~~~~~~~~~~~~
 
-By utlilizing the :doc:`PyMuPDF4LLM API <pymupdf4llm/api>` we are able to convert PDF to a Markdown representation.
+By utlilizing the :meth:`Document.to_markdown` method we are able to convert PDF to a Markdown representation.
 
 **Example**
 
 .. code-block:: python
 
-    import pymupdf4llm
+    import pymupdf
     import pathlib
 
-    md_text = pymupdf4llm.to_markdown("test.pdf")
+    doc = pymupdf.open("test.pdf")
+    md_text = doc.to_markdown()
     print(md_text)
 
-    pathlib.Path("4llm-output.md").write_bytes(md_text.encode())
+    pathlib.Path("output.md").write_bytes(md_text.encode())
 
 
 PDF to SVG

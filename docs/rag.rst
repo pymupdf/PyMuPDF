@@ -20,7 +20,7 @@ Converting to |Markdown|
     doc = pymupdf.open("input.pdf")
     md = doc.to_markdown()
 
-See the API at :meth:`Document.to_markdown`.
+See the API at: :meth:`Document.to_markdown`.
 
 
 Converting to |JSON|
@@ -42,7 +42,7 @@ Converting to |TXT|
     doc = pymupdf.open("input.pdf")
     txt = doc.to_text()
 
-See the API at :meth:`Document.to_text`.
+See the API at: :meth:`Document.to_text`.
 
 ..
     .. raw:: html
@@ -94,59 +94,11 @@ See `Building RAG from Scratch <https://docs.llamaindex.ai/en/stable/examples/lo
 Preparing Data for Chunking
 -----------------------------
 
-Chunking (or splitting) data is essential to give context to your :title:`LLM` data and with :title:`Markdown` output now supported by |PyMuPDF| this means that `Level 3 chunking <https://medium.com/@anuragmishra_27746/five-levels-of-chunking-strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ is supported.
-
-
-
-.. _rag_outputting_as_md:
-
-Outputting as :title:`Markdown`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In order to export your document in :title:`Markdown` format you will need a separate helper. Package :doc:`pymupdf4llm/index` is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
-
-
-.. code-block:: python
-
-    # convert the document to markdown
-    import pymupdf4llm
-    md_text = pymupdf4llm.to_markdown("input.pdf")
-
-    # Write the text to some file in UTF8-encoding
-    import pathlib
-    pathlib.Path("output.md").write_bytes(md_text.encode())
-
-
-For further information please refer to: :doc:`pymupdf4llm/index`.
-
-
-How to use :title:`Markdown` output
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Once you have your data in :title:`Markdown` format you are ready to chunk/split it and supply it to your :title:`LLM`, for example, if this is :title:`LangChain` then do the following:
-
-.. code-block:: python
-
-    import pymupdf4llm
-    from langchain.text_splitter import MarkdownTextSplitter
-
-    # Get the MD text
-    md_text = pymupdf4llm.to_markdown("input.pdf")  # get markdown for all pages
-
-    splitter = MarkdownTextSplitter(chunk_size=40, chunk_overlap=0)
-
-    splitter.create_documents([md_text])
-
-
-
-For more see `5 Levels of Text Splitting <https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_
+todo
 
 
 Related Blogs
---------------------
-
-To find out more about |PyMuPDF|, :title:`LLM` & :title:`RAG` check out our blogs for implementations & tutorials.
-
+-----------------------------
 
 Methodologies to Extract Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -156,7 +108,7 @@ Methodologies to Extract Text
 
 
 
-Create a Chatbot to discuss your documents
+Create a Chatbot to connect with your documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - `Make a simple command line Chatbot <https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-pymupdf>`_
