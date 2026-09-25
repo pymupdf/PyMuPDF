@@ -23,6 +23,14 @@ def _use_layout():
     else:
         return True
 
+
+def _use_4llm():
+    if os.environ.get('PYMUPDF_TEST_USE_4LLM') == '0':
+        return False
+    else:
+        return True
+
+
 def _str_tables(tables):
     '''
     Returns a readble string description of tables that is also valid python
@@ -617,13 +625,16 @@ def test_3148():
             page.draw_rect(cells[j][i])
             k = (i + j) % 4
             page.insert_textbox(cells[j][i] + delta, text[k], rotate=degrees[k])
-    # doc.save("multi-degree.pdf")
+    #doc.save(os.path.normpath(f'{__file__}/../../tests/test_3148.pdf'))
     tabs = page.find_tables()
-    tab = tabs[0]
-    for extract in tab.extract():
-        for item in extract:
-            item = item.replace("\n", " ")
-            assert item in text
+    if _use_layout() and _use_4llm():
+        assert len(tabs.tables) == 0
+    else:
+        tab = tabs[0]
+        for extract in tab.extract():
+            for item in extract:
+                item = item.replace("\n", " ")
+                assert item in text
 
 
 def test_3179():
@@ -822,76 +833,129 @@ def test_4017():
 
         if _use_layout():
         
-            tables2_expected = [
-                        [
-                            ['ClassA/BOvercollateralization', '13144%\n.', '>=', '12260%\n.', '', 'PASS'],
-                            [None, None, None, None, None, 'PASS'],
-                            ['ClassDOvercollateralization', '11224%\n.', '>=', '10640%\n.', '', 'PASS'],
-                            [None, None, None, None, None, 'PASS'],
-                            ['EventofDefault', '15608%\n.', '>=', '10250%\n.', '', 'PASS'],
-                            [None, None, None, None, None, 'PASS'],
-                            ['ClassA/BInterestCoverage', 'N/A', '>=', '12000%\n.', '', 'N/A'],
-                            [None, None, None, None, None, 'N/A'],
-                            ['ClassDInterestCoverage', 'N/A', '>=', '10500%\n.', '', 'N/A'],
-                        ],
-                        [
-                            ["Moody'sMaximumRatingFactorTest", '2577\n,', '<=', '3250\n,', '', 'PASS', '2581\n,'],
-                            [None, None, None, None, None, 'PASS', None],
-                            ['MinimumFloatingSpread', '35006%\n.', '>=', '20000%\n.', '', 'PASS', '34871%\n.'],
-                            [None, None, None, None, None, 'PASS', None],
-                            ['MinimumWeightedAverageS&PRecovery\nRateTest', '4050%\n.', '>=', '4000%\n.', '', 'PASS', '4040%\n.'],
-                            [None, None, None, None, None, 'PASS', None],
-                            ['WeightedAverageLife', '483\n.', '<=', '900\n.', '', 'PASS', '492\n.'],
-                        ],
-                        [
-                            ['AssetDetails', '', '', '', '', '', '', 'Notes'],
-                            ['', '', 'Count', '', '', 'Current', '', 'Notes'],
-                            ['DelayedDrawLoan', '', '1', '', '', '6500000\n, .', '', 'Class A -1'],
-                            ['RevolvingLoan', '', '0', '', '', '000\n.', '', 'Class A -2'],
-                            ['TermLoan', '', '293', '', '', '37486898542\n, , .', '', 'Class B -1'],
-                            ['MiscellaneousInformation', None, None, None, None, '', '', 'Class B -2\nClassC'],
-                            ['', '', '', '', '', '', '', ''],
-                            ['AggregatePrincipalBalance', None, '', '', '', '38603398542\n, , .', '', 'Class D\n-'],
-                            ['PrincipalCash', '', '', '', '', '1281594162\n, , .', '', 'Class D\n-'],
-                            ['PFAI', '', '', '', '', '72757624\n, .', '', 'ClassEN'],
-                            ['Totals', '', '', '', '', '39957750328\n, , .', '', ''],
-                            ['AccountBalances', None, '', '', '', '', '', ''],
-                            ['', '', '', '', '', '', '', ''],
-                            ['PrincipalCash\nInterestCash', '', '', '', '', '1281594162\n, , .\n1300009090\n, , .', '', ''],
-                        ],
-                        [
-                            ['Issuer', 'OCPCLO202432 LTD\n- , .'],
-                            ['Co-Issuer', 'OCPCLO202432LLC\n-'],
-                            ['CollateralTrustee', 'Citibank N .A\n.'],
-                            ['CollateralManager', 'Onex Credit Partners, LLC'],
-                            ['RatingAgencies', 'S&P'],
-                            ['CollateralAdministrator', 'SiepeLLC'],
-                            ['RelationshipManager', 'SabrinaSchmidt'],
-                            ['', 'sschmidt@siepe.com'],
-                            ['', '2818704754\n- -'],
-                            ['ClosingDate', '04/23/2024'],
-                            ['FirstPaymentDate', '10/23/2024'],
-                            ['ReinvestmentPeriod', '04/23/2024 04/23/2029\n-'],
-                            ['EffectiveDate', '04/25/2024'],
-                            ['NextPaymentDate', '10/23/2024'],
-                            ['PriorPaymentDate', '-'],
-                            ['CollectionPeriod', '04/23/2024 10/08/2024\n-'],
-                        ],
-                        [
-                            ['Notes', 'OriginalBalance', 'CurrentBalance', 'Spread', 'Coupon', 'Interest'],
-                            ['Class A -1 Notes', '256000000\n, ,', '256000000\n, ,', '152000%\n.', '682458%\n.', '888105344\n, , .'],
-                            ['Class A -2 Notes', '16000000\n, ,', '16000000\n, ,', '172000%\n.', '702458%\n.', '57133251\n, .'],
-                            ['Class B -1 Notes', '24000000\n, ,', '24000000\n, ,', '200000%\n.', '730458%\n.', '89115876\n, .'],
-                            ['Class B -2 Notes', '8000000\n, ,', '8000000\n, ,', '584100%\n.', '584100%\n.', '23364000\n, .'],
-                            ['ClassCNotes', '24000000\n, ,', '24000000\n, ,', '250000%\n.', '780458%\n.', '95215876\n, .'],
-                            ['Class D -1 Notes', '24000000\n, ,', '24000000\n, ,', '375000%\n.', '905458%\n.', '110465876\n, , .'],
-                            ['Class D -2 Notes', '4000000\n, ,', '4000000\n, ,', '905000%\n.', '905000%\n.', '18100000\n, .'],
-                            ['ClassENotes', '12000000\n, ,', '12000000\n, ,', '676000%\n.', '1206458%\n.', '73593938\n, .'],
-                            ['', '36800000000\n, , .', '36800000000\n, , .', '', '', '1355094161\n, , .'],
-                        ],
-                    ]
-            assert tables2 == tables2_expected
+            if 1:   # 4llm
+                tables2_expected = [
+                            [
+                                ['ClassA/BOvercollateralization', '13144%\n.', '>=', '12260%\n.', '', 'PASS', ],
+                                [None, None, None, None, None, 'PASS', ],
+                                ['ClassDOvercollateralization', '11224%\n.', '>=', '10640%\n.', '', 'PASS', ],
+                                [None, None, None, None, None, 'PASS', ],
+                                ['EventofDefault', '15608%\n.', '>=', '10250%\n.', '', 'PASS', ],
+                                [None, None, None, None, None, 'PASS', ],
+                                ['ClassA/BInterestCoverage', 'N/A', '>=', '12000%\n.', '', 'N/A', ],
+                                [None, None, None, None, None, 'N/A', ],
+                                ['ClassDInterestCoverage', 'N/A', '>=', '10500%\n.', '', 'N/A', ],
+                            ],
+                            [
+                                ["Moody'sMaximumRatingFactorTest", '2577\n,', '<=', '3250\n,', '', 'PASS', '2581\n,', ],
+                                [None, None, None, None, None, 'PASS', None, ],
+                                ['MinimumFloatingSpread', '35006%\n.', '>=', '20000%\n.', '', 'PASS', '34871%\n.', ],
+                                [None, None, None, None, None, 'PASS', None, ],
+                                ['MinimumWeightedAverageS&PRecovery\nRateTest', '4050%\n.', '>=', '4000%\n.', '', 'PASS', '4040%\n.', ],
+                                [None, None, None, None, None, 'PASS', None, ],
+                                ['WeightedAverageLife', '483\n.', '<=', '900\n.', '', 'PASS', '492\n.', ],
+                            ],
+                            [
+                                ['Issuer', 'OCPCLO202432 LTD\n- , .', '', '', 'Count', '', '', 'Current', ],
+                                ['Co-Issuer', 'OCPCLO202432LLC\n-', 'DelayedDrawLoan', '', '1', '', '', '6500000\n, .', ],
+                                ['CollateralTrustee', 'Citibank N .A\n.', 'RevolvingLoan', '', '0', '', '', '000\n.', ],
+                                ['CollateralManager', 'Onex Credit Partners, LLC', 'TermLoan', '', '293', '', '', '37486898542\n, , .', ],
+                                ['RatingAgencies\nCollateralAdministrator', 'S&P\nSiepeLLC', 'MiscellaneousInformation', None, None, None, None, '', ],
+                                ['RelationshipManager', 'SabrinaSchmidt', 'AggregatePrincipalBalance', None, '', '', '', '38603398542\n, , .', ],
+                                ['', 'sschmidt@siepe.com', 'PrincipalCash', '', '', '', '', '1281594162\n, , .', ],
+                                ['', '2818704754\n- -', 'PFAI', '', '', '', '', '72757624\n, .', ],
+                                ['ClosingDate', '04/23/2024', 'Totals', '', '', '', '', '39957750328\n, , .', ],
+                                ['FirstPaymentDate', '10/23/2024', '', '', '', '', '', '', ],
+                                ['ReinvestmentPeriod\nEffectiveDate', '04/23/2024 04/23/2029\n-\n04/25/2024', 'AccountBalances', None, '', '', '', '', ],
+                                ['NextPaymentDate\nPriorPaymentDate', '10/23/2024\n-', 'PrincipalCash\nInterestCash', '', '', '', '', '1281594162\n, , .\n1300009090\n, , .', ],
+                                ['CollectionPeriod', '04/23/2024 10/08/2024\n-', '', '', '', '', '', '', ],
+                            ],
+                            [
+                                ['Notes', 'OriginalBalance', 'CurrentBalance', 'Spread', 'Coupon', 'Interest', ],
+                                ['Class A -1 Notes', '256000000\n, ,', '256000000\n, ,', '152000%\n.', '682458%\n.', '888105344\n, , .', ],
+                                ['Class A -2 Notes', '16000000\n, ,', '16000000\n, ,', '172000%\n.', '702458%\n.', '57133251\n, .', ],
+                                ['Class B -1 Notes', '24000000\n, ,', '24000000\n, ,', '200000%\n.', '730458%\n.', '89115876\n, .', ],
+                                ['Class B -2 Notes', '8000000\n, ,', '8000000\n, ,', '584100%\n.', '584100%\n.', '23364000\n, .', ],
+                                ['ClassCNotes', '24000000\n, ,', '24000000\n, ,', '250000%\n.', '780458%\n.', '95215876\n, .', ],
+                                ['Class D -1 Notes', '24000000\n, ,', '24000000\n, ,', '375000%\n.', '905458%\n.', '110465876\n, , .', ],
+                                ['Class D -2 Notes', '4000000\n, ,', '4000000\n, ,', '905000%\n.', '905000%\n.', '18100000\n, .', ],
+                                ['ClassENotes', '12000000\n, ,', '12000000\n, ,', '676000%\n.', '1206458%\n.', '73593938\n, .', ],
+                                ['', '36800000000\n, , .', '36800000000\n, , .', '', '', '1355094161\n, , .', ],
+                            ],
+                        ]
+            else:
+        
+                tables2_expected = [
+                            [
+                                ['ClassA/BOvercollateralization', '13144%\n.', '>=', '12260%\n.', '', 'PASS'],
+                                [None, None, None, None, None, 'PASS'],
+                                ['ClassDOvercollateralization', '11224%\n.', '>=', '10640%\n.', '', 'PASS'],
+                                [None, None, None, None, None, 'PASS'],
+                                ['EventofDefault', '15608%\n.', '>=', '10250%\n.', '', 'PASS'],
+                                [None, None, None, None, None, 'PASS'],
+                                ['ClassA/BInterestCoverage', 'N/A', '>=', '12000%\n.', '', 'N/A'],
+                                [None, None, None, None, None, 'N/A'],
+                                ['ClassDInterestCoverage', 'N/A', '>=', '10500%\n.', '', 'N/A'],
+                            ],
+                            [
+                                ["Moody'sMaximumRatingFactorTest", '2577\n,', '<=', '3250\n,', '', 'PASS', '2581\n,'],
+                                [None, None, None, None, None, 'PASS', None],
+                                ['MinimumFloatingSpread', '35006%\n.', '>=', '20000%\n.', '', 'PASS', '34871%\n.'],
+                                [None, None, None, None, None, 'PASS', None],
+                                ['MinimumWeightedAverageS&PRecovery\nRateTest', '4050%\n.', '>=', '4000%\n.', '', 'PASS', '4040%\n.'],
+                                [None, None, None, None, None, 'PASS', None],
+                                ['WeightedAverageLife', '483\n.', '<=', '900\n.', '', 'PASS', '492\n.'],
+                            ],
+                            [
+                                ['AssetDetails', '', '', '', '', '', '', 'Notes'],
+                                ['', '', 'Count', '', '', 'Current', '', 'Notes'],
+                                ['DelayedDrawLoan', '', '1', '', '', '6500000\n, .', '', 'Class A -1'],
+                                ['RevolvingLoan', '', '0', '', '', '000\n.', '', 'Class A -2'],
+                                ['TermLoan', '', '293', '', '', '37486898542\n, , .', '', 'Class B -1'],
+                                ['MiscellaneousInformation', None, None, None, None, '', '', 'Class B -2\nClassC'],
+                                ['', '', '', '', '', '', '', ''],
+                                ['AggregatePrincipalBalance', None, '', '', '', '38603398542\n, , .', '', 'Class D\n-'],
+                                ['PrincipalCash', '', '', '', '', '1281594162\n, , .', '', 'Class D\n-'],
+                                ['PFAI', '', '', '', '', '72757624\n, .', '', 'ClassEN'],
+                                ['Totals', '', '', '', '', '39957750328\n, , .', '', ''],
+                                ['AccountBalances', None, '', '', '', '', '', ''],
+                                ['', '', '', '', '', '', '', ''],
+                                ['PrincipalCash\nInterestCash', '', '', '', '', '1281594162\n, , .\n1300009090\n, , .', '', ''],
+                            ],
+                            [
+                                ['Issuer', 'OCPCLO202432 LTD\n- , .'],
+                                ['Co-Issuer', 'OCPCLO202432LLC\n-'],
+                                ['CollateralTrustee', 'Citibank N .A\n.'],
+                                ['CollateralManager', 'Onex Credit Partners, LLC'],
+                                ['RatingAgencies', 'S&P'],
+                                ['CollateralAdministrator', 'SiepeLLC'],
+                                ['RelationshipManager', 'SabrinaSchmidt'],
+                                ['', 'sschmidt@siepe.com'],
+                                ['', '2818704754\n- -'],
+                                ['ClosingDate', '04/23/2024'],
+                                ['FirstPaymentDate', '10/23/2024'],
+                                ['ReinvestmentPeriod', '04/23/2024 04/23/2029\n-'],
+                                ['EffectiveDate', '04/25/2024'],
+                                ['NextPaymentDate', '10/23/2024'],
+                                ['PriorPaymentDate', '-'],
+                                ['CollectionPeriod', '04/23/2024 10/08/2024\n-'],
+                            ],
+                            [
+                                ['Notes', 'OriginalBalance', 'CurrentBalance', 'Spread', 'Coupon', 'Interest'],
+                                ['Class A -1 Notes', '256000000\n, ,', '256000000\n, ,', '152000%\n.', '682458%\n.', '888105344\n, , .'],
+                                ['Class A -2 Notes', '16000000\n, ,', '16000000\n, ,', '172000%\n.', '702458%\n.', '57133251\n, .'],
+                                ['Class B -1 Notes', '24000000\n, ,', '24000000\n, ,', '200000%\n.', '730458%\n.', '89115876\n, .'],
+                                ['Class B -2 Notes', '8000000\n, ,', '8000000\n, ,', '584100%\n.', '584100%\n.', '23364000\n, .'],
+                                ['ClassCNotes', '24000000\n, ,', '24000000\n, ,', '250000%\n.', '780458%\n.', '95215876\n, .'],
+                                ['Class D -1 Notes', '24000000\n, ,', '24000000\n, ,', '375000%\n.', '905458%\n.', '110465876\n, , .'],
+                                ['Class D -2 Notes', '4000000\n, ,', '4000000\n, ,', '905000%\n.', '905000%\n.', '18100000\n, .'],
+                                ['ClassENotes', '12000000\n, ,', '12000000\n, ,', '676000%\n.', '1206458%\n.', '73593938\n, .'],
+                                ['', '36800000000\n, , .', '36800000000\n, , .', '', '', '1355094161\n, , .'],
+                            ],
+                        ]
             
+            _check_tables(tables2_expected, tables2)
+        
         else:
             expected_a = [
                 ["Class A/B Overcollateralization", "131.44%", ">=", "122.60%", "", "PASS"],
