@@ -339,6 +339,11 @@ _globals = _Globals()
 
 _get_layout: typing.Optional[typing.Callable] = None
 
+try:
+    import pymupdf.layout
+except ImportError:
+    pass
+
 # global switch ensuring that the recommendation message is shown at most once
 _recommend_layout = True  # must be referred to as "global" everywhere
 
