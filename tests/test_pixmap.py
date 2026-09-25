@@ -810,3 +810,21 @@ def test_5082():
         assert timeout, f'Expected timeout from {pymupdf.mupdf_version=}.'
     else:
         assert not timeout, f'Unexpected timeout from {pymupdf.mupdf_version=}.'
+
+
+def test_5125():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5125.pdf')
+    e = None
+    command = f'{sys.executable} -c "import pymupdf; pymupdf.open({path!r})[0].get_pixmap(dpi=200)"'
+    print()
+    print(f'Running: {command}', flush=1)
+    try:
+        cp = subprocess.run(command, shell=1, timeout=30)
+    except subprocess.TimeoutExpired as ee:
+        e = ee
+    print(f'{e=}', flush=1)
+    if pymupdf.mupdf_version_tuple >= (1, 28, 5):
+        assert not e
+    else:
+        assert e
+    

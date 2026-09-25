@@ -1099,20 +1099,59 @@ def sdist():
 
 
 # PyMuPDF version.
-version_p = '1.28.2'
+version_p = '2.0'
 
-version_mupdf = '1.28.2'
+version_mupdf = '1.28.5'
 
 # A normal PyMuPDF package.
 
+def get_requires_for_build_wheel(config_settings=None):
+    '''
+    Adds to pyproject.toml:[build-system]:requires, allowing programmatic
+    control over what packages we require.
+    '''
+    def platform_release_tuple():
+        r = platform.release()
+        r = r.split('.')
+        r = tuple(int(i) for i in r)
+        log(f'platform_release_tuple() returning {r=}.')
+        return r
+
+    ret = list()
+    libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
+    if libclang:
+        print(f'Overriding to use {libclang=}.')
+        ret.append(libclang)
+    elif pipcl.openbsd():
+        print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
+    elif pipcl.darwin() and platform_release_tuple() < (18,):
+        # There are still of problems when building on old macos.
+        ret.append('libclang==14.0.6')
+    else:
+        ret.append('libclang')
+    if msys2():
+        print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
+    elif pipcl.openbsd():
+        print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
+    elif PYMUPDF_SETUP_SWIG:
+        pass
+    elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
+        # Latest swig-4.4.1 gives director errors on macos with python<3.13.
+        ret.append('swig==4.3.1')
+    else:
+        ret.append('swig')
+    return ret
+
+
 requires_dist = list()
+requires_dist.append('pymupdf4llm')
 if os.environ.get('PYODIDE_ROOT'):
     # We can't pip install pytest on pyodide, so specify it here.
     requires_dist.append('pytest')
     requires_dist.append('pipcl')
 
 p = pipcl.Package(
-        'pymupdf',
+        'pymupdf-core',
         version_p,
         summary = 'A high performance Python library for data extraction, analysis, conversion & manipulation of PDF (and other) documents.',
         description = 'README.md',
@@ -1178,43 +1217,6 @@ if pipcl.darwin():
             pt2 = f'{m.group(1)}10_15{m.group(5)}'
             pipcl.log(f'Changing tag_platform from {pt!r} to {pt2!r}')
             p.tag_platform_ = pt2
-
-def get_requires_for_build_wheel(config_settings=None):
-    '''
-    Adds to pyproject.toml:[build-system]:requires, allowing programmatic
-    control over what packages we require.
-    '''
-    def platform_release_tuple():
-        r = platform.release()
-        r = r.split('.')
-        r = tuple(int(i) for i in r)
-        log(f'platform_release_tuple() returning {r=}.')
-        return r
-
-    ret = list()
-    libclang = os.environ.get('PYMUPDF_SETUP_LIBCLANG')
-    if libclang:
-        print(f'Overriding to use {libclang=}.')
-        ret.append(libclang)
-    elif pipcl.openbsd():
-        print(f'OpenBSD: libclang not available via pip; assuming `pkg_add py3-llvm`.')
-    elif pipcl.darwin() and platform_release_tuple() < (18,):
-        # There are still of problems when building on old macos.
-        ret.append('libclang==14.0.6')
-    else:
-        ret.append('libclang')
-    if msys2():
-        print(f'msys2: pip install of swig does not build; assuming `pacman -S swig`.')
-    elif pipcl.openbsd():
-        print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
-    elif PYMUPDF_SETUP_SWIG:
-        pass
-    elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
-        # Latest swig-4.4.1 gives director errors on macos with python<3.13.
-        ret.append('swig==4.3.1')
-    else:
-        ret.append('swig')
-    return ret
 
 
 if PYMUPDF_SETUP_URL_WHEEL:

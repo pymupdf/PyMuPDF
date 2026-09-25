@@ -128,7 +128,8 @@ def test_textbox5():
 
         blocks = page.get_text("blocks")
         bbox = pymupdf.Rect(blocks[0][:4])
-        assert bbox in r
+        # Need small allowance if pymupdf4llm is imported.
+        assert bbox in (r + pymupdf.Rect(-0.01, -0.01, +0.01, +0.01))
     finally:
         # Must restore small_glyph_heights, otherwise other tests can fail.
         pymupdf.TOOLS.set_small_glyph_heights(small_glyph_heights0)

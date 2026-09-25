@@ -339,6 +339,11 @@ _globals = _Globals()
 
 _get_layout: typing.Optional[typing.Callable] = None
 
+try:
+    import pymupdf.layout   # noqa: F401
+except ImportError:
+    pass
+
 # global switch ensuring that the recommendation message is shown at most once
 _recommend_layout = True  # must be referred to as "global" everywhere
 
@@ -26291,7 +26296,6 @@ recover_span_quad           = utils.recover_span_quad
 
 from . import table
 
-
 class FitzDeprecation(DeprecationWarning):
     pass
 
@@ -26582,3 +26586,8 @@ __doc__ = (
         f'PyMuPDF {VersionBind}: Python bindings for the MuPDF {VersionFitz} library.\n'
         f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
         )
+
+try:
+    import pymupdf4llm   # noqa: F401
+except ImportError:
+    pass

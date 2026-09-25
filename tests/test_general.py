@@ -306,7 +306,13 @@ def test_2533():
                     bbox = pymupdf.Rect(char[3])
                     break
         bbox2 = page.search_for(NEEDLE)[0]
-        assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
+        if util._use_4llm():
+            assert bbox2.x0 == bbox.x0
+            assert bbox2.x1 == bbox.x1
+            assert abs(bbox2.y0 - bbox.y0) < 1
+            assert abs(bbox2.y1 - bbox.y1) < 1
+        else:
+            assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
     finally:
         pymupdf.TOOLS.set_small_glyph_heights(False)
 
