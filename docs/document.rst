@@ -169,6 +169,7 @@ For details on **embedded files** refer to Appendix 3.
 :attr:`Document.permissions`            permissions to access the document
 :attr:`Document.pagemode`               PDF PageMode value
 :attr:`Document.pagelayout`             PDF PageLayout value
+:attr:`Document.use_layout`             whether the PyMuPDF Layout module is used for page analysis
 :attr:`Document.version_count`          PDF count of versions
 ======================================= ==========================================================
 
@@ -541,6 +542,12 @@ For details on **embedded files** refer to Appendix 3.
           
           See: :ref:`box classes <pymupdf4llm-api-boxclasses>`
 
+
+  .. method:: use_layout(yes: bool = True)
+
+    Switch on/off the use of the :ref:`PyMuPDF Layout module <pymupdf_and_layout>`. 
+    
+    If `yes=True` (default), the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
 
 
   .. method:: add_ocg(name, config=-1, on=True, intent="View", usage="Artwork")

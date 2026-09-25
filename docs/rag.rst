@@ -94,7 +94,56 @@ See `Building RAG from Scratch <https://docs.llamaindex.ai/en/stable/examples/lo
 Preparing Data for Chunking
 -----------------------------
 
-todo
+By using the PyMuPDF4LLM module, you can efficiently prepare your documents for chunking and subsequent processing with your :title:`LLM`.
+
+Create chunked documents as follows:
+
+.. code-block:: python
+
+    import pymupdf4llm
+    
+    chunked_document = pymupdf4llm.to_chunks("input.pdf")
+
+Basic queries with chunked documents can be made as follows:
+
+.. code-block:: python
+
+    len(chunked_document) # Count the number of Chunks
+    chunked_document[0], chunked_document[2:5] # a Chunk, a list of Chunks
+    chunked_document.index(chunked_document[3]) # 3 (Sequence protocol: iteration, slicing, index)
+    chunked_document.chunks  # the same chunks as a tuple
+    chunked_document.text # all chunk text joined (lazy)
+    chunked_document.get("c0") # get chunk by any public id: c{n}, t{n}, f{n}, s{n}, p{page}.b{box}
+
+See :ref:`the full API documentation <pymupdf4llm-api-to-chunks>` for PyMuPDF4LLM's chunking capabilities.
+
+
+
+.. _using_pymupdf_with_pymupdf_office:
+
+Using with |PyMuPDF Office|
+---------------------------
+
+
+For **Office** document support, |PyMuPDF| works seamlessly with |PyMuPDF Office|. Assuming you have :doc:`../pymupdf-office/index` installed you will be able to work with **Office** documents as expected:
+
+
+.. code-block:: python
+
+    import pymupdf
+    import pymupdf.office
+    pymupdf.office.unlock()
+    md = pymupdf.office.to_markdown("sample.doc")
+
+
+.. _pymupdf_and_layout:
+
+PyMuPDF & PyMuPDF Layout
+-----------------------------------
+
+By default |PyMuPDF| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`Document.use_layout` method.
+
+
 
 
 Related Blogs
@@ -116,6 +165,10 @@ Create a Chatbot to connect with your documents
 
 
 
+
+.. _PyMuPDF4LLM Document Loader: https://docs.langchain.com/oss/python/integrations/providers/pymupdf4llm/
+
+.. _layout analysis module: https://pymupdf.io/use-cases/layout
 
 
 

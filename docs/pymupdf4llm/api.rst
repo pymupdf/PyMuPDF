@@ -177,6 +177,42 @@ The PyMuPDF4LLM API
     :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
 
 
+
+
+.. method:: to_json(doc: pymupdf.Document | str, *, **kwargs) -> str
+
+    Parses the document and the specified pages and converts the result into a `JSON formatted string <https://docs.pdf4llm.com/python/reference/JSON-schema>`_.
+
+    :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
+
+    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
+
+    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+
+    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+
+    :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
+
+    :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
+
+    :arg str image_path: store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory. Page areas classified as "picture" will be written as image files to the specified location. The image file names will be of the format `{image_path}/{filename}-pagenumber-image_number.{image_format}`.
+
+    :arg bool force_text: generate text output for text that is written upon areas that are classified as "picture" by the layout module. This may be especially be useful when picture content is not stored.
+
+    :arg bool show_progress: display a progress bar during processing.
+
+    :arg bool embed_images: store image binaries for "picture" boundary boxes. Base64-encoded images are included in the JSON output. Ignores `image_path` if used. This may drastically increase the size of your JSON text.
+
+    :arg bool write_images: store image files "picture" boundary boxes. When encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
+
+    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
+
+    :rtype: str
+
+    See `JSON Schema <https://docs.pdf4llm.com/python/reference/JSON-schema>`_ for the structure of the output JSON string.
+
+
+
 .. method:: to_text(doc: pymupdf.Document | str, *, **kwargs) -> str
 
     Reads the pages of the file and outputs the text of its pages in plain text (|TXT|) format.
@@ -226,64 +262,191 @@ The PyMuPDF4LLM API
           See: :ref:`box classes <pymupdf4llm-api-boxclasses>`
 
 
-.. method:: to_json(doc: pymupdf.Document | str, *, **kwargs) -> str
+.. _pymupdf4llm-api-to-chunks:
 
-    Parses the document and the specified pages and converts the result into a `JSON formatted string <https://docs.pdf4llm.com/python/reference/JSON-schema>`_.
+.. method:: to_chunks(doc: pymupdf.Document | str, **kwargs) -> ChunkedDocument
 
-    :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| :class:`Document` (created via `pymupdf.open`). In order to use `pathlib.Path` specifications, Python file-like objects, documents in memory etc. you **must** use a |PyMuPDF| :class:`Document`.
+    Creates retrieval-oriented chunks from a document.
 
-    :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
+    Chunk boundaries are determined from layout information, including box boundaries, page breaks, vertical gaps, font changes, and structural hints. Token limits guide chunk assembly but are not guarantees: indivisible content, such as a preserved table, may exceed ``max_tokens``.
 
-    :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+    :arg int max_tokens: target maximum number of tokens per chunk. Default is ``400``.
 
-    :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+    :arg int min_tokens: minimum size used when merging small neighboring chunks. Default is ``120``. A value of ``0`` disables this minimum-size behavior.
 
-    :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
+    :arg float breakpoint_threshold: boundary score threshold used when splitting chunks. Default is ``0.5``.
 
-    :arg str image_format: specify the desired image format via its extension. Default is "png" (portable network graphics). Another popular format may be "jpg". Possible values are all :ref:`supported output formats <Supported_File_Types>`. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
+    :arg bool merge_small_chunks: whether to merge chunks that are below ``min_tokens`` with neighboring chunks. Default is ``True``.
 
-    :arg str image_path: store images in this folder. Relevant if `write_images=True`. Default is the path of the script directory. Page areas classified as "picture" will be written as image files to the specified location. The image file names will be of the format `{image_path}/{filename}-pagenumber-image_number.{image_format}`.
+    :arg str table_mode: ``"preserve"`` keeps table content together as one chunk; ``"isolate"`` prevents tables from being merged into neighboring chunks. Default is ``"preserve"``.
 
-    :arg bool force_text: generate text output for text that is written upon areas that are classified as "picture" by the layout module. This may be especially be useful when picture content is not stored.
+    :arg bool respect_section_starts: whether to keep a chunk starting a detected section separate from the preceding section when merging to meet token budgets. Default is ``True``.
 
-    :arg bool show_progress: display a progress bar during processing.
+    :arg str header_footer_mode: controls handling of page headers and footers. ``"exclude"`` omits them from chunk text, ``"auto"`` omits repeated headers and footers, and ``"include"`` retains them. Default is ``"exclude"``. The element registry in the result retains the parsed layout elements in all modes.
 
-    :arg bool embed_images: store image binaries for "picture" boundary boxes. Base64-encoded images are included in the JSON output. Ignores `image_path` if used. This may drastically increase the size of your JSON text.
+    :arg str sentence_splitter: sentence splitting mode: ``"default"`` or ``"multilingual"`` (for additional CJK support). Default is ``"default"``.
 
-    :arg bool write_images: store image files "picture" boundary boxes. When encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
+    :arg tokenizer: token-counting strategy. Use ``None`` for the default character-based estimate, a callable accepting text and returning an integer token count, or a ``tiktoken`` encoding name. Default is ``None``.
 
-    :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
+    :arg dict weights: optional overrides for the layout boundary-score weights. The default ``None`` uses the built-in weights for box boundaries, box classes, page breaks, vertical and horizontal gaps, font changes, headings, headers and footers, lists, tables, and captions.
 
-    :rtype: str
+    The enum-valued arguments accept only the values listed above. ``max_tokens`` must be a positive integer and ``min_tokens`` a non-negative integer; unknown keyword arguments raise :exc:`TypeError` and invalid values raise :exc:`ValueError`.
 
-    See `JSON Schema <https://docs.pdf4llm.com/python/reference/JSON-schema>`_ for the structure of the output JSON string.
+    :returns: a :class:`ChunkedDocument`, a sequence of :class:`Chunk` objects with document-level element, table, figure, and section views. It also provides joined text, ID-based lookup, diagnostics, JSON-safe export, and reassembly with different chunk-budget parameters.
 
 
-.. _pymupdf4llm-api-boxclasses:
+.. class:: ChunkedDocument
 
-.. note::
+    Retrieval-ready chunks and document-level structure returned by :meth:`to_chunks`. This object implements the sequence protocol over its chunks: use ``len(cd)``, integer indexing, iteration, or slicing. Integer indexing returns a chunk; slicing returns a list of chunks. Chunk ids are ``c{n}`` in reading order, so ``cd.get("c3")`` addresses the same chunk as ``cd[3]``.
 
-    **About box classes**
+    The object also keeps layout elements and table, figure, and section views. These views are linked to their owning chunks through ids. Element ids have the form ``p{page}.b{box}`` (1-based page number and 0-based box index). The ``hierarchy`` property represents sections as a tree; its root has level 0.
 
-    If `page_chunks = True` the return objects for `to_markdown` & `to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
+    .. attribute:: chunks
 
-    The return object for `to_json` contains a similar key called ``boxclass``.
+        The chunks as a tuple, equivalent to ``tuple(cd)``.
 
-    The possible string values are for this ``class`` / ``boxclass`` key are:
+    .. attribute:: text
 
-    .. code-block:: bash
+        All chunk text joined in reading order with blank lines between chunks. The value is computed lazily and cached.
 
-        text
-        picture
-        table
-        caption
-        title
-        section-header
-        page-header
-        page-footer
-        list-item
-        footnote
-        formula
+    .. attribute:: elements
+
+        A list containing every parsed layout box, including headers and footers excluded from chunk text. Each element has an id, page and box indices, box class, bounding box, canonical text, and a flag indicating whether it is a header or footer.
+
+    .. attribute:: tables
+
+        A list of table views. Each table is linked to its owning chunk when one exists, and provides its id, source element id, page, bounding box, canonical text, optional caption and section id, and token count. The canonical text is Markdown or HTML according to the table output mode.
+
+    .. attribute:: figures
+
+        A list of figure and formula views, linked to their owning chunk when one exists. Views include source location, extracted text when available, caption and section links, and image data when it was extracted.
+
+    .. attribute:: sections
+
+        A list of section views with title, heading level, page range, path, child chunk ids, token count, and section body text.
+
+    .. attribute:: hierarchy
+
+        Sections arranged as a tree of section nodes. The root node has level 0 and no section id.
+
+    .. attribute:: params
+
+        A read-only mapping of the parameters used to create this object.
+
+    .. attribute:: diagnostics
+
+        A dictionary of extraction and ingestion facts: chunk, element, table, figure, section, and page counts; pages without chunks; reasons for an empty result; figures without extracted text; degenerate tables; and the number of excluded header/footer units. This reports facts only; consumers decide how to act on them.
+
+    .. method:: get(id: str, default=...)
+
+        Return a chunk, table, figure, section, or element by its public id: ``c{n}``, ``t{n}``, ``f{n}``, ``s{n}``, or ``p{page}.b{box}``. Raises :exc:`KeyError` if the id is unknown and no default is provided; otherwise returns ``default`` for an unknown id.
+
+    .. method:: to_dicts(*, include_tagged: bool = True) -> list[dict]
+
+        Return the chunks as flat, JSON-safe dictionaries. Each dictionary contains ``id``, ``text``, ``content_hash``, and ``metadata``; it also contains ``tagged_content`` unless ``include_tagged=False``.
+
+    .. method:: to_json(*, include_tagged: bool = True, **json_kwargs) -> str
+
+        Serialize the result of :meth:`to_dicts` as JSON. ``include_tagged`` controls whether tagged content is included; additional keyword arguments are passed to :func:`json.dumps`.
+
+    .. method:: reassemble_chunks(**params) -> ChunkedDocument
+
+        Create a new ``ChunkedDocument`` by assembling chunks again from the retained parsed units; the document does not need to be parsed again. Accepts only ``max_tokens``, ``min_tokens``, ``breakpoint_threshold``, ``table_mode``, ``merge_small_chunks``, and ``respect_section_starts``. Other chunking parameters and parse options raise :exc:`ValueError` because they require a new :meth:`to_chunks` call. The original object is unchanged.
+
+    .. method:: to_langchain_documents(*, doc_id: str | None = None)
+
+        Return the chunks as LangChain ``Document`` objects. Requires the optional ``langchain-core`` package. If ``doc_id`` is provided, it is prefixed to each exported chunk id to make ids unique across documents.
+
+    .. method:: to_llama_nodes(*, doc_id: str | None = None)
+
+        Return the chunks as LlamaIndex ``TextNode`` objects. Requires the optional ``llama-index-core`` package. If ``doc_id`` is provided, it is prefixed to each exported chunk id to make ids unique across documents; the original chunk id is retained in node metadata.
+
+
+.. class:: Chunk
+
+    A finalized, retrieval-ready portion of a document, returned as an item in :class:`ChunkedDocument`. Treat chunks returned by :meth:`to_chunks` as read-only. Mutating ``text`` or ``metadata`` after reading ``content_hash`` can leave that cached hash, and caches on the owning ``ChunkedDocument``, out of date. To change chunk boundaries, use :meth:`ChunkedDocument.reassemble_chunks`; keep application-specific data separately, keyed by the chunk id.
+
+    .. attribute:: id
+
+        The chunk id, formatted as ``c{n}``, where ``n`` is its position in this ``ChunkedDocument``. Chunk ids are local to the result and may change when chunks are reassembled with different parameters.
+
+    .. attribute:: text
+
+        The chunk's Markdown text, rendered from its layout content.
+
+    .. attribute:: tagged_content
+
+        Context-enriched text for embedding. It includes the chunk's section path, page, and non-paragraph content types where available, followed by its Markdown text. This is separate from ``text`` and is included by default in :meth:`ChunkedDocument.to_dicts` and :meth:`ChunkedDocument.to_json`.
+
+    .. attribute:: metadata
+
+        A :class:`ChunkMetadata` instance containing page, layout, structure, token-count, and provenance information for this chunk.
+
+    .. attribute:: content_hash
+
+        A lazily computed SHA-256 hash of ``text`` after runs of whitespace have been collapsed to one space and leading and trailing whitespace has been removed. The hash is cached. It is stable across rendering-only whitespace changes, but changes when the normalized text changes.
+
+.. class:: ChunkMetadata
+
+    Payload-ready metadata associated with a :class:`Chunk`. Its fields are also included in the ``metadata`` object returned by :meth:`ChunkedDocument.to_dicts` and :meth:`ChunkedDocument.to_json`.
+
+    .. attribute:: page_start
+
+        1-based number of the first page contributing content to the chunk.
+
+    .. attribute:: page_end
+
+        1-based number of the last page contributing content to the chunk.
+
+    .. attribute:: bboxes
+
+        List of bounding boxes in ``(page, x0, y0, x1, y1)`` form. Page numbers are 1-based.
+
+    .. attribute:: types
+
+        Content types present in the chunk, in reading order, such as ``"heading"``, ``"paragraph"``, ``"table"``, ``"list"``, ``"figure"``, or ``"caption"``.
+
+    .. attribute:: section_id
+
+        Id of the innermost detected section containing the chunk, in ``s{n}`` form, or ``None`` when the chunk is not associated with a section.
+
+    .. attribute:: section_path
+
+        List of section titles from the document's section hierarchy to the innermost section. Empty when no section applies.
+
+    .. attribute:: token_count
+
+        Token count used by the chunk assembler. Depending on the tokenizer and the final rendered text, this can differ slightly from a separate tokenization of ``text``; token budgets are targets rather than hard limits.
+
+    .. attribute:: element_ids
+
+        Ids of the source layout elements contributing to the chunk, formatted as ``p{page}.b{box}`` (1-based page number, 0-based box index).
+
+    .. attribute:: table_ids
+
+        Ids of table views associated with the chunk, formatted as ``t{n}``.
+
+    .. attribute:: figure_ids
+
+        Ids of figure or formula views associated with the chunk, formatted as ``f{n}``.
+
+    .. attribute:: lists
+
+        List groups found in the chunk. Each group contains ``items`` with item text, page number, and bounding box, and ``bboxes`` for the group.
+
+    .. attribute:: ocr
+
+        ``True`` if content contributing to this chunk came from a page processed by OCR; otherwise ``False``.
+
+    .. attribute:: file_path
+
+        Source document path, or ``None`` when no path is available.
+
+    .. attribute:: page_count
+
+        Number of pages in the source document, or ``None`` when unavailable.
+
+
 
 
 .. _pymupdf4llm-api-layout:
@@ -512,6 +675,36 @@ This is a version of previous **example 2** that uses :class:`TocHeaders` for he
 
 -----
 
+
+
+.. _pymupdf4llm-api-boxclasses:
+
+.. note::
+
+    **About box classes**
+
+    If `page_chunks = True` the return objects for `to_markdown` & `to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
+
+    The return object for `to_json` contains a similar key called ``boxclass``.
+
+    The possible string values are for this ``class`` / ``boxclass`` key are:
+
+    .. code-block:: bash
+
+        text
+        picture
+        table
+        caption
+        title
+        section-header
+        page-header
+        page-footer
+        list-item
+        footnote
+        formula
+
+-----
+
 For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/pymupdf4llm/blob/main/CHANGES.md>`_.
 
 .. rubric:: Footnotes
@@ -560,3 +753,5 @@ For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/p
             white-space: pre;
         }
     </style>
+
+
