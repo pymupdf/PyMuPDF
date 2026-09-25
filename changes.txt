@@ -20,7 +20,7 @@ Fixed issues:
 
 Other:
 
-* Use MuPDF-1.28.4.
+* Use MuPDF-1.28.5.
 * Added support for form field hierarchies.
 * Added support for radio button groups.
 * Added support for widget aliases.
