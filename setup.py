@@ -1101,7 +1101,7 @@ def sdist():
 # PyMuPDF version.
 version_p = '2.0'
 
-version_mupdf = '1.28.4'
+version_mupdf = '1.28.5'
 
 # A normal PyMuPDF package.
 
