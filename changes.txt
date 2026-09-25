@@ -16,7 +16,7 @@ Fixed issues:
 * **Fixed** `5101 <https://github.com/pymupdf/PyMuPDF/issues/5101>`_: Cyclic Widget /Parent makes page operations fail with FzErrorFormat: code=7: cycle in resources
 * **Fixed** `5108 <https://github.com/pymupdf/PyMuPDF/issues/5108>`_: Page.clip_to_rect() drops 'sh' (shading) operators
 * **Fixed** `5112 <https://github.com/pymupdf/PyMuPDF/issues/5112>`_: Stack-based buffer overflow in JM_set_annot_callout_line
-* **Fixed** `5125 <https://github.com/pymupdf/PyMuPDF/issues/5125>`_: get_pixmap() never returns on a tagged PDF page with many MCIDs \u2014 pdf_lookup_mcid_in_mcids is a linear scan, making rendering O(n²) per page
+* **Fixed** `5125 <https://github.com/pymupdf/PyMuPDF/issues/5125>`_: get_pixmap() never returns on a tagged PDF page with many MCIDs - pdf_lookup_mcid_in_mcids is a linear scan, making rendering O(n**2) per page
 
 Other:
 
