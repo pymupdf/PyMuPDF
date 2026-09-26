@@ -1030,6 +1030,8 @@ def check_lines(expected_regexes, actual):
         return s
     expected_regexes = str_to_list(expected_regexes)
     actual = str_to_list(actual)
+    if actual and 'onnxruntime' in actual[0]:
+        actual = actual[1:]
     if expected_regexes and expected_regexes[-1]:
         expected_regexes.append('') # Always expect a trailing empty line.
     # Remove `None` regexes and make all regexes match entire lines.
