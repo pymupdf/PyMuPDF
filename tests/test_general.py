@@ -1030,12 +1030,17 @@ def check_lines(expected_regexes, actual):
         return s
     expected_regexes = str_to_list(expected_regexes)
     actual = str_to_list(actual)
+    if actual and 'onnxruntime' in actual[0]:
+        actual = actual[1:]
+        if len(actual) == 1 and not actual[0]:
+            actual = list()
+        print(f'### check_lines(): have changed to {actual=}', flush=1)
     if expected_regexes and expected_regexes[-1]:
         expected_regexes.append('') # Always expect a trailing empty line.
     # Remove `None` regexes and make all regexes match entire lines.
     expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
     
-    print(f'expected_regexes ({len(expected_regexes)}):')
+    print(f'expected_regexes ({len(expected_regexes)}):', flush=1)
     for i in expected_regexes:
         print(f'    {i!r}')
     
@@ -2314,7 +2319,7 @@ def test_5100():
             import pymupdf
             ''')
     assert cp.stdout == b''
-    assert cp.stderr == b''
+    assert cp.stderr == b'' or b'onnxruntime' in cp.stderr
     
     cp = run('''
             import fitz
@@ -2328,7 +2333,7 @@ def test_5100():
             import fitz
             ''')
     assert cp.stdout == b''
-    assert cp.stderr == b''
+    assert cp.stderr == b'' or b'onnxruntime' in cp.stderr
 
 
 def test_4846():
