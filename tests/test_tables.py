@@ -227,6 +227,115 @@ def test_strict_lines():
     assert tab2.col_count < tab1.col_count
 
 
+def test_strict_lines_accepts_thin_rects_batched_in_large_fill_path():
+    """Line-like rect items survive a large fill-only path's bbox filter."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=240, height=180)
+    shape = page.new_shape()
+    x_values = (40, 120, 200)
+    y_values = (30, 90, 150)
+    for x in x_values:
+        shape.draw_rect(pymupdf.Rect(x - 0.4, y_values[0], x + 0.4, y_values[-1]))
+    for y in y_values:
+        shape.draw_rect(pymupdf.Rect(x_values[0], y - 0.4, x_values[-1], y + 0.4))
+    shape.finish(color=None, fill=(0, 0, 0))
+    shape.commit()
+    for row in range(2):
+        for col in range(2):
+            page.insert_text(
+                (x_values[col] + 10, y_values[row] + 25),
+                f"r{row}c{col}",
+            )
+
+    paths = page.get_drawings()
+    assert len(paths) == 1
+    assert paths[0]["type"] == "f"
+    assert paths[0]["rect"].width > 3 and paths[0]["rect"].height > 3
+
+    tables = page.find_tables(strategy="lines_strict", use_layout=False).tables
+    assert len(tables) == 1
+    assert tables[0].row_count == 2
+    assert tables[0].col_count == 2
+    doc.close()
+
+
+def test_strict_lines_ignores_a_dot_screen_batched_in_a_large_fill_path():
+    """Short thin rects in a large fill path are a dot screen, not grid rules.
+
+    This page batches 196 rects of 1.1 x 0.9 pt into one fill path: a dotted
+    shading, not a grid. Each is thin enough to look like a simulated line, and a
+    few hundred of them at one y snap and join into a single long edge, which
+    turns an empty region into a table. Only rects long enough to be a rule are
+    kept (see _is_batched_rule).
+    """
+    filename = os.path.join(scriptdir, "resources", "test_3594.pdf")
+    doc = pymupdf.open(filename)
+    page = doc[14]
+    try:
+        paths = [
+            p
+            for p in page.get_drawings()
+            if p["type"] == "f" and p["rect"].width > 3 and p["rect"].height > 3
+        ]
+        assert any(len(p["items"]) > 100 for p in paths)
+        assert page.find_tables(strategy="lines_strict", use_layout=False).tables == []
+    finally:
+        doc.close()
+
+
+def test_get_table_drawings_is_shared_only_inside_one_call():
+    """The drawings cache lives for one find_tables() call; copies stay isolated."""
+    from pymupdf.table import _get_table_drawings
+
+    doc = pymupdf.open()
+    page = doc.new_page(width=200, height=200)
+    page.draw_rect(pymupdf.Rect(20, 20, 120, 60))
+    try:
+        # Without the cache every consumer extracts afresh, exactly as before.
+        assert _get_table_drawings(page) is not _get_table_drawings(page)
+
+        page._table_drawings_cache = []  # what find_tables() installs
+        first = _get_table_drawings(page)
+        assert first is _get_table_drawings(page)
+        assert first == page.get_drawings()
+        rect = pymupdf.Rect(first[0]["rect"])
+        item_count = len(first[0]["items"])
+
+        native = _get_table_drawings(page, native=True)
+        assert native is not first
+        native[0]["rect"] |= pymupdf.Point(180, 180)
+        native[0]["items"].append(("l", pymupdf.Point(0, 0), pymupdf.Point(1, 1)))
+        # The edge builder's in-place edits must not reach the other consumers.
+        cached = _get_table_drawings(page)
+        assert pymupdf.Rect(cached[0]["rect"]) == rect
+        assert len(cached[0]["items"]) == item_count
+        assert pymupdf.Rect(native[0]["rect"]) != rect  # the copy really changed
+
+        del page._table_drawings_cache
+        page.find_tables(use_layout=False)  # must not leave the cache behind
+        assert not hasattr(page, "_table_drawings_cache")
+    finally:
+        doc.close()
+
+
+def test_table_header_is_computed_on_first_access():
+    """Table.header is lazy but keeps its value, so to_markdown still works."""
+    doc = pymupdf.open(filename)
+    page = doc[0]
+    try:
+        tab = page.find_tables().tables[0]
+        assert tab._header is pymupdf.table._NO_HEADER_YET
+        header = tab.header
+        assert header is tab.header  # computed once
+        assert header.external is False
+        assert header.names == tab.extract()[0]
+        assert tab.to_markdown().startswith("|")
+        tab.header = None  # assignable, as before
+        assert tab.header is None
+    finally:
+        doc.close()
+
+
 def test_add_lines():
     """Test new parameter add_lines for table recognition."""
     if platform.python_implementation() == 'GraalVM':
@@ -676,6 +785,123 @@ def test_find_tables_refine_splits_rows_default_unchanged():
         doc.close()
 
 
+def test_refine_repeated_leading_header_cuts_exact_signature():
+    """A leading header row that recurs verbatim splits stacked tables."""
+    rows = [
+        ["First table", "", ""],
+        ["Effective Date", "BI", "PD"],
+        ["2024-01-01", "1", "2"],
+        ["2024-02-01", "3", "4"],
+        ["2024-03-01", "5", "6"],
+        ["Second table", "", ""],
+        [" effective   date ", "bi", "PD"],
+        ["2023-01-01", "7", "8"],
+        ["2023-02-01", "9", "10"],
+        ["2023-03-01", "11", "12"],
+    ]
+    cuts = pymupdf.table._refine_repeated_leading_header_cuts
+    assert cuts(rows, 2) == (6,)
+    # The header finder is conservative: a title row above the header can leave it
+    # reporting one header row, and the signature is still a leading row.
+    assert cuts(rows, 1) == (6,)
+    assert cuts(rows, 0) == (6,)
+    # A two-column stack splits too: the rule reads the grid's own width.
+    assert cuts([row[:2] for row in rows], 2) == (6,)
+
+
+def test_refine_repeated_leading_header_cuts_rejects_body_and_short_segments():
+    """Repeated body data and adjacent duplicate headers leave the table intact."""
+    repeated_body = [
+        ["Report", "", ""],
+        ["Name", "Value", "Note"],
+        ["a", "1", "x"],
+        ["same", "record", "value"],
+        ["b", "2", "y"],
+        ["c", "3", "z"],
+        ["d", "4", "w"],
+        ["same", "record", "value"],
+        ["e", "5", "q"],
+        ["f", "6", "r"],
+    ]
+    adjacent_duplicate = [
+        ["Name", "Value", "Note"],
+        ["a", "1", "x"],
+        ["b", "2", "y"],
+        ["c", "3", "z"],
+        ["Name", "Value", "Note"],
+        ["Name", "Value", "Note"],
+        ["d", "4", "w"],
+        ["e", "5", "q"],
+    ]
+    # A two-row header, as on IRS form 940-B: the narrow sub-header under the
+    # eight-column header recurs inside the one table.
+    spanning_subheader = [
+        ["State", "Reporting No.", "Payroll", "Rate period", "Rate", "Paid", "Due", "Total"],
+        ["From-", "To-"],
+        ["", "", "", "", "", "", "", ""],
+        ["State agency"],
+        ["Fax", "Mail to", "Other"],
+        ["State", "Rate", "Taxable", "Rate", "Paid", "Due", "Total"],
+        ["From-", "To-"],
+        ["", "", "", "", "", "", "", ""],
+    ]
+    cuts = pymupdf.table._refine_repeated_leading_header_cuts
+    # The repeated row is body data: it is not a leading row.
+    assert cuts(repeated_body, 2) == ()
+    # Two spanning cells do not carry an eight-column header's structure.
+    assert cuts(spanning_subheader, 1) == ()
+    # A repeated all-numeric leading row is data too.
+    assert cuts([["1", "2"], ["a", "b"], ["1", "2"], ["c", "d"]], 1) == ()
+    # Two header rows in a row are one header, not a cut.
+    assert cuts(adjacent_duplicate, 1) == ()
+    # A trailing repeat with no record under it is not a segment.
+    assert cuts([["H", "H2"], ["a", "b"], ["H", "H2"]], 1) == ()
+
+
+def test_find_tables_refine_splits_a_repeated_leading_header():
+    """Two tables printed under one another are one grid; refine=True splits it.
+
+    Nothing about a repeated header is union-specific, so the split applies
+    whenever refine=True. The default path still reports the single grid.
+
+    *** PyMuPDF extension. ***
+    """
+    texts = [
+        ["Date", "BI", "PD"],
+        ["2024-01", "1", "2"],
+        ["2024-02", "3", "4"],
+        ["Date", "BI", "PD"],
+        ["2023-01", "7", "8"],
+        ["2023-02", "9", "10"],
+    ]
+    doc = pymupdf.open()
+    page = doc.new_page(width=400, height=400)
+    x_values = (60, 160, 230, 300)
+    y0, row_height = 60, 22
+    for row in range(len(texts) + 1):
+        y = y0 + row * row_height
+        page.draw_line((x_values[0], y), (x_values[-1], y))
+    for x in x_values:
+        page.draw_line((x, y0), (x, y0 + len(texts) * row_height))
+    for row, values in enumerate(texts):
+        for column, value in enumerate(values):
+            page.insert_text(
+                (x_values[column] + 4, y0 + row * row_height + 15), value
+            )
+    try:
+        default = page.find_tables(use_layout=False).tables
+        assert len(default) == 1
+        assert default[0].row_count == 6
+
+        refined = page.find_tables(use_layout=False, refine=True).tables
+        assert len(refined) == 2
+        assert [t.extract() for t in refined] == [texts[:3], texts[3:]]
+        # Each segment reports its own region, not the parent's.
+        assert refined[0].bbox[3] <= refined[1].bbox[1] + 1
+    finally:
+        doc.close()
+
+
 def _make_merged_header_page():
     """A page whose line grid detects a header cell that spans both body columns.
 
@@ -852,6 +1078,138 @@ def test_render_table_html_section_row_collapse():
     )
 
 
+def _span_grid(rows):
+    """A placement grid from rows of cell text or ``(text, colspan, rowspan)``."""
+    from pymupdf.table import SpanCell
+
+    return [
+        [SpanCell(None, *((cell, 1, 1) if isinstance(cell, str) else cell)) for cell in row]
+        for row in rows
+    ]
+
+
+def test_find_tables_refine_tags_leaf_labels_under_a_spanning_header():
+    """The row naming the columns of a header cell that spans some of them joins
+    the header: find_tables(refine=True) tags it th. The default result is
+    unchanged.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    texts = [
+        ["Product", "Availability", None],
+        ["", "Online", "In store"],
+        ["Laptop", "Yes", "No"],
+        ["Phone", "No", "Yes"],
+        ["Tablet", "Yes", "Yes"],
+    ]
+    doc = pymupdf.open()
+    page = doc.new_page(width=400, height=300)
+    x_values = (60, 160, 240, 320)
+    y0, row_height = 60, 20
+    y1 = y0 + len(texts) * row_height
+    for row in range(len(texts) + 1):
+        y = y0 + row * row_height
+        page.draw_line((x_values[0], y), (x_values[-1], y))
+    for x in (60, 160, 320):
+        page.draw_line((x, y0), (x, y1))
+    page.draw_line((240, y0 + row_height), (240, y1))  # no divider in the header row
+    for row, values in enumerate(texts):
+        for column, value in enumerate(values):
+            if value:
+                page.insert_text((x_values[column] + 4, y0 + row * row_height + 14), value)
+    try:
+        default = page.find_tables(use_layout=False).tables[0]
+        assert (default.placements, default.header_rows) == (None, 0)
+        assert default.extract() == texts
+
+        t = page.find_tables(use_layout=False, refine=True).tables[0]
+        assert t.header_rows == 2
+        assert t.to_html() == (
+            "<table>"
+            '<tr><th>Product</th><th colspan="2">Availability</th></tr>'
+            "<tr><th></th><th>Online</th><th>In store</th></tr>"
+            "<tr><td>Laptop</td><td>Yes</td><td>No</td></tr>"
+            "<tr><td>Phone</td><td>No</td><td>Yes</td></tr>"
+            "<tr><td>Tablet</td><td>Yes</td><td>Yes</td></tr>"
+            "</table>"
+        )
+    finally:
+        doc.close()
+
+    # A stub label spanning both header rows; an already named span is left alone.
+    grid = _span_grid([
+        [("Product", 1, 2), ("Units sold", 2, 1)],
+        ["Online", "In store"],
+        ["Laptop", "120", "45"],
+        ["Phone", "300", "80"],
+    ])
+    assert extend_header_leaf_labels(grid, 1) == 2
+    assert extend_header_leaf_labels(grid, 2) == 2
+
+
+def test_header_leaf_labels_keep_a_numeric_body_row():
+    """A record under a spanning header cell stays in the body: its blank/number/
+    text shape repeats in the next row, or it puts a number under a column that
+    already has a label.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    repeated_shape = _span_grid([
+        ["Region", ("Revenue", 2, 1)],
+        ["East", "10", "12"],
+        ["West", "11", "13"],
+    ])
+    assert extend_header_leaf_labels(repeated_shape, 1) == 1
+    number_under_label = _span_grid([
+        ["Year", ("Sales", 2, 1)],
+        ["2023", "North", "South"],
+        ["2024", "10", "12"],
+    ])
+    assert extend_header_leaf_labels(number_under_label, 1) == 1
+
+
+def test_header_leaf_labels_need_a_spanning_header_cell():
+    """Without a header cell spanning more than one column but not all of them,
+    the header is left alone even when the next row reads like labels.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    single_cells = _span_grid([
+        ["Product", "Online", "In store"],
+        ["", "units", "units"],
+        ["Laptop", "120", "45"],
+    ])
+    assert extend_header_leaf_labels(single_cells, 1) == 1
+    # A cell spanning every column is a title, not a group of columns.
+    full_width_title = _span_grid([
+        [("Units sold", 3, 1)],
+        ["Product", "Online", "In store"],
+        ["Laptop", "120", "45"],
+    ])
+    assert extend_header_leaf_labels(full_width_title, 1) == 1
+
+
+def test_header_leaf_labels_never_take_the_last_row():
+    """A header never takes the whole table: the single record row under a
+    spanning header cell stays in the body.
+
+    *** PyMuPDF extension (opt-in header rules). ***
+    """
+    from pymupdf._table_headers import extend_header_leaf_labels
+
+    single_record = _span_grid([
+        ["Product", ("Units sold", 2, 1)],
+        ["Laptop", "120", "45"],
+    ])
+    assert extend_header_leaf_labels(single_record, 1) == 1
+
+
 def _make_bordered_table(page, x0, y0, texts):
     """Draw a bordered 2x2 table (cells 100 wide, 20 tall) at (x0, y0), with the
     2x2 ``texts`` grid inserted into its cells; returns nothing (mutates page)."""
@@ -938,4 +1296,178 @@ def test_find_tables_union_no_layout_degrades_to_line_candidates():
         assert t.extract()[0][0] == "a"
     finally:
         pymupdf._get_layout = original_get_layout_fn
+        doc.close()
+
+
+def _make_bordered_grid(page, bbox, texts):
+    """Draw a uniformly divided grid with the same shape as ``texts``."""
+    x0, y0, x1, y1 = bbox
+    row_count = len(texts)
+    col_count = len(texts[0])
+    row_height = (y1 - y0) / row_count
+    col_width = (x1 - x0) / col_count
+    for row in range(row_count + 1):
+        y = y0 + row * row_height
+        page.draw_line((x0, y), (x1, y))
+    for column in range(col_count + 1):
+        x = x0 + column * col_width
+        page.draw_line((x, y0), (x, y1))
+    for row, values in enumerate(texts):
+        for column, value in enumerate(values):
+            if value:
+                page.insert_text(
+                    (
+                        x0 + column * col_width + 5,
+                        y0 + row * row_height + min(14, row_height - 3),
+                    ),
+                    value,
+                )
+
+
+def test_find_tables_union_forwards_virtual_lines_to_candidates():
+    """Virtual raster-style rules reach the nested line finder in union mode."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=400, height=400)
+    for row, y in enumerate((100, 140)):
+        for col, x in enumerate((80, 180)):
+            page.insert_text((x + 8, y + 24), f"r{row}c{col}")
+    page.layout_information = []
+    lines = [
+        ((80, y), (280, y)) for y in (100, 140, 180)
+    ] + [
+        ((x, 100), (x, 180)) for x in (80, 180, 280)
+    ]
+    try:
+        tables = page.find_tables(
+            use_layout=True,
+            union=True,
+            add_lines=lines,
+        ).tables
+        assert len(tables) == 1
+        assert (tables[0].row_count, tables[0].col_count) == (2, 2)
+        assert tables[0].extract()[1][1] == "r1c1"
+    finally:
+        doc.close()
+
+
+def test_find_tables_union_rejects_multiline_single_row_panel():
+    """A one-row partition around a whole picture is not emitted as a table."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=500, height=500)
+    _make_bordered_grid(
+        page,
+        (80, 80, 380, 240),
+        [["left\naxis\nlabels", "right\naxis\nlabels"]],
+    )
+    page.layout_information = [
+        {"class_name": "picture", "group_bbox": [80.0, 80.0, 380.0, 240.0]},
+    ]
+    try:
+        assert page.find_tables(use_layout=True, union=True).tables == []
+    finally:
+        doc.close()
+
+
+def test_find_tables_union_inside_picture_needs_table_shaped_text():
+    """Inside a picture region a grid is admitted only on table-shaped text.
+
+    The Layout model called the region a picture, so a line grid found almost
+    entirely inside one is as likely to be a chart's rules as a table. A chart
+    labels its two axes, so its text sits in exactly one row and one column;
+    a table -- even a sparse matrix of scattered marks -- has a header row and a
+    label column that are each at least half full. Outside a picture nothing
+    changes.
+    """
+    picture = [{"class_name": "picture", "group_bbox": [120.0, 80.0, 440.0, 360.0]}]
+    # Chart shape: only the first row and the first column carry text.
+    axes = [
+        ["", "x0", "x1", "x2"],
+        ["y0", "", "", ""],
+        ["y1", "", "", ""],
+        ["y2", "", "", ""],
+    ]
+    dense = [["a0", "b0", "c0"], ["a1", "b1", "c1"]]
+    # Sparse matrix: header row, label column and a few scattered marks.
+    matrix = [
+        ["use", "z1", "z2", "z3", "z4", "z5"],
+        ["r1", "P", "P", "", "", ""],
+        ["r2", "P", "P", "", "", ""],
+        ["r3", "", "", "", "", ""],
+        ["r4", "", "", "", "", ""],
+        ["r5", "", "", "", "", ""],
+    ]
+
+    def find(texts, bbox, layout):
+        doc = pymupdf.open()
+        page = doc.new_page(width=500, height=500)
+        _make_bordered_grid(page, bbox, texts)
+        page.layout_information = list(layout)
+        try:
+            return page.find_tables(use_layout=True, union=True).tables
+        finally:
+            doc.close()
+
+    assert find(axes, (160, 160, 400, 300), picture) == []
+    assert len(find(axes, (160, 160, 400, 300), [])) == 1  # only the picture gates it
+
+    tables = find(dense, (160, 180, 380, 240), picture)
+    assert len(tables) == 1
+    assert (tables[0].row_count, tables[0].col_count) == (2, 3)
+    assert tables[0].extract()[1][2] == "c1"
+
+    tables = find(matrix, (140, 140, 420, 320), picture)
+    assert len(tables) == 1
+    assert (tables[0].row_count, tables[0].col_count) == (6, 6)
+    assert tables[0].extract()[1][1] == "P"
+
+
+def test_find_tables_union_keeps_a_table_holding_a_picture_in_one_cell():
+    """A table larger than the picture contains it and keeps the ordinary rule."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=500, height=500)
+    # A 200x200 grid whose upper-left cell is the picture; the right column has text.
+    page.draw_rect((100, 100, 300, 300))
+    page.draw_line((100, 200), (300, 200))
+    page.draw_line((200, 100), (200, 300))
+    page.insert_text((210, 130), "right top")
+    page.insert_text((210, 230), "right bottom")
+    page.insert_text((110, 230), "left bottom")
+    page.layout_information = [
+        {"class_name": "picture", "group_bbox": [100.0, 100.0, 200.0, 200.0]},
+    ]
+    try:
+        tables = page.find_tables(use_layout=True, union=True).tables
+        assert len(tables) == 1
+        assert (tables[0].row_count, tables[0].col_count) == (2, 2)
+        assert tables[0].extract()[0][1] == "right top"
+    finally:
+        doc.close()
+
+
+def test_find_tables_union_keeps_one_coherent_table_group_without_content_support():
+    """One Layout table group is retained; ownership is not a rejection gate."""
+    import types
+
+    doc = pymupdf.open()
+    page = doc.new_page(width=500, height=500)
+    _make_bordered_grid(
+        page,
+        (80, 80, 380, 240),
+        [["left\naxis\nlabels", "right\naxis\nlabels"]],
+    )
+    page.layout_information = [
+        {
+            "class_name": "table",
+            "group_bbox": [80.0, 80.0, 380.0, 240.0],
+            "table_grid": types.SimpleNamespace(
+                h_lines=[50.0, 100.0],
+                v_lines=[150.0],
+            ),
+        }
+    ]
+    try:
+        tables = page.find_tables(use_layout=True, union=True).tables
+        assert len(tables) == 1
+        assert (tables[0].row_count, tables[0].col_count) == (1, 2)
+    finally:
         doc.close()
