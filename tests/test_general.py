@@ -1030,14 +1030,16 @@ def check_lines(expected_regexes, actual):
         return s
     expected_regexes = str_to_list(expected_regexes)
     actual = str_to_list(actual)
+    print(f'### check_lines(): {actual=}', flush=1)
     if actual and 'onnxruntime' in actual[0]:
         actual = actual[1:]
+        print(f'### check_lines(): have changed to {actual=}', flush=1)
     if expected_regexes and expected_regexes[-1]:
         expected_regexes.append('') # Always expect a trailing empty line.
     # Remove `None` regexes and make all regexes match entire lines.
     expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
     
-    print(f'expected_regexes ({len(expected_regexes)}):')
+    print(f'expected_regexes ({len(expected_regexes)}):', flush)
     for i in expected_regexes:
         print(f'    {i!r}')
     
