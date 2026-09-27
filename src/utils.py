@@ -954,9 +954,8 @@ def get_label_pno(pgNo, labels):
     Returns:
         The label (str) of the page number. Errors return an empty string.
     """
-    # Jorj McKie, 2021-01-06
-
-    item = [x for x in labels if x[0] <= pgNo][-1]
+    l = [x for x in labels if x[0] <= pgNo]
+    item = (pgNo, "") if not l else l[-1]
     rule = rule_dict(item)
     prefix = rule.get("prefix", "")
     style = rule.get("style", "")
