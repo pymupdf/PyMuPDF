@@ -11917,7 +11917,7 @@ class Page:
         assert isinstance(page, mupdf.FzPage), f'{self.this=}'
         clips = True if extended else False
         prect = mupdf.fz_bound_page(page)
-        if 1 or g_use_extra:
+        if g_use_extra:
             rc = extra.get_cdrawings(page, extended, callback, method)
         else:
             rc = list()
@@ -23519,7 +23519,10 @@ def jm_checkrect(dev):
             ):
         return 0 # not a rectangle
     
-    # we have a rect, replace last 3 "l" items by one "re" item.
+    # we have a rect
+    dev.lastpoint = ll  # last point is the start of the first line
+
+    # replace last 3 "l" items by one "re" item.
     if ul.y < lr.y:
         r = mupdf.fz_make_rect(ul.x, ul.y, lr.x, lr.y)
         orientation = 1

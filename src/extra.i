@@ -2467,8 +2467,10 @@ jm_checkrect(jm_lineart_device* dev)
         ur.x != lr.x) {
         goto drop_out;  // not a rectangle
     }
+    // we have a rect
+    dev->lastpoint = fz_make_point(ll.x, ll.y);  // set last point to start of first line
 
-    // we have a rect, replace last 3 "l" items by one "re" item.
+    // replace last 3 "l" items by one "re" item.
     if (ul.y < lr.y) {
         r = fz_make_rect(ul.x, ul.y, lr.x, lr.y);
         orientation = 1;
