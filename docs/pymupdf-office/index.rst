@@ -12,12 +12,9 @@
 PyMuPDF Office
 =============
 
+Enhance |PyMuPDF| capability with **Office** document support.
 
-|PyMuPDF Office| is a set of *commercial extensions* for |PyMuPDF|.
-
-Enhance |PyMuPDF| capability with **Office** document support & **RAG/LLM** integrations.
-
-- Enables Office document handling, including ``doc``, ``docx``, ``hwp``, ``hwpx``, ``ppt``, ``pptx``, ``xls``, ``xlsx``, and others.
+- Enables Office document handling, including ``doc``, ``docx``, ``ppt``, ``pptx``, ``xls``, ``xlsx``, ``hwp``, ``hwpx``.
 - Supports text and table extraction, document conversion and more.
 - Includes everything from |PyMuPDF|
 
