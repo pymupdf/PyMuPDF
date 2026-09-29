@@ -264,3 +264,17 @@ def test_4954_2():
         d = document[0].get_drawings()[-1]
         print(f'{d["width"]=}')  # Expected: 2.0, Actual: 1.0
         assert abs(d['width'] - 2.449) < 0.01
+
+
+def test_5139():
+    with pymupdf.open() as document:
+        page = document.new_page()
+        page.draw_line((10, 10), (100, 100))
+        
+        def callback(path):
+            raise ValueError("callback failed")
+
+        print()
+        print('test_5139(): calling page.get_cdrawings().', flush=1)
+        page.get_cdrawings(callback=callback)   # SIGSEGV
+        print('test_5139(): page.get_cdrawings() returned.', flush=1)
