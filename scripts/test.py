@@ -447,6 +447,11 @@ def main(argv):
     warnings = list()
     venv = 2
     
+    # 2026-09-29: we are always testing without layout/4llm so need to set
+    # these environment variables so that test expect the appropriate results.
+    env_extra['PYMUPDF_TEST_USE_LAYOUT'] = '0'
+    env_extra['PYMUPDF_TEST_USE_4LLM'] = '0'
+    
     options = os.environ.get('PYMUDF_SCRIPTS_TEST_options', '')
     options = shlex.split(options)
     
