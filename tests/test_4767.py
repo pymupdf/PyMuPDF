@@ -75,6 +75,10 @@ def test_4767():
         if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
             line0, stdout = stdout.split('\n', 1)
             assert 'The global interpreter lock (GIL) has been enabled to load module \'pymupdf._extra\',' in line0
+        if stdout:
+            lines = stdout.split('\n')
+            if 'onnxruntime' in lines[0]:
+                stdout = '\n'.join(lines[1:])
         return stdout
     
     cp = run(f'cd {testdir}/one/two && {sys.executable} -m pymupdf embed-extract {path} -name evil_entry')

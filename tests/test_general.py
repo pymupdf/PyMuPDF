@@ -306,7 +306,13 @@ def test_2533():
                     bbox = pymupdf.Rect(char[3])
                     break
         bbox2 = page.search_for(NEEDLE)[0]
-        assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
+        if util._use_4llm():
+            assert bbox2.x0 == bbox.x0
+            assert bbox2.x1 == bbox.x1
+            assert abs(bbox2.y0 - bbox.y0) < 1
+            assert abs(bbox2.y1 - bbox.y1) < 1
+        else:
+            assert bbox2 == bbox, f'{bbox=} {bbox2=} {bbox2-bbox=}.'
     finally:
         pymupdf.TOOLS.set_small_glyph_heights(False)
 
@@ -1024,12 +1030,17 @@ def check_lines(expected_regexes, actual):
         return s
     expected_regexes = str_to_list(expected_regexes)
     actual = str_to_list(actual)
+    if actual and 'onnxruntime' in actual[0]:
+        actual = actual[1:]
+        if len(actual) == 1 and not actual[0]:
+            actual = list()
+        print(f'### check_lines(): have changed to {actual=}', flush=1)
     if expected_regexes and expected_regexes[-1]:
         expected_regexes.append('') # Always expect a trailing empty line.
     # Remove `None` regexes and make all regexes match entire lines.
     expected_regexes = [f'^{i}$' for i in expected_regexes if i is not None]
     
-    print(f'expected_regexes ({len(expected_regexes)}):')
+    print(f'expected_regexes ({len(expected_regexes)}):', flush=1)
     for i in expected_regexes:
         print(f'    {i!r}')
     
@@ -1720,7 +1731,7 @@ def test_3569():
                 '</svg>\n'
                 )
     wt = pymupdf.TOOLS.mupdf_warnings()
-    if pymupdf.mupdf_version_tuple >= (1, 29):
+    if pymupdf.mupdf_version_tuple >= (1, 28, 5):
         assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via Adobe-Identity-UCS)\ninvalid marked content sequence / clip nesting'
     elif pymupdf.mupdf_version_tuple >= (1, 28):
         assert wt == 'unknown cid collection: PDFAUTOCAD-Indentity0\nnon-embedded font using identity encoding: ArialMT (mapping via )\ninvalid marked content sequence / clip nesting'
@@ -2308,7 +2319,7 @@ def test_5100():
             import pymupdf
             ''')
     assert cp.stdout == b''
-    assert cp.stderr == b''
+    assert cp.stderr == b'' or b'onnxruntime' in cp.stderr
     
     cp = run('''
             import fitz
@@ -2322,7 +2333,7 @@ def test_5100():
             import fitz
             ''')
     assert cp.stdout == b''
-    assert cp.stderr == b''
+    assert cp.stderr == b'' or b'onnxruntime' in cp.stderr
 
 
 def test_4846():

@@ -59,14 +59,13 @@ def test_checkbox():
     widget.text_color = blue
     widget.text_font = "ZaDb"
     widget.field_value = True
+    # Check #2350 - setting checkbox to readonly.
+    #
+    widget.field_flags |= pymupdf.PDF_FIELD_IS_READ_ONLY
     page.add_widget(widget)  # create the field
     field = page.first_widget
     assert field.field_type_string == "CheckBox"
 
-    # Check #2350 - setting checkbox to readonly.
-    #
-    widget.field_flags |= pymupdf.PDF_FIELD_IS_READ_ONLY
-    widget.update()
     path = f"{scriptdir}/test_checkbox.pdf"
     doc.save(path)
 
@@ -180,10 +179,10 @@ def test_2333():
         w = page.load_widget(xref)
         w.field_value = True
         w.update()
-        assert values() == set(("/Off", f"{i}", f"/{i}"))
+        assert values() == set(("/Off", f"/{i}"))
     w.field_value = False
     w.update()
-    assert values() == set(("Off", "/Off"))
+    assert values() == {"/Off"}
 
 
 def test_2411():
@@ -312,14 +311,15 @@ def test_interfield_calculation():
                 pymupdf.PDF_NAME("AcroForm"),
                 CO_name,
             )
-        # we confirm CO is an array of foreseeable length
-        assert pymupdf.mupdf.pdf_array_len(CO) == i + 1
 
-        # the xref of the i-th item must equal that of the last widget
-        assert (
-            pymupdf.mupdf.pdf_to_num(pymupdf.mupdf.pdf_array_get(CO, i))
-            == list(page.widgets())[-1].xref
-        )
+        # we confirm CO is an array of foreseeable length
+        assert CO.pdf_array_len() == i + 1
+
+        # last item in the /CO array is that of the last widget's parent
+        last_xref = CO.pdf_array_get(i).pdf_to_num()
+        obj = pymupdf.mupdf.pdf_load_object(pdf, w.xref)
+        parent_xref = obj.pdf_dict_get(pymupdf.PDF_NAME("Parent")).pdf_to_num()
+        assert last_xref == parent_xref
 
 
 def test_3950():
@@ -550,10 +550,7 @@ def test_5101():
             page = document[0]
             wt = pymupdf.TOOLS.mupdf_warnings()
             print(f'{wt=}')
-            if pymupdf.mupdf_version_tuple >= (1, 29):
-                assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
-            else:
-                assert wt == 'fixed bad Parent in AcroForm tree\n... repeated 2 times...'
+            assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
             document2 = pymupdf.open()
             document2.insert_pdf(document, annots=False, widgets=False, links=True)
         else:
@@ -574,6 +571,22 @@ def test_5101():
             else:
                 assert 0, 'test_5101(): Expected exception from document2.insert_pdf.'
             
+
+def test_delete_all():
+    """Confirm: Deleting all widgets converts to a Non-Form-PDF."""
+    path = os.path.normpath(f"{__file__}/../../tests/resources/test_hierarchy.pdf")
+    doc = pymupdf.open(path)
+    assert doc.is_form_pdf
+    widgets = 0
+    for page in doc:
+        w = page.first_widget
+        while w:
+            widgets += 1
+            w = page.delete_widget(w)
+    print(f"Deleted {widgets} widgets")
+    assert not doc.is_form_pdf
+    
+
 def test_3478():
     print()
     print(f'test_3478(): {pymupdf.version=}')
