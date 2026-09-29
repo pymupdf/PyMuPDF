@@ -59,14 +59,13 @@ def test_checkbox():
     widget.text_color = blue
     widget.text_font = "ZaDb"
     widget.field_value = True
+    # Check #2350 - setting checkbox to readonly.
+    #
+    widget.field_flags |= pymupdf.PDF_FIELD_IS_READ_ONLY
     page.add_widget(widget)  # create the field
     field = page.first_widget
     assert field.field_type_string == "CheckBox"
 
-    # Check #2350 - setting checkbox to readonly.
-    #
-    widget.field_flags |= pymupdf.PDF_FIELD_IS_READ_ONLY
-    widget.update()
     path = f"{scriptdir}/test_checkbox.pdf"
     doc.save(path)
 
@@ -180,10 +179,10 @@ def test_2333():
         w = page.load_widget(xref)
         w.field_value = True
         w.update()
-        assert values() == set(("/Off", f"{i}", f"/{i}"))
+        assert values() == set(("/Off", f"/{i}"))
     w.field_value = False
     w.update()
-    assert values() == set(("Off", "/Off"))
+    assert values() == {"/Off"}
 
 
 def test_2411():
@@ -551,10 +550,7 @@ def test_5101():
             page = document[0]
             wt = pymupdf.TOOLS.mupdf_warnings()
             print(f'{wt=}')
-            if pymupdf.mupdf_version_tuple >= (1, 28, 5):
-                assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
-            else:
-                assert wt == 'fixed bad Parent in AcroForm tree\n... repeated 2 times...'
+            assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
             document2 = pymupdf.open()
             document2.insert_pdf(document, annots=False, widgets=False, links=True)
         else:

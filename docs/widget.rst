@@ -43,23 +43,23 @@ Like annotations, widgets also lose connection to their page when the page becom
 
        :returns: the value that sets the button to "selected". For non-checkbox, non-radiobutton fields, always `None` is returned. For check boxes the return is `True`. For radio buttons this is the value "Male" in the following example:
 
-         >>> print(field.field_name, field.button_states())
+         >>> print(widget.field_name, widget.button_states())
          Gender Second person {'down': ['Male', 'Off'], 'normal': ['Male', 'Off']}
-         >>> print(field.on_state())
+         >>> print(widget.on_state())
          Male
 
-        So for check boxes and radio buttons, the recommended method to set them to "selected", or to check the state is the following:
+        To set check boxes or radio buttons to ``True`` or "selected", the recommended method is the following:
 
-         >>> field.field_value = field.on_state()
-         >>> field.field_value == field.on_state()
+         >>> widget.field_value = widget.on_state()  # set the field to "selected"
+         >>> widget.field_value == widget.on_state()  # confirm
          True
 
 
     .. method:: update(sync_flags=False)
 
-       After any changes to a widget, this **method must be used** to reflect changes in the PDF [#f1]_.
+       After any changes to a widget, this **method must be used** to reflect the changes in the PDF.
 
-       :arg bool sync_flags: if ``True``, the widget's :attr:`Widget.field_flags` are copied to the ``Parent`` object (if present) and all widgets named in its ``Kids`` array. This provides a convenient way to -- for example -- set all instances of the widget to read-only, no matter on which page they may occur [#f2]_.
+       :arg bool sync_flags: if ``True``, the widget's :attr:`Widget.field_flags` are copied to the ``Parent`` object (if present) and all widgets named in its ``Kids`` array. This provides a convenient way to -- for example -- set all instances of the widget to read-only, no matter on which page they may occur [#f1]_.
 
     .. method:: reset
 
@@ -93,7 +93,7 @@ Like annotations, widgets also lose connection to their page when the page becom
 
        A mandatory string defining the field's name. If the name contains one or more colons "." the field is considered to be a child of a parent field. If the parent field does not exist, it will be created automatically. If the (full) name already exists anywhere in the PDF, the widget will become a new child of the existing field.
 
-       All widgets with the same name -- whether or not a colon is part of it and independent of their position in the document -- will share the same field value and field flags.
+       All widgets with the same name -- whether or not a colon is part of it and independent of their position in the document -- will share the same field value and the same field flags.
 
        See also :ref:`the relationship between form fields and widgets <Widget>`.
 
@@ -104,6 +104,8 @@ Like annotations, widgets also lose connection to their page when the page becom
     .. attribute:: field_value
 
        The value of the field.
+
+       If the field type is PDF_WIDGET_TYPE_RADIOBUTTON a value **must** be provided when creating the widget; it represents the "selected" state of the button in its group. The first button of a new group will be set to "selected". Subsequent insertions of buttons with this name will automatically be set to "not selected".
 
     .. attribute:: field_flags
 
@@ -255,12 +257,12 @@ PyMuPDF supports the creation and update of most widget types.
 * check box (`PDF_WIDGET_TYPE_CHECKBOX`)
 * combo box (`PDF_WIDGET_TYPE_COMBOBOX`)
 * list box (`PDF_WIDGET_TYPE_LISTBOX`)
-* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF now supports the creation and update of Radio Button Groups (RBGs). Adding a new radio button widget with the same (full) name as an existing one anywhere in the PDF will automatically create or extend an RBG.
+* radio button (`PDF_WIDGET_TYPE_RADIOBUTTON`): PyMuPDF supports the creation and update of Radio Button Groups (RBGs). Adding a radio button widget will **create** a Radio Button Group if the field name is new. If the field name already exists, the RBG will be **extended** [#f2]_.
 * signature (`PDF_WIDGET_TYPE_SIGNATURE`) **read only** -- no update or creation of signatures and no signing support.
 
 The Relationship between Form Fields and Widgets
 --------------------------------------------------
-A form field is a logical object in the document's form field tree. It may have one or more widgets, which are the visual appearances of that field on one or more pages. A widget is therefore the page-bound representation of a form field.
+A form field is a logical object in the document's form field tree. It may have one or more widgets, which are the visual appearances of that field on one or more pages. A widget is therefore the page-bound instance of a form field.
 
 The connection between a widget and its form field is established through the widget's ``/Parent`` entry, which references the form field. Conversely, the form field's ``/Kids`` array contains references to all widgets that visually represent that field.
 
@@ -272,7 +274,7 @@ Form Field Hierarchy
 --------------------------------------------------
 Form fields support hierarchical naming. A form field may have child fields, forming a logical structure. The hierarchy is defined by the ``/Parent`` entry of a child field, which references its parent field. The parent field's ``/Kids`` array contains references to all its child fields.
 
-This hierarchy is reflected in the field's name. For example, a field named "Parent.Child" has a parent field "Parent" and a child field "Child". The parent may have additional children such as "Parent.Child2" or "Parent.Child3".
+This hierarchy is reflected in the field's name. For example, a field named "Address.Street" has a parent field "Address" and a child field "Street". The parent may have additional children such as "Address.City" or "Address.ZipCode".
 
 Automatic Hierarchy Creation via Dotted Names
 --------------------------------------------------
@@ -291,8 +293,18 @@ This mechanism allows complex information structures to be expressed naturally w
 
 .. rubric:: Footnotes
 
-.. [#f1] If you intend to re-access a new or updated field (e.g. for making a pixmap), make sure to reload the page first. Either close and re-open the document, or load another page first, or simply do `page = doc.reload_page(page)`.
+.. [#f1] Among other purposes, ``Parent`` objects are also used to support multiple occurrences of a field (on the same or on different pages). The ``Kids`` array in the ``Parent`` contains the cross references of all widgets that are "aliases" of the same field. Whenever the field value of one "kid" is changed, all kids are immediately updated too.
 
-.. [#f2] Among other purposes, ``Parent`` objects are also used to facilitate multiple occurrences of a field (on the same or on different pages). The ``Kids`` array in this ``Parent`` object contains the cross references of all widgets that are "copies" of the same field. Whenever the field value of any "kid" widget is changed, all the other kids are immediately updated too. This is a very efficient way to handle multiple copies of the same field, e.g. for filling out forms. This simultaneous update only happens for :attr:`Widget.field value`. The new parameter ``sync_flags`` extends this to :attr:`Widget.field_flags`. This cannot be automated in the same way as for the field value to allow for more flexibility.
+.. [#f2] Radio Button Groups (RBGs) exist in three distinct technical forms. Remember that the *Form Field itself* represents the group — the individual radio button widgets merely correspond to the possible "values" of that field.
+
+   1. **RBGs with a ``/Kids`` array:**
+      The radio button widgets appear as children of a single Form Field and each widget contains a backward pointer (``/Parent``) to that field. This is the standard, specification-compliant structure, and is fully supported.
+
+   2. **"Flat" RBGs:**
+      Multiple radio button widgets share the same field name but have no ``/Parent`` pointer. Exactly one of these widgets appears in the global ``/AcroForm/Fields`` array, and no Form Field with a ``/Kids`` array exists. Detecting this variant requires parsing the entire document, which is planned for a future version.
+
+   3. **JavaScript-defined RBGs:**
+      Multiple radio button widgets have different field names and no structural relationship in the PDF. Their grouping is established solely through JavaScript code embedded in the widgets. Detecting this variant requires parsing all JavaScript associated with radio buttons, which is planned for a future version.
+
 
 .. include:: footer.rst

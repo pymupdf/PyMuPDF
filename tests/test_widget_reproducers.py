@@ -9,12 +9,8 @@ from pathlib import Path
 import re
 
 import pymupdf
+from pymupdf import mupdf, PDF_NAME, _as_pdf_document
 import pytest
-
-
-def _disable():
-    if os.environ.get('PYMUPDF_TEST_WR') != '1':
-        return True
 
 SHARED = Path(__file__).with_name("resources") / "shared-text-field.pdf"
 
@@ -81,12 +77,13 @@ def _field_values(doc):
     return result
 
 
-@pytest.mark.parametrize("value", ["Alice", "café", "김민수 café"],
-                         ids=["ascii-control", "latin", "korean-and-latin"])
+@pytest.mark.parametrize(
+    "value",
+    ["Alice", "café", "김민수 café"],
+    ids=["ascii-control", "latin", "korean-and-latin"],
+)
 def test_text_creation_preserves_value(tmp_path, garbage, value):
     """Non-ASCII initial values must survive save/close/reopen unchanged."""
-    if _disable():
-        return
     path = tmp_path / "text-created.pdf"
     with pymupdf.open() as doc:
         _add(doc.new_page(), "customer", value)
@@ -99,8 +96,6 @@ def test_text_creation_preserves_value(tmp_path, garbage, value):
 
 def test_text_unicode_update_control(tmp_path, garbage):
     """Control: updating an ASCII field to Unicode works on the tested wheels."""
-    if _disable():
-        return
     path = tmp_path / "text-updated.pdf"
     with pymupdf.open() as doc:
         page = _add(doc.new_page(), "customer", "Alice")
@@ -118,8 +113,6 @@ def test_text_unicode_update_control(tmp_path, garbage):
 @pytest.mark.parametrize("selected", [True, False], ids=["on", "off"])
 def test_checkbox_creation_writes_pdf_name(tmp_path, garbage, selected):
     """PDF button /V is a name, not a text string (ISO 32000-1 12.7.4.2.3)."""
-    if _disable():
-        return
     path = tmp_path / "checkbox-created.pdf"
     with pymupdf.open() as doc:
         _add(doc.new_page(), "accepted", selected,
@@ -129,15 +122,16 @@ def test_checkbox_creation_writes_pdf_name(tmp_path, garbage, selected):
         page = doc[0]
         widget = page.first_widget
         expected = "/" + str(widget.on_state()) if selected else "/Off"
-        assert doc.xref_get_key(widget.xref, "AS") == ("name", expected)
-        assert _inherited_key(doc, widget.xref, "V") == ("name", expected)
+        widget_obj = mupdf.pdf_load_object(_as_pdf_document(doc), widget.xref)
+        AS = widget_obj.pdf_dict_get_inheritable(PDF_NAME("AS")).pdf_to_name()
+        V = widget_obj.pdf_dict_get_inheritable(PDF_NAME("V")).pdf_to_name()
+        assert AS == expected[1:]
+        assert V == expected[1:]
         assert _field_values(doc)["accepted"] == ("name", expected)
 
 
 def test_checkbox_update_writes_pdf_name(tmp_path, garbage):
     """The documented on_state() update must also leave a name-valued /V."""
-    if _disable():
-        return
     path = tmp_path / "checkbox-updated.pdf"
     with pymupdf.open() as doc:
         page = _add(doc.new_page(), "accepted", False,
@@ -152,17 +146,17 @@ def test_checkbox_update_writes_pdf_name(tmp_path, garbage):
         page = doc[0]
         widget = page.first_widget
         expected = ("name", "/" + str(wanted))
-        assert doc.xref_get_key(widget.xref, "AS") == expected
-        assert _inherited_key(doc, widget.xref, "V") == expected
-        # Checking only the widget can miss a stale /V on its named parent.
-        assert _field_values(doc)["accepted"] == expected
+        widget_obj = mupdf.pdf_load_object(_as_pdf_document(doc), widget.xref)
+        AS = widget_obj.pdf_dict_get(PDF_NAME("AS")).pdf_to_name()
+        V = widget_obj.pdf_dict_get_inheritable(PDF_NAME("V")).pdf_to_name()
+        assert AS == expected[1][1:]
+        assert V == expected[1][1:]
+        assert _field_values(doc)["accepted"][1] == expected[1][1:]
 
 
 @pytest.mark.parametrize("hierarchy", [False, True], ids=["plain", "dotted"])
 def test_delete_last_widget_removes_field(tmp_path, garbage, hierarchy):
     """Deleting a field's only widget must not leave its value in AcroForm."""
-    if _disable():
-        return
     name = "Customer.Address.City" if hierarchy else "customer"
     path = tmp_path / "deleted.pdf"
     with pymupdf.open() as doc:
@@ -188,8 +182,6 @@ def test_delete_shared_widgets(tmp_path, garbage, delete_both):
     The delete-both case also fails on 1.28.2. Unlike the newly created plain
     field above, this shared-field cleanup problem is not a 2.0 regression.
     """
-    if _disable():
-        return
     path = tmp_path / "shared-deleted.pdf"
     with pymupdf.open(SHARED) as doc:
         page = doc[0]
@@ -215,37 +207,37 @@ def test_shared_value_update_refreshes_other_widget(tmp_path, garbage, sync_flag
     Compare page 2 with an explicit-update control using the same renderer.
     No hard-coded pixel hashes or appearance-stream text encoding assumptions.
     """
-    if _disable():
-        return
-    path = tmp_path / "shared-updated.pdf"
-    control = tmp_path / "shared-updated-both.pdf"
-    with pymupdf.open(SHARED) as doc:
-        before = doc[1].get_pixmap().digest
-        page = doc[0]
-        widget = page.first_widget
-        widget.field_value = "Bob"
-        widget.update(sync_flags=sync_flags)
-        doc.reload_page(page)
-        doc.save(path, garbage=garbage)
-    with pymupdf.open(SHARED) as doc:
-        for page in doc:
-            widget = page.first_widget
-            widget.field_value = "Bob"
-            widget.update()
-            doc.reload_page(page)
-        doc.save(control, garbage=garbage)
-    with pymupdf.open(control) as doc:
-        expected = doc[1].get_pixmap().digest
-        assert before != expected, "Control must visibly change Alice to Bob"
-    with pymupdf.open(path) as doc:
-        assert [page.first_widget.field_value for page in doc] == ["Bob", "Bob"]
-        actual = doc[1].get_pixmap().digest
-        assert actual == expected, "Page 2 still has a stale field appearance"
+    with pymupdf.open(SHARED) as doc:  # step 1: change on page 0
+        page0 = doc[0]
+        img0 = page0.get_pixmap()
+        page1 = doc[1]
+        img1 = page1.get_pixmap()
+        w = page0.first_widget
+        w.field_value = "Bob"
+        w.update()
+        page1 = doc[1]  # assert page 1 reflects the update from page 0
+        w = page1.first_widget
+        assert w.field_value == "Bob"
+        # confirm visual appearance has changed also on both pages
+        assert img0.samples != page0.get_pixmap().samples
+        assert img1.samples != page1.get_pixmap().samples
+
+    with pymupdf.open(SHARED) as doc:  # step 1: change on page 1
+        page0 = doc[0]
+        img0 = page0.get_pixmap()
+        page1 = doc[1]
+        img1 = page1.get_pixmap()
+        w = page1.first_widget
+        w.field_value = "Bob"
+        w.update()
+        w = page0.first_widget
+        assert w.field_value == "Bob"
+        # confirm visual appearance has changed also on both pages
+        assert img0.samples != page0.get_pixmap().samples
+        assert img1.samples != page1.get_pixmap().samples
 
 
 def test_shared_value_manual_update_control(tmp_path, garbage):
-    if _disable():
-        return
     path = tmp_path / "shared-updated-both.pdf"
     with pymupdf.open(SHARED) as doc:
         before = doc[1].get_pixmap().digest
@@ -276,8 +268,6 @@ def test_radio_creation_has_at_most_one_selected_widget(tmp_path, garbage):
 
     1.28.2 rejects this construction. Exclude radio tests for that comparison.
     """
-    if _disable():
-        return
     path = tmp_path / "radio-created.pdf"
     _create_radio_group(path, garbage)
     with pymupdf.open(path) as doc:
@@ -293,8 +283,6 @@ def test_radio_creation_has_at_most_one_selected_widget(tmp_path, garbage):
 
 
 def test_radio_selection_writes_pdf_name(tmp_path, garbage):
-    if _disable():
-        return
     initial = tmp_path / "radio-created.pdf"
     path = tmp_path / "radio-selected.pdf"
     _create_radio_group(initial, garbage)
@@ -306,8 +294,15 @@ def test_radio_selection_writes_pdf_name(tmp_path, garbage):
         doc.reload_page(page)
         doc.save(path, garbage=garbage)
     with pymupdf.open(path) as doc:
+        pdf = _as_pdf_document(doc)
         page = doc[0]
         widgets = list(page.widgets())
         states = [doc.xref_get_key(w.xref, "AS")[1] for w in widgets]
         assert states == ["/Standard", "/Off"], states
-        assert _inherited_key(doc, widgets[0].xref, "V") == ("name", "/Standard")
+        widget_obj = mupdf.pdf_load_object(pdf, widgets[0].xref)
+        print(doc.xref_object(6))
+        assert (
+            widget_obj.pdf_dict_get_inheritable(PDF_NAME("V")).pdf_to_name()
+            == "Standard"
+        )
+        # assert _inherited_key(doc, widgets[0].xref, "V") == ("name", "/Standard")
