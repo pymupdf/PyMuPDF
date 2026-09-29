@@ -94,7 +94,7 @@ See `Building RAG from Scratch <https://docs.llamaindex.ai/en/stable/examples/lo
 Preparing Data for Chunking
 -----------------------------
 
-By using the PyMuPDF4LLM module, you can efficiently prepare your documents for chunking and subsequent processing with your :title:`LLM`.
+By using the :doc:`PyMuPDF4LLM module <pymupdf4llm/index>`, you can efficiently prepare your documents for chunking and subsequent processing with your :title:`LLM`.
 
 Create chunked documents as follows:
 
