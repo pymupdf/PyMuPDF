@@ -28,9 +28,12 @@ analyzer's table grids with the line-based finder's candidates. Table,
 TableFinder and _iou come from pymupdf.table; find_tables is imported lazily.
 """
 
+from bisect import bisect_left
+from collections import namedtuple
+
 import pymupdf
 
-from pymupdf.table import CHARS, EDGES, Table, TableFinder, _iou
+from pymupdf.table import CHARS, EDGES, Table, TableFinder, _cells_to_rows, _iou
 
 
 # ---------------------------------------------------------------------------
@@ -53,6 +56,12 @@ _UNION_GRID_REF_SPAN_MULT_GATE = True     # reject under-segmented candidate gri
 _UNION_GRID_REF_SPAN_MULT_THRESHOLD = 3.0  # max horizontally-separated span groups per cell
 _UNION_OWNER_CONTAINMENT = 0.85           # min containment for a split candidate's owner
 _UNION_OWNER_AMBIGUOUS_OVERLAP = 0.25     # overlap above which an unowned candidate is suppressed
+_UNION_PICTURE_CONTAINMENT = 0.8          # area fraction that puts a candidate inside a picture
+
+# How a candidate grid's text is laid out; see _union_grid_content_support.
+_UnionContent = namedtuple(
+    "_UnionContent", "supported dense_rows dense_columns concrete slots"
+)
 
 
 def _layout_table_grids(page):
@@ -88,35 +97,83 @@ def _layout_table_grids(page):
     return grids
 
 
-def _union_line_candidates(page):
+def _union_line_candidates(page, *, add_lines=None, add_boxes=None):
     """Line-based table candidates for the union stage as ``(bbox, grid)`` pairs.
 
     Runs a nested find_tables (strategy=_UNION_STRATEGY, use_layout=False) and
-    keeps each detected table's bbox and row-major cell grid (Table.rows, None
-    for a gap), deduped by rounded bbox. Returns ``(candidates, finder)``; the
-    finder is reused as the returned TableFinder shell.
+    keeps each detected table's bbox and row-major cell grid (None for a gap),
+    deduped by rounded bbox. Caller-supplied virtual lines / boxes are forwarded
+    to that nested finder so they take part in the same union decisions as
+    PDF-native vector rules. Admission (see ``admit``) runs on the finder's cell
+    groups, before a Table is built for any of them. Returns ``(candidates,
+    finder)``; the finder is reused as the returned TableFinder shell.
     """
     # Imported here, not at module top, to break the import cycle: this
     # module is itself imported lazily by table.find_tables (union path).
     from pymupdf.table import find_tables
-    finder = find_tables(page, strategy=_UNION_STRATEGY, use_layout=False)
     candidates = []
-    seen = set()
-    for tab in (getattr(finder, "tables", None) or []):
-        try:
-            bbox = pymupdf.Rect(tab.bbox)
-        except (ValueError, TypeError):
-            continue
-        if bbox.is_empty:
-            continue
-        grid = [[cell for cell in row.cells] for row in (tab.rows or [])]
-        if not grid:
-            continue
-        key = tuple(round(value) for value in bbox)
-        if key in seen:
-            continue
-        seen.add(key)
-        candidates.append((bbox, grid))
+
+    def admit(live_page, groups):
+        """Keep the cell groups that may become tables, in detection order.
+
+        A candidate is admitted as before: the line grid is evidence in its own
+        right and the layout model can miss a table entirely. The one exception is
+        a candidate sitting inside a region the layout model called a picture,
+        which has to show table-shaped text instead. That cheap geometric test
+        therefore gates the character scan, and the scan itself is built once for
+        the whole call.
+        """
+        kept = []
+        seen = set()
+        points = None
+        for cells in groups:
+            bbox = pymupdf.Rect(
+                min(cell[0] for cell in cells),
+                min(cell[1] for cell in cells),
+                max(cell[2] for cell in cells),
+                max(cell[3] for cell in cells),
+            )
+            if bbox.is_empty:
+                continue
+            grid = [row.cells for row in _cells_to_rows(cells)]
+            if not grid:
+                continue
+            key = tuple(round(value) for value in bbox)
+            if key in seen:
+                continue
+            if _union_candidate_inside_picture(live_page, bbox):
+                if points is None:
+                    points = _union_char_midpoints()
+                content = _union_grid_content_support(grid, points)
+                # A chart labels one row and one column -- its axes -- and its
+                # partial gridlines leave most slots without a cell. A table has
+                # a header row and a label column that are each at least half
+                # full, and cell coverage that is mostly rectangular.
+                if not (
+                    content.supported
+                    and content.dense_rows >= 2
+                    and content.dense_columns >= 2
+                    and content.concrete * 2 >= content.slots
+                ):
+                    continue
+            # Dedup only admitted candidates: a rejected one must not shadow a
+            # later, differently gridded candidate with the same rounded bbox.
+            seen.add(key)
+            kept.append(cells)
+            candidates.append((bbox, grid))
+        return kept
+
+    finder = find_tables(
+        page,
+        strategy=_UNION_STRATEGY,
+        use_layout=False,
+        add_lines=add_lines,
+        add_boxes=add_boxes,
+        _cell_group_filter=admit,
+    )
+    if finder is None:
+        # Nested detection failure must not leak partially admitted candidates.
+        candidates.clear()
     return candidates, finder
 
 
@@ -163,6 +220,161 @@ def _union_find_owner(candidate_bbox, existing_bboxes):
         elif candidate_containment >= _UNION_OWNER_AMBIGUOUS_OVERLAP or existing_coverage >= _UNION_OWNER_AMBIGUOUS_OVERLAP:
             ambiguous = True
     return best_owner, ambiguous
+
+
+def _union_char_midpoints():
+    """The page's non-blank character midpoints as ``(v_mid, h_mid)``, y-sorted.
+
+    One pass over CHARS replaces the per-cell character scan of the admission
+    tests, which read midpoints only. Sorting by the vertical midpoint lets each
+    grid row take its own characters as one slice.
+    """
+    points = []
+    for char in CHARS:
+        if not str(char.get("text") or "").strip():
+            continue
+        try:
+            h_mid = (float(char["x0"]) + float(char["x1"])) / 2.0
+            v_mid = (float(char["top"]) + float(char["bottom"])) / 2.0
+        except (KeyError, TypeError, ValueError):
+            continue
+        points.append((v_mid, h_mid))
+    points.sort()
+    return points
+
+
+def _union_grid_content_support(grid, points):
+    """How a candidate line grid's text is distributed, in one scan.
+
+    ``supported`` means at least two rows with text in at least two columns and
+    at least two columns with text in at least two rows -- two being the smallest
+    non-trivial count in each dimension, not a fitted one. A populated cell counts
+    for every column its x-range covers, so a grid whose missing horizontal rules
+    leave a spanning header above one record row is supported just like the same
+    table with all its rules.
+
+    ``dense_rows`` / ``dense_columns`` count the rows and columns whose own
+    concrete cells are at least half populated, and ``concrete`` / ``slots`` are
+    the concrete cells and the grid's total slots. Those describe the *shape* of
+    the text rather than its amount, which is what separates a chart from a
+    sparse table (see _union_candidate_inside_picture).
+
+    Character membership follows Table.extract()'s half-open cell rule. ``None``
+    grid slots are span/gap placeholders, not empty text cells. The decision is
+    candidate-local: page area, layout ownership, file identity and virtual-line
+    provenance are not inputs.
+    """
+    columns = sorted({float(cell[0]) for row in grid for cell in row if cell is not None})
+    width = max((len(row) for row in grid), default=0)
+    column_populated = [0] * width
+    column_concrete = [0] * width
+    row_columns = []
+    row_counts = []
+    concrete = 0
+    slots = 0
+    for row in grid:
+        slots += len(row)
+        covered = set()
+        row_populated = 0
+        rects = [(index, pymupdf.Rect(cell)) for index, cell in enumerate(row) if cell is not None]
+        rects = [(index, rect) for index, rect in rects if not rect.is_empty]
+        concrete += len(rects)
+        if rects:
+            band = _union_row_points(rects, points)
+            for index, rect in rects:
+                column_concrete[index] += 1
+                if not _union_rect_has_point(rect, band):
+                    continue
+                row_populated += 1
+                column_populated[index] += 1
+                spanned = [
+                    column
+                    for column, x in enumerate(columns)
+                    if float(rect.x0) <= x < float(rect.x1)
+                ]
+                covered.update(spanned or (index,))
+        row_columns.append(covered)
+        row_counts.append((row_populated, len(rects)))
+    supported = sum(len(covered) >= 2 for covered in row_columns) >= 2 and sum(
+        sum(column in covered for covered in row_columns) >= 2
+        for column in range(len(columns))
+    ) >= 2
+    return _UnionContent(
+        supported=supported,
+        dense_rows=sum(total > 0 and filled * 2 >= total for filled, total in row_counts),
+        dense_columns=sum(
+            total > 0 and filled * 2 >= total
+            for filled, total in zip(column_populated, column_concrete)
+        ),
+        concrete=concrete,
+        slots=slots,
+    )
+
+
+def _union_row_points(rects, points):
+    """The y-sorted midpoints falling in one grid row's vertical band."""
+    y0 = min(float(rect.y0) for _index, rect in rects)
+    y1 = max(float(rect.y1) for _index, rect in rects)
+    return points[bisect_left(points, (y0,)) : bisect_left(points, (y1,))]
+
+
+def _union_rect_has_point(rect, band):
+    """Whether any midpoint of the row band lies in rect (half-open, as extract)."""
+    x0, y0, x1, y1 = float(rect.x0), float(rect.y0), float(rect.x1), float(rect.y1)
+    for v_mid, h_mid in band:
+        if x0 <= h_mid < x1 and y0 <= v_mid < y1:
+            return True
+    return False
+
+
+def _union_layout_groups(page):
+    """The page's layout groups as ``(class_name, rect)``, skipping unusable ones."""
+    groups = []
+    for group in (page.layout_information or []):
+        if not isinstance(group, dict):
+            continue
+        group_bbox = group.get("group_bbox")
+        if not group_bbox:
+            continue
+        try:
+            rect = pymupdf.Rect(group_bbox[:4])
+        except (TypeError, ValueError):
+            continue
+        if rect.is_empty:
+            continue
+        groups.append((group.get("class_name"), rect))
+    return groups
+
+
+def _union_candidate_inside_picture(page, candidate_bbox):
+    """Whether a candidate sits inside a layout picture group without covering it.
+
+    The layout model classified that region as a picture, so a line grid found
+    almost entirely inside one is as likely to be a chart's gridlines as a table,
+    and overriding the model's verdict needs table-shaped text. The shape, not the
+    amount, is what tells them apart: a chart's text sits along its two axes, so
+    exactly one row and one column are well filled and its partial gridlines leave
+    most of the grid without a cell at all, while a table has a header row and a
+    label column that are each at least half full over mostly complete cell
+    coverage -- which a sparse matrix of scattered marks still satisfies. See the
+    admission rule in _union_line_candidates.
+
+    A candidate larger than the picture contains it instead -- a bordered table
+    with an image in one of its cells -- and keeps the ordinary rule.
+    """
+    candidate_area = _union_rect_area(candidate_bbox)
+    if candidate_area <= 0:
+        return False
+    threshold = _UNION_PICTURE_CONTAINMENT * candidate_area
+    for class_name, rect in _union_layout_groups(page):
+        if class_name != "picture":
+            continue
+        if _union_intersection_area(candidate_bbox, rect) < threshold:
+            continue
+        if candidate_area > _union_rect_area(rect):
+            continue  # the candidate is the larger region: it holds the picture
+        return True
+    return False
 
 
 def _union_text_span_rects(page):
@@ -325,18 +537,21 @@ def _union_replace_append(existing, candidates, *, page, grid_ref, grid_ref_iou,
     return entries
 
 
-def _find_tables_union(page):
+def _find_tables_union(page, *, add_lines=None, add_boxes=None):
     """Detect a page's tables by fusing layout grids with line-based candidates.
 
     Ensures the raw layout (computed only when page.layout_information is None,
-    like the official use_layout path), reads primary grids, detects candidates,
-    applies grid-ref / split / append, and returns a TableFinder whose .tables
-    carry the fused grids in contractual order (grid-ref tables keep their
-    explicit layout bbox)."""
+    like the official use_layout path), reads primary grids, detects candidates
+    (forwarding the caller's virtual lines / boxes to the nested finder), applies
+    grid-ref / split / append, and returns a TableFinder whose .tables carry the
+    fused grids in contractual order (grid-ref tables keep their explicit layout
+    bbox)."""
     if page.layout_information is None:
         page.get_layout(return_raw=True)
     primaries = _layout_table_grids(page)
-    candidates, finder = _union_line_candidates(page)
+    candidates, finder = _union_line_candidates(
+        page, add_lines=add_lines, add_boxes=add_boxes
+    )
     entries = _union_replace_append(
         primaries,
         candidates,
