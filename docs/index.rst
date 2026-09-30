@@ -43,6 +43,7 @@ This documentation covers all versions up to |version|.
    about.rst
    pymupdf-office/index.rst
    rag.rst
+   grounding.rst
 
 .. toctree::
    :caption: User Guide
