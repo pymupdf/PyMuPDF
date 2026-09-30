@@ -21363,7 +21363,11 @@ def _make_image_dict(img, img_dict):
     elif ext == "jpeg" and img.n() == 4:
         # JPEG with CMYK: invert colors
         res = mupdf.fz_new_buffer_from_image_as_jpeg(
-                    img, mupdf.FzColorParams(mupdf.fz_default_color_params), 95, 1)
+                    img,
+                    mupdf.FzColorParams(mupdf.fz_default_color_params),
+                    95,
+                    mupdf.FZ_CMYK_JPEG_INVERTED if mupdf_version_tuple >= (1, 29) else 1,
+                    )
     else:
         # copy the compressed buffer
         res = mupdf.FzBuffer(mupdf.ll_fz_keep_buffer(ll_cbuf.buffer))
