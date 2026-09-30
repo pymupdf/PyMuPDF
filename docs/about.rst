@@ -65,22 +65,6 @@ The following table illustrates how |PyMuPDF| compares with other typical soluti
 
 ----
 
-.. _About_PyMuPDF_Product_Suite:
-
-PyMuPDF Product Suite
------------------------------------------------
-
-|PyMuPDF| is the standard version of the library, however there are a family of additional products each with different features and functionality. 
-
-**Additional products** in the |PyMuPDF| product suite are:
-   
-- |PyMuPDF Office| adds support for Office document formats.
-
-.. note::
-    All of the products above depend on the same core product - |PyMuPDF| and therefore have full access to all of its features.
-    These additional products can be seen as optional extras to the enhance the core |PyMuPDF| library.
-
-
 .. _About_PyMuPDF_Products_Comparison:
 
 PyMuPDF Products Comparison
