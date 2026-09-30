@@ -57,8 +57,8 @@ msgid "The following file types are supported:"
 msgstr "다음 파일 유형이 지원됩니다:"
 
 #: ../../how-to-open-a-file.rst:34 fa9ae965eea142478505848892067bb0
-msgid "PyMuPDF Pro"
-msgstr "PyMuPDF Pro"
+msgid "PyMuPDF Office"
+msgstr "PyMuPDF Office"
 
 #: ../../how-to-open-a-file.rst:36 c4725d269a0e41b0867c5b6b16b8960b
 msgid "|PyMuPDF Office| can open Office files."

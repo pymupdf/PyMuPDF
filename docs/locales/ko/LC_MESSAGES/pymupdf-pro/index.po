@@ -36,8 +36,8 @@ msgid ""
 msgstr "PDF 텍스트 추출, PDF 이미지 추출, PDF 변환, PDF 테이블, PDF 분할, PDF 생성, Pyodide, PyScript"
 
 #: ../../pymupdf-pro/index.rst:8 07624f1e03dd463c99bf82f95b91a35e
-msgid "PyMuPDF Pro"
-msgstr "PyMuPDF Pro"
+msgid "PyMuPDF Office"
+msgstr "PyMuPDF Office"
 
 #: ../../pymupdf-pro/index.rst:11 879666c817c94726a9df9e5880d5425a
 msgid "|PyMuPDF Office| is a set of *commercial extensions* for |PyMuPDF|."
