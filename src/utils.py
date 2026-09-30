@@ -204,7 +204,7 @@ def get_sorted_text(
             lrect |= r  # update line bbox
             # convert distance to previous word to multiple spaces
             dist = max(
-                int(round((r.x0 - x1) / r.width * len(t))),
+                int(round((r.x0 - x1) / r.width * len(t))) if r.width else 0,
                 0 if (x1 == clip.x0 or r.x0 <= x1) else 1,
             )  # number of space characters
 
@@ -492,8 +492,6 @@ def get_text(
     }
     option = option.lower()
     assert option in formats
-    if option not in formats:
-        option = "text"
     if flags is None:
         flags = formats[option]
 
@@ -956,7 +954,10 @@ def get_label_pno(pgNo, labels):
     """
     # Jorj McKie, 2021-01-06
 
-    item = [x for x in labels if x[0] <= pgNo][-1]
+    candidates = [x for x in labels if x[0] <= pgNo]
+    if not candidates:
+        return ""
+    item = candidates[-1]
     rule = rule_dict(item)
     prefix = rule.get("prefix", "")
     style = rule.get("style", "")
