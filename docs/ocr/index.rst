@@ -129,7 +129,7 @@ Pages with no selectable text will return empty strings in this mode. This is us
 OCR Adaptors
 ------------
 
-By default, PyMuPDF uses **Tesseract** and **OpenCV** for image pre-processing. If you need a different OCR engine — for higher accuracy, language support, or cloud-based processing — you can plug in a custom adaptor.
+By default, PyMuPDF uses **Tesseract** and internal models for image pre-processing. If you need a different OCR engine you can plug in a custom adaptor.
 
 Built-in Adaptors
 ~~~~~~~~~~~~~~~~~

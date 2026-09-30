@@ -28,10 +28,10 @@ Platform support
 
 Available for these platforms only:
 
-- Windows x86_64.
-- Linux x86_64 (glibc).
-- MacOS x86_64.
-- MacOS arm64.
+- Windows x86_64
+- Linux x86_64 (glibc)
+- MacOS x86_64
+- MacOS arm64
 
 
 Office file support
@@ -220,7 +220,7 @@ Function `pymupdf.office.get_fontpath()` returns a tuple of all font directories
 API
 -----------------------
 
-.. _pymupdf_office_api_to_pdf:
+.. _pymupdf_office_api_unlock:
 
 .. method:: unlock(my_key: str = None, *, fontpath: str | list | tuple = None, fontpath_auto: bool = None)
 
@@ -231,6 +231,8 @@ API
     :arg bool fontpath_auto: Whether to append system font directories.
 
     Grants access to the full functionality of PyMuPDF Office. For a free trial key please visit: `https://pymupdf.io/office/try/ <https://pymupdf.io/office/try/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-pymupdf-office-page&utm_campaign=docs>`_.
+
+.. _pymupdf_office_api_to_pdf:
 
 .. method:: to_pdf(input_path: str, output_path:str = None) -> bytes | None
 

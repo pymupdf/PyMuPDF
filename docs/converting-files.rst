@@ -158,7 +158,11 @@ For example, assuming you have access to the source files for the "Comic Sans" f
 PDF to Markdown
 ~~~~~~~~~~~~~~~~~
 
-By utlilizing the :meth:`Document.to_markdown` method we are able to convert PDF to a Markdown representation.
+By utlilizing the :meth:`Document.to_markdown` method we are able to convert any of the following document types to a Markdown representation:
+
+- PDFs
+- Image documents (because they are internally converted to 1-page PDFs)
+- Office documents opened using PyMuPDF Office (because they are converted to PDFs via :ref:`to_pdf() <pymupdf_office_api_to_pdf>` before processing them)
 
 **Example**
 

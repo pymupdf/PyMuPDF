@@ -138,9 +138,9 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.set_xml_metadata`       PDF only: create or update document XML metadata
 :meth:`Document.subset_fonts`           PDF only: create font subsets
 :meth:`Document.switch_layer`           PDF only: activate OC configuration
-:meth:`Document.to_json`                PDF only: convert the document to JSON
-:meth:`Document.to_markdown`            PDF only: convert the document to Markdown
-:meth:`Document.to_text`                PDF only: convert the document to plain text
+:meth:`Document.to_json`                PDF, Image & Office documents: convert the document to JSON
+:meth:`Document.to_markdown`            PDF, Image & Office documents: convert the document to Markdown
+:meth:`Document.to_text`                PDF, Image & Office documents: convert the document to plain text
 :meth:`Document.tobytes`                PDF only: writes document to memory
 :meth:`Document.xref_copy`              PDF only: copy a PDF dictionary to another :data:`xref`
 :meth:`Document.xref_get_key`           PDF only: get the value of a dictionary key
