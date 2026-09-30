@@ -61,8 +61,8 @@ msgstr ""
 msgid ""
 "You can extend the supported file types to also include **Office** "
 "document formats (DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX) by :ref:`using "
-"PyMuPDF Pro with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`."
-msgstr ":ref:`PyMuPDF Pro와 PyMuPDF4LLM 함께 사용 <using_pymupdf4llm_withpymupdfpro>` 하여 지원되는 파일 타입을 **Office** 문서 형식(DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX)도 포함하도록 확장할 수 있습니다."
+"PyMuPDF Office with PyMuPDF4LLM <using_pymupdf4llm_withpymupdfpro>`."
+msgstr ":ref:`PyMuPDF Office PyMuPDF4LLM 함께 사용 <using_pymupdf4llm_withpymupdfpro>` 하여 지원되는 파일 타입을 **Office** 문서 형식(DOC/DOCX, XLS/XLSX, PPT/PPTX, HWP/HWPX)도 포함하도록 확장할 수 있습니다."
 
 #: ../../pymupdf4llm/index.rst:19 38428359cdaf4039b439454f5c712ec7
 msgid "Features"

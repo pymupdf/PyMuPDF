@@ -43,8 +43,8 @@ msgid "**PyMuPDF Pro**"
 msgstr ""
 
 #: ../../resources.rst:12 08c45bb03e394054bea50f41ce8a06d0
-msgid "For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`."
-msgstr "**Office** ファイルのサポートには、`PyMuPDF Pro <pymupdf-pro>` をお試しください。"
+msgid "For **Office** file support `try PyMuPDF Office <pymupdf-office>`."
+msgstr "**Office** ファイルのサポートには、`PyMuPDF Office <pymupdf-office>` をお試しください。"
 
 #: ../../resources.rst:20 5af5e4a006674fbf9c2bb32995565bc2
 msgid "Find out about **PyMuPDF Utilities**"
