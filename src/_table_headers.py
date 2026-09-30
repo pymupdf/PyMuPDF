@@ -26,8 +26,9 @@ CA 94129, USA, for further information.
 PyMuPDF table header detection and HTML serialization (opt-in extension).
 
 Pure text-grid module (no pymupdf import): the header-region rules operate on a
-row-major ``[[cell text]]`` grid, and the serializer turns a tagged placement
-grid into an HTML ``<table>``. Used only by find_tables(refine=True) (via
+row-major ``[[cell text]]`` grid, extend_header_leaf_labels completes that region
+from a placement grid's spans, and the serializer turns a tagged placement grid
+into an HTML ``<table>``. Used only by find_tables(refine=True) (via
 pymupdf.table) and Table.to_html(); never runs on the default detection path.
 """
 from __future__ import annotations
@@ -923,6 +924,89 @@ def find_header_region(rows: list[list[str]]) -> HeaderRegion:
         top_header_rows=top_header_rows,
         section_header_rows=section_rows,
     )
+
+
+# --- Leaf labels under spanning header cells: placement grid -> depth --------
+# Digits with only currency, sign, grouping, decimal, percent or date
+# punctuation read as a value; a single letter makes the cell a label.
+_PLAIN_NUMBER_RE = re.compile(r"^[\s$€£(),.%\-–—+0-9/:]+$")
+
+
+def _plain_number(text: str) -> bool:
+    return bool(_PLAIN_NUMBER_RE.match(text)) and any(char.isdigit() for char in text)
+
+
+def _span_slots(grid) -> tuple[list[tuple[int, int, int, int, str]], int]:
+    """Place a ragged span grid on its slots, as an HTML renderer does.
+
+    Returns one ``(row0, row1, col0, col1, text)`` entry per cell (end-exclusive
+    slots, whitespace-collapsed text) and the grid's column count."""
+    occupied: set[tuple[int, int]] = set()
+    slots = []
+    for row0, row in enumerate(grid):
+        col0 = 0
+        for cell in row:
+            while (row0, col0) in occupied:
+                col0 += 1
+            row1, col1 = row0 + max(1, cell.rowspan), col0 + max(1, cell.colspan)
+            occupied.update((r, c) for r in range(row0, row1) for c in range(col0, col1))
+            slots.append((row0, row1, col0, col1, collapse_cell_ws(cell.text or "")))
+            col0 = col1
+    return slots, max((col for _, col in occupied), default=-1) + 1
+
+
+def _row_shape(slots, row: int, ncols: int) -> tuple[str, ...]:
+    """Per column, whether ``row`` shows nothing, a plain number or text there."""
+    shape = [""] * ncols
+    for row0, row1, col0, col1, text in slots:
+        if row0 <= row < row1 and text:
+            kind = "number" if _plain_number(text) else "text"
+            for col in range(col0, min(col1, ncols)):
+                shape[col] = kind
+    return tuple(shape)
+
+
+def extend_header_leaf_labels(grid, top_header_rows: int) -> int:
+    """Extend the header over the row naming the columns of a spanning header cell.
+
+    A header cell spanning more than one column but not all of them, with no
+    single-column label under any of its columns, leaves those columns unnamed.
+    The row below the header joins it when it supplies the names: a non-empty
+    single-column cell under every column of such a span, no plain number under
+    a column that is already labeled, not one full-width cell, and not the same
+    blank/number/text shape per column as the row after it (that repeat marks
+    the first record of a regular body). Repeats for nested spans; never shrinks
+    the header, leaves a header of 0 rows alone and never takes the last row, so
+    the table always keeps a body row.
+
+    ``grid`` is a row-major placement grid duck-typed like ``render_table_html``
+    input (``text`` / ``colspan`` / ``rowspan``). Only its text and spans are
+    read, so the result depends on nothing but the grid itself.
+    """
+    slots, ncols = _span_slots(grid)
+    depth = top_header_rows
+    if not 0 < depth < len(grid) or ncols < 2:
+        return depth
+    while depth < len(grid) - 1:  # a header never takes the whole table
+        header = [slot for slot in slots if slot[1] <= depth and slot[4]]
+        labeled = {col0 for _, _, col0, col1, _ in header if col1 - col0 == 1}
+        spans = [
+            range(col0, col1)
+            for _, _, col0, col1, _ in header
+            if 1 < col1 - col0 < ncols and labeled.isdisjoint(range(col0, col1))
+        ]
+        row = [(col0, col1, text) for row0, _, col0, col1, text in slots if row0 == depth and text]
+        if not spans or not row or (len(row) == 1 and row[0][1] - row[0][0] == ncols):
+            break
+        leaves = {col0 for col0, col1, _ in row if col1 - col0 == 1}
+        if not any(leaves.issuperset(span) for span in spans):
+            break
+        if any(_plain_number(text) and not labeled.isdisjoint(range(col0, col1)) for col0, col1, text in row):
+            break
+        if _row_shape(slots, depth, ncols) == _row_shape(slots, depth + 1, ncols):
+            break
+        depth += 1
+    return depth
 
 
 # --- HTML serialization: tagged placement grid -> <table> --------------------
