@@ -6,6 +6,9 @@ import os
 
 import pymupdf
 
+import util
+
+
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "quad-calc-0.pdf")
 
@@ -24,7 +27,14 @@ def test_quadcalc():
     # let text search find the text returning quad coordinates
     rl = page.search_for(text, quads=True)
     searchq = rl[0]
-    assert abs(searchq.ul - lineq.ul) <= 1e-4
-    assert abs(searchq.ur - lineq.ur) <= 1e-4
-    assert abs(searchq.ll - lineq.ll) <= 1e-4
-    assert abs(searchq.lr - lineq.lr) <= 1e-4
+    if util._use_4llm():
+        # 4llm changes skip_quad_corrections.
+        assert abs(searchq.ul - lineq.ul) <= 4
+        assert abs(searchq.ur - lineq.ur) <= 4
+        assert abs(searchq.ll - lineq.ll) <= 4
+        assert abs(searchq.lr - lineq.lr) <= 4
+    else:
+        assert abs(searchq.ul - lineq.ul) <= 1e-4
+        assert abs(searchq.ur - lineq.ur) <= 1e-4
+        assert abs(searchq.ll - lineq.ll) <= 1e-4
+        assert abs(searchq.lr - lineq.lr) <= 1e-4

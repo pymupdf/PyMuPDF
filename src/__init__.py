@@ -339,6 +339,11 @@ _globals = _Globals()
 
 _get_layout: typing.Optional[typing.Callable] = None
 
+try:
+    import pymupdf.layout   # noqa: F401
+except ImportError:
+    pass
+
 # global switch ensuring that the recommendation message is shown at most once
 _recommend_layout = True  # must be referred to as "global" everywhere
 
@@ -11912,7 +11917,7 @@ class Page:
         assert isinstance(page, mupdf.FzPage), f'{self.this=}'
         clips = True if extended else False
         prect = mupdf.fz_bound_page(page)
-        if 1 or g_use_extra:
+        if g_use_extra:
             rc = extra.get_cdrawings(page, extended, callback, method)
         else:
             rc = list()
@@ -21358,7 +21363,11 @@ def _make_image_dict(img, img_dict):
     elif ext == "jpeg" and img.n() == 4:
         # JPEG with CMYK: invert colors
         res = mupdf.fz_new_buffer_from_image_as_jpeg(
-                    img, mupdf.FzColorParams(mupdf.fz_default_color_params), 95, 1)
+                    img,
+                    mupdf.FzColorParams(mupdf.fz_default_color_params),
+                    95,
+                    mupdf.FZ_CMYK_JPEG_INVERTED if mupdf_version_tuple >= (1, 29) else 1,
+                    )
     else:
         # copy the compressed buffer
         res = mupdf.FzBuffer(mupdf.ll_fz_keep_buffer(ll_cbuf.buffer))
@@ -23514,7 +23523,10 @@ def jm_checkrect(dev):
             ):
         return 0 # not a rectangle
     
-    # we have a rect, replace last 3 "l" items by one "re" item.
+    # we have a rect
+    dev.lastpoint = ll  # last point is the start of the first line
+
+    # replace last 3 "l" items by one "re" item.
     if ul.y < lr.y:
         r = mupdf.fz_make_rect(ul.x, ul.y, lr.x, lr.y)
         orientation = 1
@@ -26291,7 +26303,6 @@ recover_span_quad           = utils.recover_span_quad
 
 from . import table
 
-
 class FitzDeprecation(DeprecationWarning):
     pass
 
@@ -26582,3 +26593,8 @@ __doc__ = (
         f'PyMuPDF {VersionBind}: Python bindings for the MuPDF {VersionFitz} library.\n'
         f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
         )
+
+try:
+    import pymupdf4llm   # noqa: F401
+except ImportError:
+    pass

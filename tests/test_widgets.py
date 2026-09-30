@@ -550,10 +550,7 @@ def test_5101():
             page = document[0]
             wt = pymupdf.TOOLS.mupdf_warnings()
             print(f'{wt=}')
-            if pymupdf.mupdf_version_tuple >= (1, 28, 5):
-                assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
-            else:
-                assert wt == 'fixed bad Parent in AcroForm tree\n... repeated 2 times...'
+            assert wt == 'cycle in parent chain\nfixed bad Parent in AcroForm tree\n... repeated 2 times...'
             document2 = pymupdf.open()
             document2.insert_pdf(document, annots=False, widgets=False, links=True)
         else:
