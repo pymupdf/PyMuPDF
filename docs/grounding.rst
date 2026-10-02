@@ -31,8 +31,13 @@ Our example highlights how an answer is **grounded with citations directly linke
 .. image:: images/grounding/citation.png
         :alt: Citation grounding example
 
+.. note::
+
+   Citation example highlights source text by visually marking the grounding locations in the PDF.
 
 The code example creates a basic PDF with sample text content and asks PyMuPDF to highlight the areas that support the answer from the LLM response.
+
+
 
 
 .. code-block:: python
@@ -62,6 +67,7 @@ The code example creates a basic PDF with sample text content and asks PyMuPDF t
 
     import json
     import re
+    import unicodedata
     from dataclasses import dataclass, field
 
     import pymupdf
@@ -97,7 +103,18 @@ The code example creates a basic PDF with sample text content and asks PyMuPDF t
     # 2. Retrieval (placeholder: keyword overlap)
     # --------------------------------------------------------------------------
     def tokens(s: str) -> list[str]:
-        return re.findall(r"[a-z0-9]+", s.lower())
+        text = unicodedata.normalize("NFKC", s).casefold()
+        out = re.findall(r"[^\W_]+", text, flags=re.UNICODE)
+        hangul = "".join(re.findall(r"[가-힣]", text))
+        out.extend(f"ko:{hangul[i:i + 2]}" for i in range(len(hangul) - 1))
+        if len(hangul) == 1:
+            out.append(f"ko:{hangul}")
+        return out
+
+
+    def _normalise_match(text: str) -> str:
+        text = unicodedata.normalize("NFKC", text).casefold()
+        return "".join(char for char in text if char.isalnum())
 
 
     def retrieve(chunks: list[Chunk], question: str, k: int = 4) -> list[Chunk]:
@@ -155,9 +172,8 @@ The code example creates a basic PDF with sample text content and asks PyMuPDF t
         #    the quote as a contiguous run. Handles hyphenation, ligatures,
         #    punctuation and whitespace differences.
         words = page.get_text("words", clip=clip, sort=True)   # (x0,y0,x1,y1,word,...)
-        norm = lambda w: re.sub(r"[^a-z0-9]", "", w.lower())
-        page_words = [(norm(w[4]), w) for w in words if norm(w[4])]
-        target = [t for t in (norm(w) for w in quote.split()) if t]
+        page_words = [(_normalise_match(w[4]), w) for w in words if _normalise_match(w[4])]
+        target = [t for t in (_normalise_match(w) for w in quote.split()) if t]
         if not target:
             return []
 
@@ -166,6 +182,18 @@ The code example creates a basic PDF with sample text content and asks PyMuPDF t
         for i in range(len(joined) - n + 1):
             if joined[i:i + n] == target:
                 return [pymupdf.Rect(w[:4]).quad for _, w in page_words[i:i + n]]
+
+        # Korean spacing and PDF word segmentation can differ. Compare the
+        # normalized character stream while retaining each character's word box.
+        target_text = _normalise_match(quote)
+        char_stream = "".join(word for word, _ in page_words)
+        start = char_stream.find(target_text)
+        if target_text and start >= 0:
+            char_word_indices = [
+                index for index, (word, _) in enumerate(page_words) for _ in word
+            ]
+            matched_indices = dict.fromkeys(char_word_indices[start:start + len(target_text)])
+            return [pymupdf.Rect(page_words[index][1][:4]).quad for index in matched_indices]
 
         # c) Partial match: longest leading run of the quote (min 4 words).
         for size in range(n - 1, 3, -1):
@@ -293,6 +321,7 @@ The code example creates a basic PDF with sample text content and asks PyMuPDF t
                     llm=fake_llm, out_pdf="sample_lease_grounded.pdf")
         print(json.dumps(report, indent=2))
 
+
 ----
 
 2. Extracted-data grounding
@@ -305,6 +334,14 @@ Our example demonstrates how extracted data is grounded by marking each value on
 
 .. image:: images/grounding/extraction.png
         :alt: Extraction grounding example
+
+.. note::
+
+   The colors used in the grounding PDF indicate the status of each extracted value:
+
+   - **Green**: the value matches the source text.
+   - **Orange**: the value is ambiguous or partially matches.
+   - **Red**: the value does not match the source text.
 
 The validation produces a grounding PDF example with matches for validated areas (green), ambiguous areas (orange), and mismatches (red).
 
@@ -585,7 +622,7 @@ The validation produces a grounding PDF example with matches for validated areas
         shown_px = tuple((real * page2.rotation_matrix) * (200 / 72))
 
         # A box that points at the wrong place (simulated extractor error).
-        wrong_box = tuple(doc[0].search_for("20%")[0])
+        wrong_box = tuple(doc[0].search_for("Licence")[0])
 
         items = [
             # Path A: no coordinates (e.g. from an LLM). Different number formats on purpose.
@@ -618,6 +655,10 @@ This applies when a document is checked against something trusted, either refere
 
 .. image:: images/grounding/verification.png
         :alt: Verification grounding example
+
+.. note::
+
+    Verification grounding highlights discrepancies between the document and the trusted (CSV) input reference, making it easy to spot errors at a glance.
 
 Our example shows how a CSV input source is used as the trusted reference, with discrepancies in the document highlighted and linked back to their locations on the page.
 
