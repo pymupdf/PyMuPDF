@@ -11247,6 +11247,13 @@ class Page:
     def cropbox_position(self):
         return self.cropbox.tl
 
+    def _delete_empty_annots(self):
+        """Delete the /Annots key if empty."""
+        page_obj = self._pdf_page().obj()
+        annots = page_obj.pdf_dict_get(PDF_NAME("Annots"))
+        if annots.pdf_array_len() == 0:
+            page_obj.pdf_dict_del(PDF_NAME("Annots"))
+
     def delete_annot(self, annot):
         """Delete annot and return next one."""
         CheckParent(self)
@@ -11268,6 +11275,11 @@ class Page:
             val.parent = weakref.proxy(self) # owning page object
             val.parent._annot_refs[id(val)] = val
         annot._erase()
+
+        # remove /Annots if now empty
+        self._delete_empty_annots()
+        mupdf.pdf_sync_annots(page)
+
         return val
 
     def delete_image(page: 'Page', xref: int):
@@ -11416,6 +11428,8 @@ class Page:
         keylist = list(widget.__dict__.keys())
         for key in keylist:
             del widget.__dict__[key]
+
+        self._delete_empty_annots()
         mupdf.pdf_sync_annots(ppage)
         return nextwidget
 
