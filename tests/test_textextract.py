@@ -564,11 +564,7 @@ def test_4182():
     if platform.system() != 'Windows':  # Output on Windows can fail due to non-utf8 stdout.
         for l in linelist:
             print(l)
-    if pymupdf.mupdf_version_tuple >= (1, 29):
-        # Since mupdf 0db5aaff9cc4 Bug 709711: Use smaller of sizes for heuristics when font size changes.
-        path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4182_expected_1.29.png')
-    else:
-        path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4182_expected.png')
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4182_expected.png')
     pixmap_diff = gentle_compare.pixmaps_diff(path_expected, pixmap)
     path_diff = os.path.normpath(f'{__file__}/../../tests/resources/test_4182_diff.png')
     pixmap_diff.save(path_diff)
