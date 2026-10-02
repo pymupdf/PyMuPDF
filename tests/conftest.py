@@ -33,6 +33,21 @@ def install_required_packages():
         pass
     else:
         packages += ' psutil'
+    
+    PYMUPDF_TEST_USE_LAYOUT = os.environ.get('PYMUPDF_TEST_USE_LAYOUT')
+    PYMUPDF_TEST_USE_4LLM = os.environ.get('PYMUPDF_TEST_USE_4LLM')
+    if PYMUPDF_TEST_USE_LAYOUT == '0' and PYMUPDF_TEST_USE_4LLM == '0':
+        # pymupdf_lite.
+        pass
+    else:
+        # Pymupdf contains layout and 4llm.
+        
+        # From pymupdf_layout/tests/conftest.py.
+        packages += ' opencv-python'
+
+        # From pymupdf4llm/tests/conftest.py.
+        packages += ' llama_index pytest-asyncio rapidocr-onnxruntime'
+    
     command = f'pip install --upgrade {packages}'
     print(f'{__file__}:install_required_packages)(): Running: {command}', flush=1)
     subprocess.run(command, shell=1, check=1)
