@@ -750,6 +750,18 @@ def test_battery_file():
     assert len(tabs.tables) == 0
 
 
+def test_table_finder_len_bool_iter():
+    """TableFinder supports len(), truth testing and iteration over its tables."""
+    for name, count in (("test_3179.pdf", 3), ("battery-file-22.pdf", 0)):
+        doc = pymupdf.open(os.path.join(scriptdir, "resources", name))
+        tabs = doc[0].find_tables()
+        assert len(tabs) == count
+        assert bool(tabs) is (count > 0)
+        items = list(tabs)
+        assert len(items) == count
+        assert all(a is b for a, b in zip(items, tabs.tables))
+
+
 def test_markdown():
     """Confirm correct markdown output."""
     filename = os.path.join(scriptdir, "resources", "strict-yes-no.pdf")
