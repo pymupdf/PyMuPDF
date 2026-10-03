@@ -694,11 +694,5 @@ def test_5154():
     kids.pdf_array_delete(0)  # delete pointer to 'child'
     src = pymupdf.open("pdf", doc.tobytes())
     out = pymupdf.open()
-    ok = False
-    try:
-        out.insert_pdf(src, widgets=True)  # ValueError: 9 is not in list
-        ok = True
-    except Exception as e:
-        pass
-    assert ok
-
+    out.insert_pdf(src, widgets=True)  # ValueError: 9 is not in list
+    
