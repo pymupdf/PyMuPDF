@@ -5,7 +5,7 @@ Test PDF field (widget) insertion.
 import gc
 import pymupdf
 import os
-from pymupdf import mupdf
+from pymupdf import mupdf, PDF_NAME
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "widgettest.pdf")
@@ -673,3 +673,32 @@ def test_3478():
     
     assert num_still_present == 0, f'{num_still_present=}'
     assert num_still_present_acro == 0, f'{num_still_present_acro=}'
+
+def test_5154():
+    """Let 'insert_pdf' survive broken parent /Kids array."""
+    doc = pymupdf.open()
+    pdoc = pymupdf._as_pdf_document(doc)
+    page = doc.new_page()
+    w = pymupdf.Widget()
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.field_name = "child"
+    w.field_value = "child"
+    w.rect = pymupdf.Rect(50, 50, 200, 80)
+    page.add_widget(w)
+    wx = page.first_widget.xref
+
+    # empty / invalidate the parent's /Kids array
+    widget_obj = mupdf.pdf_load_object(pdoc, wx)
+    parent = widget_obj.pdf_dict_get(PDF_NAME("Parent"))
+    kids = parent.pdf_dict_get(PDF_NAME("Kids"))
+    kids.pdf_array_delete(0)  # delete pointer to 'child'
+    src = pymupdf.open("pdf", doc.tobytes())
+    out = pymupdf.open()
+    ok = False
+    try:
+        out.insert_pdf(src, widgets=True)  # ValueError: 9 is not in list
+        ok = True
+    except Exception as e:
+        pass
+    assert ok
+

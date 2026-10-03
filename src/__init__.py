@@ -3415,10 +3415,22 @@ class Document:
         def kids_xrefs(widget):
             """Get the xref of top "Parent" and the list of leaf widgets."""
             kids_list = []
-            parent = mupdf.pdf_dict_get(widget, PDF_NAME("Parent"))
+            parent = widget.pdf_dict_get(PDF_NAME("Parent"))
             parent_xref = parent.pdf_to_num()
             if parent_xref == 0:
                 return parent_xref, kids_list
+
+            kids = parent.pdf_dict_get(PDF_NAME("Kids"))
+            # Fix #5154: ensure the widget is in the parent's /Kids array
+            if not kids.pdf_is_array():
+                kids = parent.pdf_dict_put_array(PDF_NAME("Kids"), 1)
+            in_kids = False
+            for i in range(kids.pdf_array_len()):
+                if kids.pdf_array_get(i).pdf_to_num() == widget.pdf_to_num():
+                    in_kids = True
+                    break
+            if not in_kids:
+                kids.pdf_array_push(widget)
             kids_list = get_kids(parent, kids_list)
             return parent_xref, kids_list
 
@@ -3507,7 +3519,7 @@ class Document:
                 for xref, wtype, _ in src_page.annot_xrefs()
                 if wtype == mupdf.PDF_ANNOT_WIDGET  # pylint: disable=no-member
             ]:
-                w_obj = mupdf.pdf_load_object(srcpdf, xref)
+                w_obj = mupdf.pdf_new_indirect(srcpdf, xref, 0)
                 w_obj.pdf_dict_del(PDF_NAME("P"))
 
                 # get the widget's parent structure
