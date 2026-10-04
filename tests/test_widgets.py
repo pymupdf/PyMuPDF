@@ -696,3 +696,28 @@ def test_5154():
     out = pymupdf.open()
     out.insert_pdf(src, widgets=True)  # ValueError: 9 is not in list
     
+def test_5055():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5055.pdf')
+    src = pymupdf.open(path)
+    tar = pymupdf.open()
+    ptar=pymupdf._as_pdf_document(tar)
+    tar.insert_pdf(src)
+    ptar = pymupdf._as_pdf_document(tar)
+    fields = mupdf.pdf_dict_getl(
+        mupdf.pdf_trailer(ptar),
+        PDF_NAME("Root"),
+        PDF_NAME("AcroForm"),
+        PDF_NAME("Fields"),
+    )
+    assert fields.pdf_array_len()==1
+    field = fields.pdf_array_get(0)
+    kids=field.pdf_dict_get(PDF_NAME("Kids"))
+    kid_xrefs=set([kids.pdf_array_get(i).pdf_to_num() for i in range(kids.pdf_array_len())])
+    field_xref=field.pdf_to_num()
+    page=tar[0]
+    annot_xrefs = set([x[0] for x in page.annot_xrefs()])
+    assert kid_xrefs == annot_xrefs, f"kid_xrefs: {kid_xrefs}, annot_xrefs: {annot_xrefs}"
+    for w in page.widgets():
+        widget=mupdf.pdf_load_object(ptar, w.xref)
+        parent = widget.pdf_dict_get(PDF_NAME("Parent"))
+        assert parent.pdf_to_num() == field_xref
