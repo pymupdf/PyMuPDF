@@ -198,7 +198,7 @@ For details on **embedded files** refer to Appendix 3.
 
     * With default parameters, a **new empty PDF** document will be created.
     * If ``stream`` is given, then the document is created from memory.
-    * If ``stream`` is `None`, then a document is created from the file given by ``filename``. 
+    * If ``stream`` is `None`, then a document is created from the file given by ``filename``.
 
     :arg str,pathlib filename: A UTF-8 string or ``pathlib.Path`` object containing a file path. The document type is always determined from the file content.  The ``filetype`` parameter is ignored, except when content inspection was unsuccessful. This is regularly the case for plain text types like "txt", "html", "xml" etc. with a wrong or missing file extension.
 
@@ -211,7 +211,7 @@ For details on **embedded files** refer to Appendix 3.
     :arg rect_like rect: A rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books, MD or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter :data:`fontsize`, each page will be accordingly laid out and hence also determine the number of pages.
 
     :arg float width: May be used together with ``height`` as an alternative to ``rect`` to specify layout information.
- 
+
     :arg float height: May be used together with ``width`` as an alternative to ``rect`` to specify layout information.
 
     :arg float fontsize: the default :data:`fontsize` for reflowable document types. This parameter is ignored if none of the parameters ``rect`` or ``width`` and ``height`` are specified. Will be used to calculate the page layout.
@@ -234,18 +234,18 @@ For details on **embedded files** refer to Appendix 3.
         # handle wrong extension
         doc = pymupdf.open("some.file", filetype="xps")  # assert expected type
         doc = pymupdf.open("some.file", filetype="txt")  # treat as plain text
-        
+
         # from memory
         doc = pymupdf.open(stream=mem_area)  # works for any supported type
         doc = pymupdf.open(stream=unknown_type, filetype="txt")  # treat as plain text
-        
+
         # new empty PDF
         doc = pymupdf.open()
         doc = pymupdf.open(None)
         doc = pymupdf.open("")
 
-    .. note:: 
-        
+    .. note::
+
         Raster images with a wrong (but supported) file extension **are no problem**. MuPDF will determine the correct image type when file **content** is actually accessed and will process it without complaint.
 
         See :ref:`supported file types <Supported_File_Types>` for more information.
@@ -885,7 +885,7 @@ For details on **embedded files** refer to Appendix 3.
     :arg dict options: This parameter is intended for expert users. Except ``set_to_gray``, all other parameters are ignored. It must be an object prepared in the following way: ``options = pymupdf.mupdf.PdfImageRewriterOptions()``. Then attributes of this object can be set to achieve fine-grained control. Following are the adjustable attributes of the ``options`` object and their default (do nothing) values.
 
     ::
-  
+
       options.bitonal_image_recompress_method = FZ_RECOMPRESS_NEVER
       options.bitonal_image_recompress_quality = None
       options.bitonal_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
@@ -913,15 +913,15 @@ For details on **embedded files** refer to Appendix 3.
       options.gray_lossy_image_subsample_to = 0
 
     The ``*_recompress_method`` attributes may be one of the values **FZ_RECOMPRESS_NEVER (0), FZ_RECOMPRESS_SAME (1), FZ_RECOMPRESS_LOSSLESS (2), FZ_RECOMPRESS_JPEG (3), FZ_RECOMPRESS_J2K (4), FZ_RECOMPRESS_FAX (5)**. Value FZ_RECOMPRESS_NEVER will skip this image type altogether and FZ_RECOMPRESS_SAME will not change the type. The other values will execute type conversions (as far as technically possible).
-    
+
     The ``*_quality`` values are strings of integers from "0" to "100" or ``None``.
-    
+
     The ``*_subsample_method`` attributes are either **FZ_SUBSAMPLE_AVERAGE (0)** or **FZ_SUBSAMPLE_BICUBIC (1)** and refer to how a pixel value is derived from its neighboring pixels during subsampling. For some background see `this Wikipedia article about bicubic interpolation <https://en.wikipedia.org/wiki/Bicubic_interpolation>`_.
-    
+
     Attributes ``*_subsample_threshold`` excludes images from subsampling which have a lower DPI. Participating images will be subsampled to the DPI values given by the ``*_subsample_to`` values. Values of 0 mean that no subsampling will take place.
-    
+
     The ``*_subsample_threshold`` values should be chosen notably larger than the ``*_subsample_to`` values to ensure that there are enough size savings. After all, every subsampling inevitably incurs quality losses.
-    
+
     An example for a good choice is ``threshold=100`` and ``to=72``.
 
 
@@ -1489,7 +1489,7 @@ For details on **embedded files** refer to Appendix 3.
   .. method:: bake(*, annots=True, widgets=True)
 
     PDF only: Convert annotations and / or widgets to become permanent parts of the pages. The PDF **will be changed** by this method. If `widgets` is `True`, the document will also no longer be a "Form PDF".
-    
+
     All pages will look the same, but will no longer have annotations, respectively fields. The visible parts will be converted to standard text, vector graphics or images as required.
 
     The method may thus be a viable **alternative for PDF-to-PDF conversions** using :meth:`Document.convert_to_pdf`.
@@ -1510,13 +1510,13 @@ For details on **embedded files** refer to Appendix 3.
     Check whether the document can be saved incrementally. Use it to choose the right option without encountering exceptions.
 
   .. method:: repair()
-  
+
     Repair document.
-    
+
     * Slow for large documents.
     * Does nothing on non-PDF documents.
     * New in v1.27.0
-  
+
   .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
     * New in v1.16.14
@@ -1541,9 +1541,9 @@ For details on **embedded files** refer to Appendix 3.
   .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0, compression_effort=0, raise_on_repair=False)
 
     PDF documents are saved in their **current state**.
-    
+
     Non-PDF documents are saved in PDF format. *(new in v1.28.0)*
-    
+
     :arg str,Path,fp outfile: The file path, `pathlib.Path` or file object to save to. A file object must have been created before via `open(...)` or `io.BytesIO()`. Choosing `io.BytesIO()` is similar to :meth:`Document.tobytes` below, which equals the `getvalue()` output of an internally created `io.BytesIO()`.
 
     :arg int garbage: Do garbage collection. Positive values exclude "incremental".
@@ -1589,22 +1589,22 @@ For details on **embedded files** refer to Appendix 3.
     :arg int use_objstms: *(new in v1.24.0)* compression option that converts eligible PDF object definitions to information that is stored in some other object's :data:`stream` data. Depending on the `deflate` parameter value, the converted object definitions will be compressed -- which can lead to very significant file size reductions.
 
         See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
-    
+
     :arg int compression_effort:
-    
+
       * 0 for default
       * 1 for minimum effort.
       * 100 for maximum effort.
 
       See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
-    
+
     :arg bool raise_on_repair: *(new in v1.27.0)* If true we raise an exception if the save caused a repair.
       This is useful because repairs can cause changes to be lost.
-      
+
       Also see `Document.repair()`.
-    
-    .. warning:: 
-        
+
+    .. warning::
+
         The method does not check, whether a file of that name already exists, will hence not ask for confirmation, and overwrite the file. It is your responsibility as a programmer to handle this.
 
 
@@ -1613,13 +1613,13 @@ For details on **embedded files** refer to Appendix 3.
       **File size reduction**
 
       1. Use the save options like `garbage=3|4, deflate=True, use_objstms=True|1`. Do not touch the default values `expand=False|0, clean=False|0, incremental=False|0, linear=False|0`.
-      This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below. 
+      This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below.
 
       2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
 
       See: :ref:`Compressing Files <CompressingFiles>` for more.
 
-    
+
 
   .. method:: ez_save(*args, **kwargs)
 
@@ -1682,20 +1682,20 @@ For details on **embedded files** refer to Appendix 3.
 
     :arg int rotate: All copied pages will be rotated by the provided value (degrees, integer multiple of 90).
 
-    :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal links to outside the copied page range are **always excluded**. 
-    
+    :arg bool links: Choose whether (internal and external) links should be included in the copy. Default is `True`. *Named* links (:data:`LINK_NAMED`) and internal links to outside the copied page range are **always excluded**.
+
     :arg bool annots: choose whether annotations should be included in the copy.
-    
-    :arg bool widgets: choose whether annotations should be included in the copy. If `True` and at least one of the source pages contains form fields, the target PDF will be turned into a Form PDF (if not already being one).
-    
+
+    :arg bool widgets: choose whether annotations should be included in the copy. If `True` and at least one of the source pages contains form fields, the target PDF will be turned into a Form PDF (if not already being one). *(New in version 2.0)* Method :meth:`Page.repair_flat_rbgs()` will be invoked internally for all pages of the source PDF to ensure proper handling of flat Radio Button Groups.
+
     :arg bool join_duplicates: *(New in version 1.25.5)* Choose how to handle duplicate root field names in the source pages. This parameter is ignored if `widgets=False`.
-    
+
       Default is ``False`` which will add unifying strings to the name of those source root fields which have a duplicate in the target. For instance, if "name" already occurs in the target, the source widget's name will be changed to "name [text]" with a suitably chosen string "text".
 
       If ``True``, root fields with duplicate names in source and target will be converted to so-called "Kids" of a "Parent" object (which lists all kid widgets in a PDF array). This will effectively turn those kids into instances of the "same" widget: if e.g. one of the kids is changed, then all its instances will automatically inherit this change -- no matter on which page they happen to be displayed.
-    
+
     :arg int show_progress: *(new in v1.17.7)* specify an interval size greater zero to see progress messages on `sys.stdout`. After each interval, a message like `Inserted 30 of 47 pages.` will be printed.
-    
+
     :arg int final: *(new in v1.18.0)* controls whether the list of already copied objects should be **dropped** after this method, default ``True``. Set it to 0 except for the last one of multiple insertions from the same source PDF. This saves target file size and speeds up execution considerably.
 
   .. note::
@@ -2203,7 +2203,7 @@ For details on **embedded files** refer to Appendix 3.
     :arg bool fallback: if `True` use the deprecated algorithm that makes use of package `fontTools <https://pypi.org/project/fonttools/>`_ (which hence must be installed). If using the recommended value `False` (default), MuPDF's native function is used -- which is **very much faster** and can subset a broader range of font types. Package fontTools is not required then.
 
     The greatest benefit can be achieved when creating new PDFs using large fonts like is typical for Asian scripts. When using the :ref:`Story` class or method :meth:`Page.insert_htmlbox`, multiple fonts may automatically be included -- without the programmer becoming aware of it.
-    
+
     In all these cases, the set of actually used unicodes mostly is very small compared to the number of glyphs available in the used fonts. Using this method can easily reduce the embedded font binaries by two orders of magnitude -- from several megabytes down to a low two-digit kilobyte amount.
 
     Creating font subsets leaves behind a large number of large, now unused PDF objects ("ghosts"). Therefore, make sure to compress and garbage-collect when saving the file. We recommend to use :meth:`Document.ez_save`.
