@@ -41,10 +41,9 @@ This documentation covers all versions up to |version|.
    :maxdepth: 1
 
    about.rst
-   pymupdf4llm/index.rst
-   pymupdf-pro/index.rst
-
-
+   pymupdf-office/index.rst
+   rag.rst
+   grounding.rst
 
 .. toctree::
    :caption: User Guide
@@ -53,7 +52,7 @@ This documentation covers all versions up to |version|.
    installation.rst
    the-basics.rst
    tutorial.rst
-   rag.rst
+   ocr/index.rst
    resources.rst
    faq/index.rst
 
@@ -71,7 +70,6 @@ This documentation covers all versions up to |version|.
    :maxdepth: 2
 
    classes.rst
-   pymupdf4llm/api.rst
    algebra.rst
    lowlevel.rst
    glossary.rst

@@ -40,12 +40,12 @@ msgid "Resources"
 msgstr "리소스"
 
 #: ../../resources.rst:9 226156d6aa574ae49ebbc29f7cc0ef0d
-msgid "**PyMuPDF Pro**"
-msgstr "**PyMuPDF Pro**"
+msgid "**PyMuPDF Office**"
+msgstr "**PyMuPDF Office**"
 
 #: ../../resources.rst:12 67c0d5d5d80c4878907a81eb3091f9c3
-msgid "For **Office** file support `try PyMuPDF Pro <pymupdf-pro>`."
-msgstr "**Office** 파일 지원을 위해 `PyMuPDF Pro <pymupdf-pro>` 를 사용해 보세요."
+msgid "For **Office** file support `try PyMuPDF Office <pymupdf-office>`."
+msgstr "**Office** 파일 지원을 위해 `PyMuPDF Office <pymupdf-office>` 를 사용해 보세요."
 
 #: ../../resources.rst:20 28881f0ff7624205aac76bf0a54670e2
 msgid "Find out about **PyMuPDF Utilities**"

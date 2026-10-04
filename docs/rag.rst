@@ -8,23 +8,56 @@ PyMuPDF, LLM & RAG
 
 Integrating |PyMuPDF| into your :title:`Large Language Model (LLM)` framework and overall :title:`RAG (Retrieval-Augmented Generation`) solution provides the fastest and most reliable way to deliver document data.
 
-There are a few well known :title:`LLM` solutions which have their own interfaces with |PyMuPDF| - it is a fast growing area, so please let us know if you discover any more!
+If you need to export to :title:`Markdown`, structured |JSON| or |TXT| formats, |PyMuPDF| provides the necessary tools to achieve this efficiently in the :class:`Document` object.
 
-If you need to export to :title:`Markdown` or obtain a :title:`LlamaIndex` Document from a file:
 
-.. raw:: html
+Converting to |Markdown|
+-------------------------------------
+ 
 
-   <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='pymupdf4llm/'">Try PyMuPDF4LLM</button>
-   <p></p>
+.. code-block:: python
 
-   <script>
-      let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+    doc = pymupdf.open("input.pdf")
+    md = doc.to_markdown()
 
-      if (lang=="ja") {
-         document.getElementById("pymupdf4llmButton").innerHTML = "PyMuPDF4LLM を試してみる";
-      }
+See the API at: :meth:`Document.to_markdown`.
 
-   </script>
+
+Converting to |JSON|
+-------------------------------------
+
+
+.. code-block:: python
+
+    doc = pymupdf.open("input.pdf")
+    json = doc.to_json()
+
+See the API at :meth:`Document.to_json`.
+
+Converting to |TXT|
+-------------------------------------
+
+.. code-block:: python
+
+    doc = pymupdf.open("input.pdf")
+    txt = doc.to_text()
+
+See the API at: :meth:`Document.to_text`.
+
+..
+    .. raw:: html
+
+    <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='pymupdf4llm/'">Try PyMuPDF4LLM</button>
+    <p></p>
+
+    <script>
+        let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+
+        if (lang=="ja") {
+            document.getElementById("pymupdf4llmButton").innerHTML = "PyMuPDF4LLM を試してみる";
+        }
+
+    </script>
 
 
 Integration with :title:`LangChain`
@@ -61,59 +94,60 @@ See `Building RAG from Scratch <https://docs.llamaindex.ai/en/stable/examples/lo
 Preparing Data for Chunking
 -----------------------------
 
-Chunking (or splitting) data is essential to give context to your :title:`LLM` data and with :title:`Markdown` output now supported by |PyMuPDF| this means that `Level 3 chunking <https://medium.com/@anuragmishra_27746/five-levels-of-chunking-strategies-in-rag-notes-from-gregs-video-7b735895694d#b123>`_ is supported.
+By using the :doc:`PyMuPDF4LLM module <pymupdf4llm/index>`, you can efficiently prepare your documents for chunking and subsequent processing with your :title:`LLM`.
 
-
-
-.. _rag_outputting_as_md:
-
-Outputting as :title:`Markdown`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In order to export your document in :title:`Markdown` format you will need a separate helper. Package :doc:`pymupdf4llm/index` is a high-level wrapper of |PyMuPDF| functions which for each page outputs standard and table text in an integrated Markdown-formatted string across all document pages:
-
-
-.. code-block:: python
-
-    # convert the document to markdown
-    import pymupdf4llm
-    md_text = pymupdf4llm.to_markdown("input.pdf")
-
-    # Write the text to some file in UTF8-encoding
-    import pathlib
-    pathlib.Path("output.md").write_bytes(md_text.encode())
-
-
-For further information please refer to: :doc:`pymupdf4llm/index`.
-
-
-How to use :title:`Markdown` output
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Once you have your data in :title:`Markdown` format you are ready to chunk/split it and supply it to your :title:`LLM`, for example, if this is :title:`LangChain` then do the following:
+Create chunked documents as follows:
 
 .. code-block:: python
 
     import pymupdf4llm
-    from langchain.text_splitter import MarkdownTextSplitter
+    
+    chunked_document = pymupdf4llm.to_chunks("input.pdf")
 
-    # Get the MD text
-    md_text = pymupdf4llm.to_markdown("input.pdf")  # get markdown for all pages
+Basic queries with chunked documents can be made as follows:
 
-    splitter = MarkdownTextSplitter(chunk_size=40, chunk_overlap=0)
+.. code-block:: python
 
-    splitter.create_documents([md_text])
+    len(chunked_document) # Count the number of Chunks
+    chunked_document[0], chunked_document[2:5] # a Chunk, a list of Chunks
+    chunked_document.index(chunked_document[3]) # 3 (Sequence protocol: iteration, slicing, index)
+    chunked_document.chunks  # the same chunks as a tuple
+    chunked_document.text # all chunk text joined (lazy)
+    chunked_document.get("c0") # get chunk by any public id: c{n}, t{n}, f{n}, s{n}, p{page}.b{box}
+
+See :ref:`the full API documentation <pymupdf4llm-api-to-chunks>` for PyMuPDF4LLM's chunking capabilities.
 
 
 
-For more see `5 Levels of Text Splitting <https://github.com/FullStackRetrieval-com/RetrievalTutorials/blob/main/tutorials/LevelsOfTextSplitting/5_Levels_Of_Text_Splitting.ipynb>`_
+.. _using_pymupdf_with_pymupdf_office:
+
+Using with |PyMuPDF Office|
+---------------------------
+
+
+For **Office** document support, |PyMuPDF| works seamlessly with |PyMuPDF Office|. Assuming you have :doc:`../pymupdf-office/index` installed you will be able to work with **Office** documents as expected:
+
+
+.. code-block:: python
+
+    import pymupdf
+    import pymupdf.office
+    pymupdf.office.unlock()
+    md = pymupdf.office.to_markdown("sample.doc")
+
+
+.. _pymupdf_and_layout:
+
+PyMuPDF & PyMuPDF Layout
+-----------------------------------
+
+By default |PyMuPDF| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`Document.use_layout` method.
+
+
 
 
 Related Blogs
---------------------
-
-To find out more about |PyMuPDF|, :title:`LLM` & :title:`RAG` check out our blogs for implementations & tutorials.
-
+-----------------------------
 
 Methodologies to Extract Text
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -123,7 +157,7 @@ Methodologies to Extract Text
 
 
 
-Create a Chatbot to discuss your documents
+Create a Chatbot to connect with your documents
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 - `Make a simple command line Chatbot <https://artifex.com/blog/creating-a-rag-chatbot-with-chatgpt-and-pymupdf>`_
@@ -131,6 +165,10 @@ Create a Chatbot to discuss your documents
 
 
 
+
+.. _PyMuPDF4LLM Document Loader: https://docs.langchain.com/oss/python/integrations/providers/pymupdf4llm/
+
+.. _layout analysis module: https://pymupdf.io/use-cases/layout
 
 
 
