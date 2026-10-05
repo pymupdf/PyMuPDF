@@ -62,13 +62,13 @@ How OCR is Triggered
 
 There are two scenarios where OCR is applied automatically:
 
-**No text at all** — if a page contains roughly no text but is covered with images or many character-sized vectors, PyMuPDF uses `OpenCV <https://pypi.org/project/opencv-python/>`_ to check whether text is *probably* detectable on the page. This distinguishes image-based text (e.g. a scanned document) from ordinary pictures like photographs.
+**No text at all** — if a page contains roughly no text but is covered with images or many character-sized vectors, PyMuPDF checks whether text is *probably* detectable on the page. This distinguishes image-based text (e.g. a scanned document) from ordinary pictures like photographs.
 
 **Garbled text** — if a page does contain text but too many characters are unreadable (e.g. ``"�����"``), OCR is applied **for the affected text areas only**, not the full page. This preserves already-readable text, images, and vectors while recovering only what is broken.
 
 .. note::
 
-   For these heuristics to work, both a `Tesseract installation <installation_ocr>` and `OpenCV <https://pypi.org/project/opencv-python/>`_ must be available in your Python environment. If either is missing, no OCR is attempted.
+   For these heuristics to work, a `Tesseract installation <installation_ocr>`  must be available in your Python environment. If it is missing, no OCR is attempted.
 
 ----
 
@@ -156,9 +156,10 @@ In this way RapidOCR can be used as an alternative OCR engine to Tesseract for a
 RapidOCR & Tesseract Side-by-Side
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If you want to use both OCR engines side-by-side, you can do so by implementing a custom OCR function which calls both OCR engines — one for bbox recognition (RapidOCR) and the other for text recognition (Tesseract) — and then combines their results.
+If both OCR engines are installed -- Tesseract and one of RapidOCR / RapidOCR-ONNXRuntime -- they are automatically used together by default: RapidOCR for text line rectangle detection and Tesseract for text recognition in these rectangles.
+Experiments show that this approach delivers the best results and in a shorter time than RapidOCR alone.
 
-This pre-made callable OCR function can be found in the ``PyMuPDF.ocr`` module as ``rapidtess_api.exec_ocr``.
+This pre-made default callable OCR function can be found in the ``PyMuPDF.ocr`` module as ``rapidtess_api.exec_ocr``.
 
 **Example**
 
@@ -180,7 +181,7 @@ This pre-made callable OCR function can be found in the ``PyMuPDF.ocr`` module a
      - Engines
      - Notes
    * - ``rapidocr_api.exec_ocr``
-     - RapidOCR
+     - RapidOCR or RapidOCR-ONNXRuntime
      - Requires RapidOCR and ONNX Runtime
    * - ``rapidtess_api.exec_ocr``
      - RapidOCR & Tesseract
