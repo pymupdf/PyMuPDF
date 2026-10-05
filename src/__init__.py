@@ -580,6 +580,27 @@ def _pdf_annot_page(annot):
 # Fixme: we don't support JM_MEMORY=1.
 JM_MEMORY = 0
 
+# List of PDF keys that must not exist in a PDF widget dictionary
+NON_WIDGET_KEYS = (
+    "AA",
+    "FT",
+    "Ff",
+    "DA",
+    "Opt",
+    "TU",
+    "I",
+    "TM",  # missing in MuPDF
+    "DV",
+    "MaxLen",
+    "Q",
+    "DS",
+    "DR",
+    "TI",
+    "RV",
+    "T",
+    "V",
+)
+
 # Classes
 #
 
@@ -5451,6 +5472,9 @@ class Document:
             raise ValueError("document closed or encrypted")
         if self._graft_id == docsrc._graft_id:
             raise ValueError("source and target cannot be same object")
+        if widgets:
+            for page in docsrc:
+                page.repair_flat_rbgs()
         sa = start_at
         if sa < 0:
             sa = self.page_count
@@ -10069,6 +10093,117 @@ class Page:
         JM_add_annot_id(annot, "W")
         return Annot(annot)
 
+    def repair_flat_rbgs(self):
+        """Identify / convert "flat" Radio Button Groups in a PDF page.
+
+        "Flat" RBGs do not have a parent field object with a /Kids array
+        pointing to the single RB widgets.
+        Instead, the parent field is implicitly defined by widgets with equal
+        names, which have no /Parent key, and exactly one of them being present
+        in the /AcroForm/Fields array.
+
+        This method finds and converts flat RBGs to standard RBGs.
+        """
+        doc = self.parent
+        if not doc.is_pdf:
+            return
+        pdoc = _as_pdf_document(doc)
+        fields = mupdf.pdf_dict_getl(
+            mupdf.pdf_trailer(pdoc),
+            PDF_NAME("Root"),
+            PDF_NAME("AcroForm"),
+            PDF_NAME("Fields")
+        )
+
+        # Return if this is not a Form PDF
+        if not fields.pdf_array_len():
+            return
+
+        def repair_flat_rbg(name, widgets):
+            """Convert one flat RadioButtonGroup.
+
+            Args:
+                name: Name of the RBG field (string)
+                widgets: List of (widget, idx) tuples, where `widget` is a mupdf
+                        pdf object representing a RB widget and `idx` is its index
+                        in the /AcroForm/Fields array (or -1 if not present).
+            """
+
+            # Create a new parent field for the flat RBG
+            nxref = doc.get_new_xref()
+            doc.update_object(nxref, "<<>>")
+            parent = mupdf.pdf_new_indirect(pdoc, nxref, 0)
+            kids = parent.pdf_dict_put_array(PDF_NAME("Kids"), len(widgets))
+            field_idx = -1  # index of the widget that exists in /AcroForm/Fields
+            for widget, i in widgets:
+                wxref = widget.pdf_to_num()
+                if i >= 0:
+                    field_idx = i  # replace this item with the new parent field
+                for key in NON_WIDGET_KEYS:
+                    # move each non-widget key from the widget to the parent field
+                    try:
+                        pdf_name = PDF_NAME(key)
+                    except Exception:
+                        pdf_name = mupdf.pdf_new_name(key)
+                    w_obj = widget.pdf_dict_get(pdf_name)  # value in the widget
+                    p_obj = parent.pdf_dict_get(pdf_name)  # value in the parent
+                    if w_obj.pdf_is_null():  # not present in widget
+                        continue
+                    if p_obj.pdf_is_null():  # not yet present in parent
+                        parent.pdf_dict_put(pdf_name, w_obj)  # put in parent
+                    widget.pdf_dict_del(pdf_name)  # delete from widget
+
+                    # give widget a /Parent
+                    widget.pdf_dict_put(PDF_NAME("Parent"), parent)
+
+                # extend the parent /Kids array
+                kids.pdf_array_push(mupdf.pdf_new_indirect(pdoc, wxref, 0))
+
+            # finally replace old item in /AcroForm/Fields array with parent field
+            fields.pdf_array_put(field_idx, parent)
+            return
+
+        def is_in_fields(widget):
+            """Check if a widget is in the /AcroForm/Fields array."""
+            wxref = widget.pdf_to_num()
+            for i in range(fields.pdf_array_len()):
+                f = fields.pdf_array_get(i)
+                if f.pdf_to_num() == wxref:
+                    return i  # position inside /AcroForm/Fields array
+            return -1  # not in /AcroForm/Fields array
+
+        ppage = self._pdf_page()
+        page_obj = ppage.obj()  # PDF object representing the page
+        flat_widgets = collections.defaultdict(list)  # store flat RBGs here
+        annots = page_obj.pdf_dict_get(PDF_NAME("Annots"))  # /Annots array
+
+        for i in range(annots.pdf_array_len()):
+            w = annots.pdf_array_get(i)
+            # skip if not a RadioButton widget
+            if mupdf.pdf_field_type(w) != mupdf.PDF_WIDGET_TYPE_RADIOBUTTON:
+                continue
+            # skip if RB has a /Parent
+            parent = w.pdf_dict_get(PDF_NAME("Parent"))
+            if not parent.pdf_is_null():
+                continue
+            # get the field name of the widget
+            name = w.pdf_dict_get(PDF_NAME("T")).pdf_to_text_string()
+            if not name:
+                continue
+            # this is a RadioButton with a field name but without parent
+            j = is_in_fields(w)  # index of widget in /AcroForm/Fields
+            flat_widgets[name].append((w, j))
+
+        for name, widgets in flat_widgets.items():
+            count = sum(1 for w, j in widgets if j >= 0)  # must be 1!
+            if count != 1:  # not a flat RBG
+                print(f"Skipping flat RBG '{name}' with count {count}")
+                continue
+            repair_flat_rbg(name, widgets)
+
+        mupdf.pdf_sync_annots(ppage)
+        return
+
     def _ensure_field_hierarchy(self, field_name):
         """Ensures that the complete Form field hierarchy exists.
 
@@ -10213,27 +10348,12 @@ class Page:
         )
 
         # move non-widget keys to the parent field
-        MOVE_KEYS = (
-            PDF_NAME("AA"),
-            PDF_NAME("FT"),
-            PDF_NAME("Ff"),
-            PDF_NAME("DA"),
-            PDF_NAME("Opt"),
-            PDF_NAME("TU"),
-            PDF_NAME("I"),
-            mupdf.pdf_new_name("TM"),  # missing in MuPDF
-            PDF_NAME("DV"),
-            PDF_NAME("MaxLen"),
-            PDF_NAME("Q"),
-            PDF_NAME("DS"),
-            PDF_NAME("DR"),
-            PDF_NAME("TI"),
-            PDF_NAME("RV"),
-            PDF_NAME("T"),
-            PDF_NAME("V"),
-        )
+        for key in NON_WIDGET_KEYS:
+            try:
+                key_name = PDF_NAME(key)
+            except Exception:
+                key_name = mupdf.pdf_new_name(key)
 
-        for key_name in MOVE_KEYS:
             widget_itm = annot_obj.pdf_dict_get(key_name)
             parent_itm = parent_obj.pdf_dict_get(key_name)
             # if present in widget but not in parent, move to parent
