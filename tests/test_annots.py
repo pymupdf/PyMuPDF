@@ -812,3 +812,11 @@ def test_5112():
         else:
             assert 0, f'Expected exception from page.add_freetext_annot().'
 
+
+def test_annots_removal():
+    """Check that removal of the last annotation removes the entire key."""
+    doc = pymupdf.open()
+    page = doc.new_page()
+    a = page.add_circle_annot((100, 100, 200, 200))
+    _ = page.delete_annot(a)
+    assert "Annots" not in doc.xref_get_keys(page.xref)

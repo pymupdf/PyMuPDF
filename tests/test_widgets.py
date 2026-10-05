@@ -5,7 +5,7 @@ Test PDF field (widget) insertion.
 import gc
 import pymupdf
 import os
-from pymupdf import mupdf
+from pymupdf import mupdf, PDF_NAME
 
 scriptdir = os.path.abspath(os.path.dirname(__file__))
 filename = os.path.join(scriptdir, "resources", "widgettest.pdf")
@@ -673,3 +673,51 @@ def test_3478():
     
     assert num_still_present == 0, f'{num_still_present=}'
     assert num_still_present_acro == 0, f'{num_still_present_acro=}'
+
+def test_5154():
+    """Let 'insert_pdf' survive broken parent /Kids array."""
+    doc = pymupdf.open()
+    pdoc = pymupdf._as_pdf_document(doc)
+    page = doc.new_page()
+    w = pymupdf.Widget()
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.field_name = "child"
+    w.field_value = "child"
+    w.rect = pymupdf.Rect(50, 50, 200, 80)
+    page.add_widget(w)
+    wx = page.first_widget.xref
+
+    # empty / invalidate the parent's /Kids array
+    widget_obj = mupdf.pdf_load_object(pdoc, wx)
+    parent = widget_obj.pdf_dict_get(PDF_NAME("Parent"))
+    kids = parent.pdf_dict_get(PDF_NAME("Kids"))
+    kids.pdf_array_delete(0)  # delete pointer to 'child'
+    src = pymupdf.open("pdf", doc.tobytes())
+    out = pymupdf.open()
+    out.insert_pdf(src, widgets=True)  # ValueError: 9 is not in list
+    
+def test_5055():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_5055.pdf')
+    src = pymupdf.open(path)
+    tar = pymupdf.open()
+    ptar=pymupdf._as_pdf_document(tar)
+    tar.insert_pdf(src)
+    ptar = pymupdf._as_pdf_document(tar)
+    fields = mupdf.pdf_dict_getl(
+        mupdf.pdf_trailer(ptar),
+        PDF_NAME("Root"),
+        PDF_NAME("AcroForm"),
+        PDF_NAME("Fields"),
+    )
+    assert fields.pdf_array_len()==1
+    field = fields.pdf_array_get(0)
+    kids=field.pdf_dict_get(PDF_NAME("Kids"))
+    kid_xrefs=set([kids.pdf_array_get(i).pdf_to_num() for i in range(kids.pdf_array_len())])
+    field_xref=field.pdf_to_num()
+    page=tar[0]
+    annot_xrefs = set([x[0] for x in page.annot_xrefs()])
+    assert kid_xrefs == annot_xrefs, f"kid_xrefs: {kid_xrefs}, annot_xrefs: {annot_xrefs}"
+    for w in page.widgets():
+        widget=mupdf.pdf_load_object(ptar, w.xref)
+        parent = widget.pdf_dict_get(PDF_NAME("Parent"))
+        assert parent.pdf_to_num() == field_xref
