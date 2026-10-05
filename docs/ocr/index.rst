@@ -64,11 +64,11 @@ There are two scenarios where OCR is applied automatically:
 
 **No text at all** — if a page contains roughly no text but is covered with images or many character-sized vectors, PyMuPDF checks whether text is *probably* detectable on the page. This distinguishes image-based text (e.g. a scanned document) from ordinary pictures like photographs.
 
-**Garbled text** — if a page does contain text but too many characters are unreadable (e.g. ``"�����"``), OCR is applied **for the affected text areas only**, not the full page. This preserves already-readable text, images, and vectors while recovering only what is broken.
+**Garbled text** — if a page does contain text but too many characters are unreadable (e.g. text extraction results in "�" replacements for the characters), OCR is applied **for the affected text areas only**, not the full page. This preserves already-readable text, images, and vectors while recovering only what is broken.
 
 .. note::
 
-   For these heuristics to work, a `Tesseract installation <installation_ocr>`  must be available in your Python environment. If it is missing, no OCR is attempted.
+   For these heuristics to work, at least one of the supported default OCR engines, `Tesseract <installation_ocr>` or `RapidOCR <rapid_ocr>` must be installed. Otherwise, the behavior is the same as if `use_ocr=False` was specified. If you have your own, non-default OCR engine, you must supply the respective plugin.
 
 ----
 
@@ -133,6 +133,9 @@ By default, PyMuPDF uses **Tesseract** and internal models for image pre-process
 
 Built-in Adaptors
 ~~~~~~~~~~~~~~~~~
+
+
+.. _rapid_ocr:
 
 RapidOCR
 ^^^^^^^^
