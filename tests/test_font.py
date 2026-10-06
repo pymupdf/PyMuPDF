@@ -191,26 +191,12 @@ def test_3933():
 
 def test_3780():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3780.pdf')
-    with pymupdf.open(path) as document:
-        for page_i, page in enumerate(document):
-            for itm in page.get_fonts():
-                buff=document.extract_font(itm[0])[-1]
-                font=pymupdf.Font(fontbuffer=buff)
-                print(f'{page_i=}: xref {itm[0]} {font.name=} {font.ascender=} {font.descender=}.')
-            if page_i == 0:
-                d = page.get_text('dict')
-                #for n, v in d.items():
-                #    print(f'    {n}: {v!r}')
-                for i, block in enumerate(d['blocks']):
-                    print(f'block {i}:')
-                    if block['type'] != 0:
-                        continue
-                    for j, line in enumerate(block['lines']):
-                        print(f'    line {j}:')
-                        for k, span in enumerate(line['spans']):
-                            print(f'        span {k}:')
-                            for n, v in span.items():
-                                print(f'            {n}: {v!r}')
+    doc = pymupdf.open(path)
+    page = doc[0]
+    words = page.get_text("words")
+    for i, w in enumerate(words):
+        xwords = page.get_text("words", clip=w[:4])
+        assert xwords[0][4] == w[4], f"wrong bbox {i} {w[:4]}, word 'w[4]'"
 
 
 def test_3887():
