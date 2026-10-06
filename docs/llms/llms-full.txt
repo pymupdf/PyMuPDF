@@ -10,7 +10,7 @@ PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered
 
 ```
 pip install pymupdf
-pip install pymupdf4llm   # for LLM/RAG features
+pip install pymupdf4llm
 ```
 
 Import as:
@@ -33,7 +33,7 @@ doc = pymupdf.open("a.pdf")  # open a document
 
 `pymupdf.open(...)` is an alias for `pymupdf.Document(...)`.
 
-Supported file types include: PDF, XPS, EPUB, MOBI, FB2, CBZ, SVG, TXT, and image formats (PNG, JPEG, BMP, GIF, TIFF, etc.). PyMuPDF Pro adds support for Office formats (DOCX, XLSX, PPTX, HWP, etc.).
+Supported file types include: PDF, XPS, EPUB, MOBI, FB2, CBZ, SVG, TXT, and image formats (PNG, JPEG, BMP, GIF, TIFF, etc.). PyMuPDF Office adds support for Office formats (DOCX, XLSX, PPTX, HWP, etc.).
 
 ### Extract Text from a PDF
 
@@ -105,7 +105,7 @@ PyMuPDF4LLM is a lightweight extension for PyMuPDF that converts documents into 
 - Smart OCR — automatically OCRs only regions that need it, skipping clean text
 - Framework integrations — drop-in support for LlamaIndex and LangChain
 - Page chunking — chunk output by page with full metadata per chunk, ready for vector stores
-- Office document support — works with PyMuPDF Pro for DOCX, XLSX, PPTX, etc.
+- Office document support — works with PyMuPDF Office for DOCX, XLSX, PPTX, etc.
 
 ### Installation
 
@@ -311,24 +311,22 @@ splitter = MarkdownTextSplitter(chunk_size=500, chunk_overlap=50)
 chunks = splitter.create_documents([md_text])
 ```
 
-### Office Document Support (PyMuPDF Pro)
+### Office Document Support (PyMuPDF Office)
 
 ```python
-import pymupdf4llm
-import pymupdf.pro
+import pymupdf.office
 
-pymupdf.pro.unlock()
+pymupdf.office.unlock()
 
 # Now supports DOCX, XLSX, PPTX, DOC, HWP, etc.
-md = pymupdf4llm.to_markdown("report.docx")
-md = pymupdf4llm.to_markdown("spreadsheet.xlsx")
+doc = pymupdf.open("report.docx")
+md = doc.to_markdown()
 ```
 
-### to_markdown() Full Parameter Reference
+### Document.to_markdown() Full Parameter Reference
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `doc` | `Document` or `str` | required | File path or PyMuPDF Document |
 | `pages` | `list` or `None` | `None` | 0-based page numbers to process; `None` = all |
 | `page_chunks` | `bool` | `False` | Return list of per-page dicts instead of one string |
 | `write_images` | `bool` | `False` | Save images to disk; referenced in Markdown |
@@ -406,6 +404,9 @@ md = pymupdf4llm.to_markdown("spreadsheet.xlsx")
 | `Document.get_ocgs()` | Get optional content groups (PDF layers) |
 | `Document.bake()` | Make annotations permanent |
 | `Document.journal_enable()` | Enable journalling (undo/redo) |
+| `Document.to_json()` |  Convert document to JSON
+| `Document.to_markdown()` |  Convert document to Markdown
+| `Document.to_text()` |  Convert document to TXT
 
 ### Key Attributes
 

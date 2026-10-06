@@ -295,13 +295,13 @@ This mechanism allows complex information structures to be expressed naturally w
 
 .. [#f1] Among other purposes, ``Parent`` objects are also used to support multiple occurrences of a field (on the same or on different pages). The ``Kids`` array in the ``Parent`` contains the cross references of all widgets that are "aliases" of the same field. Whenever the field value of one "kid" is changed, all kids are immediately updated too.
 
-.. [#f2] Radio Button Groups (RBGs) exist in three distinct technical forms. Remember that the *Form Field itself* represents the group — the individual radio button widgets merely correspond to the possible "values" of that field.
+.. [#f2] Radio Button Groups (RBGs) exist in three distinct technical forms. Remember that it is the Radio Button **Group** that represents the *Form Field* -— the individual radio button widgets represent the possible "values" of that field.
 
    1. **RBGs with a ``/Kids`` array:**
       The radio button widgets appear as children of a single Form Field and each widget contains a backward pointer (``/Parent``) to that field. This is the standard, specification-compliant structure, and is fully supported.
 
    2. **"Flat" RBGs:**
-      Multiple radio button widgets share the same field name but have no ``/Parent`` pointer. Exactly one of these widgets appears in the global ``/AcroForm/Fields`` array, and no Form Field with a ``/Kids`` array exists. Detecting this variant requires parsing the entire document, which is planned for a future version.
+      Multiple radio button widgets share the same **field name** but they have no ``/Parent`` pointer, and there is no Form Field with a ``/Kids`` array. Exactly one of these widgets appears in the global ``/AcroForm/Fields`` array. This variant is not directly supported, but it can be detected and converted to the standard format 1. by using :meth:`Page.repair_flat_rbgs()`.
 
    3. **JavaScript-defined RBGs:**
       Multiple radio button widgets have different field names and no structural relationship in the PDF. Their grouping is established solely through JavaScript code embedded in the widgets. Detecting this variant requires parsing all JavaScript associated with radio buttons, which is planned for a future version.

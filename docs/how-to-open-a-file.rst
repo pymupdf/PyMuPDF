@@ -30,10 +30,10 @@ The following file types are supported:
 ----
 
 
-PyMuPDF Pro
+PyMuPDF Office
 """""""""""""""
 
-|PyMuPDF Pro| can open Office files.
+|PyMuPDF Office| can open Office files.
 
 The following file types are supported:
 

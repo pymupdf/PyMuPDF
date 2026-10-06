@@ -3636,7 +3636,17 @@ void JM_make_image_block(fz_stext_block *block, PyObject *block_dict)
         }
         else if (n == 4 && strcmp(ext, "jpeg") == 0) // JPEG CMYK needs another step
         {
-            buf = freebuf = fz_new_buffer_from_image_as_jpeg(ctx, image, fz_default_color_params, 95, 1);        
+            buf = freebuf = fz_new_buffer_from_image_as_jpeg(
+                    ctx,
+                    image,
+                    fz_default_color_params,
+                    95 /*quality*/,
+                    #if 100*FZ_VERSION_MAJOR + FZ_VERSION_MINOR >= 129
+                        FZ_CMYK_JPEG_INVERTED
+                    #else
+                        1
+                    #endif
+                    );
         }
         else
         {

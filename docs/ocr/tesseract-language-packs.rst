@@ -1,7 +1,7 @@
 
 .. include:: ../header.rst
 
-.. _pymupdf-pro:
+
 
 .. raw:: html
 

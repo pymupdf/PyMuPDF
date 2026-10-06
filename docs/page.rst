@@ -119,6 +119,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.set_trimbox`           PDF only: modify `/TrimBox`
 :meth:`Page.show_pdf_page`         PDF only: display PDF page image
 :meth:`Page.update_link`           PDF only: modify a link
+:meth:`Page.repair_flat_rbgs`      PDF only: repair flat radio button groups
 :meth:`Page.widgets`               return a generator over the fields on the page
 :meth:`Page.write_text`            write one or more :ref:`Textwriter` objects
 :attr:`Page.cropbox_position`      displacement of the :data:`cropbox`
@@ -208,33 +209,33 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg float fontsize: the :data:`fontsize`. Default is 11. Ignored if `richtext=True`.
 
       :arg str fontname: The font name. Default is "Helv". Ignored if `richtext=True`, otherwise the following **restritions apply:**
-        
+
         * Accepted alternatives are "Helv" (Helvetica), "Cour" (Courier), "TiRo" (Timnes-Roman), "ZaDb" (ZapfDingBats) and "Symb" (Symbol). The name may be abbreviated to the first two characters, like "Co" for "Cour", lower case accepted.
 
         * Bold or italic variants of the fonts are **not supported.**
-        
+
       :arg list,tuple,float text_color: the text color. Default is black. Ignored if `richtext=True`.
 
       :arg list,tuple,float fill_color: the fill color. This is used for ``rect`` and the end point of the callout lines when applicable. Default is ``None``.
 
       :arg list,tuple,float border_color:  This parameter **only has an effect** if `richtext=True`. Otherwise, ``text_color`` is used.
-      
+
       :arg float border_width: the width of border and ``callout`` lines. Default is 0 (no border), in which case callout lines may still appear with some hairline width, depending on the PDF viewer used. In any case, this value must be positive to see a border line.
-      
+
       :arg list,tuple dashes: a list of floats specifying how border and callout lines should be dashed. Default is ``None``.
-      
+
       :arg list,tuple callout: a list / tuple of two or three :data:`point_like` objects, which will be interpreted as end point [, knee point] and start point (in this sequence) of up to two line segments, converting this annotation into a call-out shape.
-      
+
       :arg int line_end: the line end symbol of the call-out line. It is drawn at the first point specified in the `callout` list. Default is an open arrow. For possible values see :ref:`AnnotationLineEnds`.
-      
+
       :arg float opacity: a float `0 <= opacity < 1` turning the annotation transparent. Default is no transparency.
-      
+
       :arg int align: text alignment, one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT - justify is **not supported**. Ignored if `richtext=True`.
-      
+
       :arg int rotate: the text orientation. Accepted values are integer multiples of 90°. Invalid entries receive a rotation of 0.
-      
+
       :arg bool richtext: treat ``text`` as HTML syntax. This allows to achieve **bold**, *italic*, arbitrary text colors, font sizes, text alignment including justify and more - as far as the PDF subset of HTML and styling instructions supports this. This is similar to what happens in :meth:`Page.insert_htmlbox`. The base library will for example pull in required fonts if it encounters characters not contained in the standard ones. Some parameters are ignored if this option is set, as mentioned above. Default is ``False``.
-      
+
       :arg str style: supply optional HTML styling information in CSS syntax. Ignored if `richtext=False`.
 
       :rtype: :ref:`Annot`
@@ -301,14 +302,14 @@ In a nutshell, this is what you can do with PyMuPDF:
    ~~~~~~~~~~~
 
    .. method:: add_redact_annot(quad, text=None, fontname=None, fontsize=11, align=TEXT_ALIGN_LEFT, fill=(1, 1, 1), text_color=(0, 0, 0), cross_out=True)
-      
+
       **PDF only**: Add a redaction annotation. A redaction annotation identifies an area whose content should be removed from the document. Adding such an annotation is the first of two steps. It makes visible what will be removed in the subsequent step, :meth:`Page.apply_redactions`.
 
       :arg quad_like,rect_like quad: specifies the (rectangular) area to be removed which is always equal to the annotation rectangle. This may be a :data:`rect_like` or :data:`quad_like` object. If a quad is specified, then the enveloping rectangle is taken.
 
       :arg str text: text to be placed in the rectangle after applying the redaction (and thus removing old content). (New in v1.16.12)
 
-      :arg str fontname: the font to use when ``text`` is given, otherwise ignored. Only CJK and the :ref:`Base-14-Fonts` are supported. Apart from this, the same rules apply as for :meth:`Page.insert_textbox` -- which is what the method :meth:`Page.apply_redactions` internally invokes. 
+      :arg str fontname: the font to use when ``text`` is given, otherwise ignored. Only CJK and the :ref:`Base-14-Fonts` are supported. Apart from this, the same rules apply as for :meth:`Page.insert_textbox` -- which is what the method :meth:`Page.apply_redactions` internally invokes.
 
       :arg float fontsize: the :data:`fontsize` to use for the replacing text. If the text is too large to fit, several insertion attempts will be made, gradually reducing the :data:`fontsize` to no less than 4. If then the text will still not fit, no text insertion will take place at all. (New in v1.16.12)
 
@@ -424,7 +425,7 @@ In a nutshell, this is what you can do with PyMuPDF:
         Every item must be finite, convex and not empty (as applicable).
         **Set this parameter to** ``None`` if you want to use the following arguments (Changed in v1.16.14).
         And vice versa: if not ``None``, the remaining parameters must be ``None``.
-        
+
       :arg point_like start: start text marking at this point. Defaults to the top-left point of *clip*. Must be provided if `quads` is ``None``. (New in v1.16.14)
       :arg point_like stop: stop text marking at this point. Defaults to the bottom-right point of *clip*. Must be used if `quads` is ``None``. (New in v1.16.14)
       :arg rect_like clip: only consider text lines intersecting this area. Defaults to the page rectangle. Only use if `start` and `stop` are provided. (New in v1.16.14)
@@ -459,13 +460,13 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg rect_like clip: specify a region to consider within the page rectangle and ignore the rest. Default is the full page.
 
       :arg str strategy: Request a **table detection** strategy. Valid values are "lines", "lines_strict" and "text".
-      
+
          Default is **"lines"** which uses all vector graphics on the page to detect grid lines.
-         
+
          Strategy **"lines_strict"** ignores borderless rectangle vector graphics. Sometimes single text pieces have background colors which may lead to false columns or lines. This strategy ignores them and can thus increase detection precision.
-         
+
          If **"text"** is specified, text positions are used to generate "virtual" column and / or row boundaries. Use `min_words_*` to request the number of words for considering their coordinates.
-         
+
          Use parameters `vertical_strategy` and `horizontal_strategy` **instead** for a more fine-grained treatment of the dimensions.
 
       :arg sequence[floats] horizontal_lines: y-coordinates of rows. If provided, there will be no attempt to identify additional table rows. This influences table detection.
@@ -524,7 +525,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          Please have a look at these `Jupyter notebooks <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/table-analysis>`_, which cover standard situations like multiple tables on one page or joining table fragments across multiple pages.
 
          .. caution:: The lifetime of the `TableFinder` object, as well as that of all its tables **equals the lifetime of the page**. If the page object is deleted or reassigned, all tables are no longer valid.
-         
+
             The only way to keep table content beyond the page's availability is to **extract it** via methods `Table.to_markdown()`, `Table.to_pandas()` or a copy of `Table.extract()` (e.g. `Table.extract()[:]`).
 
          .. note::
@@ -557,15 +558,15 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like rect: rectangle where to place the annotation.
       :arg multiple stamp: The following options are available:
-      
+
          * The id number (int) of the stamp text. For available stamps see :ref:`StampIcons`.
-   
+
          * A string specifying an image file path.
 
          * A ``bytes``, ``bytearray`` or ``io.BytesIO`` object for an image in memory.
 
          * A :ref:`Pixmap`.
-         
+
       1. **Text-based stamps**
 
          * :attr:`Annot.rect` is automatically calculated as the largest rectangle with an aspect ratio of ``width:height = 3.8`` that fits in the provided ``rect``. Its position is vertically and horizontally centered.
@@ -580,7 +581,7 @@ In a nutshell, this is what you can do with PyMuPDF:
          * The annotation can be modified via :meth:`Annot.set_opacity`. This method therefore is a way to display images transparently even if no alpha channel is present.
          * Setting colors has no effect on image stamps.
          * Rotating image-based stamps **is not supported**. Setting the rotation may lead to unexpected results.
-         
+
    .. method:: add_widget(widget)
 
       PDF only: Add a PDF Form field ("widget") to a page. This also **turns the PDF into a Form PDF**. Because of the large amount of different options available for widgets, we have developed a new class :ref:`Widget`, which contains the possible PDF field attributes. It must be used for both, form field creation and updates.
@@ -701,6 +702,19 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
+   .. method:: repair_flat_rbgs()
+
+      PDF only: Repair *"flat"* radio button groups on the page. When multiple radio button widgets share the same field name, have no ``/Parent`` pointer, and there is no Form Field with a ``/Kids`` array, then these widgets are considered to represent a "flat" Radio Button Group. Although discouraged by the PDF specification, some tools still generate this RBG variant and many PDF viewers support it.
+
+      The method converts all flat RBGs on the page to the standard format without impacting the page's appearance or the behavior of the groups or widgets.
+
+      |history_begin|
+
+      * New in v2.0
+
+      |history_end|
+
+
    .. method:: widgets(types=None)
 
       Return a generator over the page's form fields.
@@ -809,9 +823,9 @@ In a nutshell, this is what you can do with PyMuPDF:
                 )
 
       PDF only: Insert text into the specified :data:`rect_like` *rect*.
-      
+
       :arg overlay: see :meth:`Shape.commit`.
-      
+
       For other args, see `Shape.insert_textbox`.
 
       |history_begin|
@@ -850,8 +864,8 @@ In a nutshell, this is what you can do with PyMuPDF:
         - Links are automatically generated when present.
 
       * If content does not fit in the rectangle, the developer has two choices:
-         
-        - **either** only be informed about this (and accept a no-op, just like with the other textbox insertion methods), 
+
+        - **either** only be informed about this (and accept a no-op, just like with the other textbox insertion methods),
         - **or** (`scale_low=0` - the default) scale down the content until it fits.
 
       :arg rect_like rect: rectangle on page to receive the text.
@@ -860,7 +874,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg float scale_low: if necessary, scale down the content until it fits in the target rectangle. This sets the down scaling limit. Default is 0, no limit. A value of 1 means no down-scaling permitted. A value of e.g. 0.2 means maximum down-scaling by 80%.
       :arg Archive archive: an Archive object that points to locations where to find images or non-standard fonts. If ``text`` refers to images or non-standard fonts, this parameter is required. This parameter is ignored if ``text`` is a Story.
       :arg int rotate: one of the values 0, 90, 180, 270. Depending on this, text will be filled:
-      
+
           - 0: top-left to bottom-right.
           - 90: bottom-left to top-right.
           - 180: bottom-right to top-left.
@@ -884,7 +898,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_begin|
 
       * New in v1.26.5:
-        
+
         * do additional scaling to fit long words.
         *
           If we succeeded and scaled down, the returned `spare_height` is now
@@ -895,7 +909,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.23.9: `opacity` parameter.
 
       |history_end|
-      
+
 
    **Drawing Methods**
 
@@ -1289,7 +1303,7 @@ In a nutshell, this is what you can do with PyMuPDF:
         image.
 
       :type pixmap: :ref:`Pixmap`
-      
+
       :returns:
         The `xref` of the embedded image. This can be used as the `xref`
         argument for very significant performance boosts, if the image is
@@ -1355,23 +1369,23 @@ In a nutshell, this is what you can do with PyMuPDF:
           The image is now always placed **centered** in the rectangle, i.e.
           the centers of image and rectangle are equal.
         * Added support for `stream` as `io.BytesIO`.
-      
+
       * Changed in v1.17.6:
         Insertion rectangle no longer needs to have a non-empty intersection
         with the page's :attr:`Page.cropbox` [#f5]_.
       * Changed in v1.18.1: Added `mask` arg.
       * Changed in v1.18.3: Added `oc` arg.
       * Changed in v1.18.13:
-        
+
         * Allow providing the image as the xref of an existing one.
         * Added `xref` arg.
         * Return `xref` of stored image.
-      
+
       * Changed in v1.19.3: deprecate and ignore `alpha` arg.
 
       |history_end|
 
-   
+
    .. index::
       pair: filename; replace_image
       pair: pixmap; replace_image
@@ -1398,8 +1412,8 @@ In a nutshell, this is what you can do with PyMuPDF:
       * New in v1.21.0
 
       |history_end|
-   
-   
+
+
    .. index::
       pair: xref; delete_image
 
@@ -1410,7 +1424,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :arg int xref: the :data:`xref` of the image.
 
       This is a **global replacement:** the image will disappear wherever the old one has been displayed throughout the file.
-   
+
       If you inspect / extract a page's images by methods like :meth:`Page.get_images`,
       :meth:`Page.get_image_info` or :meth:`Page.get_text`,
       the replacing "dummy" image will be detected like so
@@ -1423,7 +1437,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
-   
+
    .. index::
       pair: blocks; Page.get_text
       pair: dict; Page.get_text
@@ -1555,7 +1569,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note:: This method does **not** support a clip parameter -- OCR (full or partial) will always happen for the complete page rectangle.
 
       :returns:
-      
+
          a :ref:`TextPage`. Execution may be significantly longer than :meth:`Page.get_textpage`.
 
       For ``full=True`` OCR, **all text** will have the font "GlyphLessFont" from Tesseract. In case of partial OCR (``full=False``), legible normal text will keep its properties, and only recognized text will have the GlyphLessFont.
@@ -1563,7 +1577,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       Recognized / OCR text will follow (legible) normal text for partial OCR and will thus not be in reading order. Establishing reading order is -- as always -- your responsibility.
 
       .. note::
-      
+
          Text extraction results, including any OCR, are stored in the returned :ref:`TextPage`. To access them, you must use the ``textpage`` parameter in all subsequent text extraction and search methods.
 
          `This Jupyter notebook <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/jupyter-notebooks/partial-ocr.ipynb>`_ walks through an example for using OCR textpages.
@@ -1681,7 +1695,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       .. note:: The method is based on the output of :meth:`Page.get_cdrawings` -- which is much faster, but requires somewhat more attention processing its output.
 
       |history_begin|
-      
+
       * New in v1.18.0
       * Changed in v1.18.17
       * Changed in v1.19.0: add "seqno" key, remove "clippings" key
@@ -1689,7 +1703,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.19.2: add an indicator for the *"orientation"* of the area covered by an "re" item.
       * Changed in v1.22.0: add new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`).
       * Changed in v1.22.0: add parameter `extended` to also return clipping and group paths.
-      
+
       |history_end|
 
 
@@ -1710,7 +1724,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * Changed in v1.19.1: always generate RGB color tuples.
       * Changed in v1.22.0: added new key `"layer"` which contains the name of the Optional Content Group of the path (or `None`).
       * Changed in v1.22.0: added parameter `extended` to also return clipping paths.
-      
+
       |history_end|
 
 
@@ -1738,7 +1752,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :rtype: list[dict]
       :returns: A list of dictionaries. This includes information for **exactly those** images, that are shown on the page -- including *"inline images"*. The dictionary layout is similar to that of image blocks in `page.get_text("dict")`.
-      
+
          In contrast to images included in :meth:`Page.get_text`, image **binary content** is not loaded by this method, which drastically reduces memory usage. Another difference is that image detection is not restricted to the visible part of the page or any ``clip`` parameter: method :meth:`Page.get_text` will only extract images **fully contained** in the provided ``clip``.
 
          =============== ===============================================================
@@ -1813,7 +1827,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       :returns: the boundary box of the image -- optionally also its transformation matrix.
 
         |history_begin|
-        
+
         * (Changed in v1.16.7): If the page in fact does not display this image, an infinite rectangle is returned now. In previous versions, an exception was raised. Formally invalid parameters still raise exceptions.
         * (Changed in v1.17.0): Only images referenced directly by the page are considered. This means that images occurring in embedded PDF pages are ignored and an exception is raised.
         * (Changed in v1.18.5): Removed the restriction introduced in v1.17.0: any item of the page's image list may be specified.
@@ -1869,7 +1883,7 @@ In a nutshell, this is what you can do with PyMuPDF:
      :arg bool alpha: whether to add an alpha channel. Always accept the default ``False`` if you do not really need transparency. This will save a lot of memory (25% in case of RGB ... and pixmaps are typically **large**!), and also processing time. Also note an **important difference** in how the image will be rendered: with ``True`` the pixmap's samples area will be pre-cleared with *0x00*. This results in **transparent** areas where the page is empty. With ``False`` the pixmap's samples will be pre-cleared with *0xff*. This results in **white** where the page has nothing to show.
 
        |history_begin|
-      
+
        Changed in v1.14.17
          The default alpha value is now ``False``.
 
@@ -2011,7 +2025,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       The method works best for text: All text on the page will be removed (decided by single character) that has no intersection with the rectangle. For vector graphics, the method will remove all paths that have no intersection with the rectangle. For images, the method will remove all images that have no intersection with the rectangle. Vectors and images **having** an intersection with the rectangle, will be kept in their entirety.
 
       The method roughly has the same effect as if four redactions had been applied that cover the rectangle's outside.
-      
+
       * New in v1.26.4.
 
    .. method:: remove_rotation()
@@ -2111,7 +2125,7 @@ In a nutshell, this is what you can do with PyMuPDF:
         A list of :ref:`Rect` or  :ref:`Quad` objects, each of which  -- **normally!** -- surrounds one occurrence of *needle*. **However:** if parts of *needle* occur on more than one line, then a separate item is generated for each these parts. So, if `needle = "search string"`, two rectangles may be generated.
 
         |history_begin|
-        
+
         Changes in v1.18.2:
 
         * There no longer is a limit on the list length (removal of the `hit_max` parameter).
@@ -2208,7 +2222,7 @@ In a nutshell, this is what you can do with PyMuPDF:
    .. attribute:: rotation
 
       Contains the rotation of the page in degrees (always 0 for non-PDF types). This is a copy of the value in the PDF file. The PDF documentation says:
-      
+
          *"The number of degrees by which the page should be rotated clockwise when displayed or printed. The value must be a multiple of 90. Default value: 0."*
 
          In PyMuPDF, we make sure that this attribute is always one of 0, 90, 180 or 270.
