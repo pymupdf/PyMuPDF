@@ -20,7 +20,13 @@ import time
 
 import pymupdf
 
+
 THISDIR = os.path.dirname(os.path.abspath(__file__))
+THISDIR_TEXT = THISDIR
+if os.environ.get('GITHUB_ACTIONS') == 'true':
+    # Use shortened text because cwd can be too long for the Story rect on
+    # Github.
+    THISDIR_TEXT = os.sep.join(THISDIR.split(os.sep)[-4:])
 TOC = []  # this will contain the TOC list items
 CURRENT_ID = ""  # currently processed filename - stored by recorder func
 MEDIABOX = pymupdf.paper_rect("a4-l")  # chosen page size
@@ -99,7 +105,7 @@ def code_printer(outfile):
     body = story.body
     body.set_properties(font="sans-serif")
 
-    text = f"Python sources in folder '{THISDIR}'"
+    text = f"Python sources in folder '{THISDIR_TEXT}'"
 
     body.add_header(1).add_text(text)  # the only h1 item in the story
 
@@ -136,7 +142,7 @@ def code_printer(outfile):
         i += 1
         device = writer.begin_page(MEDIABOX)
         # create Story objects for header, footer and the rest.
-        header = header_story(f"Python Files in '{THISDIR}'")
+        header = header_story(f"Python Files in '{THISDIR_TEXT}'")
         hdr_ok, _ = header.place(HDR_WHERE)
         if hdr_ok != 0:
             raise ValueError("header does not fit")
@@ -205,7 +211,7 @@ if __name__ == "__main__" or os.environ.get('PYTEST_CURRENT_TEST'):
     more = 1
     while more:
         device = writer.begin_page(MEDIABOX)
-        header = header_story(f"Python Files in '{THISDIR}'")
+        header = header_story(f"Python Files in '{THISDIR_TEXT}'")
         # write the page header
         hdr_ok, _ = header.place(HDR_WHERE)
         header.draw(device, None)
