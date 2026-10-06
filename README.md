@@ -18,9 +18,9 @@
 [![Github Stars](https://img.shields.io/github/stars/pymupdf/PyMuPDF?style=social)](https://github.com/pymupdf/PyMuPDF/stargazers)
 [![Discord](https://img.shields.io/discord/770681584617652264?color=6A7EC2&logo=discord&logoColor=ffffff)](https://artifex.com/discord/artifex?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=discord)
 [![Forum](https://img.shields.io/badge/Forum-ff6600?logo=python&logoColor=ffffff)](https://forum.mupdf.com/c/general/4?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=forum)
-[![Twitter](https://img.shields.io/twitter/follow/pymupdf4llm)](https://x.com/pymupdf4llm)
+[![Twitter](https://img.shields.io/twitter/follow/pymupdf)](https://x.com/pymupdf)
 [![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97_Hugging_Face-007ec6)](https://huggingface.co/artifex-software)
-[![Demo](https://img.shields.io/badge/PyMuPDF4LLM-live?badge&label=DEMO&logo=python&logoColor=ffffff)](https://demo.pymupdf.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=badges&utm_term=demo)
+
 
 **The PDF engine behind over 50 million monthly downloads, powering AI pipelines worldwide.**
 
@@ -35,8 +35,9 @@
 - **Fast** — powered by [MuPDF](https://mupdf.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=mupdf), a best-in-class C rendering engine
 - **Accurate** — pixel-perfect text extraction with font, color, and position metadata
 - **Versatile** — read, write, annotate, redact, merge, split, and convert documents
-- **LLM-ready** — native Markdown output via [PyMuPDF4LLM](https://pdf4llm.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf4llm) for RAG and AI pipelines
+- **LLM-ready** — structured data with JSON & native Markdown output for RAG and AI pipelines
 - **No mandatory dependencies** — `pip install pymupdf` and you're done
+- **Grounded results** — improved, verifiable results, see: [PyMuPDF & Grounding](https://pymupdf.readthedocs.io/en/latest/grounding.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_grounding)
 
 ---
 
@@ -52,20 +53,16 @@ Wheels are available for **Windows**, **macOS**, and **Linux** on Python 3.10–
 
 | Package | Purpose |
 |---|---|
+| `pymupdf-office` | Adds Office document support |
 | `pymupdf-fonts` | Extended font collection for text output |
-| `pymupdf4llm` | LLM/RAG-optimised Markdown and JSON extraction |
-| `pymupdfpro` | Adds Office document support |
 | `tesseract-ocr` | OCR for scanned pages and images (separate install) |
 
 ```bash
+# Office support
+pip install pymupdf-office
+
 # More fonts
 pip install pymupdf-fonts
-
-# LLM-ready extraction
-pip install pymupdf4llm
-
-# Office support
-pip install pymupdfpro
 
 # OCR (Tesseract must be installed separately)
 # macOS
@@ -85,8 +82,7 @@ sudo apt install tesseract-ocr
 |---|---|
 | PDF & derivatives | PDF, XPS, EPUB, CBZ, MOBI, FB2, SVG, TXT, MD |
 | Images | PNG, JPEG, BMP, TIFF, GIF, and more |
-| Microsoft Office *(Pro)* | DOC, DOCX, XLS, XLSX, PPT, PPTX |
-| Korean Office *(Pro)* | HWP, HWPX |
+| PyMuPDF Office | DOC, DOCX, XLS, XLSX, PPT, PPTX, HWP, HWPX |
 
 ### Output
 
@@ -183,9 +179,10 @@ md_doc.save("example.pdf")
 ### Convert to Markdown for LLMs
 
 ```python
-import pymupdf4llm
+import pymupdf
 
-md = pymupdf4llm.to_markdown("report.pdf")
+doc = pymupdf.open("report.pdf")
+md = doc.to_markdown()
 # Pass directly to your LLM or vector store
 print(md)
 ```
@@ -224,9 +221,9 @@ merger.save("merged.pdf")
 ### Convert an Office document to PDF
 
 ```python
-import pymupdf.pro
+import pymupdf.office
 
-pymupdf.pro.unlock("YOUR-LICENSE-KEY")
+pymupdf.office.unlock("YOUR-LICENSE-KEY")
 
 doc = pymupdf.open("presentation.pptx")
 pdf_bytes = doc.convert_to_pdf()
@@ -238,13 +235,11 @@ with open("output.pdf", "wb") as f:
 ### Extract LLM-ready Markdown from a Word document
 
 ```python
-import pymupdf4llm
-import pymupdf.pro
+import pymupdf.office
 
-pymupdf.pro.unlock("YOUR-LICENSE-KEY")
+pymupdf.office.unlock("YOUR-LICENSE-KEY")
 
-md = pymupdf4llm.to_markdown("document.docx")
-print(md)
+pymupdf.office.to_markdown("input.docx", "output.md")
 ```
 
 ---
@@ -272,18 +267,17 @@ print(md)
 | **Metadata** | Title, author, creation date, producer, subject, and custom entries |
 | **Color spaces** | RGB, CMYK, greyscale; color space conversion |
 
-### LLM & AI output (via PyMuPDF4LLM)
+### LLM & AI output
+
+`doc = pymupdf.open("document.pdf")` , then:
 
 | Output | API |
 |---|---|
-| Markdown | `pymupdf4llm.to_markdown(path)` |
-| JSON | `pymupdf4llm.to_json(path)` |
-| Plain text | `pymupdf4llm.to_text(path)` |
+| Markdown | `doc.to_markdown(path)` |
+| JSON | `doc.to_json(path)` |
+| Plain text | `doc.to_text(path)` |
 
 Supports multi-column layouts, natural reading order and page chunking.
-
-
-[![Demo](https://img.shields.io/badge/Pymupdf4llm-live?style=for-the-badge&label=DEMO&logo=python&logoColor=ffffff)](https://demo.pymupdf.io?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=demo)
 
 ---
 
@@ -302,7 +296,7 @@ Python **3.10 – 3.14** (as of v1.27.x). Wheels ship for:
 
 PyMuPDF is built on MuPDF — one of the fastest PDF rendering engines available. Typical benchmarks against pure-Python PDF libraries show **10–50× speed improvements** for text extraction and **100× or more** for page rendering, with a minimal memory footprint.
 
-For AI workloads, PyMuPDF4LLM processes documents **without a GPU**, cutting infrastructure costs significantly compared to vision-based LLM approaches.
+PyMuPDF processes documents **without a GPU**, cutting infrastructure costs significantly compared to vision-based LLM approaches.
 
 ---
 
@@ -387,13 +381,13 @@ doc.save("watermarked.pdf")
 
 ## Office Document Processing
 
-PyMuPDF can be extended with PyMuPDF Pro. This adds a conversion layer that handles Microsoft and Korean Office formats natively — no Office installation, no COM interop, no LibreOffice subprocess.
+PyMuPDF can be extended with PyMuPDF Office. This adds a conversion layer that handles Microsoft and Korean Office formats natively — no Office installation, no COM interop, no LibreOffice subprocess.
 
 Once unlocked, `pymupdf.open()` accepts Office files exactly like PDFs:
 
 ```python
-import pymupdf.pro
-pymupdf.pro.unlock("YOUR-LICENSE-KEY")
+import pymupdf.office
+pymupdf.office.unlock("YOUR-LICENSE-KEY")
 
 # Works identically regardless of format
 for fmt in ["contract.docx", "data.xlsx", "deck.pptx", "report.hwpx"]:
@@ -402,27 +396,26 @@ for fmt in ["contract.docx", "data.xlsx", "deck.pptx", "report.hwpx"]:
         print(page.get_text())
 ```
 
-[Get a trial license key for PyMuPDF Pro](https://pymupdf.pro/try-pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf_pro) 
+[Get a trial license key for PyMuPDF Office](https://pymupdf.io/office/try?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=body&utm_term=pymupdf_office) 
 
 **What you can do with Office documents:**
 
 - Extract text and images page-by-page
 - Convert to PDF with `doc.convert_to_pdf()`
 - Rasterise pages to PNG/JPEG for visual inspection
-- Feed directly into PyMuPDF4LLM for AI-ready output
 
 
 
 ### Restrictions Without a License Key
 
-When `pymupdf.pro.unlock()` is called **without** a key, the following restrictions apply:
+When `pymupdf.office.unlock()` is called **without** a key, the following restrictions apply:
 
 | Restriction | Detail |
 |---|---|
 | Page limit | Only the **first 3 pages** of any document are accessible |
 | Time limit | Evaluation period — functionality expires after a set duration |
 
-All other Pro features work normally within these constraints, making it straightforward to prototype before purchasing a license.
+All other features work normally within these constraints, making it straightforward to prototype before purchasing a license.
 
 
 ---
@@ -431,7 +424,7 @@ All other Pro features work normally within these constraints, making it straigh
 
 ## Frequently Asked Questions
 
-### Can I use PyMuPDF, PyMuPDF4LLM and PyMuPDF Pro without sending data to the cloud?
+### Can I use PyMuPDF and PyMuPDF Office without sending data to the cloud?
 
 Yes, absolutely — and this is one of PyMuPDF's most significant advantages.
 
@@ -466,14 +459,14 @@ Yes — PyMuPDF has solid CJK support
 
 ### How do I extract Markdown from PDF for LLM?
 
-Let PyMuPDF4LLM do everything (recommended for RAG).
 
-PyMuPDF4LLM is a high-level wrapper that outputs standard text and table content together in an integrated Markdown-formatted string across all document pages PyMuPDF — tables are detected, converted to GitHub-compatible Markdown, and interleaved with surrounding text in the correct reading order. This is the best starting point for feeding an LLM or building a RAG pipeline.
+This is the best starting point for feeding an LLM or building a RAG pipeline.
 
 ```python
-import pymupdf4llm
+import pymupdf
 
-md = pymupdf4llm.to_markdown("report.pdf")
+doc = pymupdf.open("report.pdf")
+md = doc.to_markdown()
 print(md)
 # Tables appear as Markdown | col1 | col2 | ... inline with the text
 ```
@@ -740,19 +733,9 @@ Full installation guide, API reference, cookbook, and tutorial at **[pymupdf.rea
 - [Cookbook](https://pymupdf.readthedocs.io/en/latest/the-basics.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=the_basics)
 - [Tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=tutorial)
 - [Changelog](https://pymupdf.readthedocs.io/en/latest/changes.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=changelog)
-- [PyMuPDF4LLM docs](https://docs.pdf4llm.com?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=docs)
-- [PyMuPDF Pro docs](https://pymupdf.readthedocs.io/en/latest/pymupdf-pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_pro)
-
----
+- [PyMuPDF Office docs](https://pymupdf.readthedocs.io/en/latest/pymupdf-office?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_office)
 
 
-## Related projects
-
-| Project | Description |
-|---|---|
-| [PyMuPDF4LLM](https://github.com/pymupdf/pymupdf4llm) | LLM/RAG-optimised Markdown and JSON extraction |
-| [PyMuPDF Pro](https://pymupdf.io/pro?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=related_projects&utm_term=pymupdf_pro) | Adds Office and HWP document support |
-| [pymupdf-fonts](https://pypi.org/project/pymupdf-fonts/) | Extended font collection for PyMuPDF text output |
 
 ---
 
