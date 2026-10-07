@@ -813,6 +813,10 @@ def test_5082():
 
 
 def test_5125():
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_5125(): not running on Pyodide - cannot run child processes.')
+        return
+        
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_5125.pdf')
     e = None
     command = f'{sys.executable} -c "import pymupdf; pymupdf.open({path!r})[0].get_pixmap(dpi=200)"'
