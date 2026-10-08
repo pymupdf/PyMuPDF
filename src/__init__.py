@@ -22534,11 +22534,13 @@ def JM_set_widget_properties(annot, Widget):
         # set all other kids to off first
         for i in range(parent_kids.pdf_array_len()):
             kid = parent_kids.pdf_array_get(i)
-            if kid.pdf_to_num() != annot_obj.pdf_to_num():
-                mupdf.pdf_dict_put(kid, PDF_NAME("AS"), PDF_NAME("Off"))
+            this_onstate = mupdf.pdf_button_field_on_state(kid)
+            if this_onstate.pdf_to_name() == onstate.pdf_to_name():
+                kid.pdf_dict_put(PDF_NAME("AS"), onstate)
+            else:
+                kid.pdf_dict_put(PDF_NAME("AS"), PDF_NAME("Off"))
 
         # set this button to on
-        annot_obj.pdf_dict_put(PDF_NAME("AS"), onstate)
         if not parent.pdf_is_null():
             parent.pdf_dict_put(PDF_NAME("V"), onstate)
 
