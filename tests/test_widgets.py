@@ -721,3 +721,51 @@ def test_5055():
         widget=mupdf.pdf_load_object(ptar, w.xref)
         parent = widget.pdf_dict_get(PDF_NAME("Parent"))
         assert parent.pdf_to_num() == field_xref
+
+def test_5165():
+    doc = pymupdf.open()
+    pdoc = pymupdf._as_pdf_document(doc)
+    page = doc.new_page()
+
+    xrefs = []
+    field_values = []
+    rb_parent = set()
+
+    for i in range(3):
+        w = pymupdf.Widget()
+        w.field_type = pymupdf.PDF_WIDGET_TYPE_RADIOBUTTON
+        w.field_name = "group"  # same full name for both buttons
+        w.rect = pymupdf.Rect(50, 50 + 30 * i, 70, 70 + 30 * i)
+        w.field_value = "Male" if i == 0 else "Female"
+        page.add_widget(w)
+        xrefs.append(w.xref)
+
+    for xref in xrefs:
+        w = page.load_widget(xref)
+        rb_parent.add(w.rb_parent)
+
+    # Assert all widgets have the same parent
+    assert len(rb_parent) == 1
+
+    # assert parent has value of first inserted widget
+    parent = mupdf.pdf_load_object(pdoc, list(rb_parent)[0])
+    assert parent.pdf_dict_get(PDF_NAME("V")).pdf_to_name() == "Male"
+
+    # assert correct widget value setting
+    for w in page.widgets():
+        field_values.append(w.field_value)
+    assert field_values == ["Male", "Off", "Off"]
+
+    # Set one of the widgets with duplicate values ("Female") to true
+    w3 = page.load_widget(xrefs[-1])
+    w3.field_value = "Female"
+    w3.update()
+
+    # Assert that the parent shows that value
+    assert parent.pdf_dict_get(PDF_NAME("V")).pdf_to_name() == "Female"
+
+    # Assert that all widgets with that value are updated accordingly
+    field_values = []
+    for w in page.widgets():
+        field_values.append(w.field_value)
+    assert field_values == ["Off", "Female", "Female"]
