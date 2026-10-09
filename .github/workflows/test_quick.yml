@@ -36,4 +36,4 @@ jobs:
             import subprocess
             import sys
             subprocess.run(f'git clone https://github.com/ArtifexSoftware/aptest.git', shell=1, check=1)
-            subprocess.run(f'{sys.executable} aptest/aptest.py -a APTEST_MUPDF_LOCATION -p . --4llm git: --layout git: build test -t p -a APTEST_args', shell=1, check=1)
+            subprocess.run(f'{sys.executable} aptest/aptest.py -a APTEST_MUPDF_LOCATION -p . --4llm git: --layout git: build test -t p -e PYMUPDF_TEST_QUICK=1 -a APTEST_args', shell=1, check=1)
