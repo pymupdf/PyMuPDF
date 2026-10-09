@@ -325,3 +325,40 @@ def test_5110():
         else:
             # 2026-09-11: Expect error.
             assert num_drawings == 1
+
+
+def test_5119():
+    # This does not yet reproduce the problem - does not hang.
+    
+    chinese_text = '\u4f60\u7684' * 1000
+    html = textwrap.dedent(f'''
+            <style>
+                .column {{
+                    width: 100px;
+                }}
+            </style>
+            <div class="column">
+                {chinese_text}
+            </div>
+            ''')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_5119_out.pdf')
+    story = pymupdf.Story(html=html)
+    mediabox = pymupdf.paper_rect("a4")
+    where = mediabox + (36, 36, -36, -36)
+    writer = pymupdf.DocumentWriter(path_out)
+    more = 1
+    page_count = 0
+    while more:
+        page_count += 1
+        # Safety limit added only to demonstrate the problem.
+        if page_count > 100:
+            raise RuntimeError('Story.place() did not make progress')
+        device = writer.begin_page(mediabox)
+        more, filled = story.place(where)
+        print(
+            f'page={page_count}, more={more}, filled={filled}'
+        )
+        story.draw(device)
+        writer.end_page()
+    writer.close()
+    
