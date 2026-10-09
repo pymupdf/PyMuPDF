@@ -320,5 +320,8 @@ def test_5110():
             print(f'Drawing with {rect=}: {drawing=}')
         num_drawings = len(page.get_drawings())
         print(f'{num_drawings=}')
-        # 2026-09-11: Expect error.
-        assert num_drawings == 1
+        if pymupdf.mupdf_version_tuple >= (1, 29):
+            assert num_drawings == 0
+        else:
+            # 2026-09-11: Expect error.
+            assert num_drawings == 1
