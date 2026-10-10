@@ -1,10 +1,9 @@
 import io
-import pymupdf
 import os
+import platform
+import pymupdf
 import re
 import util
-
-import PIL.Image
 
 
 scriptdir = os.path.dirname(__file__)
@@ -44,6 +43,14 @@ def test_4918():
 
 
 def test_5164():
+    if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
+        # module `PIL` not available - see
+        # conftest.py:install_required_packages for details.
+        return
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_5164(): not running on Pyodide - No module named \'PIL\'.')
+        return
+    import PIL.Image
 
     def colorspace_components(doc, xref):
         kind, value = doc.xref_get_key(xref, "ColorSpace")

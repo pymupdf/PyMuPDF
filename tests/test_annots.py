@@ -820,3 +820,61 @@ def test_annots_removal():
     a = page.add_circle_annot((100, 100, 200, 200))
     _ = page.delete_annot(a)
     assert "Annots" not in doc.xref_get_keys(page.xref)
+
+
+def test_5152():
+    def make_page(ops):
+        doc = pymupdf.open()
+        page = doc.new_page(width=300, height=200)
+        page.insert_text((0, 0), "x", fontname="helv")          # adds a Helvetica resource
+        font = page.get_fonts()[0][4]
+        doc.update_stream(page.get_contents()[0], ops.replace("/F1", "/" + font).encode())
+        return doc, page
+
+    def words(page):
+        return [(w[4], round(w[1], 1)) for w in page.get_text("words")]
+
+    OPS = "BT /F1 12 Tf 20 150 Td 20 TL (Line1) Tj 0 -40 Td (SECRET) ' ET"
+    print("PyMuPDF", pymupdf.VersionBind, "MuPDF", pymupdf.mupdf_version)
+
+    results = list()
+    
+    doc, page = make_page(OPS)
+    print("original:          ", words(page))
+    assert words(page) == [('Line1', 37.1), ('SECRET', 97.1)]
+    results.append(words(page))
+    
+    page.add_redact_annot(page.search_for("SECRET")[0])
+    page.apply_redactions()
+    print("after redaction:   ", words(page), "  <- SECRET should be gone")
+    results.append(words(page))
+    #assert words(page) == [('Line1', 37.1)]
+
+    doc, page = make_page(OPS)
+    page.clean_contents()
+    print("after clean:       ", words(page), "  <- positions should be unchanged")
+    results.append(words(page))
+    #assert words(page) == [('Line1', 37.1), ('SECRET', 117.1)]
+
+    doc, page = make_page(OPS.replace("(SECRET) '", "T* (SECRET) Tj"))
+    page.add_redact_annot(page.search_for("SECRET")[0])
+    page.apply_redactions()
+    print("T* Tj equivalent:  ", words(page), "  <- works")
+    results.append(words(page))
+    
+    expected = [
+            [('Line1', 37.1), ('SECRET', 97.1)],
+            [('Line1', 37.1)],
+            [('Line1', 37.1), ('SECRET', 97.1)],
+            [('Line1', 37.1)],
+            ]
+
+    print(f'expected')
+    for i in expected:
+        print(i)
+    
+    print(f'results')
+    for i in results:
+        print(i)
+    
+    assert results == expected
