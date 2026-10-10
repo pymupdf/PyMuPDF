@@ -26742,7 +26742,27 @@ __doc__ = (
         f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
         )
 
+
+def _to_markdown(*args, **kwargs):
+    return pymupdf4llm.to_markdown(*args, **kwargs)
+def _to_text(*args, **kwargs):
+    return pymupdf4llm.to_text(*args, **kwargs)
+def _to_json(*args, **kwargs):
+    return pymupdf4llm.to_json(*args, **kwargs)
+def _to_chunks(*args, **kwargs):
+    return pymupdf4llm.to_chunks(*args, **kwargs)
+def _convert_batch(*args, **kwargs):
+    return pymupdf4llm.convert_batch(*args, **kwargs)
+def _use_layout(yes):
+    return pymupdf4llm.use_layout(yes)
+
 try:
     import pymupdf4llm   # noqa: F401
-except ImportError:
+    Document.to_markdown = _to_markdown   # noqa: F401
+    Document.to_text = _to_text   # noqa: F401
+    Document.to_json = _to_json   # noqa: F401
+    Document.to_chunks = _to_chunks   # noqa: F401
+    convert_batch = _convert_batch   # noqa: F401
+    use_layout = _use_layout   # noqa: F401
+except (ImportError, ModuleNotFoundError):
     pass
