@@ -3,6 +3,7 @@ import os
 import platform
 import pymupdf
 import re
+import sys
 import util
 
 
