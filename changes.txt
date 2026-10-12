@@ -34,6 +34,7 @@ Other:
 * Retrospectively marked #4918 fixed in 1.28.0.
 * Retrospectively marked #4158 fixed in 1.27.2.2
 * Warning for use of deprecated `fitz` API now uses `warnings.warn()` with `FutureWarning`.
+* Added `__len__`, `__bool__` and `__iter__` to `TableFinder`. `len(tabs)`, `bool(tabs)` and `for t in tabs` now work directly. Note that a `TableFinder` with no tables is now falsy.
 
 
 **Changes in version 1.28.2** (2026-08-06)
