@@ -65,6 +65,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`sRGB_to_pdf`                  return PDF RGB color tuple from an sRGB integer
 :meth:`sRGB_to_rgb`                  return (R, G, B) color tuple from an sRGB integer
 :meth:`unicode_to_glyph_name`        return glyph name from a unicode
+:attr:`use_layout`                   whether the PyMuPDF Layout module is used for page analysis
 :meth:`get_tessdata`                 locates the language support of the Tesseract-OCR installation
 :meth:`colors_pdf_dict`              return dict of color names.
 :meth:`colors_wx_list`               return list of color names.
@@ -73,6 +74,63 @@ Yet others are handy, general-purpose utilities.
 :attr:`pdfcolor`                     dictionary of almost 500 RGB colors in PDF format.
 ==================================== ==============================================================
 
+   
+   .. method:: use_layout(yes: bool = True)
+
+        Switch on/off the use of the :ref:`PyMuPDF Layout module <pymupdf_and_layout>`. 
+        
+        If `yes=True` (default), the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
+
+   .. method:: convert_batch(inputs, *, workers=None, streaming=False, out_dir=None, backend="md", options=None, consumer=None, consumer_kwargs=None, progress_callback=None, persistent=False)
+
+    Convert a batch of documents using the selected processing strategy.
+
+    This helper accepts a sequence of input files or paths, applies the requested
+    conversion backend and options to each document, and returns a batch of
+    :class:`BatchResult` objects. The work can be executed sequentially or in a
+    worker pool, and results can be streamed as they complete.
+
+    :param inputs: Sequence of PDF or document paths to convert.
+    :type inputs: list or tuple
+    :param workers: Number of worker processes to use. ``None`` lets the helper
+        select an automatic value based on the input count and OCR settings.
+    :type workers: int or None
+    :param streaming: If ``True``, yields results as each document finishes instead
+        of waiting for the entire batch to complete.
+    :type streaming: bool
+    :param out_dir: Optional output directory for generated markdown, JSON, or
+        text files. When provided, each input document is converted into its own
+        subdirectory named after the source stem when appropriate.
+    :type out_dir: str or os.PathLike or None
+    :param backend: Conversion backend to use. Supported values are ``"md"``,
+        ``"json"``, and ``"txt"``.
+    :type backend: str
+    :param options: Per-document conversion options. If omitted, defaults are
+        generated for the selected backend.
+    :type options: dict or None
+    :param consumer: Optional callable invoked with each conversion output. The
+        function may receive ``output``, ``input``, ``backend``, and ``options``
+        arguments when supported by its signature.
+    :type consumer: callable or None
+    :param consumer_kwargs: Extra keyword arguments forwarded to ``consumer``.
+    :type consumer_kwargs: dict or None
+    :param progress_callback: Optional callback invoked after each document
+        finishes with the current progress as ``(done, total)``.
+    :type progress_callback: callable or None
+    :param persistent: If ``True``, uses a persistent process pool so OCR/layout
+        state can be reused across documents.
+    :type persistent: bool
+
+    :returns: A list of :doc:`batch-result` instances for non-streaming mode, or
+        a generator yielding those results as they complete when ``streaming`` is
+        enabled.
+    :rtype: list or iterator
+
+    :raises TypeError: If ``inputs`` is not a list or tuple, or if ``consumer`` is
+        not callable.
+    :raises ValueError: If ``backend`` is unsupported or output/image settings are
+        invalid.
+   
    .. method:: paper_size(s)
 
       Convenience function to return width and height of a known paper format code. These values are given in pixels for the standard resolution 72 pixels = 1 inch.
