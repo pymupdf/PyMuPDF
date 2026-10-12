@@ -127,8 +127,25 @@ Environmental variables:
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
     
+    PYMUPDF_SETUP_PATH_4LLM
+        Location of pymupdf4llm checkout; if set, we embed 4llm code into the
+        generated wheel.
+
+        Also see `General information about PYMUPDF_SETUP_PATH_4LLM and
+        PYMUPDF_SETUP_PATH_LAYOUT` below.
+    
+    PYMUPDF_SETUP_PATH_LAYOUT
+        Location of pymupdf_layout checkout. If set, we embed layout code into
+        the generated wheel.
+
+        Also see `General information about PYMUPDF_SETUP_PATH_4LLM and
+        PYMUPDF_SETUP_PATH_LAYOUT` below.
+    
     PYMUPDF_SETUP_PY_LIMITED_API
         If not '0', we build for current Python's stable ABI.
+    
+    PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM
+        If '0', we do not depend on empty pymupdf_layout/pymupdf4llm packages.
     
     PYMUPDF_SETUP_URL_WHEEL
         If set, we use an existing wheel instead of building a new wheel.
@@ -154,6 +171,31 @@ Environmental variables:
     WDEV_VS_GRADE
         If set, we use as Visual Studio grade, for example 'Community' or
         'Professional' or 'Enterprise'.
+
+General information about PYMUPDF_SETUP_PATH_4LLM and PYMUPDF_SETUP_PATH_LAYOUT
+
+    Supported combinations:
+
+        PYMUPDF_SETUP_PATH_4LLM unset
+        PYMUPDF_SETUP_PATH_LAYOUT unset
+            We build package pymupdf-lite, which contains only the core pymupdf
+            code.
+
+        PYMUPDF_SETUP_PATH_4LLM set
+        PYMUPDF_SETUP_PATH_LAYOUT unset
+            We build package pymupdf-mid, which contains pymupdf code and 4llm
+            code.
+            
+            This is experimental and will currently fail various tests.
+
+        PYMUPDF_SETUP_PATH_4LLM unset
+        PYMUPDF_SETUP_PATH_LAYOUT set
+            Unsupported.
+
+        PYMUPDF_SETUP_PATH_4LLM set
+        PYMUPDF_SETUP_PATH_LAYOUT set
+            We build package pymupdf, which contains pymupdf code, 4llm code
+            and layout code.
 '''
 
 import glob
@@ -207,6 +249,7 @@ PYMUPDF_SETUP_PATH_4LLM = os.environ.get('PYMUPDF_SETUP_PATH_4LLM')
 
 PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM = os.environ.get('PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM')
 
+
 # PyMuPDF version.
 version_p = '2.0'
 
@@ -214,26 +257,36 @@ version_mupdf = '1.28.5'
 
 g_requires_dist = list()
 
-if PYMUPDF_SETUP_PATH_LAYOUT or PYMUPDF_SETUP_PATH_4LLM:
-    assert PYMUPDF_SETUP_PATH_LAYOUT and PYMUPDF_SETUP_PATH_4LLM, (
-            f'Either none or both of PYMUPDF_SETUP_PATH_LAYOUT and PYMUPDF_SETUP_PATH_4LLM must be specified.'
-            f'{PYMUPDF_SETUP_PATH_LAYOUT=} {PYMUPDF_SETUP_PATH_4LLM=}'
-            )
+if PYMUPDF_SETUP_PATH_LAYOUT:
     g_requires_dist += [
             'networkx',
             'numpy',
             'onnxruntime',
-            'psutil',
             'pyyaml',
-            'tabulate',
+            f'pymupdf-layout=={version_p}',
             ]
-    g_package_name = 'pymupdf'
+
     if PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM != '0':
         g_requires_dist += [
-                f'pymupdf-layout=={version_p}',
+                f'pymupdf_layout=={version_p}',
+                ]
+
+if PYMUPDF_SETUP_PATH_4LLM:
+    g_requires_dist += [
+            'psutil',
+            'tabulate',
+            ]
+    if PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM != '0':
+        g_requires_dist += [
                 f'pymupdf4llm=={version_p}',
                 ]
 
+if PYMUPDF_SETUP_PATH_LAYOUT and PYMUPDF_SETUP_PATH_4LLM:
+    g_package_name = 'pymupdf'
+elif PYMUPDF_SETUP_PATH_4LLM:
+    g_package_name = 'pymupdf-mid'
+elif PYMUPDF_SETUP_PATH_LAYOUT:
+    assert 0, f'Use of PYMUPDF_SETUP_PATH_LAYOUT without PYMUPDF_SETUP_PATH_4LLM is not supported.'
 else:
     g_package_name = 'pymupdf-lite'
 
@@ -836,7 +889,7 @@ def build():
         build_py += f'platform_python_implementation = {platform.python_implementation()!r}\n'
         ret.append( (build_py.encode(), f'{to_dir}/layout/_build.py') )
     
-    if PYMUPDF_SETUP_PATH_LAYOUT:
+    if PYMUPDF_SETUP_PATH_4LLM:
         # 4llm
         pipcl.run(f'git config --global --add safe.directory {PYMUPDF_SETUP_PATH_4LLM}', check=0)
         for p in pipcl.git_items(f'{PYMUPDF_SETUP_PATH_4LLM}/src'):
