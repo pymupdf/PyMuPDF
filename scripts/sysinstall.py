@@ -1,475 +1,234 @@
 #! /usr/bin/env python3
 
 '''
-Test for Linux system install of MuPDF and PyMuPDF.
-
-We build and install MuPDF and PyMuPDF into a root directory, then use
-scripts/test.py to run PyMuPDF's pytest tests with LD_PRELOAD_PATH and
-PYTHONPATH set.
-
-PyMuPDF itself is installed using `python -m install` with a wheel created with
-`pip wheel`.
-
-We run install commands with `sudo` if `--root /` is used.
-
-Note that we run some commands with sudo; it's important that these use the
-same python as non-sudo, otherwise things can be build and installed for
-different python versions. For example when we are run from a github action, it
-should not do `- uses: actions/setup-python@v5` but instead use whatever system
-python is already defined.
+Test script for system install of mupdf and pymupdf.
 
 Args:
 
-    --gdb 0|1
-    --mupdf-dir <mupdf_dir>
-        Path of MuPDF checkout; default is 'mupdf'.
-    --mupdf-do 0|1
-        Whether to build and install mupdf.
-    --mupdf-git <git_args>
-        Get or update `mupdf_dir` using git. If `mupdf_dir` already
-        exists we run `git pull` in it; otherwise we run `git
-        clone` with `<git_args> <mupdf_dir>`. For example:
-            --mupdf-git "--branch master https://github.com/ArtifexSoftware/mupdf.git"
-    --mupdf-so-mode <mode>
-        Used with `install -m <mode> ...` when installing MuPDF. For example
-        `--mupdf-so-mode 744`.
-    --packages 0|1
-        If 1 (the default) we install required system packages such as
-        `libfreetype-dev`.
-    --pip 0|venv|sudo
-        Whether/how to install Python packages.
-        If '0' we assume required packages are already available.
-        If 'sudo' we install required Python packages using `sudo pip install
-        ...`.
-        If 'venv' (the default) we install Python packages and run installer
-        and test commands inside venv's.
-    --prefix:
-        Directory within `root`; default is `/usr/local`. Must start with `/`.
-    --pymupdf-dir <pymupdf_dir>
-        Path of PyMuPDF checkout; default is 'PyMuPDF'.
-    --pymupdf-do 0|1
-        Whether to build and install pymupdf.
-    --root <root>
-        Root of install directory; default is 'pymupdf-sysinstall-test-root'.
-    --tesseract5 0|1
-        If 1 (the default), we force installation of libtesseract-dev version
-        5 (which is not available as a default package in Ubuntu-22.04) from
-        package repository ppa:alex-p/tesseract-ocr-devel.
-    --test-venv <test_venv>
-        Set the name of the venv in which we run tests (only with `--pip
-        venv`); the default is a hard-coded venv name. The venv will be
-        created, and required packages installed using `pip`.
-    --use-installer 0|1
-        If 1 (the default), we use `python -m installer` to install PyMuPDF
-        from a generated wheel. [Otherwise we use `pip install`, which refuses
-        to do a system install with `--root /`, referencing PEP-668.]
-    -i <implementations>
-        Passed through to scripts/test.py. Default is 'rR'.
-    -f <test-fitz>
-        Passed through to scripts/test.py. Default is '0'
-        (Changed 2026-09-02 because new warnings on import cause failures.)
-    -p <pytest-options>
-        Passed through to scripts/test.py.
-    -t <names>
-        Passed through to scripts/test.py.
+    -h
+    --help
+        Show this help.
+    
+    -m <mupdf_location>.
+        Set location of mupdf. Default is 'git:'.
+        
+        If <mupdf_location> starts with 'git:', we clone/fetch to local
+        directory `sysinstall_mupdf/`.
+            Examples:
+                git:-b 1.28.x
+                    Get branch 1.28.x.
+                git:
+                    Get branch master.
+        Otherwise <mupdf_location> is assumed to be a local mupdf checkout.
 
-To only show what commands would be run, but not actually run them, specify `-m
-0 -p 0 -t 0`.
+Notes:
+
+* We terminate with an error if run in a venv,
+  because this would cause mupdf to install its libraries in the wrong place within our test tree.
+* We assume we are running on a Debian-based system.
+* We run `sudo apt update` and `sudo apt install ...` commands.
+* We create the following directories:
+  * ./pymupdf_sysinstall_test_root/
+  * ./pymupdf_sysinstall_test_mupdf/
+  * ./pymupdf_sysinstall_test_venv/
 '''
 
-import glob
+
 import multiprocessing
 import os
 import platform
-import shlex
+import shutil
 import subprocess
 import sys
-import sysconfig
 
-#import test as test_py
 
-pymupdf_dir = os.path.abspath( f'{__file__}/../..')
+g_pymupdf_root = os.path.normpath(f'{__file__}/../..')
 
-#sys.path.insert(0, f'{pymupdf_dir}/src')
-#import pipcl
-#del sys.path[0]
 
-#log = pipcl.log0
-def log(text, caller=2):
+def log(text=''):
     print(text, flush=1)
-
-# Requirements for a system build and install:
-#
-# system packages (Debian names):
-#
-g_sys_packages = [
-        'libfreetype-dev',
-        'libgumbo-dev',
-        'libharfbuzz-dev',
-        'libjbig2dec-dev',
-        'libjpeg-dev',
-        'libleptonica-dev',
-        'libopenjp2-7-dev',
-        ]
-# We also need libtesseract-dev version 5.
-#
-
-
-def test_packages():
-    ret = 'pytest fontTools pymupdf-fonts flake8 pylint codespell'
-    if platform.system() == 'Windows' and cpu_bits() == 32:
-        # No pillow wheel available, and doesn't build easily.
-        pass
+   
+    
+def run(command, capture=False):
+    log(f'Running: {command}')
+    if capture:
+        cp = subprocess.run(command, shell=1, check=1, stdout=subprocess.PIPE)
+        return cp.stdout
     else:
-        ret += ' pillow'
-    if platform.system().startswith('MSYS_NT-'):
-        # psutil not available on msys2.
+        subprocess.run(command, shell=1, check=1)
+
+
+def fs_remove(path):
+    '''
+    Removes file or directory, without raising exception if it doesn't exist.
+
+    We assert-fail if the path still exists when we return, in case of
+    permission problems etc.
+    '''
+    try:
+        os.remove(path)
+    except Exception:
         pass
-    else:
-        ret += ' psutil'
-    return ret
+    shutil.rmtree(path, ignore_errors=1)
+    assert not os.path.exists(path), f'Path still exists after deletion: {path!r}.'
+
+
+def git_get(local, **kwargs):
+    '''
+    Behaves like pipcl.git_get().
+
+    But because we don't want to run sysinstall.py itself in a venv (because
+    this messes up where mupdf installs its libraries), we internally create
+    a separate venv in which we install pipcl and run some python code (in a
+    child process) that calls pipcl.git_get().
+    '''
+    log()
+    log(f'## Running pipcl.git_get() in venv.')
+    venv = 'pymupdf_sysinstall_test_venv'
+    run(f'{sys.executable} -m venv {venv}')
+    kwargs2 = [f'{n} = {v!r}' for (n, v) in kwargs.items()]
+    kwargs2_str = ', '.join(kwargs2)
+    run(f'. {venv}/bin/activate && pip install pipcl && python -c "import pipcl; pipcl.git_get({local!r}, {kwargs2_str})"')
+    return os.path.abspath(local)
 
 
 def main():
+    log('## Sysinstall testing.')
     
-    if 1:
-        log(f'## {__file__}: Starting.')
-        log(f'{sys.executable=}')
-        log(f'{platform.python_version()=}')
-        log(f'{__file__=}')
-        log(f'{os.environ.get("PYMUDF_SCRIPTS_SYSINSTALL_ARGS_PRE")=}')
-        log(f'{os.environ.get("PYMUDF_SCRIPTS_SYSINSTALL_ARGS_POST")=}')
-        log(f'{sys.argv=}')
-        log(f'{sysconfig.get_path("platlib")=}')
-        run_command(f'python -V', check=0)
-        run_command(f'python3 -V', check=0)
-        run_command(f'sudo python -V', check=0)
-        run_command(f'sudo python3 -V', check=0)
-        run_command(f'sudo PATH={os.environ["PATH"]} python -V', check=0)
-        run_command(f'sudo PATH={os.environ["PATH"]} python3 -V', check=0)
+    if sys.prefix != sys.base_prefix:
+        log(f'Error: we must not be run in a venv.')
+        return 1
     
-    #if test_py.github_workflow_unimportant():
-    #    return
+    mupdf_location = 'git:'
     
-    # Set default behaviour.
-    #
-    gdb = False
-    use_installer = True
-    mupdf_do = True
-    mupdf_dir = 'mupdf'
-    mupdf_git = None
-    mupdf_so_mode = None
-    packages = True
-    prefix = '/usr/local'
-    pymupdf_do = True
-    root = 'pymupdf-sysinstall-test-root'
-    tesseract5 = True
-    pytest_args = None
-    pytest_do = True
-    pytest_name = None
-    test_venv = 'venv-pymupdf-sysinstall-test'
-    pip = 'venv'
-    test_fitz = '0'
-    test_implementations = 'rR'
-    
-    # Parse command-line.
-    #
-    env_args_pre = shlex.split(os.environ.get('PYMUDF_SCRIPTS_SYSINSTALL_ARGS_PRE', ''))
-    env_args_post = shlex.split(os.environ.get('PYMUDF_SCRIPTS_SYSINSTALL_ARGS_POST', ''))
-    args = iter(env_args_pre + sys.argv[1:] + env_args_post)
+    args = iter(sys.argv[1:])
     while 1:
         try:
             arg = next(args)
         except StopIteration:
             break
         if arg in ('-h', '--help'):
-            log(__doc__)
+            print(__doc__)
             return
-        elif arg == '--gdb':            gdb = int(next(args))
-        elif arg == '--mupdf-do':       mupdf_do = int(next(args))
-        elif arg == '--mupdf-dir':      mupdf_dir = next(args)
-        elif arg == '--mupdf-git':      mupdf_git = next(args)
-        elif arg == '--mupdf-so-mode':  mupdf_so_mode = next(args)
-        elif arg == '--packages':       packages = int(next(args))
-        elif arg == '--prefix':         prefix = next(args)
-        elif arg == '--pymupdf-do':     pymupdf_do = int(next(args))
-        elif arg == '--root':           root = next(args)
-        elif arg == '--tesseract5':     tesseract5 = int(next(args))
-        elif arg == '--pytest-do':      pytest_do = int(next(args))
-        elif arg == '--test-venv':      test_venv = next(args)
-        elif arg == '--use-installer':  use_installer = int(next(args))
-        elif arg == '--pip':            pip = next(args)
-        elif arg == '-f':               test_fitz = next(args)
-        elif arg == '-i':               test_implementations = next(args)
-        elif arg == '-p':               pytest_args = next(args)
-        elif arg == '-t':               pytest_name = next(args)
+        elif arg == '-m':
+            mupdf_location = next(args)
         else:
-            assert 0, f'Unrecognised arg: {arg!r}'
+            assert 0, f'Unrecognised {arg=}.'
     
-    assert prefix.startswith('/')
-    pip_values = ('0', 'sudo', 'venv')
-    assert pip in pip_values, f'Unrecognised --pip value {pip!r} should be one of: {pip_values!r}'
-    root = os.path.abspath(root)
-    root_prefix = f'{root}{prefix}'.replace('//', '/')
+    assert mupdf_location, f'Need `-m <mupdf_location>'
+    if mupdf_location.startswith('git:'):
+        mupdf_dir = git_get(
+                'pymupdf_sysinstall_test_mupdf',
+                remote='https://github.com/ArtifexSoftware/mupdf.git',
+                branch='master',
+                text=mupdf_location,
+                )
+    else:
+        mupdf_dir = mupdf_location
     
-    sudo = ''
-    if root == '/':
-        sudo = f'sudo PATH={os.environ["PATH"]} '
-    def run(command, env_extra=None):
-        return run_command(command, doit=mupdf_do, env_extra=env_extra)
-    # Get MuPDF from git if specified.
+    install_root = os.path.abspath('pymupdf_sysinstall_test_root')
+    install_prefix = '/usr/local'
+    
+    log()
+    log('## Initial settings.')
+    log(f'{mupdf_dir=}.')
+    log(f'{install_root=}.')
+    log(f'{install_prefix=}.')
+    
+    # Set environment variables so that <install_root> will be used when
+    # importing python modules and loading shared libraries.
     #
-    if mupdf_git:
-        # Update existing checkout or do `git clone`.
-        if os.path.exists(mupdf_dir):
-            log(f'## Update MuPDF checkout {mupdf_dir}.')
-            run(f'cd {mupdf_dir} && git pull && git submodule update --init')
-        else:
-            # No existing git checkout, so do a fresh clone.
-            log(f'## Clone MuPDF into {mupdf_dir}.')
-            run(f'git clone --recursive --depth 1 --shallow-submodules {mupdf_git} {mupdf_dir}')
+    log()
+    log('## Setting environment variables.')
+    # We guess the site-packages and dist-packages directories that python will
+    # use when mupdf installs python libraries and we use `pip install` to
+    # install pymupdf.
+    #
+    python_version_str = '.'.join(platform.python_version_tuple()[:2])
+    install_python_site_packages = f'{install_root}{install_prefix}/lib/python{python_version_str}/site-packages'
+    install_python_dist_packages = f'{install_root}{install_prefix}/lib/python{python_version_str}/dist-packages'
+    os.environ['LD_LIBRARY_PATH'] = f'{install_root}{install_prefix}/lib'
+    os.environ['PATH'] = f'{install_root}{install_prefix}/bin' + os.pathsep + os.environ['PATH']
+    os.environ['PYTHONPATH'] = install_python_site_packages + os.pathsep + install_python_dist_packages
+    log(f'LD_LIBRARY_PATH={os.environ["LD_LIBRARY_PATH"]}')
+    log(f'PATH={os.environ["PATH"]}')
+    log(f'PYTHONPATH={os.environ["PYTHONPATH"]}')
     
-    if packages:
-        # Install required system packages. We assume a Debian package system.
-        #
-        log('## Install system packages required by MuPDF.')
+    if 1:
+        log()
+        log(f'## Deleting any existing {install_root=}.')
+        fs_remove(install_root)
+    
+    if 1:
+        log()
+        log('## Installing system packages required by MuPDF.')
+        sys_packages = [
+                'libfreetype-dev',
+                'libgumbo-dev',
+                'libharfbuzz-dev',
+                'libjbig2dec-dev',
+                'libjpeg-dev',
+                'libleptonica-dev',
+                'libopenjp2-7-dev',
+                ]
         run(f'sudo apt update')
-        run(f'sudo apt install {" ".join(g_sys_packages)}')
+        run(f'sudo apt install {" ".join(sys_packages)}')
         # Ubuntu-22.04 has freeglut3-dev, not libglut-dev.
         run(f'sudo apt install libglut-dev | sudo apt install freeglut3-dev')
-        if tesseract5:
-            log(f'## Force installation of libtesseract-dev version 5.')
-            # https://stackoverflow.com/questions/76834972/how-can-i-run-pytesseract-python-library-in-ubuntu-22-04
-            #
-            run('sudo apt install -y software-properties-common')
-            run('sudo add-apt-repository ppa:alex-p/tesseract-ocr-devel')
-            run('sudo apt update')
-            run('sudo apt install -y libtesseract-dev')
-        else:
-            run('sudo apt install libtesseract-dev')
+        run(f'sudo apt install libtesseract-dev')
     
-    # Build+install MuPDF. We use mupd:Makefile's install-shared-python target.
-    #
-    if pip == 'sudo':
-        log('## Installing Python packages required for building MuPDF and PyMuPDF.')
-        #run(f'sudo pip install --upgrade pip') # Breaks on Github see: https://github.com/pypa/get-pip/issues/226.
-        # We need to install psutil and pillow as system packages, otherwise things like `import psutil`
-        # fail, seemingly because of pip warning:
-        #
-        #   WARNING: Running pip as the 'root' user can result in broken
-        #   permissions and conflicting behaviour with the system package
-        #   manager. It is recommended to use a virtual environment instead:
-        #   https://pip.pypa.io/warnings/venv
-        #
-        names = test_py.wrap_get_requires_for_build_wheel(f'{__file__}/../..')
-        names = names.split(' ')
-        names = [n for n in names if n not in ('psutil', 'pillow')]
-        names = ' '.join(names)
-        run(f'sudo pip install {names}')
-        run(f'sudo apt install python3-psutil python3-pillow')
+    if 1:
+        log()
+        log('## Installing python packages.')
+        run(f'{sys.executable} -m pip install --root {install_root} libclang swig')
     
-    log('## Build and install MuPDF.')
-    command = f'cd {mupdf_dir}'
-    command += f' && {sudo}make'
-    # 2026-08-21: GUMBO_NODE_PROCESSING_INSTRUCTION is not in current gumbo release 0.13.2.
-    command += f' && XCXXFLAGS="-DMUPDF_HAVE_GUMBO_NODE_PROCESSING_INSTRUCTION=0" {sudo}make'
-    command += f' -j {multiprocessing.cpu_count()}'
-    #command += f' EXE_LDFLAGS=-Wl,--trace' # Makes linker generate diagnostics as it runs.
-    command += f' DESTDIR={root}'
-    command += f' HAVE_LEPTONICA=yes'
-    command += f' HAVE_TESSERACT=yes'
-    command += f' USE_SYSTEM_LIBS=yes'
-    # We need latest zxingcpp so system version not ok.
-    command += f' USE_SYSTEM_ZXINGCPP=no'
-    command += f' barcode=yes'
-    command += f' VENV_FLAG={"--venv" if pip == "venv" else ""}'
-    if mupdf_so_mode:
-        command += f' SO_INSTALL_MODE={mupdf_so_mode}'
-    command += f' build_prefix=system-libs-'
-    command += f' prefix={prefix}'
-    command += f' verbose=yes'
-    command += f' install-shared-python'
-    command += f' INSTALL_MODE=755'
-    run( command)
+    if 1:
+        log()
+        log('## Building and installing MuPDF.')
+        run(f'cd {mupdf_dir} && make -j {multiprocessing.cpu_count()}')
+        run(f'cd {mupdf_dir} && make'
+                f' -j {multiprocessing.cpu_count()}'
+                f' barcode=yes'
+                f' build_prefix=system-libs-'
+                f' prefix={install_prefix}'
+                f' verbose=yes'
+                f' DESTDIR={install_root}'
+                f' HAVE_LEPTONICA=yes'
+                f' HAVE_TESSERACT=yes'
+                f' INSTALL_MODE=755'
+                f' USE_SYSTEM_GUMBO=no' # Github Ubuntu's gumbo too old for mupdf.
+                f' USE_SYSTEM_LIBS=yes'
+                f' USE_SYSTEM_ZXINGCPP=no'  # Github Ubuntu's zxingcpp too old for mupdf.
+                f' VENV_FLAG='
+                f' install-shared-python'
+                )
     
-    # Build+install PyMuPDF.
-    #
-    log('## Build and install PyMuPDF.')
-    def run(command):
-        return run_command(command, doit=pymupdf_do)
-    flags_freetype2 = run_command('pkg-config --cflags freetype2', capture=1)
-    compile_flags = f'-I {root_prefix}/include {flags_freetype2}'
-    log(f'{compile_flags=}')
-    link_flags = f'-L {root_prefix}/lib'
-    env = ''
-    env += f'CFLAGS="{compile_flags}" '
-    env += f'CXXFLAGS="{compile_flags}" '
-    env += f'LDFLAGS="-L {root}/{prefix}/lib" '
-    env += f'PYMUPDF_SETUP_MUPDF_BUILD= '       # Use system MuPDF.
-    if use_installer:
-        log(f'## Building wheel.')
-        if pip == 'venv':
-            venv_name = 'venv-pymupdf-sysinstall'
-        run(f'pwd')
-        run(f'rm dist/* || true')
-        if pip == 'venv':
-            run(f'{sys.executable} -m venv {venv_name}')
-            run(f'. {venv_name}/bin/activate && pip install --upgrade pip')
-            run(f'. {venv_name}/bin/activate && pip install --upgrade installer')
-            run(f'{env} {venv_name}/bin/python -m pip wheel -vv -w dist {os.path.abspath(pymupdf_dir)}')
-        elif pip == 'sudo':
-            #run(f'sudo pip install --upgrade pip') # Breaks on Github see: https://github.com/pypa/get-pip/issues/226.
-            run(f'sudo pip install installer')
-            run(f'{env} pip wheel -vv -w dist {os.path.abspath(pymupdf_dir)}')
-        else:
-            log(f'Not installing "installer" because {pip=}.')
-        wheel = glob.glob(f'dist/*')
-        assert len(wheel) == 1, f'{wheel=}'
-        wheel = wheel[0]
-        log(f'## Installing wheel using `installer`.')
-        pv = '.'.join(platform.python_version_tuple()[:2])
-        p = f'{root_prefix}/lib/python{pv}'
-        # `python -m installer` fails to overwrite existing files.
-        run(f'{sudo}rm -r {p}/site-packages/pymupdf || true')
-        run(f'{sudo}rm -r {p}/site-packages/pymupdf.py || true')
-        run(f'{sudo}rm -r {p}/site-packages/fitz || true')
-        run(f'{sudo}rm -r {p}/site-packages/fitz.py || true')
-        run(f'{sudo}rm -r {p}/site-packages/pymupdf-*.dist-info || true')
-        run(f'{sudo}rm -r {root_prefix}/bin/pymupdf || true')
-        if pip == 'venv':
-            run(f'{sudo}{venv_name}/bin/python -m installer --destdir {root} --prefix {prefix} {wheel}')
-        else:
-            run(f'{sudo}{sys.executable} -m installer --destdir {root} --prefix {prefix} {wheel}')
-        # It seems that MuPDF Python bindings are installed into
-        # `.../dist-packages` (from mupdf:Mafile's call of `$(shell python3
-        # -c "import sysconfig; print(sysconfig.get_path('platlib'))")` while
-        # `python -m installer` installs PyMuPDF into `.../site-packages`.
-        #
-        # This might be because `sysconfig.get_path('platlib')` returns
-        # `.../site-packages` if run in a venv, otherwise `.../dist-packages`.
-        #
-        # And on github ubuntu-latest, sysconfig.get_path("platlib") is
-        #   /opt/hostedtoolcache/Python/3.11.7/x64/lib/python3.11/site-packages
-        #
-        # So we set pythonpath (used later) to import from all
-        # `pythonX.Y/site-packages/` and `pythonX.Y/dist-packages` directories
-        # within `root_prefix`:
-        #
-        pv = platform.python_version().split('.')
-        pv = f'python{pv[0]}.{pv[1]}'
-        pythonpath = list()
-        for dirpath, dirnames, filenames in os.walk(root_prefix):
-            if os.path.basename(dirpath) == pv:
-                for leaf in 'site-packages', 'dist-packages':
-                    if leaf in dirnames:
-                        pythonpath.append(os.path.join(dirpath, leaf))
-        pythonpath = ':'.join(pythonpath)
-        log(f'{pythonpath=}')
-    else:
-        command = f'{env} pip install -vv --root {root} {os.path.abspath(pymupdf_dir)}'
-        run( command)
-        pythonpath = pipcl.install_dir(root)
-    
-    # Show contents of installation directory. This is very slow on github,
-    # where /usr/local contains lots of things.
-    #run(f'find {root_prefix}|sort')
+    if 1:
+        log()
+        log('## Building and installing PyMuPDF.')
+        compile_flags = f'-I {install_root}{install_prefix}/include'
+        link_flags = f'-L {install_root}{install_prefix}/lib'
+        env = ''
+        env += f'CFLAGS="{compile_flags}" '
+        env += f'CXXFLAGS="{compile_flags}" '
+        env += f'LDFLAGS="{link_flags}" '
+        env += f'PYMUPDF_SETUP_MUPDF_BUILD= '   # Use system MuPDF.
         
-    # Run pytest tests.
-    #
-    log('## Run PyMuPDF pytest tests.')
-    def run(command, env_extra=None):
-        return run_command(command, doit=pytest_do, env_extra=env_extra, caller=1)
-    if pip == 'venv':
-        # Create venv.
-        run(f'{sys.executable} -m venv {test_venv}')
-        # Install required packages.
-        command = f'. {test_venv}/bin/activate'
-        command += f' && pip install --upgrade pip'
-        command += f' && pip install --upgrade {test_packages()}'
-        run(command)
-    elif pip == 'sudo':
-        names = test_packages()
-        names = names.split(' ')
-        names = [n for n in names if n not in ('psutil', 'pillow')]
-        names = ' '.join(names)
-        run(f'sudo pip install --upgrade {names}')
-    else:
-        log(f'Not installing packages for testing because {pip=}.')
-    # Run pytest.
-    #
-    # We need to set PYTHONPATH and LD_LIBRARY_PATH. In particular we
-    # use pipcl.install_dir() to find where pipcl will have installed
-    # PyMuPDF.
-    command = ''
-    if pip == 'venv':
-        command += f'. {test_venv}/bin/activate &&'
-    command += f' LD_LIBRARY_PATH={root_prefix}/lib PYTHONPATH={pythonpath} PATH=$PATH:{root_prefix}/bin'
-    run(f'ls -l {root_prefix}/bin/')
-    # 2024-03-20: Not sure whether/where `pymupdf` binary is installed, so we
-    # disable the test_cli* tests.
-    command += f' {pymupdf_dir}/scripts/test.py'
-    if gdb:
-        command += ' --gdb 1'
-    command += f' -v 0'
-    if pytest_name is None:
-        excluded_tests = (
-                'test_color_count',
-                'test_3050',
-                'test_cli',
-                'test_cli_out',
-                'test_pylint',
-                'test_textbox3',
-                'test_3493',
-                'test_4180',
-                'test_4767',
-                'test_5001',
-                'test_5049',
-                )
-        excluded_tests = ' and not '.join(excluded_tests)
-        if not pytest_args:
-            pytest_args = ''
-        pytest_args += f' -k \'not {excluded_tests}\''
-    else:
-        command += f' -t {pytest_name}'
-    if test_fitz:
-        command += f' -f {test_fitz}'
-    if test_implementations:
-        command += f' -i {test_implementations}'
-    if pytest_args:
-        command += f' -p {shlex.quote(pytest_args)}'
-    if pytest_do:
-        command += ' test'
-    run(command, env_extra=dict(PYMUPDF_SYSINSTALL_TEST='1'))
-
-
-def run_command(command, capture=False, check=True, doit=True, env_extra=None, caller=0):
-    if doit:
-        env = os.environ
-        if env_extra:
-            env = env.copy()
-            env.update(env_extra)
-        cp = subprocess.run(
-                command,
-                shell=1,
-                check=check,
-                env=env,
-                stdout=subprocess.PIPE if capture else None,
-                stderr=subprocess.STDOUT if capture else None,
-                text=True,
-                )
-        if check:
-            return cp.stdout if capture else None
-        else:
-            return (cp.returncode, cp.stdout) if capture else cp.returncode
-    else:
-        log(f'## Would have run: {command}', caller=2)
+        command = f'{env} pip install -v --target {install_python_dist_packages} {os.path.abspath(g_pymupdf_root)}'
+        run( command)
     
-#def run_command(command, capture=False, check=True, doit=True, env_extra=None, caller=0):
-#    if doit:
-#        return pipcl.run(command, capture=capture, check=check, caller=caller+2, env_extra=env_extra)
-#    else:
-#        log(f'## Would have run: {command}', caller=2)
+    if 1:
+        log()
+        log('## Running tests.')
+        run(f'pip install --root {install_root} pytest')
+        run(
+                f'PYMUPDF_TEST_USE_4LLM=0 '
+                    f'PYMUPDF_TEST_USE_LAYOUT=0 '
+                    f'PYMUPDF_SYSINSTALL_ROOT={install_root} '
+                    f'pytest {g_pymupdf_root}/tests'
+                )
 
 
 if __name__ == '__main__':
-    main()
+    e = main()
+    sys.exit(e)
