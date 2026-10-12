@@ -19,7 +19,7 @@ def install_required_packages():
         # We can't run child processes, so rely on required test packages
         # already being installed, e.g. in our wheel's <requires_dist>.
         return
-    packages = 'pytest fontTools pymupdf-fonts flake8 pylint codespell mypy'
+    packages = 'fontTools pymupdf-fonts flake8 pylint codespell mypy'
     packages += ' pipcl'
     if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
         # No pillow wheel available, and doesn't build easily.
@@ -48,9 +48,20 @@ def install_required_packages():
         # From pymupdf4llm/tests/conftest.py.
         packages += ' llama_index pytest-asyncio rapidocr-onnxruntime'
     
-    command = f'pip install --upgrade {packages}'
-    print(f'{__file__}:install_required_packages)(): Running: {command}', flush=1)
-    subprocess.run(command, shell=1, check=1)
+    PYMUPDF_SYSINSTALL_ROOT = os.environ.get('PYMUPDF_SYSINSTALL_ROOT')
+    if PYMUPDF_SYSINSTALL_ROOT == '-':
+        # Do not install any python packages.
+        pass
+    else:
+        if PYMUPDF_SYSINSTALL_ROOT:
+            # We do not specify `--upgrade`, because this appears to make pip
+            # attempt to upgrade system python packages.
+            pir = f' --root {PYMUPDF_SYSINSTALL_ROOT}'
+        else:
+            pir = ' --upgrade'
+        command = f'{sys.executable} -m pip install{pir} {packages}'
+        print(f'{__file__}:install_required_packages)(): Running: {command}', flush=1)
+        subprocess.run(command, shell=1, check=1)
 
 install_required_packages()
 
