@@ -320,6 +320,9 @@ def test_4457():
 
 
 def test_5049():
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_5049(): doing nothing in sysinstall.')
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_5049.pdf')
     
     def create_pdf() -> pymupdf.Document:

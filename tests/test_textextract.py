@@ -523,6 +523,9 @@ def test_4245():
 
 
 def test_4180():
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_4180(): doing nothing in sysinstall.')
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4180.pdf')
     with pymupdf.open(path) as document:
         page = document[0]
