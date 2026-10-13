@@ -106,6 +106,9 @@ def test_color_count():
     This is known to fail if MuPDF is built without PyMuPDF's custom config.h,
     e.g. in Linux system installs.
     '''
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_color_count(): doing nothing in sysinstall.')
+        return
     pm = pymupdf.Pixmap(imgfile)
     assert pm.color_count() == 40624
 
@@ -166,10 +169,11 @@ def test_3020():
     pm4 = pymupdf.Pixmap(pm, pm3)
 
 def test_3050():
-    '''
-    This is known to fail if MuPDF is built without it's default third-party
-    libraries, e.g. in Linux system installs.
-    '''
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        # This is known to fail if MuPDF is built without it's default
+        # third-party libraries, e.g. in Linux system installs.
+        print(f'test_3050(): doing nothing because known to fail if MuPDF is built without it\'s default third-party libraries, e.g. in Linux system installs.')
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/001003ED.pdf')
     with pymupdf.open(path) as pdf_file:
         page_no = 0
@@ -276,6 +280,9 @@ def test_3493():
     This test is excluded by default in sysinstall tests, because running
     commands in a new venv does not seem to pick up pymupdf as expected.
     '''
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_3493(): doing nothing in sysinstall.')
+        return
     if platform.system() != 'Linux':
         print(f'Not running because not Linux: {platform.system()=}')
         return
@@ -435,7 +442,7 @@ def test_3854():
     pixmap_diff.save(path_diff)
     rms = gentle_compare.pixmaps_rms(pixmap, pixmap_expected)
     print(f'{rms=}.')
-    if os.environ.get('PYMUPDF_SYSINSTALL_TEST') == '1':
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
         # MuPDF using external third-party libs gives slightly different
         # behaviour.
         assert rms < 2
@@ -659,6 +666,9 @@ def test_5001():
     '''
     #5001 is fixed with mupdf>=1.28.
     '''
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_5001(): doing nothing in sysinstall.')
+        return
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_5001.pdf')
     path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_5001_expected.png')
     path_out = os.path.normpath(f'{__file__}/../../tests/test_5001_out.png')

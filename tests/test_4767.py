@@ -11,6 +11,9 @@ def test_4767():
     '''
     Check handling of unsafe paths in `pymupdf embed-extract`.
     '''
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_4767(): doing nothing in sysinstall.')
+        return
     if os.environ.get('PYODIDE_ROOT'):
         print('test_4767(): not running on Pyodide - cannot run child processes.')
         return
