@@ -844,6 +844,7 @@ def _internal(args):
     pymupdf.message('This is from PyMuPDF message().')
     pymupdf.log('This is from PyMuPDF log().')
 
+
 def main():
     """Define command configurations."""
     parser = argparse.ArgumentParser(
