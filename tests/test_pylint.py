@@ -129,6 +129,7 @@ def test_pylint():
             'pymupdf.py',
             'table.py',
             'utils.py',
+            'show_features.py',
             ]
     leafs.sort()
     try:

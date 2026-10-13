@@ -640,6 +640,7 @@ def build():
         ret.append( (f'{g_root}/src/utils.py', to_dir) )
         ret.append( (f'{g_root}/src/_wxcolors.py', to_dir) )
         ret.append( (f'{g_root}/src/_apply_pages.py', to_dir) )
+        ret.append( (f'{g_root}/src/show_features.py', to_dir) )
         ret.append( (f'{g_root}/src/build/extra.py', to_dir) )
         ret.append( (b'', f'{to_dir}/py.typed') )
         ret.append( (f'{g_root}/src/build/{path_so_leaf}', to_dir) )
@@ -1390,6 +1391,7 @@ if os.environ.get('PYODIDE_ROOT'):
 g_entry_points = textwrap.dedent('''
         [console_scripts]
         pymupdf = pymupdf.__main__:main
+        pymupdf-config = pymupdf.show_features:config
         ''')
 
 
