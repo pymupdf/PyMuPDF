@@ -81,9 +81,11 @@ def test_3842():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_3842.pdf')
     if pymupdf.mupdf_version_tuple >= (1, 28):
         path_text_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3842_expected_1.28.txt')
+        path_text_expected_alternative = os.path.normpath(f'{__file__}/../../tests/resources/test_3842_expected_1.28_older_tesseract.txt')
     else:
         path_text_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_3842_partial.txt')
     text_expected = pathlib.Path(path_text_expected).read_text()
+    text_expected_alternative = pathlib.Path(path_text_expected_alternative).read_text()
     with pymupdf.open(path) as document:
         page = document[6]
         try:
@@ -104,4 +106,5 @@ def test_3842():
             print(text)
             print(f'text:\n{text!r}')
             print(f'text_expected:\n{text_expected!r}')
-            assert text == text_expected
+            print(f'text_expected_alternative:\n{text_expected_alternative!r}')
+            assert text == text_expected or text == text_expected_alternative
