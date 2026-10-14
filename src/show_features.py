@@ -15,6 +15,8 @@ def get_tesseract_version():
 
 
 def get_pkg_version(name: str):
+    if name == "pymupdf":
+        return pymupdf.__version__
     try:
         return importlib.metadata.version(name)
     except importlib.metadata.PackageNotFoundError:
@@ -23,7 +25,7 @@ def get_pkg_version(name: str):
 
 _pymupdf_feature_list = [
     (
-        "pymupdf_core",
+        "pymupdf",
         pymupdf.__version__,
         "Core PyMuPDF Functionality",
         "",
