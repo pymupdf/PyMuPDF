@@ -1429,6 +1429,11 @@ g_entry_points = textwrap.dedent('''
         pymupdf = pymupdf.__main__:main
         ''')
 
+g_requires_python = '>=3.11'
+if PYMUPDF_SETUP_PATH_LAYOUT:
+    # 2026-10-14: onnxruntime not available for python-3.15.
+    g_requires_python += ', <3.15'
+
 
 p = pipcl.Package(
         g_package_name,
@@ -1455,7 +1460,7 @@ p = pipcl.Package(
         author = 'Artifex',
         author_email = 'support@artifex.com',
         requires_dist = g_requires_dist,
-        requires_python = '>=3.11',
+        requires_python = g_requires_python,
         license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
         project_url = [
             ('Documentation, https://pymupdf.readthedocs.io/'),
