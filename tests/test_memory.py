@@ -324,6 +324,9 @@ def test_4751():
     # possible that these could be real leaks, but they are not the ones
     # we are testing for here.
     #
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_4751(): doing nothing in sysinstall.')
+        return
     if os.path.basename(__file__).startswith(f'test_fitz_'):
         # Don't test the `fitz` alias, because we assume our leafname.
         print(f'test_4751(): Not testing with fitz alias.')

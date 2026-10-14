@@ -24,7 +24,6 @@ Fixed issues:
 * **Fixed** `5154 <https://github.com/pymupdf/PyMuPDF/issues/5154>`_: insert_pdf raises ValueError: <xref> is not in list when a widget's /Parent does not list it in /Kids
 * **Fixed** `5165 <https://github.com/pymupdf/PyMuPDF/issues/5165>`_: Page.add_widget fails for radio buttons
 
-
 Other:
 
 * Use MuPDF-1.28.5.
@@ -32,7 +31,7 @@ Other:
 * Added support for radio button groups.
 * Added support for widget aliases.
 * Fixed builds with swig-4.5.
-* Fixed CVE-2026-82035.
+* Fixed `https://bugs.ghostscript.com/show_bug.cgi?id=709683`_ Path Traversal and Arbitrary File Write in PyMuPDF CLI Font Extraction (CVE-2026-82035)
 * Fixed ignoring aspect ratio for square images.
 * Fixed potential SEGV in pymupdf.Page.get_cdrawings() if callback raises exception.
 * Fixed use with python-3.15.

@@ -1009,6 +1009,9 @@ def test_3140():
     os.remove(oldfile)
 
 def test_cli():
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_4751(): doing nothing in sysinstall.')
+        return
     if os.environ.get('PYODIDE_ROOT'):
         print('test_cli(): not running on Pyodide - cannot run child processes.')
         return
@@ -1076,6 +1079,9 @@ def test_cli_out():
     Check redirection of messages and log diagnostics with environment
     variables PYMUPDF_LOG and PYMUPDF_MESSAGE.
     '''
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_cli_out(): doing nothing in sysinstall.')
+        return
     if os.environ.get('PYODIDE_ROOT'):
         print('test_cli_out(): not running on Pyodide - cannot run child processes.')
         return
