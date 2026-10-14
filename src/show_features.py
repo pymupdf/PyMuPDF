@@ -3,6 +3,18 @@ import sys
 import importlib.metadata
 import pymupdf
 
+try:
+    importlib.metadata.version("pymupdf")
+    pyfull = True
+except importlib.metadata.PackageNotFoundError:
+    pyfull = False
+
+try:
+    importlib.metadata.version("pymupdf_lite")
+    plite = True
+except importlib.metadata.PackageNotFoundError:
+    plite = False
+
 def get_tesseract_version():
     try:
         out = subprocess.check_output(
@@ -15,8 +27,6 @@ def get_tesseract_version():
 
 
 def get_pkg_version(name: str):
-    if name == "pymupdf":
-        return pymupdf.__version__
     try:
         return importlib.metadata.version(name)
     except importlib.metadata.PackageNotFoundError:
@@ -24,24 +34,6 @@ def get_pkg_version(name: str):
 
 
 _pymupdf_feature_list = [
-    (
-        "pymupdf",
-        pymupdf.__version__,
-        "Core PyMuPDF Functionality",
-        "",
-    ),
-    (
-        "pymupdf4llm",
-        pymupdf.__version__,
-        "4LLM Extensions",
-        "",
-    ),
-    (
-        "pymupdf_layout",
-        pymupdf.__version__,
-        "ML Based Layout Extensions",
-        "",
-    ),
     (
         "pymupdf_fonts",
         "1.0.4",
@@ -91,7 +83,11 @@ def _check_installed_package_version(pack, vsn):
         version = get_pkg_version(pack)
     if version is None:
         return 2, None
-    if version >= vsn:
+
+    version = "".join([c for c in version if c in "0123456789."])
+    version_tuple = tuple(map(int, version.split(".")))
+    vsn_tuple = tuple(map(int, vsn.split(".")))
+    if vsn_tuple <= version_tuple:
         return 0, version
     else:
         return 1, version
@@ -182,8 +178,15 @@ def collect_features():
 
 
 def config():
-    print(f"Python: {sys.version}")
-    print("PyMuPDF Configuration Overview")
+    print("Python Version")
+    print("==============")
+    print(f"{sys.version}")
+    print()
+    if pyfull:
+        print(f"PyMuPDF version {pymupdf.__version__} installed.")
+    elif plite:
+        print(f"PyMuPDF lite version {pymupdf.__version__} installed. Consider upgrading for advanced features like layout and more.")
+    print()
     pymupdf_components, other_packages = collect_features()
     print_feature_dict("PyMuPDF Configuration", pymupdf_components)
     print_feature_dict("Useful Third-party Packages for PyMuPDF", other_packages)
