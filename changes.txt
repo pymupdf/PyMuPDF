@@ -26,7 +26,6 @@ Fixed issues:
 
 Other:
 
-* Use MuPDF-1.28.5.
 * Added support for form field hierarchies.
 * Added support for radio button groups.
 * Added support for widget aliases.
@@ -37,9 +36,11 @@ Other:
 * Fixed use with python-3.15.
 * Remove the debug timing loop from `Annot.update()`.
 * Retrospectively marked #3478 fixed in 1.25.3.
+* Retrospectively marked #4158 fixed in 1.27.2.2
 * Retrospectively marked #4896 fixed in 1.28.0.
 * Retrospectively marked #4918 fixed in 1.28.0.
-* Retrospectively marked #4158 fixed in 1.27.2.2
+* Supported Python versions are now 3.11-3.15.
+* Use MuPDF-1.28.5.
 * Warning for use of deprecated `fitz` API now uses `warnings.warn()` with `FutureWarning`.
 
 
