@@ -13,6 +13,13 @@ otherwise compilation can fail because free() and malloc() are not declared. */
 
 %init
 %{
+    /* With swig<4.4, if we have not created swig's globals object by the time
+    we are unloaded at exit, swig creates it then, which gives `DeprecationWarning:
+    builtin type swigvarlink has no __module__ attribute` and a SEGV if warnings
+    are errors. So we create it now, while src/__init__.py is ignoring these
+    warnings. See #4392. */
+    SWIG_globals();
+    
     /* Initialise some globals that require Python functions.
     
     [Prior to 2023-08-18 we initialised these global variables inline,

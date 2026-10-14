@@ -13,6 +13,7 @@ from __future__ import annotations
 import atexit
 import binascii
 import collections
+import contextlib
 import glob
 import importlib.util
 import inspect
@@ -30,7 +31,30 @@ import warnings
 import weakref
 import zipfile
 
-from . import extra
+
+@contextlib.contextmanager
+def _swig_import():
+    '''
+    Context manager for importing our SWIG modules `extra` and `mupdf`.
+
+    With swig<4.4, module initialisation gives `DeprecationWarning: builtin
+    type SwigPyPacked has no __module__ attribute` (also for SwigPyObject and
+    swigvarlink). If warnings are errors (for example `python -W error` or
+    `pytest -W error`), swig's init code ignores the resulting exception and
+    then crashes with SEGV. So we ignore these warnings while importing. See
+    #4392 and https://github.com/swig/swig/issues/3061.
+    '''
+    with warnings.catch_warnings():
+        warnings.filterwarnings(
+                'ignore',
+                'builtin type .+ has no __module__ attribute',
+                DeprecationWarning,
+                )
+        yield
+
+
+with _swig_import():
+    from . import extra
 
 # Set up g_out_log and g_out_message from environment variables.
 #
@@ -396,10 +420,11 @@ else:
     # directory for conventional wheel installs, or from separate place in case
     # we are using a separately-installed system installation of mupdf.
     #
-    try:
-        from . import mupdf
-    except Exception:
-        import mupdf
+    with _swig_import():
+        try:
+            from . import mupdf
+        except Exception:
+            import mupdf
     if hasattr(mupdf, 'internal_check_ndebug'):
         mupdf.internal_check_ndebug()
     mupdf.reinit_singlethreaded()
