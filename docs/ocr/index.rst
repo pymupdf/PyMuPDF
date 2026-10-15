@@ -20,10 +20,34 @@ Overview
 
 |PyMuPDF| includes built-in OCR support for scanned documents and image-based PDFs. By default, OCR runs **automatically** when needed — you don't have to opt in. For more control, you can force OCR on specific pages, disable it entirely, or swap in a different OCR engine using the adaptor interface.
 
-.. note::
+|PyMuPDF| will use RapidOCR and/or Tesseract engines depending on availability and suitability for the task.
 
-   OCR requires a working Tesseract installation. See `OCR Installation <installation_ocr>` for setup instructions.
 
+.. _ocr-engine-comparison:
+
+OCR Engine Comparison
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We compared both OCR engines **accuracy** on the `ExtractBench <https://www.extractbench.ai/>`_ document corpus on a set of 370 various types of documents:
+
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   
+   * - PyMuPDF + Tesseract
+     - PyMuPDF + RapidOCR
+   * - 78.31%
+     - **85.20%**
+
+
+Overall, for the best OCR accuracy, it is recommended to use **RapidOCR**.
+
+.. tip::
+
+   OCR requires a working installation. See `OCR Installation <installation_ocr>` for setup instructions.
+ 
 ----
 
 Hybrid OCR strategy

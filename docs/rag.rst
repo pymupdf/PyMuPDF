@@ -151,10 +151,35 @@ For **Office** document support, |PyMuPDF| works seamlessly with |PyMuPDF Office
 
 .. _pymupdf_and_layout:
 
-PyMuPDF & PyMuPDF Layout
+|PyMuPDF| & |PyMuPDF Layout|
 -----------------------------------
 
-By default |PyMuPDF| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`use_layout` method.
+By default |PyMuPDF| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`pymupdf.use_layout` method.
+
+.. _pymupdf_layout_and_onnx_runtime:
+
+|PyMuPDF Layout| uses `ONNX Runtime <https://pypi.org/project/onnxruntime/>`_ purely as the inference engine for a small, pre-trained 
+graph neural network (GNN) that performs layout analysis on document pages.
+
+.. note::
+
+    Compatibility with `ONNX Runtime <https://pypi.org/project/onnxruntime/>`_ and your Python version is required for the layout analysis module to function correctly.
+   
+    If your Python version does not have a compatible ONNX Runtime your PyMuPDF installation will fail. For full information about what systems ONNX Runtime supports, see https://pypi.org/project/onnxruntime/#files.
+
+    After a new Python version is published in October each year, there may be a delay of several weeks before a compatible ONNX wheel becomes available.
+
+    For example on 2026-Oct-01, the latest version of Python was 3.15, but there is was no Python 3.15 ONNX Runtime package generally available. 
+
+    If an official ONNX Runtime build is not yet available for your Python version, see this issue for more details: https://github.com/microsoft/onnxruntime/issues/26547. 
+    You only require to install the non-CUDA (CPU-only) version, because PyMuPDF Layout needs no GPU support.
+
+
+Disabling |PyMuPDF Layout|
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+|PyMuPDF Layout| is enabled by default.
+To disable this module you can do so by calling the :meth:`pymupdf.use_layout` method.
 
 
 

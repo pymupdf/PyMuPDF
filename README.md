@@ -24,7 +24,7 @@
 
 **The PDF engine behind over 50 million monthly downloads, powering AI pipelines worldwide.**
 
-**PyMuPDF is a high-performance Python library for data extraction, analysis, conversion, rendering and manipulation of PDF (and other) documents.** Built on top of MuPDF — a lightweight, fast C engine — PyMuPDF gives you precise, low-level control over documents alongside high-level convenience APIs. No mandatory external dependencies.
+**PyMuPDF is a high-performance Python library for data extraction, layout analysis, conversion, rendering and manipulation of PDF (and other) documents.** Built on top of MuPDF — a lightweight, fast C engine — PyMuPDF gives you precise, low-level control over documents alongside high-level convenience APIs.
 
 [![Star on GitHub](https://img.shields.io/github/stars/pymupdf/PyMuPDF.svg?style=for-the-badge&label=Star&logo=github)](https://github.com/pymupdf/PyMuPDF/)
 
@@ -36,7 +36,6 @@
 - **Accurate** — pixel-perfect text extraction with font, color, and position metadata
 - **Versatile** — read, write, annotate, redact, merge, split, and convert documents
 - **LLM-ready** — structured data with JSON & native Markdown output for RAG and AI pipelines
-- **No mandatory dependencies** — `pip install pymupdf` and you're done
 - **Grounded results** — improved, verifiable results, see: [PyMuPDF & Grounding](https://pymupdf.readthedocs.io/en/latest/grounding.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_grounding)
 
 ---
@@ -44,10 +43,21 @@
 ## Installation
 
 ```bash
-pip install pymupdf
+pip install --upgrade pymupdf
 ```
 
 Wheels are available for **Windows**, **macOS**, and **Linux** on Python 3.11–3.15. If no pre-built wheel exists for your platform, pip will compile from source (requires a C/C++ toolchain).
+
+> PyMuPDF uses the ONNX Runtime for certain layout analysis features - ensure your Python environment can support it. For more details see [PyMuPDF Layout & ONNX Runtime](https://pymupdf.readthedocs.io/en/latest/rag.html#pymupdf-layout-and-onnx-runtime?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=installation)
+
+
+## PyMuPDF Config
+
+After installation, run the `pymupdf-config` command,
+This will review what is installed and show information about what other packages
+(Python and otherwise) may be available for your system and could improve accuracy and speed.
+
+
 
 ### Optional extras
 
@@ -55,7 +65,8 @@ Wheels are available for **Windows**, **macOS**, and **Linux** on Python 3.11–
 |---|---|
 | `pymupdf-office` | Adds Office document support |
 | `pymupdf-fonts` | Extended font collection for text output |
-| `tesseract-ocr` | OCR for scanned pages and images (separate install) |
+| `rapidocr` | OCR engine ([recommended](#ocr-support)) |
+| `tesseract-ocr` | OCR engine|
 
 ```bash
 # Office support
@@ -63,6 +74,9 @@ pip install pymupdf-office
 
 # More fonts
 pip install pymupdf-fonts
+
+# OCR
+pip install rapidocr
 
 # OCR (Tesseract must be installed separately)
 # macOS
@@ -73,6 +87,21 @@ sudo apt install tesseract-ocr
 ```
 
 ---
+
+## OCR Support
+
+We compared both OCR engines on the [ExtractBench](https://www.extractbench.ai/) document corpus:
+
+| Document length | PDFs  |   PyMuPDF + Tesseract | PyMuPDF + RapidOCR |
+|---|---|---|---|
+|Short, 1–10 pages  |  252 | 80.39% |  **88.94%** |  
+|Medium, 11–50 pages | 98 |  82.72% | **87.00%**  | 
+|Long, over 50 pages | 20 |  **30.49%** | 29.22%  | 
+|Overall |  370 | 78.31% |  **85.20%** | 
+
+
+Overall, for the best OCR accuracy, it is recommended to use **RapidOCR**.
+
 
 ## Supported File Formats
 
@@ -523,6 +552,9 @@ Charts and diagrams created by tools like matplotlib, Excel, or R are typically 
 ### How does OCR work in PyMuPDF? Does it require a separate Tesseract installation?
 
 PyMuPDF uses MuPDF's built-in Tesseract-based OCR support, so there is no Python-level `pytesseract` dependency. However, PyMuPDF still needs access to the **Tesseract language data files** (`tessdata`), and automatic tessdata discovery may invoke the `tesseract` executable (for example, to list available languages) if you do not explicitly provide a tessdata path. In practice, the recommended setup is to either install Tesseract so discovery works automatically, or configure the tessdata location yourself via the `tessdata` parameter or the `TESSDATA_PREFIX` environment variable. Over 100 languages are supported.
+
+PyMuPDF also supports RapidOCR - which is the recommended OCR engine - RapidOCR is a pip-installable Python package that runs ONNX models, so it doesn't need a separate Tesseract install or `TESSDATA_PREFIX`.
+
 
 ```python
 import pymupdf
