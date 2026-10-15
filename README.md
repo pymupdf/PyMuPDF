@@ -47,7 +47,7 @@
 pip install pymupdf
 ```
 
-Wheels are available for **Windows**, **macOS**, and **Linux** on Python 3.10–3.14. If no pre-built wheel exists for your platform, pip will compile from source (requires a C/C++ toolchain).
+Wheels are available for **Windows**, **macOS**, and **Linux** on Python 3.11–3.15. If no pre-built wheel exists for your platform, pip will compile from source (requires a C/C++ toolchain).
 
 ### Optional extras
 
@@ -283,7 +283,7 @@ Supports multi-column layouts, natural reading order and page chunking.
 
 ## Supported Python versions
 
-Python **3.10 – 3.14** (as of v1.27.x). Wheels ship for:
+Python **3.11 – 3.15** (as of v2.0). Wheels ship for:
 
 - `manylinux` x86\_64 and aarch64
 - `musllinux` x86\_64
