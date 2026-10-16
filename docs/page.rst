@@ -2442,6 +2442,18 @@ The `TableFinder` class is returned by :meth:`Page.find_tables` and has related 
 
       :type: :ref:`Page`
 
+   .. method:: __len__()
+
+      The number of tables found. Same as ``len(tables)``.
+
+   .. method:: __bool__()
+
+      *True* if at least one table was found. This means a `TableFinder` without tables is falsy, so ``if page.find_tables():`` skips pages without tables.
+
+   .. method:: __iter__()
+
+      Iterate over the :class:`Table` objects, same as iterating over :attr:`tables`.
+
 
 .. class:: Table
 
