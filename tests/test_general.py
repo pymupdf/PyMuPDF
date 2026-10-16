@@ -2037,7 +2037,22 @@ def test_4392():
     e3 = subprocess.run(command, shell=1, check=0).returncode
     print(f'{e3=}')
     
-    print(f'{e1=} {e2=} {e3=}', flush=1)
+    # With swig<4.4 an unclosed file used to give a SEGV at exit, because
+    # swig created a new type when unloading `extra`.
+    command = f'{sys.executable} -Werror -c "import pymupdf; open({path!r})"'
+    print(f'Running: {command}', flush=1)
+    e4 = subprocess.run(command, shell=1, check=0).returncode
+    print(f'{e4=}')
+    
+    # Check that we don't get swig's `DeprecationWarning: builtin type
+    # SwigPyPacked has no __module__ attribute` etc.
+    command = f'{sys.executable} -W default -c "import pymupdf"'
+    print(f'Running: {command}', flush=1)
+    cp = subprocess.run(command, shell=1, check=0, capture_output=1, text=1)
+    print(f'{cp.returncode=}')
+    print(f'{cp.stderr=}')
+    
+    print(f'{e1=} {e2=} {e3=} {e4=}', flush=1)
     
     print(f'{pymupdf.swig_version=}', flush=1)
     print(f'{pymupdf.swig_version_tuple=}', flush=1)
@@ -2052,30 +2067,20 @@ def test_4392():
     # Exit code 4: pytest command line usage error
     # Exit code 5: No tests were collected
     
+    # With swig<4.4 we used to get SEGV's here, but now we ignore swig's
+    # warnings when importing.
     assert e1 == 5
-    if pymupdf.swig_version_tuple >= (4, 4):
-        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
-            assert e2 == 4
-        else:
-            assert e2 == 5
-        if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
-            # GIL warning results in failure because of -Werror.
-            assert e3 == 1
-        else:
-            assert e3 == 0
+    if sysconfig.get_config_var('Py_GIL_DISABLED') == 1 and sys._is_gil_enabled():
+        # GIL warning results in failure because of -Werror.
+        assert e2 == 4
+        assert e3 == 1
+        assert e4 == 1
     else:
-        # We get SEGV's etc with older swig.
-        if platform.system() == 'Windows':
-            assert (e2, e3) == (0xc0000005, 0xc0000005)
-        elif platform.system() == 'Linux':
-            # On plain linux we get (139, 139). On manylinux we get (-11,
-            # -11). On MacOS we get (-11, -11).
-            assert (e2, e3) == (139, 139) or (e2, e3) == (-11, -11)
-        elif platform.system() == 'Darwin':
-            # python3.14t gives (4, -11)?
-            assert (e2, e3) == (-11, -11) or (e2, e3) == (4, -11)
-        else:
-            assert e2 and e3
+        assert e2 == 5
+        assert e3 == 0
+        assert e4 == 0
+    assert cp.returncode == 0
+    assert 'has no __module__ attribute' not in cp.stderr
 
 
 def test_4639():
