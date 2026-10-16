@@ -36,28 +36,20 @@ Installation
 
 This will install from a Python wheel if one is available for your platform.
 
+.. note::
 
-Installation when a suitable wheel is not available
----------------------------------------------------------
+    PyMuPDF uses the ONNX Runtime for certain layout analysis features.
 
-If a suitable Python wheel is not available, pip will automatically build from
-source using a Python sdist.
+    For more details see: :ref:`PyMuPDF Layout & ONNX Runtime <pymupdf_layout_and_onnx_runtime>`.
 
-**This requires C/C++ development tools to be installed**:
 
-* On Windows:
+PyMuPDF Config
+~~~~~~~~~~~~~~~~~
 
-  *
-    Install Visual Studio 2019. If not installed in a standard location, set
-    environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the
-    `devenv.com` binary.
+After installation, run the `pymupdf-config` command,
+This will review what is installed and show information about what other packages
+(Python and otherwise) may be available for your system and could improve accuracy and speed.
 
-  *
-    Having other installed versions of Visual Studio, for example Visual Studio
-    2022, can cause problems because one can end up with MuPDF and PyMuPDF code
-    being compiled with different compiler versions.
-
-The build will automatically download and build MuPDF.
 
 
 .. _problems-after-installation:
@@ -303,7 +295,20 @@ See :doc:`pyodide`.
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract's language support data <https://github.com/tesseract-ocr/tessdata>`_.
+.. tip::
+
+   Enabling integrated OCR support requires installing at least one OCR engine, such as RapidOCR or Tesseract. See also: :ref:`OCR Engine Comparison <ocr-engine-comparison>`.
+
+RapidOCR
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See the instructions on the `RapidOCR GitHub repository <https://github.com/RapidAI/RapidOCR>`_.
+
+
+Tesseract
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+PyMuPDF already contains the Tesseract engine to support OCR functions. All it is missing is the `Language Support Data <https://github.com/tesseract-ocr/tessdata>`_ that will be taken from the system installation of Tesseract.
 
 If not specified explicitly, PyMuPDF will attempt to find the installed
 Tesseract's `tessdata`, but this should probably not be relied upon.
