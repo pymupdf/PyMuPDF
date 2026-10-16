@@ -127,8 +127,25 @@ Environmental variables:
     PYMUPDF_SETUP_MUPDF_REBUILD
         If 0 we do not (re)build mupdf.
     
+    PYMUPDF_SETUP_PATH_4LLM
+        Location of pymupdf4llm checkout; if set, we embed 4llm code into the
+        generated wheel.
+
+        Also see `General information about PYMUPDF_SETUP_PATH_4LLM and
+        PYMUPDF_SETUP_PATH_LAYOUT` below.
+    
+    PYMUPDF_SETUP_PATH_LAYOUT
+        Location of pymupdf_layout checkout. If set, we embed layout code into
+        the generated wheel.
+
+        Also see `General information about PYMUPDF_SETUP_PATH_4LLM and
+        PYMUPDF_SETUP_PATH_LAYOUT` below.
+    
     PYMUPDF_SETUP_PY_LIMITED_API
         If not '0', we build for current Python's stable ABI.
+    
+    PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM
+        If '0', we do not depend on empty pymupdf_layout/pymupdf4llm packages.
     
     PYMUPDF_SETUP_URL_WHEEL
         If set, we use an existing wheel instead of building a new wheel.
@@ -154,6 +171,31 @@ Environmental variables:
     WDEV_VS_GRADE
         If set, we use as Visual Studio grade, for example 'Community' or
         'Professional' or 'Enterprise'.
+
+General information about PYMUPDF_SETUP_PATH_4LLM and PYMUPDF_SETUP_PATH_LAYOUT
+
+    Supported combinations:
+
+        PYMUPDF_SETUP_PATH_4LLM unset
+        PYMUPDF_SETUP_PATH_LAYOUT unset
+            We build package pymupdf-lite, which contains only the core pymupdf
+            code.
+
+        PYMUPDF_SETUP_PATH_4LLM set
+        PYMUPDF_SETUP_PATH_LAYOUT unset
+            We build package pymupdf-mid, which contains pymupdf code and 4llm
+            code.
+            
+            This is experimental and will currently fail various tests.
+
+        PYMUPDF_SETUP_PATH_4LLM unset
+        PYMUPDF_SETUP_PATH_LAYOUT set
+            Unsupported.
+
+        PYMUPDF_SETUP_PATH_4LLM set
+        PYMUPDF_SETUP_PATH_LAYOUT set
+            We build package pymupdf, which contains pymupdf code, 4llm code
+            and layout code.
 '''
 
 import glob
@@ -207,6 +249,7 @@ PYMUPDF_SETUP_PATH_4LLM = os.environ.get('PYMUPDF_SETUP_PATH_4LLM')
 
 PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM = os.environ.get('PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM')
 
+
 # PyMuPDF version.
 version_p = '2.0'
 
@@ -214,26 +257,36 @@ version_mupdf = '1.28.5'
 
 g_requires_dist = list()
 
-if PYMUPDF_SETUP_PATH_LAYOUT or PYMUPDF_SETUP_PATH_4LLM:
-    assert PYMUPDF_SETUP_PATH_LAYOUT and PYMUPDF_SETUP_PATH_4LLM, (
-            f'Either none or both of PYMUPDF_SETUP_PATH_LAYOUT and PYMUPDF_SETUP_PATH_4LLM must be specified.'
-            f'{PYMUPDF_SETUP_PATH_LAYOUT=} {PYMUPDF_SETUP_PATH_4LLM=}'
-            )
+if PYMUPDF_SETUP_PATH_LAYOUT:
     g_requires_dist += [
             'networkx',
             'numpy',
             'onnxruntime',
-            'psutil',
             'pyyaml',
-            'tabulate',
+            f'pymupdf-layout=={version_p}',
             ]
-    g_package_name = 'pymupdf'
+
     if PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM != '0':
         g_requires_dist += [
-                f'pymupdf-layout=={version_p}',
+                f'pymupdf_layout=={version_p}',
+                ]
+
+if PYMUPDF_SETUP_PATH_4LLM:
+    g_requires_dist += [
+            'psutil',
+            'tabulate',
+            ]
+    if PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM != '0':
+        g_requires_dist += [
                 f'pymupdf4llm=={version_p}',
                 ]
 
+if PYMUPDF_SETUP_PATH_LAYOUT and PYMUPDF_SETUP_PATH_4LLM:
+    g_package_name = 'pymupdf'
+elif PYMUPDF_SETUP_PATH_4LLM:
+    g_package_name = 'pymupdf-mid'
+elif PYMUPDF_SETUP_PATH_LAYOUT:
+    assert 0, f'Use of PYMUPDF_SETUP_PATH_LAYOUT without PYMUPDF_SETUP_PATH_4LLM is not supported.'
 else:
     g_package_name = 'pymupdf-lite'
 
@@ -484,6 +537,7 @@ def build():
         # Download MuPDF.
         #
         mupdf_local, mupdf_location = get_mupdf()
+        pipcl.log(f'get_mupdf() => {mupdf_local=} {mupdf_location=}')
         if mupdf_local:
             mupdf_version_tuple = get_mupdf_version(mupdf_local)
         # else we cannot determine version this way and do not use it
@@ -517,8 +571,14 @@ def build():
                     PYMUPDF_SETUP_FAKE_NOGIL,
                     )
         log( f'build(): mupdf_build_dir={mupdf_build_dir!r}')
-        mupdf_include = [f'{mupdf_local}/include', f'{mupdf_local}/platform/c++/include']
-        mupdf_lib = mupdf_build_dir
+        if mupdf_local:
+            mupdf_include = [f'{mupdf_local}/include', f'{mupdf_local}/platform/c++/include']
+        else:
+            mupdf_include = list()
+        if mupdf_build_dir:
+            mupdf_lib = mupdf_build_dir
+        else:
+            mupdf_lib = None
     
     elif g_include_pymupdf or g_include_layout:
         import pymupdf.mupdf_info
@@ -587,6 +647,7 @@ def build():
         ret.append( (f'{g_root}/src/utils.py', to_dir) )
         ret.append( (f'{g_root}/src/_wxcolors.py', to_dir) )
         ret.append( (f'{g_root}/src/_apply_pages.py', to_dir) )
+        ret.append( (f'{g_root}/src/show_features.py', to_dir) )
         ret.append( (f'{g_root}/src/build/extra.py', to_dir) )
         ret.append( (b'', f'{to_dir}/py.typed') )
         ret.append( (f'{g_root}/src/build/{path_so_leaf}', to_dir) )
@@ -596,7 +657,7 @@ def build():
         ret.append( (f'{g_root}/src/fitz_table.py', 'fitz/table.py') )
         ret.append( (f'{g_root}/src/fitz_utils.py', 'fitz/utils.py') )
 
-    if 1:
+    if mupdf_build_dir:
         # Add MuPDF Python API.
         
         ret.append( (f'{mupdf_build_dir}/mupdf.py', to_dir) )
@@ -737,6 +798,10 @@ def build():
                 """)
         ret.append( (code.encode(), 'pymupdf/mupdf_info.py') )
     
+    else:
+        mupdf_location = ''
+        
+    if 1:
         # Add a .py file containing build-time information - location of MuPDF,
         # pymupdf git info, swig version etc.
         #
@@ -751,7 +816,9 @@ def build():
                 return int(text)
             except Exception:
                 return 0
+        
         swig_version_tuple = tuple(int_or_0(i) for i in swig_version.split('.'))
+    
         log(f'{swig_version=}')
         text = ''
         text += pipcl.git_info_py(g_root, check=0, prefix = 'pymupdf_git_')
@@ -836,7 +903,7 @@ def build():
         build_py += f'platform_python_implementation = {platform.python_implementation()!r}\n'
         ret.append( (build_py.encode(), f'{to_dir}/layout/_build.py') )
     
-    if PYMUPDF_SETUP_PATH_LAYOUT:
+    if PYMUPDF_SETUP_PATH_4LLM:
         # 4llm
         pipcl.run(f'git config --global --add safe.directory {PYMUPDF_SETUP_PATH_4LLM}', check=0)
         for p in pipcl.git_items(f'{PYMUPDF_SETUP_PATH_4LLM}/src'):
@@ -1155,6 +1222,8 @@ def build_mupdf_unix(
 
 
 def get_mupdf_version(mupdf_dir):
+    if not mupdf_dir:
+        return None, None, None
     path = f'{mupdf_dir}/include/mupdf/fitz/version.h'
     with open(path) as f:
         text = f.read()
@@ -1190,13 +1259,19 @@ def _extension_flags(
         defines.append('FZ_DLL_CLIENT')
         wp = pipcl.wdev.WindowsPython()
         build_type_infix = 'Debug' if debug else 'Release'
-        libpaths = (
-                f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}',
-                f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}Tesseract',
-                )
+        if mupdf_local:
+            libpaths = (
+                    f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}',
+                    f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}Tesseract',
+                    )
+        else:
+            libpaths = None
         #libpaths = [os.path.abspath(mupdf_lib)]
         libs = f'mupdfcpp{wp.cpu.windows_suffix}.lib'
-        libraries = f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
+        if mupdf_local:
+            libraries = f'{mupdf_local}\\platform\\{mupdf_win32_infix()}\\{wp.cpu.windows_subdir}{build_type_infix}\\{libs}'
+        else:
+            libraries = None
         compiler_extra = ''
         if sysconfig.get_config_var('Py_GIL_DISABLED')==1:
             # Required to link with python3.14t etc.
@@ -1210,9 +1285,13 @@ def _extension_flags(
                 )
         if pipcl.openbsd():
             compiler_extra += ' -Wno-deprecated-declarations'
-        libpaths = (mupdf_lib,)
+        if mupdf_lib:
+            libpaths = (mupdf_lib,)
+        else:
+            libpaths = None
         libraries = libpaths
-    if 1:
+    
+    if mupdf_include:
         includes = mupdf_include
     else:
         # Use system MuPDF.
@@ -1227,12 +1306,24 @@ def _extension_flags(
         if ldflags:
             linker_extra += f' {ldflags}'
         cflags = os.environ.get('CFLAGS')
+        pipcl.log(f'{cflags=}')
         if cflags:
             compiler_extra += f' {cflags}'
         cxxflags = os.environ.get('CXXFLAGS')
+        pipcl.log(f'{cxxflags=}')
         if cxxflags:
             compiler_extra += f' {cxxflags}'
 
+    pipcl.log(f'Returning:')
+    pipcl.log(f'{compiler_extra=}')
+    pipcl.log(f'{linker_extra=}')
+    pipcl.log(f'{includes=}')
+    pipcl.log(f'{defines=}')
+    pipcl.log(f'{optimise=}')
+    pipcl.log(f'{debug=}')
+    pipcl.log(f'{libpaths=}')
+    pipcl.log(f'{libs=}')
+    pipcl.log(f'{libraries=}')
     return compiler_extra, linker_extra, includes, defines, optimise, debug, libpaths, libs, libraries, 
 
 
@@ -1337,7 +1428,13 @@ if os.environ.get('PYODIDE_ROOT'):
 g_entry_points = textwrap.dedent('''
         [console_scripts]
         pymupdf = pymupdf.__main__:main
+        pymupdf-config = pymupdf.show_features:config
         ''')
+
+g_requires_python = '>=3.11'
+if PYMUPDF_SETUP_PATH_LAYOUT:
+    # 2026-10-14: onnxruntime not available for python-3.15.
+    g_requires_python += ', <3.15'
 
 
 p = pipcl.Package(
@@ -1365,7 +1462,7 @@ p = pipcl.Package(
         author = 'Artifex',
         author_email = 'support@artifex.com',
         requires_dist = g_requires_dist,
-        requires_python = '>=3.11',
+        requires_python = g_requires_python,
         license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
         project_url = [
             ('Documentation, https://pymupdf.readthedocs.io/'),

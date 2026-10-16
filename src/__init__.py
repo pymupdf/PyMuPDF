@@ -26742,7 +26742,51 @@ __doc__ = (
         f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
         )
 
+
 try:
     import pymupdf4llm   # noqa: F401
-except ImportError:
-    pass
+except (ImportError, ModuleNotFoundError):
+    pymupdf4llm = None
+
+def _to_markdown(*args, **kwargs):
+    if pymupdf4llm:
+        return pymupdf4llm.to_markdown(*args, **kwargs)
+    else:
+        raise NotImplementedError('pymupdf4llm functions are not available.')
+
+def _to_text(*args, **kwargs):
+    if pymupdf4llm:
+        return pymupdf4llm.to_text(*args, **kwargs)
+    else:
+        raise NotImplementedError('pymupdf4llm functions are not available.')
+
+def _to_json(*args, **kwargs):
+    if pymupdf4llm:
+        return pymupdf4llm.to_json(*args, **kwargs)
+    else:
+        raise NotImplementedError('pymupdf4llm functions are not available.')
+
+def _to_chunks(*args, **kwargs):
+    if pymupdf4llm:
+        return pymupdf4llm.to_chunks(*args, **kwargs)
+    else:
+        raise NotImplementedError('pymupdf4llm functions are not available.')
+
+def _convert_batch(*args, **kwargs):
+    if pymupdf4llm:
+        return pymupdf4llm.convert_batch(*args, **kwargs)
+    else:
+        raise NotImplementedError('pymupdf4llm functions are not available.')
+
+def _use_layout(yes):
+    if pymupdf4llm:
+        return pymupdf4llm.use_layout(yes)
+    else:
+        raise NotImplementedError('pymupdf4llm functions are not available.')
+
+Document.to_markdown = _to_markdown
+Document.to_text = _to_text
+Document.to_json = _to_json
+Document.to_chunks = _to_chunks
+convert_batch = _convert_batch
+use_layout = _use_layout

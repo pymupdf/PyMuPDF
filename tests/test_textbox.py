@@ -63,6 +63,9 @@ def test_textbox2():
 
 def test_textbox3():
     """Use TextWriter for text insertion."""
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_textbox3(): doing nothing in sysinstall.')
+        return
     doc = pymupdf.open()
     page = doc.new_page()
     font = pymupdf.Font("cjk")

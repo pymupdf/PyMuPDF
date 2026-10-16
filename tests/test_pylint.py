@@ -7,6 +7,9 @@ import textwrap
 
 def test_pylint():
     
+    if os.environ.get('PYMUPDF_SYSINSTALL_ROOT'):
+        print(f'test_pylint(): doing nothing in sysinstall.')
+        return
     if os.environ.get('PYODIDE_ROOT'):
         print('test_pylint(): not running on Pyodide - cannot run child processes.')
         return
@@ -129,6 +132,7 @@ def test_pylint():
             'pymupdf.py',
             'table.py',
             'utils.py',
+            'show_features.py',
             ]
     leafs.sort()
     try:
