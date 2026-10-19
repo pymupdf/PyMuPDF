@@ -46,10 +46,32 @@ This will install from a Python wheel if one is available for your platform.
 PyMuPDF Config
 ~~~~~~~~~~~~~~~~~
 
-After installation, run the `pymupdf-config` command,
+After installation, run the `pymupdf-config` command.
 This will review what is installed and show information about what other packages
 (Python and otherwise) may be available for your system and could improve accuracy and speed.
 
+.. note::
+
+    If not using a virtual environment,Windows users need to make sure that their Python's `Scripts` directory is included in the `PATH` environment variable, because the executable `pymupdf-config.exe` will be located there.
+
+    If it is not already included, either add the `Scripts` directory to the system's (or user's) `PATH` environment variable using the Windows GUI, or execute the following little Python script that will do this for you.
+
+    This is a once-only operation: you do not need to run it ever again.
+
+    .. code-block:: python
+
+        import os, sys, subprocess
+
+        scripts = os.path.join(os.path.dirname(sys.executable), "Scripts")
+
+        # Check whether Scripts folder is already on PATH
+        paths = os.environ["PATH"].lower().split(";")
+        if scripts.lower() not in paths:
+            cmd = f"[Environment]::SetEnvironmentVariable('Path', $env:Path + ';{scripts}', 'User')"
+            subprocess.run(["powershell", "-Command", cmd], check=True)
+            print("Added to PATH:", scripts)
+        else:
+            print("Python Scripts folder already in PATH")
 
 
 .. _problems-after-installation:
@@ -76,7 +98,7 @@ Problems after installation
   Python error::
 
       ModuleNotFoundError: No module named 'frontend'
-  
+
   This can happen if PyMuPDF's legacy name `fitz` is used (for example `import
   fitz` instead of `import pymupdf`), and an unrelated Python package called
   `fitz` (https://pypi.org/project/fitz/) is installed.
@@ -93,7 +115,7 @@ Problems after installation
     match.
 
   * Or uninstall the `fitz` package and reinstall PyMuPDF::
-  
+
         pip uninstall fitz
         pip install --force-reinstall pymupdf
 
@@ -107,11 +129,11 @@ Problems after installation
   https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
 
 * On Windows, Python error::
-    
+
     ImportError: dynamic module does not define module export function (PyInit__extra)
 
   This was reported 2025-03-26 in https://github.com/pymupdf/PyMuPDF/issues/4405.
-  
+
   The fix appears to be to install the latest `VC_redist.x64.exe`.
 
 
@@ -120,23 +142,23 @@ Notes
 
 *
   Wheels are available for the following platforms:
-  
+
    * Windows 32-bit Intel.
    * Windows 64-bit Intel.
    * Linux 64-bit Intel.
    * Linux 64-bit ARM.
    * MacOS 64-bit Intel.
    * MacOS 64-bit ARM.
-  
+
   Details:
-  
+
   * We release a single wheel for each of the above platforms.
-  
+
   *
     Each wheel uses the Python Stable ABI of the current oldest supported
     Python version (currently 3.11), and so works with all later Python
     versions, including new Python releases.
-  
+
   *
     Wheels are tested on all Python versions currently marked as "Supported"
     on https://devguide.python.org/versions/, currently |python_versions|.
@@ -158,7 +180,7 @@ Notes
   * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
   * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
   * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-  * 
+  *
     `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical
     character recognition in images and document pages. Tesseract is separate
     software, not a Python package. To enable OCR functions in PyMuPDF,
@@ -326,11 +348,11 @@ So for a working OCR functionality, make sure to complete this checklist:
    * Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
 2. Specify the language support folder when calling PyMuPDF OCR functions:
-   
+
    * Set the `tessdata` argument.
    * Or set `os.environ["TESSDATA_PREFIX"]` from within Python.
    * Or set environment variable `TESSDATA_PREFIX` before running Python, for example:
-   
+
      * Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
      * Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
@@ -343,7 +365,7 @@ So for a working OCR functionality, make sure to complete this checklist:
 
 
 .. note::
-    
+
   Find out more on the `official documentation for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
 
 .. include:: footer.rst
