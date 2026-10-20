@@ -137,6 +137,26 @@ Problems after installation
   The fix appears to be to install the latest `VC_redist.x64.exe`.
 
 
+*
+  Deprecation warnings on MacOS if warnings are enabled.
+  
+  For example::
+  
+      > python -W all -c 'import pymupdf'
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+      <sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+  This occurs because we use an older swig (version 4.3.1) when building for macos,
+  because of https://github.com/swig/swig/issues/3279.
+  
+  The issue with swig generating deprecation warnings was fixed in swig-4.4.0
+  (see https://github.com/swig/swig/issues/2881).
+
+
 Notes
 ---------------------------------------------------------
 
