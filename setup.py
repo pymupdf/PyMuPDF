@@ -1308,9 +1308,13 @@ def _extension_flags(
             compiler_extra += ' -Wno-deprecated-declarations'
         if mupdf_lib:
             libpaths = (mupdf_lib,)
+            libraries = libpaths
         else:
-            libpaths = None
-        libraries = libpaths
+            # Use system MuPDF.
+            libpaths = os.environ.get('PYMUPDF_MUPDF_LIB')
+            if libpaths:
+                libpaths = libpaths.split(':')
+            libraries = None
     
     if mupdf_include:
         includes = mupdf_include
