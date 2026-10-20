@@ -1413,6 +1413,8 @@ def get_requires_for_build_wheel(config_settings=None):
         pass
     elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
         # Latest swig-4.4.1 gives director errors on macos with python<3.13.
+        # https://github.com/swig/swig/issues/3279
+        #   swig-4.4.0 with PyMuPDF/MuPDF gives Director errors on MacOS only.
         ret.append('swig==4.3.1')
     else:
         ret.append('swig')
