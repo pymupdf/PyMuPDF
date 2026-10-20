@@ -723,7 +723,8 @@ def test_4755():
 
 def test_4944():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4944.pdf')
-    path_out = os.path.normpath(f'{__file__}/../../tests/test_4944_out.pdf')
+    path_out1 = os.path.normpath(f'{__file__}/../../tests/test_4944_out1.pdf')
+    path_out2 = os.path.normpath(f'{__file__}/../../tests/test_4944_out2.pdf')
     print()
     with pymupdf.open(path) as document:
         page = document[0]
@@ -732,17 +733,28 @@ def test_4944():
         print(f'{page.rotation=}')
         print(f'{page.rotation_matrix=}')
         print(f'{page.transformation_matrix=}')
-        text_json = page.get_text('rawjson')
-        #print(text_json)
+        
+        text1 = page.get_text()
+        text1_json = page.get_text('rawjson')
+        print(f'{text1=}')
+        #print(text1_json)
         
         page.add_redact_annot(page.rect)
+        document.save(path_out1)
+        
         page.apply_redactions(text=pymupdf.PDF_REDACT_TEXT_REMOVE)
         page.draw_rect(page.rect, color=(1, 0, 0))
-        document.save(path_out)
-        print(repr(page.get_text()))
+        document.save(path_out2)
         
-        text_json = page.get_text('rawjson')
-        #print(text_json)
+        text2 = page.get_text()
+        text2_json = page.get_text('rawjson')
+        print(f'{text2=}')
+        #print(text2_json)
+        
+        if 0:
+            assert text2 == ''        
+        else:
+            assert text2 == 'p\np\n'
 
 
 def test_5033():
