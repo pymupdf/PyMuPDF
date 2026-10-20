@@ -22,7 +22,6 @@ Converting to |Markdown|
 
 See the API at: :meth:`Document.to_markdown`.
 
-
 Converting to |JSON|
 -------------------------------------
 
@@ -44,20 +43,26 @@ Converting to |TXT|
 
 See the API at: :meth:`Document.to_text`.
 
-..
-    .. raw:: html
 
-    <button id="pymupdf4llmButton" class="cta orange" style="text-transform: none;" onclick="window.location='pymupdf4llm/'">Try PyMuPDF4LLM</button>
-    <p></p>
+Batch conversion
+-------------------------------------
 
-    <script>
-        let lang = document.getElementsByTagName('html')[0].getAttribute('lang');
+You can convert multiple documents in a batch by iterating over them and applying the conversion methods accordingly. For example:
 
-        if (lang=="ja") {
-            document.getElementById("pymupdf4llmButton").innerHTML = "PyMuPDF4LLM を試してみる";
-        }
+.. code-block:: python
 
-    </script>
+    from pymupdf import convert_batch
+    
+    inputs = ["report.pdf", "invoice.pdf", "manual.pdf"]
+    results = convert_batch(
+        inputs,
+        out_dir="./out",
+        workers=1,
+        backend="md"
+    )
+    for r in results:
+        status = "OK" if r.success else f"FAILED: {r.error}"
+        print(f"{r.input.name}: {status}")
 
 
 Integration with :title:`LangChain`
@@ -94,15 +99,14 @@ See `Building RAG from Scratch <https://docs.llamaindex.ai/en/stable/examples/lo
 Preparing Data for Chunking
 -----------------------------
 
-By using the :doc:`PyMuPDF4LLM module <pymupdf4llm/index>`, you can efficiently prepare your documents for chunking and subsequent processing with your :title:`LLM`.
+You can efficiently prepare your documents for chunking and subsequent processing with your :title:`LLM` byt using the :meth:`Document.to_chunks` method.
 
 Create chunked documents as follows:
 
 .. code-block:: python
-
-    import pymupdf4llm
     
-    chunked_document = pymupdf4llm.to_chunks("input.pdf")
+    doc = pymupdf.open("input.pdf")
+    chunked_document = doc.to_chunks()
 
 Basic queries with chunked documents can be made as follows:
 
@@ -115,7 +119,16 @@ Basic queries with chunked documents can be made as follows:
     chunked_document.text # all chunk text joined (lazy)
     chunked_document.get("c0") # get chunk by any public id: c{n}, t{n}, f{n}, s{n}, p{page}.b{box}
 
-See :ref:`the full API documentation <pymupdf4llm-api-to-chunks>` for PyMuPDF4LLM's chunking capabilities.
+.. note::
+
+    **API reference**
+
+    - :meth:`Document.to_chunks`
+    - :doc:`chunked-document`
+    - :doc:`chunk`
+    - :doc:`chunk-metadata`
+    
+    
 
 
 
@@ -138,10 +151,35 @@ For **Office** document support, |PyMuPDF| works seamlessly with |PyMuPDF Office
 
 .. _pymupdf_and_layout:
 
-PyMuPDF & PyMuPDF Layout
+|PyMuPDF| & |PyMuPDF Layout|
 -----------------------------------
 
-By default |PyMuPDF| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`Document.use_layout` method.
+By default |PyMuPDF| includes a `layout analysis module`_ to enhance output results. To disable this module you can do so by calling the :meth:`pymupdf.use_layout` method.
+
+.. _pymupdf_layout_and_onnx_runtime:
+
+|PyMuPDF Layout| uses `ONNX Runtime <https://pypi.org/project/onnxruntime/>`_ purely as the inference engine for a small, pre-trained 
+graph neural network (GNN) that performs layout analysis on document pages.
+
+.. note::
+
+    Compatibility with `ONNX Runtime <https://pypi.org/project/onnxruntime/>`_ and your Python version is required for the layout analysis module to function correctly.
+   
+    If your Python version does not have a compatible ONNX Runtime your PyMuPDF installation will fail. For full information about what systems ONNX Runtime supports, see https://pypi.org/project/onnxruntime/#files.
+
+    After a new Python version is published in October each year, there may be a delay of several weeks before a compatible ONNX wheel becomes available.
+
+    For example on 2026-Oct-01, the latest version of Python was 3.15, but there is was no Python 3.15 ONNX Runtime package generally available. 
+
+    If an official ONNX Runtime build is not yet available for your Python version, see this issue for more details: https://github.com/microsoft/onnxruntime/issues/26547. 
+    You only require to install the non-CUDA (CPU-only) version, because PyMuPDF Layout needs no GPU support.
+
+
+Disabling |PyMuPDF Layout|
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+|PyMuPDF Layout| is enabled by default.
+To disable this module you can do so by calling the :meth:`pymupdf.use_layout` method.
 
 
 
@@ -168,8 +206,7 @@ Create a Chatbot to connect with your documents
 
 .. _PyMuPDF4LLM Document Loader: https://docs.langchain.com/oss/python/integrations/providers/pymupdf4llm/
 
-.. _layout analysis module: https://pymupdf.io/use-cases/layout
-
+.. _layout analysis module: https://pymupdf.io/use-cases/layout/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline_link
 
 
 

@@ -2351,12 +2351,20 @@ def test_4846():
     # Currently doesn't test the generated file, just leaves to to be looked at
     # manually.
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4846.pdf')
-    path_out = os.path.normpath(f'{__file__}/../../tests/test_out.svg')
+    path_expected = os.path.normpath(f'{__file__}/../../tests/resources/test_4846_expected.svg')
+    path_out = os.path.normpath(f'{__file__}/../../tests/test_4846_out.svg')
     with pymupdf.open(path) as document:
         page = document[0]
         svg_content = page.get_svg_image()
         with open(path_out, 'w', encoding="utf8") as f:
             f.write(svg_content)
+    with open(path_expected) as f_expected:
+        expected = f_expected.read()
+    print(f'test_4846(): {pymupdf.mupdf_version=} {(svg_content==expected)=}')
+    if pymupdf.mupdf_version_tuple >= (1, 29):
+        assert svg_content == expected
+    else:
+        assert svg_content != expected        
 
 
 def test_4896():

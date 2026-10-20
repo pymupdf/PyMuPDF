@@ -36,28 +36,42 @@ Installation
 
 This will install from a Python wheel if one is available for your platform.
 
+.. note::
 
-Installation when a suitable wheel is not available
----------------------------------------------------------
+    PyMuPDF uses the ONNX Runtime for certain layout analysis features.
 
-If a suitable Python wheel is not available, pip will automatically build from
-source using a Python sdist.
+    For more details see: :ref:`PyMuPDF Layout & ONNX Runtime <pymupdf_layout_and_onnx_runtime>`.
 
-**This requires C/C++ development tools to be installed**:
 
-* On Windows:
+PyMuPDF Config
+~~~~~~~~~~~~~~~~~
 
-  *
-    Install Visual Studio 2019. If not installed in a standard location, set
-    environmental variable `PYMUPDF_SETUP_DEVENV` to the location of the
-    `devenv.com` binary.
+After installation, run the `pymupdf-config` command.
+This will review what is installed and show information about what other packages
+(Python and otherwise) may be available for your system and could improve accuracy and speed.
 
-  *
-    Having other installed versions of Visual Studio, for example Visual Studio
-    2022, can cause problems because one can end up with MuPDF and PyMuPDF code
-    being compiled with different compiler versions.
+.. note::
 
-The build will automatically download and build MuPDF.
+    If not using a virtual environment,Windows users need to make sure that their Python's `Scripts` directory is included in the `PATH` environment variable, because the executable `pymupdf-config.exe` will be located there.
+
+    If it is not already included, either add the `Scripts` directory to the system's (or user's) `PATH` environment variable using the Windows GUI, or execute the following little Python script that will do this for you.
+
+    This is a once-only operation: you do not need to run it ever again.
+
+    .. code-block:: python
+
+        import os, sys, subprocess
+
+        scripts = os.path.join(os.path.dirname(sys.executable), "Scripts")
+
+        # Check whether Scripts folder is already on PATH
+        paths = os.environ["PATH"].lower().split(";")
+        if scripts.lower() not in paths:
+            cmd = f"[Environment]::SetEnvironmentVariable('Path', $env:Path + ';{scripts}', 'User')"
+            subprocess.run(["powershell", "-Command", cmd], check=True)
+            print("Added to PATH:", scripts)
+        else:
+            print("Python Scripts folder already in PATH")
 
 
 .. _problems-after-installation:
@@ -84,7 +98,7 @@ Problems after installation
   Python error::
 
       ModuleNotFoundError: No module named 'frontend'
-  
+
   This can happen if PyMuPDF's legacy name `fitz` is used (for example `import
   fitz` instead of `import pymupdf`), and an unrelated Python package called
   `fitz` (https://pypi.org/project/fitz/) is installed.
@@ -101,7 +115,7 @@ Problems after installation
     match.
 
   * Or uninstall the `fitz` package and reinstall PyMuPDF::
-  
+
         pip uninstall fitz
         pip install --force-reinstall pymupdf
 
@@ -115,12 +129,32 @@ Problems after installation
   https://github.com/pymupdf/PyMuPDF/issues/3643#issuecomment-2210588778.
 
 * On Windows, Python error::
-    
+
     ImportError: dynamic module does not define module export function (PyInit__extra)
 
   This was reported 2025-03-26 in https://github.com/pymupdf/PyMuPDF/issues/4405.
-  
+
   The fix appears to be to install the latest `VC_redist.x64.exe`.
+
+
+*
+  Deprecation warnings on MacOS if warnings are enabled.
+  
+  For example::
+  
+      > python -W all -c 'import pymupdf'
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyPacked has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type SwigPyObject has no __module__ attribute
+      <frozen importlib._bootstrap>:549: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+      <sys>:0: DeprecationWarning: builtin type swigvarlink has no __module__ attribute
+
+  This occurs because we use an older swig (version 4.3.1) when building for macos,
+  because of https://github.com/swig/swig/issues/3279.
+  
+  The issue with swig generating deprecation warnings was fixed in swig-4.4.0
+  (see https://github.com/swig/swig/issues/2881).
 
 
 Notes
@@ -128,23 +162,23 @@ Notes
 
 *
   Wheels are available for the following platforms:
-  
+
    * Windows 32-bit Intel.
    * Windows 64-bit Intel.
    * Linux 64-bit Intel.
    * Linux 64-bit ARM.
    * MacOS 64-bit Intel.
    * MacOS 64-bit ARM.
-  
+
   Details:
-  
+
   * We release a single wheel for each of the above platforms.
-  
+
   *
     Each wheel uses the Python Stable ABI of the current oldest supported
-    Python version (currently 3.10), and so works with all later Python
+    Python version (currently 3.11), and so works with all later Python
     versions, including new Python releases.
-  
+
   *
     Wheels are tested on all Python versions currently marked as "Supported"
     on https://devguide.python.org/versions/, currently |python_versions|.
@@ -166,7 +200,7 @@ Notes
   * `Pillow <https://pypi.org/project/Pillow/>`_ is required for :meth:`Pixmap.pil_save` and :meth:`Pixmap.pil_tobytes`.
   * `fontTools <https://pypi.org/project/fonttools/>`_ is required for :meth:`Document.subset_fonts`.
   * `pymupdf-fonts <https://pypi.org/project/pymupdf-fonts/>`_ is a collection of nice fonts to be used for text output methods.
-  * 
+  *
     `Tesseract-OCR <https://github.com/tesseract-ocr/tesseract>`_ for optical
     character recognition in images and document pages. Tesseract is separate
     software, not a Python package. To enable OCR functions in PyMuPDF,
@@ -224,11 +258,11 @@ Also, one can build for different Python versions in the same PyMuPDF tree:
 
   So for example on Windows one can build different versions with::
 
-    cd PyMuPDF && py -3.10 -m pip install .
+    cd PyMuPDF && py -3.14 -m pip install .
 
   or::
 
-    cd PyMuPDF && py -3.10-32 -m pip install .
+    cd PyMuPDF && py -3.12-32 -m pip install .
 
 
 Running tests
@@ -303,7 +337,20 @@ See :doc:`pyodide`.
 Enabling Integrated OCR Support
 ---------------------------------------------------------
 
-PyMuPDF will already contain all the logic to support OCR functions. But it additionally does need `Tesseract's language support data <https://github.com/tesseract-ocr/tessdata>`_.
+.. tip::
+
+   Enabling integrated OCR support requires installing at least one OCR engine, such as RapidOCR or Tesseract. See also: :ref:`OCR Engine Comparison <ocr-engine-comparison>`.
+
+RapidOCR
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+See the instructions on the `RapidOCR GitHub repository <https://github.com/RapidAI/RapidOCR>`_.
+
+
+Tesseract
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+PyMuPDF already contains the Tesseract engine to support OCR functions. All it is missing is the `Language Support Data <https://github.com/tesseract-ocr/tessdata>`_ that will be taken from the system installation of Tesseract.
 
 If not specified explicitly, PyMuPDF will attempt to find the installed
 Tesseract's `tessdata`, but this should probably not be relied upon.
@@ -321,11 +368,11 @@ So for a working OCR functionality, make sure to complete this checklist:
    * Unix systems: `/usr/share/tesseract-ocr/4.00/tessdata`
 
 2. Specify the language support folder when calling PyMuPDF OCR functions:
-   
+
    * Set the `tessdata` argument.
    * Or set `os.environ["TESSDATA_PREFIX"]` from within Python.
    * Or set environment variable `TESSDATA_PREFIX` before running Python, for example:
-   
+
      * Windows: `setx TESSDATA_PREFIX "C:/Program Files/Tesseract-OCR/tessdata"`
      * Unix systems: `declare -x TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata`
 
@@ -338,7 +385,7 @@ So for a working OCR functionality, make sure to complete this checklist:
 
 
 .. note::
-    
+
   Find out more on the `official documentation for installing Tesseract website <https://tesseract-ocr.github.io/tessdoc/Installation.html>`_.
 
 .. include:: footer.rst

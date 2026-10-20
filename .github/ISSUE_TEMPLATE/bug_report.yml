@@ -80,10 +80,10 @@ body:
       # Need quotes around `3.10` otherwise it is treated as a number and shows as `3.1`.
       options:
         -
+        - "3.15"
         - "3.14"
         - "3.13"
         - "3.12"
         - "3.11"
-        - "3.10"
     validations:
       required: true

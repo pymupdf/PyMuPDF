@@ -647,6 +647,7 @@ def build():
         ret.append( (f'{g_root}/src/utils.py', to_dir) )
         ret.append( (f'{g_root}/src/_wxcolors.py', to_dir) )
         ret.append( (f'{g_root}/src/_apply_pages.py', to_dir) )
+        ret.append( (f'{g_root}/src/show_features.py', to_dir) )
         ret.append( (f'{g_root}/src/build/extra.py', to_dir) )
         ret.append( (b'', f'{to_dir}/py.typed') )
         ret.append( (f'{g_root}/src/build/{path_so_leaf}', to_dir) )
@@ -1412,6 +1413,8 @@ def get_requires_for_build_wheel(config_settings=None):
         pass
     elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
         # Latest swig-4.4.1 gives director errors on macos with python<3.13.
+        # https://github.com/swig/swig/issues/3279
+        #   swig-4.4.0 with PyMuPDF/MuPDF gives Director errors on MacOS only.
         ret.append('swig==4.3.1')
     else:
         ret.append('swig')
@@ -1427,6 +1430,7 @@ if os.environ.get('PYODIDE_ROOT'):
 g_entry_points = textwrap.dedent('''
         [console_scripts]
         pymupdf = pymupdf.__main__:main
+        pymupdf-config = pymupdf.show_features:config
         ''')
 
 

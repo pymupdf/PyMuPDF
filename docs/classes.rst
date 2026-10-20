@@ -9,6 +9,10 @@ Classes
 
    annot.rst
    archive-class.rst
+   batch-result.rst
+   chunk-metadata.rst
+   chunk.rst
+   chunked-document.rst
    colorspace.rst
    displaylist.rst
    document.rst

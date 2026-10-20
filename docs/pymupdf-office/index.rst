@@ -208,7 +208,7 @@ By default `pymupdf.office.unlock()` searches for all installed font directories
 
 This can be controlled with keyword-only args:
 
-* `fontpath`: specific font directories, either as a list/tuple or `os.sep`-separated string.
+* `fontpath`: specific font directories, either as a list/tuple or `os.pathsep`-separated string.
   If None (the default), we use `os.environ['PYMUPDFPRO_FONT_PATH']` if set.
 * `fontpath_auto`: Whether to append system font directories.
   If None (the default) we use true if `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` is '1'.
@@ -227,8 +227,8 @@ API
     Unlocks the PyMuPDF Office functionality with the provided key.
 
     :arg str my_key: the license key for PyMuPDF Office.
-    :arg str | list | tuple fontpath: specific font directories, either as a list/tuple or `os.sep`-separated string.
-    :arg bool fontpath_auto: Whether to append system font directories.
+    :arg str | list | tuple fontpath: specific font directories, either as a list/tuple or `os.pathsep`-separated string.
+    :arg bool fontpath_auto: whether to append system font directories. If `None` (the default) we use `True` if `os.environ['PYMUPDFPRO_FONT_PATH_AUTO']` is unset or '1', otherwise `False`.
 
     Grants access to the full functionality of PyMuPDF Office. For a free trial key please visit: `https://pymupdf.io/office/try/ <https://pymupdf.io/office/try/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=cta-button-pymupdf-office-page&utm_campaign=docs>`_.
 
@@ -240,9 +240,9 @@ API
 
     :arg str input_path: the input file path.
 
-    :arg str output_path: the path to the output file. If `None`, the method returns the bytes of the PDF content.
+    :arg str output_path: the path to the output file. If None (the default), the method returns the PDF content as ``bytes``.
     
-    :returns: Either bytes of the PDF content, `None` if `output_path` is specified.
+    :returns: ``bytes`` of the PDF content or `None` if `output_path` is specified.
 
 
 .. _pymupdf_office_api_to_markdown:
@@ -255,7 +255,7 @@ API
 
     :arg str output_path: the path to the output file. If `None`, the method returns the content as a string.
 
-    :returns: Either a string of the Markdown representation, `None` if `output_path` is specified.
+    :returns: string of the Markdown representation or `None` if `output_path` is specified.
 
 
 
@@ -269,7 +269,7 @@ API
 
     :arg str output_path: the path to the output file. If `None`, the method returns the content as a string.
 
-    :returns: Either a string of the JSON representation, `None` if `output_path` is specified.
+    :returns: string of the JSON representation or `None` if `output_path` is specified.
 
 
 
