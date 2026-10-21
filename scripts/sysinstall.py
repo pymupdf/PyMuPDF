@@ -201,7 +201,6 @@ def main():
                 f' HAVE_LEPTONICA=yes'
                 f' HAVE_TESSERACT=yes'
                 f' INSTALL_MODE=755'
-                f' USE_SYSTEM_GUMBO=no' # Github Ubuntu's gumbo too old for mupdf.
                 f' USE_SYSTEM_LIBS=yes'
                 f' USE_SYSTEM_ZXINGCPP=no'  # Github Ubuntu's zxingcpp too old for mupdf.
                 f' VENV_FLAG='
