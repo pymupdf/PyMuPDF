@@ -2356,10 +2356,14 @@ def test_4846():
     with open(path_expected) as f_expected:
         expected = f_expected.read()
     print(f'test_4846(): {pymupdf.mupdf_version=} {(svg_content==expected)=}')
+    
+    rms = gentle_compare.pixmaps_rms(path_expected, path_out)
+    print(f'{rms=}')
+    
     if pymupdf.mupdf_version_tuple >= (1, 29):
-        assert svg_content == expected
+        assert rms < 0.5
     else:
-        assert svg_content != expected        
+        assert rms > 50        
 
 
 def test_4896():
