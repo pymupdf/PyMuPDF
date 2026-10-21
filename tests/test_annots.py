@@ -890,3 +890,87 @@ def test_5152():
         print(i)
     
     assert results == expected
+
+
+def test_5201():
+    print()
+    path1 = os.path.normpath(f'{__file__}/../../tests/test_5201_out1.pdf')
+    path2 = os.path.normpath(f'{__file__}/../../tests/test_5201_out2.pdf')
+    with pymupdf.open() as document:
+        page = document.new_page()
+        
+        def show_text(prefix):
+            '''
+            Returns rawdict and also print out blocks, lines, spans and chars.
+            '''
+            text = page.get_text('rawdict')
+            for i_b, block in enumerate(text['blocks']):
+                print(f'block {i_b}')
+                for i_l, line in enumerate(block['lines']):
+                    print(f'    line {i_l}')
+                    for i_s, span in enumerate(line['spans']):
+                        print(f'        span {i_s}')
+                        for i_c, char in enumerate(span['chars']):
+                            print(f'        char {i_c}')
+                            print(f'            {prefix}{char["origin"]=} {char["bbox"]=} {char["c"]=}')
+            return text
+        
+        def chars_g(text):
+            '''
+            Generator for each char in rawdict.
+            '''
+            for block in text['blocks']:
+                for line in block['lines']:
+                    for span in line['spans']:
+                        for char in span['chars']:
+                            yield char
+                            
+        def chars(text):
+            '''
+            Returns list of each char in rawdict.
+            '''
+            return list(chars_g(text))
+        
+        def show_chars(chars, prefix):
+            '''
+            Show chars.
+            '''
+            for char in chars:
+                print(f'{prefix}origin={str(char["origin"]):<32} bbox={str(char["bbox"]):<80} {char["c"]=}')
+        
+        page.insert_text((20, 40), 'This is the example text')
+        page.insert_text((20, 60), 'This is the example text')
+        page.insert_text((20, 80), 'This is the example text')
+        text1 = show_text('1: ')
+        document.save(path1)
+        print(f'Have saved to {path1=}')
+        
+        page.add_redact_annot((50, 70, 120, 80))
+        page.apply_redactions()
+        text2 = show_text('2: ')
+        document.save(path2)
+        print(f'Have saved to {path2=}')
+        
+        # Detect/show differences in origin and bbox of last three characters.
+        chars1 = chars(text1)[-3:]
+        chars2 = chars(text2)[-3:]
+        show_chars(chars1, '1: ')
+        show_chars(chars2, '2: ')
+        num_errors = 0
+        for i in range(3):
+            char1 = chars1[-3+i]
+            char2 = chars2[-3+i]
+            x1 = list(char1['origin']) + list(char1['bbox'])
+            x2 = list(char2['origin']) + list(char2['bbox'])
+            d = [i2 - i1 for (i1, i2) in zip(x1, x2)]
+            for dd in d:
+                print(f'{dd=}')
+                if abs(dd) >= 0.1:
+                    num_errors += 1
+
+        print(f'{num_errors=}')
+        if pymupdf.mupdf_version_tuple >= (1, 28, 5):
+            # Bug introduced in mupdf-1.28.5.
+            assert num_errors
+        else:
+            assert num_errors == 0
