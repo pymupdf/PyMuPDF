@@ -339,10 +339,46 @@ _globals = _Globals()
 
 _get_layout: typing.Optional[typing.Callable] = None
 
-try:
-    import pymupdf.layout   # noqa: F401
-except ImportError:
-    pass
+def _import_layout():
+    """Import pymupdf.layout and activate it, replacing the lazy stub."""
+    global _get_layout
+    _get_layout = None  # let layout.activate() install the real function
+    try:
+        module = importlib.import_module("pymupdf.layout")
+    except BaseException:
+        _get_layout = _lazy_get_layout
+        raise
+    if _get_layout is None:
+        # Module was already imported earlier (when only the stub was present,
+        # so its import-time activate() did nothing): activate explicitly.
+        try:
+            module.activate()
+        except BaseException:
+            _get_layout = _lazy_get_layout
+            raise
+    if _get_layout is None:
+        _get_layout = _lazy_get_layout
+        raise RuntimeError("pymupdf.layout could not be activated")
+    return module
+
+
+def _lazy_get_layout(*args, **kwargs):
+    """Import and activate pymupdf.layout on first real use."""
+    _import_layout()
+    return _get_layout(*args, **kwargs)
+
+
+def _layout_available():
+    """Cheap check (no import) whether pymupdf.layout is installed."""
+    try:
+        return importlib.util.find_spec("pymupdf.layout") is not None
+    except Exception:
+        return False
+
+
+if _layout_available():
+    # Layout is available: mark it so, but defer the expensive import.
+    _get_layout = _lazy_get_layout
 
 # global switch ensuring that the recommendation message is shown at most once
 _recommend_layout = True  # must be referred to as "global" everywhere
@@ -26742,45 +26778,76 @@ __doc__ = (
         f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
         )
 
+_pymupdf4llm = None  # None: not tried yet, False: not installed
 
-try:
-    import pymupdf4llm   # noqa: F401
-except (ImportError, ModuleNotFoundError):
-    pymupdf4llm = None
+def _lazy_import_pymupdf4llm():
+    global _pymupdf4llm
+    old_skip = _globals.skip_quad_corrections
+    if _pymupdf4llm is None:
+        try:
+            _pymupdf4llm = importlib.import_module('pymupdf4llm')
+        except ModuleNotFoundError as e:
+            if e.name != 'pymupdf4llm':
+                raise   # missing dependency inside pymupdf4llm: don't hide it
+            _pymupdf4llm = False
+
+    _globals.skip_quad_corrections = old_skip
+    return _pymupdf4llm
+
+def __getattr__(name):
+    # Keep `pymupdf.pymupdf4llm` / `from pymupdf import pymupdf4llm` working.
+    if name == 'pymupdf4llm':
+        return _lazy_import_pymupdf4llm() or None
+    if name == 'layout' and _layout_available():
+        # Importing the submodule activates layout and binds `pymupdf.layout`.
+        return _import_layout()
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
 
 def _to_markdown(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_markdown(*args, **kwargs)
+    pymupdf4llm = _lazy_import_pymupdf4llm()
+    if pymupdf4llm not in (None, False):
+        rc = pymupdf4llm.to_markdown(*args, **kwargs)
+        return rc
     else:
         raise NotImplementedError('pymupdf4llm functions are not available.')
 
 def _to_text(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_text(*args, **kwargs)
+    pymupdf4llm = _lazy_import_pymupdf4llm()
+    if pymupdf4llm not in (None, False):
+        rc = pymupdf4llm.to_text(*args, **kwargs)
+        return rc
     else:
         raise NotImplementedError('pymupdf4llm functions are not available.')
 
 def _to_json(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_json(*args, **kwargs)
+    pymupdf4llm = _lazy_import_pymupdf4llm()
+    if pymupdf4llm not in (None, False):
+        rc = pymupdf4llm.to_json(*args, **kwargs)
+        return rc
     else:
         raise NotImplementedError('pymupdf4llm functions are not available.')
 
 def _to_chunks(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_chunks(*args, **kwargs)
+    pymupdf4llm = _lazy_import_pymupdf4llm()
+    if pymupdf4llm not in (None, False):
+        rc = pymupdf4llm.to_chunks(*args, **kwargs)
+        return rc
     else:
         raise NotImplementedError('pymupdf4llm functions are not available.')
 
 def _convert_batch(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.convert_batch(*args, **kwargs)
+    pymupdf4llm = _lazy_import_pymupdf4llm()
+    if pymupdf4llm not in (None, False):
+        rc = pymupdf4llm.convert_batch(*args, **kwargs)
+        return rc
     else:
         raise NotImplementedError('pymupdf4llm functions are not available.')
 
 def _use_layout(yes):
-    if pymupdf4llm:
-        return pymupdf4llm.use_layout(yes)
+    pymupdf4llm = _lazy_import_pymupdf4llm()
+    if pymupdf4llm not in (None, False):
+        rc = pymupdf4llm.use_layout(yes)
+        return rc
     else:
         raise NotImplementedError('pymupdf4llm functions are not available.')
 
