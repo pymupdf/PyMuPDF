@@ -20,6 +20,9 @@ Args:
                 git:
                     Get branch master.
         Otherwise <mupdf_location> is assumed to be a local mupdf checkout.
+    
+    -p <pytest_flags>
+        Additional flags to pass to pytest.
 
 Notes:
 
@@ -100,6 +103,7 @@ def main():
         return 1
     
     mupdf_location = 'git:'
+    pytest_flags = ''
     
     args = iter(sys.argv[1:])
     while 1:
@@ -112,6 +116,8 @@ def main():
             return
         elif arg == '-m':
             mupdf_location = next(args)
+        elif arg == '-p':
+            pytest_flags = next(args)
         else:
             assert 0, f'Unrecognised {arg=}.'
     
@@ -185,8 +191,7 @@ def main():
     if 1:
         log()
         log('## Building and installing MuPDF.')
-        run(f'cd {mupdf_dir} && make -j {multiprocessing.cpu_count()}')
-        run(f'cd {mupdf_dir} && make'
+        run(f'cd {os.path.abspath(mupdf_dir)} && make'
                 f' -j {multiprocessing.cpu_count()}'
                 f' barcode=yes'
                 f' build_prefix=system-libs-'
@@ -225,7 +230,7 @@ def main():
                 f'PYMUPDF_TEST_USE_4LLM=0 '
                     f'PYMUPDF_TEST_USE_LAYOUT=0 '
                     f'PYMUPDF_SYSINSTALL_ROOT={install_root} '
-                    f'pytest {g_pymupdf_root}/tests'
+                    f'pytest {pytest_flags} {g_pymupdf_root}/tests'
                 )
 
 
