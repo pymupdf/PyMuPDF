@@ -339,10 +339,20 @@ _globals = _Globals()
 
 _get_layout: typing.Optional[typing.Callable] = None
 
-try:
-    import pymupdf.layout   # noqa: F401
-except ImportError:
-    pass
+# Set by pymupdf.layout.activate(), which runs when pymupdf.layout is imported.
+# Importing is deferred until needed, see __getattr__() and Page.get_layout().
+
+# Switch for using layout, set by pymupdf4llm.use_layout().
+_layout_enabled = True
+
+
+def _layout_available():
+    """Cheap check (no import) whether pymupdf.layout is installed."""
+    try:
+        return importlib.util.find_spec("pymupdf.layout") is not None
+    except Exception:
+        return False
+
 
 # global switch ensuring that the recommendation message is shown at most once
 _recommend_layout = True  # must be referred to as "global" everywhere
@@ -362,8 +372,6 @@ def _warn_layout_once():
     if (
         1
         and _recommend_layout  # still True?
-        and _get_layout is None  # no layout function stored here
-
         # client did not globally disable the recommendation
         and os.getenv("PYMUPDF_SUGGEST_LAYOUT_ANALYZER") != "0"
 
@@ -11314,7 +11322,7 @@ class Page:
 
     def get_layout(self, **kwargs):
         """Try to access layout information."""
-        if _get_layout:
+        if _layout_enabled and _optional_import('layout') and _get_layout:
             self.layout_information = _get_layout(self, **kwargs)
 
     @property
@@ -26742,51 +26750,43 @@ __doc__ = (
         f'Python {sys.version_info[0]}.{sys.version_info[1]} running on {sys.platform} ({64 if sys.maxsize > 2**32 else 32}-bit).\n'
         )
 
+_optional_modules = {'layout': 'pymupdf.layout', 'pymupdf4llm': 'pymupdf4llm'}
+_optional_cache = dict()
 
-try:
-    import pymupdf4llm   # noqa: F401
-except (ImportError, ModuleNotFoundError):
-    pymupdf4llm = None
+def _optional_import(name):
+    """Import an optional module on first use; return None if not installed."""
+    if name not in _optional_cache:
+        fullname = _optional_modules[name]
+        old_skip = _globals.skip_quad_corrections
+        module = None
+        try:
+            module = importlib.import_module(fullname)
+        except ModuleNotFoundError as e:
+            if e.name != fullname:
+                raise   # missing dependency inside the module: don't hide it
+        finally:
+            _globals.skip_quad_corrections = old_skip
+        _optional_cache[name] = module
+    return _optional_cache[name]
 
-def _to_markdown(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_markdown(*args, **kwargs)
-    else:
-        raise NotImplementedError('pymupdf4llm functions are not available.')
+def __getattr__(name):
+    # Keep `pymupdf.pymupdf4llm` / `from pymupdf import pymupdf4llm` working.
+    if name in _optional_modules:
+        return _optional_import(name)
+    raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
 
-def _to_text(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_text(*args, **kwargs)
-    else:
-        raise NotImplementedError('pymupdf4llm functions are not available.')
+def _pymupdf4llm_function(name):
+    def function(*args, **kwargs):
+        pymupdf4llm = _optional_import('pymupdf4llm')
+        if pymupdf4llm is None:
+            raise NotImplementedError('pymupdf4llm functions are not available.')
+        return getattr(pymupdf4llm, name)(*args, **kwargs)
+    function.__name__ = name
+    return function
 
-def _to_json(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_json(*args, **kwargs)
-    else:
-        raise NotImplementedError('pymupdf4llm functions are not available.')
-
-def _to_chunks(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.to_chunks(*args, **kwargs)
-    else:
-        raise NotImplementedError('pymupdf4llm functions are not available.')
-
-def _convert_batch(*args, **kwargs):
-    if pymupdf4llm:
-        return pymupdf4llm.convert_batch(*args, **kwargs)
-    else:
-        raise NotImplementedError('pymupdf4llm functions are not available.')
-
-def _use_layout(yes):
-    if pymupdf4llm:
-        return pymupdf4llm.use_layout(yes)
-    else:
-        raise NotImplementedError('pymupdf4llm functions are not available.')
-
-Document.to_markdown = _to_markdown
-Document.to_text = _to_text
-Document.to_json = _to_json
-Document.to_chunks = _to_chunks
-convert_batch = _convert_batch
-use_layout = _use_layout
+Document.to_markdown = _pymupdf4llm_function('to_markdown')
+Document.to_text = _pymupdf4llm_function('to_text')
+Document.to_json = _pymupdf4llm_function('to_json')
+Document.to_chunks = _pymupdf4llm_function('to_chunks')
+convert_batch = _pymupdf4llm_function('convert_batch')
+use_layout = _pymupdf4llm_function('use_layout')

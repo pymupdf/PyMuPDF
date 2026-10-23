@@ -3205,6 +3205,10 @@ def find_tables(
         else:
             boxes = []
             if use_layout:
+                # Layout results depend on the quad correction setting.
+                # Importing pymupdf4llm disables corrections globally, so do
+                # the same here to be independent of that import.
+                pymupdf.TOOLS.unset_quad_corrections(True)
                 page.get_layout()
                 if page.layout_information:
                     pymupdf.TOOLS.unset_quad_corrections(True)
