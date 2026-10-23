@@ -107,9 +107,19 @@ def test_mupdfcpp64_dll_symbols():
     assert(os.path.isfile(p)), f'Not found: {p}'
     with open(p, 'rb') as f:
         content = f.read()
-    fz_argv_from_wargv_in_mupdfcpp64_dll = b'fz_argv_from_wargv' in content
-    print(f'{fz_argv_from_wargv_in_mupdfcpp64_dll=}')
-    if pymupdf.mupdf_version_tuple >= (1, 29):
-        assert fz_argv_from_wargv_in_mupdfcpp64_dll
-    else:
-        assert not fz_argv_from_wargv_in_mupdfcpp64_dll
+    num_errors = 0
+    for name in (
+            'fz_argv_from_wargv',
+            'gettimeofday',
+            ):
+        is_in = (name.encode() in content)
+        if pymupdf.mupdf_version_tuple >= (1, 29):
+            if not is_in:
+                print(f'Unexpected not in mupdfcpp64.dll: {name}')
+                num_errors += 1
+        else:
+            if is_in:
+                print(f'Unexpected in mupdfcpp64.dll: {name}')
+                num_errors += 1
+    print(f'{num_errors=}')
+    assert not num_errors
