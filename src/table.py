@@ -2396,7 +2396,9 @@ def make_chars(page, clip=None):
     page_height = page.rect.height
     ctm = page.transformation_matrix
     TEXTPAGE = page.get_textpage(clip=clip, flags=FLAGS)
-    blocks = page.get_text("rawdict", textpage=TEXTPAGE)["blocks"]
+    # Word grouping needs font-metric boxes, not individual glyph outlines.
+    char_flags = FLAGS & ~pymupdf.TEXT_ACCURATE_BBOXES
+    blocks = page.get_text("rawdict", clip=clip, flags=char_flags)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
         for line in block["lines"]:
