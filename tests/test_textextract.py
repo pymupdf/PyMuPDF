@@ -8,6 +8,7 @@ import sys
 import textwrap
 
 import pymupdf
+import pytest
 
 import gentle_compare
 
@@ -340,6 +341,60 @@ def test_4524():
     print(f'{len(texts_single)=}')
     print(f'{len(texts_mp)=}')
     assert texts_mp == texts_single
+
+
+@pytest.mark.parametrize('pages', [None, [2, 0]])
+@pytest.mark.parametrize('with_init', [False, True])
+def test_apply_pages_kwargs(tmp_path, pages, with_init):
+    path = tmp_path / 'pages.pdf'
+    with pymupdf.open() as document:
+        for number in range(3):
+            document.new_page().insert_text((72, 72), f'Page {number}')
+        document.save(path)
+
+    initialized = []
+
+    def initialize(value, *, marker):
+        initialized.append((value, marker))
+
+    def extract(page, prefix, *, suffix):
+        return prefix + page.get_text().strip() + suffix
+
+    kwargs = {}
+    if with_init:
+        kwargs = dict(initfn=initialize, initfn_args=('init',),
+                      initfn_kwargs={'marker': 'initialized'})
+    result = pymupdf.apply_pages(
+        path, extract, pagefn_args=('[',), pagefn_kwargs={'suffix': ']'},
+        pages=pages, method='single', **kwargs,
+    )
+    selected = range(3) if pages is None else pages
+    assert result == [f'[Page {number}]' for number in selected]
+    assert initialized == ([('init', 'initialized')] if with_init else [])
+
+
+@pytest.mark.parametrize('method', ['single', 'mp'])
+@pytest.mark.parametrize('options', [
+    {'option': 'words', 'delimiters': '.'},
+    {'option': 'dict'},
+    {'clip': (0, 0, 200, 100)},
+    {'sort': True},
+])
+def test_get_text_kwargs(tmp_path, method, options):
+    if method == 'mp' and os.environ.get('PYODIDE_ROOT'):
+        pytest.skip('multiprocessing not available on Pyodide')
+    path = tmp_path / 'text.pdf'
+    with pymupdf.open() as document:
+        for number in range(3):
+            page = document.new_page()
+            page.insert_text((72, 144), 'second.line')
+            page.insert_text((72, 72), f'first.line.{number}')
+        document.save(path)
+        expected = [document[number].get_text(**options) for number in [2, 0]]
+
+    assert pymupdf.get_text(
+        path, pages=[2, 0], method=method, concurrency=1, **options,
+    ) == expected
 
 
 def test_3594():
