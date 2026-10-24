@@ -25600,7 +25600,7 @@ def apply_pages(
             pages = range(len(document))
         for pno in pages:
             page = document[pno]
-            r = pagefn(page, *pagefn_args, **initfn_kwargs)
+            r = pagefn(page, *pagefn_args, **pagefn_kwargs)
             ret.append(r)
     
     else:
