@@ -2546,9 +2546,18 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
             # and keep those items (see _is_batched_rule). They contribute no
             # enveloping bbox: bbox_paths holds only the paths whose own rect is
             # real graphics.
+            # A fill+stroke path whose stroke has the same color as its fill
+            # (both opaque) draws no visible border either, so it is treated
+            # like a fill-only path, e.g. white redaction boxes: issue #5175.
+            is_invisible_fs = (
+                p["type"] == "fs"
+                and p.get("fill") == p.get("color")
+                and p.get("fill_opacity") == 1
+                and p.get("stroke_opacity") == 1
+            )
             if (
                 lines_strict
-                and p["type"] == "f"
+                and (p["type"] == "f" or is_invisible_fs)
                 and p["rect"].width > snap_x
                 and p["rect"].height > snap_y
             ):
