@@ -74,8 +74,19 @@ Environmental variables:
         If '0' we build MuPDF without Tesseract.
     
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
-        Unix only. Controls build type of MuPDF. Supported values are:
+        Controls build type of mupdf/pymupdf extensions. Supported values are:
             debug
+            debugo (debug build with optimisations)
+            memento
+            release (default)
+    
+    PYMUPDF_SETUP_MUPDF_BUILD_TYPE2
+        Controls build type of MuPDF only, overriding
+        PYMUPDF_SETUP_MUPDF_BUILD_TYPE.
+        
+        Supported values are:
+            debug
+            debugo (debug build with optimisations)
             memento
             release (default)
     
@@ -534,8 +545,12 @@ def build():
     '''
     #pipcl.show_sysconfig()
     build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
-    assert build_type in ('debug', 'memento', 'release'), \
+    assert build_type in ('debug', 'debugo', 'memento', 'release'), \
             f'Unrecognised build_type={build_type!r}'
+    
+    build_type_mupdf = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE2', build_type)
+    assert build_type_mupdf in ('debug', 'debugo', 'memento', 'release'), \
+            f'Unrecognised build_type={build_type_mupdf!r}'
     
     version_p_tuple = pipcl.version_to_tuple(version_p)
 
@@ -558,7 +573,7 @@ def build():
         if pipcl.windows():
             mupdf_build_dir = build_mupdf_windows(
                     mupdf_local,
-                    build_type,
+                    build_type_mupdf,
                     overwrite_config,
                     g_py_limited_api,
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
@@ -568,7 +583,7 @@ def build():
         else:
             mupdf_build_dir = build_mupdf_unix(
                     mupdf_local,
-                    build_type,
+                    build_type_mupdf,
                     overwrite_config,
                     g_py_limited_api,
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
@@ -1257,8 +1272,8 @@ def _extension_flags(
     linker_extra = ''
     if build_type == 'memento':
         compiler_extra += ' -DMEMENTO'
-    optimise = 'release' in build_type
-    debug = 'debug' in build_type
+    optimise = build_type in ('release', 'debugo')
+    debug = build_type in ('debug', 'debugo', 'memento')
     r_extra = ''
     defines = list()
     if pipcl.windows():
