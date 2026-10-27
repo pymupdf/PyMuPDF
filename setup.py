@@ -165,6 +165,12 @@ Environmental variables:
     PYMUPDF_SETUP_SWIG
         If set, we use this instead of `swig`.
     
+    PYMUPDF_SETUP_SWIG_PIP
+        If set, we use this when requesting swig from build frontend.
+        For example:
+            PYMUPDF_SETUP_SWIG_PIP=swig         # build with latest swig on pypi.org.
+            PYMUPDF_SETUP_SWIG_PIP=swig==4.4.0  # build with swig-4.4.0.
+    
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
 
@@ -1411,6 +1417,8 @@ def get_requires_for_build_wheel(config_settings=None):
         print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
     elif PYMUPDF_SETUP_SWIG:
         pass
+    elif PYMUPDF_SETUP_SWIG_PIP := os.environ.get('PYMUPDF_SETUP_SWIG_PIP'):
+        ret.append(PYMUPDF_SETUP_SWIG_PIP)
     elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
         # Latest swig-4.4.1 gives director errors on macos with python<3.13.
         # https://github.com/swig/swig/issues/3279
