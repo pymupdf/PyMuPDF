@@ -2027,7 +2027,9 @@ def test_4392():
     e1 = subprocess.run(command, shell=1, check=0).returncode
     print(f'{e1=}')
     
-    command = f'pytest -Werror {path}'
+    # We need `-o asyncio_default_fixture_loop_scope=function` to avoid
+    # unrelated errors from pytest-asyncio with pytest-9.2.0.
+    command = f'pytest -Werror -o asyncio_default_fixture_loop_scope=function {path}'
     print(f'Running: {command}', flush=1)
     e2 = subprocess.run(command, shell=1, check=0).returncode
     print(f'{e2=}')
