@@ -19894,6 +19894,7 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
         e = fp      # ... range
     rot = JM_norm_rotation(rotate)
     i = fp
+    page_map = {}  # source page number -> output page number
     internal_links = []  # collect PDF-wide internal links here
     while 1:  # interpret & write document pages as PDF pages
         if not _INRANGE(i, s, e):
@@ -19906,10 +19907,12 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
         dev = None
         page_obj = mupdf.pdf_add_page(pdfout, mediabox, rot, resources, contents)
         mupdf.pdf_insert_page(pdfout, -1, page_obj)
+        out_pno = mupdf.pdf_count_pages(pdfout) - 1
+        page_map[i] = out_pno
 
         # also copy links to the output PDF page
         # get the PDF page we've just created
-        pdf_page = mupdf.pdf_load_page(pdfout, i)
+        pdf_page = mupdf.pdf_load_page(pdfout, out_pno)
 
         # loop through source page links
         link = mupdf.fz_load_links(page)  # load first link
@@ -19923,7 +19926,7 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
             else:  # internal links done when PDF is complete
                 # find target of internal link
                 ret, xp, yp = mupdf.fz_resolve_link(doc, uri)
-                ilink={"page": i, "ret": ret, "from": rect, "h": rect.y1-rect.y0, "w": rect.x1-rect.x0, "xp": xp, "yp": yp}
+                ilink={"page": out_pno, "ret": ret, "from": rect, "h": rect.y1-rect.y0, "w": rect.x1-rect.x0, "xp": xp, "yp": yp}
                 internal_links.append(ilink)
             link = link.next()
         
@@ -19932,12 +19935,19 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
     # PDF created - now write it to Python bytearray
     # insert any internal links collected before:
     for ilink in internal_links:
-        pdf_page = mupdf.pdf_load_page(pdfout, ilink["page"])
         ret = ilink["ret"]
+        source_pno = mupdf.fz_page_number_from_location(doc, ret)
+        if source_pno >= 0 and source_pno not in page_map:
+            continue  # target page was not converted
+        pdf_page = mupdf.pdf_load_page(pdfout, ilink["page"])
         dest = mupdf.fz_link_dest()
         dest.type = 7  # XYZ destination format
-        dest.loc.chapter = ret.chapter
-        dest.loc.page = ret.page
+        if source_pno >= 0:  # point to the target's output page
+            dest.loc.chapter = 0
+            dest.loc.page = page_map[source_pno]
+        else:
+            dest.loc.chapter = ret.chapter
+            dest.loc.page = ret.page
         dest.h = ilink["h"]
         dest.w = ilink["w"]
         dest.x = ilink["xp"]
