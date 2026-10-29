@@ -10,6 +10,7 @@ import json
 import os
 import pathlib
 import pickle
+import pipcl
 import platform
 import pymupdf
 import re
@@ -2418,3 +2419,18 @@ def test_4896():
                 print(f'{diff=} for {path=}.')
                 assert diff == 0
     
+
+def test_5182():
+    print()
+    print(f'test_5182(): {platform.system()=}')
+    print(f'test_5182(): {pymupdf._build.swig_version_tuple=}')
+    print(f'test_5182(): {pipcl.python_version_tuple()=}')
+    e = pipcl.run(f'{sys.executable} -W error -c "import pymupdf"', check=0)
+    print(f'{e=}')
+    if (1
+            and platform.system() == 'Darwin'
+            and pymupdf._build.swig_version_tuple < (4, 4)
+            ):
+        assert e, f'Did not receive expected error.'
+    else:
+        assert not e, f'Received unexpected error.'
