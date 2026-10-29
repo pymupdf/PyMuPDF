@@ -283,7 +283,7 @@ pymupdf.office.to_markdown("input.docx", "output.md")
 | **Table detection** | `find_tables()` — locate, extract, and export tables as Markdown or structured data |
 | **Image extraction** | Extract embedded images and render any page to a high-resolution `Pixmap` |
 | **Rendering** | Render PDF pages to images or `Pixmap` data for use in UI or other workflows |
-| **OCR** | Tesseract integration — full-page or partial OCR, configurable language |
+| **OCR** | Tesseract via `get_textpage_ocr()`; RapidOCR for `to_markdown()` and the other layout extractors |
 | **Annotations** | Read and write highlights, underlines, squiggly lines, sticky notes, free text, ink, stamps |
 | **Redaction** | Add and permanently apply redaction annotations |
 | **Forms** | Read and fill PDF AcroForm fields |
@@ -551,10 +551,7 @@ Charts and diagrams created by tools like matplotlib, Excel, or R are typically 
 
 ### How does OCR work in PyMuPDF? Does it require a separate Tesseract installation?
 
-PyMuPDF uses MuPDF's built-in Tesseract-based OCR support, so there is no Python-level `pytesseract` dependency. However, PyMuPDF still needs access to the **Tesseract language data files** (`tessdata`), and automatic tessdata discovery may invoke the `tesseract` executable (for example, to list available languages) if you do not explicitly provide a tessdata path. In practice, the recommended setup is to either install Tesseract so discovery works automatically, or configure the tessdata location yourself via the `tessdata` parameter or the `TESSDATA_PREFIX` environment variable. Over 100 languages are supported.
-
-PyMuPDF also supports RapidOCR - which is the recommended OCR engine - RapidOCR is a pip-installable Python package that runs ONNX models, so it doesn't need a separate Tesseract install or `TESSDATA_PREFIX`.
-
+`Page.get_textpage_ocr()` uses MuPDF's built-in Tesseract OCR. There is no Python-level `pytesseract` dependency, but the method needs Tesseract's language data files (`tessdata`). If you omit `tessdata` and `TESSDATA_PREFIX` is unset, PyMuPDF searches for a Tesseract installation and may run the `tesseract` executable to list languages. Install Tesseract so that discovery works, or pass the tessdata folder via the `tessdata` argument or `TESSDATA_PREFIX`. Over 100 languages are supported. Installing RapidOCR does not change this method.
 
 ```python
 import pymupdf
@@ -562,10 +559,22 @@ import pymupdf
 doc = pymupdf.open("scanned.pdf")
 page = doc[0]
 
-# Get a text page using OCR
+# Tesseract OCR. Requires tessdata, via discovery or TESSDATA_PREFIX.
 tp = page.get_textpage_ocr(language="eng")
 text = page.get_text(textpage=tp)
 print(text)
+```
+
+RapidOCR is the recommended engine for layout extraction: `Document.to_markdown()`, `to_text()`, `to_json()`, and `to_chunks()`. It is a pip-installable Python package that runs ONNX models, so those methods can OCR a document without a separate Tesseract install or `TESSDATA_PREFIX` when RapidOCR is installed.
+
+```python
+import pymupdf
+
+doc = pymupdf.open("scanned.pdf")
+
+# Uses RapidOCR when the package is installed.
+md = doc.to_markdown()
+print(md)
 ```
 
 
@@ -578,7 +587,7 @@ pix = pymupdf.Pixmap("image.png")
 if pix.alpha:
     pix = pymupdf.Pixmap(pix, 0)  # remove alpha channel — required for OCR
 
-# Wrap in a 1-page PDF and OCR it
+# Wrap in a 1-page PDF and OCR it with Tesseract (requires tessdata).
 doc = pymupdf.open()
 page = doc.new_page(width=pix.width, height=pix.height)
 page.insert_image(page.rect, pixmap=pix)
