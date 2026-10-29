@@ -2,6 +2,24 @@ Change Log
 ==========
 
 
+**Changes in version 2.1**
+
+Fixed issues:
+
+* **Fixed** `5196 <https://github.com/pymupdf/PyMuPDF/issues/5196>`_: PyMuPDF 2.0 eagerly initializes layout on import, increasing CPU and thread overhead in spawned workers
+* **Fixed** `5214 <https://github.com/pymupdf/PyMuPDF/issues/5214>`_: get_label() and get_page_labels() mangle page-label prefixes that contain '/', string escapes or UTF-16 text
+* **Fixed** `5216 <https://github.com/pymupdf/PyMuPDF/issues/5216>`_: Documentation: Mention PDF rotation in Page.show_pdf() documentation
+* **Fixed** `5220 <https://github.com/pymupdf/PyMuPDF/issues/5220>`_: Page.get_texttrace(): character bbox height follows X scale instead of Y scale
+
+Other:
+
+* Improve upgrade from 1.x to 2.x via pymupdf4llm or pymupdf_layout.
+* Reduced startup time using lazy internal import of large modules.
+* Retrospectively added date of 2.0 release.
+* Retrospectively marked #5115 as fixed in 2.0.
+* Use MuPDF-1.28.6.
+
+
 **Changes in version 2.0** (2026-10-19)
 
 Fixed issues:
