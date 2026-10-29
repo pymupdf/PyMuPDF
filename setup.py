@@ -270,7 +270,7 @@ PYMUPDF_SETUP_REQUIRE_LAYOUT_4LLM = os.environ.get('PYMUPDF_SETUP_REQUIRE_LAYOUT
 # PyMuPDF version.
 version_p = '2.1'
 
-version_mupdf = '1.28.5'
+version_mupdf = '1.28.6'
 
 g_requires_dist = list()
 
