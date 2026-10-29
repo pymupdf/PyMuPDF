@@ -33,6 +33,7 @@ def install_required_packages():
         pass
     else:
         packages += ' psutil'
+    packages += ' pytest-asyncio'   # Required for test_4392().
     
     PYMUPDF_TEST_USE_LAYOUT = os.environ.get('PYMUPDF_TEST_USE_LAYOUT')
     PYMUPDF_TEST_USE_4LLM = os.environ.get('PYMUPDF_TEST_USE_4LLM')
@@ -46,7 +47,7 @@ def install_required_packages():
         packages += ' opencv-python'
 
         # From pymupdf4llm/tests/conftest.py.
-        packages += ' llama_index pytest-asyncio rapidocr-onnxruntime'
+        packages += ' llama_index rapidocr-onnxruntime'
     
     PYMUPDF_SYSINSTALL_ROOT = os.environ.get('PYMUPDF_SYSINSTALL_ROOT')
     if PYMUPDF_SYSINSTALL_ROOT == '-':
