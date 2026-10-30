@@ -361,6 +361,32 @@ def test_2506():
                 assert round(span["size"]) == fontsize
 
 
+def test_5220():
+    """Character bbox heights follow vertical text scaling."""
+    if not pymupdf.g_use_extra:
+        print('Not running test_5220() because use_extra=0 known to fail')
+        return
+    doc = pymupdf.open()
+    page = doc.new_page()
+    origin = pymupdf.Point(50, 50)
+    scales = ((1, 1), (0.5, 1), (2, 1), (1, 0.5), (1, 2))
+    for scale_x, scale_y in scales:
+        matrix = pymupdf.Matrix(scale_x, 0, 0, scale_y, 0, 0)
+        page.insert_text(origin, "H", fontsize=20, morph=(origin, matrix))
+        origin.y += 60
+
+    heights = [
+        pymupdf.Rect(char[3]).height
+        for span in page.get_texttrace()
+        for char in span["chars"]
+    ]
+    expected = [20, 20, 20, 10, 40]
+    assert len(heights) == len(expected)
+    assert all(
+        abs(actual - target) < 1e-4 for actual, target in zip(heights, expected)
+    )
+
+
 def test_2108():
     doc = pymupdf.open(f'{scriptdir}/resources/test_2108.pdf')
     page = doc[0]
