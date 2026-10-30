@@ -74,8 +74,19 @@ Environmental variables:
         If '0' we build MuPDF without Tesseract.
     
     PYMUPDF_SETUP_MUPDF_BUILD_TYPE
-        Unix only. Controls build type of MuPDF. Supported values are:
+        Controls build type of mupdf/pymupdf extensions. Supported values are:
             debug
+            debugo (debug build with optimisations)
+            memento
+            release (default)
+    
+    PYMUPDF_SETUP_MUPDF_BUILD_TYPE2
+        Controls build type of MuPDF only, overriding
+        PYMUPDF_SETUP_MUPDF_BUILD_TYPE.
+        
+        Supported values are:
+            debug
+            debugo (debug build with optimisations)
             memento
             release (default)
     
@@ -164,6 +175,12 @@ Environmental variables:
 
     PYMUPDF_SETUP_SWIG
         If set, we use this instead of `swig`.
+    
+    PYMUPDF_SETUP_SWIG_PIP
+        If set, we use this when requesting swig from build frontend.
+        For example:
+            PYMUPDF_SETUP_SWIG_PIP=swig         # build with latest swig on pypi.org.
+            PYMUPDF_SETUP_SWIG_PIP=swig==4.4.0  # build with swig-4.4.0.
     
     WDEV_VS_YEAR
         If set, we use as Visual Studio year, for example '2019' or '2022'.
@@ -528,8 +545,12 @@ def build():
     '''
     #pipcl.show_sysconfig()
     build_type = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE', 'release')
-    assert build_type in ('debug', 'memento', 'release'), \
+    assert build_type in ('debug', 'debugo', 'memento', 'release'), \
             f'Unrecognised build_type={build_type!r}'
+    
+    build_type_mupdf = os.environ.get( 'PYMUPDF_SETUP_MUPDF_BUILD_TYPE2', build_type)
+    assert build_type_mupdf in ('debug', 'debugo', 'memento', 'release'), \
+            f'Unrecognised build_type={build_type_mupdf!r}'
     
     version_p_tuple = pipcl.version_to_tuple(version_p)
 
@@ -552,7 +573,7 @@ def build():
         if pipcl.windows():
             mupdf_build_dir = build_mupdf_windows(
                     mupdf_local,
-                    build_type,
+                    build_type_mupdf,
                     overwrite_config,
                     g_py_limited_api,
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
@@ -562,7 +583,7 @@ def build():
         else:
             mupdf_build_dir = build_mupdf_unix(
                     mupdf_local,
-                    build_type,
+                    build_type_mupdf,
                     overwrite_config,
                     g_py_limited_api,
                     PYMUPDF_SETUP_MUPDF_REFCHECK_IF,
@@ -1251,8 +1272,8 @@ def _extension_flags(
     linker_extra = ''
     if build_type == 'memento':
         compiler_extra += ' -DMEMENTO'
-    optimise = 'release' in build_type
-    debug = 'debug' in build_type
+    optimise = build_type in ('release', 'debugo')
+    debug = build_type in ('debug', 'debugo', 'memento')
     r_extra = ''
     defines = list()
     if pipcl.windows():
@@ -1411,6 +1432,8 @@ def get_requires_for_build_wheel(config_settings=None):
         print(f'OpenBSD: pip install of swig does not build; assuming `pkg_add swig`.')
     elif PYMUPDF_SETUP_SWIG:
         pass
+    elif PYMUPDF_SETUP_SWIG_PIP := os.environ.get('PYMUPDF_SETUP_SWIG_PIP'):
+        ret.append(PYMUPDF_SETUP_SWIG_PIP)
     elif pipcl.darwin() and pipcl.python_version_tuple() < (3, 13):
         # Latest swig-4.4.1 gives director errors on macos with python<3.13.
         # https://github.com/swig/swig/issues/3279

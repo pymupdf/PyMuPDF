@@ -7244,7 +7244,8 @@ class Document:
             """
             s = f"{label['startpage']}<<"
             if label.get("prefix", "") != "":
-                s += f"/P({label['prefix']})"
+                # Convert to a valid PDF string even when outside ASCII range
+                s += f"/P {get_pdf_str(label['prefix'])}"
             if label.get("style", "") != "":
                 s += f"/S/{label['style']}"
             if label.get("firstpagenum", 1) > 1:
@@ -20962,11 +20963,7 @@ def JM_get_page_labels(liste, nums):
         key = mupdf.pdf_resolve_indirect( mupdf.pdf_array_get(nums, i))
         pno = mupdf.pdf_to_int(key)
         val = mupdf.pdf_resolve_indirect( mupdf.pdf_array_get(nums, i + 1))
-        res = JM_object_to_buffer(val, 1, 0)
-        c = mupdf.fz_buffer_extract(res)
-        assert isinstance(c, bytes)
-        c = c.decode('utf-8')
-        liste.append( (pno, c))
+        liste.append((pno, val))
 
 
 def JM_get_script(key):
