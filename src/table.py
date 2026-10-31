@@ -1966,7 +1966,7 @@ class Table:
             return any(
                 c["bold"]
                 for c in chars
-                if rect_in_rect((c["x0"], c["y0"], c["x1"], c["y1"]), bbox)
+                if rect_in_rect((c["x0"], c["top"], c["x1"], c["bottom"]), bbox)
             )
 
         try:
