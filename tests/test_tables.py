@@ -7,6 +7,7 @@ import platform
 from concurrent.futures import ThreadPoolExecutor
 
 import pymupdf
+import pytest
 
 import util
 
@@ -106,24 +107,24 @@ def test_table1():
             expected = [
                         [
                             [b'\xe5\xb9\xb4\xe4\xbb\xbd'.decode(), b'\xe4\xb8\xbb\xe4\xbd\x93\xe4\xbf\xa1\xe7\x94\xa8\n\xe8\xaf\x84\xe7\xba\xa7'.decode(), b'\xe6\xb6\xb5\xe4\xb9\x89'.decode(), b'\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\xba\xe6\x9e\x84'.decode(), b'\xe8\xaf\x84\xe7\xba\xa7\xe5\xb1\x95\xe6\x9c\x9b'.decode(), ],
-                            ['2023', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8 \xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe3\x80\x81\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
-                            ['2022', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8 \xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe3\x80\x81\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
-                            ['2021', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
-                            ['2020', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                            ['2023', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8\xe3\x80\x81\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                            ['2022', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8\xe3\x80\x81\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                            ['2021', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                            ['2020', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
                         ],
                         [
                             [b'\xe5\xba\x8f\xe5\x8f\xb7'.decode(), b'\xe9\x87\x91\xe8\x9e\x8d\xe6\x9c\xba\xe6\x9e\x84\xe5\x90\x8d\xe7\xa7\xb0'.decode(), b'\xe6\x8e\x88\xe4\xbf\xa1\xe6\x80\xbb\xe9\xa2\x9d'.decode(), b'\xe5\xb7\xb2\xe4\xbd\xbf\xe7\x94\xa8\xe6\x83\x85\xe5\x86\xb5'.decode(), b'\xe5\x89\xa9\xe4\xbd\x99\xe9\xa2\x9d\xe5\xba\xa6'.decode(), ],
-                            ['1', b'\xe5\xb7\xa5\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '33043530\n, .', '23485000\n, .', '9558530\n, .', ],
-                            ['2', b'\xe5\xbe\xbd\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe4\xb8\xad\xe5\xb1\xb1\xe5\x8c\x97\xe8\xb7\xaf\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '33043530\n, .', '25673530\n, .', '7370000\n, .', ],
-                            ['3', b'\xe5\x85\xb4\xe4\xb8\x9a\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '30260000\n, .', '11060000\n, .', '19200000\n, .', ],
-                            ['4', b'\xe6\xb0\x91\xe7\x94\x9f\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '26200000\n, .', '8850000\n, .', '17350000\n, .', ],
-                            ['5', b'\xe4\xb8\xad\xe4\xbf\xa1\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '20508800\n, .', '20508800\n, .', '000\n.', ],
-                            ['6', b'\xe5\x8d\x97\xe4\xba\xac\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '17517000\n, .', '17517000\n, .', '000\n.', ],
-                            ['7', b'\xe6\x9d\xad\xe5\xb7\x9e\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '10900000\n, .', '3269000\n, .', '7631000\n, .', ],
-                            ['8', b'\xe6\xb1\x9f\xe8\x8b\x8f\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '21859700\n, .', '21859700\n, .', '000\n.', ],
-                            ['9', b'\xe6\xb8\xa4\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '9800000\n, .', '000\n.', '9800000\n, .', ],
-                            ['10', b'\xe6\x81\x92\xe4\xb8\xb0\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe6\xb1\x9f\xe5\x8c\x97\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '9390000\n, .', '4350000\n, .', '5040000\n, .', ],
-                            ['11', b'\xe4\xb8\x8a\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '4626500\n, .', '4626500\n, .', '000\n.', ],
+                            ['1', b'\xe5\xb7\xa5\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '330,435.30', '234,850.00', '95,585.30', ],
+                            ['2', b'\xe5\xbe\xbd\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe4\xb8\xad\xe5\xb1\xb1\xe5\x8c\x97\xe8\xb7\xaf\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '330,435.30', '256,735.30', '73,700.00', ],
+                            ['3', b'\xe5\x85\xb4\xe4\xb8\x9a\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '302,600.00', '110,600.00', '192,000.00', ],
+                            ['4', b'\xe6\xb0\x91\xe7\x94\x9f\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '262,000.00', '88,500.00', '173,500.00', ],
+                            ['5', b'\xe4\xb8\xad\xe4\xbf\xa1\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '205,088.00', '205,088.00', '0.00', ],
+                            ['6', b'\xe5\x8d\x97\xe4\xba\xac\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '175,170.00', '175,170.00', '0.00', ],
+                            ['7', b'\xe6\x9d\xad\xe5\xb7\x9e\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '109,000.00', '32,690.00', '76,310.00', ],
+                            ['8', b'\xe6\xb1\x9f\xe8\x8b\x8f\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '218,597.00', '218,597.00', '0.00', ],
+                            ['9', b'\xe6\xb8\xa4\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '98,000.00', '0.00', '98,000.00', ],
+                            ['10', b'\xe6\x81\x92\xe4\xb8\xb0\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe6\xb1\x9f\xe5\x8c\x97\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '93,900.00', '43,500.00', '50,400.00', ],
+                            ['11', b'\xe4\xb8\x8a\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '46,265.00', '46,265.00', '0.00', ],
                         ],
                     ]
             _check_tables(expected, [table.extract() for table in tables])
@@ -259,24 +260,24 @@ def test_table2():
         expected =     [
                     [
                         [b'\xe5\xb9\xb4\xe4\xbb\xbd'.decode(), b'\xe4\xb8\xbb\xe4\xbd\x93\xe4\xbf\xa1\xe7\x94\xa8\n\xe8\xaf\x84\xe7\xba\xa7'.decode(), b'\xe6\xb6\xb5\xe4\xb9\x89'.decode(), b'\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\xba\xe6\x9e\x84'.decode(), b'\xe8\xaf\x84\xe7\xba\xa7\xe5\xb1\x95\xe6\x9c\x9b'.decode(), ],
-                        ['2023', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8 \xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe3\x80\x81\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
-                        ['2022', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8 \xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe3\x80\x81\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
-                        ['2021', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
-                        ['2020', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba \xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xef\xbc\x8c\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7 \xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e\n\xef\xbc\x8c'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                        ['2023', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8\xe3\x80\x81\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                        ['2022', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe4\xb8\xad\xe8\xaf\x9a\xe4\xbf\xa1\xe5\x9b\xbd\xe9\x99\x85\xe4\xbf\xa1\n\xe7\x94\xa8\xe8\xaf\x84\xe7\xba\xa7\xe6\x9c\x89\xe9\x99\x90\xe8\xb4\xa3\n\xe4\xbb\xbb\xe5\x85\xac\xe5\x8f\xb8\xe3\x80\x81\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\n\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\n\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                        ['2021', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
+                        ['2020', 'AA+', b'\xe5\x81\xbf\xe8\xbf\x98\xe5\x80\xba\xe5\x8a\xa1\xe7\x9a\x84\xe8\x83\xbd\xe5\x8a\x9b\xe5\xbe\x88\xe5\xbc\xba\xef\xbc\x8c\xe5\x8f\x97\xe4\xb8\x8d\xe5\x88\xa9\xe7\xbb\x8f\xe6\xb5\x8e\n\xe7\x8e\xaf\xe5\xa2\x83\xe7\x9a\x84\xe5\xbd\xb1\xe5\x93\x8d\xe4\xb8\x8d\xe5\xa4\xa7\xef\xbc\x8c\xe8\xbf\x9d\xe7\xba\xa6\xe9\xa3\x8e\xe9\x99\xa9\xe5\xbe\x88\xe4\xbd\x8e'.decode(), b'\xe8\x81\x94\xe5\x90\x88\xe8\xb5\x84\xe4\xbf\xa1\xe8\xaf\x84\xe4\xbc\xb0\n\xe6\x9c\x89\xe9\x99\x90\xe5\x85\xac\xe5\x8f\xb8'.decode(), b'\xe7\xa8\xb3\xe5\xae\x9a'.decode(), ],
                     ],
                     [
                         [b'\xe5\xba\x8f\xe5\x8f\xb7'.decode(), b'\xe9\x87\x91\xe8\x9e\x8d\xe6\x9c\xba\xe6\x9e\x84\xe5\x90\x8d\xe7\xa7\xb0'.decode(), b'\xe6\x8e\x88\xe4\xbf\xa1\xe6\x80\xbb\xe9\xa2\x9d'.decode(), b'\xe5\xb7\xb2\xe4\xbd\xbf\xe7\x94\xa8\xe6\x83\x85\xe5\x86\xb5'.decode(), b'\xe5\x89\xa9\xe4\xbd\x99\xe9\xa2\x9d\xe5\xba\xa6'.decode(), ],
-                        ['1', b'\xe5\xb7\xa5\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '33043530\n, .', '23485000\n, .', '9558530\n, .', ],
-                        ['2', b'\xe5\xbe\xbd\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe4\xb8\xad\xe5\xb1\xb1\xe5\x8c\x97\xe8\xb7\xaf\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '33043530\n, .', '25673530\n, .', '7370000\n, .', ],
-                        ['3', b'\xe5\x85\xb4\xe4\xb8\x9a\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '30260000\n, .', '11060000\n, .', '19200000\n, .', ],
-                        ['4', b'\xe6\xb0\x91\xe7\x94\x9f\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '26200000\n, .', '8850000\n, .', '17350000\n, .', ],
-                        ['5', b'\xe4\xb8\xad\xe4\xbf\xa1\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '20508800\n, .', '20508800\n, .', '000\n.', ],
-                        ['6', b'\xe5\x8d\x97\xe4\xba\xac\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '17517000\n, .', '17517000\n, .', '000\n.', ],
-                        ['7', b'\xe6\x9d\xad\xe5\xb7\x9e\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '10900000\n, .', '3269000\n, .', '7631000\n, .', ],
-                        ['8', b'\xe6\xb1\x9f\xe8\x8b\x8f\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '21859700\n, .', '21859700\n, .', '000\n.', ],
-                        ['9', b'\xe6\xb8\xa4\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '9800000\n, .', '000\n.', '9800000\n, .', ],
-                        ['10', b'\xe6\x81\x92\xe4\xb8\xb0\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe6\xb1\x9f\xe5\x8c\x97\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '9390000\n, .', '4350000\n, .', '5040000\n, .', ],
-                        ['11', b'\xe4\xb8\x8a\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '4626500\n, .', '4626500\n, .', '000\n.', ],
+                        ['1', b'\xe5\xb7\xa5\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '330,435.30', '234,850.00', '95,585.30', ],
+                        ['2', b'\xe5\xbe\xbd\xe5\x95\x86\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe4\xb8\xad\xe5\xb1\xb1\xe5\x8c\x97\xe8\xb7\xaf\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '330,435.30', '256,735.30', '73,700.00', ],
+                        ['3', b'\xe5\x85\xb4\xe4\xb8\x9a\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '302,600.00', '110,600.00', '192,000.00', ],
+                        ['4', b'\xe6\xb0\x91\xe7\x94\x9f\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '262,000.00', '88,500.00', '173,500.00', ],
+                        ['5', b'\xe4\xb8\xad\xe4\xbf\xa1\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '205,088.00', '205,088.00', '0.00', ],
+                        ['6', b'\xe5\x8d\x97\xe4\xba\xac\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '175,170.00', '175,170.00', '0.00', ],
+                        ['7', b'\xe6\x9d\xad\xe5\xb7\x9e\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '109,000.00', '32,690.00', '76,310.00', ],
+                        ['8', b'\xe6\xb1\x9f\xe8\x8b\x8f\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '218,597.00', '218,597.00', '0.00', ],
+                        ['9', b'\xe6\xb8\xa4\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c'.decode(), '98,000.00', '0.00', '98,000.00', ],
+                        ['10', b'\xe6\x81\x92\xe4\xb8\xb0\xe9\x93\xb6\xe8\xa1\x8c\xe5\x8d\x97\xe4\xba\xac\xe6\xb1\x9f\xe5\x8c\x97\xe6\x94\xaf\xe8\xa1\x8c'.decode(), '93,900.00', '43,500.00', '50,400.00', ],
+                        ['11', b'\xe4\xb8\x8a\xe6\xb5\xb7\xe9\x93\xb6\xe8\xa1\x8c\xe7\x9b\x90\xe5\x9f\x8e\xe5\x88\x86\xe8\xa1\x8c'.decode(), '46,265.00', '46,265.00', '0.00', ],
                     ],
                 ]
         _check_tables(expected, tables2)
@@ -601,10 +602,10 @@ def test_add_lines():
         expected = [
                     [
                         [b'Boiling Points \xc2\xb0C'.decode(), 'min', 'max', 'avg'],
-                        ['Noble gases', '269\n-', '62\n-', '170 5\n- .'],
-                        ['Nonmetals', '253\n-', '4827', '414 1\n.'],
-                        ['Metalloids', '335', '3900', '741 5\n.'],
-                        ['Metals', '357', '>5000', '2755 9\n.'],
+                        ['Noble gases', '-269', '-62', '-170.5'],
+                        ['Nonmetals', '-253', '4827', '414.1'],
+                        ['Metalloids', '335', '3900', '741.5'],
+                        ['Metals', '357', '>5000', '2755.9'],
                     ],
                 ]
         _check_tables(expected, [table.extract() for table in tabs1])
@@ -822,10 +823,10 @@ def test_boxes_param():
         expected = [
                     [
                         [b'Boiling Points \xc2\xb0C'.decode(), 'min', 'max', 'avg'],
-                        ['Noble gases', '269\n-', '62\n-', '170 5\n- .'],
-                        ['Nonmetals', '253\n-', '4827', '414 1\n.'],
-                        ['Metalloids', '335', '3900', '741 5\n.'],
-                        ['Metals', '357', '>5000', '2755 9\n.'],
+                        ['Noble gases', '-269', '-62', '-170.5'],
+                        ['Nonmetals', '-253', '4827', '414.1'],
+                        ['Metalloids', '335', '3900', '741.5'],
+                        ['Metals', '357', '>5000', '2755.9'],
                     ],
                 ]
         _check_tables(expected, [tabs.tables[0].extract()])
@@ -849,45 +850,45 @@ def test_dotted_grid():
     if util._use_layout():
         expected = [
                     [
-                        ['REGIONE', "PROVINCIA/\nCITTA'\nMETROPOLITANA", 'COMUNE', 'NUMERO\nCOMUNI', 'COMUNI\nCAPOLUOGO\n(CAP)', 'COMUNI\nSUPERIORI\n15000\n.\nabitanti\n(SUP)', 'COMUNI\nPARIO\nINFERIORI\n15000\n.\nabitanti\n(INF)', 'COMUNIAL\nRINNOVOPER\nMOTIVIDIVERSI\nDASCADENZA\nNATURALE(*)', 'COMUNI\nSCIOLTIAL\nRINNOVOPER\nSCADENZA\nNATURALE(#)', 'POPOLAZIONE\nal31/12/2021\nDPR20/01/2023\n...', 'SEZIONI\nRilevazioneal\n31/12/2023', 'ELETTORI\nRilevazioneal\n31/12/2023'],
+                        ['REGIONE', "PROVINCIA/\nCITTA'\nMETROPOLITANA", 'COMUNE', 'NUMERO\nCOMUNI', 'COMUNI\nCAPOLUOGO\n(CAP)', 'COMUNI\nSUPERIORI\n15.000\nabitanti\n(SUP)', 'COMUNI\nPARI O\nINFERIORI\n15.000\nabitanti\n(INF)', 'COMUNI AL\nRINNOVO PER\nMOTIVI DIVERSI\nDA SCADENZA\nNATURALE (*)', 'COMUNI\nSCIOLTI AL\nRINNOVO PER\nSCADENZA\nNATURALE (#)', 'POPOLAZIONE\nal 31/12/2021\nD.P.R. 20/01/2023', 'SEZIONI\nRilevazione al\n31/12/2023', 'ELETTORI\nRilevazione al\n31/12/2023'],
                         ['', '', 'CORVARA', '1', '', '', 'INF', '', '', '206', '1', '510'],
-                        ['', '', 'FARINDOLA', '1', '', '', 'INF', '', '', '1357\n.', '2', '1578\n.'],
-                        ['', '', 'LETTOMANOPPELLO', '1', '', '', 'INF', '', '', '2713\n.', '3', '2710\n.'],
-                        ['', '', 'MONTEBELLODIBERTONA', '1', '', '', 'INF', '', '', '883', '2', '1139\n.'],
-                        ['', '', 'MONTESILVANO', '1', '', 'SUP', '', '', '', '53402\n.', '52', '44600\n.'],
-                        ['', '', 'MOSCUFO', '1', '', '', 'INF', '', '', '3092\n.', '3', '2851\n.'],
-                        ['', '', 'ROSCIANO', '1', '', '', 'INF', '', '', '4038\n.', '6', '3697\n.'],
+                        ['', '', 'FARINDOLA', '1', '', '', 'INF', '', '', '1.357', '2', '1.578'],
+                        ['', '', 'LETTOMANOPPELLO', '1', '', '', 'INF', '', '', '2.713', '3', '2.710'],
+                        ['', '', 'MONTEBELLO DI BERTONA', '1', '', '', 'INF', '', '', '883', '2', '1.139'],
+                        ['', '', 'MONTESILVANO', '1', '', 'SUP', '', '', '', '53.402', '52', '44.600'],
+                        ['', '', 'MOSCUFO', '1', '', '', 'INF', '', '', '3.092', '3', '2.851'],
+                        ['', '', 'ROSCIANO', '1', '', '', 'INF', '', '', '4.038', '6', '3.697'],
                         ['', '', 'SALLE', '1', '', '', 'INF', '', '', '270', '1', '698'],
                         ['', '', 'VICOLI', '1', '', '', 'INF', '', '', '381', '1', '495'],
-                        ['', 'Totale', '', '17', '1', '2', '15', '0', '0', '209303\n.', '267', '185620\n.'],
+                        ['', 'Totale', '', '17', '1', '2', '15', '0', '0', '209.303', '267', '185.620'],
                         ['', '', '', '', '', '', '', '', '', '', '', ''],
                         ['', 'TERAMO', '', '', '', '', '', '', '', '', '', ''],
-                        ['', '', 'ANCARANO', '1', '', '', 'INF', '', '', '1811\n.', '2', '1620\n.'],
+                        ['', '', 'ANCARANO', '1', '', '', 'INF', '', '', '1.811', '2', '1.620'],
                         ['', '', 'ARSITA', '1', '', '', 'INF', '', '', '756', '1', '874'],
-                        ['', '', 'ATRI', '1', '', '', 'INF', '*', '', '10064\n.', '14', '9986\n.'],
-                        ['', '', 'CAMPLI', '1', '', '', 'INF', '', '', '6630\n.', '11', '6568\n.'],
-                        ['', '', 'CANZANO', '1', '', '', 'INF', '', '', '1794\n.', '3', '1653\n.'],
-                        ['', '', 'CASTIGLIONEMESSERRAIMONDO', '1', '', '', 'INF', '', '', '2052\n.', '4', '1917\n.'],
-                        ['', '', 'CELLINOATTANASIO', '1', '', '', 'INF', '', '', '2274\n.', '3', '2531\n.'],
-                        ['', '', 'CERMIGNANO', '1', '', '', 'INF', '', '', '1459\n.', '3', '1839\n.'],
-                        ['', '', 'COLLEDARA', '1', '', '', 'INF', '', '', '2097\n.', '4', '2281\n.'],
-                        ['', '', 'CORROPOLI', '1', '', '', 'INF', '', '', '5108\n.', '5', '4467\n.'],
-                        ['', '', 'FANOADRIANO', '1', '', '', 'INF', '', '', '257', '2', '277'],
-                        ['', '', 'GIULIANOVA', '1', '', 'SUP', '', '', '', '23442\n.', '23', '21806\n.'],
+                        ['', '', 'ATRI', '1', '', '', 'INF', '*', '', '10.064', '14', '9.986'],
+                        ['', '', 'CAMPLI', '1', '', '', 'INF', '', '', '6.630', '11', '6.568'],
+                        ['', '', 'CANZANO', '1', '', '', 'INF', '', '', '1.794', '3', '1.653'],
+                        ['', '', 'CASTIGLIONE MESSER RAIMONDO', '1', '', '', 'INF', '', '', '2.052', '4', '1.917'],
+                        ['', '', 'CELLINO ATTANASIO', '1', '', '', 'INF', '', '', '2.274', '3', '2.531'],
+                        ['', '', 'CERMIGNANO', '1', '', '', 'INF', '', '', '1.459', '3', '1.839'],
+                        ['', '', 'COLLEDARA', '1', '', '', 'INF', '', '', '2.097', '4', '2.281'],
+                        ['', '', 'CORROPOLI', '1', '', '', 'INF', '', '', '5.108', '5', '4.467'],
+                        ['', '', 'FANO ADRIANO', '1', '', '', 'INF', '', '', '257', '2', '277'],
+                        ['', '', 'GIULIANOVA', '1', '', 'SUP', '', '', '', '23.442', '23', '21.806'],
                         ['', '', 'MONTEFINO', '1', '', '', 'INF', '', '', '967', '2', '915'],
-                        ['', '', "MORROD'ORO", '1', '', '', 'INF', '', '', '3560\n.', '3', '3232\n.'],
-                        ['', '', "MOSCIANOSANT'ANGELO", '1', '', '', 'INF', '', '', '9088\n.', '9', '8365\n.'],
-                        ['', '', "PENNASANT'ANDREA", '1', '', '', 'INF', '', '', '1635\n.', '2', '1778\n.'],
-                        ['', '', 'PINETO', '1', '', '', 'INF', '', '#', '14538\n.', '11', '13363\n.'],
-                        ['', '', 'ROCCASANTAMARIA', '1', '', '', 'INF', '', '', '477', '1', '537'],
-                        ['', '', "SANT'EGIDIOALLAVIBRATA", '1', '', '', 'INF', '', '', '9804\n.', '7', '8244\n.'],
-                        ['', '', "SANT'OMERO", '1', '', '', 'INF', '', '', '5112\n.', '7', '4767\n.'],
-                        ['', '', 'TORANONUOVO', '1', '', '', 'INF', '', '', '1490\n.', '2', '1280\n.'],
-                        ['', '', 'TORRICELLASICURA', '1', '', '', 'INF', '', '', '2460\n.', '4', '2658\n.'],
-                        ['', '', 'TOSSICIA', '1', '', '', 'INF', '', '#', '1258\n.', '3', '1388\n.'],
-                        ['', 'Totale', '', '23', '0', '1', '22', '1', '2', '108133\n.', '126', '102346\n.'],
+                        ['', '', "MORRO D'ORO", '1', '', '', 'INF', '', '', '3.560', '3', '3.232'],
+                        ['', '', "MOSCIANO SANT'ANGELO", '1', '', '', 'INF', '', '', '9.088', '9', '8.365'],
+                        ['', '', "PENNA SANT'ANDREA", '1', '', '', 'INF', '', '', '1.635', '2', '1.778'],
+                        ['', '', 'PINETO', '1', '', '', 'INF', '', '#', '14.538', '11', '13.363'],
+                        ['', '', 'ROCCA SANTA MARIA', '1', '', '', 'INF', '', '', '477', '1', '537'],
+                        ['', '', "SANT'EGIDIO ALLA VIBRATA", '1', '', '', 'INF', '', '', '9.804', '7', '8.244'],
+                        ['', '', "SANT'OMERO", '1', '', '', 'INF', '', '', '5.112', '7', '4.767'],
+                        ['', '', 'TORANO NUOVO', '1', '', '', 'INF', '', '', '1.490', '2', '1.280'],
+                        ['', '', 'TORRICELLA SICURA', '1', '', '', 'INF', '', '', '2.460', '4', '2.658'],
+                        ['', '', 'TOSSICIA', '1', '', '', 'INF', '', '#', '1.258', '3', '1.388'],
+                        ['', 'Totale', '', '23', '0', '1', '22', '1', '2', '108.133', '126', '102.346'],
                         ['', '', '', '', '', '', '', '', '', '', '', ''],
-                        ['BRUZZO', '', '', '98', '1', '3', '95', '2', '2', '424264\n.', '537', '405785\n.'],
+                        ['BRUZZO', '', '', '98', '1', '3', '95', '2', '2', '424.264', '537', '405.785'],
                     ],
                 ]
         _check_tables(expected, [table.extract() for table in tabs])
@@ -927,121 +928,121 @@ def test_4017():
             if util._use_4llm():
                 tables2_expected = [
                             [
-                                ['ClassA/BOvercollateralization', '13144%\n.', '>=', '12260%\n.', '', 'PASS', ],
+                                ['Class A/B Overcollateralization', '131.44%', '>=', '122.60%', '', 'PASS', ],
                                 [None, None, None, None, None, 'PASS', ],
-                                ['ClassDOvercollateralization', '11224%\n.', '>=', '10640%\n.', '', 'PASS', ],
+                                ['Class D Overcollateralization', '112.24%', '>=', '106.40%', '', 'PASS', ],
                                 [None, None, None, None, None, 'PASS', ],
-                                ['EventofDefault', '15608%\n.', '>=', '10250%\n.', '', 'PASS', ],
+                                ['Event of Default', '156.08%', '>=', '102.50%', '', 'PASS', ],
                                 [None, None, None, None, None, 'PASS', ],
-                                ['ClassA/BInterestCoverage', 'N/A', '>=', '12000%\n.', '', 'N/A', ],
+                                ['Class A/B Interest Coverage', 'N/A', '>=', '120.00%', '', 'N/A', ],
                                 [None, None, None, None, None, 'N/A', ],
-                                ['ClassDInterestCoverage', 'N/A', '>=', '10500%\n.', '', 'N/A', ],
+                                ['Class D Interest Coverage', 'N/A', '>=', '105.00%', '', 'N/A', ],
                             ],
                             [
-                                ["Moody'sMaximumRatingFactorTest", '2577\n,', '<=', '3250\n,', '', 'PASS', '2581\n,', ],
+                                ["Moody's Maximum Rating Factor Test", '2,577', '<=', '3,250', '', 'PASS', '2,581', ],
                                 [None, None, None, None, None, 'PASS', None, ],
-                                ['MinimumFloatingSpread', '35006%\n.', '>=', '20000%\n.', '', 'PASS', '34871%\n.', ],
+                                ['Minimum Floating Spread', '3.5006%', '>=', '2.0000%', '', 'PASS', '3.4871%', ],
                                 [None, None, None, None, None, 'PASS', None, ],
-                                ['MinimumWeightedAverageS&PRecovery\nRateTest', '4050%\n.', '>=', '4000%\n.', '', 'PASS', '4040%\n.', ],
+                                ['Minimum Weighted Average S&P Recovery\nRate Test', '40.50%', '>=', '40.00%', '', 'PASS', '40.40%', ],
                                 [None, None, None, None, None, 'PASS', None, ],
-                                ['WeightedAverageLife', '483\n.', '<=', '900\n.', '', 'PASS', '492\n.', ],
+                                ['Weighted Average Life', '4.83', '<=', '9.00', '', 'PASS', '4.92', ],
                             ],
                             [
-                                ['Issuer', 'OCPCLO202432 LTD\n- , .', '', '', 'Count', '', '', 'Current', ],
-                                ['Co-Issuer', 'OCPCLO202432LLC\n-', 'DelayedDrawLoan', '', '1', '', '', '6500000\n, .', ],
-                                ['CollateralTrustee', 'Citibank N .A\n.', 'RevolvingLoan', '', '0', '', '', '000\n.', ],
-                                ['CollateralManager', 'Onex Credit Partners, LLC', 'TermLoan', '', '293', '', '', '37486898542\n, , .', ],
-                                ['RatingAgencies\nCollateralAdministrator', 'S&P\nSiepeLLC', 'MiscellaneousInformation', None, None, None, None, '', ],
-                                ['RelationshipManager', 'SabrinaSchmidt', 'AggregatePrincipalBalance', None, '', '', '', '38603398542\n, , .', ],
-                                ['', 'sschmidt@siepe.com', 'PrincipalCash', '', '', '', '', '1281594162\n, , .', ],
-                                ['', '2818704754\n- -', 'PFAI', '', '', '', '', '72757624\n, .', ],
-                                ['ClosingDate', '04/23/2024', 'Totals', '', '', '', '', '39957750328\n, , .', ],
-                                ['FirstPaymentDate', '10/23/2024', '', '', '', '', '', '', ],
-                                ['ReinvestmentPeriod\nEffectiveDate', '04/23/2024 04/23/2029\n-\n04/25/2024', 'AccountBalances', None, '', '', '', '', ],
-                                ['NextPaymentDate\nPriorPaymentDate', '10/23/2024\n-', 'PrincipalCash\nInterestCash', '', '', '', '', '1281594162\n, , .\n1300009090\n, , .', ],
-                                ['CollectionPeriod', '04/23/2024 10/08/2024\n-', '', '', '', '', '', '', ],
+                                ['Issuer', 'OCP CLO 2024-32, LTD.', '', '', 'Count', '', '', 'Current', ],
+                                ['Co-Issuer', 'OCP CLO 2024-32 LLC', 'Delayed Draw Loan', '', '1', '', '', '65,000.00', ],
+                                ['Collateral Trustee', 'Citibank N.A.', 'Revolving Loan', '', '0', '', '', '0.00', ],
+                                ['Collateral Manager', 'Onex Credit Partners, LLC', 'Term Loan', '', '293', '', '', '374,868,985.42', ],
+                                ['Rating Agencies\nCollateral Administrator', 'S&P\nSiepe LLC', 'Miscellaneous Information', None, None, None, None, '', ],
+                                ['Relationship Manager', 'Sabrina Schmidt', 'Aggregate Principal Balance', None, '', '', '', '386,033,985.42', ],
+                                ['', 'sschmidt@siepe.com', 'Principal Cash', '', '', '', '', '12,815,941.62', ],
+                                ['', '281-870-4754', 'PFAI', '', '', '', '', '727,576.24', ],
+                                ['Closing Date', '04/23/2024', 'Totals', '', '', '', '', '399,577,503.28', ],
+                                ['First Payment Date', '10/23/2024', '', '', '', '', '', '', ],
+                                ['Reinvestment Period\nEffective Date', '04/23/2024 - 04/23/2029\n04/25/2024', 'Account Balances', None, '', '', '', '', ],
+                                ['Next Payment Date\nPrior Payment Date', '10/23/2024\n-', 'Principal Cash\nInterest Cash', '', '', '', '', '12,815,941.62\n13,000,090.90', ],
+                                ['Collection Period', '04/23/2024 - 10/08/2024', '', '', '', '', '', '', ],
                             ],
                             [
-                                ['Notes', 'OriginalBalance', 'CurrentBalance', 'Spread', 'Coupon', 'Interest', ],
-                                ['Class A -1 Notes', '256000000\n, ,', '256000000\n, ,', '152000%\n.', '682458%\n.', '888105344\n, , .', ],
-                                ['Class A -2 Notes', '16000000\n, ,', '16000000\n, ,', '172000%\n.', '702458%\n.', '57133251\n, .', ],
-                                ['Class B -1 Notes', '24000000\n, ,', '24000000\n, ,', '200000%\n.', '730458%\n.', '89115876\n, .', ],
-                                ['Class B -2 Notes', '8000000\n, ,', '8000000\n, ,', '584100%\n.', '584100%\n.', '23364000\n, .', ],
-                                ['ClassCNotes', '24000000\n, ,', '24000000\n, ,', '250000%\n.', '780458%\n.', '95215876\n, .', ],
-                                ['Class D -1 Notes', '24000000\n, ,', '24000000\n, ,', '375000%\n.', '905458%\n.', '110465876\n, , .', ],
-                                ['Class D -2 Notes', '4000000\n, ,', '4000000\n, ,', '905000%\n.', '905000%\n.', '18100000\n, .', ],
-                                ['ClassENotes', '12000000\n, ,', '12000000\n, ,', '676000%\n.', '1206458%\n.', '73593938\n, .', ],
-                                ['', '36800000000\n, , .', '36800000000\n, , .', '', '', '1355094161\n, , .', ],
+                                ['Notes', 'Original Balance', 'Current Balance', 'Spread', 'Coupon', 'Interest', ],
+                                ['Class A-1 Notes', '256,000,000', '256,000,000', '1.52000%', '6.82458%', '8,881,053.44', ],
+                                ['Class A-2 Notes', '16,000,000', '16,000,000', '1.72000%', '7.02458%', '571,332.51', ],
+                                ['Class B-1 Notes', '24,000,000', '24,000,000', '2.00000%', '7.30458%', '891,158.76', ],
+                                ['Class B-2 Notes', '8,000,000', '8,000,000', '5.84100%', '5.84100%', '233,640.00', ],
+                                ['Class C Notes', '24,000,000', '24,000,000', '2.50000%', '7.80458%', '952,158.76', ],
+                                ['Class D-1 Notes', '24,000,000', '24,000,000', '3.75000%', '9.05458%', '1,104,658.76', ],
+                                ['Class D-2 Notes', '4,000,000', '4,000,000', '9.05000%', '9.05000%', '181,000.00', ],
+                                ['Class E Notes', '12,000,000', '12,000,000', '6.76000%', '12.06458%', '735,939.38', ],
+                                ['', '368,000,000.00', '368,000,000.00', '', '', '13,550,941.61', ],
                             ],
                         ]
             else:
         
                 tables2_expected = [
                             [
-                                ['ClassA/BOvercollateralization', '13144%\n.', '>=', '12260%\n.', '', 'PASS'],
+                                ['Class A/B Overcollateralization', '131.44%', '>=', '122.60%', '', 'PASS'],
                                 [None, None, None, None, None, 'PASS'],
-                                ['ClassDOvercollateralization', '11224%\n.', '>=', '10640%\n.', '', 'PASS'],
+                                ['Class D Overcollateralization', '112.24%', '>=', '106.40%', '', 'PASS'],
                                 [None, None, None, None, None, 'PASS'],
-                                ['EventofDefault', '15608%\n.', '>=', '10250%\n.', '', 'PASS'],
+                                ['Event of Default', '156.08%', '>=', '102.50%', '', 'PASS'],
                                 [None, None, None, None, None, 'PASS'],
-                                ['ClassA/BInterestCoverage', 'N/A', '>=', '12000%\n.', '', 'N/A'],
+                                ['Class A/B Interest Coverage', 'N/A', '>=', '120.00%', '', 'N/A'],
                                 [None, None, None, None, None, 'N/A'],
-                                ['ClassDInterestCoverage', 'N/A', '>=', '10500%\n.', '', 'N/A'],
+                                ['Class D Interest Coverage', 'N/A', '>=', '105.00%', '', 'N/A'],
                             ],
                             [
-                                ["Moody'sMaximumRatingFactorTest", '2577\n,', '<=', '3250\n,', '', 'PASS', '2581\n,'],
+                                ["Moody's Maximum Rating Factor Test", '2,577', '<=', '3,250', '', 'PASS', '2,581'],
                                 [None, None, None, None, None, 'PASS', None],
-                                ['MinimumFloatingSpread', '35006%\n.', '>=', '20000%\n.', '', 'PASS', '34871%\n.'],
+                                ['Minimum Floating Spread', '3.5006%', '>=', '2.0000%', '', 'PASS', '3.4871%'],
                                 [None, None, None, None, None, 'PASS', None],
-                                ['MinimumWeightedAverageS&PRecovery\nRateTest', '4050%\n.', '>=', '4000%\n.', '', 'PASS', '4040%\n.'],
+                                ['Minimum Weighted Average S&P Recovery\nRate Test', '40.50%', '>=', '40.00%', '', 'PASS', '40.40%'],
                                 [None, None, None, None, None, 'PASS', None],
-                                ['WeightedAverageLife', '483\n.', '<=', '900\n.', '', 'PASS', '492\n.'],
+                                ['Weighted Average Life', '4.83', '<=', '9.00', '', 'PASS', '4.92'],
                             ],
                             [
-                                ['AssetDetails', '', '', '', '', '', '', 'Notes'],
+                                ['Asset Details', '', '', '', '', '', '', 'Notes'],
                                 ['', '', 'Count', '', '', 'Current', '', 'Notes'],
-                                ['DelayedDrawLoan', '', '1', '', '', '6500000\n, .', '', 'Class A -1'],
-                                ['RevolvingLoan', '', '0', '', '', '000\n.', '', 'Class A -2'],
-                                ['TermLoan', '', '293', '', '', '37486898542\n, , .', '', 'Class B -1'],
-                                ['MiscellaneousInformation', None, None, None, None, '', '', 'Class B -2\nClassC'],
+                                ['Delayed Draw Loan', '', '1', '', '', '65,000.00', '', 'Class A-1'],
+                                ['Revolving Loan', '', '0', '', '', '0.00', '', 'Class A-2'],
+                                ['Term Loan', '', '293', '', '', '374,868,985.42', '', 'Class B-1'],
+                                ['Miscellaneous Information', None, None, None, None, '', '', 'Class B-2\nClass C'],
                                 ['', '', '', '', '', '', '', ''],
-                                ['AggregatePrincipalBalance', None, '', '', '', '38603398542\n, , .', '', 'Class D\n-'],
-                                ['PrincipalCash', '', '', '', '', '1281594162\n, , .', '', 'Class D\n-'],
-                                ['PFAI', '', '', '', '', '72757624\n, .', '', 'ClassEN'],
-                                ['Totals', '', '', '', '', '39957750328\n, , .', '', ''],
-                                ['AccountBalances', None, '', '', '', '', '', ''],
+                                ['Aggregate Principal Balance', None, '', '', '', '386,033,985.42', '', 'Class D-'],
+                                ['Principal Cash', '', '', '', '', '12,815,941.62', '', 'Class D-'],
+                                ['PFAI', '', '', '', '', '727,576.24', '', 'Class E N'],
+                                ['Totals', '', '', '', '', '399,577,503.28', '', ''],
+                                ['Account Balances', None, '', '', '', '', '', ''],
                                 ['', '', '', '', '', '', '', ''],
-                                ['PrincipalCash\nInterestCash', '', '', '', '', '1281594162\n, , .\n1300009090\n, , .', '', ''],
+                                ['Principal Cash\nInterest Cash', '', '', '', '', '12,815,941.62\n13,000,090.90', '', ''],
                             ],
                             [
-                                ['Issuer', 'OCPCLO202432 LTD\n- , .'],
-                                ['Co-Issuer', 'OCPCLO202432LLC\n-'],
-                                ['CollateralTrustee', 'Citibank N .A\n.'],
-                                ['CollateralManager', 'Onex Credit Partners, LLC'],
-                                ['RatingAgencies', 'S&P'],
-                                ['CollateralAdministrator', 'SiepeLLC'],
-                                ['RelationshipManager', 'SabrinaSchmidt'],
+                                ['Issuer', 'OCP CLO 2024-32, LTD.'],
+                                ['Co-Issuer', 'OCP CLO 2024-32 LLC'],
+                                ['Collateral Trustee', 'Citibank N.A.'],
+                                ['Collateral Manager', 'Onex Credit Partners, LLC'],
+                                ['Rating Agencies', 'S&P'],
+                                ['Collateral Administrator', 'Siepe LLC'],
+                                ['Relationship Manager', 'Sabrina Schmidt'],
                                 ['', 'sschmidt@siepe.com'],
-                                ['', '2818704754\n- -'],
-                                ['ClosingDate', '04/23/2024'],
-                                ['FirstPaymentDate', '10/23/2024'],
-                                ['ReinvestmentPeriod', '04/23/2024 04/23/2029\n-'],
-                                ['EffectiveDate', '04/25/2024'],
-                                ['NextPaymentDate', '10/23/2024'],
-                                ['PriorPaymentDate', '-'],
-                                ['CollectionPeriod', '04/23/2024 10/08/2024\n-'],
+                                ['', '281-870-4754'],
+                                ['Closing Date', '04/23/2024'],
+                                ['First Payment Date', '10/23/2024'],
+                                ['Reinvestment Period', '04/23/2024 - 04/23/2029'],
+                                ['Effective Date', '04/25/2024'],
+                                ['Next Payment Date', '10/23/2024'],
+                                ['Prior Payment Date', '-'],
+                                ['Collection Period', '04/23/2024 - 10/08/2024'],
                             ],
                             [
-                                ['Notes', 'OriginalBalance', 'CurrentBalance', 'Spread', 'Coupon', 'Interest'],
-                                ['Class A -1 Notes', '256000000\n, ,', '256000000\n, ,', '152000%\n.', '682458%\n.', '888105344\n, , .'],
-                                ['Class A -2 Notes', '16000000\n, ,', '16000000\n, ,', '172000%\n.', '702458%\n.', '57133251\n, .'],
-                                ['Class B -1 Notes', '24000000\n, ,', '24000000\n, ,', '200000%\n.', '730458%\n.', '89115876\n, .'],
-                                ['Class B -2 Notes', '8000000\n, ,', '8000000\n, ,', '584100%\n.', '584100%\n.', '23364000\n, .'],
-                                ['ClassCNotes', '24000000\n, ,', '24000000\n, ,', '250000%\n.', '780458%\n.', '95215876\n, .'],
-                                ['Class D -1 Notes', '24000000\n, ,', '24000000\n, ,', '375000%\n.', '905458%\n.', '110465876\n, , .'],
-                                ['Class D -2 Notes', '4000000\n, ,', '4000000\n, ,', '905000%\n.', '905000%\n.', '18100000\n, .'],
-                                ['ClassENotes', '12000000\n, ,', '12000000\n, ,', '676000%\n.', '1206458%\n.', '73593938\n, .'],
-                                ['', '36800000000\n, , .', '36800000000\n, , .', '', '', '1355094161\n, , .'],
+                                ['Notes', 'Original Balance', 'Current Balance', 'Spread', 'Coupon', 'Interest'],
+                                ['Class A-1 Notes', '256,000,000', '256,000,000', '1.52000%', '6.82458%', '8,881,053.44'],
+                                ['Class A-2 Notes', '16,000,000', '16,000,000', '1.72000%', '7.02458%', '571,332.51'],
+                                ['Class B-1 Notes', '24,000,000', '24,000,000', '2.00000%', '7.30458%', '891,158.76'],
+                                ['Class B-2 Notes', '8,000,000', '8,000,000', '5.84100%', '5.84100%', '233,640.00'],
+                                ['Class C Notes', '24,000,000', '24,000,000', '2.50000%', '7.80458%', '952,158.76'],
+                                ['Class D-1 Notes', '24,000,000', '24,000,000', '3.75000%', '9.05458%', '1,104,658.76'],
+                                ['Class D-2 Notes', '4,000,000', '4,000,000', '9.05000%', '9.05000%', '181,000.00'],
+                                ['Class E Notes', '12,000,000', '12,000,000', '6.76000%', '12.06458%', '735,939.38'],
+                                ['', '368,000,000.00', '368,000,000.00', '', '', '13,550,941.61'],
                             ],
                         ]
             
@@ -1105,7 +1106,7 @@ def test_md_styles():
     tabs = page.find_tables()[0]
     if util._use_layout():
         text = textwrap.dedent('''
-                |Column1|Column2|Column3|
+                |Column 1|Column 2|Column 3|
                 |---|---|---|
                 |Zelle (0,0)|**Bold (0,1)**|Zelle (0,2)|
                 |~~Strikeout (1,0), Zeile 1~~<br>~~Hier kommt Zeile 2.~~|Zelle (1,1)|~~Strikeout (1,2)~~|
@@ -1813,6 +1814,30 @@ def _make_bordered_grid(page, bbox, texts):
                     ),
                     value,
                 )
+
+
+@pytest.mark.parametrize("rotation", (0, 90, 180, 270))
+@pytest.mark.parametrize("unset_quad_corrections", (False, True))
+def test_5198(rotation, unset_quad_corrections):
+    expected = [
+        ["P for interaction", "Cooking fuel type"],
+        ["0.74", "12.5 mg"],
+    ]
+    old_quads = pymupdf.TOOLS.unset_quad_corrections()
+    try:
+        pymupdf.TOOLS.unset_quad_corrections(unset_quad_corrections)
+        with pymupdf.open() as doc:
+            page = doc.new_page()
+            _make_bordered_grid(page, (72, 72, 472, 152), expected)
+            page.set_rotation(rotation)
+            tables = page.find_tables(use_layout=False).tables
+            assert pymupdf.TOOLS.unset_quad_corrections() == unset_quad_corrections
+            assert len(tables) == 1
+            for _ in range(rotation // 90):
+                expected = [list(row) for row in zip(*reversed(expected), strict=True)]
+            assert tables[0].extract() == expected
+    finally:
+        pymupdf.TOOLS.unset_quad_corrections(old_quads)
 
 
 def test_find_tables_union_forwards_virtual_lines_to_candidates():
