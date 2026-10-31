@@ -137,11 +137,12 @@ def _fork(
         while 1:
             if verbose:
                 pymupdf.log(f'{os.getpid()=}: calling get().')
-            page_num = queue_down.get()
+            item = queue_down.get()
             if verbose:
-                pymupdf.log(f'{os.getpid()=}: {page_num=}.')
-            if page_num is None:
+                pymupdf.log(f'{os.getpid()=}: {item=}.')
+            if item is None:
                 break
+            index, page_num = item
             try:
                 if not document:
                     if stats:
@@ -172,9 +173,9 @@ def _fork(
                 if verbose: pymupdf.log(f'{os.getpid()=}: exception {e=}')
                 ret = e
             if verbose:
-                pymupdf.log(f'{os.getpid()=}: sending {page_num=} {ret=}')
-                
-            queue_up.put( (page_num, ret) )
+                pymupdf.log(f'{os.getpid()=}: sending {index=} {ret=}')
+
+            queue_up.put( (index, ret) )
 
     error = None
 
@@ -206,8 +207,8 @@ def _fork(
             t = time.time()
         if verbose:
             pymupdf.log(f'Sending page numbers.')
-        for page_num in range(len(pages)):
-            queue_down.put(page_num)
+        for index, page_num in enumerate(pages):
+            queue_down.put((index, page_num))
         if stats:
             _stats_write(t, 'Send page numbers')
 
@@ -215,15 +216,15 @@ def _fork(
         # of text, but this hasn't been tested.
         ret = [None] * len(pages)
         for i in range(len(pages)):
-            page_num, text = queue_up.get()
+            index, text = queue_up.get()
             if verbose:
-                pymupdf.log(f'{page_num=} {len(text)=}')
-            assert ret[page_num] is None
+                pymupdf.log(f'{index=} {len(text)=}')
+            assert ret[index] is None
             if isinstance(text, Exception):
                 if not error:
                     error = text
                 break
-            ret[page_num] = text
+            ret[index] = text
 
         # Close queue. This should cause exception in workers and terminate
         # them, but on macos-arm64 this does not seem to happen, so we also
