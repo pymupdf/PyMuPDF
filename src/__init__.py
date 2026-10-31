@@ -8213,6 +8213,7 @@ class Document:
         if xref != -1:
             mupdf.pdf_update_object(pdf, xref, new_obj)
         else:
+            obj = mupdf.pdf_trailer(pdf)
             n = mupdf.pdf_dict_len(new_obj)
             for i in range(n):
                 mupdf.pdf_dict_put(
