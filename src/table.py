@@ -2364,6 +2364,9 @@ class TableFinder:
 
         return filter_edges(edges, min_length=settings.edge_min_length)
 
+    def __bool__(self):
+        return bool(self.tables)
+
     def __getitem__(self, i):
         tcount = len(self.tables)
         if i >= tcount:
@@ -2371,6 +2374,12 @@ class TableFinder:
         while i < 0:
             i += tcount
         return self.tables[i]
+
+    def __iter__(self):
+        return iter(self.tables)
+
+    def __len__(self):
+        return len(self.tables)
 
 
 """
