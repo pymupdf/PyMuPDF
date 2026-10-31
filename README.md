@@ -46,6 +46,18 @@
 pip install --upgrade pymupdf
 ```
 
+If you have a broken installation due to upgrading PyMuPDF from earlier versions, or from running separate installation commands for `pymupdf-layout` or `pymupdf4llm`, then please use:
+
+```bash
+pip install --force-reinstall --no-cache-dir pymupdf
+```
+
+This will ensure a clean installation of PyMuPDF.
+
+
+
+### Wheels
+
 Wheels are available for **Windows**, **macOS**, and **Linux** on Python 3.11–3.15. If no pre-built wheel exists for your platform, pip will compile from source (requires a C/C++ toolchain).
 
 > PyMuPDF uses the ONNX Runtime for certain layout analysis features - ensure your Python environment can support it. For more details see [PyMuPDF Layout & ONNX Runtime](https://pymupdf.readthedocs.io/en/latest/rag.html#pymupdf-layout-and-onnx-runtime?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=installation)

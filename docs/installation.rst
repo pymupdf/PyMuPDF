@@ -30,18 +30,31 @@ For example:
 Installation
 ---------------------------------------------------------
 
-|PyMuPDF| should be installed using pip with::
+|PyMuPDF| should be installed using pip with:
 
-  pip install --upgrade pymupdf
+.. code-block:: bash
+    
+    pip install --upgrade pymupdf
 
 This will install from a Python wheel if one is available for your platform.
+
+If you have a broken installation due to upgrading |PyMuPDF| from earlier versions, 
+or from running separate installation commands for `pymupdf-layout` or
+`pymupdf4llm`, then please use:
+
+.. code-block:: bash
+    
+    pip install --force-reinstall --no-cache-dir pymupdf
+
+
+This will ensure a clean installation of PyMuPDF.
 
 .. note::
 
     PyMuPDF uses the ONNX Runtime for certain layout analysis features.
 
     For more details see: :ref:`PyMuPDF Layout & ONNX Runtime <pymupdf_layout_and_onnx_runtime>`.
-
+ 
 
 PyMuPDF Config
 ~~~~~~~~~~~~~~~~~
