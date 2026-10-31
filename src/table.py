@@ -393,12 +393,20 @@ def extract_cells(textpage, cell, markdown=False):
                 ):
                     continue  # skip spans outside cell
 
-                # only include chars with more than 50% bbox overlap
+                # only include chars with more than 50% bbox overlap.
+                # A char with an empty bbox (e.g. second half of a ligature
+                # with quad corrections unset, or a zero-width combining mark)
+                # has no area, so fall back to testing its origin: issue #5185.
                 span_text = ""
                 for char in span["chars"]:
                     this_char = char["c"]
                     bbox = pymupdf.Rect(char["bbox"])
-                    if abs(bbox & cell) > 0.5 * abs(bbox):
+                    if bbox.is_empty:
+                        if pymupdf.Point(char["origin"]) in pymupdf.Rect(cell):
+                            span_text += this_char
+                        elif this_char in white_spaces:
+                            span_text += " "
+                    elif abs(bbox & cell) > 0.5 * abs(bbox):
                         span_text += this_char
                     elif this_char in white_spaces:
                         span_text += " "
