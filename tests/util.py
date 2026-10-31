@@ -55,3 +55,25 @@ def _use_4llm():
         return False
     else:
         return True
+
+
+def diff_dicts( a, b, values=False):
+    '''
+    Returns string containing text of top-level differences between dicts.
+    '''
+    diff = 0
+    ret = ''
+    keys = sorted(a.keys() | b.keys())
+    for key in keys:
+        if ak := key in a:
+            av = a[key]
+        if bk := key in b:
+            bv = b[key]
+        if ak and bk:
+            if av != bv:
+                ret += f'* {key}: {av!r} => {bv!r}\n'
+        elif ak:
+            ret += f'- {key}: {av!r}\n'
+        elif bk:
+            ret += f'+ {key}: {bv!r}\n'
+    return ret

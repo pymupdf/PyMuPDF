@@ -85,7 +85,7 @@ def test_5164():
             path_out = os.path.normpath(f'{__file__}/../../tests/test_5164_out.pdf')
             doc.save(path_out)
     print(f'{num_errors=}')
-    if pymupdf.mupdf_version_tuple >= (1, 28, 6):
+    if pymupdf.mupdf_version_tuple >= (1, 28, 7):
         assert not num_errors
     else:
         assert num_errors == 5

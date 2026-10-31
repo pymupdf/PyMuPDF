@@ -1775,6 +1775,9 @@ static void jm_trace_text_span(
     fz_point dir = mupdf::ll_fz_transform_vector(mupdf::ll_fz_make_point(1, 0), mat); // writing direction
     double fsize = sqrt(dir.x * dir.x + dir.y * dir.y); // font size
 
+    fz_point vdir = mupdf::ll_fz_transform_vector(mupdf::ll_fz_make_point(0, 1), mat);
+    double vsize = sqrt(vdir.x * vdir.x + vdir.y * vdir.y);
+
     dir = mupdf::ll_fz_normalize_vector(dir);
 
     // compute effective ascender / descender
@@ -1785,8 +1788,8 @@ static void jm_trace_text_span(
         asc = 0.9;
     }
 
-    double ascsize = asc * fsize / (asc - dsc);
-    double dscsize = dsc * fsize / (asc - dsc);
+    double ascsize = asc * vsize / (asc - dsc);
+    double dscsize = dsc * vsize / (asc - dsc);
     int fflags = 0; // font flags
     int mono = mupdf::ll_fz_font_is_monospaced(span->font);
     fflags += mono * TEXT_FONT_MONOSPACED;
