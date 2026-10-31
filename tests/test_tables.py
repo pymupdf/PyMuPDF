@@ -1962,3 +1962,45 @@ def test_find_tables_union_keeps_one_coherent_table_group_without_content_suppor
         assert (tables[0].row_count, tables[0].col_count) == (1, 2)
     finally:
         doc.close()
+
+
+def test_5198():
+    """Cell text keeps decimal points when quad corrections are off.
+
+    Importing pymupdf4llm turns quad corrections off for the whole process.
+    find_tables() then built its characters from exact glyph boxes, so the
+    "." of "0.74" sat lower than the digits, was grouped onto a line of its
+    own and the cell read "0 74\\n.".
+    """
+    doc = pymupdf.open()
+    page = doc.new_page(width=595, height=842)
+    x0, y0, x1, y1, xm, ym = 72, 72, 472, 152, 272, 112
+    for p1, p2 in [
+        ((x0, y0), (x1, y0)),
+        ((x0, ym), (x1, ym)),
+        ((x0, y1), (x1, y1)),
+        ((x0, y0), (x0, y1)),
+        ((xm, y0), (xm, y1)),
+        ((x1, y0), (x1, y1)),
+    ]:
+        page.draw_line(p1, p2)
+    for text, point in [
+        ("P for interaction", (80, 100)),
+        ("Cooking fuel type", (280, 100)),
+        ("0.74", (80, 140)),
+        ("12.5 mg", (280, 140)),
+    ]:
+        page.insert_text(point, text, fontsize=11)
+
+    quad_before = bool(pymupdf.TOOLS.unset_quad_corrections())
+    pymupdf.TOOLS.unset_quad_corrections(True)  # as importing pymupdf4llm does
+    try:
+        tables = page.find_tables(use_layout=False).tables
+        assert [t.extract() for t in tables] == [
+            [["P for interaction", "Cooking fuel type"], ["0.74", "12.5 mg"]]
+        ]
+        # find_tables() restores the setting it found
+        assert pymupdf.TOOLS.unset_quad_corrections() is True
+    finally:
+        pymupdf.TOOLS.unset_quad_corrections(quad_before)
+        doc.close()

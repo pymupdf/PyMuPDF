@@ -3230,6 +3230,15 @@ def find_tables(
             tset = TableSettings.resolve(settings=settings)
             page.table_settings = tset
 
+            if not boxes:
+                # Without layout boxes this is the line-based finder, whose
+                # characters need the minimum glyph heights set above. Those
+                # only take effect with quad corrections on; without them each
+                # char keeps its exact glyph box, a "." sits lower than the
+                # digits around it and is grouped onto a line of its own
+                # ("0.74" becomes "0 74\n."). Turn corrections on, whatever
+                # get_layout() above or an import of pymupdf4llm left them at.
+                pymupdf.TOOLS.unset_quad_corrections(False)
             TEXTPAGE = make_chars(page, clip=clip)  # create character list of page
             make_edges(
                 page,
