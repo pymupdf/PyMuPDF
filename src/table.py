@@ -336,7 +336,7 @@ def make_table_from_bbox(textpage, word_rects, rect):
     return cells
 
 
-def extract_cells(textpage, cell, markdown=False):
+def extract_cells(textpage, cell, markdown=False, *, clean=False):
     """Extract text from a rect-like 'cell' as plain or MD styled text.
 
     This function should ultimately be used to extract text from a table cell.
@@ -348,6 +348,8 @@ def extract_cells(textpage, cell, markdown=False):
             TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES.
         cell: A tuple (x0, y0, x1, y1) defining the cell's bbox.
         markdown: If True, return text formatted for Markdown.
+        clean: With markdown=True, HTML-escape source text without escaping
+            generated line breaks and formatting.
 
     Returns:
         A string with the text extracted from the cell.
@@ -427,6 +429,10 @@ def extract_cells(textpage, cell, markdown=False):
 
                 if len(span["chars"]) > 2:
                     span_text = span_text.rstrip()
+
+                # Escape source text before it is combined with generated markup.
+                if clean:
+                    span_text = html.escape(span_text)
 
                 # if span continues previous styling: extend cell text
                 if (ls := len(suffix)) and text.endswith(suffix):
@@ -1807,7 +1813,7 @@ class Table:
             for j, cell in enumerate(row):
                 if cell is not None:
                     cells[i][j] = extract_cells(
-                        self.textpage, cell_boxes[i][j], markdown=True
+                        self.textpage, cell_boxes[i][j], markdown=True, clean=clean
                     )
 
         if fill_empty:  # fill "None" cells where possible
@@ -1828,9 +1834,9 @@ class Table:
         for i, name in enumerate(self.header.names):
             if not name:  # generate a name if empty
                 name = f"Col{i+1}"
+            if clean:
+                name = html.escape(name)
             name = name.replace("\n", "<br>")  # use HTML line breaks
-            if clean:  # remove sensitive syntax
-                name = html.escape(name.replace("-", "&#45;"))
             output += name + "|"
 
         output += "\n"
@@ -1848,8 +1854,6 @@ class Table:
                 # use HTML line break tag
                 if cell is None:
                     cell = ""
-                if clean:  # remove sensitive syntax
-                    cell = html.escape(cell.replace("-", "&#45;"))
                 line += cell + "|"
             line += "\n"
             output += line
