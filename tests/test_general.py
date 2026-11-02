@@ -2422,15 +2422,24 @@ def test_4896():
 
 def test_5182():
     print()
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_5182(): not running on Pyodide - cannot run child processes.')
+        return
     print(f'test_5182(): {platform.system()=}')
     print(f'test_5182(): {pymupdf._build.swig_version_tuple=}')
     print(f'test_5182(): {pipcl.python_version_tuple()=}')
     e = pipcl.run(f'{sys.executable} -W error -c "import pymupdf"', check=0)
     print(f'{e=}')
+    expect_error = False
     if (1
             and platform.system() == 'Darwin'
             and pymupdf._build.swig_version_tuple < (4, 4)
             ):
+        expect_error = True
+    if sysconfig.get_config_var('Py_GIL_DISABLED'):
+        # Warning `The global interpreter lock (GIL) has been enabled` is treated as an error.
+        expect_error = True
+    if expect_error:
         assert e, f'Did not receive expected error.'
     else:
         assert not e, f'Received unexpected error.'
