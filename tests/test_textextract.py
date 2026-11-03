@@ -341,6 +341,10 @@ def test_4524():
     print(f'{len(texts_single)=}')
     print(f'{len(texts_mp)=}')
     assert texts_mp == texts_single
+    if platform.system() != 'Windows':
+        texts_fork = pymupdf.get_text(path, method='fork', pages=[1, 3, 5])
+        print(f'{len(texts_fork)=}')
+        assert texts_fork == texts_single
 
 
 @pytest.mark.parametrize('pages', [None, [2, 0]])
