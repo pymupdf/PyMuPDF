@@ -972,6 +972,7 @@ class Annot:
 
         fs = mupdf.pdf_dict_get(annot_obj, PDF_NAME('FS'))
 
+        filename = None
         o = mupdf.pdf_dict_get(fs, PDF_NAME('UF'))
         if o.m_internal:
             filename = mupdf.pdf_to_text_string(o)
@@ -2074,7 +2075,7 @@ class Archive:
                 raise ValueError(f'Not a file or directory: {content!r}')
 
         elif is_binary_data(content):
-            assert isinstance(path, str) and path != '' \
+            assert isinstance(path, str) and path != '', \
                     f'Need name for binary content, but {path=}.'
             self._add_treeitem(content, path)
             return make_subarch([path], None, 'tree')
@@ -7244,7 +7245,8 @@ class Document:
             """
             s = f"{label['startpage']}<<"
             if label.get("prefix", "") != "":
-                s += f"/P({label['prefix']})"
+                # Convert to a valid PDF string even when outside ASCII range
+                s += f"/P {get_pdf_str(label['prefix'])}"
             if label.get("style", "") != "":
                 s += f"/S/{label['style']}"
             if label.get("firstpagenum", 1) > 1:
@@ -7340,14 +7342,14 @@ class Document:
             title = get_pdf_str(o[1])  # title
             pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
             page_xref = doc.page_xref(pno)
-            page_height = doc.page_cropbox(pno).height
-            top = Point(72, page_height - 36)
+            cropbox = doc.page_cropbox(pno)
+            top = Point(72, cropbox.y1 - 36)
             dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
             if o[2] < 0:
                 dest_dict["kind"] = LINK_NONE
             if len(o) > 3:  # some target is specified
                 if type(o[3]) in (int, float):  # convert a number to a point
-                    dest_dict["to"] = Point(72, page_height - o[3])
+                    dest_dict["to"] = Point(72, cropbox.y1 - o[3])
                 else:  # if something else, make sure we have a dict
                     # We make a copy of o[3] to avoid modifying our caller's data.
                     dest_dict = o[3].copy() if type(o[3]) is dict else dest_dict
@@ -7356,7 +7358,7 @@ class Document:
                     else:  # transform target to PDF coordinates
                         page = doc[pno]
                         point = Point(dest_dict["to"])
-                        point.y = page.cropbox.height - point.y
+                        point.y = page.cropbox.y1 - point.y
                         point = point * page.rotation_matrix
                         dest_dict["to"] = (point.x, point.y)
             d = {}
@@ -7509,9 +7511,9 @@ class Document:
             if dest_dict["kind"] == LINK_GOTO:
                 pno = dest_dict["page"]
                 page_xref = doc.page_xref(pno)
-                page_height = doc.page_cropbox(pno).height
+                cropbox = doc.page_cropbox(pno)
                 to = dest_dict.get('to', Point(72, 36))
-                to.y = page_height - to.y
+                to.y = cropbox.y1 - to.y
                 dest_dict["to"] = to
             action = utils.getDestStr(page_xref, dest_dict)
             if not action.startswith("/A"):
@@ -7545,12 +7547,12 @@ class Document:
             if pno is None or pno not in range(1, doc.page_count + 1):
                 raise ValueError("bad page number")
             page_xref = doc.page_xref(pno - 1)
-            page_height = doc.page_cropbox(pno - 1).height
+            cropbox = doc.page_cropbox(pno - 1)
             if to is None:
-                to = Point(72, page_height - 36)
+                to = Point(72, cropbox.y1 - 36)
             else:
                 to = Point(to)
-                to.y = page_height - to.y
+                to.y = cropbox.y1 - to.y
 
         ddict = {
             "kind": kind,
@@ -8212,6 +8214,7 @@ class Document:
         if xref != -1:
             mupdf.pdf_update_object(pdf, xref, new_obj)
         else:
+            obj = mupdf.pdf_trailer(pdf)
             n = mupdf.pdf_dict_len(new_obj)
             for i in range(n):
                 mupdf.pdf_dict_put(
@@ -9518,6 +9521,8 @@ class Widget:
         if bstate is None:
             bstate = dict()
         for k in bstate.keys():
+            if bstate[k] is None:
+                continue
             for v in bstate[k]:
                 if v != "Off":
                     return v
@@ -13688,7 +13693,7 @@ class Page:
             lang = mupdf.fz_text_language_from_string(language)
             assert hasattr(mupdf, 'fz_string_from_text_language2')
             mupdf.pdf_dict_put_text_string(
-                    pdfpage.obj,
+                    pdfpage.obj(),
                     PDF_NAME('Lang'),
                     mupdf.fz_string_from_text_language2(lang)
                     )
@@ -14793,7 +14798,7 @@ class Pixmap:
         if idx is None:
             raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
         if self.alpha and idx in (2, 6, 7):
-            raise ValueError("'{output}' cannot have alpha")
+            raise ValueError(f"'{output}' cannot have alpha")
         if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
             raise ValueError(f"unsupported colorspace for '{output}'")
         if idx == 7:
@@ -20962,11 +20967,7 @@ def JM_get_page_labels(liste, nums):
         key = mupdf.pdf_resolve_indirect( mupdf.pdf_array_get(nums, i))
         pno = mupdf.pdf_to_int(key)
         val = mupdf.pdf_resolve_indirect( mupdf.pdf_array_get(nums, i + 1))
-        res = JM_object_to_buffer(val, 1, 0)
-        c = mupdf.fz_buffer_extract(res)
-        assert isinstance(c, bytes)
-        c = c.decode('utf-8')
-        liste.append( (pno, c))
+        liste.append((pno, val))
 
 
 def JM_get_script(key):
@@ -21617,7 +21618,7 @@ def JM_matrix_from_py(m):
     for i in range(6):
         a[i] = JM_FLOAT_ITEM(m, i)
         if a[i] is None:
-            return mupdf.FzRect()
+            return mupdf.FzMatrix()
     return mupdf.FzMatrix(a[0], a[1], a[2], a[3], a[4], a[5])
 
 
@@ -25600,7 +25601,7 @@ def apply_pages(
             pages = range(len(document))
         for pno in pages:
             page = document[pno]
-            r = pagefn(page, *pagefn_args, **initfn_kwargs)
+            r = pagefn(page, *pagefn_args, **pagefn_kwargs)
             ret.append(r)
     
     else:
