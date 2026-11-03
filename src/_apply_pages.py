@@ -137,12 +137,11 @@ def _fork(
         while 1:
             if verbose:
                 pymupdf.log(f'{os.getpid()=}: calling get().')
-            item = queue_down.get()
+            index = queue_down.get()
             if verbose:
-                pymupdf.log(f'{os.getpid()=}: {item=}.')
-            if item is None:
+                pymupdf.log(f'{os.getpid()=}: {index=}.')
+            if index is None:
                 break
-            index, page_num = item
             try:
                 if not document:
                     if stats:
@@ -153,6 +152,7 @@ def _fork(
                 
                 if stats:
                     t = time.time()
+                page_num = pages[index]
                 page = document[page_num]
                 if stats:
                     _stats_write(t, 'document[page_num]')
@@ -207,8 +207,8 @@ def _fork(
             t = time.time()
         if verbose:
             pymupdf.log(f'Sending page numbers.')
-        for index, page_num in enumerate(pages):
-            queue_down.put((index, page_num))
+        for index in range(len(pages)):
+            queue_down.put(index)
         if stats:
             _stats_write(t, 'Send page numbers')
 
