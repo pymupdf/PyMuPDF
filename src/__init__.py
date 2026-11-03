@@ -4443,6 +4443,11 @@ class Document:
                 f, t = args
                 if not (type(f) is int and type(t) is int):
                     raise ValueError("both arguments must be int")
+                # Wrap -ve f and t into range 0..page_count-1.
+                if f < 0:
+                    f %= page_count
+                if t < 0:
+                    t %= page_count
                 if f > t:
                     f, t = t, f
                 if not f <= t < page_count:
