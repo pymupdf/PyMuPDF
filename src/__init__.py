@@ -2881,12 +2881,12 @@ class Document:
         start = i.start if i.start else 0
         stop = i.stop if i.stop else pc
         step = i.step if i.step else 1
-        while start < 0:
-            start += pc
+        if start < 0:
+            start %= pc
         if start >= pc:
             raise ValueError("bad page number(s)")
-        while stop < 0:
-            stop += pc
+        if stop < 0:
+            stop %= pc
         if stop > pc:
             raise ValueError("bad page number(s)")
         return self.delete_pages(range(start, stop, step))
@@ -4429,10 +4429,10 @@ class Document:
                 raise ValueError("cannot mix keyword and positional argument")
             f = kw.get("from_page", -1)  # first page to delete
             t = kw.get("to_page", -1)  # last page to delete
-            while f < 0:
-                f += page_count
-            while t < 0:
-                t += page_count
+            if f < 0:
+                f %= page_count
+            if t < 0:
+                t %= page_count
             if not f <= t < page_count:
                 raise ValueError("bad page number(s)")
             numbers = tuple(range(f, t + 1))
@@ -4443,6 +4443,11 @@ class Document:
                 f, t = args
                 if not (type(f) is int and type(t) is int):
                     raise ValueError("both arguments must be int")
+                # Wrap -ve f and t into range 0..page_count-1.
+                if f < 0:
+                    f %= page_count
+                if t < 0:
+                    t %= page_count
                 if f > t:
                     f, t = t, f
                 if not f <= t < page_count:
@@ -4450,8 +4455,8 @@ class Document:
                 numbers = tuple(range(f, t + 1))
             elif isinstance(args[0], int):
                 pno = args[0]
-                while pno < 0:
-                    pno += page_count
+                if pno < 0:
+                    pno %= page_count
                 numbers = (pno,)
             else:
                 numbers = tuple(args[0])
@@ -5834,8 +5839,8 @@ class Document:
             raise ValueError("page not in document")
         if type(page_id) is int and page_id < 0:
             np = self.page_count
-            while page_id < 0:
-                page_id += np
+            if page_id < 0:
+                page_id %= np
         if isinstance(page_id, int):
             page = mupdf.fz_load_page(self.this, page_id)
         else:
@@ -5857,8 +5862,8 @@ class Document:
         this_doc = self.this
         loc = mupdf.fz_make_location(-1, -1)
         page_count = mupdf.fz_count_pages(this_doc)
-        while pno < 0:
-            pno += page_count
+        if pno < 0:
+            pno %= page_count
         if pno >= page_count:
             raise ValueError( MSG_BAD_PAGENO)
         loc = mupdf.fz_location_from_page_number(this_doc, pno)
@@ -6008,8 +6013,8 @@ class Document:
         else:
             page_count = mupdf.fz_count_pages(self.this)
             pdf_document = _as_pdf_document(self)
-        while n < 0:
-            n += page_count
+        if n < 0:
+            n %= page_count
         if n > page_count:
             raise ValueError( MSG_BAD_PAGENO)
         page_obj = mupdf.pdf_lookup_page_obj(pdf_document, n)
@@ -6035,8 +6040,8 @@ class Document:
         this_doc = self.this
         page_count = mupdf.fz_count_pages( this_doc)
         n = pno
-        while n < 0:
-            n += page_count
+        if n < 0:
+            n %= page_count
         pdf = _as_pdf_document(self)
         if n >= page_count:
             raise ValueError( MSG_BAD_PAGENO)
@@ -6052,8 +6057,8 @@ class Document:
         """Convert (chapter, pno) to page number."""
         if type(page_id) is int:
             np = self.page_count
-            while page_id < 0:
-                page_id += np
+            if page_id < 0:
+                page_id %= np
             page_id = (0, page_id)
         if page_id not in self:
             raise ValueError("page id not in document")
@@ -6070,8 +6075,8 @@ class Document:
             raise ValueError("document closed")
         page_count = mupdf.fz_count_pages(self.this)
         n = pno
-        while n < 0:
-            n += page_count
+        if n < 0:
+            n %= page_count
         pdf = _as_pdf_document(self)
         xref = 0
         if n >= page_count:
@@ -6116,8 +6121,8 @@ class Document:
             return
         # set the start value
         start = start or 0
-        while start < 0:
-            start += self.page_count
+        if start < 0:
+            start %= self.page_count
         if start not in range(self.page_count):
             raise ValueError("bad start page number")
 
@@ -13758,8 +13763,8 @@ class Page:
         if rect.is_empty or rect.is_infinite:
             raise ValueError("rect must be finite and not empty")
 
-        while pno < 0:  # support negative page numbers
-            pno += docsrc.page_count
+        if pno < 0:  # support negative page numbers
+            pno %= docsrc.page_count
         src_page = docsrc[pno]  # load source page
 
         tar_rect = rect * ~page.transformation_matrix  # target rect in PDF coordinates
