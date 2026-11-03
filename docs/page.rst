@@ -2044,7 +2044,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
    .. method:: show_pdf_page(rect, docsrc, pno=0, keep_proportion=True, overlay=True, oc=0, rotate=0, clip=None)
 
-      PDF only: Display a page of another PDF. This is similar to :meth:`Page.insert_image` but the source page will appear like a copy of itself and will not be rasterized. This is a multi-purpose method. For example, you can use it to:
+      PDF only. Display a page of another PDF. This is similar to :meth:`Page.insert_image` but the source page will appear like a copy of itself and will not be rasterized. This is a multi-purpose method. For example, you can use it to:
 
       * create "n-up" versions of existing PDF files, combining several input pages into **one output page** (see example `combine.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/combine-pages/combine.py>`_),
       * create "posterized" PDF files, i.e. every input page is split up in parts which each create a separate output page (see `posterize.py <https://github.com/pymupdf/PyMuPDF-Utilities/blob/master/examples/posterize-document/posterize.py>`_),
@@ -2065,7 +2065,11 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       :arg rect_like clip: choose which part of the source page to show. Default is the full page, else must be finite and its intersection with the source page must not be empty.
 
-      .. note:: In contrast to method :meth:`Document.insert_pdf`, this method does not copy annotations, widgets or links, so these objects are not included in the target [#f6]_. But all its **other resources (text, images, fonts, etc.)** will be imported into the current PDF. They will therefore appear in text extractions and in :meth:`get_fonts` and :meth:`get_images` lists -- even if they are not contained in the visible area given by *clip*.
+      .. note::
+
+         1. In contrast to method :meth:`Document.insert_pdf`, this method does not copy annotations, widgets or links, so these objects are not included in the target [#f6]_. But all its **other resources (text, images, fonts, etc.)** will be imported into the current PDF. They will therefore appear in text extractions and in :meth:`get_fonts` and :meth:`get_images` lists -- even if they are not contained in the visible area given by *clip*.
+
+         2. Be wary about source page rotation. Taking a source page rotation into account may make things quite complicated and confusing -- especially when you also use the `rotate` parameter. We therefore recommend to use method :meth:`Page.remove_rotation` first if your source PDF is suspected (or known) to have rotated pages. Simply do `docsrc[i].remove_rotation()` before you do ``page.show_pdf_page(rect, docsrc, i, ...)``.
 
       Example: Show the same source page, rotated by 90 and by -90 degrees:
 

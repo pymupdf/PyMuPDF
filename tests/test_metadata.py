@@ -27,6 +27,34 @@ def test_erase_meta():
     assert statement2 or statement1
 
 
+def test_clear_metadata_xref_stream():
+    """set_metadata({}) must clear metadata on a cross-reference-stream PDF."""
+    doc = pymupdf.open()
+    doc.new_page()
+    doc.set_metadata({"title": "Title", "author": "Author"})
+
+    doc = pymupdf.open("pdf", doc.tobytes(use_objstms=1))
+    assert doc.xref_get_key(-1, "Type") == ("name", "/XRef")
+
+    doc.set_metadata({})
+    assert not doc.metadata["title"]
+    assert not doc.metadata["author"]
+
+
+def test_scrub_xref_stream():
+    """scrub() must clear metadata on a cross-reference-stream PDF."""
+    doc = pymupdf.open()
+    doc.new_page()
+    doc.set_metadata({"title": "Title", "author": "Author"})
+
+    doc = pymupdf.open("pdf", doc.tobytes(use_objstms=1))
+    assert doc.xref_get_key(-1, "Type") == ("name", "/XRef")
+
+    doc.scrub()
+    assert not doc.metadata["title"]
+    assert not doc.metadata["author"]
+
+
 def test_3237():
     filename = os.path.abspath(f'{__file__}/../../tests/resources/001003ED.pdf')
     with pymupdf.open(filename) as doc:

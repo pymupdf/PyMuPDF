@@ -205,13 +205,18 @@ EDGES = _TableStateList(_EDGES_VAR)  # vector graphics from PyMuPDF
 CHARS = _TableStateList(_CHARS_VAR)  # text characters from PyMuPDF
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
+
 FLAGS = (
     0
     | pymupdf.TEXTFLAGS_TEXT
     | pymupdf.TEXT_COLLECT_STYLES
-    | pymupdf.TEXT_ACCURATE_BBOXES
     | pymupdf.TEXT_MEDIABOX_CLIP
 )
+def textpage_flags():
+    if pymupdf._layout_available() and pymupdf._layout_enabled:
+        return FLAGS | pymupdf.TEXT_ACCURATE_BBOXES
+    return FLAGS
+
 # needed by mupdf function fz_find_table_within_bounds().
 TABLE_DETECTOR_FLAGS = (
     0
@@ -236,12 +241,15 @@ def rect_in_rect(inner, outer):
 
 def chars_in_rect(CHARS, rect):
     """Check whether any of the chars in CHAR are inside rectangle 'rect'."""
+    # NB: 'rect' (e.g. from page.get_drawings()) and c["x0"]/c["x1"] are in
+    # top-down page space; c["top"]/c["bottom"] are the top-down counterparts
+    # of c["y0"]/c["y1"], which are in PDF-native (bottom-up) space instead.
     return any(
         1
         and rect[0] <= c["x0"]
         and c["x1"] <= rect[2]
-        and rect[1] <= c["y0"]
-        and rect[3] >= c["y1"]
+        and rect[1] <= c["top"]
+        and rect[3] >= c["bottom"]
         for c in CHARS
     )
 
@@ -2051,17 +2059,17 @@ class Table:
             h0 = line_heights[-1]
             bold0 = line_bolds[-1]
 
-            if bold0 and not bold:
-                break  # stop if switching from bold to non-bold
-
             # if fitting in height of previous span, modify bbox
             if y0 - y1 <= y_delta or abs((y0 - h0) - s["bbox"][1]) <= y_delta:
                 s["bbox"] = (s["bbox"][0], y0 - h0, s["bbox"][2], y0)
                 spans[i] = s
+                line_heights[-1] = min(h0, h)
                 if bold:
                     line_bolds[-1] = bold
                 continue
-            elif y0 - y1 > 1.5 * h0:
+            if bold0 and not bold:
+                break  # stop if switching from bold to non-bold
+            if y0 - y1 > 1.5 * h0:
                 break  # stop if distance to previous line too large
             select.append(y1)
             line_heights.append(h)
@@ -2395,7 +2403,7 @@ def make_chars(page, clip=None):
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    TEXTPAGE = page.get_textpage(clip=clip, flags=FLAGS)
+    TEXTPAGE = page.get_textpage(clip=clip, flags=textpage_flags())
     blocks = page.get_text("rawdict", textpage=TEXTPAGE)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
