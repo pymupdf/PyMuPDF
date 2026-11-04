@@ -19,7 +19,7 @@ def install_required_packages():
         # We can't run child processes, so rely on required test packages
         # already being installed, e.g. in our wheel's <requires_dist>.
         return
-    packages = 'fontTools pymupdf-fonts flake8 pylint codespell mypy'
+    packages = 'fontTools pymupdf-fonts flake8 pylint codespell mypy pandas'
     packages += ' pipcl'
     if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
         # No pillow wheel available, and doesn't build easily.
