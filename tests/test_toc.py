@@ -328,3 +328,15 @@ def test_set_toc_y_with_shifted_cropbox():
     doc.close()
 
 
+def test_5239():
+    doc = pymupdf.open()
+    doc.new_page()
+    doc.set_toc([[1, "Chapter 1", 1]])
+
+    p = pymupdf.Point(100, 200)
+    dest_dict = {"kind": pymupdf.LINK_GOTO, "page": 0, "to": p}
+    doc.set_toc_item(0, dest_dict=dest_dict)
+    toc = doc.get_toc(simple=False)
+    link_dict = toc[0][-1]
+    assert link_dict["to"] == p
+
