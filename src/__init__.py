@@ -7517,8 +7517,9 @@ class Document:
                 pno = dest_dict["page"]
                 page_xref = doc.page_xref(pno)
                 cropbox = doc.page_cropbox(pno)
-                to = dest_dict.get('to', Point(72, 36))
+                to = Point(dest_dict.get('to', (72, 36)))
                 to.y = cropbox.y1 - to.y
+                dest_dict = dest_dict.copy()
                 dest_dict["to"] = to
             action = utils.getDestStr(page_xref, dest_dict)
             if not action.startswith("/A"):
