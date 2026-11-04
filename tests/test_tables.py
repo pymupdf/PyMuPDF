@@ -1996,3 +1996,24 @@ def test_5175():
     assert len(tables) == 1
     assert tables[0].row_count == 4
     doc.close()
+
+
+def test_5241():
+    """Ensure that 'to_pandas()' leaves column headers untouched."""
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.draw_rect([50, 50, 200, 100])
+    page.draw_line([50, 75], [200, 75])
+    page.draw_line([125, 50], [125, 100])
+    page.insert_text([60, 65], "Total")
+    page.insert_text([135, 65], "Total")
+    page.insert_text([60, 90], "10")
+    page.insert_text([135, 90], "20")
+
+    tabs = page.find_tables()
+    tab = tabs[0]
+    names_before = list(tab.header.names)
+    tab.to_pandas()
+    names_after = list(tab.header.names)
+    assert names_before == names_after, "Column headers changed by to_pandas()"
+
