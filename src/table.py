@@ -1889,7 +1889,7 @@ class Table:
         pd_dict = {}
         extract = self.extract()
         hdr = self.header
-        names = self.header.names
+        names = list(self.header.names)
         hdr_len = len(names)
         # ensure uniqueness of column names
         for i in range(hdr_len):
