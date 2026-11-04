@@ -2000,6 +2000,9 @@ def test_5175():
 
 def test_5241():
     """Ensure that 'to_pandas()' leaves column headers untouched."""
+    if platform.system() == 'Windows' and sys.maxsize.bit_length()+1 == 32:
+        print(f'test_5241(): not running on win-x32 because pandas not available.')
+        return
     doc = pymupdf.open()
     page = doc.new_page()
     page.draw_rect([50, 50, 200, 100])
