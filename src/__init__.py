@@ -24416,9 +24416,9 @@ class JM_new_lineart_device_Device(mupdf.FzDevice2):
         self.use_virtual_clip_stroke_text()
         self.use_virtual_clip_text()
         
-        self.use_virtual_fill_text
-        self.use_virtual_stroke_text
-        self.use_virtual_ignore_text
+        self.use_virtual_fill_text()
+        self.use_virtual_stroke_text()
+        self.use_virtual_ignore_text()
         
         self.use_virtual_fill_shade()
         self.use_virtual_fill_image()
