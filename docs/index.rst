@@ -53,6 +53,7 @@ This documentation covers all versions up to |version|.
    the-basics.rst
    tutorial.rst
    ocr/index.rst
+   chunking/index.rst
    resources.rst
    faq/index.rst
 
