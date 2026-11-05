@@ -204,7 +204,7 @@ def get_sorted_text(
             lrect |= r  # update line bbox
             # convert distance to previous word to multiple spaces
             dist = max(
-                int(round((r.x0 - x1) / r.width * len(t))),
+                int(round((r.x0 - x1) / r.width * len(t))) if r.width else 0,
                 0 if (x1 == clip.x0 or r.x0 <= x1) else 1,
             )  # number of space characters
 
@@ -492,8 +492,6 @@ def get_text(
     }
     option = option.lower()
     assert option in formats
-    if option not in formats:
-        option = "text"
     if flags is None:
         flags = formats[option]
 
@@ -916,32 +914,26 @@ def rule_dict(item):
 
     Args:
         item -- a tuple (pno, rule) with the start page number and the rule
-                string like <</S/D...>>.
+                PDF object (a dictionary like <</S/D...>>).
     Returns:
         A dict like
         {'startpage': int, 'prefix': str, 'style': str, 'firstpagenum': int}.
     """
-    # Jorj McKie, 2021-01-06
-
     pno, rule = item
-    rule = rule[2:-2].split("/")[1:]  # strip "<<" and ">>"
     d = {"startpage": pno, "prefix": "", "firstpagenum": 1}
-    skip = False
-    for i, item in enumerate(rule): # pylint: disable=redefined-argument-from-local
-        if skip:  # this item has already been processed
-            skip = False  # deactivate skipping again
-            continue
-        if item == "S":  # style specification
-            d["style"] = rule[i + 1]  # next item has the style
-            skip = True  # do not process next item again
-            continue
-        if item.startswith("P"):  # prefix specification: extract the string
-            x = item[1:].replace("(", "").replace(")", "")
-            d["prefix"] = x
-            continue
-        if item.startswith("St"):  # start page number specification
-            x = int(item[2:])
-            d["firstpagenum"] = x
+    if not isinstance(rule, pymupdf.mupdf.PdfObj):
+        return d
+    # We need no type checking for 'rule' here, because pdf_dict_len()
+    # is zero if it is no valid PDF dictionary.
+    for i in range(rule.pdf_dict_len()):
+        key = rule.pdf_dict_get_key(i)
+        value = rule.pdf_dict_get_val(i)
+        if key.pdf_to_name() == "S":
+            d["style"] = value.pdf_to_name()
+        elif key.pdf_to_name() == "P":
+            d["prefix"] = value.pdf_to_text_string()
+        elif key.pdf_to_name() == "St":
+            d["firstpagenum"] = value.pdf_to_int()
     return d
 
 

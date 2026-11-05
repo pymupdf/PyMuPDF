@@ -191,3 +191,15 @@ def test_4790():
         # Expect correct result.
         assert len(document) == 1, f'{len(document)=}'
     
+
+def test_5240():
+    def make_document():
+        document = pymupdf.open()
+        n = 5
+        for _ in range(n):
+            document.new_page()
+        return document
+    document = make_document()
+    document.delete_pages(from_page=-2, to_page=-1)
+    document = make_document()
+    document.delete_pages(-2, -1)

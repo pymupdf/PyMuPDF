@@ -315,3 +315,28 @@ def test_3820():
         assert epage == dest["page"] + 1
 
 
+def test_set_toc_y_with_shifted_cropbox():
+    """TOC y is in page space. Destinations are in PDF user space (MediaBox)."""
+    doc = pymupdf.open()
+    page = doc.new_page(width=612, height=792)
+    page.set_cropbox(pymupdf.Rect(108, 90, 504, 702))
+    y = 304.6222839355469
+    doc.set_toc([[1, "title", 1, y]])
+    toc = doc.get_toc(simple=False)
+    actual_y = toc[0][3]["to"][1]
+    assert abs(actual_y - y) < 0.05, (y, actual_y)
+    doc.close()
+
+
+def test_5239():
+    doc = pymupdf.open()
+    doc.new_page()
+    doc.set_toc([[1, "Chapter 1", 1]])
+
+    p = pymupdf.Point(100, 200)
+    dest_dict = {"kind": pymupdf.LINK_GOTO, "page": 0, "to": p}
+    doc.set_toc_item(0, dest_dict=dest_dict)
+    toc = doc.get_toc(simple=False)
+    link_dict = toc[0][-1]
+    assert link_dict["to"] == p
+

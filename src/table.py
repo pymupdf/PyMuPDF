@@ -205,13 +205,18 @@ EDGES = _TableStateList(_EDGES_VAR)  # vector graphics from PyMuPDF
 CHARS = _TableStateList(_CHARS_VAR)  # text characters from PyMuPDF
 TEXT_BOLD = mupdf.FZ_STEXT_BOLD
 TEXT_STRIKEOUT = mupdf.FZ_STEXT_STRIKEOUT
+
 FLAGS = (
     0
     | pymupdf.TEXTFLAGS_TEXT
     | pymupdf.TEXT_COLLECT_STYLES
-    | pymupdf.TEXT_ACCURATE_BBOXES
     | pymupdf.TEXT_MEDIABOX_CLIP
 )
+def textpage_flags():
+    if pymupdf._layout_available() and pymupdf._layout_enabled:
+        return FLAGS | pymupdf.TEXT_ACCURATE_BBOXES
+    return FLAGS
+
 # needed by mupdf function fz_find_table_within_bounds().
 TABLE_DETECTOR_FLAGS = (
     0
@@ -236,12 +241,15 @@ def rect_in_rect(inner, outer):
 
 def chars_in_rect(CHARS, rect):
     """Check whether any of the chars in CHAR are inside rectangle 'rect'."""
+    # NB: 'rect' (e.g. from page.get_drawings()) and c["x0"]/c["x1"] are in
+    # top-down page space; c["top"]/c["bottom"] are the top-down counterparts
+    # of c["y0"]/c["y1"], which are in PDF-native (bottom-up) space instead.
     return any(
         1
         and rect[0] <= c["x0"]
         and c["x1"] <= rect[2]
-        and rect[1] <= c["y0"]
-        and rect[3] >= c["y1"]
+        and rect[1] <= c["top"]
+        and rect[3] >= c["bottom"]
         for c in CHARS
     )
 
@@ -705,6 +713,30 @@ class WordMap:
         return TextMap(_textmap)
 
 
+def _line_top(obj):
+    """Vertical position used to group chars and words into text lines.
+
+    make_chars() stores "line_top" for every char: the top of the text line
+    computed from the char's baseline and font metrics, i.e. where the quad
+    correction with small glyph heights would put the top of the char box. It
+    is the same for every char on a line whether or not quad corrections are
+    on. The bbox top ("doctop") is used for objects that do not carry it.
+    """
+    return obj.get("line_top", obj["doctop"])
+
+
+def _line_x0(obj):
+    """Left edge used to group rotated (non-upright) chars and words into lines:
+    the metric-derived "line_x0" stored by make_chars() for vertical lines, else
+    the bbox left edge ("x0")."""
+    return obj.get("line_x0", obj["x0"])
+
+
+def _line_x1(obj):
+    """Right edge used to order the lines of a rotated cell, same source."""
+    return obj.get("line_x1", obj["x1"])
+
+
 class WordExtractor:
     def __init__(
         self,
@@ -737,6 +769,9 @@ class WordExtractor:
 
     def merge_chars(self, ordered_chars: list):
         x0, top, x1, bottom = objects_to_bbox(ordered_chars)
+        line_tops = [c["line_top"] for c in ordered_chars if "line_top" in c]
+        line_x0s = [c["line_x0"] for c in ordered_chars if "line_x0" in c]
+        line_x1s = [c["line_x1"] for c in ordered_chars if "line_x1" in c]
         doctop_adj = ordered_chars[0]["doctop"] - ordered_chars[0]["top"]
         upright = ordered_chars[0]["upright"]
         direction = 1 if (self.horizontal_ltr if upright else self.vertical_ttb) else -1
@@ -769,6 +804,12 @@ class WordExtractor:
 
         for key in self.extra_attrs:
             word[key] = ordered_chars[0][key]
+
+        if line_tops:  # like the word top, the smallest of its chars
+            word["line_top"] = min(line_tops)
+        if line_x0s:  # like the word's x0 and x1
+            word["line_x0"] = min(line_x0s)
+            word["line_x1"] = max(line_x1s)
 
         return word
 
@@ -814,8 +855,8 @@ class WordExtractor:
         if curr_char["upright"]:
             x = self.x_tolerance
             y = self.y_tolerance
-            ay = prev_char["top"]
-            cy = curr_char["top"]
+            ay = _line_top(prev_char)
+            cy = _line_top(curr_char)
             if self.horizontal_ltr:
                 ax = prev_char["x0"]
                 bx = prev_char["x1"]
@@ -828,8 +869,8 @@ class WordExtractor:
         else:
             x = self.y_tolerance
             y = self.x_tolerance
-            ay = prev_char["x0"]
-            cy = curr_char["x0"]
+            ay = _line_x0(prev_char)
+            cy = _line_x0(curr_char)
             if self.vertical_ttb:
                 ax = prev_char["top"]
                 bx = prev_char["bottom"]
@@ -884,11 +925,11 @@ class WordExtractor:
 
         for upright_cluster in cluster_objects(list(chars), upright_key, 0):
             upright = upright_cluster[0]["upright"]
-            cluster_key = "doctop" if upright else "x0"
+            cluster_key = _line_top if upright else _line_x0
 
             # Cluster by line
             subclusters = cluster_objects(
-                upright_cluster, itemgetter(cluster_key), self.y_tolerance
+                upright_cluster, cluster_key, self.y_tolerance
             )
 
             for sc in subclusters:
@@ -961,13 +1002,13 @@ def extract_text(chars: list, **kwargs) -> str:
             rotation = 0
 
         if rotation == 90:
-            words.sort(key=lambda w: (w["x1"], -w["top"]))
+            words.sort(key=lambda w: (_line_x1(w), -w["top"]))
             lines = " ".join([w["text"] for w in words])
         elif rotation == 270:
-            words.sort(key=lambda w: (-w["x1"], w["top"]))
+            words.sort(key=lambda w: (-_line_x1(w), w["top"]))
             lines = " ".join([w["text"] for w in words])
         else:
-            lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
+            lines = cluster_objects(words, _line_top, y_tolerance)
             lines = "\n".join(" ".join(word["text"] for word in line) for line in lines)
             if rotation == 180:  # needs extra treatment
                 lines = "".join([(c if c != "\n" else " ") for c in reversed(lines)])
@@ -1891,7 +1932,7 @@ class Table:
         pd_dict = {}
         extract = self.extract()
         hdr = self.header
-        names = self.header.names
+        names = list(self.header.names)
         hdr_len = len(names)
         # ensure uniqueness of column names
         for i in range(hdr_len):
@@ -2061,17 +2102,17 @@ class Table:
             h0 = line_heights[-1]
             bold0 = line_bolds[-1]
 
-            if bold0 and not bold:
-                break  # stop if switching from bold to non-bold
-
             # if fitting in height of previous span, modify bbox
             if y0 - y1 <= y_delta or abs((y0 - h0) - s["bbox"][1]) <= y_delta:
                 s["bbox"] = (s["bbox"][0], y0 - h0, s["bbox"][2], y0)
                 spans[i] = s
+                line_heights[-1] = min(h0, h)
                 if bold:
                     line_bolds[-1] = bold
                 continue
-            elif y0 - y1 > 1.5 * h0:
+            if bold0 and not bold:
+                break  # stop if switching from bold to non-bold
+            if y0 - y1 > 1.5 * h0:
                 break  # stop if distance to previous line too large
             select.append(y1)
             line_heights.append(h)
@@ -2405,7 +2446,7 @@ def make_chars(page, clip=None):
     page_number = page.number + 1
     page_height = page.rect.height
     ctm = page.transformation_matrix
-    TEXTPAGE = page.get_textpage(clip=clip, flags=FLAGS)
+    TEXTPAGE = page.get_textpage(clip=clip, flags=textpage_flags())
     blocks = page.get_text("rawdict", textpage=TEXTPAGE)["blocks"]
     doctop_base = page_height * page.number
     for block in blocks:
@@ -2420,6 +2461,21 @@ def make_chars(page, clip=None):
             for span in sorted(line["spans"], key=lambda s: s["bbox"][0]):
                 fontname = span["font"]
                 fontsize = span["size"]
+                # Line top relative to the baseline: the normalised ascender
+                # times the font size, which is what the quad correction with
+                # small glyph heights uses for the top of every char box.
+                # With quad corrections off each char keeps its exact glyph
+                # box instead, so a "." starts far below the digits around
+                # it; grouping by this value keeps such chars on their line.
+                # Vertical lines (page rotated by 90 or 270 degrees) stack along
+                # x; for them the two box edges along x are derived the same way
+                # ("line_x0", "line_x1"). The normalised ascender and descender
+                # add up to the font size, so the descender side is the rest.
+                asc = span.get("ascender", 0.8)
+                dsc = span.get("descender", -0.2)
+                if asc < 1e-3:  # glyphless font, same fallback as the quad correction
+                    asc, dsc = 0.9, -0.1
+                line_ascent = fontsize * (asc / (asc - dsc) if asc - dsc > 0 else 0.8)
                 span_bold = bool(
                     span["flags"] & pymupdf.TEXT_FONT_BOLD or span["char_flags"] & 8
                 )
@@ -2435,6 +2491,7 @@ def make_chars(page, clip=None):
                         "adv": bbox.x1 - bbox.x0 if upright else bbox.y1 - bbox.y0,
                         "bottom": bbox.y1,
                         "doctop": bbox.y0 + doctop_base,
+                        "line_top": char["origin"][1] - line_ascent + doctop_base,
                         "fontname": fontname,
                         "height": bbox.y1 - bbox.y0,
                         "matrix": tuple(matrix),
@@ -2456,6 +2513,14 @@ def make_chars(page, clip=None):
                         "y0": bbox_ctm.y0,
                         "y1": bbox_ctm.y1,
                     }
+                    if not upright and ldir[0] == 0:
+                        ox = char["origin"][0]
+                        if ldir[1] > 0:  # glyph top points to +x
+                            char_dict["line_x0"] = ox - (fontsize - line_ascent)
+                            char_dict["line_x1"] = ox + line_ascent
+                        else:  # glyph top points to -x
+                            char_dict["line_x0"] = ox - line_ascent
+                            char_dict["line_x1"] = ox + (fontsize - line_ascent)
                     chars.append(char_dict)
     return TEXTPAGE
 
@@ -2556,9 +2621,18 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
             # and keep those items (see _is_batched_rule). They contribute no
             # enveloping bbox: bbox_paths holds only the paths whose own rect is
             # real graphics.
+            # A fill+stroke path whose stroke has the same color as its fill
+            # (both opaque) draws no visible border either, so it is treated
+            # like a fill-only path, e.g. white redaction boxes: issue #5175.
+            is_invisible_fs = (
+                p["type"] == "fs"
+                and p.get("fill") == p.get("color")
+                and p.get("fill_opacity") == 1
+                and p.get("stroke_opacity") == 1
+            )
             if (
                 lines_strict
-                and p["type"] == "f"
+                and (p["type"] == "f" or is_invisible_fs)
                 and p["rect"].width > snap_x
                 and p["rect"].height > snap_y
             ):

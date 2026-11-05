@@ -46,6 +46,7 @@ body:
     attributes:
       label: PyMuPDF version
       options:
+        - 2.1
         - 2.0
         - 1.28.2
         - 1.28.0
