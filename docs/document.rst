@@ -480,6 +480,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg str table_mode: ``"preserve"`` keeps table content together as one chunk; ``"isolate"`` prevents tables from being merged into neighboring chunks. Default is ``"preserve"``.
 
+        :arg str table_output: controls the output format for tables. ``"html"`` preserves HTML structure, including merged cells, while engines without HTML support fall back to Markdown. Default is ``"markdown"``.
+
         :arg bool respect_section_starts: whether to keep a chunk starting a detected section separate from the preceding section when merging to meet token budgets. Default is ``True``.
 
         :arg str header_footer_mode: controls handling of page headers and footers. ``"exclude"`` omits them from chunk text, ``"auto"`` omits repeated headers and footers, and ``"include"`` retains them. Default is ``"exclude"``. The element registry in the result retains the parsed layout elements in all modes.
