@@ -21,7 +21,10 @@ def install_required_packages():
         return
     packages = 'fontTools pymupdf-fonts flake8 pylint codespell mypy'
     packages += ' pipcl'
-    if platform.system() == 'Windows' and int.bit_length(sys.maxsize+1) == 32:
+    win_x32 = (platform.system() == 'Windows' and sys.maxsize.bit_length()+1 == 32)
+    if not win_x32:
+        packages += ' pandas'
+    if win_x32:
         # No pillow wheel available, and doesn't build easily.
         pass
     elif platform.python_implementation() == 'GraalVM':
