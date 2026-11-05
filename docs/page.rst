@@ -1469,7 +1469,7 @@ In a nutshell, this is what you can do with PyMuPDF:
       * "rawdict" -- :meth:`TextPage.extractRAWDICT`. May include text and images.
       * "rawjson" -- :meth:`TextPage.extractRAWJSON`. May include text and images.
 
-      :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported. If misspelled, option "text" is silently assumed.
+      :arg str opt: A string indicating the requested format, one of the above. A mixture of upper and lower case is supported.
 
       :arg rect-like clip: restrict the extraction to this rectangle. If ``None`` (default), the visible part of the page is taken. Any content (text, images) that is **not fully contained** in ``clip`` will be completely omitted. To avoid clipping altogether use ``clip=pymupdf.INFINITE_RECT()``. Only then the extraction will contain all items. This parameter has **no effect** on options "html", "xhtml" and "xml".
 
