@@ -972,6 +972,7 @@ class Annot:
 
         fs = mupdf.pdf_dict_get(annot_obj, PDF_NAME('FS'))
 
+        filename = None
         o = mupdf.pdf_dict_get(fs, PDF_NAME('UF'))
         if o.m_internal:
             filename = mupdf.pdf_to_text_string(o)
@@ -2074,7 +2075,7 @@ class Archive:
                 raise ValueError(f'Not a file or directory: {content!r}')
 
         elif is_binary_data(content):
-            assert isinstance(path, str) and path != '' \
+            assert isinstance(path, str) and path != '', \
                     f'Need name for binary content, but {path=}.'
             self._add_treeitem(content, path)
             return make_subarch([path], None, 'tree')
@@ -2880,12 +2881,12 @@ class Document:
         start = i.start if i.start else 0
         stop = i.stop if i.stop else pc
         step = i.step if i.step else 1
-        while start < 0:
-            start += pc
+        if start < 0:
+            start %= pc
         if start >= pc:
             raise ValueError("bad page number(s)")
-        while stop < 0:
-            stop += pc
+        if stop < 0:
+            stop %= pc
         if stop > pc:
             raise ValueError("bad page number(s)")
         return self.delete_pages(range(start, stop, step))
@@ -4428,10 +4429,10 @@ class Document:
                 raise ValueError("cannot mix keyword and positional argument")
             f = kw.get("from_page", -1)  # first page to delete
             t = kw.get("to_page", -1)  # last page to delete
-            while f < 0:
-                f += page_count
-            while t < 0:
-                t += page_count
+            if f < 0:
+                f %= page_count
+            if t < 0:
+                t %= page_count
             if not f <= t < page_count:
                 raise ValueError("bad page number(s)")
             numbers = tuple(range(f, t + 1))
@@ -4442,6 +4443,11 @@ class Document:
                 f, t = args
                 if not (type(f) is int and type(t) is int):
                     raise ValueError("both arguments must be int")
+                # Wrap -ve f and t into range 0..page_count-1.
+                if f < 0:
+                    f %= page_count
+                if t < 0:
+                    t %= page_count
                 if f > t:
                     f, t = t, f
                 if not f <= t < page_count:
@@ -4449,8 +4455,8 @@ class Document:
                 numbers = tuple(range(f, t + 1))
             elif isinstance(args[0], int):
                 pno = args[0]
-                while pno < 0:
-                    pno += page_count
+                if pno < 0:
+                    pno %= page_count
                 numbers = (pno,)
             else:
                 numbers = tuple(args[0])
@@ -5833,8 +5839,8 @@ class Document:
             raise ValueError("page not in document")
         if type(page_id) is int and page_id < 0:
             np = self.page_count
-            while page_id < 0:
-                page_id += np
+            if page_id < 0:
+                page_id %= np
         if isinstance(page_id, int):
             page = mupdf.fz_load_page(self.this, page_id)
         else:
@@ -5856,8 +5862,8 @@ class Document:
         this_doc = self.this
         loc = mupdf.fz_make_location(-1, -1)
         page_count = mupdf.fz_count_pages(this_doc)
-        while pno < 0:
-            pno += page_count
+        if pno < 0:
+            pno %= page_count
         if pno >= page_count:
             raise ValueError( MSG_BAD_PAGENO)
         loc = mupdf.fz_location_from_page_number(this_doc, pno)
@@ -6007,8 +6013,8 @@ class Document:
         else:
             page_count = mupdf.fz_count_pages(self.this)
             pdf_document = _as_pdf_document(self)
-        while n < 0:
-            n += page_count
+        if n < 0:
+            n %= page_count
         if n > page_count:
             raise ValueError( MSG_BAD_PAGENO)
         page_obj = mupdf.pdf_lookup_page_obj(pdf_document, n)
@@ -6034,8 +6040,8 @@ class Document:
         this_doc = self.this
         page_count = mupdf.fz_count_pages( this_doc)
         n = pno
-        while n < 0:
-            n += page_count
+        if n < 0:
+            n %= page_count
         pdf = _as_pdf_document(self)
         if n >= page_count:
             raise ValueError( MSG_BAD_PAGENO)
@@ -6051,8 +6057,8 @@ class Document:
         """Convert (chapter, pno) to page number."""
         if type(page_id) is int:
             np = self.page_count
-            while page_id < 0:
-                page_id += np
+            if page_id < 0:
+                page_id %= np
             page_id = (0, page_id)
         if page_id not in self:
             raise ValueError("page id not in document")
@@ -6069,8 +6075,8 @@ class Document:
             raise ValueError("document closed")
         page_count = mupdf.fz_count_pages(self.this)
         n = pno
-        while n < 0:
-            n += page_count
+        if n < 0:
+            n %= page_count
         pdf = _as_pdf_document(self)
         xref = 0
         if n >= page_count:
@@ -6115,8 +6121,8 @@ class Document:
             return
         # set the start value
         start = start or 0
-        while start < 0:
-            start += self.page_count
+        if start < 0:
+            start %= self.page_count
         if start not in range(self.page_count):
             raise ValueError("bad start page number")
 
@@ -7341,14 +7347,14 @@ class Document:
             title = get_pdf_str(o[1])  # title
             pno = min(doc.page_count - 1, max(0, o[2] - 1))  # page number
             page_xref = doc.page_xref(pno)
-            page_height = doc.page_cropbox(pno).height
-            top = Point(72, page_height - 36)
+            cropbox = doc.page_cropbox(pno)
+            top = Point(72, cropbox.y1 - 36)
             dest_dict = {"to": top, "kind": LINK_GOTO}  # fall back target
             if o[2] < 0:
                 dest_dict["kind"] = LINK_NONE
             if len(o) > 3:  # some target is specified
                 if type(o[3]) in (int, float):  # convert a number to a point
-                    dest_dict["to"] = Point(72, page_height - o[3])
+                    dest_dict["to"] = Point(72, cropbox.y1 - o[3])
                 else:  # if something else, make sure we have a dict
                     # We make a copy of o[3] to avoid modifying our caller's data.
                     dest_dict = o[3].copy() if type(o[3]) is dict else dest_dict
@@ -7357,7 +7363,7 @@ class Document:
                     else:  # transform target to PDF coordinates
                         page = doc[pno]
                         point = Point(dest_dict["to"])
-                        point.y = page.cropbox.height - point.y
+                        point.y = page.cropbox.y1 - point.y
                         point = point * page.rotation_matrix
                         dest_dict["to"] = (point.x, point.y)
             d = {}
@@ -7510,9 +7516,10 @@ class Document:
             if dest_dict["kind"] == LINK_GOTO:
                 pno = dest_dict["page"]
                 page_xref = doc.page_xref(pno)
-                page_height = doc.page_cropbox(pno).height
-                to = dest_dict.get('to', Point(72, 36))
-                to.y = page_height - to.y
+                cropbox = doc.page_cropbox(pno)
+                to = Point(dest_dict.get('to', (72, 36)))
+                to.y = cropbox.y1 - to.y
+                dest_dict = dest_dict.copy()
                 dest_dict["to"] = to
             action = utils.getDestStr(page_xref, dest_dict)
             if not action.startswith("/A"):
@@ -7546,12 +7553,12 @@ class Document:
             if pno is None or pno not in range(1, doc.page_count + 1):
                 raise ValueError("bad page number")
             page_xref = doc.page_xref(pno - 1)
-            page_height = doc.page_cropbox(pno - 1).height
+            cropbox = doc.page_cropbox(pno - 1)
             if to is None:
-                to = Point(72, page_height - 36)
+                to = Point(72, cropbox.y1 - 36)
             else:
                 to = Point(to)
-                to.y = page_height - to.y
+                to.y = cropbox.y1 - to.y
 
         ddict = {
             "kind": kind,
@@ -9520,6 +9527,8 @@ class Widget:
         if bstate is None:
             bstate = dict()
         for k in bstate.keys():
+            if bstate[k] is None:
+                continue
             for v in bstate[k]:
                 if v != "Off":
                     return v
@@ -13690,7 +13699,7 @@ class Page:
             lang = mupdf.fz_text_language_from_string(language)
             assert hasattr(mupdf, 'fz_string_from_text_language2')
             mupdf.pdf_dict_put_text_string(
-                    pdfpage.obj,
+                    pdfpage.obj(),
                     PDF_NAME('Lang'),
                     mupdf.fz_string_from_text_language2(lang)
                     )
@@ -13755,8 +13764,8 @@ class Page:
         if rect.is_empty or rect.is_infinite:
             raise ValueError("rect must be finite and not empty")
 
-        while pno < 0:  # support negative page numbers
-            pno += docsrc.page_count
+        if pno < 0:  # support negative page numbers
+            pno %= docsrc.page_count
         src_page = docsrc[pno]  # load source page
 
         tar_rect = rect * ~page.transformation_matrix  # target rect in PDF coordinates
@@ -14795,7 +14804,7 @@ class Pixmap:
         if idx is None:
             raise ValueError(f"Image format {output} not in {tuple(valid_formats.keys())}")
         if self.alpha and idx in (2, 6, 7):
-            raise ValueError("'{output}' cannot have alpha")
+            raise ValueError(f"'{output}' cannot have alpha")
         if self.colorspace and self.colorspace.n > 3 and idx in (1, 2, 4):
             raise ValueError(f"unsupported colorspace for '{output}'")
         if idx == 7:
@@ -19895,6 +19904,7 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
         e = fp      # ... range
     rot = JM_norm_rotation(rotate)
     i = fp
+    page_map = {}  # source page number -> output page number
     internal_links = []  # collect PDF-wide internal links here
     while 1:  # interpret & write document pages as PDF pages
         if not _INRANGE(i, s, e):
@@ -19907,10 +19917,12 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
         dev = None
         page_obj = mupdf.pdf_add_page(pdfout, mediabox, rot, resources, contents)
         mupdf.pdf_insert_page(pdfout, -1, page_obj)
+        out_pno = mupdf.pdf_count_pages(pdfout) - 1
+        page_map[i] = out_pno
 
         # also copy links to the output PDF page
         # get the PDF page we've just created
-        pdf_page = mupdf.pdf_load_page(pdfout, i)
+        pdf_page = mupdf.pdf_load_page(pdfout, out_pno)
 
         # loop through source page links
         link = mupdf.fz_load_links(page)  # load first link
@@ -19924,7 +19936,7 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
             else:  # internal links done when PDF is complete
                 # find target of internal link
                 ret, xp, yp = mupdf.fz_resolve_link(doc, uri)
-                ilink={"page": i, "ret": ret, "from": rect, "h": rect.y1-rect.y0, "w": rect.x1-rect.x0, "xp": xp, "yp": yp}
+                ilink={"page": out_pno, "ret": ret, "from": rect, "h": rect.y1-rect.y0, "w": rect.x1-rect.x0, "xp": xp, "yp": yp}
                 internal_links.append(ilink)
             link = link.next()
         
@@ -19933,12 +19945,19 @@ def JM_convert_to_pdf(doc, fp, tp, rotate) -> bytes:
     # PDF created - now write it to Python bytearray
     # insert any internal links collected before:
     for ilink in internal_links:
-        pdf_page = mupdf.pdf_load_page(pdfout, ilink["page"])
         ret = ilink["ret"]
+        source_pno = mupdf.fz_page_number_from_location(doc, ret)
+        if source_pno >= 0 and source_pno not in page_map:
+            continue  # target page was not converted
+        pdf_page = mupdf.pdf_load_page(pdfout, ilink["page"])
         dest = mupdf.fz_link_dest()
         dest.type = 7  # XYZ destination format
-        dest.loc.chapter = ret.chapter
-        dest.loc.page = ret.page
+        if source_pno >= 0:  # point to the target's output page
+            dest.loc.chapter = 0
+            dest.loc.page = page_map[source_pno]
+        else:
+            dest.loc.chapter = ret.chapter
+            dest.loc.page = ret.page
         dest.h = ilink["h"]
         dest.w = ilink["w"]
         dest.x = ilink["xp"]
@@ -21615,7 +21634,7 @@ def JM_matrix_from_py(m):
     for i in range(6):
         a[i] = JM_FLOAT_ITEM(m, i)
         if a[i] is None:
-            return mupdf.FzRect()
+            return mupdf.FzMatrix()
     return mupdf.FzMatrix(a[0], a[1], a[2], a[3], a[4], a[5])
 
 
@@ -25598,7 +25617,7 @@ def apply_pages(
             pages = range(len(document))
         for pno in pages:
             page = document[pno]
-            r = pagefn(page, *pagefn_args, **initfn_kwargs)
+            r = pagefn(page, *pagefn_args, **pagefn_kwargs)
             ret.append(r)
     
     else:

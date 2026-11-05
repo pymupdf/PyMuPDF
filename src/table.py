@@ -241,12 +241,15 @@ def rect_in_rect(inner, outer):
 
 def chars_in_rect(CHARS, rect):
     """Check whether any of the chars in CHAR are inside rectangle 'rect'."""
+    # NB: 'rect' (e.g. from page.get_drawings()) and c["x0"]/c["x1"] are in
+    # top-down page space; c["top"]/c["bottom"] are the top-down counterparts
+    # of c["y0"]/c["y1"], which are in PDF-native (bottom-up) space instead.
     return any(
         1
         and rect[0] <= c["x0"]
         and c["x1"] <= rect[2]
-        and rect[1] <= c["y0"]
-        and rect[3] >= c["y1"]
+        and rect[1] <= c["top"]
+        and rect[3] >= c["bottom"]
         for c in CHARS
     )
 
@@ -1886,7 +1889,7 @@ class Table:
         pd_dict = {}
         extract = self.extract()
         hdr = self.header
-        names = self.header.names
+        names = list(self.header.names)
         hdr_len = len(names)
         # ensure uniqueness of column names
         for i in range(hdr_len):
@@ -2551,9 +2554,18 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
             # and keep those items (see _is_batched_rule). They contribute no
             # enveloping bbox: bbox_paths holds only the paths whose own rect is
             # real graphics.
+            # A fill+stroke path whose stroke has the same color as its fill
+            # (both opaque) draws no visible border either, so it is treated
+            # like a fill-only path, e.g. white redaction boxes: issue #5175.
+            is_invisible_fs = (
+                p["type"] == "fs"
+                and p.get("fill") == p.get("color")
+                and p.get("fill_opacity") == 1
+                and p.get("stroke_opacity") == 1
+            )
             if (
                 lines_strict
-                and p["type"] == "f"
+                and (p["type"] == "f" or is_invisible_fs)
                 and p["rect"].width > snap_x
                 and p["rect"].height > snap_y
             ):
