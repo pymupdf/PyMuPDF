@@ -1891,3 +1891,58 @@ def test_find_tables_union_keeps_one_coherent_table_group_without_content_suppor
         assert (tables[0].row_count, tables[0].col_count) == (1, 2)
     finally:
         doc.close()
+
+
+def test_5175():
+    """lines_strict: an opaque fill+stroke rectangle whose stroke has the same
+    color as its fill draws no visible line and must not add a phantom row."""
+
+    def make_page(doc, color):
+        page = doc.new_page(width=600, height=350)
+        xs, ys = [50, 200, 300, 400, 500], [50, 100, 150, 200]
+        for x in xs:
+            page.draw_line((x, ys[0]), (x, ys[-1]), color=(0, 0, 0), width=0.5)
+        for y in ys:
+            page.draw_line((xs[0], y), (xs[-1], y), color=(0, 0, 0), width=0.5)
+        for row in range(3):
+            for col in range(4):
+                page.insert_text(
+                    (xs[col] + 10, ys[row] + 25), f"{row+1}:{col+1}", fontsize=10
+                )
+        page.draw_rect((301, 185, 313, 198), color=color, fill=(1, 1, 1), width=1)
+        return page
+
+    doc = pymupdf.open()
+    # same-colored (invisible) border: ignored like a fill-only rectangle
+    page = make_page(doc, (1, 1, 1))
+    tables = page.find_tables(strategy="lines_strict", use_layout=False).tables
+    assert len(tables) == 1
+    assert (tables[0].row_count, tables[0].col_count) == (3, 4)
+
+    # contrasting (visible) border: still contributes lines
+    page = make_page(doc, (0, 0, 0))
+    tables = page.find_tables(strategy="lines_strict", use_layout=False).tables
+    assert len(tables) == 1
+    assert tables[0].row_count == 4
+    doc.close()
+
+
+def test_5241():
+    """Ensure that 'to_pandas()' leaves column headers untouched."""
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.draw_rect([50, 50, 200, 100])
+    page.draw_line([50, 75], [200, 75])
+    page.draw_line([125, 50], [125, 100])
+    page.insert_text([60, 65], "Total")
+    page.insert_text([135, 65], "Total")
+    page.insert_text([60, 90], "10")
+    page.insert_text([135, 90], "20")
+
+    tabs = page.find_tables()
+    tab = tabs[0]
+    names_before = list(tab.header.names)
+    tab.to_pandas()
+    names_after = list(tab.header.names)
+    assert names_before == names_after, "Column headers changed by to_pandas()"
+
