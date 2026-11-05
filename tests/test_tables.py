@@ -7,6 +7,7 @@ import platform
 from concurrent.futures import ThreadPoolExecutor
 
 import pymupdf
+import pytest
 
 import util
 
@@ -574,6 +575,56 @@ def test_table_header_is_computed_on_first_access():
         assert tab.header is None
     finally:
         doc.close()
+
+
+@pytest.mark.parametrize("top", [120, 420])
+@pytest.mark.parametrize(
+    "bold_header, text_above, mirrored_bold, external",
+    [
+        (True, True, False, False),
+        (False, True, True, True),
+        (False, True, False, True),
+        (True, False, False, False),
+    ],
+)
+def test_table_header_bold_uses_page_coordinates(
+    top, bold_header, text_above, mirrored_bold, external
+):
+    """Header boldness must use the same top-down coordinates as row bounds."""
+    with pymupdf.open() as doc:
+        page = doc.new_page(width=600, height=800)
+        for y in (top, top + 30, top + 60):
+            page.draw_line((50, y), (350, y))
+        for x in (50, 200, 350):
+            page.draw_line((x, top), (x, top + 60))
+        if text_above:
+            page.insert_text((60, top - 6), "Above A", fontsize=12)
+            page.insert_text((210, top - 6), "Above B", fontsize=12)
+        font = "hebo" if bold_header else "helv"
+        page.insert_text((60, top + 20), "Header A", fontsize=12, fontname=font)
+        page.insert_text((210, top + 20), "Header B", fontsize=12, fontname=font)
+        page.insert_text((60, top + 50), "value A", fontsize=12)
+        page.insert_text((210, top + 50), "value B", fontsize=12)
+        if mirrored_bold:
+            # This text is outside the table, but its bottom-up y bounds
+            # fall inside the top-down bounds of the first table row.
+            page.insert_text(
+                (60, 800 - top - 5), "Unrelated bold", fontsize=12, fontname="hebo"
+            )
+        finder = page.find_tables(use_layout=False)
+        assert len(finder.tables) == 1
+        table = finder.tables[0]
+        assert table.bbox == (50, top, 350, top + 60)
+        assert table.cells == [
+            (50, top, 200, top + 30),
+            (50, top + 30, 200, top + 60),
+            (200, top, 350, top + 30),
+            (200, top + 30, 350, top + 60),
+        ]
+        assert table.extract() == [["Header A", "Header B"], ["value A", "value B"]]
+        assert table.header.external is external
+        expected_names = ["Above A", "Above B"] if external else ["Header A", "Header B"]
+        assert table.header.names == expected_names
 
 
 def test_add_lines():
