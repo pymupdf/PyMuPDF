@@ -4,6 +4,7 @@ from pprint import pprint
 import textwrap
 import pickle
 import platform
+import sys
 from concurrent.futures import ThreadPoolExecutor
 
 import pymupdf
