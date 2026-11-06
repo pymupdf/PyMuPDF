@@ -566,8 +566,8 @@ To select pages, do the following:
 
     .. code-block:: python
 
-        p_even = [p in range(doc.page_count) if p % 2 == 0]
-        p_odd  = [p in range(doc.page_count) if p % 2 == 1]
+        p_even = [p for p in range(doc.page_count) if p % 2 == 0]
+        p_odd = [p for p in range(doc.page_count) if p % 2 == 1]
 
     This snippet creates the respective sub documents which can then be used to print the document:
 
