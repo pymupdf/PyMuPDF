@@ -736,13 +736,6 @@ static int LIST_APPEND_DROP(PyObject *list, PyObject *item)
     return rc;
 }
 
-static int LIST_APPEND(PyObject *list, PyObject *item)
-{
-    if (!list || !PyList_Check(list) || !item) return -2;
-    int rc = PyList_Append(list, item);
-    return rc;
-}
-
 static int DICT_SETITEM_DROP(PyObject *dict, PyObject *key, PyObject *value)
 {
     if (!dict || !PyDict_Check(dict) || !key || !value) return -2;
@@ -3531,7 +3524,7 @@ int _as_blocks(fz_stext_block *block, fz_rect tp_rect, PyObject *lines, int bloc
             PyTuple_SET_ITEM(litem, 4, text);
             PyTuple_SET_ITEM(litem, 5, Py_BuildValue("i", block_n));
             PyTuple_SET_ITEM(litem, 6, Py_BuildValue("i", block->type));
-            LIST_APPEND(lines, litem);
+            LIST_APPEND_DROP(lines, litem);
         }
         text = NULL;
         block = block->next;
