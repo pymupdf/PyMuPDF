@@ -12881,7 +12881,9 @@ class Page:
             ) -> str:
         tp = textpage
         if tp is None:
-            tp = page.get_textpage()
+            # Leave out text that a clip path hides, as get_text() and
+            # search_for() do. Otherwise the default flags (0) are kept.
+            tp = page.get_textpage(flags=TEXT_MEDIABOX_CLIP)
         elif getattr(tp, "parent") != page:
             raise ValueError("not a textpage of this page")
         rc = tp.extractTextbox(rect)
