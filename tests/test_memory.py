@@ -373,11 +373,14 @@ def test_extractblocks_refcount():
         assert blocks
 
         # Each tuple must be referenced by the result list only, exactly like
-        # a tuple that Python itself put into a list.
+        # a tuple that Python itself put into a list. Refcounts are read
+        # outside `assert`: pytest's assertion rewriting would hold `blocks[i]`
+        # in a temporary, which adds a reference on Python < 3.14.
         control = [tuple(list(blocks[0]))]
         expected = sys.getrefcount(control[0])
         for i in range(len(blocks)):
-            assert sys.getrefcount(blocks[i]) == expected, f'{i=} {blocks[i][:4]=}'
+            rc = sys.getrefcount(blocks[i])
+            assert rc == expected, f'{i=} {rc=} {expected=} {blocks[i][:4]=}'
 
         # Memory must stay flat over repeated calls.
         import tracemalloc
