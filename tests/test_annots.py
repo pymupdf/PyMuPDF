@@ -491,10 +491,7 @@ def test_4047():
 
 def test_4079():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4079.pdf')
-    if pymupdf.mupdf_version_tuple >= (1, 29):
-        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after-1.29.pdf')
-    else:
-        path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
+    path_after = os.path.normpath(f'{__file__}/../../tests/resources/test_4079_after.pdf')
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4079_out')
     with pymupdf.open(path_after) as document_after:
         page = document_after[0]
