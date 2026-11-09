@@ -7317,6 +7317,12 @@ class Document:
                 raise ValueError(f"bad hierarchy level in row {(i + 1)}")
             if t2[0] > t1[0] + 1:
                 raise ValueError(f"bad hierarchy level in row {(i + 1)}")
+        # The loop above only inspects toc[0] .. toc[-2]. A one-row TOC never
+        # enters it, and the last row of a longer TOC is only checked for
+        # shape, so an out-of-range page number was clamped onto a real page.
+        last = toclen - 1
+        if not -1 <= toc[last][2] <= page_count:
+            raise ValueError(f"row {last}: page number out of range")
         # no formal errors in toc --------------------------------------------------
 
         # --------------------------------------------------------------------------
