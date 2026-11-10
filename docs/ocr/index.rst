@@ -183,8 +183,12 @@ In this way RapidOCR can be used as an alternative OCR engine to Tesseract for a
 RapidOCR & Tesseract Side-by-Side
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If both OCR engines are installed -- Tesseract and one of RapidOCR / RapidOCR-ONNXRuntime -- they are automatically used together by default: RapidOCR for text line rectangle detection and Tesseract for text recognition in these rectangles.
-Experiments show that this approach delivers the best results and in a shorter time than RapidOCR alone.
+If both OCR engines are installed, Tesseract and one of RapidOCR / RapidOCR-ONNXRuntime, they can be combined together.
+
+The following conditions apply:
+
+- RapidOCR version is `rapidocr_onnxruntime` & Tesseract is available then they are combined together **by default**.
+- RapidOCR 3.9.1 or later: no combination by default, but can be combined with Tesseract if required.
 
 This pre-made default callable OCR function can be found in the ``PyMuPDF.ocr`` module as ``rapidtess_api.exec_ocr``.
 
