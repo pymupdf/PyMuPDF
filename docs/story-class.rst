@@ -167,8 +167,9 @@ Story
             
             * position:
                 An `ElementPosition` with an extra `.page_num` member.
-            Typically called multiple times as we generate elements that
-            are headings or have an id.
+                
+                Typically called multiple times as we generate elements that
+                are headings or have an id.
         :arg pagefn:
             None, or a callable taking `(page_num, mediabox, dev, after)`;
             called at start (`after=0`) and end (`after=1`) of each page.
@@ -213,8 +214,9 @@ Story
             If true, we add unique ids to all header tags that
             don't already have an id. This can help automatic
             generation of tables of contents.
-        Returns:
-            None.
+        
+            Returns:
+                None.
        
    .. method:: write_with_links(rectfn, positionfn=None, pagefn=None)
 

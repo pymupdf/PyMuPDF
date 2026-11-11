@@ -49,7 +49,7 @@ Other:
 * Added support for radio button groups.
 * Added support for widget aliases.
 * Fixed builds with swig-4.5.
-* Fixed `https://bugs.ghostscript.com/show_bug.cgi?id=709683`_ Path Traversal and Arbitrary File Write in PyMuPDF CLI Font Extraction (CVE-2026-82035)
+* Fixed `<https://bugs.ghostscript.com/show_bug.cgi?id=709683>`_ Path Traversal and Arbitrary File Write in PyMuPDF CLI Font Extraction (CVE-2026-82035)
 * Fixed ignoring aspect ratio for square images.
 * Fixed potential SEGV in pymupdf.Page.get_cdrawings() if callback raises exception.
 * Fixed use with python-3.15.
@@ -406,7 +406,7 @@ Other:
   * Added miter_limit arg to insert_text*() to allow suppression of spikes caused by long miters.
   * Add Widget Support to `Document.insert_pdf()`.
   * Add `bibi` to span dicts.
-  * Add `synthetic' to char dict.
+  * Add `synthetic` to char dict.
   * Fixed Pyodide builds.
 
 

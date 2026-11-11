@@ -135,15 +135,15 @@ This class is a collection of utility methods and attributes, mainly around memo
       Control whether MuPDF errors should be displayed as |PyMuPDF| messages.
 
       :arg value:
-      * If `None`, the current setting is left unchanged.
-      * Otherwise changes the current setting to `bool(value)`;
-        if ``True``, future MuPDF errors will be shown as :ref:`Messages`.
-      * Regardless of this setting, MuPDF errors will always be stored in the warnings store.
-      * Upon import of |PyMuPDF| this value is ``True``.
+          * If `None`, the current setting is left unchanged.
+          * Otherwise changes the current setting to `bool(value)`;
+            if ``True``, future MuPDF errors will be shown as :ref:`Messages`.
+          * Regardless of this setting, MuPDF errors will always be stored in the warnings store.
+          * Upon import of |PyMuPDF| this value is ``True``.
 
-      :returns: The current setting as ``True`` or ``False``.
+          :returns: The current setting as ``True`` or ``False``.
 
-      * New in version 1.16.8
+          * New in version 1.16.8
 
 
    .. method:: mupdf_display_warnings(value=None)
@@ -151,15 +151,15 @@ This class is a collection of utility methods and attributes, mainly around memo
       Control whether MuPDF warnings should be displayed as |PyMuPDF| messages.
 
       :arg value:
-      * If `None`, the current setting is left unchanged.
-      * Otherwise changes the current setting to `bool(value)`;
-        if ``True``, future MuPDF warnings will be shown as :ref:`Messages`.
-      * Regardless of this setting, MuPDF warnings will always be stored in the warnings store.
-      * Upon import of |PyMuPDF| this value is ``True``.
+          * If `None`, the current setting is left unchanged.
+          * Otherwise changes the current setting to `bool(value)`;
+            if ``True``, future MuPDF warnings will be shown as :ref:`Messages`.
+          * Regardless of this setting, MuPDF warnings will always be stored in the warnings store.
+          * Upon import of |PyMuPDF| this value is ``True``.
 
-      :returns: The current setting as ``True`` or ``False``.
+          :returns: The current setting as ``True`` or ``False``.
 
-      * New in version 1.16.8
+          * New in version 1.16.8
 
 
    .. method:: mupdf_warnings(reset=True)

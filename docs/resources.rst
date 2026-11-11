@@ -13,6 +13,7 @@ For **Office** file support `try PyMuPDF Office <pymupdf-office>`.
 
 
 |
+
 ----
 
 
@@ -22,6 +23,7 @@ Find out about **PyMuPDF Utilities**
 The :title:`GitHub` repository `PyMuPDF-Utilities <https://github.com/pymupdf/PyMuPDF-Utilities>`_ contains a full range of examples, demonstrations and use cases.
 
 |
+
 ----
 
 
