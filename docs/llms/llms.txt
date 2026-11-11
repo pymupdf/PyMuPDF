@@ -11,6 +11,7 @@ PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered
 - [The Basics](https://pymupdf.readthedocs.io/en/latest/the-basics.html): Quick start examples for common tasks
 - [Tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html): Step-by-step introduction
 - [PyMuPDF, LLM & RAG](https://pymupdf.readthedocs.io/en/latest/rag.html): Using PyMuPDF for LLM and RAG pipelines
+- [PyMuPDF & Grounding](https://pymupdf.readthedocs.io/en/latest/grounding.html): Trace extracted text, chunks and LLM quotes back to their page and position. Covers page coordinates (points, top-left origin, converting to PDF space and image pixels), storing `page_boxes` bbox and text positions as chunk metadata, and finding quotes with `Page.search_for(quads=True)`
 - [Resources](https://pymupdf.readthedocs.io/en/latest/resources.html): Blog posts, examples and tutorials
 - [FAQ](https://pymupdf.readthedocs.io/en/latest/faq/index.html): Frequently asked questions
 - [Features Comparison](https://pymupdf.readthedocs.io/en/latest/about.html): Feature matrix vs other tools

@@ -71,6 +71,7 @@ This documentation covers all versions up to |version|.
    :maxdepth: 2
 
    classes.rst
+   json-schema.rst
    algebra.rst
    lowlevel.rst
    glossary.rst

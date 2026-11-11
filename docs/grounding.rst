@@ -13,12 +13,20 @@ This section explores 3 grounding patterns and how |PyMuPDF| uses **deterministi
 
 |PyMuPDF| helps you build **verifiable evidence objects**, that is: extracted content linked to its source document, page, and region, with enough context to inspect it and ground its origin.
 
+Visit the `PyMuPDF Grounding portal <https://pymupdf.io/grounding/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline-button>`_ for more information, including articles & Python notebooks.
+
+.. raw:: html
+
+    <button id="visit-pymupdf-io" class="cta orange" style="margin-top: 10px; width:300px;" onclick="window.location='https://pymupdf.io/grounding/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline-button'">PyMuPDF Grounding portal</button>
+
 Grounding: 3 patterns
 -----------------------
 
 These examples illustrate three common grounding patterns used in document data extraction. The scripts provided demonstrate each pattern and are self-contained for easy experimentation.
 
 ----
+
+.. _grounding-answer-citation:
 
 1. Answer and citation grounding
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -323,6 +331,8 @@ The code example creates a basic PDF with sample text content and asks PyMuPDF t
 
 
 ----
+
+.. _grounding-extracted-data:
 
 2. Extracted-data grounding
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -647,6 +657,8 @@ The validation produces a grounding PDF example with matches for validated areas
 
 ----
 
+
+.. _grounding-verification:
 
 3. Verification grounding
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1030,6 +1042,338 @@ Our example shows how a CSV input source is used as the trusted reference, with 
 
         print(json.dumps({"reference_check": [asdict(r) for r in report_a],
                         "version_changes": [asdict(c) for c in report_b]}, indent=2))
+
+
+
+Grounding: tracing text back to the page
+----------------------------------------
+
+
+.. _grounding-coordinates:
+
+How To: convert coordinates
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Every location |PyMuPDF| gives you, such as a search hit, a text span ``bbox``
+or a box in the :doc:`JSON output <json-schema>`, uses the same coordinate
+system:
+
+- **Units are points.** 1 point = 1/72 inch, so a US Letter page is 612 × 792
+  points.
+- **The origin (0, 0) is the top-left corner** of the unrotated page. ``x``
+  grows to the right and ``y`` grows downwards.
+- **A rectangle is** ``[x0, y0, x1, y1]``: the top-left corner followed by the
+  bottom-right corner.
+
+You can use these coordinates directly with other |PyMuPDF| methods, for example
+to add a highlight annotation or to extract the text in a region. To use them
+somewhere else, convert them first.
+
+To **PDF space**
+   The PDF file format puts the origin at the **bottom-left** corner (see: :ref:`Coordinates_PDF_Space_and_MuPDF_Space`), with
+   ``y`` growing upwards. You need these coordinates when you write raw PDF
+   objects, such as an annotation's ``/Rect``, or when you compare results
+   with a tool that reports native PDF coordinates. Multiply by the inverse of
+   :attr:`Page.transformation_matrix`:
+
+   .. code-block:: python
+
+      pdf_rect = rect * ~page.transformation_matrix
+
+   :attr:`Page.transformation_matrix` converts the other way, from PDF space
+   to |PyMuPDF| coordinates. The inverse (``~``) matters when the page's
+   :attr:`Page.mediabox` doesn't start at (0, 0).
+
+To **pixels in a rendered image**
+   :meth:`Page.get_pixmap` renders the page at ``dpi`` pixels per inch, which
+   is ``dpi / 72`` pixels per point. Multiply by that factor to place a box on
+   the image, for example to crop it or to give it to a vision model. A
+   pixmap shows the page as displayed, so on a rotated page you also need to
+   apply :attr:`Page.rotation_matrix` first:
+
+   .. code-block:: python
+
+      pixel_rect = rect * page.rotation_matrix * (dpi / 72)
+
+   To go back, for example with a box that an OCR service or vision model
+   returned for that image, divide by the same factor and apply
+   :attr:`Page.derotation_matrix`:
+
+   .. code-block:: python
+
+      rect = pixel_rect * (72 / dpi) * page.derotation_matrix
+
+   If the page isn't rotated, the rotation matrices change nothing, so the
+   conversion is simply ``rect * (dpi / 72)``.
+
+.. rubric:: Example
+
+.. code-block:: python
+
+    import pymupdf
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_text((72, 100), "Total due: EUR 3,000.00", fontsize=11)
+
+    rect = page.search_for("Total due")[0]   # points, top-left origin
+    print("PyMuPDF space:", rect)
+
+    # PDF space: bottom-left origin, y grows upwards
+    pdf_rect = rect * ~page.transformation_matrix
+    print("PDF space:    ", pdf_rect)
+
+    # Pixels in an image rendered at 150 dpi
+    dpi = 150
+    pix = page.get_pixmap(dpi=dpi)
+    pixel_rect = rect * page.rotation_matrix * (dpi / 72)
+    print("Image pixels: ", pixel_rect.round(), "of", pix.width, "x", pix.height)
+
+    # And back from pixels to PyMuPDF space
+    print("Round trip:   ", pixel_rect * (72 / dpi) * page.derotation_matrix)
+
+Output:
+
+.. code-block:: text
+
+    PyMuPDF space: Rect(72.0, 88.17500305175781, 117.8589859008789, 103.28900146484375)
+    PDF space:     Rect(72.0, 738.7109985351562, 117.8589859008789, 753.8250122070312)
+    Image pixels:  IRect(150, 183, 246, 216) of 1240 x 1755
+    Round trip:    Rect(72.0, 88.17500305175781, 117.8589859008789, 103.28900146484375)
+
+
+.. note::
+
+    The ``from_pixels()`` and ``from_inches()`` helpers in :ref:`extracted-data grounding <grounding-extracted-data>` use these same conversions.
+
+----
+
+
+.. _grounding-markdown-to-page:
+
+How To: trace Markdown back to the page
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When you convert a document to Markdown for a RAG pipeline, the Markdown text
+on its own doesn't say where on the page each passage came from. To cite a
+passage or highlight it later, keep its page number and bounding box next to
+the text, for example as chunk metadata.
+
+With :ref:`PyMuPDF Layout <pymupdf_and_layout>` enabled (the default),
+``to_markdown(..., page_chunks=True)`` returns one dictionary per page. Each one has the page's
+Markdown in ``"text"`` and a list of layout boxes in ``"page_boxes"``. Every
+box has:
+
+``"pos"``
+   The box's ``(start, stop)`` character positions in the page's Markdown.
+   ``chunk["text"][start:stop]`` is the Markdown made from that box.
+
+``"bbox"``
+   The box's position on the page as ``(x0, y0, x1, y1)``: points rounded to
+   integers, origin at the top-left corner of the unrotated page. See
+   :ref:`grounding-coordinates`.
+
+``"class"``
+   The kind of content, such as ``"text"``, ``"section-header"`` or
+   ``"table"``. See :ref:`box classes <pymupdf-boxclasses>`.
+
+The boxes are in reading order and their ``pos`` ranges follow each other
+without gaps, so together they cover the whole page's Markdown.
+
+To make chunks you can trace back, slice the text with each box's ``pos`` and
+store the box's ``bbox``, page number and source file as metadata:
+
+.. code-block:: python
+
+    import json
+    import pymupdf
+
+    def make_sample(path: str) -> None:
+        doc = pymupdf.open()
+        page = doc.new_page()
+        page.insert_text((72, 80), "Service Agreement", fontsize=18)
+        page.insert_textbox(pymupdf.Rect(72, 110, 520, 200), (
+            "This agreement starts on 1 March 2026 and runs for twelve months."
+            "Either party may end it with thirty days' written notice."), fontsize=11)
+        page.insert_text((72, 230), "Fees", fontsize=14)
+        page.insert_textbox(pymupdf.Rect(72, 245, 520, 330), (
+            "The monthly fee is EUR 1,250.00, payable within fourteen days of the "
+            "invoice date. Late payments incur interest at 2% per month."), fontsize=11)
+        doc.save(path)
+
+    def chunks_with_boxes(path: str) -> list[dict]:
+        """One chunk per layout box: Markdown text plus where it came from."""
+        chunks = []
+        doc = pymupdf.open(path)
+        for page_chunk in doc.to_markdown(page_chunks=True):
+            text = page_chunk["text"]
+            page_number = page_chunk["metadata"]["page_number"]   # 1-based
+            for box in page_chunk["page_boxes"]:
+                start, stop = box["pos"]
+                box_text = text[start:stop].strip()
+                if not box_text:
+                    continue
+                chunks.append({
+                    "text": box_text,
+                    "metadata": {
+                        "source": path,
+                        "page": page_number,
+                        "class": box["class"],
+                        "bbox": json.dumps(box["bbox"]),   # many vector stores want scalar values
+                        "start": start,
+                        "stop": stop,
+                    },
+                })
+        return chunks
+
+    def highlight(path: str, chunk: dict, out_path: str) -> None:
+        """Use a chunk's metadata to mark its source region on the page."""
+        meta = chunk["metadata"]
+        doc = pymupdf.open(path)
+        page = doc[meta["page"] - 1]
+        rect = pymupdf.Rect(json.loads(meta["bbox"]))
+        annot = page.add_rect_annot(rect)
+        annot.set_colors(stroke=(0,1,0)) # draw a green rectangle around the chunk
+        annot.update()
+        doc.save(out_path)
+
+    if __name__ == "__main__":
+        make_sample("agreement.pdf")
+        chunks = chunks_with_boxes("agreement.pdf")
+        for c in chunks:
+            print(json.dumps(c, indent=2))
+
+        # Pretend a search returned the chunk that mentions the fee
+        hit = next(c for c in chunks if "EUR 1,250.00" in c["text"])
+        highlight("agreement.pdf", hit, "agreement_hit.pdf")
+
+Output (first two of four chunks):
+
+.. code-block:: text
+
+    {
+      "text": "# Service Agreement",
+      "metadata": {
+        "source": "agreement.pdf",
+        "page": 1,
+        "class": "section-header",
+        "bbox": "[72, 66, 226, 84]",
+        "start": 0,
+        "stop": 22
+      }
+    }
+    {
+      "text": "This agreement starts on 1 March 2026 and runs for twelve months. Either party may end it with thirty days' written notice.",
+      "metadata": {
+        "source": "agreement.pdf",
+        "page": 1,
+        "class": "text",
+        "bbox": "[72, 113, 516, 141]",
+        "start": 22,
+        "stop": 148
+      }
+    }
+
+The script also saves ``agreement_hit.pdf``, with a green frame around the
+paragraph that contains the fee.
+
+Some notes on adapting the example:
+
+- **Metadata values.** Vector stores such as Chroma accept only strings,
+  numbers and booleans as metadata values, so the example stores ``bbox`` as a
+  JSON string. If your store accepts lists, you can store the tuple directly.
+- **Page numbers.** ``metadata["page_number"]`` is 1-based, while
+  ``doc[...]`` is 0-based, so subtract 1 when you load the page.
+- **Larger chunks.** One box per chunk is often too small. To combine
+  consecutive boxes from the same page, slice from the first box's ``start``
+  to the last box's ``stop``, and store every box's ``bbox`` (a list of
+  rectangles) so that you can highlight each part.
+- **Exact text.** ``bbox`` is rounded to whole points, so it is good for
+  highlighting and cropping. To check the original page text, use
+  ``page.get_text("text", clip=rect)``. :ref:`Verification grounding
+  <grounding-verification>` shows that pattern in full.
+
+----
+
+
+.. _grounding-quote-to-page:
+
+How To: find a quote on the page
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+When an LLM answers with a verbatim quote, you can confirm that the quote is
+really in the document and show the reader where it is. :meth:`Page.search_for`
+with ``quads=True`` returns the quote's location as a list of
+:ref:`Quad` objects, one for each line the quote covers. Pass the list
+straight to :meth:`Page.add_highlight_annot` to highlight the quote:
+
+.. code-block:: python
+
+    import pymupdf
+
+    doc = pymupdf.open()
+    page = doc.new_page()
+    page.insert_textbox(pymupdf.Rect(72, 72, 300, 200), (
+        "The monthly fee is EUR 1,250.00, payable within fourteen days of the "
+        "invoice date. Late payments incur interest at 2% per month."), fontsize=11)
+
+    quote = "payable within fourteen days of the invoice date"   # e.g. from an LLM answer
+    quads = page.search_for(quote, quads=True)
+    for q in quads:
+        print(q.rect)
+
+    if quads:
+        annot = page.add_highlight_annot(quads)
+        annot.set_info(content="Quote found")
+        annot.update()
+    else:
+        print("Quote not found on page", page.number)
+
+    doc.save("quote_hit.pdf")
+
+Output (the found quad's associated rectangles):
+
+.. code-block:: text
+
+    Rect(240.1349639892578, 72.00001525878906, 278.65692138671875, 87.114013671875)
+    Rect(72.0, 88.24757385253906, 262.1569519042969, 103.361572265625)
+
+The quote wraps onto a second line, so ``search_for`` returns two quads, and
+the highlight follows the text across the line break.
+
+Why ask for quads rather than rectangles?
+
+- **Multi-line quotes.** You get one quad per line, so a highlight covers only
+  the quoted words and not the whole block around them.
+- **Rotated or slanted text.** A quad follows the text's angle. A
+  :ref:`Rect` is always axis-aligned, so it can only enclose slanted text
+  with extra space around it.
+- **Storing the result.** ``q.rect`` gives the smallest rectangle that encloses
+  each quad. Store those rectangles with the citation, in the same
+  coordinates as a chunk's ``bbox`` (see :ref:`grounding-coordinates`).
+
+:meth:`Page.search_for` ignores case and finds text across line breaks and hyphenated
+line ends. A few things make a search more reliable:
+
+- **Search inside the chunk.** If you know which chunk the quote came from,
+  pass its ``bbox`` as ``clip=``. This avoids matches elsewhere on the page and
+  is faster. If nothing is found, search the whole page.
+- **Normalize whitespace.** LLMs often change line breaks and spacing. Collapse
+  them first with ``" ".join(quote.split())``.
+- **Plan for misses.** An LLM may paraphrase a quote, or the PDF may use
+  ligatures or unusual punctuation. If ``search_for`` returns an empty list,
+  compare words from ``page.get_text("words")`` instead. If that also fails,
+  mark the whole chunk and flag the quote for review. The ``locate_quote()``
+  function in :ref:`answer and citation grounding <grounding-answer-citation>`
+  does all of this.
+
+For a longer walk-through, see the articles on the
+`PyMuPDF Grounding portal <https://pymupdf.io/grounding/?utm_source=rtd-pymupdf&utm_medium=rtd&utm_content=inline_link>`_.
+
+----
+
+
+
 
 
 .. include:: footer.rst
