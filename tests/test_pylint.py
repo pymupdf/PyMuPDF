@@ -133,6 +133,7 @@ def test_pylint():
             'table.py',
             'utils.py',
             'show_features.py',
+            'unified_field_model.py',
             ]
     leafs.sort()
     try:

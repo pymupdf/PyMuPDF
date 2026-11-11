@@ -4176,6 +4176,11 @@ class Document:
                     i = i * (-1)
                     mupdf.pdf_dict_put_int( item, PDF_NAME('Count'), i)
 
+    def get_form_fields(self, repair=False, verbose=False):
+        """Return a FormFields object."""
+        from .unified_field_model import FormFields
+        return FormFields(self, repair=repair, verbose=verbose)
+
     @property
     def FormFonts(self):
         """Get list of field font resource names."""
