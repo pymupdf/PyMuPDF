@@ -6,11 +6,6 @@
     <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <span style="font-family:monospace;">use_layout()</span> is <span style="font-family:monospace;">False</span></cite>
 
 
-
-
-
-
-
 The PyMuPDF4LLM API
 ===========================================================================
 
@@ -270,42 +265,13 @@ This is a version of previous **example 2** that uses :class:`TocHeaders` for he
 -----
 
 
-
-.. _pymupdf-boxclasses:
-
-.. note::
-
-    **About box classes**
-
-    If `page_chunks = True` the return objects for `to_markdown` & `to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
-
-    The return object for `to_json` contains a similar key called ``boxclass``.
-
-    The possible string values are for this ``class`` / ``boxclass`` key are:
-
-    .. code-block:: bash
-
-        text
-        picture
-        table
-        caption
-        title
-        section-header
-        page-header
-        page-footer
-        list-item
-        footnote
-        formula
-
------
-
 For a list of changes, please see file `CHANGES.md <https://github.com/pymupdf/pymupdf4llm/blob/main/CHANGES.md>`_.
 
 .. rubric:: Footnotes
 
 .. [#f1] `LlamaIndex documentation <https://docs.llamaindex.ai/en/stable/>`_
 
-.. [#f2] When using PyMuPDF-Pro, supported office documents are converted internally into a PDF-like format. Therefore, they **will have fixed page dimensions** and be no longer "reflowable". Consequently, the page width and page height specifications will be ignored as well in these cases.
+.. [#f2] When using PyMuPDF Office, supported office documents are converted internally into a PDF-like format. Therefore, they **will have fixed page dimensions** and be no longer "reflowable". Consequently, the page width and page height specifications will be ignored as well in these cases.
 
 
 

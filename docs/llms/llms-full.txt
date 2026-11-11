@@ -363,6 +363,60 @@ md = doc.to_markdown()
 
 ---
 
+## Grounding: tracing text back to the page
+
+Grounding links extracted content, RAG chunks and LLM quotes to the page and region they came from, so they can be cited, highlighted and checked. Full guide: https://pymupdf.readthedocs.io/en/latest/grounding.html
+
+### Coordinates
+
+- All PyMuPDF positions (search hits, span `bbox`, `page_boxes`, JSON boxes) are in points (1/72 inch), with the origin at the top-left corner of the unrotated page. `y` grows downwards. Rectangles are `(x0, y0, x1, y1)`.
+- `page_boxes` bboxes from `to_markdown()` are rounded to integers. Boxes from `to_json()` are unrounded floats.
+- To PDF space (bottom-left origin): `rect * ~page.transformation_matrix`. `page.transformation_matrix` converts the other way, from PDF space to PyMuPDF coordinates.
+- To pixels of an image from `page.get_pixmap(dpi=dpi)`: `rect * page.rotation_matrix * (dpi / 72)`. Back from pixels: `pixel_rect * (72 / dpi) * page.derotation_matrix`. On unrotated pages this reduces to multiplying by `dpi / 72`.
+
+### From Markdown to the page
+
+With `page_chunks=True`, each `page_boxes` entry has `"pos": (start, stop)` and `"bbox"`. `chunk["text"][start:stop]` is the Markdown made from that box. Store the bbox, page number and source as chunk metadata:
+
+```python
+import json
+import pymupdf4llm
+
+chunks = []
+for page_chunk in pymupdf4llm.to_markdown("input.pdf", page_chunks=True):
+    text = page_chunk["text"]
+    for box in page_chunk["page_boxes"]:
+        start, stop = box["pos"]
+        if text[start:stop].strip():
+            chunks.append({
+                "text": text[start:stop].strip(),
+                "metadata": {
+                    "source": "input.pdf",
+                    "page": page_chunk["metadata"]["page_number"],  # 1-based
+                    "class": box["class"],
+                    "bbox": json.dumps(box["bbox"]),  # JSON string for vector stores that only accept scalars
+                },
+            })
+```
+
+To highlight a chunk later: `page = doc[meta["page"] - 1]`, then `page.add_rect_annot(pymupdf.Rect(json.loads(meta["bbox"])))`.
+
+### From a quote to the page
+
+`page.search_for(quote, quads=True)` returns one `Quad` per line the quote covers. It ignores case and finds text across line breaks and hyphenated line ends. Pass the result to `page.add_highlight_annot(quads)`:
+
+```python
+quote = " ".join(quote.split())                      # normalise whitespace from the LLM
+quads = page.search_for(quote, clip=chunk_rect, quads=True) or page.search_for(quote, quads=True)
+if quads:
+    page.add_highlight_annot(quads)
+    rects = [q.rect for q in quads]                  # store with the citation
+else:
+    ...  # fall back to matching page.get_text("words"), or flag the quote for review
+```
+
+---
+
 ## Document Class
 
 `pymupdf.Document` (alias `pymupdf.open`) is the main class for working with documents.
@@ -691,6 +745,7 @@ PyMuPDF is available under the GNU AGPL license for open source use. Commercial 
 - Documentation: https://pymupdf.readthedocs.io/en/latest/
 - PyMuPDF4LLM Docs: https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/
 - PyMuPDF4LLM API: https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/api.html
+- Grounding: https://pymupdf.readthedocs.io/en/latest/grounding.html
 - GitHub: https://github.com/pymupdf/PyMuPDF
 - PyMuPDF4LLM GitHub: https://github.com/pymupdf/pymupdf4llm
 - PyPI (PyMuPDF): https://pypi.org/project/PyMuPDF/

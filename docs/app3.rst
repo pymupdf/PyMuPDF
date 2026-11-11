@@ -392,6 +392,8 @@ Images have a coordinate system with integer coordinates. Origin `(0, 0)` is the
 - How **large** an image will be (in centimeters or inches) when e.g. printed, depends on additional information: the "resolution". This is measured in **DPI** (dots per inch, or pixels per inch). To find the printed size of some image, we therefore must divide its width and its height by the corresponding DPI values (there may separate ones for width and for height) and will get the respective number of inches.
 
 
+.. _Coordinates_PDF_Space_and_MuPDF_Space:
+
 Origin Point, Point Size and Y-Axis
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

@@ -323,7 +323,7 @@ For details on **embedded files** refer to Appendix 3.
         dpi: int = 150, \
         embed_images: bool = False, \
         extract_words: bool = False, \
-        filename: str | None = None, \
+        filename: str = "", \
         fontsize_limit: float = 3, \
         footer: bool = True, \
         force_ocr: bool = False, \
@@ -348,6 +348,7 @@ For details on **embedded files** refer to Appendix 3.
         page_width: float = 612, \
         pages: list | range | None = None, \
         show_progress: bool = False, \
+        table_output: str | None = None, \
         table_strategy: str = "lines_strict", \
         use_glyphs: bool = False, \
         use_ocr: bool = True, \
@@ -428,12 +429,14 @@ For details on **embedded files** refer to Appendix 3.
 
             - **"text"** - page content as |Markdown| text.
 
+            .. _document_page_boxes:
+
             - **"page_boxes"** - |PyMuPDFLayoutMode_Valid| a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
 
                 {
                     "index": int,              # 0-based integer index of the box in reading sequence
-                    "class": str,              # one of "text", "picture", "table", etc.
-                    "bbox": [x0, y0, x1, y1],  # boundary box coordinates
+                    "class": str,              # one of "text", "picture", "table", etc. See: https://pymupdf.readthedocs.io/en/latest/document.html#pymupdf-boxclasses
+                    "bbox": (x0, y0, x1, y1),  # the "bbox" key contains the boundary box coordinates on the page in points (1/72 inch), rounded to integers, origin at the top-left corner of the unrotated page
                     "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
                 }
 
@@ -449,6 +452,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool show_progress: Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used.
 
+        :arg str table_output: specify how HTML tables should be rendered. Options are `"html"` or `None`. Default is `None` which defaults to Markdown output.
+
         :arg str table_strategy: |PyMuPDFLayoutMode_Ignored| see: :meth:`table detection strategy <Page.find_tables>`. Default is `"lines_strict"` which ignores background colors. In some occasions, other strategies may be more successful, for example `"lines"` which uses all vector graphics objects for detection.
 
         :arg bool use_glyphs: |PyMuPDFLayoutMode_Ignored| (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value.
@@ -459,9 +464,11 @@ For details on **embedded files** refer to Appendix 3.
 
             If using :ref:`PyMuPDF Layout <pymupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference.
 
-        :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
+        :returns: str | list[dict] - Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
 
+        .. note::
 
+            See :doc:`grounding` for real examples using ``to_markdown`` and further details on how to ground information within a document.
 
 
     .. method:: to_chunks(**kwargs) -> ChunkedDocument
@@ -496,10 +503,18 @@ For details on **embedded files** refer to Appendix 3.
 
         :returns: a :class:`ChunkedDocument`, a sequence of :class:`Chunk` objects with document-level element, table, figure, and section views. It also provides joined text, ID-based lookup, diagnostics, JSON-safe export, and reassembly with different chunk-budget parameters.
 
+        .. note::
+
+            See :doc:`grounding` for real examples using ``to_chunks`` and further details on how to ground information within a document.
+
 
     .. method:: to_json(**kwargs) -> str
 
-        Parses the document and the specified pages and converts the result into a `JSON formatted string <https://docs.pdf4llm.com/python/reference/JSON-schema>`_.
+        Parses the document and the specified pages and converts the result into a :ref:`JSON formatted string <json_output_structure>`.
+
+        Each parsed page has width, height and boxes; each box has x0, y0, x1, y1 in points from the top-left corner of the unrotated page, and a boxclass.
+
+        Unlike :meth:`to_markdown`, :meth:`to_json` box coordinates are unrounded floats for greater precision.
 
         :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
 
@@ -522,11 +537,16 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool write_images: store image files "picture" boundary boxes. When encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
 
         :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
+        
+        :arg str table_output: specify how HTML tables should be rendered. Options are `"html"` or `None`. Default is `None` which defaults to Markdown output.
+        
+        .. _json_output_structure:
 
-        :rtype: str
+        :rtype: str - A JSON string representing the structured output of the document. See :doc:`json-schema` for the full JSON output structure and further details on each field.
+        
+        .. note::
 
-        See `JSON Schema <https://docs.pdf4llm.com/python/reference/JSON-schema>`_ for the structure of the output JSON string.
-
+            See :doc:`grounding` for real examples using ``to_json`` and further details on how to ground information within a document.
 
     .. method:: to_text(**kwargs) -> str
 
@@ -2580,7 +2600,8 @@ Obviously, similar ways can be found in more general situations. Just make sure 
 
     **About box classes**
 
-    If `page_chunks = True` the return objects for :meth:`Document.to_markdown` & :meth:`Document.to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
+    If `page_chunks = True` the return objects for :meth:`Document.to_markdown` & :meth:`Document.to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein. 
+    Each box also has ``bbox`` and ``pos``; see :ref:`page_boxes <document_page_boxes>` in :meth:`Document.to_markdown`. 
 
     The return object for :meth:`Document.to_json` contains a similar key called ``boxclass``.
 
