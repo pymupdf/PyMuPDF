@@ -643,35 +643,35 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note::
 
-        Like an OCG, an OCMD has a visibility state ON or OFF, and it can be used like an OCG. In contrast to an OCG, the OCMD state is determined by evaluating the state of one or more OCGs via special forms of **boolean expressions.** If the expression evaluates to true, the OCMD state is ON and OFF for false.
+            Like an OCG, an OCMD has a visibility state ON or OFF, and it can be used like an OCG. In contrast to an OCG, the OCMD state is determined by evaluating the state of one or more OCGs via special forms of **boolean expressions.** If the expression evaluates to true, the OCMD state is ON and OFF for false.
 
-        There are two ways to formulate OCMD visibility:
+            There are two ways to formulate OCMD visibility:
 
-        1. Use the combination of *ocgs* and *policy*: The *policy* value is interpreted as follows:
+            1. Use the combination of *ocgs* and *policy*: The *policy* value is interpreted as follows:
 
-            - AnyOn -- (default) true if at least one OCG is ON.
-            - AnyOff -- true if at least one OCG is OFF.
-            - AllOn -- true if all OCGs are ON.
-            - AllOff -- true if all OCGs are OFF.
+               - AnyOn -- (default) true if at least one OCG is ON.
+               - AnyOff -- true if at least one OCG is OFF.
+               - AllOn -- true if all OCGs are ON.
+               - AllOff -- true if all OCGs are OFF.
 
-            Suppose you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be OFF):
+               Suppose you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be OFF):
 
-            Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via `set_ocmd(ocgs=[xref], policy="AllOff")`, with the :data:`xref` of the OCG.
+               Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via `set_ocmd(ocgs=[xref], policy="AllOff")`, with the :data:`xref` of the OCG.
 
-        2. Use the **visibility expression** *ve*: This is a list of two or more items. The **first item** is a logical keyword: one of the strings **"and"**, **"or"**, or **"not"**. The **second** and all subsequent items must either be an integer or another list. An integer must be the :data:`xref` number of an OCG. A list must again have at least two items starting with one of the boolean keywords. This syntax is a bit awkward, but quite powerful:
+            2. Use the **visibility expression** *ve*: This is a list of two or more items. The **first item** is a logical keyword: one of the strings **"and"**, **"or"**, or **"not"**. The **second** and all subsequent items must either be an integer or another list. An integer must be the :data:`xref` number of an OCG. A list must again have at least two items starting with one of the boolean keywords. This syntax is a bit awkward, but quite powerful:
 
-            - Each list must start with a logical keyword.
-            - If the keyword is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
-            - Items following the logical keyword may be either integers or again a list. An *integer* must be the xref of an OCG. A *list* must conform to the previous rules.
+               - Each list must start with a logical keyword.
+               - If the keyword is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
+               - Items following the logical keyword may be either integers or again a list. An *integer* must be the xref of an OCG. A *list* must conform to the previous rules.
 
-            **Examples:**
+               **Examples:**
 
-            - `set_ocmd(ve=["or", 4, ["not", 5], ["and", 6, 7]])`. This delivers ON if the following is true: **"4 is ON, or 5 is OFF, or 6 and 7 are both ON"**.
-            - `set_ocmd(ve=["not", xref])`. This has the same effect as the OCMD example created under 1.
+               - `set_ocmd(ve=["or", 4, ["not", 5], ["and", 6, 7]])`. This delivers ON if the following is true: **"4 is ON, or 5 is OFF, or 6 and 7 are both ON"**.
+               - `set_ocmd(ve=["not", xref])`. This has the same effect as the OCMD example created under 1.
 
-            For more details and examples see page 224 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
+               For more details and examples see page 224 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
 
-            Visibility expressions, `/VE`, are part of PDF specification version 1.6. So not all PDF viewers / readers may already support this feature and hence will react in some standard way for those cases.
+               Visibility expressions, `/VE`, are part of PDF specification version 1.6. So not all PDF viewers / readers may already support this feature and hence will react in some standard way for those cases.
 
 
     .. method:: get_ocmd(xref)
@@ -746,12 +746,13 @@ For details on **embedded files** refer to Appendix 3.
             * Only reports items contained in the currently selected layer configuration.
 
             * The meaning of the dictionary keys is as follows:
-            - *depth:* item's nesting level in the `/Order` array
-            - *locked:* true if cannot be changed via user interfaces
-            - *number:* running sequence number
-            - *on:* item state
-            - *text:* text string or name field of the originating OCG
-            - *type:* one of "label" (set by a text string), "checkbox" (set by a single OCG) or "radiobox" (set by a set of connected OCGs)
+            
+                - *depth:* item's nesting level in the `/Order` array
+                - *locked:* true if cannot be changed via user interfaces
+                - *number:* running sequence number
+                - *on:* item state
+                - *text:* text string or name field of the originating OCG
+                - *type:* one of "label" (set by a text string), "checkbox" (set by a single OCG) or "radiobox" (set by a set of connected OCGs)
 
     .. method:: set_layer_ui_config(number, action=0)
 
@@ -822,8 +823,8 @@ For details on **embedded files** refer to Appendix 3.
 
         For example::
 
-        [{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10},
-        {'startpage': 10, 'prefix': '', 'style': 'D', 'firstpagenum': 1}]
+            [{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10},
+            {'startpage': 10, 'prefix': '', 'style': 'D', 'firstpagenum': 1}]
 
         will generate the labels "A-10", "A-11", "A-12", "A-13", "1", "2", "3", ... for pages 6, 7 and so on until end of document. Pages 0 through 5 will have the label "".
 
@@ -947,31 +948,31 @@ For details on **embedded files** refer to Appendix 3.
 
         ::
 
-        options.bitonal_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.bitonal_image_recompress_quality = None
-        options.bitonal_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.bitonal_image_subsample_threshold = 0
-        options.bitonal_image_subsample_to = 0
-        options.color_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.color_lossless_image_recompress_quality = None
-        options.color_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.color_lossless_image_subsample_threshold = 0
-        options.color_lossless_image_subsample_to = 0
-        options.color_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.color_lossy_image_recompress_quality = None
-        options.color_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.color_lossy_image_subsample_threshold = 0
-        options.color_lossy_image_subsample_to = 0
-        options.gray_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.gray_lossless_image_recompress_quality = None
-        options.gray_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.gray_lossless_image_subsample_threshold = 0
-        options.gray_lossless_image_subsample_to = 0
-        options.gray_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.gray_lossy_image_recompress_quality = None
-        options.gray_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.gray_lossy_image_subsample_threshold = 0
-        options.gray_lossy_image_subsample_to = 0
+            options.bitonal_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.bitonal_image_recompress_quality = None
+            options.bitonal_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.bitonal_image_subsample_threshold = 0
+            options.bitonal_image_subsample_to = 0
+            options.color_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.color_lossless_image_recompress_quality = None
+            options.color_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.color_lossless_image_subsample_threshold = 0
+            options.color_lossless_image_subsample_to = 0
+            options.color_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.color_lossy_image_recompress_quality = None
+            options.color_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.color_lossy_image_subsample_threshold = 0
+            options.color_lossy_image_subsample_to = 0
+            options.gray_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.gray_lossless_image_recompress_quality = None
+            options.gray_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.gray_lossless_image_subsample_threshold = 0
+            options.gray_lossless_image_subsample_to = 0
+            options.gray_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.gray_lossy_image_recompress_quality = None
+            options.gray_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.gray_lossy_image_subsample_threshold = 0
+            options.gray_lossy_image_subsample_to = 0
 
         The ``*_recompress_method`` attributes may be one of the values **FZ_RECOMPRESS_NEVER (0), FZ_RECOMPRESS_SAME (1), FZ_RECOMPRESS_LOSSLESS (2), FZ_RECOMPRESS_JPEG (3), FZ_RECOMPRESS_J2K (4), FZ_RECOMPRESS_FAX (5)**. Value FZ_RECOMPRESS_NEVER will skip this image type altogether and FZ_RECOMPRESS_SAME will not change the type. The other values will execute type conversions (as far as technically possible).
 
@@ -1022,10 +1023,11 @@ For details on **embedded files** refer to Appendix 3.
             * *value*: (dict) with the following layout:
                 * "page":  target page number (0-based). If no page number found -1.
                 * "to": (x, y) target point on page. Currently in PDF coordinates,
-                i.e. point (0,0) is the bottom-left of the page.
+                  i.e. point (0,0) is the bottom-left of the page.
                 * "zoom": (float) the zoom factor.
                 * "dest": (str) only present if the target location on the page has
-                not been provided as "/XYZ" or if no page number was found.
+                  not been provided as "/XYZ" or if no page number was found.
+            
             Examples::
 
                 {
@@ -1530,20 +1532,20 @@ For details on **embedded files** refer to Appendix 3.
 
         Collapse everything below top level and show the chapter on Python support in red, bold and italic::
 
-        >>> import pymupdf
-        >>> doc=pymupdf.open("SWIGDocumentation.pdf")
-        >>> toc = doc.get_toc(False)  # we need the detailed TOC
-        >>> # list of level 1 indices and their titles
-        >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
-        >>> for i, title in lvl1:
-                d = toc[i][3]  # get the destination dict
-                d["collapse"] = True  # collapse items underneath
-                if "Python" in title:  # show the 'Python' chapter
-                    d["color"] = (1, 0, 0)  # in red,
-                    d["bold"] = True  # bold and
-                    d["italic"] = True  # italic
-                doc.set_toc_item(i, dest_dict=d)  # update this toc item
-        >>> doc.save("NEWSWIG.pdf",garbage=3,deflate=True)
+            >>> import pymupdf
+            >>> doc=pymupdf.open("SWIGDocumentation.pdf")
+            >>> toc = doc.get_toc(False)  # we need the detailed TOC
+            >>> # list of level 1 indices and their titles
+            >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
+            >>> for i, title in lvl1:
+                    d = toc[i][3]  # get the destination dict
+                    d["collapse"] = True  # collapse items underneath
+                    if "Python" in title:  # show the 'Python' chapter
+                        d["color"] = (1, 0, 0)  # in red,
+                        d["bold"] = True  # bold and
+                        d["italic"] = True  # italic
+                    doc.set_toc_item(i, dest_dict=d)  # update this toc item
+            >>> doc.save("NEWSWIG.pdf",garbage=3,deflate=True)
 
         In the previous example, we have changed only 42 of the 1240 TOC items of the file.
 
@@ -1660,7 +1662,7 @@ For details on **embedded files** refer to Appendix 3.
         See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
 
         :arg bool raise_on_repair: *(new in v1.27.0)* If true we raise an exception if the save caused a repair.
-        This is useful because repairs can cause changes to be lost.
+            This is useful because repairs can cause changes to be lost.
 
         Also see `Document.repair()`.
 
@@ -1671,14 +1673,14 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note::
 
-        **File size reduction**
+            **File size reduction**
 
-        1. Use the save options like `garbage=3|4, deflate=True, use_objstms=True|1`. Do not touch the default values `expand=False|0, clean=False|0, incremental=False|0, linear=False|0`.
-        This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below.
+              1. Use the save options like `garbage=3|4, deflate=True, use_objstms=True|1`. Do not touch the default values `expand=False|0, clean=False|0, incremental=False|0, linear=False|0`.
+              This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below.
 
-        2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
+              2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
 
-        See: :ref:`Compressing Files <CompressingFiles>` for more.
+              See: :ref:`Compressing Files <CompressingFiles>` for more.
 
 
 
@@ -1856,23 +1858,23 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note::
 
-        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also deactivate items in the table of contents which point to deleted pages. "Deactivation" here means, that the bookmark will point to nowhere and the title will be shown grayed-out by supporting PDF viewers. The overall TOC structure is left intact.
+            *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also deactivate items in the table of contents which point to deleted pages. "Deactivation" here means, that the bookmark will point to nowhere and the title will be shown grayed-out by supporting PDF viewers. The overall TOC structure is left intact.
 
-        It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
+            It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
-        Following examples will all delete pages 500 through 519:
+            Following examples will all delete pages 500 through 519:
 
-        * `doc.delete_pages(500, 519)`
-        * `doc.delete_pages(from_page=500, to_page=519)`
-        * `doc.delete_pages((500, 501, 502, ... , 519))`
-        * `doc.delete_pages(range(500, 520))`
-        * `del doc[500:520]`
-        * `del doc[(500, 501, 502, ... , 519)]`
-        * `del doc[range(500, 520)]`
+            * `doc.delete_pages(500, 519)`
+            * `doc.delete_pages(from_page=500, to_page=519)`
+            * `doc.delete_pages((500, 501, 502, ... , 519))`
+            * `doc.delete_pages(range(500, 520))`
+            * `del doc[500:520]`
+            * `del doc[(500, 501, 502, ... , 519)]`
+            * `del doc[range(500, 520)]`
 
-        For the :ref:`AdobeManual` the above takes about 0.6 seconds, because the remaining 1290 pages must be cleaned from invalid links.
+            For the :ref:`AdobeManual` the above takes about 0.6 seconds, because the remaining 1290 pages must be cleaned from invalid links.
 
-        In general, the performance of this method is dependent on the number of remaining pages -- **not** on the number of deleted pages: in the above example, **deleting all pages except** those 20, will need much less time.
+            In general, the performance of this method is dependent on the number of remaining pages -- **not** on the number of deleted pages: in the above example, **deleting all pages except** those 20, will need much less time.
 
 
     .. method:: copy_page(pno, to=-1)
@@ -1920,8 +1922,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :rtype: bool
         :returns:
-        * None: not a Form PDF, or property not defined.
-        * True / False: the value of the property (either just set or existing for inquiries). Has no effect if no Form PDF.
+            * None: not a Form PDF, or property not defined.
+            * True / False: the value of the property (either just set or existing for inquiries). Has no effect if no Form PDF.
 
 
 
@@ -1931,9 +1933,9 @@ For details on **embedded files** refer to Appendix 3.
 
         :rtype: int
         :returns:
-        * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
-        * 1: at least one signature field exists.
-        * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
+            * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
+            * 1: at least one signature field exists.
+            * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
     .. index::
         pair: filename; Document.embfile_add
@@ -2179,7 +2181,8 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note:: There is a functional overlap with *pix = pymupdf.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
 
-        * xref 1268 is a PNG -- Comparable execution time and identical output::
+        * xref 1268 is a PNG -- Comparable execution time and identical output:: text
+            
 
             In [23]: %timeit pix = pymupdf.Pixmap(doc, 1268);pix.tobytes()
             10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
@@ -2191,7 +2194,7 @@ For details on **embedded files** refer to Appendix 3.
             In [26]: len(img["image"])
             Out[26]: 21462
 
-        * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
+        * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB):: text
 
             In [27]: %timeit pix = pymupdf.Pixmap(doc, 1186);pix.tobytes()
             341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
@@ -2232,8 +2235,8 @@ For details on **embedded files** refer to Appendix 3.
         .. warning:: The basename is returned unchanged from the PDF. So it may contain characters (such as blanks) which may disqualify it as a filename for your operating system. Take appropriate action.
 
         .. note::
-        * The returned *basename* in general is **not** the original file name, but it probably has some similarity.
-        * If parameter `named == True`, a dictionary with the following keys is returned: `{'name': 'T1', 'ext': 'n/a', 'type': 'Type3', 'content': b''}`.
+            * The returned *basename* in general is **not** the original file name, but it probably has some similarity.
+            * If parameter `named == True`, a dictionary with the following keys is returned: `{'name': 'T1', 'ext': 'n/a', 'type': 'Type3', 'content': b''}`.
 
 
     .. method:: xref_xml_metadata()
