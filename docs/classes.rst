@@ -34,6 +34,7 @@ Classes
    textpage.rst
    textwriter.rst
    tools.rst
+   form-fields.rst
    widget.rst
    xml-class.rst
 

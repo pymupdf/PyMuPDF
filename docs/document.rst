@@ -70,6 +70,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after laid out document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
+:meth:`Document.get_form_fields`        PDF only: retrieve all form fields as a FormFields object
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_layers`             PDF only: list of optional content configurations
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
@@ -286,7 +287,19 @@ For details on **embedded files** refer to Appendix 3.
         :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
 
 
-    .. method:: get_layers()
+  .. method:: get_form_fields(repair=False, verbose=False)
+
+    * New in v2.2
+
+    PDF only: Return all form fields as a :class:`FormFields` object. If :data:`repair` is ``True``, attempt to repair any inconsistencies in the form fields. If :data:`verbose` is ``True``, print information about any repairs recommended or performed.
+
+    :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``.
+    :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
+    :rtype: :ref:`FormFields`
+    :returns: a ``FormFields`` object containing information about all form fields and widgets of the PDF.
+
+
+  .. method:: get_layers()
 
         * New in v1.18.3
 
@@ -370,12 +383,12 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool footer: |PyMuPDFLayoutMode_Valid| boolean to switch on/off page footer content. This parameter controls whether to include or omit footer text from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
 
-        :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
-            
-            This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
+    :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
 
-            .. warning:: 
-                Requires that either one of the default supported OCR engines is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
+        This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
+
+        .. warning::
+            Requires that either one of the default supported OCR engines is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
 
         :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image.
 
