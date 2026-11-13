@@ -18,6 +18,19 @@
     <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <a href="functions.html#use_layout">use_layout()</a> is <span style="font-family:monospace;">False</span></cite>
 
 
+.. Add this method when it is released in v2.2
+      .. method:: get_form_fields(repair=False, verbose=False)
+
+      * New in v2.2
+
+      PDF only: Return all form fields as a :class:`FormFields` object. If :data:`repair` is ``True``, attempt to repair any inconsistencies in the form fields. If :data:`verbose` is ``True``, print information about any repairs recommended or performed.
+
+      :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``.
+      :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
+      :rtype: :ref:`FormFields`
+      :returns: a ``FormFields`` object containing information about all form fields and widgets of the PDF.
+
+
 .. _Document:
 
 ================
@@ -70,7 +83,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after laid out document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
-:meth:`Document.get_form_fields`        PDF only: retrieve all form fields as a FormFields object
+.. :meth:`Document.get_form_fields`        PDF only: retrieve all form fields as a FormFields object
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_layers`             PDF only: list of optional content configurations
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
@@ -285,19 +298,6 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg int xref: the :data:`xref` of an image or form xobject [#f5]_. Valid such cross reference numbers are returned by :meth:`Document.get_page_images`, resp. :meth:`Document.get_page_xobjects`. For invalid numbers, an exception is raised.
         :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
-
-
-    .. method:: get_form_fields(repair=False, verbose=False)
-
-      * New in v2.2
-
-      PDF only: Return all form fields as a :class:`FormFields` object. If :data:`repair` is ``True``, attempt to repair any inconsistencies in the form fields. If :data:`verbose` is ``True``, print information about any repairs recommended or performed.
-
-      :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``.
-      :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
-      :rtype: :ref:`FormFields`
-      :returns: a ``FormFields`` object containing information about all form fields and widgets of the PDF.
-
 
     .. method:: get_layers()
 

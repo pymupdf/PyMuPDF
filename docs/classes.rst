@@ -34,8 +34,9 @@ Classes
    textpage.rst
    textwriter.rst
    tools.rst
-   form-fields.rst
    widget.rst
    xml-class.rst
+.. form-fields.rst
+   
 
 .. include:: footer.rst
