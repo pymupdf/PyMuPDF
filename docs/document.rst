@@ -287,19 +287,19 @@ For details on **embedded files** refer to Appendix 3.
         :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
 
 
-  .. method:: get_form_fields(repair=False, verbose=False)
+    .. method:: get_form_fields(repair=False, verbose=False)
 
-    * New in v2.2
+      * New in v2.2
 
-    PDF only: Return all form fields as a :class:`FormFields` object. If :data:`repair` is ``True``, attempt to repair any inconsistencies in the form fields. If :data:`verbose` is ``True``, print information about any repairs recommended or performed.
+      PDF only: Return all form fields as a :class:`FormFields` object. If :data:`repair` is ``True``, attempt to repair any inconsistencies in the form fields. If :data:`verbose` is ``True``, print information about any repairs recommended or performed.
 
-    :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``.
-    :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
-    :rtype: :ref:`FormFields`
-    :returns: a ``FormFields`` object containing information about all form fields and widgets of the PDF.
+      :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``.
+      :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
+      :rtype: :ref:`FormFields`
+      :returns: a ``FormFields`` object containing information about all form fields and widgets of the PDF.
 
 
-  .. method:: get_layers()
+    .. method:: get_layers()
 
         * New in v1.18.3
 
