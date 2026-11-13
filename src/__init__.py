@@ -2844,6 +2844,16 @@ if g_use_extra:
     extra_FzDocument_insert_pdf = extra.FzDocument_insert_pdf
 
 
+def _pymupdf4llm_function(name: str) -> typing.Callable[..., typing.Any]:
+    def function(*args, **kwargs):
+        pymupdf4llm = _optional_import('pymupdf4llm')
+        if pymupdf4llm is None:
+            raise NotImplementedError('pymupdf4llm functions are not available.')
+        return getattr(pymupdf4llm, name)(*args, **kwargs)
+    function.__name__ = name
+    return function
+
+
 class Document:
 
     def __contains__(self, loc) -> bool:
@@ -7923,6 +7933,11 @@ class Document:
         if as_default:
             mupdf.pdf_set_layer_config_as_default( pdf)
             mupdf.ll_pdf_read_ocg( pdf.m_internal)
+
+    to_markdown = _pymupdf4llm_function('to_markdown')
+    to_text = _pymupdf4llm_function('to_text')
+    to_json = _pymupdf4llm_function('to_json')
+    to_chunks = _pymupdf4llm_function('to_chunks')
 
     def update_object(self, xref, text, page=None):
         """Replace object definition source."""
@@ -26792,18 +26807,5 @@ def __getattr__(name):
         return _optional_import(name)
     raise AttributeError(f'module {__name__!r} has no attribute {name!r}')
 
-def _pymupdf4llm_function(name):
-    def function(*args, **kwargs):
-        pymupdf4llm = _optional_import('pymupdf4llm')
-        if pymupdf4llm is None:
-            raise NotImplementedError('pymupdf4llm functions are not available.')
-        return getattr(pymupdf4llm, name)(*args, **kwargs)
-    function.__name__ = name
-    return function
-
-Document.to_markdown = _pymupdf4llm_function('to_markdown')
-Document.to_text = _pymupdf4llm_function('to_text')
-Document.to_json = _pymupdf4llm_function('to_json')
-Document.to_chunks = _pymupdf4llm_function('to_chunks')
 convert_batch = _pymupdf4llm_function('convert_batch')
 use_layout = _pymupdf4llm_function('use_layout')
