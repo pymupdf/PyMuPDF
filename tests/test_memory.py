@@ -356,3 +356,47 @@ def test_4751():
     print(f'test_4751(): Running: {command!r}', flush=1)
     print(f'test_4751(): With: {env_extra=}', flush=1)
     subprocess.run(command, shell=1, check=1, env=os.environ | env_extra)
+
+
+def test_extractblocks_refcount():
+    '''
+    Check that get_text('blocks') does not leak its block tuples.
+
+    _as_blocks() used to append each tuple to the result list without
+    dropping its own reference, so every block (tuple, floats, str, ints)
+    leaked on every call.
+    '''
+    path = os.path.normpath(f'{__file__}/../../tests/resources/2201.00069.pdf')
+    with pymupdf.open(path) as document:
+        page = document[0]
+        blocks = page.get_text('blocks')
+        assert blocks
+
+        # Each tuple must be referenced by the result list only, exactly like
+        # a tuple that Python itself put into a list. Refcounts are read
+        # outside `assert`: pytest's assertion rewriting would hold `blocks[i]`
+        # in a temporary, which adds a reference on Python < 3.14.
+        control = [tuple(list(blocks[0]))]
+        expected = sys.getrefcount(control[0])
+        for i in range(len(blocks)):
+            rc = sys.getrefcount(blocks[i])
+            assert rc == expected, f'{i=} {rc=} {expected=} {blocks[i][:4]=}'
+
+        # Memory must stay flat over repeated calls.
+        import tracemalloc
+        for _ in range(10):
+            page.get_text('blocks')
+        gc.collect()
+        tracemalloc.start()
+        try:
+            before = tracemalloc.get_traced_memory()[0]
+            n = 200
+            for _ in range(n):
+                page.get_text('blocks')
+            gc.collect()
+            growth = tracemalloc.get_traced_memory()[0] - before
+        finally:
+            tracemalloc.stop()
+        print(f'test_extractblocks_refcount(): {len(blocks)=} {n=} {growth=}.')
+        # Leaking, growth was ~275 bytes per block per call (> 1 MB here).
+        assert growth < 50_000, f'{growth=}'
