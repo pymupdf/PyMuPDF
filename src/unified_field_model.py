@@ -4,17 +4,11 @@ import pathlib
 import re
 import time
 from io import StringIO
-
 import pymupdf
 from pymupdf import NON_WIDGET_KEYS, PDF_NAME, mupdf
 
-try:
-    import pandas as PANDAS
-except ImportError:
-    PANDAS = None
-
 PDF_NAME_Blur = mupdf.pdf_new_name("Bl")  # missing in mupdf.py
-PDF_NAME_Focus = mupdf.pdf_new_name("Fo")  # codespell:ignore Fo
+PDF_NAME_Focus = mupdf.pdf_new_name("Fo")
 
 
 class FormFields:
@@ -44,9 +38,11 @@ class FormFields:
             self.count_flat_fields or self.count_flat_rbgs or self.count_field_widgets
         ):
             pymupdf.message("Found PDF specification issues:")
-            pymupdf.message(f"   flat RBGs: {self.count_flat_rbgs}\n"
-            f"   flat fields: {self.count_flat_fields}\n"
-            f"   field-widgets: {self.count_field_widgets}")
+            pymupdf.message(
+                f"   flat RBGs: {self.count_flat_rbgs}\n"
+                f"   flat fields: {self.count_flat_fields}\n"
+                f"   field-widgets: {self.count_field_widgets}"
+            )
             if not self.repair:
                 pymupdf.message("Repair is recommended.\n")
             else:
@@ -82,7 +78,7 @@ class FormFields:
         self.count_flat_rbgs = 0
         self.count_field_widgets = 0
         self.page_xrefs = {}  # xref to page number if widgets present
-        self.template_xrefs = []  # list of /Type/Template xrefs having widgets
+        self.template_xrefs = set()  # list of /Type/Template xrefs having widgets
         self.widgets = self._iter_page_widgets()  # walk through page PDF objects
         self._repair_widgets()  # indispensable repairs!
         # extract form fields starting from /AcroForm/Fields
@@ -463,7 +459,7 @@ class FormFields:
             value_dict = {"field_value": value, "pages": sorted(pages)}
             if templates:
                 value_dict["template_xrefs"] = sorted(templates)
-                self.template_xrefs.extend(templates)
+                self.template_xrefs |= templates
             if xrefs:
                 value_dict["xref"] = field_xref
             value_dict["terminal"] = terminal
@@ -810,12 +806,15 @@ class FormFields:
             choice_xrefs = []
             for choice in choices:
                 if rbg_type == "js":
-                    choice_xref = [w.xref for w in widgets if w.field_name == choice][0]
+                    choice_xref = next(
+                        (w.xref for w in widgets if w.field_name == choice), 0
+                    )
                 else:
-                    choice_xref = [w.xref for w in widgets if w.btn_on_state == choice][
-                        0
-                    ]
-                choice_xrefs.append(choice_xref)
+                    choice_xref = next(
+                        (w.xref for w in widgets if w.btn_on_state == choice), 0
+                    )
+                if choice_xref:
+                    choice_xrefs.append(choice_xref)
             entry["choice_xrefs"] = choice_xrefs
 
     def _determine_field_type(self, entry):
@@ -826,6 +825,19 @@ class FormFields:
 
         w = widgets[0]
         ft = w.field_type_string.lower()
+
+        # take note if field is computed
+        if w.script_calc:
+            entry["script_calc"] = True
+        elif entry.get("terminal") and entry.get("xref"):
+            xref = entry["xref"]
+            if isinstance(xref, (list, tuple)):
+                xref = xref[0] if xref else 0
+            if xref:
+                entry_obj = mupdf.pdf_load_object(self.pdfdoc, xref)
+                aac = entry_obj.pdf_dict_getl(PDF_NAME("AA"), PDF_NAME("C"))
+                if aac.pdf_is_dict():
+                    entry["script_calc"] = True
 
         # TEXT FIELD
         if "text" in ft:
@@ -1122,12 +1134,14 @@ class FormFields:
         self.fields[field_name] = entry
         return True
 
-    def set_value(self, field_name, value):
+    def set_value(self, field_name, value, recalculate=False):
         """Set the value of a field identified by field_name.
 
         Args:
             field_name (str): The name of the field to update.
             value: The value to set for the field.
+            recalculate (bool): Whether to recalculate all fields. This will
+                      trigger recalculation of all inter-fields dependencies.
         """
 
         def update_widget_lowlevel(w, value, choices=None, rbg_type=None):
@@ -1155,7 +1169,10 @@ class FormFields:
                 parent = w_obj.pdf_dict_get(PDF_NAME("Parent"))
                 if not parent.pdf_is_dict():  # if no parent, use the widget
                     parent = w_obj
-                if value in (on, on_decoded):  # pylint: disable=possibly-used-before-assignment
+                if value in (
+                    on,  # pylint: disable=possibly-used-before-assignment
+                    on_decoded,  # pylint: disable=possibly-used-before-assignment
+                ):
                     w_obj.pdf_dict_put(PDF_NAME("AS"), onstate)
                     parent.pdf_dict_put(PDF_NAME("V"), onstate)
                 else:
@@ -1264,6 +1281,8 @@ class FormFields:
                 update_widget_lowlevel(w, value, choices=choices, rbg_type=rbg_type)
 
             entry["value"] = value
+            if recalculate:
+                self.doc.recalculate_form()
             return True
 
         elif ftype == "choice":
@@ -1277,7 +1296,8 @@ class FormFields:
         # --- update widgets ---
         for w in widgets:
             update_widget_lowlevel(w, value, choices=choices, rbg_type=rbg_type)
-
+        if recalculate:
+            self.doc.recalculate_form()
         return True
 
     def to_dicts(self):
@@ -1319,8 +1339,9 @@ class FormFields:
         else:
             return json_str
 
-    def from_dicts(self, dicts):
+    def from_dicts(self, dicts, recalculate=True):
         """Import form field value changes from a Python list of dictionaries."""
+        success=0
         for item in dicts:
             field_name = item.get("field")
             new_value = item.get("new_value")
@@ -1333,18 +1354,24 @@ class FormFields:
                 pymupdf.message(f"Warning: unknown field '{field_name}' in import")
                 continue
 
-            ok = self.set_value(field_name, new_value)
+            ok = self.set_value(field_name, new_value, recalculate=False)
             if not ok:
                 pymupdf.message(f"Failed to set '{field_name}' = '{new_value}'")
             else:
-                pymupdf.message(f"Set '{field_name}' = '{new_value}'")
+                success += 1
 
-        pymupdf.message("Import from dicts completed.")
+        if not success:
+            raise ValueError("No fields were updated.")
 
-    def from_json(self, json_str):
+        if recalculate:
+            self.doc.recalculate_form()
+        self.refresh()
+        pymupdf.message(f"Fields successfully updated: {success}.")
+
+    def from_json(self, json_str, recalculate=True):
         """Import form field value changes from a JSON string."""
         dicts = json.loads(json_str)
-        return self.from_dicts(dicts)
+        return self.from_dicts(dicts, recalculate=recalculate)
 
     def to_csv(self, file=None):
         """
@@ -1400,29 +1427,40 @@ class FormFields:
             return
         return csv_content
 
-    def _apply_csv_updates(self, csv_str):
+    def _apply_csv_updates(self, csv_str, recalculate=True):
         """
         Read a CSV with a 'field' and 'new_value' column and apply updates.
         """
         reader = csv.DictReader(StringIO(csv_str))
-
+        success = 0
         for row in reader:
             name = row.get("field")
             new_value = row.get("new_value")
             if name and new_value not in (None, ""):
-                self.set_value(name, new_value)
+                self.set_value(name, new_value, recalculate=False)
+                success += 1
+        if not success:
+            raise ValueError("No fields were updated.")
 
-    def from_csv(self, filepath):
+        if recalculate:
+            self.doc.recalculate_form()
+        self.refresh()
+        pymupdf.message(f"Fields successfully updated: {success}.")
+
+
+    def from_csv(self, filepath, recalculate=True):
         csv_str = pathlib.Path(filepath).read_bytes().decode()
-        self._apply_csv_updates(csv_str)
+        self._apply_csv_updates(csv_str, recalculate=recalculate)
         pymupdf.message(f"from_csv({filepath}) completed.")
 
     def to_pandas(self):
         """
-        Return a pandas DataFrame with all editable fields and metadata.
+        Return a pandas DataFrame with editable fields.
         """
-        if PANDAS is None:
-            raise ImportError("pandas is required but not installed.")
+        try:
+            import pandas as pd
+        except ImportError as e:
+            raise ImportError("pandas is required but not installed.") from e
         buffer = StringIO(self.to_csv())
-        df = PANDAS.read_csv(buffer)
+        df = pd.read_csv(buffer)
         return df

@@ -20,7 +20,7 @@ def test_set_value():
     doc = pymupdf.open(filename)
     ff = doc.get_form_fields()
     field_info = ff.field_info("Person.MaritalStatus")
-    assert field_info["value"] == "married", f'{field_info["value"]=}'
+    assert field_info["value"] == "married", f"{field_info['value']=}"
     ff.set_value("Person.MaritalStatus", "single")
     data = doc.tobytes()
     doc.close()
@@ -139,8 +139,16 @@ def test_to_csv():
     assert len(lines) > 1  # At least header + one field
 
     # Check header (strip \r from Windows line endings)
-    header = lines[0].rstrip('\r')
-    expected_headers = ["field", "type", "format", "editable", "choices", "current_value", "new_value"]
+    header = lines[0].rstrip("\r")
+    expected_headers = [
+        "field",
+        "type",
+        "format",
+        "editable",
+        "choices",
+        "current_value",
+        "new_value",
+    ]
     assert header == ",".join(expected_headers)
 
     # Verify at least one data row
@@ -153,7 +161,7 @@ def test_to_csv_file_export():
     doc = pymupdf.open(filename)
     ff = doc.get_form_fields()
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as tmp:
         tmp_path = tmp.name
 
     try:
@@ -161,7 +169,7 @@ def test_to_csv_file_export():
         assert result is None  # Should not return when writing to file
 
         # Verify file was created and contains data
-        with open(tmp_path, 'r') as f:
+        with open(tmp_path, "r") as f:
             content = f.read()
         assert len(content) > 0
         assert "field" in content
@@ -198,7 +206,7 @@ def test_to_json_file_export():
     doc = pymupdf.open(filename)
     ff = doc.get_form_fields()
 
-    with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as tmp:
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as tmp:
         tmp_path = tmp.name
 
     try:
@@ -206,7 +214,7 @@ def test_to_json_file_export():
         assert result is None  # Should not return when writing to file
 
         # Verify file was created and contains valid JSON
-        with open(tmp_path, 'r') as f:
+        with open(tmp_path, "r") as f:
             data = json.load(f)
         assert isinstance(data, list)
         assert len(data) > 0
@@ -244,16 +252,11 @@ def test_from_dicts():
     original_value = ff.field_info("Person.MaritalStatus")["value"]
     valid_choices = ff.field_info("Person.MaritalStatus")["choices"]
 
-    # Use a valid choice (if original is "married", use "single", else use "married")
+    # Use a valid choice (if original is 'married', use 'single', else use 'married')
     new_value = "single" if original_value == "married" else "married"
 
     # Create update dict
-    updates = [
-        {
-            "field": "Person.MaritalStatus",
-            "new_value": new_value
-        }
-    ]
+    updates = [{"field": "Person.MaritalStatus", "new_value": new_value}]
 
     ff.from_dicts(updates)
 
@@ -274,12 +277,7 @@ def test_from_json():
     new_value = "single" if original_value == "married" else "married"
 
     # Create JSON with updates using a valid choice
-    updates = [
-        {
-            "field": "Person.MaritalStatus",
-            "new_value": new_value
-        }
-    ]
+    updates = [{"field": "Person.MaritalStatus", "new_value": new_value}]
     json_str = json.dumps(updates)
 
     ff.from_json(json_str)
@@ -330,7 +328,11 @@ def test_multiple_field_updates():
 
     # Get additional field names to update if available
     for name, info in ff.fields.items():
-        if info["terminal"] and info["type"] == "text" and name != "Person.MaritalStatus":
+        if (
+            info["terminal"]
+            and info["type"] == "text"
+            and name != "Person.MaritalStatus"
+        ):
             updates.append({"field": name, "new_value": "TestValue"})
             break
 
@@ -360,7 +362,15 @@ def test_field_type_detection():
     assert len(field_types) > 0
 
     # Each type should have valid format
-    valid_types = {"text", "radio", "checkbox", "choice", "button", "signature", "unknown"}
+    valid_types = {
+        "text",
+        "radio",
+        "checkbox",
+        "choice",
+        "button",
+        "signature",
+        "unknown",
+    }
     for field_type in field_types:
         assert field_type in valid_types
 
@@ -376,3 +386,166 @@ def test_field_diagnosis():
         diagnosis = info["diagnosis"]
         assert "ok" in diagnosis
         assert isinstance(diagnosis["ok"], bool)
+
+
+def test_recalculate_form():
+    """We make a non-trivial Form PDF with a calculated field.
+
+    Then check whether the cross-field calculation works correctly.
+    """
+    from pymupdf import mupdf, _as_pdf_document, PDF_NAME
+
+    BLUE = pymupdf.pdfcolor["blue"]
+    GRAY = pymupdf.pdfcolor["lightgray"]
+
+    doc = pymupdf.open()
+    pdfdoc = pymupdf._as_pdf_document(doc)
+
+    page = doc.new_page()
+    page.insert_text(
+        (150, 70), "Customer Information Form", fontname="hebo", fontsize=20, color=BLUE
+    )
+    # define rectangles for the label and value fields
+    r1 = pymupdf.Rect(50, 100, 150, 120)  # rect of field label
+    r2 = r1 + (r1.width + 10, 0, r1.width + 50, 0)  # rect of field value
+    delta = r1.height + 10  # distance to next row
+
+    # insert some text to the left
+    page.insert_textbox(r1, "First Name:", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.Name.First"
+    w.field_value = "John"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.rect = r2
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+
+    page.insert_textbox(r1, "Last Name:", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.Name.Last"
+    w.field_value = "Doe"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.rect = r2
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+
+    # The following field is a calculated field for the full name.
+    # It is read-only and initially has no value.
+    page.insert_textbox(r1, "Full Name:", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.Fullname"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.field_flags = w.field_flags | pymupdf.PDF_FIELD_IS_READ_ONLY
+    w.rect = r2
+    w.fill_color = GRAY
+    # This is how the field value is calculated automatically.
+    w.script_calc = """event.value = this.getField('Customer.Name.First').value + ' ' + this.getField('Customer.Name.Last').value;"""
+    annot = page.add_widget(w)
+
+    r1 += (0, 2 * delta, 0, 2 * delta)
+    r2 += (0, 2 * delta, 0, 2 * delta)
+
+    page.insert_textbox(r1, "Street:", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.Address.Street"
+    w.field_value = "123 Birch Street"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.rect = r2
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+
+    page.insert_textbox(r1, "City:", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.Address.City"
+    w.field_value = "Lakeside"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_TEXT
+    w.rect = r2
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+    r2.x1 = r2.x0 + 20  # make the checkbox smaller
+
+    # This is about how this Customer knows about about us.
+    page.insert_textbox(r1, "Word Of Mouth:", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.WordOfMouth"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_CHECKBOX
+    w.rect = r2
+    w.field_value = True
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+
+    page.insert_textbox(r1, "Marital Status", align=pymupdf.TEXT_ALIGN_RIGHT)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+
+    page.insert_textbox(r1, "Married", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.MaritalStatus"
+    w.field_value = "married"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_RADIOBUTTON
+    w.rect = r2
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    r1 += (0, delta, 0, delta)
+    r2 += (0, delta, 0, delta)
+
+    # Adding a RadioButton with the same field name will add alternatives
+    # to the same button group.
+    # Note that the group buttons might also be defined on different pages.
+    page.insert_textbox(r1, "Single", align=pymupdf.TEXT_ALIGN_RIGHT)
+    w = pymupdf.Widget()
+    w.field_name = "Customer.MaritalStatus"
+    w.field_value = "single"
+    w.field_type = pymupdf.PDF_WIDGET_TYPE_RADIOBUTTON
+    w.rect = r2
+    w.border_color = BLUE
+    w.border_width = 1
+    w.fill_color = GRAY
+    annot = page.add_widget(w)
+
+    # Page is now populated with widgets.
+    # Extract all field values for later comparison.
+    field_values_0 = {w.field_name: w.field_value for w in page.widgets()}
+    assert field_values_0["Customer.Fullname"] == ""  # not yet computed
+
+    # Invoke form recalculation to update computed fields.
+    doc.recalculate_form()
+
+    # Extract all fields again. Expected behavior:
+    # All fields are unchanged; but the computed field now shows "John Doe".
+    field_values_1 = {w.field_name: w.field_value for w in page.widgets()}
+    # assert that only the cross-computed field has changed
+    for k, v in field_values_1.items():
+        if k == "Customer.Fullname":
+            assert v == "John Doe"
+        else:
+            assert v == field_values_0[k]
