@@ -12630,6 +12630,8 @@ class Page:
                     mupdf.PDF_ANNOT_LINE,
                     mupdf.PDF_ANNOT_POLY_LINE,
                     mupdf.PDF_ANNOT_POLYGON,
+                    mupdf.PDF_ANNOT_SQUARE,
+                    mupdf.PDF_ANNOT_CIRCLE,
                     mupdf.PDF_ANNOT_TEXT,
                     mupdf.PDF_ANNOT_INK,
                 ):
