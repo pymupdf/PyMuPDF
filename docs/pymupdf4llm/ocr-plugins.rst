@@ -107,14 +107,14 @@ If you want to use your own OCR function, you can do so as follows::
 
     import pymupdf4llm
 
-    def my_ocr_function(page, pixmap=None, dpi=300, language="eng"):
+    def my_ocr_function(page, pixmap=None, dpi=300, language="eng", keep_ocr_text=False):
         # Your OCR implementation here
         return None
 
     # Use my_ocr_function as the OCR function in PyMuPDF4LLM
     md_text = pymupdf4llm.to_markdown("input.pdf", ocr_function=my_ocr_function)
 
-Your plugin must accept at least the ``page`` parameter which is a PyMuPDF Page object. The other parameters are optional. The plugin must create (or extend) the text of the passed-in page object by simply inserting text (using any of PyMuPDF's text insertion methods). No return values expected.
+Your plugin must accept the ``page`` parameter which is a PyMuPDF Page object, and the keyword parameters ``dpi``, ``language`` and ``keep_ocr_text``. The plugin must create (or extend) the text of the passed-in page object by simply inserting text (using any of PyMuPDF's text insertion methods). No return values expected.
 
 Be prepared to accept ``None`` or a PyMuPDF Pixmap object as the `pixmap` parameter, which is the rendered image of the page if provided. Parameters ``dpi`` and ``language`` are passed through from the respective function parameters.
 
@@ -171,7 +171,7 @@ You can override this logic in the following ways:
     from pymupdf4llm.ocr import rapidocr_api
     from pymupdf4llm.helpers.utils import analyze_page
 
-    def my_ocr_function(page, pixmap=None, dpi=300, language="eng"):
+    def my_ocr_function(page, pixmap=None, dpi=300, language="eng", keep_ocr_text=False):
         # analyze the page content and perform OCR only if necessary
         analysis = analyze_page(page)
 
