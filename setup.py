@@ -944,6 +944,8 @@ def build():
     # Add single README file.
     ret.append( (f'{g_root}/README.md', '$dist-info/README.md') )
     
+    ret.append( (f'{g_root}/COPYING', '$dist-info/licenses/GNU_AFFERO_GPL_3.0.txt') )
+    
     return ret
 
 
@@ -1489,6 +1491,7 @@ p = pipcl.Package(
         requires_dist = g_requires_dist,
         requires_python = '>=3.11',
         license = 'Dual Licensed - GNU AFFERO GPL 3.0 or Artifex Commercial License',
+        #license_expression = 'AGPL-3.0-only OR LicenseRef-Artifex-Commercial-License',
         project_url = [
             ('Documentation, https://pymupdf.readthedocs.io/'),
             ('Source, https://github.com/pymupdf/pymupdf'),
