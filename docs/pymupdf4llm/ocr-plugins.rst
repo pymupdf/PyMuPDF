@@ -30,6 +30,8 @@ If none of these engines is available (and no own plugin is provided), no OCR wi
 
 The chosen plugin is displayed as an information message.
 
+Parameter `ocr_language` is passed on to the plugin. Plugins using Tesseract OCR for text **recognition** pass it on to Tesseract. Plugin `rapidocr_api` uses it to select a RapidOCR recognition model for some languages, see :ref:`OCR Language Support <ocr_language_support>`.
+
 How Default Plugins Work
 ------------------------
 

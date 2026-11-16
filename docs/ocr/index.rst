@@ -256,6 +256,8 @@ An OCR adaptor can be defined by passing your own Python ``ocr_function`` method
 
 ----
 
+.. _ocr_language_support:
+
 OCR Language Support
 --------------------
 
@@ -275,6 +277,30 @@ Tesseract language packs must be installed separately on your system. For exampl
    sudo apt install tesseract-ocr-deu tesseract-ocr-fra
 
 See the page on :ref:`installing Tesseract language packs <tesseract-language-packs>` for further details.
+
+When RapidOCR is used for text recognition (adaptor ``rapidocr_api``), no language packs are needed. The same language codes then select a RapidOCR recognition model for the following scripts:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Script
+     - Language codes
+   * - Korean
+     - ``kor``
+   * - Greek
+     - ``ell``
+   * - Cyrillic
+     - ``rus``, ``ukr``, ``bel``, ``bul``, ``srp``, ``mkd``
+
+.. code-block:: python
+
+   doc = pymupdf.open("korean-scan.pdf")
+   md_text = doc.to_markdown(ocr_language="kor")
+
+.. note::
+
+   RapidOCR uses one recognition model per page. If several codes are specified, the first one from the table selects the model — for example Korean for ``"eng+kor"``. RapidOCR downloads the model when it is first used. All other codes, including the default ``"eng"``, use RapidOCR's default model.
 
 ----
 
