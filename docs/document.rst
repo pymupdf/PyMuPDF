@@ -352,7 +352,7 @@ For details on **embedded files** refer to Appendix 3.
         image_path: str = "", \
         image_size_limit: float = 0.05, \
         margins: float | list = 0, \
-        ocr_dpi: int = 300, \
+        ocr_dpi: int = 150, \
         ocr_function: callable = None, \
         ocr_language: str = "eng", \
         page_chunks: bool = False, \
@@ -419,7 +419,7 @@ For details on **embedded files** refer to Appendix 3.
             * `(top, bottom)` yields  `(0, top, 0, bottom)`.
             * To always read full pages **(default)**, use `margins=0`.
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 300. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact). 
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact). 
 
         :arg callable ocr_function: |PyMuPDFLayoutMode_Valid| if you want to provide your own :ref:`OCR function <ocr_custom_adaptor>`, specify it here. If omitted (`None`), one of the available built-in OCR engines will be used.
 
@@ -534,7 +534,7 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
         :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
 
@@ -572,7 +572,7 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
         :arg bool header: boolean to switch on/off page header content. This parameter controls whether to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be written.
 
