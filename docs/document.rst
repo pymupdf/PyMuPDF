@@ -383,12 +383,13 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool footer: |PyMuPDFLayoutMode_Valid| boolean to switch on/off page footer content. This parameter controls whether to include or omit footer text from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
 
-    :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
+        :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
 
-        This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
+            This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
 
-        .. warning::
-            Requires that either one of the default supported OCR engines is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
+            .. warning::
+
+                Requires that either one of the :doc:`default supported OCR engines <ocr/index>` is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
 
         :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image.
 
@@ -2377,31 +2378,31 @@ For details on **embedded files** refer to Appendix 3.
 
 
 
-  .. attribute:: outline
+    .. attribute:: outline
 
     Contains the first :ref:`Outline` entry of the document (or `None`). Can be used as a starting point to walk through all outline items. Accessing this property for encrypted, not authenticated documents will raise an *AttributeError*.
 
     :type: :ref:`Outline`
 
-  .. attribute:: is_closed
+    .. attribute:: is_closed
 
     ``False`` if document is still open. If closed, most other attributes and methods will have been deleted / disabled. In addition, :ref:`Page` objects referring to this document (i.e. created with :meth:`Document.load_page`) and their dependent objects will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document (if applicable).
 
     :type: bool
 
-  .. attribute:: is_dirty
+    .. attribute:: is_dirty
 
     ``True`` if this is a PDF document and contains unsaved changes, else ``False``.
 
     :type: bool
 
-  .. attribute:: is_pdf
+    .. attribute:: is_pdf
 
     ``True`` if this is a PDF document, else ``False``.
 
     :type: bool
 
-  .. attribute:: is_form_pdf
+    .. attribute:: is_form_pdf
 
     ``False`` if this is not a PDF or has no form fields, otherwise the number of root form fields (fields with no ancestors).
 
@@ -2409,13 +2410,13 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: bool,int
 
-  .. attribute:: is_reflowable
+    .. attribute:: is_reflowable
 
     ``True`` if document has a variable page layout (like e-books, HTML or Markdown). In this case you can set the desired page dimensions during document creation (open) or via method :meth:`layout`.
 
     :type: bool
 
-  .. attribute:: is_repaired
+    .. attribute:: is_repaired
 
     * New in v1.18.2
 
@@ -2423,7 +2424,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: bool
 
-  .. attribute:: is_fast_webaccess
+    .. attribute:: is_fast_webaccess
 
     * New in v1.22.2
 
@@ -2431,7 +2432,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: bool
 
-  .. attribute:: markinfo
+    .. attribute:: markinfo
 
     * New in v1.22.2
 
@@ -2439,7 +2440,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: dict
 
-  .. attribute:: pagemode
+    .. attribute:: pagemode
 
     * New in v1.22.2
 
@@ -2447,7 +2448,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: str
 
-  .. attribute:: pagelayout
+    .. attribute:: pagelayout
 
     * New in v1.22.2
 
@@ -2455,7 +2456,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: str
 
-  .. attribute:: version_count
+    .. attribute:: version_count
 
     * New in v1.22.2
 
@@ -2463,19 +2464,19 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. attribute:: needs_pass
+    .. attribute:: needs_pass
 
     Indicates whether the document is password-protected against access. This indicator remains unchanged -- **even after the document has been authenticated**. Precludes incremental saves if true.
 
     :type: bool
 
-  .. attribute:: is_encrypted
+    .. attribute:: is_encrypted
 
     This indicator initially equals :attr:`Document.needs_pass`. After successful authentication, it is set to ``False`` to reflect the situation.
 
     :type: bool
 
-  .. attribute:: permissions
+    .. attribute:: permissions
 
     * Changed in v1.16.0: This is now an integer comprised of bit indicators. Was a dictionary previously.
 
@@ -2483,7 +2484,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. attribute:: metadata
+    .. attribute:: metadata
 
     Contains the document's meta data as a Python dictionary or `None` (if *is_encrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or `None`.
 
@@ -2503,19 +2504,19 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: dict
 
-  .. Attribute:: name
+    .. Attribute:: name
 
     Contains the *filename* or *filetype* value with which *Document* was created.
 
     :type: str
 
-  .. Attribute:: page_count
+    .. Attribute:: page_count
 
     Contains the number of pages of the document. May return 0 for documents with no pages. Function `len(doc)` will also deliver this result.
 
     :type: int
 
-  .. Attribute:: chapter_count
+    .. Attribute:: chapter_count
 
     * New in v1.17.0
 
@@ -2523,7 +2524,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. Attribute:: last_location
+    .. Attribute:: last_location
 
     * New in v1.17.0
 
@@ -2531,7 +2532,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. Attribute:: FormFonts
+    .. Attribute:: FormFonts
 
     A list of form field font names defined in the */AcroForm* object. `None` if not a PDF.
 
