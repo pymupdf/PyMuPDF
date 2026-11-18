@@ -1,8 +1,8 @@
 # PyMuPDF
 
-> PyMuPDF is a high-performance Python library for data extraction, analysis, conversion and manipulation of PDF (and other) documents. It includes PyMuPDF4LLM, a companion package specifically designed for LLM and RAG pipelines.
+> PyMuPDF is a layout-aware document engine for AI and a feature-rich Python toolkit for extracting, rendering and editing PDFs and other documents. Since version 2.0, its ML-based layout analysis turns PDFs and Office files into high-quality Markdown for RAG and agents, running fast on CPU and grounding every result to its source page.
 
-PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It wraps MuPDF, a lightweight PDF/XPS/eBook viewer and toolkit.
+PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It is built on top of [MuPDF](https://mupdf.com).
 
 ---
 
@@ -10,14 +10,12 @@ PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered
 
 ```
 pip install pymupdf
-pip install pymupdf4llm
 ```
 
 Import as:
 
 ```python
 import pymupdf
-import pymupdf4llm
 ```
 
 ---
@@ -95,7 +93,14 @@ pix.save("page-0.png")
 
 ## PyMuPDF4LLM
 
-PyMuPDF4LLM is a lightweight extension for PyMuPDF that converts documents into structured Markdown, JSON, and plain text optimised for RAG pipelines, vector embeddings, and LLM ingestion. It handles multi-column layouts, tables, images, headers, and scanned pages with automatic OCR — all powered by the MuPDF C engine.
+PyMuPDF4LLM converts documents into structured Markdown, JSON, and plain text optimised for RAG pipelines, vector embeddings, and LLM ingestion. It handles multi-column layouts, tables, images, headers, and scanned pages with automatic OCR — all powered by the MuPDF C engine.
+
+**Since PyMuPDF 2.0, PyMuPDF4LLM and PyMuPDF Layout are included in the main `pymupdf` package by default.** `pip install pymupdf` is all you need; there is no separate package to install. You can use the features in two ways:
+
+- As `Document` methods: `doc.to_markdown()`, `doc.to_json()` and `doc.to_text()`
+- Through the `pymupdf4llm` module: `pymupdf4llm.to_markdown(...)`, as in the examples below
+
+Layout analysis is on by default. Call `pymupdf.use_layout(False)` to turn it off.
 
 ### Key Features
 
@@ -110,12 +115,29 @@ PyMuPDF4LLM is a lightweight extension for PyMuPDF that converts documents into 
 ### Installation
 
 ```
-pip install pymupdf4llm
+pip install --upgrade pymupdf
 ```
 
-Tesseract must be installed separately if OCR is needed.
+This installs PyMuPDF together with PyMuPDF4LLM and PyMuPDF Layout. Do not install `pymupdf4llm` or `pymupdf-layout` separately on PyMuPDF 2.0 or later. If an earlier separate install broke your environment, repair it with:
+
+```
+pip install --force-reinstall --no-cache-dir pymupdf
+```
+
+OCR needs at least one OCR engine, such as RapidOCR or Tesseract, installed separately.
 
 ### Basic Usage
+
+```python
+import pymupdf
+
+doc = pymupdf.open("input.pdf")
+md_text = doc.to_markdown()      # Markdown
+json_text = doc.to_json()        # JSON string
+plain_text = doc.to_text()       # plain text
+```
+
+The same conversion through the `pymupdf4llm` module:
 
 ```python
 import pymupdf4llm
@@ -208,7 +230,7 @@ md = pymupdf4llm.to_markdown("document.pdf", force_ocr=True)
 # Specify OCR language (Tesseract language codes)
 md = pymupdf4llm.to_markdown("document.pdf", ocr_language="eng+deu")
 
-# Set OCR resolution (default 300 dpi)
+# Set OCR resolution (default 150 dpi)
 md = pymupdf4llm.to_markdown("document.pdf", ocr_dpi=200)
 
 # Provide a custom OCR function
@@ -350,7 +372,7 @@ md = doc.to_markdown()
 | `force_ocr` | `bool` | `False` | Force OCR on every page |
 | `use_ocr` | `bool` | `True` | Allow automatic OCR where needed |
 | `ocr_language` | `str` | `"eng"` | Tesseract language code(s), e.g. `"eng+deu"` |
-| `ocr_dpi` | `int` | `300` | Resolution for OCR intermediate images |
+| `ocr_dpi` | `int` | `150` | Resolution for OCR intermediate images |
 | `ocr_function` | callable or `None` | `None` | Custom OCR function |
 | `force_text` | `bool` | `True` | Output text even when overlapping images |
 | `table_strategy` | `str` | `"lines_strict"` | Table detection strategy |
@@ -360,6 +382,60 @@ md = doc.to_markdown()
 | `detect_bg_color` | `bool` | `True` | Ignore text/vectors matching background colour |
 | `use_glyphs` | `bool` | `False` | Use glyph-level extraction |
 | `filename` | `str` or `None` | `None` | Override filename for image naming |
+
+---
+
+## Grounding: tracing text back to the page
+
+Grounding links extracted content, RAG chunks and LLM quotes to the page and region they came from, so they can be cited, highlighted and checked. Full guide: https://pymupdf.readthedocs.io/en/latest/grounding.html
+
+### Coordinates
+
+- All PyMuPDF positions (search hits, span `bbox`, `page_boxes`, JSON boxes) are in points (1/72 inch), with the origin at the top-left corner of the unrotated page. `y` grows downwards. Rectangles are `(x0, y0, x1, y1)`.
+- `page_boxes` bboxes from `to_markdown()` are rounded to integers. Boxes from `to_json()` are unrounded floats.
+- To PDF space (bottom-left origin): `rect * ~page.transformation_matrix`. `page.transformation_matrix` converts the other way, from PDF space to PyMuPDF coordinates.
+- To pixels of an image from `page.get_pixmap(dpi=dpi)`: `rect * page.rotation_matrix * (dpi / 72)`. Back from pixels: `pixel_rect * (72 / dpi) * page.derotation_matrix`. On unrotated pages this reduces to multiplying by `dpi / 72`.
+
+### From Markdown to the page
+
+With `page_chunks=True`, each `page_boxes` entry has `"pos": (start, stop)` and `"bbox"`. `chunk["text"][start:stop]` is the Markdown made from that box. Store the bbox, page number and source as chunk metadata:
+
+```python
+import json
+import pymupdf4llm
+
+chunks = []
+for page_chunk in pymupdf4llm.to_markdown("input.pdf", page_chunks=True):
+    text = page_chunk["text"]
+    for box in page_chunk["page_boxes"]:
+        start, stop = box["pos"]
+        if text[start:stop].strip():
+            chunks.append({
+                "text": text[start:stop].strip(),
+                "metadata": {
+                    "source": "input.pdf",
+                    "page": page_chunk["metadata"]["page_number"],  # 1-based
+                    "class": box["class"],
+                    "bbox": json.dumps(box["bbox"]),  # JSON string for vector stores that only accept scalars
+                },
+            })
+```
+
+To highlight a chunk later: `page = doc[meta["page"] - 1]`, then `page.add_rect_annot(pymupdf.Rect(json.loads(meta["bbox"])))`.
+
+### From a quote to the page
+
+`page.search_for(quote, quads=True)` returns one `Quad` per line the quote covers. It ignores case and finds text across line breaks and hyphenated line ends. Pass the result to `page.add_highlight_annot(quads)`:
+
+```python
+quote = " ".join(quote.split())                      # normalise whitespace from the LLM
+quads = page.search_for(quote, clip=chunk_rect, quads=True) or page.search_for(quote, quads=True)
+if quads:
+    page.add_highlight_annot(quads)
+    rects = [q.rect for q in quads]                  # store with the citation
+else:
+    ...  # fall back to matching page.get_text("words"), or flag the quote for review
+```
 
 ---
 
@@ -691,6 +767,7 @@ PyMuPDF is available under the GNU AGPL license for open source use. Commercial 
 - Documentation: https://pymupdf.readthedocs.io/en/latest/
 - PyMuPDF4LLM Docs: https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/
 - PyMuPDF4LLM API: https://pymupdf.readthedocs.io/en/latest/pymupdf4llm/api.html
+- Grounding: https://pymupdf.readthedocs.io/en/latest/grounding.html
 - GitHub: https://github.com/pymupdf/PyMuPDF
 - PyMuPDF4LLM GitHub: https://github.com/pymupdf/pymupdf4llm
 - PyPI (PyMuPDF): https://pypi.org/project/PyMuPDF/

@@ -24,7 +24,7 @@
 
 **The PDF engine behind over 50 million monthly downloads, powering AI pipelines worldwide.**
 
-**PyMuPDF is a high-performance Python library for data extraction, layout analysis, conversion, rendering and manipulation of PDF (and other) documents.** Built on top of MuPDF — a lightweight, fast C engine — PyMuPDF gives you precise, low-level control over documents alongside high-level convenience APIs.
+**PyMuPDF is a layout-aware document engine for AI and a feature-rich Python toolkit for extracting, rendering and editing PDFs and other documents**. Since version 2.0, its ML-based layout analysis turns PDFs and Office files into high-quality Markdown for RAG and agents, running fast on CPU and grounding every result to its source page.
 
 [![Star on GitHub](https://img.shields.io/github/stars/pymupdf/PyMuPDF.svg?style=for-the-badge&label=Star&logo=github)](https://github.com/pymupdf/PyMuPDF/)
 
@@ -36,7 +36,7 @@
 - **Accurate** — pixel-perfect text extraction with font, color, and position metadata
 - **Versatile** — read, write, annotate, redact, merge, split, and convert documents
 - **LLM-ready** — structured data with JSON & native Markdown output for RAG and AI pipelines
-- **Grounded results** — improved, verifiable results, see: [PyMuPDF & Grounding](https://pymupdf.readthedocs.io/en/latest/grounding.html?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_grounding)
+- **Grounded results** — improved, verifiable results, see: [PyMuPDF & Grounding](https://pymupdf.io/grounding/?utm_source=github&utm_medium=referral&utm_campaign=pymupdf_github&utm_content=documentation_community&utm_term=pymupdf_grounding)
 
 ---
 
@@ -53,8 +53,6 @@ pip install --force-reinstall --no-cache-dir pymupdf
 ```
 
 This will ensure a clean installation of PyMuPDF.
-
-
 
 ### Wheels
 

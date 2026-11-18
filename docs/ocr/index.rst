@@ -164,13 +164,13 @@ Built-in Adaptors
 RapidOCR
 ^^^^^^^^
 
-If `RapidOCR <https://github.com/RapidAI/RapidOCR?tab=readme-ov-file>`_ and the RapidOCR ONNX Runtime are available, you can use a pre-made callable OCR function for it, which is provided in the ``PyMuPDF.ocr`` module as ``rapidocr_api.exec_ocr``.
+If `RapidOCR <https://github.com/RapidAI/RapidOCR?tab=readme-ov-file>`_ and the RapidOCR ONNX Runtime are available, you can use a pre-made callable OCR function for it, which is provided in the ``pymupdf4llm.ocr`` module as ``rapidocr_api.exec_ocr``.
 
 **Example**
 
 .. code-block:: python
 
-   from pymupdf.ocr import rapidocr_api
+   from pymupdf4llm.ocr import rapidocr_api
 
    doc = pymupdf.open("document.pdf")
    md = doc.to_markdown(
@@ -190,13 +190,13 @@ The following conditions apply:
 - RapidOCR version is `rapidocr_onnxruntime` & Tesseract is available then they are combined together **by default**.
 - RapidOCR 3.9.1 or later: no combination by default, but can be combined with Tesseract if required.
 
-This pre-made default callable OCR function can be found in the ``PyMuPDF.ocr`` module as ``rapidtess_api.exec_ocr``.
+This pre-made default callable OCR function can be found in the ``pymupdf4llm.ocr`` module as ``rapidtess_api.exec_ocr``.
 
 **Example**
 
 .. code-block:: python
 
-   from pymupdf.ocr import rapidtess_api
+   from pymupdf4llm.ocr import rapidtess_api
 
    doc = pymupdf.open("document.pdf")
    md = doc.to_markdown(
@@ -228,7 +228,7 @@ An OCR adaptor can be defined by passing your own Python ``ocr_function`` method
 
 .. code-block:: python
 
-   def exec_ocr(page, dpi=300, pixmap=None):
+   def exec_ocr(page, dpi=300, pixmap=None, language="eng", keep_ocr_text=False):
        """
        Custom OCR function to replace the default Tesseract-based implementation.
 
@@ -236,6 +236,8 @@ An OCR adaptor can be defined by passing your own Python ``ocr_function`` method
        - page: The PyMuPDF page object being processed.
        - dpi: The resolution at which to render the page for OCR.
        - pixmap: An optional pre-rendered pixmap of the page, if available.
+       - language: The language to be used for OCR.
+       - keep_ocr_text: Whether to keep text from a previous OCR of the page.
 
        If a Pixmap is provided, the DPI parameter is ignored. Otherwise, an RGB
        Pixmap is created from the page at the specified DPI.
@@ -253,6 +255,8 @@ An OCR adaptor can be defined by passing your own Python ``ocr_function`` method
    PyMuPDF handles interpretation — your adaptor needs to handle the text recognition & rendering step.
 
 ----
+
+.. _ocr_language_support:
 
 OCR Language Support
 --------------------
@@ -273,6 +277,30 @@ Tesseract language packs must be installed separately on your system. For exampl
    sudo apt install tesseract-ocr-deu tesseract-ocr-fra
 
 See the page on :ref:`installing Tesseract language packs <tesseract-language-packs>` for further details.
+
+When RapidOCR is used for text recognition (adaptor ``rapidocr_api``), no language packs are needed. The same language codes then select a RapidOCR recognition model for the following scripts:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 65
+
+   * - Script
+     - Language codes
+   * - Korean
+     - ``kor``
+   * - Greek
+     - ``ell``
+   * - Cyrillic
+     - ``rus``, ``ukr``, ``bel``, ``bul``, ``srp``, ``mkd``
+
+.. code-block:: python
+
+   doc = pymupdf.open("korean-scan.pdf")
+   md_text = doc.to_markdown(ocr_language="kor")
+
+.. note::
+
+   RapidOCR uses one recognition model per page. If several codes are specified, the first one from the table selects the model — for example Korean for ``"eng+kor"``. RapidOCR downloads the model when it is first used. All other codes, including the default ``"eng"``, use RapidOCR's default model.
 
 ----
 

@@ -132,6 +132,14 @@ modindex_common_prefix = []
 # If true, keep warnings as "system message" paragraphs in the built documents.
 keep_warnings = False
 
+
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#confval-suppress_warnings
+suppress_warnings = [
+        'ref.any',
+        'toc.not_included',
+        'ref.ref',
+        ]
+
 # Localization vars
 
 gettext_uuid = True

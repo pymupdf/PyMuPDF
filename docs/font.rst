@@ -43,15 +43,15 @@ A ``Font`` object also contains useful general information, like the font bbox, 
 .. class:: Font
 
    .. index::
-      pair: Font, fontfile
-      pair: Font, fontbuffer
-      pair: Font, script
-      pair: Font, ordering
-      pair: Font, is_bold
-      pair: Font, is_italic
-      pair: Font, is_serif
-      pair: Font, fontname
-      pair: Font, language
+      pair: Font; fontfile
+      pair: Font; fontbuffer
+      pair: Font; script
+      pair: Font; ordering
+      pair: Font; is_bold
+      pair: Font; is_italic
+      pair: Font; is_serif
+      pair: Font; fontname
+      pair: Font; language
 
    .. method:: __init__(self, fontname=None, fontfile=None,
                   fontbuffer=None, script=0, language=None, ordering=-1, is_bold=0,
@@ -132,9 +132,9 @@ A ``Font`` object also contains useful general information, like the font bbox, 
             =========== =========================== ======= =============================
 
    .. index::
-      pair: Font.has_glyph, language
-      pair: Font.has_glyph, script
-      pair: Font.has_glyph, fallback
+      pair: Font.has_glyph; language
+      pair: Font.has_glyph; script
+      pair: Font.has_glyph; fallback
 
    .. method:: has_glyph(chr, language=None, script=0, fallback=False)
 
@@ -183,9 +183,9 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       .. note:: This method only returns meaningful data for fonts having a CMAP (character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array will have length 1 and contain zero only.
 
    .. index::
-      pair: Font.glyph_advance, language
-      pair: Font.glyph_advance, script
-      pair: Font.glyph_advance, wmode
+      pair: Font.glyph_advance; language
+      pair: Font.glyph_advance; script
+      pair: Font.glyph_advance; wmode
 
    .. method:: glyph_advance(chr, language=None, script=0, wmode=0)
 
@@ -211,8 +211,8 @@ A ``Font`` object also contains useful general information, like the font bbox, 
          True
 
    .. index::
-      pair: Font.glyph_bbox, language
-      pair: Font.glyph_bbox, script
+      pair: Font.glyph_bbox; language
+      pair: Font.glyph_bbox; script
 
    .. method:: glyph_bbox(chr, language=None, script=0)
 
@@ -234,7 +234,7 @@ A ``Font`` object also contains useful general information, like the font bbox, 
         .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as `pymupdf.unicode_to_glyph_name()` and resp. `pymupdf.glyph_name_to_unicode()`.
 
    .. index::
-      pair: text_length, fontsize
+      pair: text_length; fontsize
 
    .. method:: text_length(text, fontsize=11)
 
@@ -258,7 +258,7 @@ A ``Font`` object also contains useful general information, like the font bbox, 
             For multi-character strings, the method offers a huge performance advantage compared to the previous implementation: instead of about 0.5 microseconds for each character, only 12.5 nanoseconds are required for the second and subsequent ones.
 
    .. index::
-      pair: char_lengths, fontsize
+      pair: char_lengths; fontsize
 
    .. method:: char_lengths(text, fontsize=11)
 

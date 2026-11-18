@@ -10,7 +10,7 @@
     </script>
 
 PyMuPDF Office
-=============
+==============
 
 Enhance |PyMuPDF| capability with **Office** document support.
 
