@@ -1,8 +1,8 @@
 # PyMuPDF
 
-> PyMuPDF is a high-performance Python library for data extraction, analysis, conversion and manipulation of PDF (and other) documents. It includes PyMuPDF4LLM, a companion package specifically designed for LLM and RAG pipelines.
+> PyMuPDF is a layout-aware document engine for AI and a feature-rich Python toolkit for extracting, rendering and editing PDFs and other documents. Since version 2.0, its ML-based layout analysis turns PDFs and Office files into high-quality Markdown for RAG and agents, running fast on CPU and grounding every result to its source page.
 
-PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It wraps MuPDF, a lightweight PDF/XPS/eBook viewer and toolkit.
+PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It is built on top of [MuPDF](https://mupdf.com).
 
 ---
 
@@ -10,14 +10,12 @@ PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered
 
 ```
 pip install pymupdf
-pip install pymupdf4llm
 ```
 
 Import as:
 
 ```python
 import pymupdf
-import pymupdf4llm
 ```
 
 ---
@@ -95,7 +93,14 @@ pix.save("page-0.png")
 
 ## PyMuPDF4LLM
 
-PyMuPDF4LLM is a lightweight extension for PyMuPDF that converts documents into structured Markdown, JSON, and plain text optimised for RAG pipelines, vector embeddings, and LLM ingestion. It handles multi-column layouts, tables, images, headers, and scanned pages with automatic OCR — all powered by the MuPDF C engine.
+PyMuPDF4LLM converts documents into structured Markdown, JSON, and plain text optimised for RAG pipelines, vector embeddings, and LLM ingestion. It handles multi-column layouts, tables, images, headers, and scanned pages with automatic OCR — all powered by the MuPDF C engine.
+
+**Since PyMuPDF 2.0, PyMuPDF4LLM and PyMuPDF Layout are included in the main `pymupdf` package by default.** `pip install pymupdf` is all you need; there is no separate package to install. You can use the features in two ways:
+
+- As `Document` methods: `doc.to_markdown()`, `doc.to_json()` and `doc.to_text()`
+- Through the `pymupdf4llm` module: `pymupdf4llm.to_markdown(...)`, as in the examples below
+
+Layout analysis is on by default. Call `pymupdf.use_layout(False)` to turn it off.
 
 ### Key Features
 
@@ -110,12 +115,29 @@ PyMuPDF4LLM is a lightweight extension for PyMuPDF that converts documents into 
 ### Installation
 
 ```
-pip install pymupdf4llm
+pip install --upgrade pymupdf
 ```
 
-Tesseract must be installed separately if OCR is needed.
+This installs PyMuPDF together with PyMuPDF4LLM and PyMuPDF Layout. Do not install `pymupdf4llm` or `pymupdf-layout` separately on PyMuPDF 2.0 or later. If an earlier separate install broke your environment, repair it with:
+
+```
+pip install --force-reinstall --no-cache-dir pymupdf
+```
+
+OCR needs at least one OCR engine, such as RapidOCR or Tesseract, installed separately.
 
 ### Basic Usage
+
+```python
+import pymupdf
+
+doc = pymupdf.open("input.pdf")
+md_text = doc.to_markdown()      # Markdown
+json_text = doc.to_json()        # JSON string
+plain_text = doc.to_text()       # plain text
+```
+
+The same conversion through the `pymupdf4llm` module:
 
 ```python
 import pymupdf4llm
