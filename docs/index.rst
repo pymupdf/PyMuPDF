@@ -19,7 +19,7 @@
 Welcome to |PyMuPDF|
 ================================
 
-|PyMuPDF| is a high-performance **Python** library for data extraction, analysis, conversion & manipulation of |PDF| (and other) documents.
+|PyMuPDF| is a layout-aware document engine for AI and a feature-rich **Python** toolkit for extracting, rendering and editing PDFs and other documents. Since version 2.0, its ML-based layout analysis turns PDFs and Office files into high-quality |Markdown| for RAG and agents, running fast on CPU and grounding every result to its source page.
 
 |PyMuPDF| is hosted on `GitHub <https://github.com/pymupdf/PyMuPDF>`_ and registered on `PyPI <https://pypi.org/project/PyMuPDF/>`_.
 
