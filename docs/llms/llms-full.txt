@@ -230,7 +230,7 @@ md = pymupdf4llm.to_markdown("document.pdf", force_ocr=True)
 # Specify OCR language (Tesseract language codes)
 md = pymupdf4llm.to_markdown("document.pdf", ocr_language="eng+deu")
 
-# Set OCR resolution (default 300 dpi)
+# Set OCR resolution (default 150 dpi)
 md = pymupdf4llm.to_markdown("document.pdf", ocr_dpi=200)
 
 # Provide a custom OCR function
@@ -372,7 +372,7 @@ md = doc.to_markdown()
 | `force_ocr` | `bool` | `False` | Force OCR on every page |
 | `use_ocr` | `bool` | `True` | Allow automatic OCR where needed |
 | `ocr_language` | `str` | `"eng"` | Tesseract language code(s), e.g. `"eng+deu"` |
-| `ocr_dpi` | `int` | `300` | Resolution for OCR intermediate images |
+| `ocr_dpi` | `int` | `150` | Resolution for OCR intermediate images |
 | `ocr_function` | callable or `None` | `None` | Custom OCR function |
 | `force_text` | `bool` | `True` | Output text even when overlapping images |
 | `table_strategy` | `str` | `"lines_strict"` | Table detection strategy |
