@@ -111,10 +111,10 @@ def test_match_across_span_boundaries(page, needle, fragments, skip_quad_correct
 
 
 @pytest.mark.parametrize("needle,text,distance", [
-    ("revenue increasd today", "revenue increased today", 1),  # deletion in query
+    ("revenue increasd today", "revenue increased today", 1),  # deletion in query; codespell:ignore increasd
     ("revenue increassed today", "revenue increased today", 1),  # insertion
     ("revenue increazed today", "revenue increased today", 1),  # substitution
-    ("revenue incerased today", "revenue increased today", 2),  # transposition
+    ("revenue incerased today", "revenue increased today", 2),  # transposition; codespell:ignore incerased
     ("the return was -5% today", "the return was 5% today", 1),
     ("the rate was 1.2 today", "the rate was 12 today", 1),
     ("the fund is not safe", "the fund is now safe", 1),
@@ -146,7 +146,7 @@ def test_overlapping_occurrences(page):
 
 def test_equal_distance_prefers_closest_length(page):
     page.insert_text((30, 60), "revenue increased")
-    hits = page.search_for_fuzzy("revenue increasd", max_edits=1)
+    hits = page.search_for_fuzzy("revenue increasd", max_edits=1)  # codespell:ignore increasd
     # Both the whole word and its prefix have distance one. This is a
     # substring API, so it does not add a word-completion heuristic.
     assert [(h["text"], h["distance"]) for h in hits] == [("revenue increase", 1)]
