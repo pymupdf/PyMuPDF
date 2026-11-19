@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+**Changes in next version**
+
+* Added :meth:`Page.search_for_fuzzy` for edit-distance substring searches,
+  returning matched text, distance and quads without additional dependencies.
+
 
 **Changes in version 2.1** (2026-11-02)
 

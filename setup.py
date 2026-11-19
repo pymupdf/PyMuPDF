@@ -661,6 +661,7 @@ def build():
         ret.append( (f'{g_root}/src/__main__.py', to_dir) )
         ret.append( (f'{g_root}/src/pymupdf.py', to_dir) )
         ret.append( (f'{g_root}/src/table.py', to_dir) )
+        ret.append( (f'{g_root}/src/_textsearch.py', to_dir) )
         ret.append( (f'{g_root}/src/_table_refine.py', to_dir) )
         ret.append( (f'{g_root}/src/_table_spans.py', to_dir) )
         ret.append( (f'{g_root}/src/_table_union.py', to_dir) )

@@ -125,6 +125,7 @@ def test_pylint():
             '_table_refine.py',
             '_table_spans.py',
             '_table_union.py',
+            '_textsearch.py',
             '_wxcolors.py',
             'fitz___init__.py',
             'fitz_table.py',
