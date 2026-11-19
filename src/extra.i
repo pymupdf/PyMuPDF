@@ -3215,6 +3215,14 @@ mupdf::FzRect JM_make_spanlist(
 
             DICT_SETITEM_DROP(char_dict, dictkey_bbox, JM_py_from_rect(r));
 
+            // Internal raw=2 mode retains quads when font metrics cannot
+            // recover them, for example with quad corrections disabled.
+            if (raw == 2)
+            {
+                fz_quad quad = JM_char_quad(line.m_internal, ch.m_internal);
+                DICT_SETITEMSTR_DROP(char_dict, "quad", JM_py_from_quad(quad));
+            }
+
             DICT_SETITEM_DROP(char_dict, dictkey_c, Py_BuildValue("C", ch.m_internal->c));
             DICT_SETITEMSTR_DROP(char_dict, "synthetic", Py_BuildValue("O", (ch.m_internal->flags & FZ_STEXT_SYNTHETIC) ? Py_True : Py_False));
             if (!char_list)

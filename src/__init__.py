@@ -13713,6 +13713,19 @@ class Page:
             del tp
         return rlist
 
+    def search_for_fuzzy(self, needle, *, max_edits, clip=None, textpage=None) -> list:
+        """Find approximate text occurrences with their edit distance and quads.
+
+        `max_edits` bounds insertions, deletions and substitutions after Unicode
+        case-folding, whitespace folding and line-end dehyphenation. Each result
+        is a dict with `text`, `distance` and `quads`. See the API documentation
+        for overlap selection and text extraction limitations.
+        """
+        from ._textsearch import search_for_fuzzy
+        return search_for_fuzzy(
+            self, needle, max_edits=max_edits, clip=clip, textpage=textpage
+        )
+
     def set_artbox(self, rect):
         """Set the ArtBox."""
         return self._set_pagebox("ArtBox", rect)
@@ -17276,6 +17289,7 @@ class TextPage:
         JM_make_textpage_dict(self.this, page_dict, raw)
 
     def _textpage_dict(self, raw=False):
+        # raw: 0 for span text, 1 for characters, 2 for characters with quads.
         page_dict = {"width": self.rect.width, "height": self.rect.height}
         self._getNewBlockList(page_dict, raw)
         return page_dict
@@ -21528,6 +21542,8 @@ def JM_make_spanlist(line_dict, line, raw, buff, tp_rect):
             char_dict = dict()
             char_dict[dictkey_origin] = JM_py_from_point( ch.m_internal.origin)
             char_dict[dictkey_bbox] = JM_py_from_rect(r)
+            if raw == 2:
+                char_dict["quad"] = JM_py_from_quad(JM_char_quad(line, ch))
             char_dict[dictkey_c] = chr(ch.m_internal.c)
             char_dict['synthetic'] = bool(ch.m_internal.flags & mupdf.FZ_STEXT_SYNTHETIC)
 
