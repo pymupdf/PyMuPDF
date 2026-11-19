@@ -97,6 +97,28 @@ def _layout_table_grids(page):
     return grids
 
 
+def _union_nested_candidate_indexes(candidates, containers=None):
+    """Rule grids inside one actual cell of another rule grid are cell text.
+
+    Use only already-admitted native candidates. Containment by a large layout
+    box is not nesting: independent panels in an overmerged region must survive.
+    Equal boxes, mere overlaps and children crossing parent cells stay candidates.
+    """
+    nested = set()
+    for parent_index in (range(len(candidates)) if containers is None else containers):
+        parent_bbox, parent_grid = candidates[parent_index]
+        cell_rects = None
+        for index, (bbox, _grid) in enumerate(candidates):
+            if index == parent_index or bbox == parent_bbox or bbox not in parent_bbox:
+                continue
+            if cell_rects is None:
+                cell_rects = [pymupdf.Rect(cell) for row in parent_grid
+                              for cell in row if cell is not None]
+            if any(bbox in cell for cell in cell_rects):
+                nested.add(index)
+    return nested
+
+
 def _union_line_candidates(page, *, add_lines=None, add_boxes=None):
     """Line-based table candidates for the union stage as ``(bbox, grid)`` pairs.
 
@@ -509,8 +531,10 @@ def _union_replace_append(existing, candidates, *, page, grid_ref, grid_ref_iou,
         grid_refs, consumed = {}, set()
     replacements = {}
     append_candidates = []
+    # A validated grid-ref already owns the native cells containing these children.
+    nested_in_refs = _union_nested_candidate_indexes(candidates, consumed)
     for candidate_index, candidate in enumerate(candidates):
-        if candidate_index in consumed:
+        if candidate_index in consumed or candidate_index in nested_in_refs:
             continue
         owner_index, ambiguous = _union_find_owner(candidate[0], existing_bboxes)
         if owner_index is not None:
@@ -534,7 +558,14 @@ def _union_replace_append(existing, candidates, *, page, grid_ref, grid_ref_iou,
         else:
             entries.append(entry)
     entries.extend(append_candidates)
-    return entries
+    # A ruled child becomes cell text only if its ruled container was selected.
+    # Keep the normal grid-ref gates and the original replacement decision:
+    # rejecting a raw parent proposal must not suppress an independent child.
+    selected_grids = {id(grid) for _bbox, grid in entries}
+    ruled = [entry for entry in candidates if id(entry[1]) in selected_grids]
+    nested = _union_nested_candidate_indexes(ruled)
+    nested_grids = {id(ruled[index][1]) for index in nested}
+    return [entry for entry in entries if id(entry[1]) not in nested_grids]
 
 
 def _find_tables_union(page, *, add_lines=None, add_boxes=None):
