@@ -9,6 +9,8 @@
 import io
 import os
 import re
+
+import pytest
 import pymupdf
 from pymupdf import mupdf
 
@@ -55,6 +57,54 @@ def approx_compare( a, b, max_delta):
     if ret:
         print( f'Differ:\n    a={a!r}\n    b={b!r}')
     return ret
+
+
+@pytest.mark.parametrize("member_first", [False, True])
+def test_insert_pdf_annotation_group(member_first):
+    with pymupdf.open() as source, pymupdf.open() as result:
+        page = source.new_page(width=240, height=120)
+        box_rect = pymupdf.Rect(20, 20, 220, 100)
+        text_rect = pymupdf.Rect(30, 35, 200, 80)
+        if member_first:
+            note = page.add_freetext_annot(text_rect, "Check dimension")
+            box = page.add_rect_annot(box_rect)
+        else:
+            box = page.add_rect_annot(box_rect)
+            note = page.add_freetext_annot(text_rect, "Check dimension")
+        note.set_irt_xref(box.xref)
+        source.xref_set_key(note.xref, "RT", "/Group")
+        pixels = page.get_pixmap().samples
+        order = [a.type[1] for a in page.annots()]
+
+        result.new_page()  # Source and destination object numbers need not match.
+        result.insert_pdf(source)
+        with pymupdf.open(stream=result.tobytes()) as saved:
+            copied = saved[1]
+            annots = {a.type[1]: a for a in copied.annots()}
+            assert list(annots) == order
+            assert annots["FreeText"].irt_xref == annots["Square"].xref
+            assert saved.xref_get_key(annots["FreeText"].xref, "RT") == ("name", "/Group")
+            assert copied.get_pixmap().samples == pixels
+
+
+def test_insert_pdf_group_requires_copied_primary():
+    with pymupdf.open() as source, pymupdf.open() as result:
+        other_page = source.new_page()
+        other_primary = other_page.add_rect_annot(pymupdf.Rect(10, 10, 80, 80)).xref
+        page = source.new_page()
+        rect = pymupdf.Rect(20, 20, 100, 100)
+        primary = page.add_rect_annot(rect)
+        reply = page.add_freetext_annot(rect, "Reply")
+        reply.set_irt_xref(primary.xref)
+        member = page.add_freetext_annot(rect, "Group on another page")
+        member.set_irt_xref(other_primary)
+        source.xref_set_key(member.xref, "RT", "/Group")
+
+        result.insert_pdf(source, from_page=1, to_page=1)
+        result.insert_pdf(source, from_page=1, to_page=1, annots=False)
+        with pymupdf.open(stream=result.tobytes()) as saved:
+            assert [a.type[1] for a in saved[0].annots()] == ["Square"]
+            assert list(saved[1].annots()) == []
 
 
 def test_insert():
