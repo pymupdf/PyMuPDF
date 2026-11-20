@@ -1033,3 +1033,27 @@ def test_4994():
             assert len(search_results) == 2
             #assert text == 'planet-warming gas driving climate change.'
     sys.stdout.flush()
+
+
+def test_textbox_clipped_text():
+    # Text hidden by a clip path is not on the rendered page. get_text() and
+    # search_for() leave it out; get_textbox() and get_text_selection() must
+    # leave it out too, unless the caller passes a textpage of their own.
+    src = pymupdf.open()
+    src_page = src.new_page(width=400, height=200)
+    src_page.insert_text((20, 50), 'VISIBLE left part', fontsize=12)
+    src_page.insert_text((250, 50), 'HIDDEN right part', fontsize=12)
+
+    doc = pymupdf.open()
+    page = doc.new_page(width=400, height=200)
+    left = pymupdf.Rect(0, 0, 200, 200)
+    page.show_pdf_page(left, src, 0, clip=left)  # clips away the right half
+
+    assert 'HIDDEN' not in page.get_text()
+    assert page.search_for('HIDDEN') == []
+    assert page.get_textbox(page.rect) == 'VISIBLE left part'
+    assert page.get_text_selection((0, 40), (400, 60)) == 'VISIBLE left part'
+
+    # An explicit textpage still decides what is extracted.
+    tp = page.get_textpage(flags=0)
+    assert 'HIDDEN' in page.get_textbox(page.rect, textpage=tp)
