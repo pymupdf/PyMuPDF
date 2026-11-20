@@ -66,19 +66,37 @@
 
 .. names of glossary terms
 
-.. |Radio Button Group| replace:: :data:`Radio Button Group <radio-button-group>`
+.. |Radio Button Group| raw:: html
 
-.. |RBG| replace:: :data:`RBG <radio-button-group>`
+    <a href="glossary.html#glossary-radio-button-group">Radio Button Group</a>
 
-.. |flat Radio Button Group| replace:: :data:`flat Radio Button Group <flat-radio-button-group>`
+.. |RBG| raw:: html
 
-.. |flat RBG| replace:: :data:`flat RBG <flat-radio-button-group>`
+    <a href="glossary.html#glossary-radio-button-group">RBG</a>
 
-.. |Radio Button Groups| replace:: :data:`Radio Button Groups <radio-button-groups>`
+.. |flat Radio Button Group| raw:: html
 
-.. |RBGs| replace:: :data:`RBGs <radio-button-groups>`
+    <a href="glossary.html#glossary-flat-radio-button-group">flat Radio Button Group</a>
 
-.. |field-widget| replace:: :data:`field-widget <field-widget>`
+.. |flat RBG| raw:: html
+
+    <a href="glossary.html#glossary-flat-radio-button-group">flat RBG</a>
+
+.. |flat field| raw:: html
+
+    <a href="glossary.html#glossary-flat-field">flat field</a>
+
+.. |Radio Button Groups| raw:: html
+
+    <a href="glossary.html#glossary-radio-button-groups">Radio Button Groups</a>
+
+.. |RBGs| raw:: html
+
+    <a href="glossary.html#glossary-radio-button-groups">RBGs</a>
+
+.. |field-widget| raw:: html
+
+    <a href="glossary.html#glossary-field-widget">field-widget</a>
 
 .. raw:: html
 
