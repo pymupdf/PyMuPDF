@@ -6,6 +6,7 @@ Test PDF annotation insertions.
 import copy
 import os
 import platform
+import xml.etree.ElementTree as ET
 
 import pymupdf
 import gentle_compare
@@ -561,6 +562,32 @@ def test_4254():
 
     # only one color must exist
     assert len(top_colors) == 1
+
+def test_richtext_xml():
+    """The saved rich-text body must be valid XHTML for external PDF editors."""
+    with pymupdf.open() as doc:
+        page = doc.new_page()
+        annot = page.add_freetext_annot(
+            (50, 50, 350, 150),
+            "<p>Approved <b>bold</b> &amp; café text.</p><p>Second paragraph.</p>",
+            richtext=True,
+        )
+        data = doc.tobytes()
+    with pymupdf.open(stream=data, filetype="pdf") as doc:
+        page = doc[0]
+        annot = next(page.annots())
+        kind, richtext = doc.xref_get_key(annot.xref, "RC")
+        assert kind == "string"
+        body = ET.fromstring(richtext)
+        ns = {"xhtml": "http://www.w3.org/1999/xhtml"}
+        assert body.tag == "{http://www.w3.org/1999/xhtml}body"
+        paragraphs = body.findall("xhtml:p", ns)
+        assert ["".join(p.itertext()) for p in paragraphs] == [
+            "Approved bold & café text.",
+            "Second paragraph.",
+        ]
+        assert paragraphs[0].find("xhtml:b", ns).text == "bold"
+
 
 def test_richtext():
     """Test creation of rich text FreeText annotations.

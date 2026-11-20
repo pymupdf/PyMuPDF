@@ -9860,10 +9860,10 @@ class Page:
             style=None,
             ):
         rc = f"""<?xml version="1.0"?>
-            <body xmlns="http://www.w3.org/1999/xtml"
+            <body xmlns="http://www.w3.org/1999/xhtml"
             xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/"
             xfa:contentType="text/html" xfa:APIVersion="Acrobat:8.0.0" xfa:spec="2.4">
-            {text}"""
+            {text}</body>"""
         page = self._pdf_page()
         if border_color and not richtext:
             raise ValueError("cannot set border_color if rich_text is False")
