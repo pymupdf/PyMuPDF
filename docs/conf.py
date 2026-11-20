@@ -316,3 +316,28 @@ pdf_break_level = 2
 
 pdf_verbosity = 0
 pdf_invariant = True
+
+# Custom glossary link role
+def glossary_role(name, rawtext, text, lineno, inliner, options=None, content=None):
+    """
+    Role for linking to glossary entries.
+    Usage: :gterm:`radio-button-group` or :gterm:`RBG <radio-button-group>`
+    """
+    if options is None:
+        options = {}
+    
+    # Parse the text to handle both "text <target>" and just "target" formats
+    if '<' in text and '>' in text:
+        label, target = text.rsplit('<', 1)
+        label = label.strip()
+        target = target.rstrip('>').strip()
+    else:
+        label = text
+        target = text.replace(' ', '-').lower()
+    
+    ref_node = nodes.reference(rawtext, label, refuri=f'glossary.html#{target}', **options)
+    return [ref_node], []
+
+def setup(app):
+    from docutils import nodes
+    app.add_role('gterm', glossary_role)

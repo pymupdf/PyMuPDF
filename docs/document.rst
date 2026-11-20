@@ -83,7 +83,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after laid out document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
-.. :meth:`Document.get_form_fields`        PDF only: retrieve all form fields as a FormFields object
+:meth:`Document.get_form_fields`        PDF only: retrieve all form fields as a FormFields object
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_layers`             PDF only: list of optional content configurations
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
@@ -130,6 +130,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.pdf_trailer`            PDF only: trailer source
 :meth:`Document.prev_location`          return (chapter, pno) of preceding page
 :meth:`Document.rewrite_images`         PDF only: rewrite / extra compression for images
+:meth:`Document.recalculate_form`       PDF only: recalculate form fields with /AA/C JS code
 :meth:`Document.recolor`                PDF only: execute :meth:`Page.recolor` for all pages
 :meth:`Document.reload_page`            PDF only: provide a new copy of a page
 :meth:`Document.resolve_names`          PDF only: Convert destination names into a Python dict
@@ -152,7 +153,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.set_xml_metadata`       PDF only: create or update document XML metadata
 :meth:`Document.subset_fonts`           PDF only: create font subsets
 :meth:`Document.switch_layer`           PDF only: activate OC configuration
-:meth:`Document.to_chunks`              PDF, Image & Office documents: split the document into retrieval-ready chunks 
+:meth:`Document.to_chunks`              PDF, Image & Office documents: split the document into retrieval-ready chunks
 :meth:`Document.to_json`                PDF, Image & Office documents: convert the document to JSON
 :meth:`Document.to_markdown`            PDF, Image & Office documents: convert the document to Markdown
 :meth:`Document.to_text`                PDF, Image & Office documents: convert the document to plain text
@@ -188,7 +189,7 @@ For details on **embedded files** refer to Appendix 3.
 ======================================= ==========================================================
 
 **Class API**
- 
+
 .. class:: Document
 
     .. index::
@@ -298,6 +299,26 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg int xref: the :data:`xref` of an image or form xobject [#f5]_. Valid such cross reference numbers are returned by :meth:`Document.get_page_images`, resp. :meth:`Document.get_page_xobjects`. For invalid numbers, an exception is raised.
         :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
+
+
+    .. method:: recalculate_form()
+
+        * New in v2.2
+
+        PDF only: Recalculate the form fields of the document. All form fields containing cross-field calculation code (JavaScript) will be updated by executing their scripts.
+
+
+    .. method:: get_form_fields(repair=False, verbose=False)
+
+        * New in v2.2
+
+        PDF only: Return all form fields and widgets as a :class:`FormFields` object.
+
+        :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``. If ``True``, field-widgets and flat fields or |RBGs| will be converted to standard parent-child structures. See the footnotes in the :ref:`FormFields` section for explanations.
+        :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
+        :rtype: :class:`FormFields`
+        :returns: a ``FormFields`` object.
+
 
     .. method:: get_layers()
 
@@ -419,7 +440,7 @@ For details on **embedded files** refer to Appendix 3.
             * `(top, bottom)` yields  `(0, top, 0, bottom)`.
             * To always read full pages **(default)**, use `margins=0`.
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact). 
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact).
 
         :arg callable ocr_function: |PyMuPDFLayoutMode_Valid| if you want to provide your own :ref:`OCR function <ocr_custom_adaptor>`, specify it here. If omitted (`None`), one of the available built-in OCR engines will be used.
 
@@ -551,13 +572,13 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool write_images: store image files "picture" boundary boxes. When encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
 
         :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
-        
+
         :arg str table_output: specify how HTML tables should be rendered. Options are `"html"` or `None`. Default is `None` which defaults to Markdown output.
-        
+
         .. _json_output_structure:
 
         :rtype: str - A JSON string representing the structured output of the document. See :doc:`json-schema` for the full JSON output structure and further details on each field.
-        
+
         .. note::
 
             See :doc:`grounding` for real examples using ``to_json`` and further details on how to ground information within a document.
@@ -585,7 +606,7 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool force_text: generate text output also when overlapping images / graphics. This text then appears after the respective image reference. Images (i.e. "picture" areas) however will not be written to the text output but appear as a text line in the output like `==> picture [width x height] <==`.
 
         :arg bool show_progress: Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used.
-        
+
         :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
 
             - **"metadata"** - a dictionary consisting of the document's metadata :attr:`Document.metadata`, enriched with additional keys **"file_path"** (the file name), **"page_count"** (number of pages in document), and **"page_number"** (1-based page number).
@@ -607,7 +628,7 @@ For details on **embedded files** refer to Appendix 3.
                     "bbox": [x0, y0, x1, y1],  # boundary box coordinates
                     "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
                 }
-            
+
             See: :ref:`box classes <pymupdf-boxclasses>`
 
 
@@ -746,7 +767,7 @@ For details on **embedded files** refer to Appendix 3.
             * Only reports items contained in the currently selected layer configuration.
 
             * The meaning of the dictionary keys is as follows:
-            
+
                 - *depth:* item's nesting level in the `/Order` array
                 - *locked:* true if cannot be changed via user interfaces
                 - *number:* running sequence number
@@ -1027,7 +1048,7 @@ For details on **embedded files** refer to Appendix 3.
                 * "zoom": (float) the zoom factor.
                 * "dest": (str) only present if the target location on the page has
                   not been provided as "/XYZ" or if no page number was found.
-            
+
             Examples::
 
                 {
@@ -2182,7 +2203,7 @@ For details on **embedded files** refer to Appendix 3.
         .. note:: There is a functional overlap with *pix = pymupdf.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
 
         * xref 1268 is a PNG -- Comparable execution time and identical output:: text
-            
+
 
             In [23]: %timeit pix = pymupdf.Pixmap(doc, 1268);pix.tobytes()
             10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
@@ -2617,8 +2638,8 @@ Obviously, similar ways can be found in more general situations. Just make sure 
 
     **About box classes**
 
-    If `page_chunks = True` the return objects for :meth:`Document.to_markdown` & :meth:`Document.to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein. 
-    Each box also has ``bbox`` and ``pos``; see :ref:`page_boxes <document_page_boxes>` in :meth:`Document.to_markdown`. 
+    If `page_chunks = True` the return objects for :meth:`Document.to_markdown` & :meth:`Document.to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
+    Each box also has ``bbox`` and ``pos``; see :ref:`page_boxes <document_page_boxes>` in :meth:`Document.to_markdown`.
 
     The return object for :meth:`Document.to_json` contains a similar key called ``boxclass``.
 
