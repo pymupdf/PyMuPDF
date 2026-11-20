@@ -36,7 +36,7 @@ Classes
    tools.rst
    widget.rst
    xml-class.rst
-.. form-fields.rst
-   
+   form-fields.rst
+
 
 .. include:: footer.rst
