@@ -118,13 +118,14 @@ def test_2788():
     print(f'{toc0=}')
     print(f'{toc1=}')
     assert toc1 == toc0
-    
-    doc.set_toc(toc0)
+
+    # `doc` is the 1-page file opened at import, so use a valid page there.
+    doc.set_toc([[1, toc0[0][1], 1, toc0[0][3]]])
     toc2 = document.get_toc(simple=False)
     print(f'{toc0=}')
     print(f'{toc2=}')
     assert toc2 == toc0
-    
+
     # Also test Page.get_links() bugfix from #2817.
     for page in document:
         page.get_links()
@@ -325,6 +326,29 @@ def test_set_toc_y_with_shifted_cropbox():
     toc = doc.get_toc(simple=False)
     actual_y = toc[0][3]["to"][1]
     assert abs(actual_y - y) < 0.05, (y, actual_y)
+    doc.close()
+
+
+def test_set_toc_checks_page_number_on_every_row():
+    """Out-of-range pages are rejected on a one-row TOC and on the last row."""
+    doc = pymupdf.open()
+    doc.new_page()
+    cases = (
+        ([[1, "only", 99]], "row 0: page number out of range"),
+        ([[1, "ok", 1], [1, "bad", 99]], "row 1: page number out of range"),
+        ([[1, "bad", -2]], "row 0: page number out of range"),
+    )
+    for toc, message in cases:
+        try:
+            doc.set_toc(toc)
+        except ValueError as e:
+            assert str(e) == message
+        else:
+            raise AssertionError(f"set_toc({toc!r}) did not raise")
+    # In-range pages are unchanged, including -1 (no destination).
+    doc.new_page()
+    doc.set_toc([[1, "chapter", 1], [2, "section", -1], [2, "end", 2]])
+    assert [item[2] for item in doc.get_toc()] == [1, -1, 2]
     doc.close()
 
 
