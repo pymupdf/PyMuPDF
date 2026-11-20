@@ -348,7 +348,10 @@ def get_textpage_ocr(
         ocr_page = ocr_pdf.load_page(0)
         unzoom = page.rect.width / ocr_page.rect.width
         ctm = pymupdf.Matrix(unzoom, unzoom) * page.derotation_matrix
-        tpage = ocr_page.get_textpage(flags=flags, matrix=ctm)
+        # `ctm` moves the characters to the unrotated page, so the TextPage
+        # bounds must be moved too. Otherwise the text outside the rotated
+        # page rect is dropped on /Rotate 90 and 270 pages.
+        tpage = ocr_page.get_textpage(flags=flags, matrix=ctm, clip=ocr_page.rect * ctm)
 
         # associate the textpage with the original page
         tpage.parent = weakref.proxy(page)
