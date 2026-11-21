@@ -169,21 +169,33 @@ Glossary
 
         Optional content membership dictionary -- a :data:`dictionary` object which can be used like an :data:`OCG`: it has a visibility state. The visibility of an OCMD is **computed:** it is a logical expression, which uses the state of one or more OCGs to produce a boolean value. The expression's result is interpreted as ON (true) or OFF (false).
 
+.. _Glossary_radio-button-group:
+
 .. data:: radio-button-group
 
-        A |Radio Button Group| is a set of radio buttons where only one button can be selected at a time. A typical use case is in forms where the user must choose one option from a set of mutually exclusive options. (Abbreviation: |RBG|)
+        The form field type "Radio Button Group" (Abbreviation: |RBG|) is a set of Radio Button widgets where only one button can be selected at a time. The typical use case is that the user makes a choice from a set of mutually exclusive options by clicking the respective button. The recommended way of defining a |RBG| is to create a field dictionary with a ``/Kids`` array whose elements point to the individual Radio Button widgets. Each widget then points back to this field via its ``/Parent`` key.
+
+.. _Glossary_flat-radio-button-group:
 
 .. data:: flat-radio-button-group
 
-        A |Radio Button Group| which only consists of a set of Radio Button widgets without a separate parent field object or other unifying data except an identical field name. PDF viewers can detects this and create a temporary, "virtual" field. This is considered a "flat" structure and is fairly often encountered in real-world PDF forms, even though it is discouraged by the PDF specification. (Abbreviation: |flat RBG|)
+        A |flat RBG| consists of a set of Radio Button widgets only -- without a parent field (hence the attribute **flat** |RBG|). The only property that unites the widgets is the identical field name. Detecting flat |RBGs| therefore requires parsing the entire document. Supporting PDF viewers do exactly this and create a temporary, "virtual" field. Flat |RBGs| are fairly often encountered in real-world PDF forms, even though explicitly discouraged by the PDF specification.
+
+.. _Glossary_radio-button-groups:
 
 .. data:: radio-button-groups
 
-        The plural form of |Radio Button Group|. (Abbreviation: |RBGs|)
+        The plural form of :ref:`radio-button-group <Glossary_radio-button-group>`. (Abbreviation: |RBGs|)
+
+.. _Glossary_flat-field:
+
+.. data:: flat-field
+
+        Similar to a |flat RBG|, a |flat field| is a set of multiple (more than one) widgets with the same field name but without a parent field that enumerates them via its ``/Kids`` array. Detecting a flat field thus requires parsing the entire document. Supporting PDF viewers can detect this and create a temporary, "virtual" field.
 
 .. data:: field-widget
 
-        A frequently used, simplified way of defining a form field and a widget annotation within one single PDF object. This approach is explicitly discouraged by the PDF specification, but it is still encountered in many real-world PDF forms. It is prone to lead to structural issues and complicates form field management.
+        A frequently used, simplified way of defining a form field **and** a widget annotation within one single PDF object. Although explicitly discouraged by the PDF specification, it is still encountered in many real-world PDF forms. It is prone to lead to structural issues and complicates form field management, for instance we don't know whether a |field-widget| belongs to a |flat field| until we parse the entire document.
 
 .. data:: ligature
 
