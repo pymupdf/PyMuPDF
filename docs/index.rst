@@ -79,14 +79,11 @@ This documentation covers all versions up to |version|.
    resources.rst
    faq/index.rst
 
-
-
 .. toctree::
    :caption: How to Guide
    :maxdepth: 3
 
    recipes.rst
-
 
 .. toctree::
    :caption: API Reference
@@ -100,6 +97,11 @@ This documentation covers all versions up to |version|.
    vars.rst
    colors.rst
 
+.. toctree::
+   :caption: Integrations
+   :maxdepth: 2
+
+   langchain/index.rst
 
 .. toctree::
    :caption: Other
