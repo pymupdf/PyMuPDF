@@ -2004,3 +2004,40 @@ def test_5241():
     names_after = list(tab.header.names)
     assert names_before == names_after, "Column headers changed by to_pandas()"
 
+
+
+def test_5291():
+    """On a rotated page, paths taken from page.get_drawings() must give the same
+    tables as letting find_tables() extract the drawings itself."""
+
+    def make_page(rotation):
+        doc = pymupdf.open()
+        page = doc.new_page(width=612, height=792)
+        page.set_rotation(rotation)
+        mat = page.derotation_matrix  # displayed frame -> unrotated frame
+        width = page.rect.width
+        xs = [72, 72 + (width - 144) / 3, 72 + 2 * (width - 144) / 3, width - 72]
+        top, row_height, rows = 100, 24, 8
+        for row in range(rows):
+            for col in range(3):
+                point = pymupdf.Point(xs[col] + 4, top + row * row_height + 16) * mat
+                page.insert_text(point, f"{row}:{col}", fontsize=10, rotate=rotation)
+        for x in xs:
+            page.draw_line(
+                pymupdf.Point(x, top) * mat, pymupdf.Point(x, top + rows * row_height) * mat
+            )
+        for row in range(rows + 1):
+            y = top + row * row_height
+            page.draw_line(pymupdf.Point(xs[0], y) * mat, pymupdf.Point(xs[-1], y) * mat)
+        return pymupdf.open("pdf", doc.tobytes())[0]
+
+    for rotation in (0, 90, 180, 270):
+        page = make_page(rotation)
+        paths = page.get_drawings()
+        rects_before = [path["rect"] for path in paths]
+        plain = page.find_tables(use_layout=False).tables
+        given = page.find_tables(paths=paths, use_layout=False).tables
+        assert [(t.row_count, t.col_count) for t in plain] == [(8, 3)], rotation
+        assert [t.extract() for t in given] == [t.extract() for t in plain], rotation
+        # the caller's paths are left in their own frame
+        assert [path["rect"] for path in paths] == rects_before, rotation

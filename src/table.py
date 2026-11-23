@@ -2864,6 +2864,30 @@ def make_edges(page, clip=None, tset=None, paths=None, add_lines=None, add_boxes
             edges.append(line_to_edge(line_dict))
 
 
+def paths_to_rotated_frame(paths, matrix):
+    """Copy vector graphics from get_drawings() into a rotated page's frame.
+
+    Page.get_drawings() gives unrotated page coordinates, while find_tables()
+    derotates a rotated page first and then works in the coordinates the page
+    is displayed in. Paths supplied by the caller are mapped the same way, so
+    they line up with the page's text. The caller's dictionaries are not changed.
+    """
+    geometry = (pymupdf.Point, pymupdf.Rect, pymupdf.Quad)
+    moved = []
+    for path in paths:
+        path = dict(path)
+        if path.get("rect") is not None:
+            path["rect"] = pymupdf.Rect(path["rect"]) * matrix
+        if path.get("items"):
+            path["items"] = [
+                (item[0],)
+                + tuple(v * matrix if isinstance(v, geometry) else v for v in item[1:])
+                for item in path["items"]
+            ]
+        moved.append(path)
+    return moved
+
+
 def page_rotation_set0(page):
     """Nullify page rotation.
 
@@ -3226,6 +3250,8 @@ def find_tables(
     old_small = bool(pymupdf.TOOLS.set_small_glyph_heights())  # save old value
     pymupdf.TOOLS.set_small_glyph_heights(True)  # we need minimum bboxes
     if page.rotation != 0:
+        if paths is not None:
+            paths = paths_to_rotated_frame(paths, page.rotation_matrix)
         page, old_xref, old_rot, old_mediabox = page_rotation_set0(page)
     else:
         old_xref, old_rot, old_mediabox = None, None, None
