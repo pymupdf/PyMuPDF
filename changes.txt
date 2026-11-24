@@ -3,12 +3,6 @@ Change Log
 
 **Changes in next version**
 
-* Added :meth:`Page.search_for_fuzzy` for edit-distance substring searches,
-  returning matched text, distance and quads without additional dependencies.
-
-
-**Changes in version**
-
 Fixed issues:
 
 * **Fixed** `4484 <https://github.com/pymupdf/PyMuPDF/issues/4484>`_: set_toc does not correctly set y-positions (from Gyanu Mayank)
@@ -63,6 +57,8 @@ Other:
 * Preserve line breaks and hyphens in clean table Markdown (from crunz-ai).
 * Fix table header boldness checks to use page coordinates (from crunz-ai).
 * Continue letter page labels with AA, BB, ... after Z, as the PDF spec says (from RavSinghChandan).
+* Added :meth:`Page.search_for_fuzzy` for edit-distance substring searches,
+  returning matched text, distance and quads without additional dependencies.
 
 
 **Changes in version 2.1** (2026-11-02)
