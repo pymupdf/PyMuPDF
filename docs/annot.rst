@@ -306,14 +306,27 @@ There is a parent-child relationship between an annotation and its page. If the 
 
    .. method:: set_colors(colors=None, stroke=None, fill=None)
 
-      Changes the "stroke" and "fill" colors for supported annotation types -- not all annotation types accept both. **Do not use this method at all for FreeText annotations** because it has its special conventions to deal with up to three colors (border, fill, text).
+      Changes the "stroke" and "fill" colors for supported annotation types -- not all annotation types accept both. 
+      
+      .. note::
 
-      :arg dict colors: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the *colors* property and then modify this dictionary as required.
-      :arg sequence stroke: see above.
-      :arg sequence fill: see above.
+        **Do not use this method at all for FreeText annotations** because it has its special conventions to deal with up to three colors (border, fill, text).
+
+      :arg dict colors: a dictionary containing color specifications. Dictionary keys can include *"stroke"* & *"fill"* , with values being sequences of floats. 
+      :arg sequence stroke: a sequence of floats specifying the RGB stroke color.
+      :arg sequence fill: a sequence of floats specifying the RGB fill color.
+
+      Example::
+
+        annot.set_colors(stroke=(1, 0, 0), fill=(0, 1, 0))
+
+        # equivalent to the previous call
+        colors={"stroke": (1, 0, 0), "fill": (0, 1, 0)}
+        annot.set_colors(colors=colors)
 
       To completely remove a color specification, use an empty sequence like `[]`. If you specify `None`, an existing specification will not be changed.
 
+      Also see :attr:`Annot.colors`.
 
    .. method:: delete_responses()
 

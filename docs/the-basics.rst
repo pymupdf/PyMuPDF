@@ -159,6 +159,20 @@ This will return a dictionary of paths for any vector drawings found on the page
 
 ----------
 
+.. _The_Basics_Grounding:
+
+Grounding
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To help ground information retrieved from a document, you can use various methods to locate and highlight the relevant text or quotes within the page.
+
+See :doc:`grounding` for more details.
+
+
+
+
+----------
+
 .. _The_Basics_Merging_PDF:
 .. _merge PDF:
 .. _join PDF:

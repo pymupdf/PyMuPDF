@@ -296,7 +296,6 @@ In a nutshell, this is what you can do with PyMuPDF:
       :rtype: :ref:`Annot`
       :returns: the created annotation. It is drawn with line (stroke) color red = (1, 0, 0), line width 1, fill color is supported.
 
-   ---------
 
    Redactions
    ~~~~~~~~~~~
@@ -376,7 +375,6 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       |history_end|
 
-      ---------
 
    .. method:: add_polyline_annot(points)
 
@@ -2334,7 +2332,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       The page's PDF :data:`xref`. Zero if not a PDF.
 
-      :type: :ref:`Rect`
+      :type: int
 
 -----
 

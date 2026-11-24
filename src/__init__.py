@@ -4176,6 +4176,11 @@ class Document:
                     i = i * (-1)
                     mupdf.pdf_dict_put_int( item, PDF_NAME('Count'), i)
 
+    def get_form_fields(self, repair=False, verbose=False):
+        """Return a FormFields object."""
+        from .unified_field_model import FormFields
+        return FormFields(self, repair=repair, verbose=verbose)
+
     @property
     def FormFonts(self):
         """Get list of field font resource names."""
@@ -5565,6 +5570,49 @@ class Document:
         if final == 1:
             self.Graftmaps[isrt] = None
         #log( 'insert_pdf(): returning')
+
+    def recalculate_form(self):
+        """Recalculate the PDF form fields having /AA/C JavaScripts.
+
+        We first remove all existing appearance dictionaries to
+        enforce their regeneration via JavaScript code."""
+
+        pdfdoc = _as_pdf_document(self)  # underlying PDF document
+
+        def drop_appearances(obj, visited):
+            """Recursively remove /AP objects."""
+            xref = obj.pdf_to_num()
+            if xref in visited:  # avoid any cycles
+                return
+            visited.add(xref)
+
+            obj.pdf_dict_del(PDF_NAME("AP"))  # is a no-op if not found
+
+            kids = obj.pdf_dict_get(PDF_NAME("Kids"))
+            for i in range(kids.pdf_array_len()):
+                drop_appearances(kids.pdf_array_get(i), visited)
+
+        # relevant fields are in the following global array
+        CO = mupdf.pdf_dict_getl(
+            mupdf.pdf_trailer(pdfdoc),
+            PDF_NAME("Root"),
+            PDF_NAME("AcroForm"),
+            PDF_NAME("CO"),
+        )
+        visited = set()
+
+        for i in range(CO.pdf_array_len()):
+            drop_appearances(CO.pdf_array_get(i), visited)
+
+        # enable JavaScript and regenerate all cross-calculated fields
+        try:
+            mupdf.pdf_enable_js(pdfdoc)
+            if not mupdf.pdf_js_supported(pdfdoc):
+                raise RuntimeError("JavaScript engine failure")
+            mupdf.pdf_calculate_form(pdfdoc)
+        except Exception as e:
+            raise RuntimeError(f"cannot recalculate the PDF") from e
+            return
 
     @property
     def is_dirty(self):
@@ -12625,6 +12673,8 @@ class Page:
                     mupdf.PDF_ANNOT_LINE,
                     mupdf.PDF_ANNOT_POLY_LINE,
                     mupdf.PDF_ANNOT_POLYGON,
+                    mupdf.PDF_ANNOT_SQUARE,
+                    mupdf.PDF_ANNOT_CIRCLE,
                     mupdf.PDF_ANNOT_TEXT,
                     mupdf.PDF_ANNOT_INK,
                 ):

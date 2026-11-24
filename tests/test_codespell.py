@@ -39,7 +39,7 @@ def test_codespell():
     command = textwrap.dedent(f'''
             cd {root} && codespell
                 --skip {shlex.quote(skips)}
-                --ignore-words-list re-use,flate,thirdparty,re-using
+                --ignore-words-list re-use,flate,thirdparty,re-using,Fo
                 --ignore-regex 'https?://[a-z0-9/_.]+'
                 --ignore-multiline-regex 'codespell:ignore-begin.*codespell:ignore-end'
             ''')

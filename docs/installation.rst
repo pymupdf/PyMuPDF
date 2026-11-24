@@ -226,8 +226,8 @@ Notes
 Build and install from a local PyMuPDF source tree
 ---------------------------------------------------------
 
-Initial setup:
-
+Initial setup
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 * Install C/C++ development tools as described above.
 * Enter a Python venv and update pip, as described above.
 
@@ -241,41 +241,59 @@ Initial setup:
     Or download and extract a `.zip` or `.tar.gz` source release from
     https://github.com/pymupdf/PyMuPDF/releases.
 
-Then one can build PyMuPDF in two ways:
 
-* Build and install PyMuPDF with default MuPDF version::
+pymupdf vs pymupdf-lite
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The default is to build/install pymupdf-lite. To build/install pymupdf instead:
 
-      cd PyMuPDF && pip install .
+* Set PYMUPDF_SETUP_PATH_LAYOUT to the absolute path of a local checkout of pymupdf-layout.
+* Set PYMUPDF_SETUP_PATH_4LLM to the absolute path of a local checkout of pymupdf4llm.
 
-  This will automatically download a specific hard-coded MuPDF source
-  release, and build it into PyMuPDF.
+* For example::
 
-* Or build and install PyMuPDF using a local MuPDF source tree:
+    git clone https://github.com/ArtifexSoftware/pymupdf_layout.git
+    git clone https://github.com/pymupdf/pymupdf4llm.git
+    export PYMUPDF_SETUP_PATH_LAYOUT=`pwd`/pymupdf_layout
+    export PYMUPDF_SETUP_PATH_4LLM=`pwd`/pymupdf4llm
+  
 
-  * Clone the MuPDF git repository::
+Build/install commands
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-      git clone --recursive https://git.ghostscript.com/mupdf.git
+To install::
 
-  *
-    Build PyMuPDF, specifying the location of the local MuPDF tree with the
-    environmental variables `PYMUPDF_SETUP_MUPDF_BUILD`::
+    pip install ./PyMuPDF
 
-      cd PyMuPDF && PYMUPDF_SETUP_MUPDF_BUILD=../mupdf pip install .
+To build a wheel::
 
-Also, one can build for different Python versions in the same PyMuPDF tree:
+    pip wheel ./PyMuPDF
 
-*
-  PyMuPDF will build for the version of Python that is being used to run
-  `pip`. To run `pip` with a specific Python version, use `python -m pip`
-  instead of `pip`.
+**Note that one needs to specify `./PyMuPDF` not `PyMuPDF` - the latter will download/install pre-built wheels from pypi.org.**
 
-  So for example on Windows one can build different versions with::
 
-    cd PyMuPDF && py -3.14 -m pip install .
+Variations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  or::
+Using a specific MuPDF.
 
-    cd PyMuPDF && py -3.12-32 -m pip install .
+* By default the build will automatically download a specific hard-coded MuPDF source release,
+  and build it into pymupdf/pymupdf-lite.
+
+* To instead use a local MuPDF checkout,
+  set PYMUPDF_SETUP_MUPDF_BUILD to the absolute path of the MuPDF checkout.
+
+
+Building for a non-default Python version.
+
+* By default the build will be for `pip`'s Python version.
+* To build for a specific Python version, use `python<version> -m pip`.
+* For example on Windows::
+  
+      py -3.14 -m pip install ./PyMuPDF
+  
+  Or::
+  
+      py -3.12-32 -m pip install ./PyMuPDF
 
 
 Running tests
@@ -290,7 +308,7 @@ suite::
 
 
 Notes about using a non-default MuPDF
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Using a non-default build of MuPDF by setting environmental variable
 `PYMUPDF_SETUP_MUPDF_BUILD` can cause various things to go wrong and so is
@@ -355,13 +373,13 @@ Enabling Integrated OCR Support
    Enabling integrated OCR support requires installing at least one OCR engine, such as RapidOCR or Tesseract. See also: :ref:`OCR Engine Comparison <ocr-engine-comparison>`.
 
 RapidOCR
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 See the instructions on the `RapidOCR GitHub repository <https://github.com/RapidAI/RapidOCR>`_.
 
 
 Tesseract
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 PyMuPDF already contains the Tesseract engine to support OCR functions. All it is missing is the `Language Support Data <https://github.com/tesseract-ocr/tessdata>`_ that will be taken from the system installation of Tesseract.
 

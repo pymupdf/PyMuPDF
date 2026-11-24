@@ -146,4 +146,4 @@ def test_5059():
         page.remove_rotation()
         pix_rot0 = page.get_pixmap(colorspace=pymupdf.csGRAY)
         rms_val = rms(pix_orig.samples, pix_rot0.samples, verbose=False)
-        assert rms_val < 2, f"RMS diff for rotation {rot}: {rms_val}"
+        assert rms_val < 0.05, f"RMS diff for rotation {rot}: {rms_val}"

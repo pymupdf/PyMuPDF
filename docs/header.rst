@@ -64,6 +64,22 @@
 
     <cite>PyPI</cite>
 
+.. names of glossary terms
+
+.. |Radio Button Group| replace:: :data:`Radio Button Group <radio-button-group>`
+
+.. |RBG| replace:: :data:`RBG <radio-button-group>`
+
+.. |flat Radio Button Group| replace:: :data:`flat Radio Button Group <flat-radio-button-group>`
+
+.. |flat RBG| replace:: :data:`flat RBG <flat-radio-button-group>`
+
+.. |Radio Button Groups| replace:: :data:`Radio Button Groups <radio-button-groups>`
+
+.. |RBGs| replace:: :data:`RBGs <radio-button-groups>`
+
+.. |field-widget| replace:: :data:`field-widget <field-widget>`
+
 .. raw:: html
 
     <style>
@@ -97,7 +113,7 @@
         #visit-pymupdf-io {
             width:23%;
             min-width:130px;
-            margin:8px 2% 0 0; 
+            margin:8px 2% 0 0;
         }
 
         .sidebar-search-container.top {

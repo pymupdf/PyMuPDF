@@ -56,3 +56,20 @@ def test_labels_styleA():
     page_labels = [page.get_label() for page in doc]
     assert page_labels == answer
     assert doc.get_page_labels() == labels
+
+
+def test_labels_style_letters_beyond_z():
+    """After Z, letter labels continue with AA, BB, ... ZZ, AAA (PDF 1.7, 12.4.2)."""
+    doc = pymupdf.open()
+    for i in range(60):
+        doc.new_page()
+    doc.set_page_labels(
+        [
+            {"startpage": 0, "prefix": "", "style": "A", "firstpagenum": 1},
+            {"startpage": 56, "prefix": "", "style": "a", "firstpagenum": 26},
+        ]
+    )
+    page_labels = [page.get_label() for page in doc]
+    assert page_labels[24:29] == ["Y", "Z", "AA", "BB", "CC"]
+    assert page_labels[50:56] == ["YY", "ZZ", "AAA", "BBB", "CCC", "DDD"]
+    assert page_labels[56:60] == ["z", "aa", "bb", "cc"]

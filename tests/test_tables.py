@@ -2004,3 +2004,18 @@ def test_5241():
     names_after = list(tab.header.names)
     assert names_before == names_after, "Column headers changed by to_pandas()"
 
+
+
+def test_5198():
+    doc = pymupdf.open()
+    page = doc.new_page(width=595, height=842)
+    x0, y0, x1, y1, xm, ym = 72, 72, 472, 152, 272, 112
+    for a, b in [((x0, y0), (x1, y0)), ((x0, ym), (x1, ym)), ((x0, y1), (x1, y1)),
+                 ((x0, y0), (x0, y1)), ((xm, y0), (xm, y1)), ((x1, y0), (x1, y1))]:
+        page.draw_line(a, b)
+    for text, point in [("P for interaction", (80, 100)), ("Cooking fuel type", (280, 100)),
+                         ("0.74", (80, 140)), ("12.5 mg", (280, 140))]:
+        page.insert_text(point, text, fontsize=11)
+
+    print(pymupdf.__version__, [t.extract() for t in page.find_tables().tables])
+    print([w[4] for w in page.get_text("words")])
