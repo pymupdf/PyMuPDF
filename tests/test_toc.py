@@ -340,3 +340,14 @@ def test_5239():
     link_dict = toc[0][-1]
     assert link_dict["to"] == p
 
+
+def test_4484():
+    path = os.path.normpath(f'{__file__}/../../tests/resources/test_4484.pdf')
+    doc = pymupdf.open(path)
+    toc = [[1, 'Engine Fire In Flight', 0, 304.6222839355469]]
+    doc.set_toc(toc)
+    read_toc = doc.get_toc(simple=False)
+    desired_y_position = toc[0][3]
+    actual_y_position = read_toc[0][3]["to"][1]
+    dy = abs(actual_y_position - desired_y_position)
+    assert dy < 0.01, f'dy too large: {desired_y_position=} {actual_y_position=} {dy=}'

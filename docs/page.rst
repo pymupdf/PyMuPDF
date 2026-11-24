@@ -2390,7 +2390,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       The page's PDF :data:`xref`. Zero if not a PDF.
 
-      :type: :ref:`Rect`
+      :type: int
 
 -----
 

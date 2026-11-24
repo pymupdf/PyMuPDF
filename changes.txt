@@ -7,6 +7,67 @@ Change Log
   returning matched text, distance and quads without additional dependencies.
 
 
+
+**Changes in version**
+
+Fixed issues:
+
+* **Fixed** `4484 <https://github.com/pymupdf/PyMuPDF/issues/4484>`_: set_toc does not correctly set y-positions
+* **Fixed** `5175 <https://github.com/pymupdf/PyMuPDF/issues/5175>`_: find_tables(lines_strict): opaque white fill+stroke rectangle creates a phantom row
+* **Fixed** `5185 <https://github.com/pymupdf/PyMuPDF/issues/5185>`_: pymupdf4llm: table cells drop the second letter of a ligature when quad corrections are unset
+* **Fixed** `5198 <https://github.com/pymupdf/PyMuPDF/issues/5198>`_: 2.0: Table.extract() moves the decimal point out of numbers ("0.74" comes back as "0 74", newline, ".") \u2014 regression from 1.28.2
+* **Fixed** `5238 <https://github.com/pymupdf/PyMuPDF/issues/5238>`_: JM_new_lineart_device_Device.__init__ omits call parentheses on use_virtual_*_text, disabling SWIG director text callbacks
+* **Fixed** `5239 <https://github.com/pymupdf/PyMuPDF/issues/5239>`_: Document.set_toc_item() crashes on point-like tuple/list coordinates (AttributeError) and inverts dest_dict['to'] via in-place mutation
+* **Fixed** `5240 <https://github.com/pymupdf/PyMuPDF/issues/5240>`_: Document.delete_pages() raises ValueError: bad page number(s) on negative page numbers passed as two positional arguments
+* **Fixed** `5241 <https://github.com/pymupdf/PyMuPDF/issues/5241>`_: Table.to_pandas() permanently mutates Table.header.names in-place, corrupting column names and downstream exports #5241
+* **Fixed** `5280 <https://github.com/pymupdf/PyMuPDF/issues/5280>`_: remove_rotation() stretches Square and Circle annotations #5280
+
+
+New features
+
+* Add extended FormFields Support.
+
+
+Other:
+
+* Various small correctness fixes.
+
+  - Archive.add(): fix broken assert (missing comma turned the error
+    message into part of the boolean expression, disabling the empty-name
+    check for binary content).
+  - Annot.file_info: avoid UnboundLocalError when a crafted/malformed
+    attachment's /FS dict has neither /UF nor /F.
+  - Page.set_language(): call pdfpage.obj() instead of passing the bound
+    method itself, which broke every call that actually sets a language.
+  - Widget.on_state(): skip None entries from button_states() instead of
+    raising TypeError.
+  - Pixmap.tobytes(): add missing f-string prefix so the alpha error
+    message actually includes the format name.
+  - JM_matrix_from_py(): fix copy-paste bug returning FzRect() instead of
+    FzMatrix() on the float-conversion failure path.
+  - utils.get_text(): remove a bare assert that made the documented
+    "misspelled option falls back to text" behavior unreachable.
+  - utils.get_label_pno(): return "" (as documented) instead of raising
+    IndexError when no label rule applies to the given page number.
+  - utils.get_sorted_text(): guard against ZeroDivisionError for
+    zero-width glyph bboxes.
+  - _apply_pages.py (method='fork'): send the actual page numbers to
+    workers instead of plain list indices, which silently processed the
+    wrong pages for any non-contiguous/non-zero-based `pages` list.
+  - table.chars_in_rect(): compare against c["top"]/c["bottom"] (top-down,
+    matching the rect from page.get_drawings()) instead of c["y0"]/c["y1"]
+    (PDF-native bottom-up space), fixing table detection for frames drawn
+    as filled rectangles.
+* get_text: fail on unrecognized option instead of silently defaulting
+* apply_pages(): Fix keyword forwarding in single-process page extraction,
+* Fixed sysinstall of mupdf.
+* Fix Document.convert_to_pdf() for page ranges that do not start at page 0
+* Some fixes for windows-x32.
+* Preserve line breaks and hyphens in clean table Markdown
+* Fix table header boldness checks to use page coordinates
+* Continue letter page labels with AA, BB, ... after Z, as the PDF spec says
+
+
 **Changes in version 2.1** (2026-11-02)
 
 Fixed issues:
