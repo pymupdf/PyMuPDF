@@ -21,7 +21,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, windows-2022, macos-15-intel, macos-14]
+        os: [ubuntu-latest, windows-2022, macos-15, macos-15-intel]
         args: [
             #'', 2026-08-23: disabled because mupdf-1.28.2 builds broken by swig-4.5.
             '-m "git:--branch master https://github.com/ArtifexSoftware/mupdf"', 

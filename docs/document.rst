@@ -18,6 +18,19 @@
     <cite style="font-size:12px;color:#c0c0c0;background:transparent;border:1px solid #c0c0c0;border-radius:5px;padding:3px;">Only if <a href="functions.html#use_layout">use_layout()</a> is <span style="font-family:monospace;">False</span></cite>
 
 
+.. Add this method when it is released in v2.2
+      .. method:: get_form_fields(repair=False, verbose=False)
+
+      * New in v2.2
+
+      PDF only: Return all form fields as a :class:`FormFields` object. If :data:`repair` is ``True``, attempt to repair any inconsistencies in the form fields. If :data:`verbose` is ``True``, print information about any repairs recommended or performed.
+
+      :arg bool repair: attempt to repair any inconsistencies in the form fields. Default is ``False``.
+      :arg bool verbose: print information about recommended or performed repairs. Default is ``False``.
+      :rtype: :ref:`FormFields`
+      :returns: a ``FormFields`` object containing information about all form fields and widgets of the PDF.
+
+
 .. _Document:
 
 ================
@@ -70,6 +83,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.ez_save`                PDF only: :meth:`Document.save` with different defaults
 :meth:`Document.find_bookmark`          retrieve page location after laid out document
 :meth:`Document.fullcopy_page`          PDF only: duplicate a page
+.. :meth:`Document.get_form_fields`        PDF only: retrieve all form fields as a FormFields object
 :meth:`Document.get_layer`              PDF only: lists of OCGs in ON, OFF, RBGroups
 :meth:`Document.get_layers`             PDF only: list of optional content configurations
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
@@ -285,7 +299,6 @@ For details on **embedded files** refer to Appendix 3.
         :arg int xref: the :data:`xref` of an image or form xobject [#f5]_. Valid such cross reference numbers are returned by :meth:`Document.get_page_images`, resp. :meth:`Document.get_page_xobjects`. For invalid numbers, an exception is raised.
         :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
 
-
     .. method:: get_layers()
 
         * New in v1.18.3
@@ -323,7 +336,7 @@ For details on **embedded files** refer to Appendix 3.
         dpi: int = 150, \
         embed_images: bool = False, \
         extract_words: bool = False, \
-        filename: str | None = None, \
+        filename: str = "", \
         fontsize_limit: float = 3, \
         footer: bool = True, \
         force_ocr: bool = False, \
@@ -339,7 +352,7 @@ For details on **embedded files** refer to Appendix 3.
         image_path: str = "", \
         image_size_limit: float = 0.05, \
         margins: float | list = 0, \
-        ocr_dpi: int = 300, \
+        ocr_dpi: int = 150, \
         ocr_function: callable = None, \
         ocr_language: str = "eng", \
         page_chunks: bool = False, \
@@ -348,6 +361,7 @@ For details on **embedded files** refer to Appendix 3.
         page_width: float = 612, \
         pages: list | range | None = None, \
         show_progress: bool = False, \
+        table_output: str | None = None, \
         table_strategy: str = "lines_strict", \
         use_glyphs: bool = False, \
         use_ocr: bool = True, \
@@ -370,11 +384,12 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool footer: |PyMuPDFLayoutMode_Valid| boolean to switch on/off page footer content. This parameter controls whether to include or omit footer text from all the document pages. Useful if the document has repetitive footer content which doesn't add any value to the overall extraction data. Default is `True` meaning that footer content will be considered.
 
         :arg bool force_ocr: |PyMuPDFLayoutMode_Valid| if `True`, OCR will be applied to all pages regardless of their content.
-            
+
             This may be useful for documents which are known to be image-based and thus profit from OCR, but which do not meet the default criteria for applying OCR. Default is `False` meaning that OCR will only be applied to pages which meet the default criteria.
 
-            .. warning:: 
-                Requires that either one of the default supported OCR engines is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
+            .. warning::
+
+                Requires that either one of the :doc:`default supported OCR engines <ocr/index>` is installed or `ocr_function` specifies a callable OCR function. Otherwise, an exception will be raised.
 
         :arg bool force_text: generate text output even when overlapping images / graphics. This text then appears after the respective image.
 
@@ -404,11 +419,11 @@ For details on **embedded files** refer to Appendix 3.
             * `(top, bottom)` yields  `(0, top, 0, bottom)`.
             * To always read full pages **(default)**, use `margins=0`.
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 300. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact). 
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Larger values do not usually increase the OCR precision. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high - in many cases you should see satisfactory results already with values of 150 or 200. Be aware that processing time and memory requirements grow quadratically with this value (an O(ocr_dpi²) impact). 
 
         :arg callable ocr_function: |PyMuPDFLayoutMode_Valid| if you want to provide your own :ref:`OCR function <ocr_custom_adaptor>`, specify it here. If omitted (`None`), one of the available built-in OCR engines will be used.
 
-        :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+        :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German. If RapidOCR is used for text recognition, the codes of some languages select a RapidOCR recognition model, see :ref:`OCR Language Support <ocr_language_support>`. *(new in v2.2)*
 
         :arg bool page_chunks: if `True` the output will be a list of `Document.page_count` dictionaries (one per page). Each dictionary has the following structure:
 
@@ -428,12 +443,14 @@ For details on **embedded files** refer to Appendix 3.
 
             - **"text"** - page content as |Markdown| text.
 
+            .. _document_page_boxes:
+
             - **"page_boxes"** - |PyMuPDFLayoutMode_Valid| a list of dictionaries representing the layout boundary boxes. Each dictionary has the following structure::
 
                 {
                     "index": int,              # 0-based integer index of the box in reading sequence
-                    "class": str,              # one of "text", "picture", "table", etc.
-                    "bbox": [x0, y0, x1, y1],  # boundary box coordinates
+                    "class": str,              # one of "text", "picture", "table", etc. See: https://pymupdf.readthedocs.io/en/latest/document.html#pymupdf-boxclasses
+                    "bbox": (x0, y0, x1, y1),  # the "bbox" key contains the boundary box coordinates on the page in points (1/72 inch), rounded to integers, origin at the top-left corner of the unrotated page
                     "pos": (start, stop),      # 0-based integers: bbox_text = chunk["text"][start:stop]
                 }
 
@@ -449,6 +466,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool show_progress: Default is `False`. A value of `True` displays a progress bar as pages are being converted. Package `tqdm <https://pypi.org/project/tqdm/>`_ is used if installed, otherwise the built-in text based progress bar is used.
 
+        :arg str table_output: specify how HTML tables should be rendered. Options are `"html"` or `None`. Default is `None` which defaults to Markdown output.
+
         :arg str table_strategy: |PyMuPDFLayoutMode_Ignored| see: :meth:`table detection strategy <Page.find_tables>`. Default is `"lines_strict"` which ignores background colors. In some occasions, other strategies may be more successful, for example `"lines"` which uses all vector graphics objects for detection.
 
         :arg bool use_glyphs: |PyMuPDFLayoutMode_Ignored| (New in v.0.0.19) Default is `False`. A value of `True` will use the glyph number of the characters instead of the character itself if the font does not store the Unicode value.
@@ -459,9 +478,11 @@ For details on **embedded files** refer to Appendix 3.
 
             If using :ref:`PyMuPDF Layout <pymupdf-layout>`, boundary boxes that are classified as "picture" by the layout module will be treated as images - independent from the mixture of text, images or vector graphics they may be covering. If `force_text=True` is used, text will still be extracted from these areas and included in the output  after the respective image reference.
 
-        :returns: Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
+        :returns: str | list[dict] - Either a string of the combined text of all selected document pages, or a list of dictionaries if `page_chunks=True`.
 
+        .. note::
 
+            See :doc:`grounding` for real examples using ``to_markdown`` and further details on how to ground information within a document.
 
 
     .. method:: to_chunks(**kwargs) -> ChunkedDocument
@@ -480,6 +501,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg str table_mode: ``"preserve"`` keeps table content together as one chunk; ``"isolate"`` prevents tables from being merged into neighboring chunks. Default is ``"preserve"``.
 
+        :arg str table_output: controls the output format for tables. ``"html"`` preserves HTML structure, including merged cells, while engines without HTML support fall back to Markdown. Default is ``"markdown"``.
+
         :arg bool respect_section_starts: whether to keep a chunk starting a detected section separate from the preceding section when merging to meet token budgets. Default is ``True``.
 
         :arg str header_footer_mode: controls handling of page headers and footers. ``"exclude"`` omits them from chunk text, ``"auto"`` omits repeated headers and footers, and ``"include"`` retains them. Default is ``"exclude"``. The element registry in the result retains the parsed layout elements in all modes.
@@ -494,16 +517,24 @@ For details on **embedded files** refer to Appendix 3.
 
         :returns: a :class:`ChunkedDocument`, a sequence of :class:`Chunk` objects with document-level element, table, figure, and section views. It also provides joined text, ID-based lookup, diagnostics, JSON-safe export, and reassembly with different chunk-budget parameters.
 
+        .. note::
+
+            See :doc:`grounding` for real examples using ``to_chunks`` and further details on how to ground information within a document.
+
 
     .. method:: to_json(**kwargs) -> str
 
-        Parses the document and the specified pages and converts the result into a `JSON formatted string <https://docs.pdf4llm.com/python/reference/JSON-schema>`_.
+        Parses the document and the specified pages and converts the result into a :ref:`JSON formatted string <json_output_structure>`.
+
+        Each parsed page has width, height and boxes; each box has x0, y0, x1, y1 in points from the top-left corner of the unrotated page, and a boxclass.
+
+        Unlike :meth:`to_markdown`, :meth:`to_json` box coordinates are unrounded floats for greater precision.
 
         :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
 
-        :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+        :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German. If RapidOCR is used for text recognition, the codes of some languages select a RapidOCR recognition model, see :ref:`OCR Language Support <ocr_language_support>`. *(new in v2.2)*
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
         :arg int image_dpi: specify the desired image resolution in dots per inch. Default value is 150. Only relevant if one of the parameters `write_images=True` or `embed_images=True` is used.
 
@@ -520,11 +551,16 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool write_images: store image files "picture" boundary boxes. When encountering images, image files will be created from the respective page area and stored in the specified folder. Any text contained in these areas will still be included in the text output.
 
         :arg list pages: optional, the pages to consider for output (caution: specify 0-based page numbers). If omitted (`None`) all pages are processed. Specify any valid Python sequence containing integers between `0` and `page_count - 1`.
+        
+        :arg str table_output: specify how HTML tables should be rendered. Options are `"html"` or `None`. Default is `None` which defaults to Markdown output.
+        
+        .. _json_output_structure:
 
-        :rtype: str
+        :rtype: str - A JSON string representing the structured output of the document. See :doc:`json-schema` for the full JSON output structure and further details on each field.
+        
+        .. note::
 
-        See `JSON Schema <https://docs.pdf4llm.com/python/reference/JSON-schema>`_ for the structure of the output JSON string.
-
+            See :doc:`grounding` for real examples using ``to_json`` and further details on how to ground information within a document.
 
     .. method:: to_text(**kwargs) -> str
 
@@ -534,9 +570,9 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool use_ocr: |PyMuPDFLayoutMode_Valid| use :ref:`OCR capability <pymupdf_layout_ocr_support>` to help analyse the page.
 
-        :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German.
+        :arg str ocr_language: |PyMuPDFLayoutMode_Valid| specify the language to be used by the Tesseract OCR engine. Default is "eng" (English). Make sure that the respective language data files are installed. Remember to use correct Tesseract language codes. Multiple languages can be specified by concatenating the respective codes with a plus sign "+", for example "eng+deu" for English and German. If RapidOCR is used for text recognition, the codes of some languages select a RapidOCR recognition model, see :ref:`OCR Language Support <ocr_language_support>`. *(new in v2.2)*
 
-        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 400. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
+        :arg int ocr_dpi: |PyMuPDFLayoutMode_Valid| specify the desired image resolution in dots per inch for applying OCR to the intermediate image of the page. Default value is 150. Only relevant if the page has been determined to profit from OCR (no or few text, most of the page covered by images or character-like vectors, etc.). Large values may increase the OCR precision but increase memory requirements and processing time. There also is a risk of over-sharpening the image which may decrease OCR precision. So the default value should probably be sufficiently high.
 
         :arg bool header: boolean to switch on/off page header content. This parameter controls whether to include or omit the header content from all the document pages. Useful if the document has repetitive header content which doesn't add any value to the overall extraction data. Default is `True` meaning that header content will be written.
 
@@ -607,35 +643,35 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note::
 
-        Like an OCG, an OCMD has a visibility state ON or OFF, and it can be used like an OCG. In contrast to an OCG, the OCMD state is determined by evaluating the state of one or more OCGs via special forms of **boolean expressions.** If the expression evaluates to true, the OCMD state is ON and OFF for false.
+            Like an OCG, an OCMD has a visibility state ON or OFF, and it can be used like an OCG. In contrast to an OCG, the OCMD state is determined by evaluating the state of one or more OCGs via special forms of **boolean expressions.** If the expression evaluates to true, the OCMD state is ON and OFF for false.
 
-        There are two ways to formulate OCMD visibility:
+            There are two ways to formulate OCMD visibility:
 
-        1. Use the combination of *ocgs* and *policy*: The *policy* value is interpreted as follows:
+            1. Use the combination of *ocgs* and *policy*: The *policy* value is interpreted as follows:
 
-            - AnyOn -- (default) true if at least one OCG is ON.
-            - AnyOff -- true if at least one OCG is OFF.
-            - AllOn -- true if all OCGs are ON.
-            - AllOff -- true if all OCGs are OFF.
+               - AnyOn -- (default) true if at least one OCG is ON.
+               - AnyOff -- true if at least one OCG is OFF.
+               - AllOn -- true if all OCGs are ON.
+               - AllOff -- true if all OCGs are OFF.
 
-            Suppose you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be OFF):
+               Suppose you want two PDF objects be displayed exactly one at a time (if one is ON, then the other one must be OFF):
 
-            Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via `set_ocmd(ocgs=[xref], policy="AllOff")`, with the :data:`xref` of the OCG.
+               Solution: use an **OCG** for object 1 and an **OCMD** for object 2. Create the OCMD via `set_ocmd(ocgs=[xref], policy="AllOff")`, with the :data:`xref` of the OCG.
 
-        2. Use the **visibility expression** *ve*: This is a list of two or more items. The **first item** is a logical keyword: one of the strings **"and"**, **"or"**, or **"not"**. The **second** and all subsequent items must either be an integer or another list. An integer must be the :data:`xref` number of an OCG. A list must again have at least two items starting with one of the boolean keywords. This syntax is a bit awkward, but quite powerful:
+            2. Use the **visibility expression** *ve*: This is a list of two or more items. The **first item** is a logical keyword: one of the strings **"and"**, **"or"**, or **"not"**. The **second** and all subsequent items must either be an integer or another list. An integer must be the :data:`xref` number of an OCG. A list must again have at least two items starting with one of the boolean keywords. This syntax is a bit awkward, but quite powerful:
 
-            - Each list must start with a logical keyword.
-            - If the keyword is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
-            - Items following the logical keyword may be either integers or again a list. An *integer* must be the xref of an OCG. A *list* must conform to the previous rules.
+               - Each list must start with a logical keyword.
+               - If the keyword is a **"not"**, then the list must have exactly two items. If it is **"and"** or **"or"**, any number of other items may follow.
+               - Items following the logical keyword may be either integers or again a list. An *integer* must be the xref of an OCG. A *list* must conform to the previous rules.
 
-            **Examples:**
+               **Examples:**
 
-            - `set_ocmd(ve=["or", 4, ["not", 5], ["and", 6, 7]])`. This delivers ON if the following is true: **"4 is ON, or 5 is OFF, or 6 and 7 are both ON"**.
-            - `set_ocmd(ve=["not", xref])`. This has the same effect as the OCMD example created under 1.
+               - `set_ocmd(ve=["or", 4, ["not", 5], ["and", 6, 7]])`. This delivers ON if the following is true: **"4 is ON, or 5 is OFF, or 6 and 7 are both ON"**.
+               - `set_ocmd(ve=["not", xref])`. This has the same effect as the OCMD example created under 1.
 
-            For more details and examples see page 224 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
+               For more details and examples see page 224 of :ref:`AdobeManual`. Also do have a look at example scripts `here <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/optional-content>`_.
 
-            Visibility expressions, `/VE`, are part of PDF specification version 1.6. So not all PDF viewers / readers may already support this feature and hence will react in some standard way for those cases.
+               Visibility expressions, `/VE`, are part of PDF specification version 1.6. So not all PDF viewers / readers may already support this feature and hence will react in some standard way for those cases.
 
 
     .. method:: get_ocmd(xref)
@@ -710,12 +746,13 @@ For details on **embedded files** refer to Appendix 3.
             * Only reports items contained in the currently selected layer configuration.
 
             * The meaning of the dictionary keys is as follows:
-            - *depth:* item's nesting level in the `/Order` array
-            - *locked:* true if cannot be changed via user interfaces
-            - *number:* running sequence number
-            - *on:* item state
-            - *text:* text string or name field of the originating OCG
-            - *type:* one of "label" (set by a text string), "checkbox" (set by a single OCG) or "radiobox" (set by a set of connected OCGs)
+            
+                - *depth:* item's nesting level in the `/Order` array
+                - *locked:* true if cannot be changed via user interfaces
+                - *number:* running sequence number
+                - *on:* item state
+                - *text:* text string or name field of the originating OCG
+                - *type:* one of "label" (set by a text string), "checkbox" (set by a single OCG) or "radiobox" (set by a set of connected OCGs)
 
     .. method:: set_layer_ui_config(number, action=0)
 
@@ -786,8 +823,8 @@ For details on **embedded files** refer to Appendix 3.
 
         For example::
 
-        [{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10},
-        {'startpage': 10, 'prefix': '', 'style': 'D', 'firstpagenum': 1}]
+            [{'startpage': 6, 'prefix': 'A-', 'style': 'D', 'firstpagenum': 10},
+            {'startpage': 10, 'prefix': '', 'style': 'D', 'firstpagenum': 1}]
 
         will generate the labels "A-10", "A-11", "A-12", "A-13", "1", "2", "3", ... for pages 6, 7 and so on until end of document. Pages 0 through 5 will have the label "".
 
@@ -911,31 +948,31 @@ For details on **embedded files** refer to Appendix 3.
 
         ::
 
-        options.bitonal_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.bitonal_image_recompress_quality = None
-        options.bitonal_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.bitonal_image_subsample_threshold = 0
-        options.bitonal_image_subsample_to = 0
-        options.color_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.color_lossless_image_recompress_quality = None
-        options.color_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.color_lossless_image_subsample_threshold = 0
-        options.color_lossless_image_subsample_to = 0
-        options.color_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.color_lossy_image_recompress_quality = None
-        options.color_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.color_lossy_image_subsample_threshold = 0
-        options.color_lossy_image_subsample_to = 0
-        options.gray_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.gray_lossless_image_recompress_quality = None
-        options.gray_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.gray_lossless_image_subsample_threshold = 0
-        options.gray_lossless_image_subsample_to = 0
-        options.gray_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
-        options.gray_lossy_image_recompress_quality = None
-        options.gray_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
-        options.gray_lossy_image_subsample_threshold = 0
-        options.gray_lossy_image_subsample_to = 0
+            options.bitonal_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.bitonal_image_recompress_quality = None
+            options.bitonal_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.bitonal_image_subsample_threshold = 0
+            options.bitonal_image_subsample_to = 0
+            options.color_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.color_lossless_image_recompress_quality = None
+            options.color_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.color_lossless_image_subsample_threshold = 0
+            options.color_lossless_image_subsample_to = 0
+            options.color_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.color_lossy_image_recompress_quality = None
+            options.color_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.color_lossy_image_subsample_threshold = 0
+            options.color_lossy_image_subsample_to = 0
+            options.gray_lossless_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.gray_lossless_image_recompress_quality = None
+            options.gray_lossless_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.gray_lossless_image_subsample_threshold = 0
+            options.gray_lossless_image_subsample_to = 0
+            options.gray_lossy_image_recompress_method = FZ_RECOMPRESS_NEVER
+            options.gray_lossy_image_recompress_quality = None
+            options.gray_lossy_image_subsample_method = FZ_SUBSAMPLE_AVERAGE
+            options.gray_lossy_image_subsample_threshold = 0
+            options.gray_lossy_image_subsample_to = 0
 
         The ``*_recompress_method`` attributes may be one of the values **FZ_RECOMPRESS_NEVER (0), FZ_RECOMPRESS_SAME (1), FZ_RECOMPRESS_LOSSLESS (2), FZ_RECOMPRESS_JPEG (3), FZ_RECOMPRESS_J2K (4), FZ_RECOMPRESS_FAX (5)**. Value FZ_RECOMPRESS_NEVER will skip this image type altogether and FZ_RECOMPRESS_SAME will not change the type. The other values will execute type conversions (as far as technically possible).
 
@@ -986,10 +1023,11 @@ For details on **embedded files** refer to Appendix 3.
             * *value*: (dict) with the following layout:
                 * "page":  target page number (0-based). If no page number found -1.
                 * "to": (x, y) target point on page. Currently in PDF coordinates,
-                i.e. point (0,0) is the bottom-left of the page.
+                  i.e. point (0,0) is the bottom-left of the page.
                 * "zoom": (float) the zoom factor.
                 * "dest": (str) only present if the target location on the page has
-                not been provided as "/XYZ" or if no page number was found.
+                  not been provided as "/XYZ" or if no page number was found.
+            
             Examples::
 
                 {
@@ -1494,20 +1532,20 @@ For details on **embedded files** refer to Appendix 3.
 
         Collapse everything below top level and show the chapter on Python support in red, bold and italic::
 
-        >>> import pymupdf
-        >>> doc=pymupdf.open("SWIGDocumentation.pdf")
-        >>> toc = doc.get_toc(False)  # we need the detailed TOC
-        >>> # list of level 1 indices and their titles
-        >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
-        >>> for i, title in lvl1:
-                d = toc[i][3]  # get the destination dict
-                d["collapse"] = True  # collapse items underneath
-                if "Python" in title:  # show the 'Python' chapter
-                    d["color"] = (1, 0, 0)  # in red,
-                    d["bold"] = True  # bold and
-                    d["italic"] = True  # italic
-                doc.set_toc_item(i, dest_dict=d)  # update this toc item
-        >>> doc.save("NEWSWIG.pdf",garbage=3,deflate=True)
+            >>> import pymupdf
+            >>> doc=pymupdf.open("SWIGDocumentation.pdf")
+            >>> toc = doc.get_toc(False)  # we need the detailed TOC
+            >>> # list of level 1 indices and their titles
+            >>> lvl1 = [(i, item[1]) for i, item in enumerate(toc) if item[0] == 1]
+            >>> for i, title in lvl1:
+                    d = toc[i][3]  # get the destination dict
+                    d["collapse"] = True  # collapse items underneath
+                    if "Python" in title:  # show the 'Python' chapter
+                        d["color"] = (1, 0, 0)  # in red,
+                        d["bold"] = True  # bold and
+                        d["italic"] = True  # italic
+                    doc.set_toc_item(i, dest_dict=d)  # update this toc item
+            >>> doc.save("NEWSWIG.pdf",garbage=3,deflate=True)
 
         In the previous example, we have changed only 42 of the 1240 TOC items of the file.
 
@@ -1624,7 +1662,7 @@ For details on **embedded files** refer to Appendix 3.
         See: :ref:`Compressing Files <CompressingFiles>` for full details on this parameter.
 
         :arg bool raise_on_repair: *(new in v1.27.0)* If true we raise an exception if the save caused a repair.
-        This is useful because repairs can cause changes to be lost.
+            This is useful because repairs can cause changes to be lost.
 
         Also see `Document.repair()`.
 
@@ -1635,14 +1673,14 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note::
 
-        **File size reduction**
+            **File size reduction**
 
-        1. Use the save options like `garbage=3|4, deflate=True, use_objstms=True|1`. Do not touch the default values `expand=False|0, clean=False|0, incremental=False|0, linear=False|0`.
-        This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below.
+              1. Use the save options like `garbage=3|4, deflate=True, use_objstms=True|1`. Do not touch the default values `expand=False|0, clean=False|0, incremental=False|0, linear=False|0`.
+              This is a "lossless" file size reduction. There is a convenience version of this method with these values set by default, :meth:`Document.ez_save` -- please see below.
 
-        2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
+              2. "Lossy" file size reduction in essence must give up something with respect to images, like (a) remove all images (b) replace images by their grayscale versions (c) reduce image resolutions. Find examples in the `PyMuPDF Utilities "replace-image" folder <https://github.com/pymupdf/PyMuPDF-Utilities/tree/master/examples/replace-image>`_.
 
-        See: :ref:`Compressing Files <CompressingFiles>` for more.
+              See: :ref:`Compressing Files <CompressingFiles>` for more.
 
 
 
@@ -1820,23 +1858,23 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note::
 
-        *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also deactivate items in the table of contents which point to deleted pages. "Deactivation" here means, that the bookmark will point to nowhere and the title will be shown grayed-out by supporting PDF viewers. The overall TOC structure is left intact.
+            *(Changed in v1.14.17, optimized in v1.17.7)* In an effort to maintain a valid PDF structure, this method and :meth:`delete_page` will also deactivate items in the table of contents which point to deleted pages. "Deactivation" here means, that the bookmark will point to nowhere and the title will be shown grayed-out by supporting PDF viewers. The overall TOC structure is left intact.
 
-        It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
+            It will also remove any **links on remaining pages** which point to a deleted one. This action may have an extended response time for documents with many pages.
 
-        Following examples will all delete pages 500 through 519:
+            Following examples will all delete pages 500 through 519:
 
-        * `doc.delete_pages(500, 519)`
-        * `doc.delete_pages(from_page=500, to_page=519)`
-        * `doc.delete_pages((500, 501, 502, ... , 519))`
-        * `doc.delete_pages(range(500, 520))`
-        * `del doc[500:520]`
-        * `del doc[(500, 501, 502, ... , 519)]`
-        * `del doc[range(500, 520)]`
+            * `doc.delete_pages(500, 519)`
+            * `doc.delete_pages(from_page=500, to_page=519)`
+            * `doc.delete_pages((500, 501, 502, ... , 519))`
+            * `doc.delete_pages(range(500, 520))`
+            * `del doc[500:520]`
+            * `del doc[(500, 501, 502, ... , 519)]`
+            * `del doc[range(500, 520)]`
 
-        For the :ref:`AdobeManual` the above takes about 0.6 seconds, because the remaining 1290 pages must be cleaned from invalid links.
+            For the :ref:`AdobeManual` the above takes about 0.6 seconds, because the remaining 1290 pages must be cleaned from invalid links.
 
-        In general, the performance of this method is dependent on the number of remaining pages -- **not** on the number of deleted pages: in the above example, **deleting all pages except** those 20, will need much less time.
+            In general, the performance of this method is dependent on the number of remaining pages -- **not** on the number of deleted pages: in the above example, **deleting all pages except** those 20, will need much less time.
 
 
     .. method:: copy_page(pno, to=-1)
@@ -1884,8 +1922,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :rtype: bool
         :returns:
-        * None: not a Form PDF, or property not defined.
-        * True / False: the value of the property (either just set or existing for inquiries). Has no effect if no Form PDF.
+            * None: not a Form PDF, or property not defined.
+            * True / False: the value of the property (either just set or existing for inquiries). Has no effect if no Form PDF.
 
 
 
@@ -1895,9 +1933,9 @@ For details on **embedded files** refer to Appendix 3.
 
         :rtype: int
         :returns:
-        * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
-        * 1: at least one signature field exists.
-        * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
+            * -1: not a Form PDF / no signature fields recorded / no *SigFlags* found.
+            * 1: at least one signature field exists.
+            * 3:  contains signatures that may be invalidated if the file is saved (written) in a way that alters its previous contents, as opposed to an incremental update.
 
     .. index::
         pair: filename; Document.embfile_add
@@ -2143,7 +2181,8 @@ For details on **embedded files** refer to Appendix 3.
 
         .. note:: There is a functional overlap with *pix = pymupdf.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
 
-        * xref 1268 is a PNG -- Comparable execution time and identical output::
+        * xref 1268 is a PNG -- Comparable execution time and identical output:: text
+            
 
             In [23]: %timeit pix = pymupdf.Pixmap(doc, 1268);pix.tobytes()
             10.8 ms ± 52.4 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
@@ -2155,7 +2194,7 @@ For details on **embedded files** refer to Appendix 3.
             In [26]: len(img["image"])
             Out[26]: 21462
 
-        * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB)::
+        * xref 1186 is a JPEG -- :meth:`Document.extract_image` is **many times faster** and produces a **much smaller** output (2.48 MB vs. 0.35 MB):: text
 
             In [27]: %timeit pix = pymupdf.Pixmap(doc, 1186);pix.tobytes()
             341 ms ± 2.86 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
@@ -2196,8 +2235,8 @@ For details on **embedded files** refer to Appendix 3.
         .. warning:: The basename is returned unchanged from the PDF. So it may contain characters (such as blanks) which may disqualify it as a filename for your operating system. Take appropriate action.
 
         .. note::
-        * The returned *basename* in general is **not** the original file name, but it probably has some similarity.
-        * If parameter `named == True`, a dictionary with the following keys is returned: `{'name': 'T1', 'ext': 'n/a', 'type': 'Type3', 'content': b''}`.
+            * The returned *basename* in general is **not** the original file name, but it probably has some similarity.
+            * If parameter `named == True`, a dictionary with the following keys is returned: `{'name': 'T1', 'ext': 'n/a', 'type': 'Type3', 'content': b''}`.
 
 
     .. method:: xref_xml_metadata()
@@ -2342,31 +2381,31 @@ For details on **embedded files** refer to Appendix 3.
 
 
 
-  .. attribute:: outline
+    .. attribute:: outline
 
     Contains the first :ref:`Outline` entry of the document (or `None`). Can be used as a starting point to walk through all outline items. Accessing this property for encrypted, not authenticated documents will raise an *AttributeError*.
 
     :type: :ref:`Outline`
 
-  .. attribute:: is_closed
+    .. attribute:: is_closed
 
     ``False`` if document is still open. If closed, most other attributes and methods will have been deleted / disabled. In addition, :ref:`Page` objects referring to this document (i.e. created with :meth:`Document.load_page`) and their dependent objects will no longer be usable. For reference purposes, :attr:`Document.name` still exists and will contain the filename of the original document (if applicable).
 
     :type: bool
 
-  .. attribute:: is_dirty
+    .. attribute:: is_dirty
 
     ``True`` if this is a PDF document and contains unsaved changes, else ``False``.
 
     :type: bool
 
-  .. attribute:: is_pdf
+    .. attribute:: is_pdf
 
     ``True`` if this is a PDF document, else ``False``.
 
     :type: bool
 
-  .. attribute:: is_form_pdf
+    .. attribute:: is_form_pdf
 
     ``False`` if this is not a PDF or has no form fields, otherwise the number of root form fields (fields with no ancestors).
 
@@ -2374,13 +2413,13 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: bool,int
 
-  .. attribute:: is_reflowable
+    .. attribute:: is_reflowable
 
     ``True`` if document has a variable page layout (like e-books, HTML or Markdown). In this case you can set the desired page dimensions during document creation (open) or via method :meth:`layout`.
 
     :type: bool
 
-  .. attribute:: is_repaired
+    .. attribute:: is_repaired
 
     * New in v1.18.2
 
@@ -2388,7 +2427,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: bool
 
-  .. attribute:: is_fast_webaccess
+    .. attribute:: is_fast_webaccess
 
     * New in v1.22.2
 
@@ -2396,7 +2435,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: bool
 
-  .. attribute:: markinfo
+    .. attribute:: markinfo
 
     * New in v1.22.2
 
@@ -2404,7 +2443,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: dict
 
-  .. attribute:: pagemode
+    .. attribute:: pagemode
 
     * New in v1.22.2
 
@@ -2412,7 +2451,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: str
 
-  .. attribute:: pagelayout
+    .. attribute:: pagelayout
 
     * New in v1.22.2
 
@@ -2420,7 +2459,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: str
 
-  .. attribute:: version_count
+    .. attribute:: version_count
 
     * New in v1.22.2
 
@@ -2428,19 +2467,19 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. attribute:: needs_pass
+    .. attribute:: needs_pass
 
     Indicates whether the document is password-protected against access. This indicator remains unchanged -- **even after the document has been authenticated**. Precludes incremental saves if true.
 
     :type: bool
 
-  .. attribute:: is_encrypted
+    .. attribute:: is_encrypted
 
     This indicator initially equals :attr:`Document.needs_pass`. After successful authentication, it is set to ``False`` to reflect the situation.
 
     :type: bool
 
-  .. attribute:: permissions
+    .. attribute:: permissions
 
     * Changed in v1.16.0: This is now an integer comprised of bit indicators. Was a dictionary previously.
 
@@ -2448,7 +2487,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. attribute:: metadata
+    .. attribute:: metadata
 
     Contains the document's meta data as a Python dictionary or `None` (if *is_encrypted=True* and *needPass=True*). Keys are *format*, *encryption*, *title*, *author*, *subject*, *keywords*, *creator*, *producer*, *creationDate*, *modDate*, *trapped*. All item values are strings or `None`.
 
@@ -2468,19 +2507,19 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: dict
 
-  .. Attribute:: name
+    .. Attribute:: name
 
     Contains the *filename* or *filetype* value with which *Document* was created.
 
     :type: str
 
-  .. Attribute:: page_count
+    .. Attribute:: page_count
 
     Contains the number of pages of the document. May return 0 for documents with no pages. Function `len(doc)` will also deliver this result.
 
     :type: int
 
-  .. Attribute:: chapter_count
+    .. Attribute:: chapter_count
 
     * New in v1.17.0
 
@@ -2488,7 +2527,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. Attribute:: last_location
+    .. Attribute:: last_location
 
     * New in v1.17.0
 
@@ -2496,7 +2535,7 @@ For details on **embedded files** refer to Appendix 3.
 
     :type: int
 
-  .. Attribute:: FormFonts
+    .. Attribute:: FormFonts
 
     A list of form field font names defined in the */AcroForm* object. `None` if not a PDF.
 
@@ -2578,7 +2617,8 @@ Obviously, similar ways can be found in more general situations. Just make sure 
 
     **About box classes**
 
-    If `page_chunks = True` the return objects for :meth:`Document.to_markdown` & :meth:`Document.to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein.
+    If `page_chunks = True` the return objects for :meth:`Document.to_markdown` & :meth:`Document.to_text` contains a list of dictionaries representing the layout boundary boxes `page_boxes`, within that a key ``class`` indicates the type of box content therein. 
+    Each box also has ``bbox`` and ``pos``; see :ref:`page_boxes <document_page_boxes>` in :meth:`Document.to_markdown`. 
 
     The return object for :meth:`Document.to_json` contains a similar key called ``boxclass``.
 

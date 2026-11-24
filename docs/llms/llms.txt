@@ -1,8 +1,8 @@
 # PyMuPDF
 
-> PyMuPDF is a high-performance Python library for data extraction, analysis, conversion and manipulation of PDF (and other) documents. It includes PyMuPDF4LLM, a companion package specifically designed for LLM and RAG pipelines that converts documents into structured Markdown, JSON, and plain text.
+> PyMuPDF is a layout-aware document engine for AI and a feature-rich Python toolkit for extracting, rendering and editing PDFs and other documents. Since version 2.0, its ML-based layout analysis turns PDFs and Office files into high-quality Markdown for RAG and agents, running fast on CPU and grounding every result to its source page.
 
-PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It is built on top of MuPDF, a lightweight PDF and XPS viewer.
+PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered on [PyPI](https://pypi.org/project/PyMuPDF/). It is built on top of [MuPDF](https://mupdf.com).
 
 ## Docs
 
@@ -11,6 +11,7 @@ PyMuPDF is hosted on [GitHub](https://github.com/pymupdf/PyMuPDF) and registered
 - [The Basics](https://pymupdf.readthedocs.io/en/latest/the-basics.html): Quick start examples for common tasks
 - [Tutorial](https://pymupdf.readthedocs.io/en/latest/tutorial.html): Step-by-step introduction
 - [PyMuPDF, LLM & RAG](https://pymupdf.readthedocs.io/en/latest/rag.html): Using PyMuPDF for LLM and RAG pipelines
+- [PyMuPDF & Grounding](https://pymupdf.readthedocs.io/en/latest/grounding.html): Trace extracted text, chunks and LLM quotes back to their page and position. Covers page coordinates (points, top-left origin, converting to PDF space and image pixels), storing `page_boxes` bbox and text positions as chunk metadata, and finding quotes with `Page.search_for(quads=True)`
 - [Resources](https://pymupdf.readthedocs.io/en/latest/resources.html): Blog posts, examples and tutorials
 - [FAQ](https://pymupdf.readthedocs.io/en/latest/faq/index.html): Frequently asked questions
 - [Features Comparison](https://pymupdf.readthedocs.io/en/latest/about.html): Feature matrix vs other tools

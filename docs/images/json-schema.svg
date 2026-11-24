@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 680 1400" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;">
+    <g>
+        <path d="M455,38L455,66C455,70.415 451.415,74 447,74L233,74C228.585,74 225,70.415 225,66L225,38C225,33.585 228.585,30 233,30L447,30C451.415,30 455,33.585 455,38Z" style="fill:rgb(60,52,137);stroke:rgb(175,169,236);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,340,52)">
+            <g transform="matrix(1,0,0,1,-35.41,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(206,203,246);">Root object</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M130,138L130,178C130,182.415 126.415,186 122,186L28,186C23.585,186 20,182.415 20,178L20,138C20,133.585 23.585,130 28,130L122,130C126.415,130 130,133.585 130,138Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,75,148)">
+            <g transform="matrix(1,0,0,1,-26.458,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">ﬁlename</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,75,168)">
+            <g transform="matrix(1,0,0,1,-14.672,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">string</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <g transform="matrix(0.833333,0,0,1,25,0)">
+            <path d="M270,138L270,178C270,182.415 266.415,186 262,186L158,186C153.585,186 150,182.415 150,178L150,138C150,133.585 153.585,130 158,130L262,130C266.415,130 270,133.585 270,138Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,200,148)">
+            <g transform="matrix(1,0,0,1,-36.589,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">page_count</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,198,168)">
+            <g transform="matrix(1,0,0,1,-20.344,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">number</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <g transform="matrix(0.766667,0,0,1,46.666667,0)">
+            <path d="M380,138L380,178C380,182.415 376.415,186 372,186L298,186C293.585,186 290,182.415 290,178L290,138C290,133.585 293.585,130 298,130L372,130C376.415,130 380,133.585 380,138Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,304,148)">
+            <g transform="matrix(1,0,0,1,-17.117,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">toc [ ]</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,300,168)">
+            <g transform="matrix(1,0,0,1,-13.67,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">array</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <g transform="matrix(0.736364,0,0,1,65.454545,0)">
+            <path d="M510,138L510,178C510,182.415 506.415,186 502,186L408,186C403.585,186 400,182.415 400,178L400,138C400,133.585 403.585,130 408,130L502,130C506.415,130 510,133.585 510,138Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,401,148)">
+            <g transform="matrix(1,0,0,1,-29.186,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">metadata</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,401,168)">
+            <g transform="matrix(1,0,0,1,-16.011,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">object</text>
+            </g>
+        </g>
+        <g transform="matrix(0.736364,0,0,1,270.454545,1)">
+            <path d="M510,138L510,178C510,182.415 506.415,186 502,186L408,186C403.585,186 400,182.415 400,178L400,138C400,133.585 403.585,130 408,130L502,130C506.415,130 510,133.585 510,138Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,606,149)">
+            <g transform="matrix(1,0,0,1,-33.186,0)">
+                <g transform="matrix(14,0,0,14,35.786133,0)">
+                </g>
+                <g transform="matrix(14,0,0,14,39.675781,0)">
+                </g>
+                <g transform="matrix(14,0,0,14,68.46875,0)">
+                </g>
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">form_ﬁelds</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,606,169)">
+            <g transform="matrix(1,0,0,1,-16.011,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">object</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <g transform="matrix(0.676923,0,0,1,99.230769,1)">
+            <path d="M660,138L660,178C660,182.415 656.415,186 652,186L538,186C533.585,186 530,182.415 530,178L530,138C530,133.585 533.585,130 538,130L652,130C656.415,130 660,133.585 660,138Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,507,148)">
+            <g transform="matrix(1,0,0,1,-26.852,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">pages [ ]</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,503,168)">
+            <g transform="matrix(1,0,0,1,-13.67,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">array</text>
+            </g>
+        </g>
+    </g>
+    <path d="M310,74L75,128" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M325,74L210,128" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g transform="matrix(0.966036,0.260528,-0.288028,1.022414,26.475396,-89.472656)">
+        <path d="M340,74L335,128" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g transform="matrix(0.663406,0.146203,-0.592846,0.701072,168.430888,-28.58031)">
+        <path d="M355,74L455,128" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g transform="matrix(0.609882,0.030574,-0.293742,0.9368,173.900085,-7.144778)">
+        <path d="M370,74L595,128" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g transform="matrix(0.780242,0.010627,-0.133646,0.979597,150.031466,-2.011035)">
+        <path d="M370,74L595,128" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <g transform="matrix(1,0,0,1,-448,-55)">
+            <path d="M660,268L660,372C660,376.415 656.415,380 652,380L498,380C493.585,380 490,376.415 490,372L490,268C490,263.585 493.585,260 498,260L652,260C656.415,260 660,263.585 660,268Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,127,227)">
+            <g transform="matrix(1,0,0,1,-47.472,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">metadata ﬁelds</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,127,247)">
+            <g transform="matrix(1,0,0,1,-35.01,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">format: string</text>
+            </g>
+        </g>
+        <g transform="matrix(0.894118,0,0,0.894118,81.882353,-21.117647)">
+            <path d="M660,268L660,372C660,376.415 656.415,380 652,380L498,380C493.585,380 490,376.415 490,372L490,268C490,263.585 493.585,260 498,260L652,260C656.415,260 660,263.585 660,268Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,587,228)">
+            <g transform="matrix(1,0,0,1,-47.472,0)">
+                <g transform="matrix(14,0,0,14,35.786133,0)">
+                </g>
+                <g transform="matrix(14,0,0,14,39.675781,0)">
+                </g>
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">form_ﬁelds ﬁelds</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,587,248)">
+            <g transform="matrix(1,0,0,1,-35.01,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">name: object</text>
+                <text x="0px" y="24px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">(objects keyed by</text>
+                <g transform="matrix(12,0,0,12,29.355469,36)">
+                </g>
+                <g transform="matrix(12,0,0,12,32.689453,36)">
+                </g>
+                <text x="0px" y="36px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">each ﬁeld&apos;s fully</text>
+                <g transform="matrix(12,0,0,12,25.353516,48)">
+                </g>
+                <g transform="matrix(12,0,0,12,28.6875,48)">
+                </g>
+                <g transform="matrix(12,0,0,12,82.048828,48)">
+                </g>
+                <text x="0px" y="48px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">qualiﬁed name)</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,127,265)">
+            <g transform="matrix(1,0,0,1,-53.689,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">title, author…: string</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,127,283)">
+            <g transform="matrix(1,0,0,1,-52.025,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">creationDate: string</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,127,301)">
+            <g transform="matrix(1,0,0,1,-40.356,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">encryption: null</text>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(0.514548,-0.247635,-0.114775,0.82702,191.186632,146.440918)">
+        <path d="M455,186L69.034,119.064" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1.93px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <path d="M470,268L470,308C470,312.415 466.415,316 462,316L288,316C283.585,316 280,312.415 280,308L280,268C280,263.585 283.585,260 288,260L462,260C466.415,260 470,263.585 470,268Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,375,278)">
+            <g transform="matrix(1,0,0,1,-36.196,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">page object</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,375,298)">
+            <g>
+                <g transform="matrix(1,0,0,1,-73.723,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">page_number</text>
+                </g>
+                <g transform="matrix(1,0,0,1,-0.322,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">, width, height</text>
+                </g>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(0.715609,-0.023016,0.257187,0.937924,23.747786,26.554554)">
+        <path d="M595,186L376,259" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g transform="matrix(0.305913,-0.128271,0.947832,-0.052237,243.760553,272.624531)">
+        <path d="M595,186L376,259" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <path d="M120,378L120,406C120,410.415 116.415,414 112,414L28,414C23.585,414 20,410.415 20,406L20,378C20,373.585 23.585,370 28,370L112,370C116.415,370 120,373.585 120,378Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,70,392)">
+            <g transform="matrix(1,0,0,1,-26.458,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">boxes [ ]</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M250,378L250,406C250,410.415 246.415,414 242,414L148,414C143.585,414 140,410.415 140,406L140,378C140,373.585 143.585,370 148,370L242,370C246.415,370 250,373.585 250,378Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,195,392)">
+            <g transform="matrix(1,0,0,1,-28.01,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">fulltext [ ]</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M380,378L380,418C380,422.415 376.415,426 372,426L278,426C273.585,426 270,422.415 270,418L270,378C270,373.585 273.585,370 278,370L372,370C376.415,370 380,373.585 380,378Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,325,388)">
+            <g transform="matrix(1,0,0,1,-30.352,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">full_ocred</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,325,408)">
+            <g transform="matrix(1,0,0,1,-21.354,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">boolean</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M510,378L510,418C510,422.415 506.415,426 502,426L408,426C403.585,426 400,422.415 400,418L400,378C400,373.585 403.585,370 408,370L502,370C506.415,370 510,373.585 510,378Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,455,388)">
+            <g transform="matrix(1,0,0,1,-32.686,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">text_ocred</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,455,408)">
+            <g transform="matrix(1,0,0,1,-21.354,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">boolean</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M660,378L660,418C660,422.415 656.415,426 652,426L538,426C533.585,426 530,422.415 530,418L530,378C530,373.585 533.585,370 538,370L652,370C656.415,370 660,373.585 660,378Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,595,388)">
+            <g transform="matrix(1,0,0,1,-52.124,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">words [ ]  links [ ]</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,595,408)">
+            <g transform="matrix(1,0,0,1,-34.676,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">empty arrays</text>
+            </g>
+        </g>
+    </g>
+    <path d="M345,316L70,368" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M355,316L195,368" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M370,316L325,368" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M385,316L455,368" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g transform="matrix(0.87112,-0.095739,-0.095739,0.92888,79.872173,59.333614)">
+        <path d="M407.061,318.274L615.507,397.462" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1.24px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <path d="M240,488L240,528C240,532.415 236.415,536 232,536L28,536C23.585,536 20,532.415 20,528L20,488C20,483.585 23.585,480 28,480L232,480C236.415,480 240,483.585 240,488Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,130,498)">
+            <g transform="matrix(1,0,0,1,-31.91,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">box object</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,130,518)">
+            <g transform="matrix(1,0,0,1,-62.027,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">x0, y0, x1, y1, boxclass</text>
+            </g>
+        </g>
+    </g>
+    <path d="M70,414L100,478" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <path d="M130,598L130,638C130,642.415 126.415,646 122,646L28,646C23.585,646 20,642.415 20,638L20,598C20,593.585 23.585,590 28,590L122,590C126.415,590 130,593.585 130,598Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,75,608)">
+            <g transform="matrix(1,0,0,1,-19.065,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">image</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,75,628)">
+            <g transform="matrix(1,0,0,1,-28.904,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">string | null</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M260,598L260,626C260,630.415 256.415,634 252,634L158,634C153.585,634 150,630.415 150,626L150,598C150,593.585 153.585,590 158,590L252,590C256.415,590 260,593.585 260,598Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,205,612)">
+            <g transform="matrix(1,0,0,1,-33.458,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">textlines [ ]</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M380,598L380,626C380,630.415 376.415,634 372,634L288,634C283.585,634 280,630.415 280,626L280,598C280,593.585 283.585,590 288,590L372,590C376.415,590 380,593.585 380,598Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,330,612)">
+            <g transform="matrix(1,0,0,1,-35.803,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">table object</text>
+            </g>
+        </g>
+    </g>
+    <path d="M75,536L75,588" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M130,536L205,588" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M175,536L330,588" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <path d="M180,708L180,792C180,796.415 176.415,800 172,800L28,800C23.585,800 20,796.415 20,792L20,708C20,703.585 23.585,700 28,700L172,700C176.415,700 180,703.585 180,708Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,100,720)">
+            <g transform="matrix(1,0,0,1,-39.296,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">table scalars</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,100,742)">
+            <g transform="matrix(1,0,0,1,-38.027,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">bbox: [n,n,n,n]</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,100,760)">
+            <g transform="matrix(1,0,0,1,-51.36,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">row_count: number</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,100,778)">
+            <g transform="matrix(1,0,0,1,-49.362,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">col_count: number</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M300,708L300,748C300,752.415 296.415,756 292,756L208,756C203.585,756 200,752.415 200,748L200,708C200,703.585 203.585,700 208,700L292,700C296.415,700 300,703.585 300,708Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,250,718)">
+            <g transform="matrix(1,0,0,1,-14.003,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">cells</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,250,738)">
+            <g transform="matrix(1,0,0,1,-34.676,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">array of rows</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M420,708L420,748C420,752.415 416.415,756 412,756L328,756C323.585,756 320,752.415 320,748L320,708C320,703.585 323.585,700 328,700L412,700C416.415,700 420,703.585 420,708Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,370,718)">
+            <g transform="matrix(1,0,0,1,-21.007,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">extract</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,370,738)">
+            <g transform="matrix(1,0,0,1,-34.676,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">array of rows</text>
+            </g>
+        </g>
+    </g>
+    <g>
+        <path d="M550,708L550,748C550,752.415 546.415,756 542,756L448,756C443.585,756 440,752.415 440,748L440,708C440,703.585 443.585,700 448,700L542,700C546.415,700 550,703.585 550,708Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,495,718)">
+            <g transform="matrix(1,0,0,1,-32.29,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">markdown</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,495,738)">
+            <g transform="matrix(1,0,0,1,-14.672,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">string</text>
+            </g>
+        </g>
+    </g>
+    <path d="M305,634L100,698" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M318,634L250,698" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M333,634L370,698" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <path d="M348,634L495,698" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <g transform="matrix(1,0,0,1,22,0)">
+            <path d="M380,828L380,856C380,860.415 376.415,864 372,864L178,864C173.585,864 170,860.415 170,856L170,828C170,823.585 173.585,820 178,820L372,820C376.415,820 380,823.585 380,828Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,297,834)">
+            <g transform="matrix(1,0,0,1,-27.627,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">cell bbox</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,297,854)">
+            <g transform="matrix(1,0,0,1,-65.361,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">[x0, y0, x1, y1]  numbers</text>
+            </g>
+        </g>
+    </g>
+    <path d="M250,756L255,818" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <g transform="matrix(1,0,0,1,22,0)">
+            <path d="M580,828L580,856C580,860.415 576.415,864 572,864L408,864C403.585,864 400,860.415 400,856L400,828C400,823.585 403.585,820 408,820L572,820C576.415,820 580,823.585 580,828Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,512,834)">
+            <g transform="matrix(1,0,0,1,-29.183,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(211,209,199);">cell value</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,512,854)">
+            <g transform="matrix(1,0,0,1,-52.875,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(180,178,169);">string  e.g. &quot;A&quot;, &quot;B1&quot;</text>
+            </g>
+        </g>
+    </g>
+    <path d="M370,756L460,818" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <g transform="matrix(1,0,0,1,60,0)">
+            <path d="M220,948L220,988C220,992.415 216.415,996 212,996L28,996C23.585,996 20,992.415 20,988L20,948C20,943.585 23.585,940 28,940L212,940C216.415,940 220,943.585 220,948Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,180,958)">
+            <g transform="matrix(1,0,0,1,-42.803,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">textline object</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,180,978)">
+            <g transform="matrix(1,0,0,1,-38.027,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">bbox: [n,n,n,n]</text>
+            </g>
+        </g>
+    </g>
+    <path d="M205,634L165,939" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <g transform="matrix(1,0,0,1,60,0)">
+            <path d="M150,1058L150,1086C150,1090.415 146.415,1094 142,1094L28,1094C23.585,1094 20,1090.415 20,1086L20,1058C20,1053.585 23.585,1050 28,1050L142,1050C146.415,1050 150,1053.585 150,1058Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,145,1072)">
+            <g transform="matrix(1,0,0,1,-26.458,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">spans [ ]</text>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,60,0)">
+        <path d="M120,996L100,1048" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <g transform="matrix(1,0,0,1,60,0)">
+            <path d="M400,1158L400,1198C400,1202.415 396.415,1206 392,1206L28,1206C23.585,1206 20,1202.415 20,1198L20,1158C20,1153.585 23.585,1150 28,1150L392,1150C396.415,1150 400,1153.585 400,1158Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,270,1168)">
+            <g transform="matrix(1,0,0,1,-35.803,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(159,225,203);">span object</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,270,1188)">
+            <g>
+                <g transform="matrix(1,0,0,1,-113.391,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">size, ﬂags, font, color</text>
+                </g>
+                <g transform="matrix(1,0,0,1,-1.33,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(93,202,165);">, text, bbox, origin, dir</text>
+                </g>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,1,60,0)">
+        <path d="M85,1094L120,1148" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <path d="M590,488L590,528C590,532.415 586.415,536 582,536L398,536C393.585,536 390,532.415 390,528L390,488C390,483.585 393.585,480 398,480L582,480C586.415,480 590,483.585 590,488Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        <g transform="matrix(1,0,0,1,490,498)">
+            <g transform="matrix(1,0,0,1,-38.517,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">fulltext block</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,490,518)">
+            <g>
+                <g transform="matrix(1,0,0,1,-67.043,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">type, number</text>
+                </g>
+                <g transform="matrix(1,0,0,1,2.338,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">, ﬂags, bbox</text>
+                </g>
+            </g>
+        </g>
+    </g>
+    <path d="M195,414L440,478" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    <g>
+        <g transform="matrix(1,0,0,1,94,-31)">
+            <path d="M570,598L570,638C570,642.415 566.415,646 562,646L398,646C393.585,646 390,642.415 390,638L390,598C390,593.585 393.585,590 398,590L562,590C566.415,590 570,593.585 570,598Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,574,577)">
+            <g transform="matrix(1,0,0,1,-22.176,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">lines [ ]</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,574,597)">
+            <g>
+                <g transform="matrix(1,0,0,1,-45.36,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">wmode, dir</text>
+                </g>
+                <g transform="matrix(1,0,0,1,12.671,0)">
+                    <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">, bbox</text>
+                </g>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(0.978053,0.114123,0.114123,0.406562,-17.415889,261.162625)">
+        <path d="M490,536L526.381,584.819" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1.17px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <g transform="matrix(1,0,0,1,95,-70)">
+            <path d="M570,708L570,748C570,752.415 566.415,756 562,756L398,756C393.585,756 390,752.415 390,748L390,708C390,703.585 393.585,700 398,700L562,700C566.415,700 570,703.585 570,708Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:0.5px;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,575,648)">
+            <g transform="matrix(1,0,0,1,-26.458,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:14px;fill:rgb(181,212,244);">spans [ ]</text>
+            </g>
+        </g>
+        <g transform="matrix(1,0,0,1,575,668)">
+            <g transform="matrix(1,0,0,1,-38.355,0)">
+                <text x="0px" y="0px" style="font-family:'LucidaGrande', 'Lucida Grande', sans-serif;font-weight:500;font-size:12px;fill:rgb(133,183,235);">→</text>
+            </g>
+            <g transform="matrix(1,0,0,1,-23.021,0)">
+                <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(133,183,235);">span object</text>
+            </g>
+        </g>
+    </g>
+    <g transform="matrix(1,0,0,0.269231,34,448.076923)">
+        <path d="M538,623.714L538,672" style="fill:none;fill-rule:nonzero;stroke:rgb(192,192,192);stroke-width:1.37px;stroke-linejoin:round;stroke-miterlimit:2;"/>
+    </g>
+    <g>
+        <path d="M34,1263L34,1271C34,1272.656 32.656,1274 31,1274L23,1274C21.344,1274 20,1272.656 20,1271L20,1263C20,1261.344 21.344,1260 23,1260L31,1260C32.656,1260 34,1261.344 34,1263Z" style="fill:rgb(60,52,137);stroke:rgb(175,169,236);stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,40,1271)">
+        <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(194,192,182);">root</text>
+    </g>
+    <g>
+        <path d="M34,1287L34,1295C34,1296.656 32.656,1298 31,1298L23,1298C21.344,1298 20,1296.656 20,1295L20,1287C20,1285.344 21.344,1284 23,1284L31,1284C32.656,1284 34,1285.344 34,1287Z" style="fill:rgb(12,68,124);stroke:rgb(133,183,235);stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,40,1295)">
+        <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(194,192,182);">page / block arrays</text>
+    </g>
+    <g>
+        <path d="M34,1311L34,1319C34,1320.656 32.656,1322 31,1322L23,1322C21.344,1322 20,1320.656 20,1319L20,1311C20,1309.344 21.344,1308 23,1308L31,1308C32.656,1308 34,1309.344 34,1311Z" style="fill:rgb(8,80,65);stroke:rgb(93,202,165);stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,40,1319)">
+        <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(194,192,182);">text / table content</text>
+    </g>
+    <g>
+        <path d="M34,1335L34,1343C34,1344.656 32.656,1346 31,1346L23,1346C21.344,1346 20,1344.656 20,1343L20,1335C20,1333.344 21.344,1332 23,1332L31,1332C32.656,1332 34,1333.344 34,1335Z" style="fill:rgb(68,68,65);stroke:rgb(180,178,169);stroke-width:1px;"/>
+    </g>
+    <g transform="matrix(1,0,0,1,40,1343)">
+        <text x="0px" y="0px" style="font-family:'Helvetica';font-size:12px;fill:rgb(194,192,182);">scalar ﬁelds</text>
+    </g>
+</svg>

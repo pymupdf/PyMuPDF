@@ -339,7 +339,7 @@ def make_table_from_bbox(textpage, word_rects, rect):
     return cells
 
 
-def extract_cells(textpage, cell, markdown=False):
+def extract_cells(textpage, cell, markdown=False, *, clean=False):
     """Extract text from a rect-like 'cell' as plain or MD styled text.
 
     This function should ultimately be used to extract text from a table cell.
@@ -351,11 +351,14 @@ def extract_cells(textpage, cell, markdown=False):
             TEXTFLAGS_TEXT | TEXT_COLLECT_STYLES.
         cell: A tuple (x0, y0, x1, y1) defining the cell's bbox.
         markdown: If True, return text formatted for Markdown.
+        clean: With markdown=True, HTML-escape source text without escaping
+            generated line breaks and formatting.
 
     Returns:
         A string with the text extracted from the cell.
     """
     text = ""
+    cell_rect = pymupdf.Rect(cell)
     for block in textpage.extractRAWDICT()["blocks"]:
         if block["type"] != 0:
             continue
@@ -396,12 +399,21 @@ def extract_cells(textpage, cell, markdown=False):
                 ):
                     continue  # skip spans outside cell
 
-                # only include chars with more than 50% bbox overlap
+                # only include chars with more than 50% bbox overlap.
+                # A char with an empty bbox (e.g. second character of an expanded
+                # ligature with quad corrections unset, or a zero-width combining mark)
+                # has no area; fall back to testing if its origin is inside the cell:
+                # issue #5185.
                 span_text = ""
                 for char in span["chars"]:
                     this_char = char["c"]
                     bbox = pymupdf.Rect(char["bbox"])
-                    if abs(bbox & cell) > 0.5 * abs(bbox):
+                    if bbox.is_empty:
+                        in_cell = pymupdf.Point(char["origin"]) in cell_rect
+                    else:
+                        in_cell = abs(bbox & cell_rect) > 0.5 * abs(bbox)
+
+                    if in_cell:
                         span_text += this_char
                     elif this_char in white_spaces:
                         span_text += " "
@@ -430,6 +442,10 @@ def extract_cells(textpage, cell, markdown=False):
 
                 if len(span["chars"]) > 2:
                     span_text = span_text.rstrip()
+
+                # Escape source text before it is combined with generated markup.
+                if clean:
+                    span_text = html.escape(span_text)
 
                 # if span continues previous styling: extend cell text
                 if (ls := len(suffix)) and text.endswith(suffix):
@@ -703,6 +719,30 @@ class WordMap:
         return TextMap(_textmap)
 
 
+def _line_top(obj):
+    """Vertical position used to group chars and words into text lines.
+
+    make_chars() stores "line_top" for every char: the top of the text line
+    computed from the char's baseline and font metrics, i.e. where the quad
+    correction with small glyph heights would put the top of the char box. It
+    is the same for every char on a line whether or not quad corrections are
+    on. The bbox top ("doctop") is used for objects that do not carry it.
+    """
+    return obj.get("line_top", obj["doctop"])
+
+
+def _line_x0(obj):
+    """Left edge used to group rotated (non-upright) chars and words into lines:
+    the metric-derived "line_x0" stored by make_chars() for vertical lines, else
+    the bbox left edge ("x0")."""
+    return obj.get("line_x0", obj["x0"])
+
+
+def _line_x1(obj):
+    """Right edge used to order the lines of a rotated cell, same source."""
+    return obj.get("line_x1", obj["x1"])
+
+
 class WordExtractor:
     def __init__(
         self,
@@ -735,6 +775,9 @@ class WordExtractor:
 
     def merge_chars(self, ordered_chars: list):
         x0, top, x1, bottom = objects_to_bbox(ordered_chars)
+        line_tops = [c["line_top"] for c in ordered_chars if "line_top" in c]
+        line_x0s = [c["line_x0"] for c in ordered_chars if "line_x0" in c]
+        line_x1s = [c["line_x1"] for c in ordered_chars if "line_x1" in c]
         doctop_adj = ordered_chars[0]["doctop"] - ordered_chars[0]["top"]
         upright = ordered_chars[0]["upright"]
         direction = 1 if (self.horizontal_ltr if upright else self.vertical_ttb) else -1
@@ -767,6 +810,12 @@ class WordExtractor:
 
         for key in self.extra_attrs:
             word[key] = ordered_chars[0][key]
+
+        if line_tops:  # like the word top, the smallest of its chars
+            word["line_top"] = min(line_tops)
+        if line_x0s:  # like the word's x0 and x1
+            word["line_x0"] = min(line_x0s)
+            word["line_x1"] = max(line_x1s)
 
         return word
 
@@ -812,8 +861,8 @@ class WordExtractor:
         if curr_char["upright"]:
             x = self.x_tolerance
             y = self.y_tolerance
-            ay = prev_char["top"]
-            cy = curr_char["top"]
+            ay = _line_top(prev_char)
+            cy = _line_top(curr_char)
             if self.horizontal_ltr:
                 ax = prev_char["x0"]
                 bx = prev_char["x1"]
@@ -826,8 +875,8 @@ class WordExtractor:
         else:
             x = self.y_tolerance
             y = self.x_tolerance
-            ay = prev_char["x0"]
-            cy = curr_char["x0"]
+            ay = _line_x0(prev_char)
+            cy = _line_x0(curr_char)
             if self.vertical_ttb:
                 ax = prev_char["top"]
                 bx = prev_char["bottom"]
@@ -882,11 +931,11 @@ class WordExtractor:
 
         for upright_cluster in cluster_objects(list(chars), upright_key, 0):
             upright = upright_cluster[0]["upright"]
-            cluster_key = "doctop" if upright else "x0"
+            cluster_key = _line_top if upright else _line_x0
 
             # Cluster by line
             subclusters = cluster_objects(
-                upright_cluster, itemgetter(cluster_key), self.y_tolerance
+                upright_cluster, cluster_key, self.y_tolerance
             )
 
             for sc in subclusters:
@@ -959,13 +1008,13 @@ def extract_text(chars: list, **kwargs) -> str:
             rotation = 0
 
         if rotation == 90:
-            words.sort(key=lambda w: (w["x1"], -w["top"]))
+            words.sort(key=lambda w: (_line_x1(w), -w["top"]))
             lines = " ".join([w["text"] for w in words])
         elif rotation == 270:
-            words.sort(key=lambda w: (-w["x1"], w["top"]))
+            words.sort(key=lambda w: (-_line_x1(w), w["top"]))
             lines = " ".join([w["text"] for w in words])
         else:
-            lines = cluster_objects(words, itemgetter("doctop"), y_tolerance)
+            lines = cluster_objects(words, _line_top, y_tolerance)
             lines = "\n".join(" ".join(word["text"] for word in line) for line in lines)
             if rotation == 180:  # needs extra treatment
                 lines = "".join([(c if c != "\n" else " ") for c in reversed(lines)])
@@ -1810,7 +1859,7 @@ class Table:
             for j, cell in enumerate(row):
                 if cell is not None:
                     cells[i][j] = extract_cells(
-                        self.textpage, cell_boxes[i][j], markdown=True
+                        self.textpage, cell_boxes[i][j], markdown=True, clean=clean
                     )
 
         if fill_empty:  # fill "None" cells where possible
@@ -1831,9 +1880,9 @@ class Table:
         for i, name in enumerate(self.header.names):
             if not name:  # generate a name if empty
                 name = f"Col{i+1}"
+            if clean:
+                name = html.escape(name)
             name = name.replace("\n", "<br>")  # use HTML line breaks
-            if clean:  # remove sensitive syntax
-                name = html.escape(name.replace("-", "&#45;"))
             output += name + "|"
 
         output += "\n"
@@ -1851,8 +1900,6 @@ class Table:
                 # use HTML line break tag
                 if cell is None:
                     cell = ""
-                if clean:  # remove sensitive syntax
-                    cell = html.escape(cell.replace("-", "&#45;"))
                 line += cell + "|"
             line += "\n"
             output += line
@@ -1969,7 +2016,7 @@ class Table:
             return any(
                 c["bold"]
                 for c in chars
-                if rect_in_rect((c["x0"], c["y0"], c["x1"], c["y1"]), bbox)
+                if rect_in_rect((c["x0"], c["top"], c["x1"], c["bottom"]), bbox)
             )
 
         try:
@@ -2418,6 +2465,21 @@ def make_chars(page, clip=None):
             for span in sorted(line["spans"], key=lambda s: s["bbox"][0]):
                 fontname = span["font"]
                 fontsize = span["size"]
+                # Line top relative to the baseline: the normalised ascender
+                # times the font size, which is what the quad correction with
+                # small glyph heights uses for the top of every char box.
+                # With quad corrections off each char keeps its exact glyph
+                # box instead, so a "." starts far below the digits around
+                # it; grouping by this value keeps such chars on their line.
+                # Vertical lines (page rotated by 90 or 270 degrees) stack along
+                # x; for them the two box edges along x are derived the same way
+                # ("line_x0", "line_x1"). The normalised ascender and descender
+                # add up to the font size, so the descender side is the rest.
+                asc = span.get("ascender", 0.8)
+                dsc = span.get("descender", -0.2)
+                if asc < 1e-3:  # glyphless font, same fallback as the quad correction
+                    asc, dsc = 0.9, -0.1
+                line_ascent = fontsize * (asc / (asc - dsc) if asc - dsc > 0 else 0.8)
                 span_bold = bool(
                     span["flags"] & pymupdf.TEXT_FONT_BOLD or span["char_flags"] & 8
                 )
@@ -2433,6 +2495,7 @@ def make_chars(page, clip=None):
                         "adv": bbox.x1 - bbox.x0 if upright else bbox.y1 - bbox.y0,
                         "bottom": bbox.y1,
                         "doctop": bbox.y0 + doctop_base,
+                        "line_top": char["origin"][1] - line_ascent + doctop_base,
                         "fontname": fontname,
                         "height": bbox.y1 - bbox.y0,
                         "matrix": tuple(matrix),
@@ -2454,6 +2517,14 @@ def make_chars(page, clip=None):
                         "y0": bbox_ctm.y0,
                         "y1": bbox_ctm.y1,
                     }
+                    if not upright and ldir[0] == 0:
+                        ox = char["origin"][0]
+                        if ldir[1] > 0:  # glyph top points to +x
+                            char_dict["line_x0"] = ox - (fontsize - line_ascent)
+                            char_dict["line_x1"] = ox + line_ascent
+                        else:  # glyph top points to -x
+                            char_dict["line_x0"] = ox - line_ascent
+                            char_dict["line_x1"] = ox + (fontsize - line_ascent)
                     chars.append(char_dict)
     return TEXTPAGE
 

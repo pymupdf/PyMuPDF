@@ -204,11 +204,11 @@ Like annotations, widgets also lose connection to their page when the page becom
     .. note::
 
        1. For **adding** or **changing** one of the above scripts,
-         just put the appropriate JavaScript source code in the widget attribute.
-         To **remove** a script, set the respective attribute to ``None``.
+          just put the appropriate JavaScript source code in the widget attribute.
+          To **remove** a script, set the respective attribute to ``None``.
 
        2. Button fields only support :attr:`script`.
-         Other script entries will automatically be set to ``None``.
+          Other script entries will automatically be set to ``None``.
 
        3. It is worthwhile to look at
           `this <https://experienceleague.adobe.com/docs/experience-manager-learn/assets/FormsAPIReference.pdf?lang=en>`_

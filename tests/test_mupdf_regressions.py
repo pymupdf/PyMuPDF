@@ -1,5 +1,6 @@
 import os
 import platform
+import sys
 
 import pymupdf
 import gentle_compare
@@ -98,12 +99,16 @@ def test_3376():
     assert ok
 
 
-def test_mupdfcpp64_dll_symbols():
+def test_mupdfcpp_dll_symbols():
     print()
     if platform.system() != 'Windows':
         print(f'test_mupdfcpp64_dll_symbols(): Not running on non-windows')
         return
-    p = f'{pymupdf.__path__[0]}/mupdfcpp64.dll'
+    if sys.maxsize.bit_length()+1 == 32:
+        p = f'{pymupdf.__path__[0]}/mupdfcpp.dll'
+    else:
+        p = f'{pymupdf.__path__[0]}/mupdfcpp64.dll'
+    print(f'{p=}')
     assert(os.path.isfile(p)), f'Not found: {p}'
     with open(p, 'rb') as f:
         content = f.read()

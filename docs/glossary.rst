@@ -56,7 +56,7 @@ Glossary
 .. data:: trailer
 
         More precisely, the **PDF trailer** contains information in :data:`dictionary` format. It is usually located at the file's end. In this dictionary, you will find things like the xrefs of the catalog and the metadata, the number of :data:`xref` numbers, etc. Here is the definition of the PDF spec:
-        
+
         *"The trailer of a PDF file enables an application reading the file to quickly find the cross-reference table and certain special objects. Applications should read a PDF file from its end."*
 
         To access the trailer in PyMuPDF, use the usual methods :meth:`Document.xref_object`, :meth:`Document.xref_get_key` and :meth:`Document.xref_get_keys` with `-1` instead of a positive xref number.
@@ -166,11 +166,27 @@ Glossary
         Optional content group -- a :data:`dictionary` object used to control the visibility of other PDF objects like images or annotations. Independently on which page they are defined, objects with the same OCG can simultaneously be shown or hidden by setting their OCG to ON or OFF. This can be achieved via the user interface provided by many PDF viewers (Adobe Acrobat), or programmatically.
 
 .. data:: OCMD
-        
+
         Optional content membership dictionary -- a :data:`dictionary` object which can be used like an :data:`OCG`: it has a visibility state. The visibility of an OCMD is **computed:** it is a logical expression, which uses the state of one or more OCGs to produce a boolean value. The expression's result is interpreted as ON (true) or OFF (false).
 
+.. data:: radio-button-group
+
+        A |Radio Button Group| is a set of radio buttons where only one button can be selected at a time. A typical use case is in forms where the user must choose one option from a set of mutually exclusive options. (Abbreviation: |RBG|)
+
+.. data:: flat-radio-button-group
+
+        A |Radio Button Group| which only consists of a set of Radio Button widgets without a separate parent field object or other unifying data except an identical field name. PDF viewers can detects this and create a temporary, "virtual" field. This is considered a "flat" structure and is fairly often encountered in real-world PDF forms, even though it is discouraged by the PDF specification. (Abbreviation: |flat RBG|)
+
+.. data:: radio-button-groups
+
+        The plural form of |Radio Button Group|. (Abbreviation: |RBGs|)
+
+.. data:: field-widget
+
+        A frequently used, simplified way of defining a form field and a widget annotation within one single PDF object. This approach is explicitly discouraged by the PDF specification, but it is still encountered in many real-world PDF forms. It is prone to lead to structural issues and complicates form field management.
+
 .. data:: ligature
-        
+
         Some frequent character combinations are represented by their own special glyphs in more advanced fonts. Typical examples are "fi", "fl", "ffi" and "ffl". These compounds are called *ligatures*. In PyMuPDF text extractions, there is the option to either return the corresponding unicode unchanged, or split ligatures up into their constituent parts: "fi" ==> "f" + "i", etc.
 
 .. include:: footer.rst

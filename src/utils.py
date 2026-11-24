@@ -6,7 +6,6 @@
 # lightweight PDF, XPS, and E-book viewer, renderer and toolkit which is
 # maintained and developed by Artifex Software, Inc. https://artifex.com.
 # ------------------------------------------------------------------------
-import math
 import typing
 import weakref
 
@@ -977,21 +976,16 @@ def construct_label(style, prefix, pno) -> str:
 
 
 def integerToLetter(i) -> str:
-    """Returns letter sequence string for integer i."""
+    """Returns letter sequence string for integer i.
+
+    Like the PDF page label styles "A" and "a": A to Z for the first 26 numbers,
+    AA to ZZ for the next 26, AAA to ZZZ for the next 26, and so on.
+    """
     # William Chapman, Jorj McKie, 2021-01-06
     import string
     ls = string.ascii_uppercase
-    n, a = 1, i
-    while pow(26, n) <= a:
-        a -= int(math.pow(26, n))
-        n += 1
-
-    str_t = ""
-    for j in reversed(range(n)):
-        f, g = divmod(a, int(math.pow(26, j)))
-        str_t += ls[f]
-        a = g
-    return str_t
+    count, index = divmod(i, 26)
+    return ls[index] * (count + 1)
 
 
 def integerToRoman(num: int) -> str:
