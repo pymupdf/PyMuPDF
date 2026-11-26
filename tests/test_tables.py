@@ -2017,5 +2017,11 @@ def test_5198():
                          ("0.74", (80, 140)), ("12.5 mg", (280, 140))]:
         page.insert_text(point, text, fontsize=11)
 
-    print(pymupdf.__version__, [t.extract() for t in page.find_tables().tables])
-    print([w[4] for w in page.get_text("words")])
+    print()
+    items = [t.extract() for t in page.find_tables().tables]
+    print(f'{items=}')
+    
+    items2 = [w[4] for w in page.get_text("words")]
+    print(f'{items2=}')
+    assert items == [[['P for interaction', '', 'Cooking fuel type'], ['0.74', '', '12.5 mg']]]
+    assert items2 == ['P', 'for', 'interaction', 'Cooking', 'fuel', 'type', '0.74', '12.5', 'mg']
