@@ -111,6 +111,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 :meth:`Page.remove_rotation`       PDF only: set page rotation to 0
 :meth:`Page.replace_image`         PDF only: replace an image
 :meth:`Page.search_for`            search for a string
+:meth:`Page.search_for_fuzzy`      search for approximate text occurrences
 :meth:`Page.set_artbox`            PDF only: modify `/ArtBox`
 :meth:`Page.set_bleedbox`          PDF only: modify `/BleedBox`
 :meth:`Page.set_cropbox`           PDF only: modify the :data:`cropbox` (visible page)
@@ -2158,6 +2159,63 @@ In a nutshell, this is what you can do with PyMuPDF:
       |history_end|
 
 
+   .. method:: search_for_fuzzy(needle, *, max_edits, clip=None, textpage=None)
+
+      Search for approximate occurrences of *needle*, using Levenshtein edit
+      distance. No additional package is required. This is a separate Python
+      implementation; :meth:`search_for` remains the faster choice for exact text.
+
+      :arg str needle: Text to search for. Unicode case folding is applied and
+         runs of whitespace become one space. Leading and trailing query
+         whitespace is ignored. A hyphen followed by a line break between letters
+         is removed within a text block. Other punctuation, signs and digits are
+         preserved. Empty or whitespace-only queries return an empty list.
+      :arg int max_edits: Required maximum number of insertions, deletions and
+         substitutions. Must be non-negative and smaller than the normalized
+         query length. Transposing adjacent characters costs two edits.
+      :arg rect_like clip: Restrict text extraction to this rectangle.
+      :arg textpage: Reuse a :ref:`TextPage` belonging to this page. As with
+         :meth:`search_for`, *clip* is ignored when this is supplied. Text already
+         removed or dehyphenated in this TextPage cannot be restored.
+      :rtype: list[dict]
+      :returns: One dictionary per selected occurrence, in extraction order:
+
+         * ``text``: the matched original text, retaining case, punctuation and
+           extracted line breaks.
+         * ``distance``: the edit count after normalization, not a confidence score.
+         * ``quads``: a list of :ref:`Quad` objects in unrotated page coordinates,
+           one per matched span fragment. Multiple lines stay separate.
+
+      Both exact and approximate occurrences are returned. At each candidate end,
+      the earliest start with the lowest distance is retained. Overlaps are then
+      resolved by lowest distance, closest length to the normalized query, and
+      earliest position. Adjacent occurrences remain separate.
+      Matches start and end at original character boundaries, even when case
+      folding expands a character (for example, ``ß`` to ``ss``). This is
+      substring search; candidates are not expanded to whole words.
+
+      Text follows extraction order, without reconstructing columns or tables.
+      OCR is not run automatically, but an existing OCR TextPage can be supplied.
+      Exact query pieces first restrict the candidate regions. Searching with a
+      positive edit budget still takes O(NM) time in the worst case for N page
+      characters and M query characters, plus selection and geometry extraction.
+      Reusing a TextPage avoids extraction from the PDF, but character dictionaries
+      and the search representation are still constructed for each call.
+
+      Example of falling back to approximate search::
+
+         quads = page.search_for(quote, quads=True)
+         if quads:
+             page.add_highlight_annot(quads)
+         else:
+             for match in page.search_for_fuzzy(quote, max_edits=2):
+                 print(match["text"], match["distance"])
+                 page.add_highlight_annot(match["quads"])
+
+      Approximate matches are candidates for review. An edit can change a number,
+      sign or negation; a small distance does not establish equivalent meaning.
+
+
    .. method:: set_mediabox(r)
 
       PDF only: Change the physical page dimension by setting :data:`mediabox` in the page's object definition.
@@ -2332,7 +2390,7 @@ In a nutshell, this is what you can do with PyMuPDF:
 
       The page's PDF :data:`xref`. Zero if not a PDF.
 
-      :type: :ref:`Rect`
+      :type: int
 
 -----
 
