@@ -1,7 +1,7 @@
 Change Log
 ==========
 
-**Changes in version 2.2**
+**Changes in version 2.2** (2026-11-26)
 
 Fixed issues:
 
