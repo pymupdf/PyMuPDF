@@ -2023,5 +2023,9 @@ def test_5198():
     
     items2 = [w[4] for w in page.get_text("words")]
     print(f'{items2=}')
-    assert items == [[['P for interaction', '', 'Cooking fuel type'], ['0.74', '', '12.5 mg']]]
-    assert items2 == ['P', 'for', 'interaction', 'Cooking', 'fuel', 'type', '0.74', '12.5', 'mg']
+    if util._use_layout():
+        assert items == [[['P for interaction', '', 'Cooking fuel type'], ['0.74', '', '12.5 mg']]]
+        assert items2 == ['P', 'for', 'interaction', 'Cooking', 'fuel', 'type', '0.74', '12.5', 'mg']
+    else:
+        assert items == [[['P for interaction', 'Cooking fuel type'], ['0.74', '12.5 mg']]]
+        assert items2 == ['P', 'for', 'interaction', 'Cooking', 'fuel', 'type', '0.74', '12.5', 'mg']
