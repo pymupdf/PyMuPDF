@@ -46,7 +46,7 @@ The combination of these two approaches ensures that the FormFields object has a
 :attr:`FormFields.fields`                     Dictionary of all form fields in the PDF
 :attr:`FormFields.widgets`                    List of all widget annotations in the PDF
 :attr:`FormFields.page_xrefs`                 Dictionary of page xrefs that contain widgets
-:attr:`FormFields.template_xrefs`             List of page template xrefs in the PDF
+:attr:`FormFields.template_xrefs`             Set of page template xrefs in the PDF
 :attr:`FormFields.count_field_widgets`        Number of field-widgets
 :attr:`FormFields.count_flat_rbgs`            Number of flat RBGs
 :attr:`FormFields.count_flat_fields`          Number of flat form fields
@@ -57,10 +57,16 @@ The combination of these two approaches ensures that the FormFields object has a
 
 .. class:: FormFields
 
-   .. method:: __init__(repair=False, verbose=False)
+   * New in v2.2
+
+   .. method:: __init__(doc, repair=False, verbose=False)
 
       Create a ``FormFields`` object. The recommended way to obtain this object is by executing :meth:`Document.get_form_fields`.
       The method will scan all PDF page objects for locating widget annotations and also inspect the `/AcroForm` PDF dictionary for form field definitions. It then integrates this information to provide a comprehensive overview of all form fields and their associated widgets. Common structure problems of Form PDFs are detected and repaired automatically if the ``repair`` parameter is set to ``True``.
+
+      :arg Document,str doc: the PDF, given either as a :ref:`Document` or as a file path. A file path is opened with :meth:`pymupdf.open`. If the document is not a PDF, the object is created without any form field information.
+      :arg bool repair: if ``True``, convert field-widgets [#f3]_, flat |RBGs| [#f1]_ and flat form fields [#f2]_ to standard parent-child structures. This modifies the PDF. Default is ``False``.
+      :arg bool verbose: if ``True``, print how many structure problems were found, and whether repairs are recommended or have been applied. Default is ``False``.
 
    .. attribute:: fields
 
@@ -76,7 +82,7 @@ The combination of these two approaches ensures that the FormFields object has a
 
    .. attribute:: template_xrefs
 
-      List of page template xrefs in the PDF. A template is actually a reusable page structure that can be referenced multiple times within the document. Its PDF ``/Type`` is ``/Template``, otherwise its structure is fully compatible with the page dictionary definitions. It is used for providing a page template when a variable number of additional pages (with form fields) is needed. Form fields on template pages are treated similarly to those on regular pages, but usually do not contain any field values. We record such fields but do not support changing their field values.
+      Set of page template xrefs in the PDF. A template is actually a reusable page structure that can be referenced multiple times within the document. Its PDF ``/Type`` is ``/Template``, otherwise its structure is fully compatible with the page dictionary definitions. It is used for providing a page template when a variable number of additional pages (with form fields) is needed. Form fields on template pages are treated similarly to those on regular pages, but usually do not contain any field values. We record such fields but do not support changing their field values.
 
    .. attribute:: count_flat_rbgs
 
@@ -93,6 +99,9 @@ The combination of these two approaches ensures that the FormFields object has a
    .. method:: field_names()
 
       Retrieve a list of all form field names in the PDF.
+
+      :rtype: list
+      :returns: the fully qualified names of all form fields, sorted alphabetically.
 
       **Examples:**
 
@@ -122,6 +131,10 @@ The combination of these two approaches ensures that the FormFields object has a
    .. method:: field_info(name)
 
       Retrieve detailed information about a form field by its name. Returns a dictionary containing the form field's properties and associated widgets.
+
+      :arg str name: the fully qualified name of the form field.
+      :rtype: dict
+      :returns: the form field's properties, or ``None`` if there is no field with this name.
 
       **Examples:**
 
@@ -162,7 +175,10 @@ The combination of these two approaches ensures that the FormFields object has a
 
    .. method:: list_valid_terminal_fields()
 
-      Retrieve a list of all form fields in the PDF whose field values can be changed.
+      Retrieve a list of all valid terminal form fields in the PDF, that is, fields that can hold a value. Fields that fail the structure check, signature fields and push buttons are not included.
+
+      :rtype: list
+      :returns: a list of dictionaries, one per field. Key ``editable`` is ``False`` for fields that only occur on page templates [#f4]_: their values cannot be changed.
 
       **Examples:**
 
@@ -172,6 +188,7 @@ The combination of these two approaches ensures that the FormFields object has a
          [{'name': 'Person.Name.First',
          'type': 'text',
          'format': 'string',
+         'editable': True,
          'choices': None,
          'value': 'John',
          'widgets': 1,
@@ -180,6 +197,7 @@ The combination of these two approaches ensures that the FormFields object has a
          {'name': 'Person.MaritalStatus',
          'type': 'radio',
          'format': 'string',
+         'editable': True,
          'choices': ['married', 'single'],
          'value': 'married',
          'widgets': 2,
@@ -193,9 +211,12 @@ The combination of these two approaches ensures that the FormFields object has a
 
       Set the value of an editable form field identified by its name.
 
-      :arg field_name: The name of the editable form field whose value is to be set.
+      :arg str field_name: The name of the editable form field whose value is to be set.
       :arg value: The new value to assign to the specified form field. This should be compatible with the field's type and format and be one of the "choices" if applicable.
-      :arg recalculate: If ``True``, recalculate all form fields after setting the value. Default is ``False``. Please note that recalculation is required only once after all desired changes have been made to the form fields. So, you may consider including ``True`` for the last call only, or execute :meth:`Document.recalculate_form` explicitly afterwards.
+      :arg bool recalculate: If ``True``, recalculate all form fields after setting the value. Default is ``False``. Please note that recalculation is required only once after all desired changes have been made to the form fields. So, you may consider including ``True`` for the last call only, or execute :meth:`Document.recalculate_form` explicitly afterwards.
+
+      :rtype: bool
+      :returns: ``True`` if the value was set. ``False`` if it was not, with a message explaining why, for example: the value is ``None``, the field is unknown or not terminal, it failed the structure check, it only occurs on page templates, or the value is not one of the allowed choices of a radio button group.
 
       **Example:**
 
@@ -210,9 +231,11 @@ The combination of these two approaches ensures that the FormFields object has a
 
       Export all editable form fields in CSV / JSON string format or to a file if a file path is provided. When using the `to_pandas` method, a DataFrame is returned instead of writing to a file. Pandas must be installed to use the `to_pandas` method. Method ``to_dicts()`` returns a list of dictionaries representing the editable form fields.
 
-      :arg file: (optional) The path to the CSV / JSON file where the form fields will be exported. If omitted, the method returns a string.
+      Each exported field has the keys (or CSV columns) ``field``, ``type``, ``format``, ``editable``, ``choices``, ``current_value`` and ``new_value``. ``new_value`` is always empty: fill it in and import the result with the matching ``from_...`` method below. In CSV format, ``editable`` is ``yes`` or ``no`` and ``choices`` are separated by ``|``.
 
-      :returns: A string in CSV/JSON format if no file path is provided. If pandas output was chosen, a DataFrame is returned. A list of dictionaries is returned by ``to_dicts()``.
+      :arg str file: (optional) The path to the CSV / JSON file where the form fields will be exported. If omitted, the method returns a string.
+
+      :returns: A string in CSV/JSON format if no file path is provided, otherwise ``None``. If pandas output was chosen, a DataFrame is returned. A list of dictionaries is returned by ``to_dicts()``.
 
       **Example:**
 
@@ -220,27 +243,32 @@ The combination of these two approaches ensures that the FormFields object has a
 
          df = formfields.to_pandas()
          print(df.to_string(index=False))
-                         field     type  format        choices    current_value  new_value
-             Person.Name.First     text  string            NaN             John        NaN
-              Person.Name.Last     text  string            NaN              Doe        NaN
-         Person.Address.Street     text  string            NaN 123 Birch Street        NaN
-           Person.Address.City     text  string            NaN         Lakeside        NaN
-            Person.WordOfMouth checkbox boolean            NaN              Yes        NaN
-          Person.MaritalStatus    radio  string married|single           single        NaN
+                         field     type  format editable        choices    current_value  new_value
+             Person.Name.First     text  string      yes            NaN             John        NaN
+              Person.Name.Last     text  string      yes            NaN              Doe        NaN
+         Person.Address.Street     text  string      yes            NaN 123 Birch Street        NaN
+           Person.Address.City     text  string      yes            NaN         Lakeside        NaN
+            Person.WordOfMouth checkbox boolean      yes            NaN              Yes        NaN
+          Person.MaritalStatus    radio  string      yes married|single           single        NaN
 
 
    .. method:: from_csv(filepath, recalculate=True)
-   .. method:: from_json(json_string, recalculate=True)
+   .. method:: from_json(json_str, recalculate=True)
    .. method:: from_dicts(dicts, recalculate=True)
 
       Update field values either from a CSV file, a JSON string, or a list of dictionaries.
-      The format is expected to match the structure produced by the corresponding export methods.
+      The format is expected to match the structure produced by the corresponding export methods. Only the ``field`` and ``new_value`` entries are used, and items with an empty ``new_value`` are skipped.
 
       When finished, the methods automatically update the form fields with the new values provided by calling :meth:`FormFields.refresh`.
 
       These methods are ideal for updating form field values in bulk.
 
-      :arg recalculate: If ``True``, recalculate all form fields after updating the values, but before calling :meth:`FormFields.refresh`. Default is ``True``.
+      :arg str filepath: (``from_csv``) the path of the CSV file.
+      :arg str json_str: (``from_json``) a JSON string.
+      :arg list dicts: (``from_dicts``) a list of dictionaries.
+      :arg bool recalculate: If ``True``, recalculate all form fields after updating the values, but before calling :meth:`FormFields.refresh`. Default is ``True``.
+
+      :raises ValueError: if no field value was updated.
 
 
    .. method:: refresh()
