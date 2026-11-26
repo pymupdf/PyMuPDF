@@ -18,6 +18,7 @@ Classes
    document.rst
    document-writer-class.rst
    font.rst
+   form-fields.rst
    identity.rst
    irect.rst
    link.rst
@@ -36,7 +37,6 @@ Classes
    tools.rst
    widget.rst
    xml-class.rst
-   form-fields.rst
 
 
 .. include:: footer.rst
