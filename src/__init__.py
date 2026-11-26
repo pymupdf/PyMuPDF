@@ -21597,8 +21597,8 @@ def _make_image_dict(img, img_dict):
                     mupdf.FzColorParams(mupdf.fz_default_color_params),
               )
         ext = "png"
-    elif ext == "jpeg" and img.n() == 4:
-        # JPEG with CMYK: invert colors
+    elif ext == "jpeg" and img.n() == 4 and not img.mask().fz_image_size():
+        # JPEG with CMYK, no mask: invert colors
         res = mupdf.fz_new_buffer_from_image_as_jpeg(
                     img,
                     mupdf.FzColorParams(mupdf.fz_default_color_params),
