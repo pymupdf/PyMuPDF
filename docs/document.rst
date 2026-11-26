@@ -89,6 +89,7 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.get_oc`                 PDF only: get OCG /OCMD xref of image / form xobject
 :meth:`Document.get_ocgs`               PDF only: info on all optional content groups
 :meth:`Document.get_ocmd`               PDF only: retrieve definition of an :data:`OCMD`
+:meth:`Document.get_outline_xrefs`      PDF only: list of :data:`xref` numbers of all TOC items
 :meth:`Document.get_page_fonts`         PDF only: list of fonts referenced by a page
 :meth:`Document.get_page_images`        PDF only: list of images referenced by a page
 :meth:`Document.get_page_labels`        PDF only: list of page label definitions
@@ -122,7 +123,6 @@ For details on **embedded files** refer to Appendix 3.
 :meth:`Document.need_appearances`       PDF only: get/set `/NeedAppearances` property
 :meth:`Document.new_page`               PDF only: insert a new empty page
 :meth:`Document.next_location`          return (chapter, pno) of following page
-:meth:`Document.outline_xref`           PDF only: :data:`xref` a TOC item
 :meth:`Document.page_cropbox`           PDF only: the unrotated page rectangle
 :meth:`Document.page_xref`              PDF only: :data:`xref` of a page number
 :meth:`Document.pages`                  iterator over a page range
@@ -208,7 +208,7 @@ For details on **embedded files** refer to Appendix 3.
         pair: height; Document
         pair: fontsize; Document
 
-    .. method:: __init__(self, filename=None, stream=None, filetype=None, archive=None, rect=None, width=0, height=0, fontsize=11)
+    .. method:: __init__(self, filename=None, stream=None, filetype=None, rect=None, width=0, height=0, fontsize=11, archive=None)
 
         Create a ``Document`` object.
 
@@ -222,8 +222,6 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg str filetype: A string specifying the type of document. This is only ever needed when file content inspection fails. Text types like "txt", "html", "xml" etc. cannot be disambiguated by their content. When such files are provided in memory or being provided with the wrong file extension, this parameter **must** be used.
 
-        :arg Archive archive: An optional :ref:`Archive` object to use as a source for resources like fonts and images. *(new in v1.28.0)*
-
         :arg rect_like rect: A rectangle specifying the desired page size. This parameter is only meaningful for documents with a variable page layout ("reflowable" documents), like e-books, MD or HTML, and ignored otherwise. If specified, it must be a non-empty, finite rectangle with top-left coordinates (0, 0). Together with parameter :data:`fontsize`, each page will be accordingly laid out and hence also determine the number of pages.
 
         :arg float width: May be used together with ``height`` as an alternative to ``rect`` to specify layout information.
@@ -231,6 +229,8 @@ For details on **embedded files** refer to Appendix 3.
         :arg float height: May be used together with ``width`` as an alternative to ``rect`` to specify layout information.
 
         :arg float fontsize: the default :data:`fontsize` for reflowable document types. This parameter is ignored if none of the parameters ``rect`` or ``width`` and ``height`` are specified. Will be used to calculate the page layout.
+
+        :arg Archive archive: An optional :ref:`Archive` object to use as a source for resources like fonts and images. *(new in v1.28.0)*
 
         :raises TypeError: if the *type* of any parameter does not conform.
         :raises FileNotFoundError: if the file / path cannot be found. Re-implemented as subclass of `RuntimeError`.
@@ -290,14 +290,14 @@ For details on **embedded files** refer to Appendix 3.
         :rtype: int
         :returns: the cross reference number of an optional contents object or zero if there is none.
 
-    .. method:: set_oc(xref, ocxref)
+    .. method:: set_oc(xref, oc)
 
         * New in v1.18.4
 
-        If :data:`xref` represents an image or form xobject, set or remove the cross reference number *ocxref* of an optional contents object.
+        If :data:`xref` represents an image or form xobject, set or remove the cross reference number *oc* of an optional contents object.
 
         :arg int xref: the :data:`xref` of an image or form xobject [#f5]_. Valid such cross reference numbers are returned by :meth:`Document.get_page_images`, resp. :meth:`Document.get_page_xobjects`. For invalid numbers, an exception is raised.
-        :arg int ocxref: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
+        :arg int oc: the :data:`xref` number of an :data:`OCG` / :data:`OCMD`. If not zero, an invalid reference raises an exception. If zero, any OC reference is removed.
 
     .. method:: get_layers()
 
@@ -320,13 +320,13 @@ For details on **embedded files** refer to Appendix 3.
         :arg sequ on: a sequence of OCG :data:`xref` numbers which should be set to ON when this layer gets activated. All OCGs not listed here will be set to OFF.
 
 
-    .. method:: switch_layer(number, as_default=False)
+    .. method:: switch_layer(config, as_default=False)
 
         * New in v1.18.3
 
         Switch to a document view as defined by the optional layer's configuration number. This is temporary, except if established as default.
 
-        :arg int number: config number as returned by :meth:`Document.layer_configs`.
+        :arg int config: config number (the ``"number"`` value of an item) as returned by :meth:`Document.get_layers`.
         :arg bool as_default: make this the default configuration.
 
         Activates the ON / OFF states of OCGs as defined in the identified layer. If ``as_default=True``, then additionally all layers, including the standard one, are merged and the result is written back to the standard layer, and **all optional layers are deleted**.
@@ -366,6 +366,8 @@ For details on **embedded files** refer to Appendix 3.
         use_glyphs: bool = False, \
         use_ocr: bool = True, \
         write_images: bool = False) -> str | list[dict]
+
+        * New in v2.0
 
         Reads the pages of the file and outputs the text of its pages in |Markdown| format. How this should happen in detail can be influenced by a number of parameters. Please note that **support for building page chunks** from the |Markdown| text is supported.
 
@@ -487,6 +489,8 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: to_chunks(**kwargs) -> ChunkedDocument
 
+        * New in v2.0
+
         Creates retrieval-oriented chunks from a document.
 
         Chunk boundaries are determined from layout information, including box boundaries, page breaks, vertical gaps, font changes, and structural hints. Token limits guide chunk assembly but are not guarantees: indivisible content, such as a preserved table, may exceed ``max_tokens``.
@@ -523,6 +527,8 @@ For details on **embedded files** refer to Appendix 3.
 
 
     .. method:: to_json(**kwargs) -> str
+
+        * New in v2.0
 
         Parses the document and the specified pages and converts the result into a :ref:`JSON formatted string <json_output_structure>`.
 
@@ -563,6 +569,8 @@ For details on **embedded files** refer to Appendix 3.
             See :doc:`grounding` for real examples using ``to_json`` and further details on how to ground information within a document.
 
     .. method:: to_text(**kwargs) -> str
+
+        * New in v2.0
 
         Reads the pages of the file and outputs the text of its pages in plain text (|TXT|) format.
 
@@ -764,7 +772,7 @@ For details on **embedded files** refer to Appendix 3.
 
         To make **permanent** changes, use :meth:`Document.set_layer`.
 
-        :arg int,str number: either the sequence number of the item in list :meth:`Document.layer_configs` or the "text" of one of these items.
+        :arg int,str number: either the sequence number of the item in list :meth:`Document.layer_ui_configs` or the "text" of one of these items.
         :arg int action: `PDF_OC_ON` = set on (default), `PDF_OC_TOGGLE` = toggle on/off, `PDF_OC_OFF` = set off.
 
 
@@ -843,13 +851,13 @@ For details on **embedded files** refer to Appendix 3.
         :returns: a long integer in pointer format. To be used for finding the new location of the page after re-layouting the document. Do not touch or re-assign.
 
 
-    .. method:: find_bookmark(bookmark)
+    .. method:: find_bookmark(bm)
 
         * New in v.1.17.3
 
         Return the new page location after re-layouting the document.
 
-        :arg pointer bookmark: created by :meth:`Document.make_bookmark`.
+        :arg pointer bm: created by :meth:`Document.make_bookmark`.
 
         :rtype: tuple
         :returns: the new (chapter, pno) of the page.
@@ -889,7 +897,7 @@ For details on **embedded files** refer to Appendix 3.
         :returns: The tuple of the preceding page, i.e. either *(chapter, pno - 1)* or the last page of the preceding chapter, **or** the empty tuple *()* if the argument was the first page. Relevant only for document types with chapter support (EPUB currently).
 
 
-    .. method:: load_page(page_id=0)
+    .. method:: load_page(page_id)
 
         * Changed in v1.17.0: For document types supporting a so-called "chapter structure" (like EPUB), pages can also be loaded via the combination of chapter number and relative page number, instead of the absolute page number. This should **significantly speed up access** for large documents.
 
@@ -915,6 +923,8 @@ For details on **embedded files** refer to Appendix 3.
 
 
     .. method:: rewrite_images(dpi_threshold=None, dpi_target=0, quality=0, lossy=True, lossless=True, bitonal=True, color=True, gray=True, set_to_gray=False, options=None)
+
+        * New in v1.26.1
 
         PDF only: Walk through all images and rewrite them according to the specified parameters. This is useful for reducing file size, changing image formats, or converting color spaces.
 
@@ -988,6 +998,8 @@ For details on **embedded files** refer to Appendix 3.
 
 
     .. method:: recolor(components=1)
+
+        * New in v1.26.0
 
         PDF only: Change the color component counts for all object types text, images and vector graphics for all pages.
 
@@ -1092,7 +1104,7 @@ For details on **embedded files** refer to Appendix 3.
         pair: to_page; Document.convert_to_pdf
         pair: rotate; Document.convert_to_pdf
 
-    .. method:: convert_to_pdf(from_page=-1, to_page=-1, rotate=0)
+    .. method:: convert_to_pdf(from_page=0, to_page=-1, rotate=0)
 
         Create a PDF version of the current document and write it to memory. **All document types** are supported. The parameters have the same meaning as in :meth:`insert_pdf`. In essence, you can restrict the conversion to a page subset, specify page rotation, and revert page sequence.
 
@@ -1172,16 +1184,18 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg int xref: the :data:`xref`. *(Changed in v1.18.10)* Use `-1` to access the special dictionary "PDF trailer".
 
-        :returns: a tuple of dictionary keys present in object :data:`xref`. Examples:
+        :rtype: list
+
+        :returns: a list of dictionary keys present in object :data:`xref`. Examples:
 
         >>> from pprint import pprint
         >>> import pymupdf
         >>> doc=pymupdf.open("pymupdf.pdf")
         >>> xref = doc.page_xref(0)  # xref of page 0
         >>> pprint(doc.xref_get_keys(xref))  # primary level keys of a page
-        ('Type', 'Contents', 'Resources', 'MediaBox', 'Parent')
+        ['Type', 'Contents', 'Resources', 'MediaBox', 'Parent']
         >>> pprint(doc.xref_get_keys(-1))  # primary level keys of the trailer
-        ('Type', 'Index', 'Size', 'W', 'Root', 'Info', 'ID', 'Length', 'Filter')
+        ['Type', 'Index', 'Size', 'W', 'Root', 'Info', 'ID', 'Length', 'Filter']
         >>>
 
 
@@ -1365,15 +1379,18 @@ For details on **embedded files** refer to Appendix 3.
             - Text extractions use the base library to access the font name, which has a length cap of 31 bytes and generally interrogates the font file binary to access the name. Method ``get_page_fonts()`` however looks at the PDF definition source.
             - Text extractions work for all supported document types in exactly the same way -- not just for PDFs. Consequently they do not contain PDF-specifics.
 
-    .. method:: get_page_text(pno, output="text", flags=3, textpage=None, sort=False)
+    .. method:: get_page_text(pno, option="text", clip=None, flags=None, textpage=None, sort=False)
 
         Extracts the text of a page given its page number *pno* (zero-based). Invokes :meth:`Page.get_text`.
 
         :arg int pno: page number, 0-based, any value `-∞ < pno < page_count`.
+        :arg str option: the desired output format, e.g. "text", "words", "blocks", "dict" -- see :meth:`Page.get_text`.
+        :arg rect_like clip: restrict extraction to this area of the page.
 
         For other parameter refer to the page method.
 
-        :rtype: str
+        :rtype: str, list, dict
+        :returns: the page's content, exactly as returned by :meth:`Page.get_text` for the given *option*.
 
     .. index::
         pair: fontsize; Document.layout
@@ -1390,11 +1407,11 @@ For details on **embedded files** refer to Appendix 3.
         :arg float height: use it together with ``width`` as alternative to ``rect``.
         :arg float fontsize: the desired default fontsize.
 
-    .. method:: select(s)
+    .. method:: select(pyliste)
 
         PDF only: Keeps only those pages of the document whose numbers occur in the list. Empty sequences or elements outside `range(doc.page_count)` will cause a *ValueError*. For more details see remarks at the bottom or this chapter.
 
-        :arg sequence s: The sequence (see :ref:`SequenceTypes`) of page numbers (zero-based) to be included. Pages not in the sequence will be deleted (from memory) and become unavailable until the document is reopened. **Page numbers can occur multiple times and in any order:** the resulting document will reflect the sequence exactly as specified.
+        :arg sequence pyliste: The sequence (see :ref:`SequenceTypes`) of page numbers (zero-based) to be included. Pages not in the sequence will be deleted (from memory) and become unavailable until the document is reopened. **Page numbers can occur multiple times and in any order:** the resulting document will reflect the sequence exactly as specified.
 
         .. note::
 
@@ -1420,38 +1437,38 @@ For details on **embedded files** refer to Appendix 3.
         :rtype: str
         :returns: XML metadata of the document. Empty string if not present or not a PDF.
 
-    .. method:: set_xml_metadata(xml)
+    .. method:: set_xml_metadata(metadata)
 
         PDF only: Sets or updates XML metadata of the document.
 
-        :arg str xml: the new XML metadata. Should be XML syntax, however no checking is done by this method and any string is accepted.
+        :arg str metadata: the new XML metadata. Should be XML syntax, however no checking is done by this method and any string is accepted.
 
 
-    .. method:: set_pagelayout(value)
+    .. method:: set_pagelayout(pagelayout)
 
         * New in v1.22.2
 
         PDF only: Set the `/PageLayout`.
 
-        :arg str value: one of the strings "SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "TwoPageLeft", "TwoPageRight". Lower case is supported.
+        :arg str pagelayout: one of the strings "SinglePage", "OneColumn", "TwoColumnLeft", "TwoColumnRight", "TwoPageLeft", "TwoPageRight". Lower case is supported.
 
 
-    .. method:: set_pagemode(value)
+    .. method:: set_pagemode(pagemode)
 
         * New in v1.22.2
 
         PDF only: Set the `/PageMode`.
 
-        :arg str value: one of the strings "UseNone", "UseOutlines", "UseThumbs", "FullScreen", "UseOC", "UseAttachments". Lower case is supported.
+        :arg str pagemode: one of the strings "UseNone", "UseOutlines", "UseThumbs", "FullScreen", "UseOC", "UseAttachments". Lower case is supported.
 
 
-    .. method:: set_markinfo(value)
+    .. method:: set_markinfo(markinfo)
 
         * New in v1.22.2
 
         PDF only: Set the `/MarkInfo` values.
 
-        :arg dict value: a dictionary like this one: `{"Marked": False, "UserProperties": False, "Suspects": False}`. This dictionary contains information about the usage of Tagged PDF conventions. For details please see the `PDF specifications <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_.
+        :arg dict markinfo: a dictionary like this one: `{"Marked": False, "UserProperties": False, "Suspects": False}`. This dictionary contains information about the usage of Tagged PDF conventions. For details please see the `PDF specifications <https://opensource.adobe.com/dc-acrobat-sdk-docs/standards/pdfstandards/pdf/PDF32000_2008.pdf>`_.
 
 
     .. method:: set_toc(toc, collapse=1)
@@ -1487,15 +1504,12 @@ For details on **embedded files** refer to Appendix 3.
         for example `set_toc(get_toc())` now gives unchanged destination 'to'
         coordinates.
 
-    .. method:: outline_xref(idx)
+    .. method:: get_outline_xrefs()
 
-        * New in v1.17.7
+        PDF only: Return the :data:`xref` numbers of all outline (TOC) items. This is mainly used for internal purposes.
 
-        PDF only: Return the :data:`xref` of the outline item. This is mainly used for internal purposes.
-
-        :arg int idx: index of the item in list :meth:`Document.get_toc`.
-
-        :returns: :data:`xref`.
+        :rtype: list
+        :returns: a list of :data:`xref` numbers, in the same sequence as the items of :meth:`Document.get_toc`. So the :data:`xref` of the TOC item with index ``idx`` is ``doc.get_outline_xrefs()[idx]``. Empty if not a PDF or if there is no outline.
 
     .. method:: del_toc_item(idx)
 
@@ -1551,6 +1565,8 @@ For details on **embedded files** refer to Appendix 3.
 
     .. method:: bake(*, annots=True, widgets=True)
 
+        * New in v1.24.2
+
         PDF only: Convert annotations and / or widgets to become permanent parts of the pages. The PDF **will be changed** by this method. If `widgets` is `True`, the document will also no longer be a "Form PDF".
 
         All pages will look the same, but will no longer have annotations, respectively fields. The visible parts will be converted to standard text, vector graphics or images as required.
@@ -1578,7 +1594,7 @@ For details on **embedded files** refer to Appendix 3.
 
         * Slow for large documents.
         * Does nothing on non-PDF documents.
-        * New in v1.27.0
+        * New in v1.27.1
 
     .. method:: scrub(attached_files=True, clean_pages=True, embedded_files=True, hidden_text=True, javascript=True, metadata=True, redactions=True, redact_images=0, remove_links=True, reset_fields=True, reset_responses=True, thumbnails=True, xml_metadata=True)
 
@@ -1601,13 +1617,13 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool xml_metadata: Remove XML metadata.
 
 
-    .. method:: save(outfile, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0, compression_effort=0, raise_on_repair=False)
+    .. method:: save(filename, garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, no_new_id=False, appearance=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=4095, owner_pw=None, user_pw=None, preserve_metadata=True, use_objstms=0, compression_effort=0, raise_on_repair=False, reproducible=False)
 
         PDF documents are saved in their **current state**.
 
         Non-PDF documents are saved in PDF format. *(new in v1.28.0)*
 
-        :arg str,Path,fp outfile: The file path, `pathlib.Path` or file object to save to. A file object must have been created before via `open(...)` or `io.BytesIO()`. Choosing `io.BytesIO()` is similar to :meth:`Document.tobytes` below, which equals the `getvalue()` output of an internally created `io.BytesIO()`.
+        :arg str,Path,fp filename: The file path, `pathlib.Path` or file object to save to. A file object must have been created before via `open(...)` or `io.BytesIO()`. Choosing `io.BytesIO()` is similar to :meth:`Document.tobytes` below, which equals the `getvalue()` output of an internally created `io.BytesIO()`.
 
         :arg int garbage: Do garbage collection. Positive values exclude "incremental".
 
@@ -1624,7 +1640,7 @@ For details on **embedded files** refer to Appendix 3.
         :arg bool deflate_images: *(new in v1.18.3)* Deflate (compress) uncompressed image streams [#f4]_.
         :arg bool deflate_fonts: *(new in v1.18.3)* Deflate (compress) uncompressed fontfile streams [#f4]_.
 
-        :arg bool incremental: Only save changes to the PDF. Excludes "garbage" and "linear". Can only be used if *outfile* is a string or a `pathlib.Path` and equal to :attr:`Document.name`. Cannot be used for files that are decrypted or repaired and also in some other cases. To be sure, check :meth:`Document.can_save_incrementally`. If this is false, saving to a new file is required.
+        :arg bool incremental: Only save changes to the PDF. Excludes "garbage" and "linear". Can only be used if *filename* is a string or a `pathlib.Path` and equal to :attr:`Document.name`. Cannot be used for files that are decrypted or repaired and also in some other cases. To be sure, check :meth:`Document.can_save_incrementally`. If this is false, saving to a new file is required.
 
         :arg bool ascii: convert binary data to ASCII.
 
@@ -1641,6 +1657,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool no_new_id: Suppress the update of the file's `/ID` field. If the file happens to have no such field at all, also suppress creation of a new one. Default is `False`, so every save will lead to an updated file identification.
 
+        :arg bool appearance: (re)create the appearance streams of annotations and widgets while saving.
+
         :arg int permissions: *(new in v1.16.0)* Set the desired permission levels. See :ref:`PermissionCodes` for possible values. Default is granting all.
 
         :arg int encryption: *(new in v1.16.0)* set the desired encryption method. See :ref:`EncryptionMethods` for possible values.
@@ -1648,6 +1666,8 @@ For details on **embedded files** refer to Appendix 3.
         :arg str owner_pw: *(new in v1.16.0)* set the document's owner password. *(Changed in v1.18.3)* If not provided, the user password is taken if provided. The string length must not exceed 40 characters.
 
         :arg str user_pw: *(new in v1.16.0)* set the document's user password. The string length must not exceed 40 characters.
+
+        :arg bool preserve_metadata: keep the document's metadata unchanged during the clean-up steps of saving (MuPDF write option `do_preserve_metadata`). Default is ``True``.
 
         :arg int use_objstms: *(new in v1.24.0)* compression option that converts eligible PDF object definitions to information that is stored in some other object's :data:`stream` data. Depending on the `deflate` parameter value, the converted object definitions will be compressed -- which can lead to very significant file size reductions.
 
@@ -1663,6 +1683,8 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg bool raise_on_repair: *(new in v1.27.0)* If true we raise an exception if the save caused a repair.
             This is useful because repairs can cause changes to be lost.
+
+        :arg bool reproducible: *(new in v1.28.2)* aim for reproducible (deterministic) output: the MuPDF version banner and `/Producer` value are not written. Combine with `no_new_id=True` if the file identifier should not change either.
 
         Also see `Document.repair()`.
 
@@ -1684,11 +1706,11 @@ For details on **embedded files** refer to Appendix 3.
 
 
 
-    .. method:: ez_save(*args, **kwargs)
+    .. method:: ez_save(filename, garbage=3, clean=False, deflate=True, deflate_images=True, deflate_fonts=True, incremental=False, ascii=False, expand=False, linear=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=4095, owner_pw=None, user_pw=None, no_new_id=True, preserve_metadata=True, use_objstms=1, compression_effort=0, raise_on_repair=False, reproducible=False)
 
         * New in v1.18.11
 
-        PDF only: The same as :meth:`Document.save` but with changed defaults `deflate=1, garbage=3, use_objstms=True`.
+        PDF only: The same as :meth:`Document.save` but with changed defaults `garbage=3, deflate=True, deflate_images=True, deflate_fonts=True, no_new_id=True, use_objstms=1`. All parameters have the same meaning as in :meth:`Document.save`. Note that the positional parameter sequence differs from :meth:`Document.save` (parameter `appearance` is not supported), so please use keywords for everything except `filename`.
 
     .. method:: saveIncr()
 
@@ -1699,7 +1721,7 @@ For details on **embedded files** refer to Appendix 3.
         Saving incrementally may be required if the document contains verified signatures which would be invalidated by saving to a new file.
 
 
-    .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, ascii=False, expand=0, linear=False, pretty=False, no_new_id=False, encryption=PDF_ENCRYPT_NONE, permissions=-1, owner_pw=None, user_pw=None, use_objstms=0)
+    .. method:: tobytes(garbage=0, clean=False, deflate=False, deflate_images=False, deflate_fonts=False, incremental=False, ascii=False, expand=0, linear=False, no_new_id=False, appearance=False, pretty=False, encryption=PDF_ENCRYPT_NONE, permissions=4095, owner_pw=None, user_pw=None, preserve_metadata=True, use_objstms=0, compression_effort=0, raise_on_repair=False, reproducible=False)
 
         * Changed in v1.18.7
         * Changed in v1.19.0
@@ -1712,9 +1734,19 @@ For details on **embedded files** refer to Appendix 3.
         :rtype: bytes
         :returns: a bytes object containing the complete document.
 
-    .. method:: search_page_for(pno, text, quads=False)
+    .. method:: search_page_for(pno, text, quads=False, clip=None, flags=None, textpage=None)
 
         Search for "text" on page number "pno". Works exactly like the corresponding :meth:`Page.search_for`. Any integer `-∞ < pno < page_count` is acceptable.
+
+        :arg int pno: page number, 0-based, any value `-∞ < pno < page_count`.
+        :arg str text: the text to search for.
+        :arg bool quads: return :ref:`Quad` objects instead of :ref:`Rect` objects.
+        :arg rect_like clip: only search within this area of the page.
+        :arg int flags: control the text extraction used for searching. If omitted (`None`), `TEXT_DEHYPHENATE | TEXT_PRESERVE_LIGATURES | TEXT_PRESERVE_WHITESPACE | TEXT_MEDIABOX_CLIP` is used.
+        :arg textpage: an existing :ref:`TextPage` of the page to reuse.
+
+        :rtype: list
+        :returns: a list of :ref:`Rect` (or :ref:`Quad` if `quads=True`) objects, each surrounding one occurrence of *text*.
 
     .. index::
         pair: append; Document.insert_pdf
@@ -1815,7 +1847,7 @@ For details on **embedded files** refer to Appendix 3.
         pair: fontfile; Document.insert_page
         pair: color; Document.insert_page
 
-    .. method:: insert_page(pno, text=None, fontsize=11, width=595, height=842, fontname="helv", fontfile=None, color=None)
+    .. method:: insert_page(pno, text=None, fontsize=11, width=595, height=842, fontname="helv", fontfile=None, color=(0,))
 
         PDF only: Insert a new page and insert some text. Convenience function which combines :meth:`Document.new_page` and (parts of) :meth:`Page.insert_text`.
 
@@ -1837,7 +1869,7 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg int pno: the page to be deleted. Negative number count backwards from the end of the document (like with indices). Default is the last page.
 
-    .. method:: delete_pages(*args, **kwds)
+    .. method:: delete_pages(*args, **kw)
 
         * Changed in v1.18.13: more flexibility specifying pages to delete.
         * Changed in v1.18.14: support Python's `del` statement.
@@ -1942,14 +1974,14 @@ For details on **embedded files** refer to Appendix 3.
         pair: ufilename; Document.embfile_add
         pair: desc; Document.embfile_add
 
-    .. method:: embfile_add(name, buffer, filename=None, ufilename=None, desc=None)
+    .. method:: embfile_add(name, buffer_, filename=None, ufilename=None, desc=None)
 
         * Changed in v1.14.16: The sequence of positional parameters "name" and "buffer" has been changed to comply with the call pattern of other functions.
 
         PDF only: Embed a new file. All string parameters except the name may be unicode (in previous versions, only ASCII worked correctly). File contents will be compressed (where beneficial).
 
         :arg str name: entry identifier, **must not already exist**.
-        :arg bytes,bytearray,BytesIO buffer: file contents.
+        :arg bytes,bytearray,BytesIO buffer_: file contents.
 
         *(Changed in v1.14.13)* *io.BytesIO* is now also supported.
 
@@ -2018,12 +2050,12 @@ For details on **embedded files** refer to Appendix 3.
         pair: ufilename; Document.embfile_upd
         pair: desc; Document.embfile_upd
 
-    .. method:: embfile_upd(item, buffer=None, filename=None, ufilename=None, desc=None)
+    .. method:: embfile_upd(item, buffer_=None, filename=None, ufilename=None, desc=None)
 
         PDF only: Change an embedded file given its entry number or name. All parameters are optional. Letting them default leads to a no-operation.
 
         :arg int/str item: index or name of entry. An integer must be in `range(embfile_count())`.
-        :arg bytes,bytearray,BytesIO buffer: the new file content.
+        :arg bytes,bytearray,BytesIO buffer_: the new file content.
 
         *(Changed in v1.14.13)* *io.BytesIO* is now also supported.
 
@@ -2062,11 +2094,16 @@ For details on **embedded files** refer to Appendix 3.
         PDF only: Return the :data:`xref` number of the PDF catalog (or root) object. Use that number with :meth:`Document.xref_object` to see its source.
 
 
-    .. method:: pdf_trailer(compressed=False)
+    .. method:: pdf_trailer(compressed=False, ascii=False)
 
         * New in v1.16.8
 
         PDF only: Return the trailer source of the PDF,  which is usually located at the PDF file's end. This is :meth:`Document.xref_object` with an :data:`xref` argument of -1.
+
+        :arg bool compressed: whether to generate a compact output with no line breaks or spaces.
+        :arg bool ascii: whether to ASCII-encode binary data.
+
+        :rtype: str
 
 
     .. method:: xref_stream(xref)
@@ -2078,7 +2115,7 @@ For details on **embedded files** refer to Appendix 3.
         :arg int xref: :data:`xref` number.
 
         :rtype: bytes
-        :returns: the (decompressed) stream of the object.
+        :returns: the (decompressed) stream of the object, or `None` if the object is not a :data:`stream`.
 
     .. method:: xref_stream_raw(xref)
 
@@ -2087,9 +2124,9 @@ For details on **embedded files** refer to Appendix 3.
         PDF only: Return the **unmodified** (esp. **not decompressed**) contents of the :data:`xref` stream object. Otherwise equal to :meth:`Document.xref_stream`.
 
         :rtype: bytes
-        :returns: the (original, unmodified) stream of the object.
+        :returns: the (original, unmodified) stream of the object, or `None` if the object is not a :data:`stream`.
 
-    .. method:: update_object(xref, obj_str, page=None)
+    .. method:: update_object(xref, text, page=None)
 
         * New in v1.16.8
 
@@ -2097,16 +2134,15 @@ For details on **embedded files** refer to Appendix 3.
 
         :arg int xref: :data:`xref` number.
 
-        :arg str obj_str: a string containing a valid PDF object definition.
+        :arg str text: a string containing a valid PDF object definition.
 
         :arg page: a page object. If provided, indicates, that annotations of this page should be refreshed (reloaded) to reflect changes incurred with links and / or annotations.
         :type page: :ref:`Page`
 
-        :rtype: int
-        :returns: zero if successful, otherwise an exception will be raised.
+        :returns: `None`. An exception is raised if not successful.
 
 
-    .. method:: update_stream(xref, data, new=False, compress=True)
+    .. method:: update_stream(xref, stream, new=False, compress=True)
 
         * New in v.1.16.8
         * Changed in v1.19.2: added parameter "compress"
@@ -2154,7 +2190,7 @@ For details on **embedded files** refer to Appendix 3.
 
         PDF Only: Extract data and meta information of an image stored in the document. The output can directly be used to be stored as an image file, as input for PIL, :ref:`Pixmap` creation, etc. This method avoids using pixmaps wherever possible to present the image in its original format (e.g. as JPEG).
 
-        :arg int xref: :data:`xref` of an image object. If this is not in `range(1, doc.xref_length())`, or the object is no image or other errors occur, `None` is returned and no exception is raised.
+        :arg int xref: :data:`xref` of an image object. If this is not in `range(1, doc.xref_length())`, or the object is no image, a `ValueError` is raised.
 
         :rtype: dict
         :returns: a dictionary with the following keys
@@ -2179,7 +2215,7 @@ For details on **embedded files** refer to Appendix 3.
         102
         >>> imgout.close()
 
-        .. note:: There is a functional overlap with *pix = pymupdf.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images, **(4)** returns `None` in error cases (generates no exception). Look at the following example images within the same PDF.
+        .. note:: There is a functional overlap with *pix = pymupdf.Pixmap(doc, xref)*, followed by a *pix.tobytes()*. Main differences are that extract_image, **(1)** does not always deliver PNG image formats, **(2)** is **very** much faster with non-PNG images, **(3)** usually results in much less disk storage for extracted images. Look at the following example images within the same PDF.
 
         * xref 1268 is a PNG -- Comparable execution time and identical output:: text
             
@@ -2287,11 +2323,13 @@ For details on **embedded files** refer to Appendix 3.
 
         PDF only: Enable journalling. Use this before you start logging operations.
 
-    .. method:: journal_start_op(name)
+    .. method:: journal_start_op(name=None)
 
         * New in v1.19.0
 
         PDF only: Start journalling an *"operation"* identified by a string "name". Updates will fail for a journal-enabled PDF, if no operation has been started.
+
+        :arg str name: the name of the operation. If omitted (`None`) or empty, an unnamed ("implicit") operation is started.
 
 
     .. method:: journal_stop_op()
@@ -2358,11 +2396,13 @@ For details on **embedded files** refer to Appendix 3.
         :arg str,fp filename: the filename (str) of the journal or a file object opened as "rb" (or an `io.BytesIO()` object).
 
 
-    .. method:: save_snapshot()
+    .. method:: save_snapshot(filename)
 
         * New in v1.19.0
 
         PDF only: Saves a "snapshot" of the document. This is a PDF document with a special, incremental-save format compatible with journalling -- therefore no save options are available. Saving a snapshot is not possible for new documents.
+
+        :arg str,Path,fp filename: the file to write the snapshot to: a file path string, a `pathlib.Path` or a file object (its `name` is used). Must not be the document's own file name.
 
         This is a normal PDF document with no usage restrictions whatsoever. If it is not being changed in any way, it can be used together with its journal to undo / redo operations or continue updating.
 

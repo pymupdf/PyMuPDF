@@ -16,8 +16,6 @@ Yet others are handy, general-purpose utilities.
 :attr:`Annot.apn_bbox`               PDF only: bbox of the appearance object
 :attr:`Annot.apn_matrix`             PDF only: the matrix of the appearance object
 :attr:`Page.is_wrapped`              check whether contents wrapping is present
-:meth:`adobe_glyph_names`            list of glyph names defined in **Adobe Glyph List**
-:meth:`adobe_glyph_unicodes`         list of unicodes defined in **Adobe Glyph List**
 :meth:`Annot.clean_contents`         PDF only: clean the annot's :data:`contents` object
 :meth:`Annot.set_apn_bbox`           PDF only: set the bbox of the appearance object
 :meth:`Annot.set_apn_matrix`         PDF only: set the matrix of the appearance object
@@ -27,7 +25,7 @@ Yet others are handy, general-purpose utilities.
 :meth:`Document.get_char_widths`     PDF only: return a list of glyph widths of a font
 :meth:`Document.get_new_xref`        PDF only: create and return a new :data:`xref` entry
 :meth:`Document.is_stream`           PDF only: check whether an :data:`xref` is a stream object
-:meth:`Document.xml_metadata_xref`   PDF only: return XML metadata :data:`xref` number
+:meth:`Document.xref_xml_metadata`   PDF only: return XML metadata :data:`xref` number
 :meth:`Document.xref_length`         PDF only: return length of :data:`xref` table
 :meth:`EMPTY_IRECT`                  return the (standard) empty / invalid rectangle
 :meth:`EMPTY_QUAD`                   return the (standard) empty / invalid quad
@@ -75,13 +73,23 @@ Yet others are handy, general-purpose utilities.
 ==================================== ==============================================================
 
    
-   .. method:: use_layout(yes: bool = True)
+   .. method:: use_layout(yes: bool)
+
+        * New in v2.0
 
         Switch on/off the use of the :ref:`PyMuPDF Layout module <pymupdf_and_layout>`. 
         
-        If `yes=True` (default), the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
+        If `yes=True`, the layout module will be used for page analysis for optimal results. If `yes=False`, the layout module will not be used.
+
+        .. note::
+
+           The layout module is used internally for page analysis to improve the accuracy of text and element extraction and
+           is set internally to `True` within PyMuPDF by default. Overriding this setting with `use_layout(False)` may reduce 
+           the accuracy of text and element extraction.
 
    .. method:: convert_batch(inputs, *, workers=None, streaming=False, out_dir=None, backend="md", options=None, consumer=None, consumer_kwargs=None, progress_callback=None, persistent=False)
+
+    * New in v2.0
 
     Convert a batch of documents using the selected processing strategy.
 
@@ -164,6 +172,8 @@ Yet others are handy, general-purpose utilities.
 
    .. method:: set_messages(*, text=None, fd=None, stream=None, path=None, path_append=None, pylogging=None, pylogging_logger=None, pylogging_level=None, pylogging_name=None, )
 
+      * New in v1.24.12
+
       Sets destination of |PyMuPDF| messages to a file descriptor,
       a file, an existing stream or `Python's logging system
       <https://docs.python.org/3/library/logging.html>`_.
@@ -225,14 +235,16 @@ Yet others are handy, general-purpose utilities.
 
       *New in v1.18.0*
 
-      Return the unicode number of a glyph name based on the **Adobe Glyph List**.
+      * Changed in v1.25.2: names are looked up in the Unicode character database (Python module `unicodedata`) instead of the **Adobe Glyph List**.
 
-      :arg str name: the name of some glyph. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+      Return the unicode number of a character name.
+
+      :arg str name: the Unicode name of a character, as used by `unicodedata.lookup()`, e.g. `"LATIN CAPITAL LETTER A WITH DIAERESIS"`.
 
       :rtype: int
       :returns: the unicode. Invalid ``name`` entries return `0xfffd (65533)`.
 
-      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+      .. note:: For conversions based on the **Adobe Glyph List**, use package `fontTools <https://pypi.org/project/fonttools/>`_ and its *agl* sub-package.
 
 -----
 
@@ -240,40 +252,16 @@ Yet others are handy, general-purpose utilities.
 
       *New in v1.18.0*
 
-      Return the glyph name of a unicode number, based on the **Adobe Glyph List**.
+      * Changed in v1.25.2: names are taken from the Unicode character database (Python module `unicodedata`) instead of the **Adobe Glyph List**.
 
-      :arg int ch: the unicode given by e.g. `ord("ß")`. The function is based on the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_.
+      Return the Unicode name of a unicode number.
+
+      :arg int ch: the unicode given by e.g. `ord("ß")`.
 
       :rtype: str
-      :returns: the glyph name. E.g. `pymupdf.unicode_to_glyph_name(ord("Ä"))` returns `'Adieresis'`.
+      :returns: the Unicode character name, or `".notdef"` if the code point has no name. E.g. `pymupdf.unicode_to_glyph_name(ord("Ä"))` returns `'LATIN CAPITAL LETTER A WITH DIAERESIS'`.
 
-      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_: in its *agl* sub-package.
-
------
-
-   .. method:: adobe_glyph_names()
-
-      *New in v1.18.0*
-
-      Return a list of glyph names defined in the **Adobe Glyph List**.
-
-      :rtype: list
-      :returns: list of strings.
-
-      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
-
------
-
-   .. method:: adobe_glyph_unicodes()
-
-      *New in v1.18.0*
-
-      Return a list of unicodes for there exists a glyph name in the **Adobe Glyph List**.
-
-      :rtype: list
-      :returns: list of integers.
-
-      .. note:: A similar functionality is provided by package `fontTools <https://pypi.org/project/fonttools/>`_ in its *agl* sub-package.
+      .. note:: For conversions based on the **Adobe Glyph List**, use package `fontTools <https://pypi.org/project/fonttools/>`_ and its *agl* sub-package.
 
 -----
 
@@ -332,7 +320,7 @@ Yet others are handy, general-purpose utilities.
       :arg rect_like rect: the rectangle to split.
       :arg int cols: the desired number of columns.
       :arg int rows: the desired number of rows.
-      :returns: a list of :ref:`Rect` objects of equal size, whose union equals *rect*. Here is the layout of a 3x4 table created by `cell = pymupdf.make_table(rect, cols=4, rows=3)`:
+      :returns: a list of `rows` lists, each containing `cols` :ref:`Rect` objects of equal size. The union of all rectangles equals *rect*. Here is the layout of a 3x4 table created by `cell = pymupdf.make_table(rect, cols=4, rows=3)`:
 
       .. image:: images/img-make-table.*
          :scale: 60
@@ -372,9 +360,11 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: paper_sizes
+   .. method:: paper_sizes()
 
-      A dictionary of pre-defines paper formats. Used as basis for :meth:`paper_size`.
+      Return a dictionary of pre-defined paper formats. Keys are lower-case format names like `"a4"`, values are `(width, height)` tuples. Used as basis for :meth:`paper_size`.
+
+      :rtype: dict
 
 -----
 
@@ -484,18 +474,18 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: get_pdf_str(text)
+   .. method:: get_pdf_str(s)
 
-      Make a PDF-compatible string: if the text contains code points *ord(c) > 255*, then it will be converted to UTF-16BE with BOM as a hexadecimal character string enclosed in "<>" brackets like *<feff...>*. Otherwise, it will return the string enclosed in (round) brackets, replacing any characters outside the ASCII range with some special code. Also, every "(", ")" or backslash is escaped with a backslash.
+      Make a PDF-compatible string: if *s* contains code points *ord(c) > 255*, then it will be converted to UTF-16BE with BOM as a hexadecimal character string enclosed in "<>" brackets like *<feff...>*. Otherwise, it will return the string enclosed in (round) brackets, replacing any characters outside the ASCII range with some special code. Also, every "(", ")" or backslash is escaped with a backslash.
 
-      :arg str text: the object to convert
+      :arg str s: the object to convert
 
       :rtype: str
       :returns: PDF-compatible string enclosed in either *()* or *<>*.
 
 -----
 
-   .. method:: image_profile(stream)
+   .. method:: image_profile(img)
 
       * New in v1.16.7
       * Changed in v1.19.5: also return natural image orientation extracted from EXIF data if present.
@@ -503,7 +493,7 @@ Yet others are handy, general-purpose utilities.
 
       Show important properties of an image provided as a memory area. Its main purpose is to avoid using other Python packages just to determine them.
 
-      :arg bytes|bytearray|BytesIO|file stream: either an image in memory or an **opened** file. An image in memory may be any of the formats `bytes`, `bytearray` or `io.BytesIO`.
+      :arg bytes|bytearray|BytesIO|file img: either an image in memory or an **opened** file. An image in memory may be any of the formats `bytes`, `bytearray` or `io.BytesIO`.
 
       :rtype: dict
       :returns:
@@ -544,11 +534,11 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: ConversionHeader("text", filename="UNKNOWN")
+   .. method:: ConversionHeader(i, filename="unknown")
 
       Return the header string required to make a valid document out of page text outputs.
 
-      :arg str output: type of document. Use the same as the output parameter of *get_text()*.
+      :arg str i: type of document. Use the same as the output parameter of *get_text()*.
 
       :arg str filename: optional arbitrary name to use in output types "json" and "xml".
 
@@ -556,11 +546,11 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: ConversionTrailer(output)
+   .. method:: ConversionTrailer(i)
 
       Return the trailer string required to make a valid document out of page text outputs. See :meth:`Page.get_text` for an example.
 
-      :arg str output: type of document. Use the same as the output parameter of *get_text()*.
+      :arg str i: type of document. Use the same as the output parameter of *get_text()*.
 
       :rtype: str
 
@@ -572,7 +562,8 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.xml_metadata_xref()
+   .. method:: Document.xref_xml_metadata()
+      :noindex:
 
       Return the XML-based metadata :data:`xref` of the PDF if present -- also refer to :meth:`Document.del_xml_metadata`. You can use it to retrieve the content via :meth:`Document.xref_stream` and then work with it using some XML software.
 
@@ -581,15 +572,15 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.run(dev, transform)
+   .. method:: Page.run(dw, m)
 
       Run a page through a device.
 
-      :arg dev: Device, obtained from one of the :ref:`Device` constructors.
-      :type dev: :ref:`Device`
+      :arg dw: Device, obtained from one of the :ref:`Device` constructors.
+      :type dw: :ref:`Device`
 
-      :arg transform: Transformation to apply to the page. Set it to :ref:`Identity` if no transformation is desired.
-      :type transform: :ref:`Matrix`
+      :arg m: Transformation to apply to the page. Set it to :ref:`Identity` if no transformation is desired.
+      :type m: :ref:`Matrix`
 
 -----
 
@@ -749,9 +740,11 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Page.get_displaylist()
+   .. method:: Page.get_displaylist(annots=True)
 
       Run a page through a list device and return its display list.
+
+      :arg bool annots: whether to include annotations (default). If `False`, only the page contents are recorded.
 
       :rtype: :ref:`DisplayList`
       :returns: the display list of the page.
@@ -804,7 +797,7 @@ Yet others are handy, general-purpose utilities.
 
 -----
 
-   .. method:: Document.get_char_widths(xref=0, limit=256)
+   .. method:: Document.get_char_widths(xref, limit=256, idx=0, fontdict=None)
 
       Return a list of character glyphs and their widths for a font that is present in the document. A font must be specified by its PDF cross reference number :data:`xref`. This function is called automatically from :meth:`Page.insert_text` and :meth:`Page.insert_textbox`. So you should rarely need to do this yourself.
 
@@ -812,8 +805,12 @@ Yet others are handy, general-purpose utilities.
 
       :arg int limit: limits the number of returned entries. The default of 256 is enforced for all fonts that only support 1-byte characters, so-called "simple fonts" (checked by this method). All :ref:`Base-14-Fonts` are simple fonts.
 
+      :arg int idx: index of the font within the font file, for font files that contain more than one font (font collections). Only used for fonts that are neither Base-14 nor CJK fonts.
+
+      :arg dict fontdict: mainly for internal use: pre-computed font properties (keys `"name"`, `"ext"`, `"type"`, `"ordering"`, `"simple"`). If omitted, the properties are read from the font object. Only used the first time a font :data:`xref` is processed.
+
       :rtype: list
-      :returns: a list of *limit* tuples. Each character *c* has an entry  *(g, w)* in this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is the glyph id of the character, and float *w* is its normalized width. The actual width for some :data:`fontsize` can be calculated as *w * fontsize*. For simple fonts, the *g* entry can always be safely ignored. In all other cases *g* is the basis for graphically representing *c*.
+      :returns: a list of *limit* tuples (``None`` for CJK fonts). Each character *c* has an entry  *(g, w)* in this list with an index of *ord(c)*. Entry *g* (integer) of the tuple is the glyph id of the character, and float *w* is its normalized width. The actual width for some :data:`fontsize` can be calculated as *w * fontsize*. For simple fonts, the *g* entry can always be safely ignored. In all other cases *g* is the basis for graphically representing *c*.
 
       This function calculates the pixel width of a string called *text*::
 
@@ -937,12 +934,16 @@ Yet others are handy, general-purpose utilities.
 -----
 
    .. method:: colors_pdf_dict()
-   
+
+      * New in v1.25.4
+
       Returns a dict mapping lower-case color name to `(red, green, blue)`
       tuple, and `red`, `green`, `blue` are floats in range 0..1.
 
    .. method:: colors_wx_list()
-   
+
+      * New in v1.25.4
+
       Returns a list of `(colorname, red, green, blue)` tuples, where
       `colorname` is upper case and `red`, `green`, `blue` are integers in
       range 0..255.

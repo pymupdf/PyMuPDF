@@ -29,7 +29,7 @@ The PyMuPDF4LLM API
 
 .. property:: version
 
-    Prints the version of the library.
+    The version of the library as a string.
 
 .. method:: to_markdown(doc: pymupdf.Document | str, *)
 
@@ -43,34 +43,42 @@ The PyMuPDF4LLM API
 
     See :meth:`Document.to_text` for further details.
 
-.. method:: use_layout()
+.. method:: use_layout(yes: bool)
 
     See :meth:`use_layout` for further details.
 
 
-.. method:: get_key_values(doc: pymupdf.Document | str) -> list[dict]
+.. method:: get_key_values(doc: pymupdf.Document | str, xrefs: bool = False, **kwargs) -> dict
 
     Parse the document if it is a **Form PDF** and extract key-value pairs from all form fields (widgets).
     
-    Please note that this method is only relevant for PDF documents that contain widgets. Otherwise, an empty list will be returned.
+    Please note that this method is only relevant for PDF documents that contain widgets. Otherwise, an empty dictionary will be returned.
 
     The function is always available -- independently of whether you are using the PyMuPDF Layout module or not.
 
-    Each dictionary item has the following structure::
+    The returned dictionary is keyed by the fully qualified field name (components separated by dots). Pushbuttons are not included. Each value has the following structure::
 
         {
-            "field_name": str,      # the full name of the form field, components separated by dots
-            {
-                "value": str,       # the field value as string
-                "pages": list,      # list of 0-based page numbers where the field appears
-            }
-        }    
+            "field_value": str,     # the field value as string
+            "pages": list,          # sorted list of 0-based page numbers where the field appears
+            "terminal": bool,       # False if the field has child fields
+            "xref": int,            # only present if xrefs=True
+        }
+
+    :arg Document,str doc: the file, to be specified either as a file path string, or as a |PyMuPDF| Document.
+
+    :arg bool xrefs: if ``True``, each value also contains the :data:`xref` of the form field under key ``"xref"``. This can for instance be used to load the widget via :meth:`Page.load_widget`. For a "flat" radio button group (several field objects with the same name), this is a list of xrefs.
+
+    :arg kwargs: ignored. A warning is printed if any are given.
+
+    :rtype: dict
+    :returns: a dictionary of form fields, as described above.
 
 .. method:: LlamaMarkdownReader(*args, **kwargs)
 
     Create a `pdf_markdown_reader.PDFMarkdownReader` using the `LlamaIndex`_ package. Please note that this package will **not automatically be installed** when installing **pymupdf4llm**.
 
-    For details on the possible arguments, please consult the LlamaIndex documentation [#f1]_.
+    All arguments are passed to the `PDFMarkdownReader` constructor, whose only parameter is `meta_filter` (default ``None``): an optional callable which receives each page's metadata dictionary and returns the (modified) dictionary to use. For more details, please consult the LlamaIndex documentation [#f1]_.
 
     :raises: `NotImplementedError`: Please install required `LlamaIndex`_ package.
     :returns: a `pdf_markdown_reader.PDFMarkdownReader` and issues message "Successfully imported LlamaIndex". Please note that this method needs several seconds to execute. For details on using the markdown reader please see below.
@@ -83,7 +91,7 @@ The PyMuPDF4LLM API
     .. note:: |PyMuPDFLayoutMode_Unavailable|
 
 
-    .. method:: __init__(self, doc: pymupdf.Document | str, *, pages: list | range | None = None, body_limit: float = 11, max_levels: int = 6)
+    .. method:: __init__(self, doc: pymupdf.Document | str, pages: list | range | None = None, body_limit: float = 12, max_levels: int = 6)
 
         Create an object which maps text font sizes to the respective number of '#' characters which are used by Markdown syntax to indicate header levels. The object is created by scanning the document for font size "popularity". The most popular font size and all smaller sizes are used for body text. Larger font sizes are mapped to the respective header levels - which correspond to the HTML tags `<h1>` to `<h6>`.
 
@@ -98,7 +106,7 @@ The PyMuPDF4LLM API
 
         :arg list pages: optional, the pages to consider. If omitted all pages are processed.
 
-        :arg float body_limit: the default font size limit for body text. Only used when the document scan does not deliver valid information.
+        :arg float body_limit: font sizes up to this value are always treated as body text. The effective limit is the larger of this value and the most frequent font size found in the document. It is used alone if the document contains no text.
 
         :arg int max_levels: the maximum number of header levels to be used. Valid values are in `range(1, 7)`. The default is 6, which corresponds to the HTML tags `<h1>` to `<h6>`. A smaller value will limit the number of generated header levels. For instance, a value of 3 will only generate header tags "#", "##" and "###". Body text will be assumed for all font sizes smaller than the one corresponding to "###".
 
@@ -113,7 +121,7 @@ The PyMuPDF4LLM API
 
         :arg Page page: the owning page object. This can be used when additional information needs to be extracted.
 
-        :returns: a string of "#" characters followed by a space.
+        :returns: an empty string or a string of "#" characters followed by a space.
 
     .. attribute:: header_id
     
@@ -232,7 +240,7 @@ This user function uses the document's Table of Contents -- under the assumption
 
         :arg Page page: the owning page object. This can be used when additional information needs to be extracted.
 
-        :returns: a string of "#" characters followed by a space.
+        :returns: an empty string or a string of "#" characters followed by a space.
 
 
 

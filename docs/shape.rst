@@ -192,15 +192,15 @@ Several draw methods can be executed in a row and each one of them will contribu
    .. index::
       pair: fullSector; draw_sector
 
-   .. method:: draw_sector(center, point, angle, fullSector=True)
+   .. method:: draw_sector(center, point, beta, fullSector=True)
 
       Draw a circular sector, optionally connecting the arc to the circle's center (like a piece of pie).
 
       :arg point_like center: the center of the circle.
 
-      :arg point_like point: one of the two end points of the pie's arc segment. The other one is calculated from the *angle*.
+      :arg point_like point: one of the two end points of the pie's arc segment. The other one is calculated from *beta*.
 
-      :arg float angle: the angle of the sector in degrees. Used to calculate the other end point of the arc. Depending on its sign, the arc is drawn anti-clockwise (positive) or clockwise.
+      :arg float beta: the angle of the sector in degrees. Used to calculate the other end point of the arc. Depending on its sign, the arc is drawn anti-clockwise (positive) or clockwise.
 
       :arg bool fullSector: whether to draw connecting lines from the ends of the arc to the circle center. If a fill color is specified, the full "pie" is colored, otherwise just the sector.
 
@@ -248,7 +248,7 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: oc; finish
 
 
-   .. method:: finish(width=1, color=(0,), fill=None, lineCap=0, lineJoin=0, dashes=None, closePath=True, even_odd=False, morph=(fixpoint, matrix), stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: finish(width=1, color=(0,), fill=None, lineCap=0, lineJoin=0, dashes=None, even_odd=False, morph=None, closePath=True, fill_opacity=1, stroke_opacity=1, oc=0)
 
       Finish a set of *draw*()* methods by applying :ref:`CommonParms` to all of them.
       
@@ -292,16 +292,16 @@ Several draw methods can be executed in a row and each one of them will contribu
       pair: fill_opacity; insert_text
       pair: oc; insert_text
 
-   .. method:: insert_text(point, text, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, miter_limit=1, border_width=1, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
+   .. method:: insert_text(point, buffer, *, fontsize=11, fontname="helv", fontfile=None, set_simple=False, encoding=TEXT_ENCODING_LATIN, color=None, lineheight=None, fill=None, render_mode=0, miter_limit=1, border_width=0.05, rotate=0, morph=None, stroke_opacity=1, fill_opacity=1, oc=0)
 
       Insert text lines starting at ``point``.
 
-      :arg point_like point: the bottom-left position of the first character of *text* in pixels. It is important to understand, how this works in conjunction with the *rotate* parameter. Please have a look at the following picture. The small red dots indicate the positions of *point* in each of the four possible cases.
+      :arg point_like point: the bottom-left position of the first character of *buffer* in pixels. It is important to understand, how this works in conjunction with the *rotate* parameter. Please have a look at the following picture. The small red dots indicate the positions of *point* in each of the four possible cases.
 
          .. image:: images/img-inserttext.*
             :scale: 33
 
-      :arg str/sequence text: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks ``\n``, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *text* is discarded -- the return code however contains the number of inserted lines.
+      :arg str/sequence buffer: the text to be inserted. May be specified as either a string type or as a sequence type. For sequences, or strings containing line breaks ``\n``, several lines will be inserted. No care will be taken if lines are too wide, but the number of inserted lines will be limited by "vertical" space on the page (in the sense of reading direction as established by the *rotate* parameter). Any rest of *buffer* is discarded -- the return code however contains the number of inserted lines.
 
       :arg float lineheight: a factor to override the line height calculated from font properties. If not `None`, a line height of `fontsize * lineheight` will be used.
       :arg float stroke_opacity: *(new in v1.18.1)* set transparency for stroke colors (the **border line** of a character). Only  `0 <= value <= 1` will be considered. Default is 1 (intransparent).
@@ -338,10 +338,10 @@ Several draw methods can be executed in a row and each one of them will contribu
                 buffer, \
                 *, \
                 align=TEXT_ALIGN_LEFT, \
-                border_width=1, \
+                border_width=0.05, \
                 color=None, \
                 encoding=TEXT_ENCODING_LATIN, \
-                expandtabs=8, \
+                expandtabs=1, \
                 fill=None, \
                 fill_opacity=1, \
                 fontfile=None, \

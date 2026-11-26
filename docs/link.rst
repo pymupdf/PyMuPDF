@@ -30,7 +30,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
 .. class:: Link
 
-   .. method:: set_border(border=None, width=0, style=None, dashes=None)
+   .. method:: set_border(border=None, width=0, dashes=None, style=None)
 
       PDF only: Change border width and dashing properties.
 
@@ -39,10 +39,10 @@ There is a parent-child relationship between a link and its page. If the page ob
       :arg dict border: a dictionary as returned by the :attr:`border` property, with keys *"width"* (*float*), *"style"* (*str*) and *"dashes"* (*sequence*). Omitted keys will leave the resp. property unchanged. To e.g. remove dashing use: *"dashes": []*. If dashes is not an empty sequence, "style" will automatically be set to "D" (dashed).
 
       :arg float width: see above.
-      :arg str style: see above.
       :arg sequence dashes: see above.
+      :arg str style: see above.
 
-   .. method:: set_colors(colors=None, stroke=None)
+   .. method:: set_colors(colors=None, stroke=None, fill=None)
 
       PDF only: Changes the "stroke" color.
 
@@ -52,6 +52,7 @@ There is a parent-child relationship between a link and its page. If the page ob
 
       :arg dict colors: a dictionary containing color specifications. For accepted dictionary keys and values see below. The most practical way should be to first make a copy of the *colors* property and then modify this dictionary as required.
       :arg sequence stroke: see above.
+      :arg sequence fill: ignored. Links have no fill color; a warning is issued if this is not ``None``.
 
    .. method:: set_flags(flags)
 

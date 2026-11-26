@@ -88,18 +88,20 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: str
 
-   .. method:: extractDICT(sort=False)
+   .. method:: extractDICT(cb=None, sort=False)
 
       Textpage content as a Python dictionary. Provides same information detail as HTML. See below for the structure.
 
+      :arg cb: (optional) an object with ``width`` and ``height`` attributes, typically a :ref:`Rect` such as the page's :attr:`Page.cropbox`. If given, the ``"width"`` and ``"height"`` values of the result are taken from it instead of from :attr:`TextPage.rect`. :meth:`Page.get_text` uses this when no *clip* is given. Note that this is the first positional parameter, so pass *sort* as a keyword argument.
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: dict
 
-   .. method:: extractJSON(sort=False)
+   .. method:: extractJSON(cb=None, sort=False)
 
       Textpage content as a JSON string. Created by `json.dumps(TextPage.extractDICT())`. It is included for backlevel compatibility. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
+      :arg cb: (optional) an object with ``width`` and ``height`` attributes, typically a :ref:`Rect` such as the page's :attr:`Page.cropbox`. If given, the ``"width"`` and ``"height"`` values of the result are taken from it instead of from :attr:`TextPage.rect`. :meth:`Page.get_text` uses this when no *clip* is given. Note that this is the first positional parameter, so pass *sort* as a keyword argument.
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: str
@@ -116,30 +118,33 @@ For a description of what this class is all about, see Appendix 2.
 
       :rtype: str
 
-   .. method:: extractRAWDICT(sort=False)
+   .. method:: extractRAWDICT(cb=None, sort=False)
 
       Textpage content as a Python dictionary -- technically similar to :meth:`extractDICT`, and it contains that information as a subset (including any images). It provides additional detail down to each character, which makes using XML obsolete in many cases. See below for the structure.
 
+      :arg cb: (optional) an object with ``width`` and ``height`` attributes, typically a :ref:`Rect` such as the page's :attr:`Page.cropbox`. If given, the ``"width"`` and ``"height"`` values of the result are taken from it instead of from :attr:`TextPage.rect`. :meth:`Page.get_text` uses this when no *clip* is given. Note that this is the first positional parameter, so pass *sort* as a keyword argument.
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: dict
 
-   .. method:: extractRAWJSON(sort=False)
+   .. method:: extractRAWJSON(cb=None, sort=False)
 
       Textpage content as a JSON string. Created by `json.dumps(TextPage.extractRAWDICT())`. You will probably use this method ever only for outputting the result to some file. The  method detects binary image data and converts them to base64 encoded strings.
 
+      :arg cb: (optional) an object with ``width`` and ``height`` attributes, typically a :ref:`Rect` such as the page's :attr:`Page.cropbox`. If given, the ``"width"`` and ``"height"`` values of the result are taken from it instead of from :attr:`TextPage.rect`. :meth:`Page.get_text` uses this when no *clip* is given. Note that this is the first positional parameter, so pass *sort* as a keyword argument.
       :arg bool sort: (new in v1.19.1) sort the output by vertical, then horizontal coordinates. In many cases, this should suffice to generate a "natural" reading order.
 
       :rtype: str
 
-   .. method:: search(needle, quads=False)
+   .. method:: search(needle, hit_max=0, quads=1)
 
       * Changed in v1.18.2
 
       Search for *string* and return a list of found locations.
 
       :arg str needle: the string to search for. Upper and lower cases will all match if needle consists of ASCII letters only -- it does not yet work for "Ä" versus "ä", etc.
-      :arg bool quads: return quadrilaterals instead of rectangles.
+      :arg int hit_max: ignored. Kept for backward compatibility only -- all hits are always returned (see the note below). Because it is the second positional parameter, pass *quads* as a keyword argument.
+      :arg bool quads: return quadrilaterals instead of rectangles. Note that the default is true (quads), unlike :meth:`Page.search_for`.
       :rtype: list
       :returns: a list of :ref:`Rect` or :ref:`Quad` objects, each surrounding a found *needle* occurrence. As the search string may contain spaces, its parts may be found on different lines. In this case, more than one rectangle (resp. quadrilateral) are returned. **(Changed in v1.18.2)** The method **now supports dehyphenation**, so it will find e.g. "method", even if it was hyphenated in two parts "meth-" and "od" across two lines. The two returned rectangles will contain "meth" (no hyphen) and "od".
 

@@ -185,13 +185,13 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :arg int xref: the :data:`xref` of an image object. For example, you can make a list of images used on a particular page with :meth:`Document.get_page_images`, which also shows the :data:`xref` numbers of each image.
 
-   .. method:: clear_with([value [, irect]])
+   .. method:: clear_with(value=None, bbox=None)
 
       Initialize the samples area.
 
       :arg int value: if specified, values from 0 to 255 are valid. Each color byte of each pixel will be set to this value, while alpha will be set to 255 (non-transparent) if present. If omitted, then all bytes (including any alpha) are cleared to *0x00*.
 
-      :arg irect_like irect: the area to be cleared. Omit to clear the whole pixmap. Can only be specified, if *value* is also specified.
+      :arg irect_like bbox: the area to be cleared. Omit to clear the whole pixmap. Can only be specified, if *value* is also specified.
 
    .. method:: tint_with(black, white)
 
@@ -217,6 +217,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
    .. method:: flip_rotate(mode)
 
+      * New in v2.0
+
       Rotate the pixmap by a multiple of 90 degrees or flip it horizontally or vertically.
 
       :arg int mode: ``mode`` is an integer to specify the desired action. Also see :ref:`PixmapTransformations`. The following values are supported:
@@ -229,11 +231,11 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
 
       :returns: A new pixmap with the requested rotation or flip applied. The original pixmap is not changed. If an unsupported mode value is provided, a warning is issued and the original pixmap is returned.
 
-   .. method:: shrink(n)
+   .. method:: shrink(factor)
 
-      Shrink the pixmap by dividing both, its width and height by 2\ :sup:``n``.
+      Shrink the pixmap by dividing both, its width and height by 2\ :sup:``factor``.
 
-      :arg int n: determines the new pixmap (samples) size. For example, a value of 2 divides width and height by 4 and thus results in a size of one 16\ :sup:`th` of the original. Values less than 1 are ignored with a warning.
+      :arg int factor: determines the new pixmap (samples) size. For example, a value of 2 divides width and height by 4 and thus results in a size of one 16\ :sup:`th` of the original. Values less than 1 are ignored with a warning.
 
       .. note:: Use this methods to reduce a pixmap's size retaining its proportion. The pixmap is changed "in place". If you want to keep original and also have more granular choices, use the resp. copy constructor above.
 
@@ -244,8 +246,8 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int x: the column number of the pixel. Must be in `range(pix.width)`.
       :arg int y: the line number of the pixel, Must be in `range(pix.height)`.
 
-      :rtype: list
-      :returns: a list of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *[r, g, b, a]*. All items are integers in `range(256)`.
+      :rtype: tuple
+      :returns: a tuple of color values and, potentially the alpha value. Its length and content depend on the pixmap's colorspace and the presence of an alpha. For RGBA pixmaps the result would e.g. be *(r, g, b, a)*. All items are integers in `range(256)`.
 
    .. method:: set_pixel(x, y, color)
 
@@ -255,11 +257,11 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int y: the line number of the pixel. Must be in `range(pix.height)`.
       :arg sequence color: the desired pixel value given as a sequence of integers in `range(256)`. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
-   .. method:: set_rect(irect, color)
+   .. method:: set_rect(bbox, color)
 
       *New in version 1.14.8:* Set the pixels of a rectangle to a value.
 
-      :arg irect_like irect: the rectangle to be filled with the value. The actual area is the intersection of this parameter and :attr:`Pixmap.irect`. For an empty intersection (or an invalid parameter), no change will happen.
+      :arg irect_like bbox: the rectangle to be filled with the value. The actual area is the intersection of this parameter and :attr:`Pixmap.irect`. For an empty intersection (or an invalid parameter), no change will happen.
       :arg sequence color: the desired value, given as a sequence of integers in `range(256)`. The length of the sequence must equal :attr:`Pixmap.n`, which includes any alpha byte.
 
       :rtype: bool
@@ -292,7 +294,7 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg int yres: resolution in y direction.
 
 
-   .. method:: set_alpha(alphavalues, premultiply=1, opaque=None)
+   .. method:: set_alpha(alphavalues=None, premultiply=1, opaque=None, matte=None)
 
       * Changed in v 1.18.13
 
@@ -301,26 +303,30 @@ Have a look at the :ref:`FAQ` section to see some pixmap usage "at work".
       :arg bytes,bytearray,BytesIO alphavalues: the new alpha values. If provided, its length must be at least *width * height*. If omitted (`None`), all alpha values are set to 255 (no transparency). *Changed in version 1.14.13:* *io.BytesIO* is now also accepted.
       :arg bool premultiply: *New in v1.18.13:* whether to premultiply color components with the alpha value.
       :arg list,tuple opaque: ignore the alpha value and set this color to fully transparent. A sequence of integers in `range(256)` with a length of :attr:`Pixmap.n`. Default is ``None``. For example, a typical choice for RGB would be `opaque=(255, 255, 255)` (white).
+      :arg list,tuple matte: the background color the pixmap's colors were pre-blended with. A sequence of integers in `range(256)` with a length of :attr:`Pixmap.n` minus the alpha byte. If given, each color component `c` is replaced by `(c - matte) * alpha / 255` and *premultiply* is ignored. Default is ``None``.
 
 
-   .. method:: invert_irect([irect])
+   .. method:: invert_irect(bbox=None)
 
-      Invert the color of all pixels in :ref:`IRect` *irect*. Will have no effect if colorspace is ``None``.
+      Invert the color of all pixels in :ref:`IRect` *bbox*. Will have no effect if colorspace is ``None``.
 
-      :arg irect_like irect: The area to be inverted. Omit to invert everything.
+      :arg irect_like bbox: The area to be inverted. Omit to invert everything.
 
-   .. method:: copy(source, irect)
+      :rtype: bool
+      :returns: ``False`` if the pixmap has no colorspace (nothing is changed), else ``True``.
 
-      Copy the *irect* part of the *source* pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and can each have :data:`CS_GRAY` or :data:`CS_RGB` colorspaces, but they currently **must** have the same alpha property [#f2]_. The copy mechanism automatically adjusts discrepancies between source and target like so:
+   .. method:: copy(src, bbox)
+
+      Copy the *bbox* part of the *src* pixmap into the corresponding area of this one. The two pixmaps may have different dimensions and can each have :data:`CS_GRAY` or :data:`CS_RGB` colorspaces, but they currently **must** have the same alpha property [#f2]_. The copy mechanism automatically adjusts discrepancies between source and target like so:
 
       If copying from :data:`CS_GRAY` to :data:`CS_RGB`, the source gray-shade value will be put into each of the three rgb component bytes. If the other way round, *(r + g + b) / 3* will be taken as the gray-shade value of the target.
 
-      Between *irect* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values :attr:`Pixmap.x` and :attr:`Pixmap.y` (which you are free to modify for this purpose via :meth:`Pixmap.set_origin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
+      Between *bbox* and the target pixmap's rectangle, an "intersection" is calculated at first. This takes into account the rectangle coordinates and the current attribute values :attr:`Pixmap.x` and :attr:`Pixmap.y` (which you are free to modify for this purpose via :meth:`Pixmap.set_origin`). Then the corresponding data of this intersection are copied. If the intersection is empty, nothing will happen.
 
-      :arg source: source pixmap.
-      :type source: :ref:`Pixmap`
+      :arg src: source pixmap.
+      :type src: :ref:`Pixmap`
 
-      :arg irect_like irect: The area to be copied.
+      :arg irect_like bbox: The area to be copied.
 
       .. note:: Example: Suppose you have two pixmaps, `pix1` and `pix2` and you want to copy the lower right quarter of `pix2` to `pix1` such that it starts at the top-left point of `pix1`. Use the following snippet::
 

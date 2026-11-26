@@ -39,17 +39,17 @@ A display list is populated with objects from a page, usually by executing :meth
 
       :rtype: ``DisplayList``
 
-   .. method:: run(device, matrix, area)
+   .. method:: run(dw, m, area)
     
       Run the display list through a device. The device will populate the display list with its "commands" (i.e. text extraction or image creation). The display list can later be used to "read" a page many times without having to re-interpret it from the document file.
 
       You will most probably instead use one of the specialized run methods below -- :meth:`get_pixmap` or :meth:`get_textpage`.
 
-      :arg device: Device
-      :type device: :ref:`Device`
+      :arg dw: Device
+      :type dw: :ref:`Device`
 
-      :arg matrix: Transformation matrix to apply to the display list contents.
-      :type matrix: :ref:`Matrix`
+      :arg m: Transformation matrix to apply to the display list contents.
+      :type m: :ref:`Matrix`
 
       :arg area: Only the part visible within this area will be considered when the list is run through the device.
       :type area: :ref:`Rect`
@@ -77,7 +77,7 @@ A display list is populated with objects from a page, usually by executing :meth
       :rtype: :ref:`Pixmap`
       :returns: pixmap of the display list.
 
-   .. method:: get_textpage(flags)
+   .. method:: get_textpage(flags=3)
 
       Run the display list through a text device and return a text page.
 

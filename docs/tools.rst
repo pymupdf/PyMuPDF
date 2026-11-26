@@ -101,8 +101,7 @@ This class is a collection of utility methods and attributes, mainly around memo
 
       :arg int percent: the percentage of current size to free. If 100+ the store will be emptied, if zero, nothing will happen. MuPDF's caching strategy is "least recently used", so low-usage elements get deleted first.
 
-      :rtype: int
-      :returns: the new current store size. Depending on the situation, the size reduction may be larger than the requested percentage.
+      :returns: ``0`` if *percent* is 100 or more (the store has been emptied), otherwise ``None``. Depending on the situation, the size reduction may be larger than the requested percentage.
 
    .. method:: show_aa_level()
 
@@ -130,13 +129,13 @@ This class is a collection of utility methods and attributes, mainly around memo
       Empty MuPDF warnings message buffer.
 
 
-   .. method:: mupdf_display_errors(value=None)
+   .. method:: mupdf_display_errors(on=None)
 
       Control whether MuPDF errors should be displayed as |PyMuPDF| messages.
 
-      :arg value:
+      :arg on:
           * If `None`, the current setting is left unchanged.
-          * Otherwise changes the current setting to `bool(value)`;
+          * Otherwise changes the current setting to `bool(on)`;
             if ``True``, future MuPDF errors will be shown as :ref:`Messages`.
           * Regardless of this setting, MuPDF errors will always be stored in the warnings store.
           * Upon import of |PyMuPDF| this value is ``True``.
@@ -146,13 +145,13 @@ This class is a collection of utility methods and attributes, mainly around memo
           * New in version 1.16.8
 
 
-   .. method:: mupdf_display_warnings(value=None)
+   .. method:: mupdf_display_warnings(on=None)
 
       Control whether MuPDF warnings should be displayed as |PyMuPDF| messages.
 
-      :arg value:
+      :arg on:
           * If `None`, the current setting is left unchanged.
-          * Otherwise changes the current setting to `bool(value)`;
+          * Otherwise changes the current setting to `bool(on)`;
             if ``True``, future MuPDF warnings will be shown as :ref:`Messages`.
           * Regardless of this setting, MuPDF warnings will always be stored in the warnings store.
           * Upon import of |PyMuPDF| this value is ``True``.

@@ -107,13 +107,13 @@ There is a parent-child relationship between an annotation and its page. If the 
       pair: xhtml; Annot.get_text
       pair: xml; Annot.get_text
 
-   .. method:: get_text(opt, clip=None, flags=None)
+   .. method:: get_text(option="text", clip=None, flags=None)
 
       * New in 1.18.0
 
       Retrieves the content of the annotation in a variety of formats -- much like the same method for :ref:`Page`.. This currently only delivers relevant data for annotation types 'FreeText' and 'Stamp'. Other types return an empty string (or equivalent objects).
 
-      :arg str opt: (positional only) the desired format - one of the following values. Please note that this method works exactly like the same-named method of :ref:`Page`.
+      :arg str option: the desired format - one of the following values. Please note that this method works exactly like the same-named method of :ref:`Page`.
 
          * "text" -- :meth:`TextPage.extractTEXT`, default
          * "blocks" -- :meth:`TextPage.extractBLOCKS`
@@ -137,7 +137,7 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg rect-like rect: the area to consider, defaults to :attr:`Annot.rect`.
 
 
-   .. method:: get_textpage(clip=None, flags=3)
+   .. method:: get_textpage(clip=None, flags=0)
 
       Create a :ref:`TextPage` for the annotation.
 
@@ -177,11 +177,11 @@ There is a parent-child relationship between an annotation and its page. If the 
       :arg int start: The symbol number for the first point.
       :arg int end: The symbol number for the last point.
 
-   .. method:: set_oc(xref)
+   .. method:: set_oc(oc=0)
 
       Set the annotation's visibility using PDF optional content mechanisms. This visibility is controlled by the user interface of supporting PDF viewers. It is independent from other attributes like :attr:`Annot.flags`.
 
-      :arg int xref: the :data:`xref` of an optional contents group (OCG or OCMD). Any previous xref will be overwritten. If zero, a previous entry will be removed. An exception occurs if the xref is not zero and does not point to a valid PDF object.
+      :arg int oc: the :data:`xref` of an optional contents group (OCG or OCMD). Any previous xref will be overwritten. If zero, a previous entry will be removed. An exception occurs if the xref is not zero and does not point to a valid PDF object.
 
       .. note:: This does **not require executing** :meth:`Annot.update` to take effect.
 
@@ -203,13 +203,13 @@ There is a parent-child relationship between an annotation and its page. If the 
          .. note:: Must refer to an existing annotation on this page. Setting this property requires no subsequent `update()`.
 
 
-   .. method:: set_open(value)
+   .. method:: set_open(is_open)
 
       * New in v1.18.4
 
       Set the annotation's Popup annotation to open or closed -- **or** the annotation itself, if its type is 'Text' ("sticky note").
 
-      :arg bool value: the desired open state.
+      :arg bool is_open: the desired open state.
 
 
    .. method:: set_popup(rect)
@@ -222,11 +222,11 @@ There is a parent-child relationship between an annotation and its page. If the 
 
 
 
-   .. method:: set_opacity(value)
+   .. method:: set_opacity(opacity)
 
       Set the annotation's transparency. Opacity can also be set in :meth:`Annot.update`.
 
-      :arg float value: a float in range *[0, 1]*. Any value outside is assumed to be 1. E.g. a value of 0.5 sets the transparency to 50%.
+      :arg float opacity: a float in range *[0, 1]*. Any value outside is assumed to be 1. E.g. a value of 0.5 sets the transparency to 50%.
 
       Three overlapping 'Circle' annotations with each opacity set to 0.5:
 
@@ -242,13 +242,13 @@ There is a parent-child relationship between an annotation and its page. If the 
       :returns: the blend mode or ``None``.
 
 
-   .. method:: set_blendmode(blendmode)
+   .. method:: set_blendmode(blend_mode)
 
       * New in v1.16.14
       
       Set the annotation's blend mode. See :ref:`AdobeManual`, page 324 for explanations. The blend mode can also be set in :meth:`Annot.update`.
 
-      :arg str blendmode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use `PDF_BM_Normal` to **remove** a blend mode.
+      :arg str blend_mode: set the blend mode. Use :meth:`Annot.update` to reflect this in the visual appearance. For predefined values see :ref:`BlendModes`. Use `PDF_BM_Normal` to **remove** a blend mode.
 
 
    .. method:: set_name(name)
@@ -270,11 +270,11 @@ There is a parent-child relationship between an annotation and its page. If the 
       .. note:: You **need not** invoke :meth:`Annot.update` for activation of the effect.
 
 
-   .. method:: set_rotation(angle)
+   .. method:: set_rotation(rotate=0)
 
       Set the rotation of an annotation. This rotates the annotation rectangle around its center point. Then a **new annotation rectangle** is calculated from the resulting quad.
 
-      :arg int angle: rotation angle in degrees. Arbitrary values are possible, but will be clamped to the interval `[0, 360)`.
+      :arg int rotate: rotation angle in degrees. Arbitrary values are possible, but will be clamped to the interval `[0, 360)`.
 
       .. note::
         * You **must invoke** :meth:`Annot.update` to activate the effect.
@@ -338,13 +338,14 @@ There is a parent-child relationship between an annotation and its page. If the 
    .. index::
       pair: blend_mode; Annot.update
       pair: fontsize; Annot.update
+      pair: fontname; Annot.update
       pair: text_color; Annot.update
       pair: border_color; Annot.update
       pair: fill_color; Annot.update
       pair: cross_out; Annot.update
       pair: rotate; Annot.update
 
-   .. method:: update(opacity=None, blend_mode=None, fontsize=0, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
+   .. method:: update(blend_mode=None, opacity=None, fontsize=0, fontname=None, text_color=None, border_color=None, fill_color=None, cross_out=True, rotate=-1)
 
       Synchronize the appearance of an annotation with its properties after relevant changes. 
 
@@ -360,11 +361,13 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       Color specifications may be made in the usual format used in PuMuPDF as sequences of floats ranging from 0.0 to 1.0 (including both). The sequence length must be 1, 3 or 4 (supporting GRAY, RGB and CMYK colorspaces respectively). For GRAY, just a float is also acceptable.
 
-      :arg float opacity: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's transparency. Valid values are *0 <= opacity < 1*.
-
       :arg str blend_mode: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's blend mode. For valid values see :ref:`BlendModes`.
 
+      :arg float opacity: *(new in v1.16.14)* **valid for all annotation types:** change or set the annotation's transparency. Valid values are *0 <= opacity < 1*.
+
       :arg float fontsize: change :data:`fontsize` of the text. 'FreeText' annotations only.
+
+      :arg str fontname: change the font of the text. 'FreeText' annotations only. Only the Base-14 font abbreviations are supported: names starting with "Co" / "co" select Courier, "Ti" / "ti" Times-Roman, "Sy" / "sy" Symbol, "Za" / "za" ZapfDingbats; any other value selects Helvetica. ``None`` (the default) keeps the current font.
 
       :arg sequence,float text_color: change the text color. 'FreeText' annotations only. This has the same effect as ``border_color``. Note that the text color of rich-text annotations cannot be changed at all because it is set by HTML / CSS syntax and part of the text itself.
 
@@ -376,7 +379,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :arg int rotate: new rotation value. Default (-1) means no change. Supports 'FreeText' and several other annotation types (see :meth:`Annot.set_rotation`), [#f1]_. Only choose 0, 90, 180, or 270 degrees for 'FreeText'. Otherwise any integer is acceptable.
 
-      :rtype: bool
+      :returns: ``None``. A ``RuntimeError`` is raised if the appearance could not be updated.
 
       This method is the only way to change the colors of a FreeText annotation. You cannot use :meth:`Annot.set_colors` for this purpose. But be aware that for rich-text annotations, the text color is never changed. The text color is set by the ``text_color`` entry of the ``info`` dictionary. This is a limitation of |MuPDF| and not a bug.
 
@@ -398,16 +401,16 @@ There is a parent-child relationship between an annotation and its page. If the 
       :returns: the content of the attached file.
 
    .. index::
-      pair: buffer; Annot.update_file
+      pair: buffer_; Annot.update_file
       pair: filename; Annot.update_file
       pair: ufilename; Annot.update_file
       pair: desc; Annot.update_file
 
-   .. method:: update_file(buffer=None, filename=None, ufilename=None, desc=None)
+   .. method:: update_file(buffer_=None, filename=None, ufilename=None, desc=None)
 
       Updates the content of an attached file. All arguments are optional. No arguments lead to a no-op.
 
-      :arg bytes|bytearray|BytesIO buffer: the new file content. Omit to only change meta-information.
+      :arg bytes|bytearray|BytesIO buffer_: the new file content. Omit to only change meta-information.
 
          *(Changed in version 1.14.13)* *io.BytesIO* is now also supported.
 
