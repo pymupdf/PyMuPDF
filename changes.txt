@@ -3,6 +3,11 @@ Change Log
 
 **Changes in version 2.2** (2026-11-26)
 
+New features:
+
+* Add extended FormFields Support.
+* Fuzzy Text Search - PyMuPDF 2.2 adds `Page.search_for_fuzzy() <https://pymupdf.readthedocs.io/en/latest/page.html#Page.search_for_fuzzy>`_, a way to find text on a PDF page even when it doesn't match your search string exactly.
+
 Fixed issues:
 
 * **Fixed** `4484 <https://github.com/pymupdf/PyMuPDF/issues/4484>`_: set_toc does not correctly set y-positions (from Gyanu Mayank)
@@ -14,10 +19,6 @@ Fixed issues:
 * **Fixed** `5240 <https://github.com/pymupdf/PyMuPDF/issues/5240>`_: Document.delete_pages() raises ValueError: bad page number(s) on negative page numbers passed as two positional arguments
 * **Fixed** `5241 <https://github.com/pymupdf/PyMuPDF/issues/5241>`_: Table.to_pandas() permanently mutates Table.header.names in-place, corrupting column names and downstream exports #5241
 * **Fixed** `5280 <https://github.com/pymupdf/PyMuPDF/issues/5280>`_: remove_rotation() stretches Square and Circle annotations #5280
-
-New features:
-
-* Add extended FormFields Support.
 
 Other:
 
@@ -80,6 +81,14 @@ Other:
 
 
 **Changes in version 2.0** (2026-10-19)
+
+Major update:
+
+* PyMuPDF now includes PyMuPDF Layout and PyMuPDF4LLM by default for
+  advanced document parsing. ``pip install pymupdf`` is all that is needed:
+  layout analysis is enabled by default, and ``Document.to_markdown()``,
+  ``Document.to_json()`` and ``Document.to_text()`` are available without
+  installing ``pymupdf4llm`` or ``pymupdf-layout`` separately.
 
 Fixed issues:
 
