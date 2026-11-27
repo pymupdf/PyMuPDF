@@ -1294,6 +1294,7 @@ class Annot:
                 val = mupdf.pdf_annot_rect(self.this)
             val = Rect(val)
         except Exception as e:
+            raise
             warnings.warn(f'Annot.rect: using annot bounds because no rect available: {e}')
             return self.bounds
         
@@ -1828,7 +1829,7 @@ class Annot:
                         TOOLS._le_slash)
             le_funcs_range = range(1, len(le_funcs))
             d = 2 * max(1, self.border["width"])
-            rect = self.rect + (-d, -d, d, d)
+            rect = self.bounds + (-d, -d, d, d)
             ap_updated = True
             points = self.vertices
             if line_end_le in le_funcs_range:
@@ -1870,18 +1871,18 @@ class Annot:
         if rot == -1:  # nothing to change
             return
 
-        M = (self.rect.tl + self.rect.br) / 2  # center of annot rect
+        M = (self.bounds.tl + self.bounds.br) / 2  # center of annot rect
 
         if rot == 0:  # undo rotations
             if abs(apnmat - Matrix(1, 1)) < 1e-5:
                 return  # matrix already is a no-op
-            quad = self.rect.morph(M, ~apnmat)  # derotate rect
+            quad = self.bounds.morph(M, ~apnmat)  # derotate rect
             self.set_rect(quad.rect)
             self.set_apn_matrix(Matrix(1, 1))  # appearance matrix = no-op
             return
 
         mat = Matrix(rot)
-        quad = self.rect.morph(M, mat)
+        quad = self.bounds.morph(M, mat)
         self.set_rect(quad.rect)
         self.set_apn_matrix(apnmat * mat)
 
