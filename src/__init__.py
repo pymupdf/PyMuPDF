@@ -334,6 +334,13 @@ class _Globals:
         self.small_glyph_heights = 0
         self.subset_fontnames = 0
         self.skip_quad_corrections = 0
+        
+        # We default to making Annot.rect fallback to Annot.bounds if
+        # pdf_annot_rect() raises an exception.
+        #
+        # However this is set to false when running tests, so that we don't
+        # rely on it in our code (see conftest.py).
+        self.annot_rect_fallback = True
 
 _globals = _Globals()
 
@@ -1294,9 +1301,11 @@ class Annot:
                 val = mupdf.pdf_annot_rect(self.this)
             val = Rect(val)
         except Exception as e:
-            raise
-            warnings.warn(f'Annot.rect: using annot bounds because no rect available: {e}')
-            return self.bounds
+            if _globals.annot_rect_fallback:
+                warnings.warn(f'Annot.rect: using annot bounds because no rect available: {e}')
+                return self.bounds
+            else:
+                raise
         
         # Caching self.parent_() reduces 1000x from 0.07 to 0.04.
         #
