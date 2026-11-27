@@ -45,7 +45,7 @@ t1 = u"têxt üsès Lätiñ charß,\nEUR: €, mu: µ, super scripts: ²³!"
 def print_descr(annot):
     """Print a short description to the right of each annot rect."""
     annot.parent.insert_text(
-        annot.rect.br + (10, -5), f"{annot.type[1]} annotation", color=red)
+        annot.bounds.br + (10, -5), f"{annot.type[1]} annotation", color=red)
 
 
 doc = pymupdf.open()
@@ -70,13 +70,13 @@ annot.set_border(width=0.3, dashes=[2])
 annot.update(text_color=blue, fill_color=gold)
 print_descr(annot)
 
-r = annot.rect + displ
+r = annot.bounds + displ
 annot = page.add_text_annot(r.tl, t1)
 print_descr(annot)
 
 # Adding text marker annotations:
 # first insert a unique text, then search for it, then mark it
-pos = annot.rect.tl + displ.tl
+pos = annot.bounds.tl + displ.tl
 page.insert_text(
     pos,  # insertion point
     highlight,  # inserted text
@@ -86,25 +86,25 @@ rl = page.search_for(highlight, quads=True)  # need a quad b/o tilted text
 annot = page.add_highlight_annot(rl[0])
 print_descr(annot)
 
-pos = annot.rect.bl  # next insertion point
+pos = annot.bounds.bl  # next insertion point
 page.insert_text(pos, underline, morph=(pos, pymupdf.Matrix(-10)))
 rl = page.search_for(underline, quads=True)
 annot = page.add_underline_annot(rl[0])
 print_descr(annot)
 
-pos = annot.rect.bl
+pos = annot.bounds.bl
 page.insert_text(pos, strikeout, morph=(pos, pymupdf.Matrix(-15)))
 rl = page.search_for(strikeout, quads=True)
 annot = page.add_strikeout_annot(rl[0])
 print_descr(annot)
 
-pos = annot.rect.bl
+pos = annot.bounds.bl
 page.insert_text(pos, squiggled, morph=(pos, pymupdf.Matrix(-20)))
 rl = page.search_for(squiggled, quads=True)
 annot = page.add_squiggly_annot(rl[0])
 print_descr(annot)
 
-pos = annot.rect.bl
+pos = annot.bounds.bl
 r = pymupdf.Rect(pos, pos.x + 75, pos.y + 35) + (0, 20, 0, 20)
 annot = page.add_polyline_annot([r.bl, r.tr, r.br, r.tl])  # 'Polyline'
 annot.set_border(width=0.3, dashes=[2])
@@ -147,7 +147,7 @@ r += displ
 annot = page.add_file_annot(
     r.tl, b"just anything for testing", "testdata.txt"  # 'FileAttachment'
 )
-print_descr(annot)  # annot.rect
+print_descr(annot)  # annot.bounds
 
 r += displ
 annot = page.add_stamp_annot(r, stamp=10)  # 'Stamp'

@@ -334,6 +334,13 @@ class _Globals:
         self.small_glyph_heights = 0
         self.subset_fontnames = 0
         self.skip_quad_corrections = 0
+        
+        # We default to making Annot.rect fallback to Annot.bounds if
+        # pdf_annot_rect() raises an exception.
+        #
+        # However this is set to false when running tests, so that we don't
+        # rely on it in our code (see conftest.py).
+        self.annot_rect_fallback = True
 
 _globals = _Globals()
 
@@ -900,6 +907,14 @@ class Annot:
         ao = mupdf.pdf_annot_obj(self.this)
         ret = JM_annot_border(ao)
         return ret
+    
+    @property
+    def bounds(self):
+        val = mupdf.pdf_bound_annot(self.this)
+        val = Rect(val)
+        p = self.get_parent()
+        val *= p.derotation_matrix
+        return val
 
     def clean_contents(self, sanitize=1):
         """Clean appearance contents stream."""
@@ -1279,11 +1294,18 @@ class Annot:
     @property
     def rect(self):
         """annotation rectangle"""
-        if g_use_extra:
-            val = extra.Annot_rect3( self.this)
-        else:
-            val = mupdf.pdf_bound_annot(self.this)
-        val = Rect(val)
+        try:
+            if g_use_extra:
+                val = extra.Annot_rect3( self.this)
+            else:
+                val = mupdf.pdf_annot_rect(self.this)
+            val = Rect(val)
+        except Exception as e:
+            if _globals.annot_rect_fallback:
+                warnings.warn(f'Annot.rect: using annot bounds because no rect available: {e}')
+                return self.bounds
+            else:
+                raise
         
         # Caching self.parent_() reduces 1000x from 0.07 to 0.04.
         #
@@ -1816,7 +1838,7 @@ class Annot:
                         TOOLS._le_slash)
             le_funcs_range = range(1, len(le_funcs))
             d = 2 * max(1, self.border["width"])
-            rect = self.rect + (-d, -d, d, d)
+            rect = self.bounds + (-d, -d, d, d)
             ap_updated = True
             points = self.vertices
             if line_end_le in le_funcs_range:
@@ -1858,18 +1880,18 @@ class Annot:
         if rot == -1:  # nothing to change
             return
 
-        M = (self.rect.tl + self.rect.br) / 2  # center of annot rect
+        M = (self.bounds.tl + self.bounds.br) / 2  # center of annot rect
 
         if rot == 0:  # undo rotations
             if abs(apnmat - Matrix(1, 1)) < 1e-5:
                 return  # matrix already is a no-op
-            quad = self.rect.morph(M, ~apnmat)  # derotate rect
+            quad = self.bounds.morph(M, ~apnmat)  # derotate rect
             self.set_rect(quad.rect)
             self.set_apn_matrix(Matrix(1, 1))  # appearance matrix = no-op
             return
 
         mat = Matrix(rot)
-        quad = self.rect.morph(M, mat)
+        quad = self.bounds.morph(M, mat)
         self.set_rect(quad.rect)
         self.set_apn_matrix(apnmat * mat)
 
@@ -12557,7 +12579,7 @@ class Page:
             state = {
                 "annot": annot,
                 "type": annot_type,
-                "rect": Rect(annot.rect),
+                "rect": Rect(annot.bounds),
                 "apn_matrix": Matrix(annot.apn_matrix),
             }
             if annot_type == mupdf.PDF_ANNOT_FREE_TEXT:

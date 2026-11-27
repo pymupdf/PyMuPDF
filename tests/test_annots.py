@@ -682,6 +682,8 @@ def test_4755():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4755.pdf')
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4755_out.pdf')
     
+    errors = list()
+    bounds = list()
     with pymupdf.open(path) as document:
         for page_i, page in enumerate(document):
             print(f'{page_i=}')
@@ -694,9 +696,30 @@ def test_4755():
                     ]
             for annot_i, annot in enumerate(page.annots()):
                 print(f'{annot_i=}')
-                #if annot_i != 2:
-                #    continue
-                before_rect = copy.deepcopy(annot.rect)
+                bounds.append(annot.bounds)
+                e = None
+                
+                try:
+                    before_rect = copy.deepcopy(annot.rect)
+                except Exception as ee:
+                    e = ee
+                print(f'{annot_i=} {e=}')
+                if annot_i == 0:
+                    assert e and 'StrikeOut annotations have no Rect property' in str(e), (
+                            f'Did not receive expected exception with {annot_i=}.'
+                            )
+                    
+                    # Check that setting pymupdf._globals.annot_rect_fallback to true allows
+                    # annot.rect to succeed.
+                    #
+                    assert not pymupdf._globals.annot_rect_fallback
+                    pymupdf._globals.annot_rect_fallback = True
+                    before_rect = copy.deepcopy(annot.rect)
+                    pymupdf._globals.annot_rect_fallback = False
+                    
+                    continue
+                else:
+                    assert not e, f'Received unexpected exception with {annot_i=}: {e}'
 
                 def draw_rectangle(rect, c, w):
                     drect = page.add_freetext_annot(rect, str(annot_i), text_color=c)
@@ -707,17 +730,39 @@ def test_4755():
                 print(f'{colour=}')
                 draw_rectangle(annot.rect, colour, .3)
 
-                print(f'before: {annot.rect}=')
+                print(f'before: {annot.rect=}')
                 annot.set_rect(annot.rect)
-                print(f' after: {annot.rect}=')
+                print(f' after: {annot.rect=}')
 
                 print(f'difference: {annot.rect-before_rect=}')
+                errors.append(annot.rect != before_rect)
 
                 draw_rectangle(annot.rect, (0, 1, 0), .3)
                 print()
         document.save(path_out)
         print(f'    {path=}.')
         print(f'{path_out=}.')
+    
+    print(f'Bounds:')
+    for i, r in enumerate(bounds):
+        print(f'    {i}: {r}')
+    
+    bounds_expected = [
+            pymupdf.Rect(177.4219970703125, 119.0980224609375, 187.93299865722656, 127.93499755859375),
+            pymupdf.Rect(185.28199768066406, 123.5159912109375, 190.58399963378906, 132.35302734375),
+            pymupdf.Rect(49.0, 50.5, 69.0, 64.5),
+            ]
+    print(f'Bounds rms:')
+    assert len(bounds) == len(bounds_expected)
+    for i, (bounds_rect_expected, bounds_rect) in enumerate(zip(bounds_expected, bounds, strict=True)):
+        rms = gentle_compare.rms(bounds_rect_expected, bounds_rect)
+        print(f'    {i}: {rms=}')
+        assert rms < 0.1
+    assert bounds == bounds_expected
+    
+    print(f'{errors=}')
+    # Expect the current broken behaviour.
+    assert errors == [False, False]
 
 
 def test_4944():

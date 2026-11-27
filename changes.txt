@@ -1,6 +1,19 @@
 Change Log
 ==========
 
+
+**Changes in next version**
+
+Fixed issues:
+
+* **Fixed** `4755 <https://github.com/pymupdf/PyMuPDF/issues/4755>`_: Unexpected behavior of annot.set_rect() with carets and strikeouts
+
+Other:
+
+* Modified return value from `Annot.rect` attribute.
+* Added `Annot.bounds` attribute.
+
+
 **Changes in version 2.2** (2026-11-26)
 
 New features:

@@ -6,7 +6,7 @@ import time
 
 import pymupdf
 
-from gentle_compare import gentle_compare, rms
+import gentle_compare
 
 
 scriptdir = os.path.dirname(__file__)
@@ -35,7 +35,7 @@ def test_remove_rotation():
         words1 = doc[i].get_text("words")
         words1.sort(key=lambda w: w[4])  # sort by word strings
         assert pix1.digest == pix0.digest, f"{pix1.digest}/{pix0.digest}"
-        assert gentle_compare(words0, words1)
+        assert gentle_compare.gentle_compare(words0, words1)
 
 
 def test_5077():
@@ -151,7 +151,14 @@ def test_5059():
         pix_orig = page.get_pixmap(colorspace=pymupdf.csGRAY)
         page.remove_rotation()
         pix_rot0 = page.get_pixmap(colorspace=pymupdf.csGRAY)
-        rms_val = rms(pix_orig.samples, pix_rot0.samples, verbose=False)
+        
+        path = os.path.relpath(os.path.normpath(f'{__file__}/../../tests/test_5059'))
+        pix_orig.save(f'{path}_orig.png')
+        pix_rot0.save(f'{path}_rot0.png')
+        pix_diff = gentle_compare.pixmaps_diff(pix_orig, pix_rot0)
+        pix_diff.save(f'{path}_diff.png')
+        
+        rms_val = gentle_compare.rms(pix_orig.samples, pix_rot0.samples, verbose=False)
         assert rms_val < 0.05, f"RMS diff for rotation {rot}: {rms_val}"
 
 

@@ -41,6 +41,7 @@ There is a parent-child relationship between an annotation and its page. If the 
 :meth:`Annot.update`               apply accumulated annot changes
 :attr:`Annot.blendmode`            annotation BlendMode
 :attr:`Annot.border`               border details
+:attr:`Annot.bounds`               the boundary rect.
 :attr:`Annot.colors`               border / background and fill colors
 :attr:`Annot.file_info`            get attached file information
 :attr:`Annot.flags`                annotation flags
@@ -460,6 +461,18 @@ There is a parent-child relationship between an annotation and its page. If the 
       The rectangle containing the annotation.
 
       :rtype: :ref:`Rect`
+      
+      * Changed in version 2.3:
+      
+        * The returned rect can be is now consistent with the rect set by `set_rect()`.
+        * It may differ slightly from earlier versions:
+        
+          * Internally we now use ``pdf_annot_rect()`` instead of ``pdf_bound_annot()``.
+          * This applies the same (usually small) ``pdf_annot_rect_diff()`` correction as `set_rect()`.
+        * Some attributes are defined by quads so do not have a rect attribute (e.g. StrikeOut).
+          In this case we return the bounds rect.
+          
+        * Also see the (new in 2.3) `bound` attribute.
 
    .. attribute:: next
 
@@ -579,6 +592,11 @@ There is a parent-child relationship between an annotation and its page. If the 
 
       :rtype: dict
 
+    .. attribute:: bounds
+      
+      The attribute's boundary rect.
+      
+      :rtype: :ref:`Rect`
 
 .. _mupdficons:
 

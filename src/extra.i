@@ -1090,13 +1090,13 @@ JM_py_from_quad(fz_quad q)
 //----------------------------------------------------------------
 static mupdf::FzRect Annot_rect(mupdf::PdfAnnot& annot)
 {
-    mupdf::FzRect rect = mupdf::pdf_bound_annot(annot);
+    mupdf::FzRect rect = mupdf::pdf_annot_rect(annot);
     return rect;
 }
 
 static PyObject* Annot_rect3(mupdf::PdfAnnot& annot)
 {
-    fz_rect rect = mupdf::ll_pdf_bound_annot(annot.m_internal);
+    fz_rect rect = mupdf::ll_pdf_annot_rect(annot.m_internal);
     return JM_py_from_rect(rect);
 }
 
