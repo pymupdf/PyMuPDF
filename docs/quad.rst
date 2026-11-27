@@ -55,18 +55,18 @@ Quads can **be obtained** as results of text search methods (:meth:`Page.search_
       Without parameters, a quad consisting of 4 copies of *Point(0, 0)* is created.
 
 
-   .. method:: transform(matrix)
+   .. method:: transform(m)
 
       Modify the quadrilateral by transforming each of its corners with a matrix.
 
-      :arg matrix_like matrix: the matrix.
+      :arg matrix_like m: the matrix.
 
-   .. method:: morph(fixpoint, matrix)
+   .. method:: morph(p, m)
 
       *(New in version 1.17.0)* "Morph" the quad with a matrix-like using a point-like as fixed point.
 
-      :arg point_like fixpoint: the point.
-      :arg matrix_like matrix: the matrix.
+      :arg point_like p: the point.
+      :arg matrix_like m: the matrix.
       :returns: a new quad (no operation if this is the infinite quad).
 
 

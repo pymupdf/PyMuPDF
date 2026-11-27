@@ -96,23 +96,25 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        Add a :htmlTag:`div` tag, context manager. See `div <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div>`_.
 
-    .. method:: add_header(value)
+    .. method:: add_header(level=1)
 
        Add a header tag (one of :htmlTag:`h1` to :htmlTag:`h6`), context manager. See `headings <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/Heading_Elements>`_.
 
-       :arg int value: a value 1 - 6.
+       :arg int level: a value 1 - 6.
 
     .. method:: add_horizontal_line
 
        Add a :htmlTag:`hr` tag. See `hr <https://developer.mozilla.org/en-US/docs/Web/HTML/Element/hr>`_.
 
-    .. method:: add_image(name, width=None, height=None)
+    .. method:: add_image(name, width=None, height=None, imgfloat=None, align=None)
 
        Add an :htmlTag:`img` tag. This causes the inclusion of the named image in the DOM.
 
        :arg str name: the filename of the image. This **must be the member name** of some entry of the :ref:`Archive` parameter of the :ref:`Story` constructor.
        :arg width: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the width of the specified `where` rectangle in :meth:`Story.place`. If this value is provided and `height` is omitted, the image will be included keeping its aspect ratio.
        :arg height: if provided, either an absolute (int) value, or a percentage string like "30%". A percentage value refers to the height of the specified `where` rectangle in :meth:`Story.place`. If this value is provided and `width` is omitted, the image's aspect ratio will be honored.
+       :arg str imgfloat: if provided, added as CSS style `float: <imgfloat>` to the image, e.g. "left" or "right".
+       :arg str align: if provided, set as the `align` attribute of the image tag.
 
     .. method:: add_link(href, text=None)
 
@@ -121,9 +123,12 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        :arg str href: the URL target.
        :arg str text: the text to display. If omitted, the `href` text is shown instead.
 
-    .. method:: add_number_list
+    .. method:: add_number_list(start=1, numtype=None)
 
        Add an :htmlTag:`ol` tag, context manager.
+
+       :arg int start: the number of the first list item. Only values greater than 1 are written (as the `start` attribute).
+       :arg str numtype: if provided, the `type` attribute of the list, i.e. the numbering style like "1", "a", "A", "i" or "I".
 
     .. method:: add_paragraph
 
@@ -161,11 +166,11 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        Add a text string. Line breaks ``\n`` are honored as :htmlTag:`br` tags.
 
-    .. method:: set_align(value)
+    .. method:: set_align(align)
 
        Set the text alignment. Only works for block-level tags.
 
-       :arg value: either one of the :ref:`TextAlign` or the `text-align <https://developer.mozilla.org/en-US/docs/Web/CSS/text-align>`_ values.
+       :arg align: either one of the :ref:`TextAlign` or the `text-align <https://developer.mozilla.org/en-US/docs/Web/CSS/text-align>`_ values.
 
     .. method:: set_attribute(key, value=None)
 
@@ -194,73 +199,73 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        :arg str key: the name of the attribute.
 
-    .. method:: set_bgcolor(value)
+    .. method:: set_bgcolor(color)
 
        Set the background color. Only works for block-level tags.
 
-       :arg value: either an RGB value like (255, 0, 0) (for "red") or a valid `background-color <https://developer.mozilla.org/en-US/docs/Web/CSS/background-color>`_ value.
+       :arg color: either an RGB value like (255, 0, 0) (for "red") or a valid `background-color <https://developer.mozilla.org/en-US/docs/Web/CSS/background-color>`_ value.
 
-    .. method:: set_bold(value)
+    .. method:: set_bold(val=True)
 
        Set bold on or off or to some string value.
 
-       :arg value: `True`, `False` or a valid `font-weight <https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight>`_ value.
+       :arg val: `True`, `False` or a valid `font-weight <https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight>`_ value.
 
-    .. method:: set_color(value)
+    .. method:: set_color(color)
 
        Set the color of the text following.
 
-       :arg value: either an RGB value like (255, 0, 0) (for "red") or a valid `color <https://developer.mozilla.org/en-US/docs/Web/CSS/color_value>`_ value.
+       :arg color: either an RGB value like (255, 0, 0) (for "red") or a valid `color <https://developer.mozilla.org/en-US/docs/Web/CSS/color_value>`_ value.
 
-    .. method:: set_columns(value)
+    .. method:: set_columns(cols)
 
        Set the number of columns.
 
-       :arg value: a valid `columns <https://developer.mozilla.org/en-US/docs/Web/CSS/columns>`_ value.
+       :arg cols: a valid `columns <https://developer.mozilla.org/en-US/docs/Web/CSS/columns>`_ value.
 
        .. note:: Currently ignored - supported in a future MuPDF version.
 
-    .. method:: set_font(value)
+    .. method:: set_font(font)
 
        Set the font-family.
 
-       :arg str value: e.g. "sans-serif".
+       :arg str font: e.g. "sans-serif".
 
-    .. method:: set_fontsize(value)
+    .. method:: set_fontsize(fontsize)
 
        Set the font size for text following.
 
-       :arg value: a float or a valid `font-size <https://developer.mozilla.org/en-US/docs/Web/CSS/font-size>`_ value.
+       :arg fontsize: a float or a valid `font-size <https://developer.mozilla.org/en-US/docs/Web/CSS/font-size>`_ value.
 
-    .. method:: set_id(unqid)
+    .. method:: set_id(unique)
 
        Set a :htmlTag:`id`. This serves as a unique identification of the node within the DOM. Use it to easily locate the node to inspect or modify it. A check for uniqueness is performed.
 
-       :arg str unqid: id string of the node.
+       :arg str unique: id string of the node.
 
-    .. method:: set_italic(value)
+    .. method:: set_italic(val=True)
 
        Set italic on or off or to some string value for the text following it.
 
-       :arg value: `True`, `False` or some valid `font-style <https://developer.mozilla.org/en-US/docs/Web/CSS/font-style>`_ value.
+       :arg val: `True`, `False` or some valid `font-style <https://developer.mozilla.org/en-US/docs/Web/CSS/font-style>`_ value.
 
-    .. method:: set_leading(value)
+    .. method:: set_leading(leading)
 
        Set inter-block text distance (`-mupdf-leading`), only works on block-level nodes.
 
-       :arg float value: the distance in points to the previous block.
+       :arg float leading: the distance in points to the previous block.
 
-    .. method:: set_lineheight(value)
+    .. method:: set_lineheight(lineheight)
 
        Set height of a line.
 
-       :arg value:  a float like 1.5 (which sets to `1.5 * fontsize`), or some valid `line-height <https://developer.mozilla.org/en-US/docs/Web/CSS/line-height>`_ value.
+       :arg lineheight:  a float like 1.5 (which sets to `1.5 * fontsize`), or some valid `line-height <https://developer.mozilla.org/en-US/docs/Web/CSS/line-height>`_ value.
 
-    .. method:: set_margins(value)
+    .. method:: set_margins(val)
 
        Set the margin(s).
 
-       :arg value: float or string with up to 4 values. See `CSS documentation <https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_.
+       :arg val: float or string with up to 4 values. See `CSS documentation <https://developer.mozilla.org/en-US/docs/Web/CSS/margin>`_.
 
     .. method:: set_pagebreak_after
 
@@ -270,36 +275,36 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
 
        Insert a page break before this node.
 
-    .. method:: set_properties(align=None, bgcolor=None, bold=None, color=None, columns=None, font=None, fontsize=None, indent=None, italic=None, leading=None, lineheight=None, margins=None, pagebreak_after=False, pagebreak_before=False, unqid=None, cls=None)
+    .. method:: set_properties(align=None, bgcolor=None, bold=None, color=None, columns=None, font=None, fontsize=None, indent=None, italic=None, leading=None, letter_spacing=None, lineheight=None, margins=None, pagebreak_after=None, pagebreak_before=None, word_spacing=None, unqid=None, cls=None)
 
-       Set any or all desired properties in one call. The meaning of argument values equal the values of the corresponding `set_` methods.
+       Set any or all desired properties in one call. The meaning of argument values equal the values of the corresponding `set_` methods. Arguments left as ``None`` are not changed. `letter_spacing` and `word_spacing` set the CSS `letter-spacing` and `word-spacing` values. `indent` corresponds to :meth:`Xml.set_text_indent`, `unqid` to :meth:`Xml.set_id` and `cls` to :meth:`Xml.add_class`. For `pagebreak_after` and `pagebreak_before`, any value other than ``None`` (including ``False``) inserts the page break.
 
        .. note:: The properties set by this method are directly attached to the node, whereas every `set_` method generates a new :htmlTag:`span` below the current node that has the respective property. So to e.g. "globally" set some property for the :htmlTag:`body`, this method must be used.
 
-    .. method:: add_style(value)
+    .. method:: add_style(text)
 
        Set (add) some style attribute not supported by its own `set_` method.
 
-       :arg str value: any valid CSS style value.
+       :arg str text: any valid CSS style value.
 
-    .. method:: add_class(value)
+    .. method:: add_class(text)
 
        Set (add) some "class" attribute.
 
-       :arg str value: the name of the class. Must have been defined in either the HTML or the CSS source of the DOM.
+       :arg str text: the name of the class. Must have been defined in either the HTML or the CSS source of the DOM.
 
-    .. method:: set_text_indent(value)
+    .. method:: set_text_indent(indent)
 
        Set indentation for the first textblock line. Only works for block-level nodes.
 
-       :arg value: a valid `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS/text-indent>`_ value. Please note that negative values do not work.
+       :arg indent: a valid `text-indent <https://developer.mozilla.org/en-US/docs/Web/CSS/text-indent>`_ value. Please note that negative values do not work.
 
 
-    .. method:: append_child(node)
+    .. method:: append_child(child)
 
        Append a child node. This is a low-level method used by other methods like :meth:`Xml.add_paragraph`.
 
-       :arg node: the :ref:`Xml` node to append.
+       :arg child: the :ref:`Xml` node to append.
 
     .. method:: create_text_node(text)
 
@@ -319,17 +324,17 @@ There is no need to ever directly construct an :ref:`Xml` object: after creating
        :rtype: :ref:`Xml`
        :returns: the created element. To actually bind it to the DOM, use :meth:`Xml.append_child`.
 
-    .. method:: insert_before(elem)
+    .. method:: insert_before(node)
 
-       Insert the given element `elem` before this node.
+       Insert the given element `node` before this node.
 
-       :arg elem: some :ref:`Xml` element.
+       :arg node: some :ref:`Xml` element.
 
-    .. method:: insert_after(elem)
+    .. method:: insert_after(node)
 
-       Insert the given element `elem` after this node.
+       Insert the given element `node` after this node.
 
-       :arg elem: some :ref:`Xml` element.
+       :arg node: some :ref:`Xml` element.
 
     .. method:: clone()
 

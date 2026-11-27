@@ -64,11 +64,11 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
       :rtype: float
 
-   .. method:: intersect(ir)
+   .. method:: intersect(r)
 
-      The intersection (common rectangular area) of the current rectangle and *ir* is calculated and replaces the current rectangle. If either rectangle is empty, the result is also empty. If either rectangle is infinite, the other one is taken as the result -- and hence also infinite if both rectangles were infinite.
+      The intersection (common rectangular area) of the current rectangle and *r* is calculated and replaces the current rectangle. If either rectangle is empty, the result is also empty. If either rectangle is infinite, the other one is taken as the result -- and hence also infinite if both rectangles were infinite.
 
-      :arg rect_like ir: Second rectangle.
+      :arg rect_like r: Second rectangle.
 
    .. method:: contains(x)
 
@@ -79,33 +79,33 @@ IRect is a rectangular bounding box, very similar to :ref:`Rect`, except that al
 
       :rtype: bool
 
-   .. method:: intersects(r)
+   .. method:: intersects(x)
 
-      Checks whether the rectangle and the :data:`rect_like` "r" contain a common non-empty :ref:`IRect`. This will always be ``False`` if either is infinite or empty.
+      Checks whether the rectangle and the :data:`rect_like` "x" contain a common non-empty :ref:`IRect`. This will always be ``False`` if either is infinite or empty.
 
-      :arg rect_like r: the rectangle to check.
+      :arg rect_like x: the rectangle to check.
 
       :rtype: bool
 
-   .. method:: torect(rect)
+   .. method:: torect(r)
 
       * New in version 1.19.3
       
       Compute the matrix which transforms this rectangle to a given one. See :meth:`Rect.torect`.
 
-      :arg rect_like rect: the target rectangle. Must not be empty or infinite.
+      :arg rect_like r: the target rectangle. Must not be empty or infinite.
       :rtype: :ref:`Matrix`
-      :returns: a matrix `mat` such that `self * mat = rect`. Can for example be used to transform between the page and the pixmap coordinates.
+      :returns: a matrix `mat` such that `self * mat = r`. Can for example be used to transform between the page and the pixmap coordinates.
 
 
-   .. method:: morph(fixpoint, matrix)
+   .. method:: morph(p, m)
 
       * New in version 1.17.0
       
       Return a new quad after applying a matrix to it using a fixed point.
 
-      :arg point_like fixpoint: the fixed point.
-      :arg matrix_like matrix: the matrix.
+      :arg point_like p: the fixed point.
+      :arg matrix_like m: the matrix.
       :returns: a new :ref:`Quad`. This a wrapper of the same-named quad method. If infinite, the infinite quad is returned.
 
    .. method:: norm()

@@ -13,11 +13,11 @@ Represents the color space of a :ref:`Pixmap`.
 
 .. class:: Colorspace
 
-   .. method:: __init__(self, n)
+   .. method:: __init__(self, type_)
 
       Constructor
 
-      :arg int n: A number identifying the colorspace. Possible values are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
+      :arg int type_: A number identifying the colorspace. Possible values are :data:`CS_RGB`, :data:`CS_GRAY` and :data:`CS_CMYK`.
 
    .. attribute:: name
 

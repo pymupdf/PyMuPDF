@@ -52,10 +52,11 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       pair: Font; is_serif
       pair: Font; fontname
       pair: Font; language
+      pair: Font; embed
 
-   .. method:: __init__(self, fontname=None, fontfile=None,
-                  fontbuffer=None, script=0, language=None, ordering=-1, is_bold=0,
-                  is_italic=0, is_serif=0)
+   .. method:: __init__(fontname=None, fontfile=None, \
+                  fontbuffer=None, script=0, language=None, ordering=-1, is_bold=0, \
+                  is_italic=0, is_serif=0, embed=1)
 
       Font constructor. The large number of parameters are used to locate font, which most closely resembles the requirements. Not all parameters are ever required -- see the below pseudo code explaining the logic how the parameters are evaluated.
 
@@ -73,6 +74,7 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       :arg bool is_bold: look for a bold font.
       :arg bool is_italic: look for an italic font.
       :arg bool is_serif: look for a serifed font.
+      :arg bool embed: set MuPDF's embedding flag of the created font (default ``1``), which is consulted when the font is written to PDF output. Ignored for fonts whose license flags forbid embedding.
 
       :returns: a |MuPDF| font if successful. This is the overall sequence of checks to determine an appropriate font:
 
@@ -135,8 +137,9 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       pair: Font.has_glyph; language
       pair: Font.has_glyph; script
       pair: Font.has_glyph; fallback
+      pair: Font.has_glyph; small_caps
 
-   .. method:: has_glyph(chr, language=None, script=0, fallback=False)
+   .. method:: has_glyph(chr, language=None, script=0, fallback=False, small_caps=False)
 
       Check whether the unicode ``chr`` exists in the font or (option) some fallback font. May be used to check whether any "TOFU" symbols will appear on output.
 
@@ -144,6 +147,7 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       :arg str language: the language -- currently unused.
       :arg int script: the UCDN script number.
       :arg bool fallback: *(new in v1.17.5)* perform an extended search in fallback fonts or restrict to current font (default).
+      :arg bool small_caps: look for the small-caps variant of the glyph. Ignored if ``fallback`` is true.
       :returns: *(changed in 1.17.7)* the glyph number. Zero indicates no glyph found.
 
    .. method:: valid_codepoints()
@@ -152,32 +156,32 @@ A ``Font`` object also contains useful general information, like the font bbox, 
 
       Return an array of unicodes supported by this font.
 
-      :returns: an ``array.array`` [#f2]_ of length at most :attr:`Font.glyph_count`. I.e. ``chr()`` of every item in this array has a glyph in the font without using fallbacks. This is an example display of the supported glyphs:
+      :returns: a sorted list of length at most :attr:`Font.glyph_count`. I.e. ``chr()`` of every item in this list has a glyph in the font without using fallbacks. This is an example display of the supported glyphs:
 
          >>> import pymupdf
          >>> font = pymupdf.Font("math")
          >>> vuc = font.valid_codepoints()
          >>> for i in vuc:
          >>>     print(f"{i:04X} {chr(i)} ({font.unicode_to_glyph_name(i)})")
-         0000
-         000D   (CR)
-         0020   (space)
-         0021 ! (exclam)
-         0022 " (quotedbl)
-         0023 # (numbersign)
-         0024 $ (dollar)
-         0025 % (percent)
+         0000   (.notdef)
+         000D   (.notdef)
+         0020   (SPACE)
+         0021 ! (EXCLAMATION MARK)
+         0022 " (QUOTATION MARK)
+         0023 # (NUMBER SIGN)
+         0024 $ (DOLLAR SIGN)
+         0025 % (PERCENT SIGN)
          ...
-         00AC ¬ (logicalnot)
-         00B1 ± (plusminus)
+         00AC ¬ (NOT SIGN)
+         00B1 ± (PLUS-MINUS SIGN)
          ...
-         21D0 ⇐ (arrowdblleft)
-         21D1 ⇑ (arrowdblup)
-         21D2 ⇒ (arrowdblright)
-         21D3 ⇓ (arrowdbldown)
-         21D4 ⇔ (arrowdblboth)
+         21D0 ⇐ (LEFTWARDS DOUBLE ARROW)
+         21D1 ⇑ (UPWARDS DOUBLE ARROW)
+         21D2 ⇒ (RIGHTWARDS DOUBLE ARROW)
+         21D3 ⇓ (DOWNWARDS DOUBLE ARROW)
+         21D4 ⇔ (LEFT RIGHT DOUBLE ARROW)
          ...
-         221E ∞ (infinity)
+         221E ∞ (INFINITY)
          ...
 
       .. note:: This method only returns meaningful data for fonts having a CMAP (character map, charmap, the `/ToUnicode` PDF key). Otherwise, this array will have length 1 and contain zero only.
@@ -186,57 +190,67 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       pair: Font.glyph_advance; language
       pair: Font.glyph_advance; script
       pair: Font.glyph_advance; wmode
+      pair: Font.glyph_advance; small_caps
 
-   .. method:: glyph_advance(chr, language=None, script=0, wmode=0)
+   .. method:: glyph_advance(chr_, language=None, script=0, wmode=0, small_caps=False)
 
       Calculate the "width" of the character's glyph (visual representation).
 
-      :arg int chr: the unicode number of the character. Use ``ord()``, not the character itself. Again, this should normally work even if a character is not supported by that font, because fallback fonts will be checked where necessary.
+      :arg int chr_: the unicode number of the character. Use ``ord()``, not the character itself. Again, this should normally work even if a character is not supported by that font, because fallback fonts will be checked where necessary.
       :arg int wmode: write mode, ``0`` = horizontal, ``1`` = vertical.
+      :arg bool small_caps: use the small-caps variant of the glyph. No fallback fonts are checked in this case.
 
-      The other parameters are not in use currently.
+      The *language* and *script* parameters are only used when looking up fallback fonts.
 
       :returns: a float representing the glyph's width relative to **fontsize 1**.
 
    .. method:: glyph_name_to_unicode(name)
 
-      Return the unicode value for a given glyph name. Use it in conjunction with `chr()` if you want to output e.g. a certain symbol.
+      * Changed in v1.25.2: uses Unicode character names (Python's `unicodedata` module) instead of the Adobe Glyph List.
 
-      :arg str name: The name of the glyph.
+      Return the unicode value for a given character name. Use it in conjunction with `chr()` if you want to output e.g. a certain symbol.
 
-      :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: `font.glyph_name_to_unicode("Sigma") = 931`, `font.glyph_name_to_unicode("sigma") = 963`. Refer to the `Adobe Glyph List <https://github.com/adobe-type-tools/agl-aglfn/blob/master/glyphlist.txt>`_ publication for a list of glyph names and their unicode numbers. Example:
+      :arg str name: The Unicode name of the character (case-insensitive), as used by Python's `unicodedata.lookup()`.
+
+      :returns: The unicode integer, or 65533 = 0xFFFD if the name is unknown. Examples: `font.glyph_name_to_unicode("GREEK CAPITAL LETTER SIGMA") = 931`, `font.glyph_name_to_unicode("greek small letter sigma") = 963`. Adobe glyph names like "Sigma" are no longer recognized and return 65533. Example:
 
          >>> font = pymupdf.Font("helv")
-         >>> font.has_glyph(font.glyph_name_to_unicode("infinity"))
+         >>> bool(font.has_glyph(font.glyph_name_to_unicode("infinity")))
          True
 
    .. index::
       pair: Font.glyph_bbox; language
       pair: Font.glyph_bbox; script
+      pair: Font.glyph_bbox; small_caps
 
-   .. method:: glyph_bbox(chr, language=None, script=0)
+   .. method:: glyph_bbox(char, language=None, script=0, small_caps=False)
 
       The glyph rectangle relative to :data:`fontsize` 1.
 
-      :arg int chr: ``ord()`` of the character.
+      :arg int char: ``ord()`` of the character.
+      :arg str language: the language -- used when looking up fallback fonts.
+      :arg int script: the UCDN script number -- used when looking up fallback fonts.
+      :arg bool small_caps: use the small-caps variant of the glyph. No fallback fonts are checked in this case.
 
       :returns: a :ref:`Rect`.
 
 
    .. method:: unicode_to_glyph_name(ch)
 
-      Show the name of the character's glyph.
+      * Changed in v1.25.2: returns Unicode character names (Python's `unicodedata` module) instead of Adobe Glyph List names.
+
+      Show the name of the character.
 
       :arg int ch: the unicode number of the character. Use ``ord()``, not the character itself.
 
-      :returns: a string representing the glyph's name. E.g. `font.glyph_name(ord("#")) = "numbersign"`. For an invalid code ".notfound" is returned.
+      :returns: a string with the character's Unicode name. E.g. `font.unicode_to_glyph_name(ord("#")) = "NUMBER SIGN"`. For a code point without a Unicode name (e.g. control characters or private use) ".notdef" is returned.
       
-        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` no longer depend on a font and instead retrieve information from the **Adobe Glyph List**. Also available as `pymupdf.unicode_to_glyph_name()` and resp. `pymupdf.glyph_name_to_unicode()`.
+        .. note:: *(Changed in v1.18.0)* This method and :meth:`Font.glyph_name_to_unicode` do not depend on a font. *(Changed in v1.25.2)* They use Python's `unicodedata` module instead of the **Adobe Glyph List**. Also available as `pymupdf.unicode_to_glyph_name()` and resp. `pymupdf.glyph_name_to_unicode()`.
 
    .. index::
       pair: text_length; fontsize
 
-   .. method:: text_length(text, fontsize=11)
+   .. method:: text_length(text, fontsize=11, language=None, script=0, wmode=0, small_caps=False)
 
       Calculate the length in points of a unicode string.
 
@@ -245,6 +259,14 @@ A ``Font`` object also contains useful general information, like the font bbox, 
       :arg str text: a text string, UTF-8 encoded.
 
       :arg float fontsize: the :data:`fontsize`.
+
+      :arg str language: the language -- used when looking up fallback fonts for characters missing in this font.
+
+      :arg int script: the UCDN script number -- used when looking up fallback fonts.
+
+      :arg int wmode: write mode, ``0`` = horizontal, ``1`` = vertical.
+
+      :arg bool small_caps: use the small-caps variants of the glyphs. No fallback fonts are checked in this case.
 
       :rtype: float
 
@@ -260,7 +282,7 @@ A ``Font`` object also contains useful general information, like the font bbox, 
    .. index::
       pair: char_lengths; fontsize
 
-   .. method:: char_lengths(text, fontsize=11)
+   .. method:: char_lengths(text, fontsize=11, language=None, script=0, wmode=0, small_caps=False)
 
       *New in v1.18.14*
 
@@ -270,7 +292,15 @@ A ``Font`` object also contains useful general information, like the font bbox, 
 
       :arg float fontsize: the :data:`fontsize`.
 
-      :rtype: tuple
+      :arg str language: the language -- used when looking up fallback fonts for characters missing in this font.
+
+      :arg int script: the UCDN script number -- used when looking up fallback fonts.
+
+      :arg int wmode: write mode, ``0`` = horizontal, ``1`` = vertical.
+
+      :arg bool small_caps: use the small-caps variants of the glyphs. No fallback fonts are checked in this case.
+
+      :rtype: list
 
       :returns: the lengths in points of the characters of a string when stored in the PDF. It works like :meth:`Font.text_length` broken down to single characters. This is a high speed method, used e.g. in :meth:`TextWriter.fill_textbox`. The following is true (allowing rounding errors): `font.text_length(text) == sum(font.char_lengths(text))`.
 
@@ -283,13 +313,13 @@ A ``Font`` object also contains useful general information, like the font bbox, 
          >>> sum(font.char_lengths(text))
          50.115999937057495
          >>> pprint(font.char_lengths(text))
-         (7.336999952793121,  # P
+         [7.336999952793121,  # P
          5.5,                 # y
          9.163000047206879,   # M
          6.115999937057495,   # u
          7.336999952793121,   # P
          7.942000031471252,   # D
-         6.721000015735626)   # F
+         6.721000015735626]   # F
 
 
    .. attribute:: buffer
@@ -367,7 +397,5 @@ A ``Font`` object also contains useful general information, like the font bbox, 
 .. rubric:: Footnotes
 
 .. [#f1] MuPDF does not support all fontfiles with this feature and will raise exceptions like *"mupdf: FT_New_Memory_Face((null)): unknown file format"*, if it encounters issues.
-
-.. [#f2] The built-in Python module `array` has been chosen for its speed and low memory requirement.
 
 .. include:: footer.rst

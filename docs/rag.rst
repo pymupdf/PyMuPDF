@@ -68,17 +68,7 @@ You can convert multiple documents in a batch by iterating over them and applyin
 Integration with :title:`LangChain`
 -------------------------------------
 
-It is simple to integrate directly with :title:`LangChain` by using their dedicated loader as follows:
-
-
-.. code-block:: python
-
-    from langchain_community.document_loaders import PyMuPDFLoader
-    loader = PyMuPDFLoader("example.pdf")
-    data = loader.load()
-
-
-See `LangChain Using PyMuPDF <https://python.langchain.com/docs/modules/data_connection/document_loaders/pdf/#using-pymupdf>`_ for full details.
+It is simple to integrate directly with :title:`LangChain` by using a dedicated loader as follows, see :doc:`langchain/index` for full details.
 
 
 Integration with :title:`LlamaIndex`

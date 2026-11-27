@@ -76,13 +76,13 @@ Please note:
       
       Return the Euclidean norm of the matrix as a vector.
 
-   .. method:: prerotate(deg)
+   .. method:: prerotate(theta)
 
-      Modify the matrix to perform a counter-clockwise rotation for positive *deg* degrees, else clockwise. The matrix elements of an identity matrix will change in the following way:
+      Modify the matrix to perform a counter-clockwise rotation for positive *theta* degrees, else clockwise. The matrix elements of an identity matrix will change in the following way:
 
-      *[1, 0, 0, 1, 0, 0] -> [cos(deg), sin(deg), -sin(deg), cos(deg), 0, 0]*.
+      *[1, 0, 0, 1, 0, 0] -> [cos(theta), sin(theta), -sin(theta), cos(theta), 0, 0]*.
 
-      :arg float deg: The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).
+      :arg float theta: The rotation angle in degrees (use conventional notation based on Pi = 180 degrees).
 
    .. method:: prescale(sx, sy)
 
@@ -92,13 +92,13 @@ Please note:
 
       :arg float sy: Zoom factor in Y direction. For the effect see description of attribute *d*.
 
-   .. method:: preshear(sx, sy)
+   .. method:: preshear(h, v)
 
-      Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [c*sy, d*sy, a*sx, b*sx, e, f]*.
+      Modify the matrix to perform a shearing, i.e. transformation of rectangles into parallelograms (rhomboids). Has effects on attributes *a* thru *d* only: *[a, b, c, d, e, f] -> [a + c*v, b + d*v, c + a*h, d + b*h, e, f]*.
 
-      :arg float sx: Shearing effect in X direction. See attribute *c*.
+      :arg float h: Shearing effect in X direction. See attribute *c*.
 
-      :arg float sy: Shearing effect in Y direction. See attribute *b*.
+      :arg float v: Shearing effect in Y direction. See attribute *b*.
 
    .. method:: pretranslate(tx, ty)
 
@@ -108,22 +108,22 @@ Please note:
 
       :arg float ty: Translation effect in Y direction. See attribute *f*.
 
-   .. method:: concat(m1, m2)
+   .. method:: concat(one, two)
 
-      Calculate the matrix product *m1 * m2* and store the result in the current matrix. Any of *m1* or *m2* may be the current matrix. Be aware that matrix multiplication is not commutative. So the sequence of *m1*, *m2* is important.
+      Calculate the matrix product *one * two* and store the result in the current matrix. Any of *one* or *two* may be the current matrix. Be aware that matrix multiplication is not commutative. So the sequence of *one*, *two* is important.
 
-      :arg m1: First (left) matrix.
-      :type m1: :ref:`Matrix`
+      :arg one: First (left) matrix.
+      :type one: :ref:`Matrix`
 
-      :arg m2: Second (right) matrix.
-      :type m2: :ref:`Matrix`
+      :arg two: Second (right) matrix.
+      :type two: :ref:`Matrix`
 
-   .. method:: invert(m = None)
+   .. method:: invert(src=None)
 
-      Calculate the matrix inverse of *m* and store the result in the current matrix. Returns *1* if *m* is not invertible ("degenerate"). In this case the current matrix **will not change**. Returns *0* if *m* is invertible, and the current matrix is replaced with the inverted *m*.
+      Calculate the matrix inverse of *src* and store the result in the current matrix. Returns *1* if *src* is not invertible ("degenerate"). In this case the current matrix **will not change**. Returns *0* if *src* is invertible, and the current matrix is replaced with the inverted *src*.
 
-      :arg m: Matrix to be inverted. If not provided, the current matrix will be used.
-      :type m: :ref:`Matrix`
+      :arg src: Matrix to be inverted. If not provided, the current matrix will be used.
+      :type src: :ref:`Matrix`
 
       :rtype: int
 

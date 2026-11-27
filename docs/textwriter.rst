@@ -56,9 +56,9 @@ Using this object entails three steps:
 
 .. class:: TextWriter
 
-   .. method:: __init__(self, rect, opacity=1, color=None)
+   .. method:: __init__(self, page_rect, opacity=1, color=None)
 
-      :arg rect-like rect: rectangle internally used for text positioning computations.
+      :arg rect-like page_rect: rectangle internally used for text positioning computations.
       :arg float opacity: sets the transparency for the text to store here. Values outside the interval `[0, 1)` will be ignored. A value of e.g. 0.5 means 50% transparency.
       :arg float,sequ color: the color of the text. All colors are specified as floats *0 <= color <= 1*. A single float represents some gray level, a sequence implies the colorspace via its length.
 
@@ -110,7 +110,7 @@ Using this object entails three steps:
 
       :returns: :attr:`text_rect` and :attr:`last_point`. *(Changed in v1.18.0:)* Raises an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
-   .. method:: fill_textbox(rect, text, *, pos=None, font=None, fontsize=11, align=0, right_to_left=False, warn=None, small_caps=0)
+   .. method:: fill_textbox(rect, text, pos=None, font=None, fontsize=11, lineheight=None, align=0, warn=None, right_to_left=False, small_caps=False)
 
       * Changed in 1.17.3: New parameter `pos` to specify where to start writing within rectangle.
       * Changed in v1.18.9: Return list of lines which do not fit in rectangle. Support writing right-to-left (e.g. Arabian, Hebrew).
@@ -123,8 +123,8 @@ Using this object entails three steps:
       :arg point_like pos: *(new in v1.17.3)* start storing at this point. Default is a point near rectangle top-left.
       :arg font: the :ref:`Font`, default `pymupdf.Font("helv")`.
       :arg float fontsize: the :data:`fontsize`.
+      :arg float lineheight: a factor to override the line height calculated from font properties. If not ``None``, a line height of `fontsize * lineheight` is used. Otherwise `fontsize * (font.ascender - font.descender)` is used, or `fontsize * 1.2` if that difference is not greater than 1.
       :arg int align: text alignment. Use one of TEXT_ALIGN_LEFT, TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_JUSTIFY.
-      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is ``False``. If ``True``, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
       :arg bool warn: on text overflow do nothing (``None``), warn (``True``), or raise an exception (``False``). Overflow text will never be written. **Changed in v1.18.9:**
 
         * Default is ``None``.
@@ -132,6 +132,7 @@ Using this object entails three steps:
         * When ``None`` or ``True`` the partial text will be written.
         * When ``False``, and an exception is raised, the text *will not* be written.
 
+      :arg bool right_to_left: *(New in v1.18.9)* whether the text should be written from right to left. Applicable for languages like Arabian or Hebrew. Default is ``False``. If ``True``, any Latin parts are automatically reverted. You must still set the alignment (if you want right alignment), it does not happen automatically -- the other alignment options remain available as well.
       :arg bool small_caps: *(New in v1.18.15)* see :meth:`append`.
 
       :rtype: list
@@ -140,19 +141,21 @@ Using this object entails three steps:
    .. note:: Use these methods as often as is required -- there is no technical limit (except memory constraints of your system). You can also mix :meth:`append` and text boxes and have multiple of both. Text positioning is exclusively controlled by the insertion point. Therefore there is no need to adhere to any order. *(Changed in v1.18.0:)* Raise an exception for an unsupported font -- checked via :attr:`Font.is_writable`.
 
 
-   .. method:: write_text(page, opacity=None, color=None, morph=None, overlay=True, oc=0, render_mode=0)
+   .. method:: write_text(page, color=None, opacity=None, overlay=True, morph=None, matrix=None, render_mode=0, oc=0)
 
       Write the TextWriter text to a page, which is the only mandatory parameter. The other parameters can be used to temporarily override the values used when the TextWriter was created.
 
       :arg page: write to this :ref:`Page`.
-      :arg float opacity: override the value of the TextWriter for this output.
       :arg sequ color: override the value of the TextWriter for this output.
-      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*.
+      :arg float opacity: override the value of the TextWriter for this output.
       :arg bool overlay: put in foreground (default) or background.
-      :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
+      :arg sequ morph: modify the text appearance by applying a matrix to it. If provided, this must be a sequence *(fixpoint, matrix)* with a point-like *fixpoint* and a matrix-like *matrix*. A typical example is rotating the text around *fixpoint*.
+      :arg matrix_like matrix: a matrix to apply to the text directly (without a fixpoint), as an alternative to *morph*. Only one of *matrix* and *morph* may be given.
       :arg int render_mode: The PDF `Tr` operator value. Values: 0 (default), 1, 2, 3 (invisible).
 
          .. image:: images/img-rendermode.*
+
+      :arg int oc: *(new in v1.18.4)* the :data:`xref` of an :data:`OCG` or :data:`OCMD`.
 
 
    .. attribute:: text_rect

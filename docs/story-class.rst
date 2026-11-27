@@ -32,7 +32,7 @@ Story
 
 .. class:: Story
 
-   .. method:: __init__(self, html=None, user_css=None, em=12, archive=None)
+   .. method:: __init__(html='', user_css=None, em=12, archive=None)
 
       Create a **story**, optionally providing HTML and CSS source.
       The HTML is parsed, and held within the Story as a DOM (Document Object Model).
@@ -111,20 +111,22 @@ Story
       
          .. note:: Instead of an actual archive, valid arguments for **creating** an :ref:`Archive` can also be provided -- in which case an archive will temporarily be constructed. So, instead of `story = pymupdf.Story(archive=pymupdf.Archive("myfolder"))`, one can also shorter write `story = pymupdf.Story(archive="myfolder")`.
 
-   .. method:: place(where)
+   .. method:: place(where, flags=0)
 
       Calculate that part of the story's content, that will fit in the provided rectangle. The method maintains a pointer which part of the story's content has already been written and upon the next invocation resumes from that pointer's position.
 
       :arg rect_like where: layout the current part of the content to fit into this rectangle. This must be a sub-rectangle of the page's :ref:`MediaBox<Glossary_MediaBox>`.
 
+      :arg int flags: passed to MuPDF's `fz_place_story_flags()`. Either 0 (default) or `mupdf.FZ_PLACE_STORY_FLAG_NO_OVERFLOW`.
+
       :rtype: tuple[bool, rect_like]
       :returns: a bool (int) `more` and a rectangle `filled`. If `more == 0`, all content of the story has been written, otherwise more is waiting to be written to subsequent rectangles / pages. Rectangle `filled` is the part of `where` that has actually been filled.
 
-   .. method:: draw(dev, matrix=None)
+   .. method:: draw(device, matrix=None)
 
       Write the content part prepared by :meth:`Story.place` to the page.
 
-      :arg dev: the :ref:`Device` created by `dev = writer.begin_page(mediabox)`. The device knows how to call all MuPDF functions needed to write the content.
+      :arg device: the :ref:`Device` created by `device = writer.begin_page(mediabox)`. The device knows how to call all MuPDF functions needed to write the content.
       :arg matrix_like matrix: a matrix for transforming content when writing to the page. An example may be writing rotated text. The default means no transformation (i.e. the :ref:`Identity` matrix).
 
    .. method:: element_positions(function, args=None)
@@ -249,7 +251,7 @@ Story
         `rect`:
             The rect created from `parameter`.
         
-   .. method:: fit(self, fn, pmin=None, pmax=None, delta=0.001, verbose=False)
+   .. method:: fit(fn, pmin=None, pmax=None, delta=0.001, verbose=False, flags=0)
 
         Finds optimal rect that contains the story `self`.
         
@@ -275,18 +277,20 @@ Story
             Maximum error in returned `parameter`.
         :arg verbose:
             If true we output diagnostics.
+        :arg flags:
+            Passed to :meth:`Story.place`, e.g. zero or
+            `mupdf.FZ_PLACE_STORY_FLAG_NO_OVERFLOW`.
 
-   .. method:: fit_scale(self, rect, scale_min=0, scale_max=None, delta=0.001, verbose=False)
+   .. method:: fit_scale(rect, scale_min=0, scale_max=None, delta=0.001, verbose=False, flags=0)
 
         Finds smallest value `scale` in range `scale_min..scale_max` where
         `scale * rect` is large enough to contain the story `self`.
 
         Returns a `Story.FitResult` instance.
 
-        :arg width:
-            width of rect.
-        :arg height:
-            height of rect.
+        :arg rect_like rect:
+            the rect to scale. Its top-left corner stays fixed; its width and
+            height are multiplied by `scale`.
         :arg scale_min:
             Minimum scale to consider; must be >= 0.
         :arg scale_max:
@@ -296,8 +300,10 @@ Story
             Maximum error in returned scale.
         :arg verbose:
             If true we output diagnostics.
+        :arg flags:
+            Passed to :meth:`Story.place`.
 
-   .. method:: fit_height(self, width, height_min=0, height_max=None, origin=(0, 0), delta=0.001, verbose=False)
+   .. method:: fit_height(width, height_min=0, height_max=None, origin=(0, 0), delta=0.001, verbose=False)
 
         Finds smallest height in range `height_min..height_max` where a rect
         with size `(width, height)` is large enough to contain the story
@@ -319,7 +325,7 @@ Story
         :arg verbose:
             If true we output diagnostics.
 
-   .. method:: fit_width(self, height, width_min=0, width_max=None, origin=(0, 0), delta=0.001, verbose=False)
+   .. method:: fit_width(height, width_min=0, width_max=None, origin=(0, 0), delta=0.001, verbose=False)
 
         Finds smallest width in range `width_min..width_max` where a rect with size
         `(width, height)` is large enough to contain the story `self`.
