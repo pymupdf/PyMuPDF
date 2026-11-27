@@ -698,6 +698,7 @@ def test_4755():
                 print(f'{annot_i=}')
                 bounds.append(annot.bounds)
                 e = None
+                
                 try:
                     before_rect = copy.deepcopy(annot.rect)
                 except Exception as ee:
@@ -707,6 +708,15 @@ def test_4755():
                     assert e and 'StrikeOut annotations have no Rect property' in str(e), (
                             f'Did not receive expected exception with {annot_i=}.'
                             )
+                    
+                    # Check that setting pymupdf._globals.annot_rect_fallback to true allows
+                    # annot.rect to succeed.
+                    #
+                    assert not pymupdf._globals.annot_rect_fallback
+                    pymupdf._globals.annot_rect_fallback = True
+                    before_rect = copy.deepcopy(annot.rect)
+                    pymupdf._globals.annot_rect_fallback = False
+                    
                     continue
                 else:
                     assert not e, f'Received unexpected exception with {annot_i=}: {e}'
