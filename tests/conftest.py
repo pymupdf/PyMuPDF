@@ -145,7 +145,11 @@ def wrap(request):
                 v = getattr(a, n)
                 ret[n] = v
         return ret
-        
+    
+    # We test without Annot.rect fallback to Annot.bounds, so that we avoid
+    # relying on the fallback in the main code and in tests.
+    pymupdf._globals.annot_rect_fallback = False
+    
     # Allow post-test checking that pymupdf._globals has not changed.
     _globals_pre = get_members(pymupdf._globals)
     
