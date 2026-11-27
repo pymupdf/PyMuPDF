@@ -703,7 +703,7 @@ def test_4755():
                 except Exception as ee:
                     e = ee
                 print(f'{annot_i=} {e=}')
-                if 0 and annot_i == 0:
+                if annot_i == 0:
                     assert e and 'StrikeOut annotations have no Rect property' in str(e), (
                             f'Did not receive expected exception with {annot_i=}.'
                             )
@@ -752,7 +752,7 @@ def test_4755():
     
     print(f'{errors=}')
     # Expect the current broken behaviour.
-    assert errors == [False, False, False]
+    assert errors == [False, False]
 
 
 def test_4944():
