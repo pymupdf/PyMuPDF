@@ -682,6 +682,7 @@ def test_4755():
     path = os.path.normpath(f'{__file__}/../../tests/resources/test_4755.pdf')
     path_out = os.path.normpath(f'{__file__}/../../tests/test_4755_out.pdf')
     
+    errors = list()
     with pymupdf.open(path) as document:
         for page_i, page in enumerate(document):
             print(f'{page_i=}')
@@ -707,17 +708,22 @@ def test_4755():
                 print(f'{colour=}')
                 draw_rectangle(annot.rect, colour, .3)
 
-                print(f'before: {annot.rect}=')
+                print(f'before: {annot.rect=}')
                 annot.set_rect(annot.rect)
-                print(f' after: {annot.rect}=')
+                print(f' after: {annot.rect=}')
 
                 print(f'difference: {annot.rect-before_rect=}')
+                errors.append(annot.rect != before_rect)
 
                 draw_rectangle(annot.rect, (0, 1, 0), .3)
                 print()
         document.save(path_out)
         print(f'    {path=}.')
         print(f'{path_out=}.')
+    
+    print(f'{errors=}')
+    # Expect the current broken behaviour.
+    assert errors == [False, True, False]
 
 
 def test_4944():
