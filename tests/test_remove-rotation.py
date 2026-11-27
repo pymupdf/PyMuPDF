@@ -1,7 +1,13 @@
+import json
 import os
-import pymupdf
+import sys
+import textwrap
 import time
+
+import pymupdf
+
 from gentle_compare import gentle_compare, rms
+
 
 scriptdir = os.path.dirname(__file__)
 ROTATIONS = (90, 180, 270)
@@ -147,3 +153,65 @@ def test_5059():
         pix_rot0 = page.get_pixmap(colorspace=pymupdf.csGRAY)
         rms_val = rms(pix_orig.samples, pix_rot0.samples, verbose=False)
         assert rms_val < 0.05, f"RMS diff for rotation {rot}: {rms_val}"
+
+
+def _test_4394_internal(angle, cropped):
+    with pymupdf.open() as doc:
+        page = doc.new_page(width=400, height=300)
+        page.insert_text((80, 90), "SYNTHETIC CROP TEST")
+        if cropped:
+            page.set_cropbox(pymupdf.Rect(50, 30, 350, 250))
+        page.set_rotation(angle)
+        before = page.get_pixmap(colorspace=pymupdf.csGRAY)
+        text_before = page.get_text().strip()
+        page.remove_rotation()
+        with pymupdf.open(stream=doc.tobytes(), filetype="pdf") as saved:
+            after = saved[0].get_pixmap(colorspace=pymupdf.csGRAY)
+            path = os.path.normpath(f'{__file__}/../../tests/test_4394_out_{angle}_{cropped}.pdf')
+            path = os.path.relpath(path)
+            ret = {
+                "rotation": angle,
+                "cropped": cropped,
+                "size_before": [before.width, before.height],
+                "size_after": [after.width, after.height],
+                "text_before": text_before,
+                "text_after": saved[0].get_text().strip(),
+                "dark_pixels_before": sum(value < 240 for value in before.samples),
+                "dark_pixels_after": sum(value < 240 for value in after.samples),
+                "pixels_identical": before.samples == after.samples,
+                "path": path,
+            }
+            saved.save(path)
+    #print(f'{angle=} {cropped=}:')
+    #t = json.dumps(ret, indent='    ')
+    #t = textwrap.indent(t, '    ')
+    #print(t)
+    return ret
+
+
+def test_4394():
+    print()
+    info = dict()
+    for angle in (0, 90, 180, 270):
+        for cropped in False, True:
+            ret = _test_4394_internal(angle, cropped)
+            info.setdefault(angle, dict())[cropped] = ret
+    for angle in sorted(info.keys()):
+        for cropped in sorted(info[angle]):
+            ret = info[angle][cropped]
+            items = list()
+            items.append(f'{angle=}')
+            items.append(f'{cropped=}')
+            items.append(f'visible: {ret["size_before"]} => {ret["size_after"]}')
+            items.append(f'text-after: {"present" if ret["text_after"] else "empty"}')
+            items.append(f'dark-pixels: {ret["dark_pixels_before"]} => {ret["dark_pixels_after"]}')
+            items.append(f'pixels-identical: {ret["pixels_identical"]}')
+            items.append(f'  {ret["path"]}')
+            widths = 12, 16, 36, 24, 28, 28, None
+            assert len(widths) == len(items), f'{len(widths)=} {len(items)=}'
+            for item, width in zip(items, widths):
+                if width:
+                    item = item.rjust(width)
+                sys.stdout.write(f' {item}')
+            sys.stdout.write('\n')
+
