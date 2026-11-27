@@ -108,3 +108,40 @@ def test_3842():
             print(f'text_expected:\n{text_expected!r}')
             print(f'text_expected_alternative:\n{text_expected_alternative!r}')
             assert text == text_expected or text == text_expected_alternative
+
+
+def test_5295():
+    # get_textpage_ocr(full=True) must not drop text on /Rotate 90 and 270
+    # pages whose width and height differ. We make an image-only A4 "scan"
+    # filed with a landscape MediaBox and /Rotate, as a landscape scanner
+    # does, with one line of text near the top and one near the bottom of
+    # the page as seen. Before the fix one of them was lost.
+    if os.environ.get('PYODIDE_ROOT'):
+        print('test_5295(): not running on Pyodide - cannot run child processes.')
+        return
+
+    lines = {'Topline': 80, 'Bottomline': 780}
+    seen = pymupdf.open()
+    seen_page = seen.new_page(width=595, height=842)
+    for text, y in lines.items():
+        seen_page.insert_text((72, y), text, fontsize=20)
+    pix = seen_page.get_pixmap(dpi=150)
+
+    for rotation in (90, 270):
+        with pymupdf.open() as document:
+            page = document.new_page(width=842, height=595)
+            page.set_rotation(rotation)
+            page.insert_image(page.rect * page.derotation_matrix, pixmap=pix, rotate=rotation)
+            try:
+                tp = page.get_textpage_ocr(full=True, dpi=150)
+            except Exception as e:
+                print(f'test_5295(): received exception: {e}', flush=1)
+                if 'No tessdata specified and Tesseract is not installed' in str(e):
+                    return
+                if 'Tesseract language initialisation failed' in str(e):
+                    return
+                raise
+            text = page.get_text(textpage=tp)
+            print(f'test_5295(): {rotation=} {text=}')
+            for line in lines:
+                assert line in text, f'{line!r} not found with /Rotate {rotation}: {text=}'
