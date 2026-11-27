@@ -100,6 +100,8 @@ catch(...) {
 #include "mupdf/internal.h"
 
 #include <algorithm>
+#include <unordered_set>
+#include <vector>
 #include <float.h>
 
 
@@ -343,8 +345,7 @@ static void page_merge(
         }
     }
 
-    // Copy annotations, but skip Link, Popup, IRT, Widget types
-    // If selected, remove dict keys P (parent) and Popup
+    // Copy ordinary annotations first so a group member can precede its primary.
     if (copy_annots)
     {
         mupdf::PdfObj old_annots = mupdf::pdf_dict_get(page_ref, PDF_NAME2(Annots));
@@ -352,6 +353,9 @@ static void page_merge(
         if (n > 0)
         {
             mupdf::PdfObj new_annots = mupdf::pdf_dict_put_array(page_dict, PDF_NAME2(Annots), n);
+            std::vector<mupdf::PdfObj> copies(n);
+            std::unordered_set<int> primaries;
+            std::vector<int> group_members;
             for (int i = 0; i < n; i++)
             {
                 mupdf::PdfObj o = mupdf::pdf_array_get(old_annots, i);
@@ -359,21 +363,37 @@ static void page_merge(
                 {
                     continue;   // skip invalid/null/non-dict items
                 }
-                if (mupdf::pdf_dict_get(o, PDF_NAME2(IRT)).m_internal) continue;
                 mupdf::PdfObj subtype = mupdf::pdf_dict_get(o, PDF_NAME2(Subtype));
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME2(Link))) continue;
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME2(Popup))) continue;
                 if (mupdf::pdf_name_eq(subtype, PDF_NAME2(Widget))) continue;
+                if (mupdf::pdf_dict_get(o, PDF_NAME2(IRT)).m_internal)
+                {
+                    if (mupdf::pdf_name_eq(mupdf::pdf_dict_get(o, PDF_NAME2(RT)), PDF_NAME2(Group)))
+                        group_members.push_back(i);
+                    continue;
+                }
                 mupdf::pdf_dict_del(o, PDF_NAME2(Popup));
                 mupdf::pdf_dict_del(o, PDF_NAME2(P));
-                mupdf::PdfObj copy_o = mupdf::pdf_graft_mapped_object(graft_map, o);
-                mupdf::PdfObj annot = mupdf::pdf_new_indirect(
-                        doc_des,
-                        mupdf::pdf_to_num(copy_o),
-                        0
-                        );
-                mupdf::pdf_array_push(new_annots, annot);
+                copies[i] = mupdf::pdf_graft_mapped_object(graft_map, o);
+                primaries.insert(mupdf::pdf_to_num(o));
             }
+            for (int i : group_members)
+            {
+                mupdf::PdfObj member = mupdf::pdf_array_get(old_annots, i);
+                mupdf::PdfObj parent = mupdf::pdf_dict_get(member, PDF_NAME2(IRT));
+                if (!mupdf::pdf_is_indirect(parent) || !primaries.count(mupdf::pdf_to_num(parent)))
+                    continue;
+
+                // The primary has already been grafted. The member's IRT will
+                // resolve to that copy without pulling in another source page.
+                mupdf::PdfObj dict = mupdf::pdf_copy_dict(member);
+                mupdf::pdf_dict_del(dict, PDF_NAME2(Popup));
+                mupdf::pdf_dict_del(dict, PDF_NAME2(P));
+                copies[i] = mupdf::pdf_add_object(doc_des, mupdf::pdf_graft_mapped_object(graft_map, dict));
+            }
+            for (auto& copy : copies)
+                if (copy.m_internal) mupdf::pdf_array_push(new_annots, copy);
         }
     }
     // rotate the page
