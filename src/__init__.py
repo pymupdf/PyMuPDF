@@ -4176,7 +4176,7 @@ class Document:
                     i = i * (-1)
                     mupdf.pdf_dict_put_int( item, PDF_NAME('Count'), i)
 
-    def get_form_fields(self, repair=False, verbose=False):
+    def get_form_fields(self, *, repair=False, verbose=False):
         """Return a FormFields object."""
         from .unified_field_model import FormFields
         return FormFields(self, repair=repair, verbose=verbose)
@@ -5572,25 +5572,54 @@ class Document:
         #log( 'insert_pdf(): returning')
 
     def recalculate_form(self):
-        """Recalculate the PDF form fields having /AA/C JavaScripts.
+        """Recalculate fields having /AA/C JavaScript actions.
 
-        We first remove all existing appearance dictionaries to
-        enforce their regeneration via JavaScript code."""
-
+        Locate all widgets belonging to fields in the AcroForm /CO array,
+        remove their existing appearances, execute the calculations, and
+        regenerate the widget appearances from the calculated values.
+        """
         pdfdoc = _as_pdf_document(self)  # underlying PDF document
+        visited = set()  # keep track of visited objects to avoid cycles
 
-        def drop_appearances(obj, visited):
-            """Recursively remove /AP objects."""
+        # for each page xref collect widget xrefs of CO fields
+        pages = collections.defaultdict(set)
+        page_missing = set()  # xrefs of widgets without a /P (page reference)
+
+        def collect_co_widgets(obj, visited, pages, page_missing):
+            """Recursively collect widgets belonging to a /CO field."""
             xref = obj.pdf_to_num()
             if xref in visited:  # avoid any cycles
                 return
             visited.add(xref)
 
-            obj.pdf_dict_del(PDF_NAME("AP"))  # is a no-op if not found
+            if obj.pdf_dict_get(PDF_NAME("Subtype")).pdf_to_name() == "Widget":
+                page_xref = obj.pdf_dict_get(PDF_NAME("P")).pdf_to_num()
+                if page_xref:
+                    pages[page_xref].add(obj.pdf_to_num())
+                else:
+                    page_missing.add(obj.pdf_to_num())
 
             kids = obj.pdf_dict_get(PDF_NAME("Kids"))
             for i in range(kids.pdf_array_len()):
-                drop_appearances(kids.pdf_array_get(i), visited)
+                collect_co_widgets(kids.pdf_array_get(i), visited, pages, page_missing)
+
+        def find_missing_pages(page_missing, pages):
+            """Find page xrefs for widgets missing a /P (page reference)."""
+            for i in range(self.page_count):
+                if not page_missing:
+                    break
+                page_obj = mupdf.pdf_lookup_page_obj(pdfdoc, i)
+                page_xref = page_obj.pdf_to_num()
+                annots = mupdf.pdf_dict_get(page_obj, PDF_NAME("Annots"))
+                for j in range(annots.pdf_array_len()):
+                    widget_obj = annots.pdf_array_get(j)
+                    widget_xref = widget_obj.pdf_to_num()
+                    if widget_xref in page_missing:
+                        page_missing.discard(widget_xref)
+                        pages[page_xref].add(widget_xref)
+                        widget_obj.pdf_dict_put_indirect(PDF_NAME("P"), page_xref)
+                        if not page_missing:
+                            break
 
         # relevant fields are in the following global array
         CO = mupdf.pdf_dict_getl(
@@ -5599,10 +5628,24 @@ class Document:
             PDF_NAME("AcroForm"),
             PDF_NAME("CO"),
         )
-        visited = set()
+        CO_len = CO.pdf_array_len()
+        if not CO_len:  # no cross-field calculations found
+            return
 
-        for i in range(CO.pdf_array_len()):
-            drop_appearances(CO.pdf_array_get(i), visited)
+        for i in range(CO_len):
+            collect_co_widgets(CO.pdf_array_get(i), visited, pages, page_missing)
+
+        if page_missing:
+            # some widgets had no /P (page reference), so we must scan all
+            # /Annots arrays of all pages
+            find_missing_pages(page_missing, pages)
+            if page_missing:  # still some widgets without a page reference
+                raise RuntimeError(f"Cannot find pages for widgets: {page_missing}")
+
+        for page_xref in pages.keys():
+            for widget_xref in pages[page_xref]:
+                obj = mupdf.pdf_load_object(pdfdoc, widget_xref)
+                obj.pdf_dict_del(PDF_NAME("AP"))
 
         # enable JavaScript and regenerate all cross-calculated fields
         try:
@@ -5610,9 +5653,18 @@ class Document:
             if not mupdf.pdf_js_supported(pdfdoc):
                 raise RuntimeError("JavaScript engine failure")
             mupdf.pdf_calculate_form(pdfdoc)
+
+            # regenerate /AP/N for all Widgets of CO fields
+            for page_xref in pages.keys():
+                page_obj = mupdf.pdf_load_object(pdfdoc, page_xref)
+                pno = mupdf.pdf_lookup_page_number(pdfdoc, page_obj)
+                page = self.load_page(pno)
+                for widget_xref in pages[page_xref]:
+                    widget = page.load_widget(widget_xref)
+                    widget.update()
+
         except Exception as e:
             raise RuntimeError(f"cannot recalculate the PDF") from e
-            return
 
     @property
     def is_dirty(self):

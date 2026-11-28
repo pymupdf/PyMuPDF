@@ -19,7 +19,7 @@ class FormFields:
     * bottom-up via parsing the /Annots arrays of the pages.
     """
 
-    def __init__(self, doc, repair=False, verbose=False):
+    def __init__(self, doc, *, repair=False, verbose=False):
         """
         doc: PyMuPDF document or path to PDF file
         """
@@ -88,6 +88,22 @@ class FormFields:
         self.fields = {}  # contains all form fields
         self._build_model()  # bring everything together
         self._diagnose_all()  # store diagnosis results
+
+    def recalculate_form(self):
+        calc_fields = [
+            entry
+            for entry in self.fields.values()
+            if entry.get("script_calc") and entry.get("pages")
+        ]
+        if not calc_fields:
+            return
+        self.doc.recalculate_form()
+
+    def _ensure_need_appearances(self):
+        acroform = mupdf.pdf_dict_getl(
+            mupdf.pdf_trailer(self.pdfdoc), PDF_NAME("Root"), PDF_NAME("AcroForm")
+        )
+        acroform.pdf_dict_put(PDF_NAME("NeedAppearances"), pymupdf.PDF_FALSE)
 
     def _decode_pdf_name(self, name):
         """Decode PDF name objects that contain UTF-16BE escape sequences.
@@ -359,25 +375,17 @@ class FormFields:
         return groups
 
     def _extract_form_fields_with_pages(self):
-        """
-        Traverse /AcroForm/Fields hierarchy top-down and return a dict:
+        """Traverse /AcroForm/Fields hierarchy top-down and return a dict:
+
         fully qualified field name -> {"field_value": ..., "pages": [...]}
         We optionally include the xref of the field.
-
-        As a side effect, we ensure that /DA and /DR exist in the AcroForm
-        to avoid problems with missing default appearance and resources.
         """
         xrefs = True
         result = {}
         if not self.doc.is_form_pdf:
             return result
-        default_DA = "(/Helv 0 Tf 0 g)"
-        default_DR = (
-            "<</Font <</Helv <</Type /Font /Subtype /Type1 /BaseFont /Helvetica>>>>>>"
-        )
 
         # Access the AcroForm dictionary.
-        cat = self.doc.pdf_catalog()
         pdfdoc = pymupdf._as_pdf_document(self.doc)
         acroform = mupdf.pdf_dict_getl(
             mupdf.pdf_trailer(pdfdoc),
@@ -385,14 +393,6 @@ class FormFields:
             PDF_NAME("AcroForm"),
         )
         fields = acroform.pdf_dict_get(PDF_NAME("Fields"))
-
-        # Ensure that /DA and /DR exist and are valid, otherwise set defaults.
-        da = acroform.pdf_dict_get(PDF_NAME("DA"))
-        dr = acroform.pdf_dict_get(PDF_NAME("DR"))
-        if self.repair and not da.pdf_is_string():
-            self.doc.xref_set_key(cat, "AcroForm/DA", default_DA)
-        if self.repair and not dr.pdf_is_dict():
-            self.doc.xref_set_key(cat, "AcroForm/DR", default_DR)
 
         def walk_field(field, prefix=""):
             # /T is the partial field name
@@ -1143,6 +1143,8 @@ class FormFields:
             recalculate (bool): Whether to recalculate all fields. This will
                       trigger recalculation of all inter-fields dependencies.
         """
+        # confirm NeedAppearances
+        self._ensure_need_appearances()
 
         def update_widget_lowlevel(w, value, choices=None, rbg_type=None):
             """Locate w as a MuPDF widget.
@@ -1215,12 +1217,10 @@ class FormFields:
             # Text field
             if w.field_type == pymupdf.PDF_WIDGET_TYPE_TEXT:
                 mupdf.pdf_set_annot_field_value(pdf, widget, value, 1)
-                mupdf.pdf_update_widget(widget)
                 return
 
             # fallback
             mupdf.pdf_set_annot_field_value(pdf, widget, value, 1)
-            mupdf.pdf_update_widget(widget)
             return
 
         if value is None:
@@ -1282,7 +1282,7 @@ class FormFields:
 
             entry["value"] = value
             if recalculate:
-                self.doc.recalculate_form()
+                self.recalculate_form()
             return True
 
         elif ftype == "choice":
@@ -1297,7 +1297,7 @@ class FormFields:
         for w in widgets:
             update_widget_lowlevel(w, value, choices=choices, rbg_type=rbg_type)
         if recalculate:
-            self.doc.recalculate_form()
+            self.recalculate_form()
         return True
 
     def to_dicts(self):
@@ -1319,7 +1319,7 @@ class FormFields:
                 "field": name,
                 "type": entry["type"],
                 "format": entry["format"],
-                "editable": bool(entry.get("pages")),
+                "editable": bool(entry.get("pages") and not entry.get("script_calc")),
                 "choices": entry.get("choices") or [],
                 "current_value": entry.get("value"),
                 "new_value": None,
@@ -1341,7 +1341,7 @@ class FormFields:
 
     def from_dicts(self, dicts, recalculate=True):
         """Import form field value changes from a Python list of dictionaries."""
-        success=0
+        success = 0
         for item in dicts:
             field_name = item.get("field")
             new_value = item.get("new_value")
@@ -1364,7 +1364,7 @@ class FormFields:
             raise ValueError("No fields were updated.")
 
         if recalculate:
-            self.doc.recalculate_form()
+            self.recalculate_form()
         self.refresh()
         pymupdf.message(f"Fields successfully updated: {success}.")
 
@@ -1413,7 +1413,11 @@ class FormFields:
                     name,
                     entry["type"],
                     entry["format"],
-                    "yes" if entry.get("pages", False) else "no",
+                    (
+                        "yes"
+                        if entry.get("pages", False) and not entry.get("script_calc")
+                        else "no"
+                    ),
                     choices_str,
                     current_value,
                     "",  # empty new_value for user to fill in
@@ -1443,10 +1447,9 @@ class FormFields:
             raise ValueError("No fields were updated.")
 
         if recalculate:
-            self.doc.recalculate_form()
+            self.recalculate_form()
         self.refresh()
         pymupdf.message(f"Fields successfully updated: {success}.")
-
 
     def from_csv(self, filepath, recalculate=True):
         csv_str = pathlib.Path(filepath).read_bytes().decode()
