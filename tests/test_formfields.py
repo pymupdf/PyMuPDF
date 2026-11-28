@@ -549,3 +549,11 @@ def test_recalculate_form():
             assert v == "John Doe"
         else:
             assert v == field_values_0[k]
+
+    # ensure that calculated widgets have a non-empty /AP/N
+    for w in page.widgets():
+        if w.field_name == "Customer.Fullname":
+            w_obj = mupdf.pdf_load_object(pdfdoc, w.xref)
+            apn = w_obj.pdf_dict_getl(PDF_NAME("AP"), PDF_NAME("N"))
+            assert apn.pdf_is_dict()
+            assert apn.pdf_is_stream()
